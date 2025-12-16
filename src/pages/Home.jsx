@@ -104,9 +104,9 @@ export default function Home() {
             className="grid grid-cols-3 gap-8 mt-16 max-w-2xl"
           >
             {[
-              { value: '50K+', label: 'Students', icon: Users },
-              { value: '500+', label: 'Courses', icon: Play },
-              { value: '4.9', label: 'Rating', icon: Star },
+              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Students', icon: Users },
+              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Courses', icon: Play },
+              { value: averageRating, label: 'Rating', icon: Star },
             ].map((stat) => (
               <div key={stat.label} className="text-center">
                 <div className="text-3xl sm:text-4xl font-bold mb-1">{stat.value}</div>
