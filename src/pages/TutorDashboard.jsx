@@ -618,14 +618,13 @@ function CourseFormFields({ formData, setFormData }) {
               className="w-full h-10 px-3 rounded-md border border-gray-300"
             >
               <option value="">Select Category</option>
-              <option value="development">Development</option>
-              <option value="design">Design</option>
-              <option value="business">Business</option>
-              <option value="marketing">Marketing</option>
-              <option value="data_science">Data Science</option>
-              <option value="photography">Photography</option>
-              <option value="music">Music</option>
-              <option value="health">Health & Fitness</option>
+              <option value="mathematics">Mathematics</option>
+              <option value="english">English</option>
+              <option value="biology">Biology</option>
+              <option value="chemistry">Chemistry</option>
+              <option value="physics">Physics</option>
+              <option value="history">History</option>
+              <option value="geography">Geography</option>
             </select>
           </div>
           <div>

@@ -12,14 +12,13 @@ import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
 
 const categories = [
-  { id: 'development', label: 'Development' },
-  { id: 'design', label: 'Design' },
-  { id: 'business', label: 'Business' },
-  { id: 'marketing', label: 'Marketing' },
-  { id: 'data_science', label: 'Data Science' },
-  { id: 'photography', label: 'Photography' },
-  { id: 'music', label: 'Music' },
-  { id: 'health', label: 'Health' },
+  { id: 'mathematics', label: 'Mathematics' },
+  { id: 'english', label: 'English' },
+  { id: 'biology', label: 'Biology' },
+  { id: 'chemistry', label: 'Chemistry' },
+  { id: 'physics', label: 'Physics' },
+  { id: 'history', label: 'History' },
+  { id: 'geography', label: 'Geography' },
 ];
 
 const levels = [
