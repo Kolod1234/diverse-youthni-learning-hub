@@ -1,18 +1,17 @@
 import React from 'react';
 import { Button } from '@/components/ui/button';
-import { Code, Palette, Briefcase, TrendingUp, Database, Camera, Music, Heart } from 'lucide-react';
+import { Calculator, BookOpen, Microscope, FlaskConical, Atom, Landmark, Globe2 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const categories = [
-  { id: 'all', name: 'All Courses', icon: null },
-  { id: 'development', name: 'Development', icon: Code },
-  { id: 'design', name: 'Design', icon: Palette },
-  { id: 'business', name: 'Business', icon: Briefcase },
-  { id: 'marketing', name: 'Marketing', icon: TrendingUp },
-  { id: 'data_science', name: 'Data Science', icon: Database },
-  { id: 'photography', name: 'Photography', icon: Camera },
-  { id: 'music', name: 'Music', icon: Music },
-  { id: 'health', name: 'Health', icon: Heart },
+  { id: 'all', name: 'All Subjects', icon: null },
+  { id: 'mathematics', name: 'Mathematics', icon: Calculator },
+  { id: 'english', name: 'English', icon: BookOpen },
+  { id: 'biology', name: 'Biology', icon: Microscope },
+  { id: 'chemistry', name: 'Chemistry', icon: FlaskConical },
+  { id: 'physics', name: 'Physics', icon: Atom },
+  { id: 'history', name: 'History', icon: Landmark },
+  { id: 'geography', name: 'Geography', icon: Globe2 },
 ];
 
 export default function CategoryFilter({ selected, onSelect }) {

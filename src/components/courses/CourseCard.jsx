@@ -7,14 +7,13 @@ import { Star, Clock, Users, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 const categoryColors = {
-  development: 'bg-blue-500/10 text-blue-600',
-  design: 'bg-purple-500/10 text-purple-600',
-  business: 'bg-emerald-500/10 text-emerald-600',
-  marketing: 'bg-orange-500/10 text-orange-600',
-  data_science: 'bg-cyan-500/10 text-cyan-600',
-  photography: 'bg-pink-500/10 text-pink-600',
-  music: 'bg-rose-500/10 text-rose-600',
-  health: 'bg-green-500/10 text-green-600',
+  mathematics: 'bg-blue-500/10 text-blue-600',
+  english: 'bg-purple-500/10 text-purple-600',
+  biology: 'bg-emerald-500/10 text-emerald-600',
+  chemistry: 'bg-amber-500/10 text-amber-600',
+  physics: 'bg-indigo-500/10 text-indigo-600',
+  history: 'bg-rose-500/10 text-rose-600',
+  geography: 'bg-teal-500/10 text-teal-600',
 };
 
 const levelColors = {
@@ -50,8 +49,8 @@ export default function CourseCard({ course, index = 0 }) {
           </div>
           
           <div className="p-5">
-            <Badge className={`${categoryColors[course.category] || 'bg-gray-100 text-gray-600'} border-0 text-xs font-medium mb-3`}>
-              {course.category?.replace('_', ' ')}
+            <Badge className={`${categoryColors[course.category] || 'bg-gray-100 text-gray-600'} border-0 text-xs font-medium mb-3 capitalize`}>
+              {course.category}
             </Badge>
             
             <h3 className="font-semibold text-gray-900 text-lg mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors">
