@@ -220,28 +220,34 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">My Courses</h2>
-        <Button onClick={() => setShowCreateCourse(true)} className="bg-indigo-600 hover:bg-indigo-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Create Course
+        <div>
+          <h2 className="text-xl font-semibold">My Courses</h2>
+          <p className="text-sm text-gray-500 mt-1">Create and manage your courses</p>
+        </div>
+        <Button onClick={() => setShowCreateCourse(true)} className="bg-indigo-600 hover:bg-indigo-700 h-11">
+          <Plus className="w-5 h-5 mr-2" />
+          Create New Course
         </Button>
       </div>
 
       {showCreateCourse && (
-        <Card className="p-6 mb-6 bg-indigo-50 border-indigo-200">
-          <div className="flex items-center justify-between mb-4">
-            <h3 className="font-semibold">Create New Course</h3>
+        <Card className="p-6 mb-6 bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200">
+          <div className="flex items-center justify-between mb-6">
+            <div>
+              <h3 className="font-semibold text-lg text-gray-900">Create New Course</h3>
+              <p className="text-sm text-gray-600 mt-1">Fill in the details to create your course</p>
+            </div>
             <Button variant="ghost" size="icon" onClick={() => setShowCreateCourse(false)}>
               <X className="w-4 h-4" />
             </Button>
           </div>
           <CourseFormFields formData={courseForm} setFormData={setCourseForm} />
-          <div className="flex gap-3 mt-4">
-            <Button onClick={handleCreateCourse} disabled={createCourseMutation.isPending} className="bg-indigo-600">
+          <div className="flex gap-3 mt-6">
+            <Button onClick={handleCreateCourse} disabled={createCourseMutation.isPending} className="bg-indigo-600 h-11">
               <Save className="w-4 h-4 mr-2" />
-              Create
+              {createCourseMutation.isPending ? 'Creating...' : 'Create Course'}
             </Button>
-            <Button variant="outline" onClick={() => setShowCreateCourse(false)}>Cancel</Button>
+            <Button variant="outline" onClick={() => setShowCreateCourse(false)} className="h-11">Cancel</Button>
           </div>
         </Card>
       )}
@@ -568,45 +574,100 @@ function AnalyticsTab({ courses, enrollments }) {
 
 function CourseFormFields({ formData, setFormData }) {
   return (
-    <div className="grid sm:grid-cols-2 gap-4">
-      <div>
-        <Label>Title *</Label>
-        <Input value={formData.title || ''} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+    <div className="space-y-6">
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h4 className="font-medium text-gray-900 mb-4">Basic Information</h4>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label>Course Title *</Label>
+            <Input 
+              value={formData.title || ''} 
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Complete Web Development Course" 
+            />
+          </div>
+          <div>
+            <Label>Instructor Name *</Label>
+            <Input 
+              value={formData.instructor || ''} 
+              onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
+              placeholder="Your full name" 
+            />
+          </div>
+        </div>
+        
+        <div className="mt-4">
+          <Label>Course Description *</Label>
+          <Textarea 
+            value={formData.description || ''} 
+            onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+            rows={4}
+            placeholder="Describe what students will learn in this course..."
+          />
+        </div>
       </div>
-      <div>
-        <Label>Instructor Name *</Label>
-        <Input value={formData.instructor || ''} onChange={(e) => setFormData({ ...formData, instructor: e.target.value })} />
-      </div>
-      <div className="sm:col-span-2">
-        <Label>Description *</Label>
-        <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
-      </div>
-      <div>
-        <Label>Category *</Label>
-        <select value={formData.category || ''} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full h-10 px-3 rounded-md border">
-          <option value="">Select</option>
-          <option value="development">Development</option>
-          <option value="design">Design</option>
-          <option value="business">Business</option>
-          <option value="marketing">Marketing</option>
-          <option value="data_science">Data Science</option>
-        </select>
-      </div>
-      <div>
-        <Label>Level</Label>
-        <select value={formData.level || 'beginner'} onChange={(e) => setFormData({ ...formData, level: e.target.value })} className="w-full h-10 px-3 rounded-md border">
-          <option value="beginner">Beginner</option>
-          <option value="intermediate">Intermediate</option>
-          <option value="advanced">Advanced</option>
-        </select>
-      </div>
-      <div>
-        <Label>Price</Label>
-        <Input type="number" value={formData.price || ''} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
-      </div>
-      <div>
-        <Label>Duration (hours)</Label>
-        <Input type="number" value={formData.duration_hours || ''} onChange={(e) => setFormData({ ...formData, duration_hours: e.target.value })} />
+
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h4 className="font-medium text-gray-900 mb-4">Course Details</h4>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label>Category *</Label>
+            <select 
+              value={formData.category || ''} 
+              onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
+              className="w-full h-10 px-3 rounded-md border border-gray-300"
+            >
+              <option value="">Select Category</option>
+              <option value="development">Development</option>
+              <option value="design">Design</option>
+              <option value="business">Business</option>
+              <option value="marketing">Marketing</option>
+              <option value="data_science">Data Science</option>
+              <option value="photography">Photography</option>
+              <option value="music">Music</option>
+              <option value="health">Health & Fitness</option>
+            </select>
+          </div>
+          <div>
+            <Label>Difficulty Level</Label>
+            <select 
+              value={formData.level || 'beginner'} 
+              onChange={(e) => setFormData({ ...formData, level: e.target.value })} 
+              className="w-full h-10 px-3 rounded-md border border-gray-300"
+            >
+              <option value="beginner">Beginner</option>
+              <option value="intermediate">Intermediate</option>
+              <option value="advanced">Advanced</option>
+            </select>
+          </div>
+          <div>
+            <Label>Price (USD)</Label>
+            <Input 
+              type="number" 
+              value={formData.price || ''} 
+              onChange={(e) => setFormData({ ...formData, price: e.target.value })}
+              placeholder="0 for free course" 
+            />
+          </div>
+          <div>
+            <Label>Estimated Duration (hours)</Label>
+            <Input 
+              type="number" 
+              value={formData.duration_hours || ''} 
+              onChange={(e) => setFormData({ ...formData, duration_hours: e.target.value })}
+              placeholder="10" 
+            />
+          </div>
+        </div>
+
+        <div className="mt-4">
+          <Label>Course Thumbnail URL (optional)</Label>
+          <Input 
+            value={formData.thumbnail || ''} 
+            onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
+            placeholder="https://images.unsplash.com/..." 
+          />
+        </div>
       </div>
     </div>
   );

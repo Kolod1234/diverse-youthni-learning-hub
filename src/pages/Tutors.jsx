@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -10,12 +10,21 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Star, BookOpen, Users, Search, GraduationCap, 
-  Award, TrendingUp, ChevronRight 
+  Award, TrendingUp, ChevronRight, Plus, Sparkles 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 export default function Tutors() {
   const [searchQuery, setSearchQuery] = useState('');
+  const [currentUser, setCurrentUser] = useState(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setCurrentUser(userData);
+    };
+    loadUser();
+  }, []);
 
   const { data: allUsers = [], isLoading } = useQuery({
     queryKey: ['all-users'],
@@ -73,9 +82,42 @@ export default function Tutors() {
             <GraduationCap className="w-8 h-8 text-white" />
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-3">Meet Our Expert Tutors</h1>
-          <p className="text-lg text-gray-500 max-w-2xl mx-auto">
+          <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
             Learn from experienced educators and industry professionals
           </p>
+          {(currentUser?.is_tutor || currentUser?.role === 'admin') && (
+            <div className="flex justify-center gap-3">
+              <Link to={createPageUrl('TutorDashboard')}>
+                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700">
+                  <Plus className="w-5 h-5 mr-2" />
+                  Create New Course
+                </Button>
+              </Link>
+              <Link to={createPageUrl('TutorDashboard')}>
+                <Button size="lg" variant="outline">
+                  My Tutor Dashboard
+                </Button>
+              </Link>
+            </div>
+          )}
+          {!currentUser?.is_tutor && currentUser?.role !== 'admin' && (
+            <div className="mt-6">
+              <Card className="max-w-2xl mx-auto p-6 bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200">
+                <div className="flex items-center gap-4">
+                  <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
+                    <Sparkles className="w-6 h-6 text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <h3 className="font-semibold text-gray-900 mb-1">Become a Tutor</h3>
+                    <p className="text-sm text-gray-600">Share your expertise and earn by teaching on our platform</p>
+                  </div>
+                  <Button className="bg-indigo-600 hover:bg-indigo-700">
+                    Apply Now
+                  </Button>
+                </div>
+              </Card>
+            </div>
+          )}
         </motion.div>
 
         {/* Search */}

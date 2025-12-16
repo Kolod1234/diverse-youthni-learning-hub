@@ -43,11 +43,16 @@ export default function Layout({ children, currentPageName }) {
     return <>{children}</>;
   }
 
+  const tutorNavigation = (user?.is_tutor || user?.role === 'admin') 
+    ? [{ name: 'Tutor Dashboard', href: createPageUrl('TutorDashboard'), icon: Settings }]
+    : [];
+
   const navigation = [
     { name: 'Home', href: createPageUrl('Home'), icon: Home },
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    ...tutorNavigation,
     { name: 'Profile', href: createPageUrl('Profile'), icon: User },
   ];
 
