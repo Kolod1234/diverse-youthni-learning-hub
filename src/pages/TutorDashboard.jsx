@@ -22,6 +22,9 @@ export default function TutorDashboard() {
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [showCreateCourse, setShowCreateCourse] = useState(false);
   const [courseForm, setCourseForm] = useState({});
+  const [isUnlocked, setIsUnlocked] = useState(() => localStorage.getItem('tutorsUnlocked') === 'true');
+  const [accessCode, setAccessCode] = useState('');
+  const [error, setError] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -101,6 +104,59 @@ export default function TutorDashboard() {
   const totalStudents = new Set(
     allEnrollments.filter(e => courses.some(c => c.id === e.course_id)).map(e => e.created_by)
   ).size;
+
+  const handleUnlock = (e) => {
+    e.preventDefault();
+    if (accessCode === 'DYNI26') {
+      setIsUnlocked(true);
+      localStorage.setItem('tutorsUnlocked', 'true');
+      setError('');
+    } else {
+      setError('Invalid access code');
+    }
+  };
+
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="w-full max-w-md"
+        >
+          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
+            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
+              <BookOpen className="w-8 h-8 text-indigo-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Tutor Dashboard Access</h2>
+            <p className="text-gray-500 text-center mb-6">Enter the access code to continue</p>
+            
+            <form onSubmit={handleUnlock} className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  value={accessCode}
+                  onChange={(e) => {
+                    setAccessCode(e.target.value);
+                    setError('');
+                  }}
+                  placeholder="Enter access code"
+                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center text-lg"
+                  autoFocus
+                />
+                {error && (
+                  <p className="text-red-600 text-sm mt-2 text-center">{error}</p>
+                )}
+              </div>
+              <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-12">
+                Unlock
+              </Button>
+            </form>
+          </div>
+        </motion.div>
+      </div>
+    );
+  }
 
   if (!user || (!user.is_tutor && user.role !== 'admin')) {
     return null;
