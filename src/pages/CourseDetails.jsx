@@ -15,7 +15,6 @@ import {
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
-import { format } from 'date-fns';
 
 const levelColors = {
   beginner: 'bg-green-100 text-green-700',
