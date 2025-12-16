@@ -44,7 +44,10 @@ export default function Layout({ children, currentPageName }) {
   }
 
   const tutorNavigation = (user?.is_tutor || user?.role === 'admin') 
-    ? [{ name: 'Tutor Dashboard', href: createPageUrl('TutorDashboard'), icon: Settings }]
+    ? [
+        { name: 'Tutor Setup', href: createPageUrl('TutorSetup'), icon: User },
+        { name: 'Tutor Dashboard', href: createPageUrl('TutorDashboard'), icon: Settings }
+      ]
     : [];
 
   const navigation = [

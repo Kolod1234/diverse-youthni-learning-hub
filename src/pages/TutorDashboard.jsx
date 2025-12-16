@@ -315,10 +315,16 @@ function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
 
-  const { data: students = [] } = useQuery({
+  const { data: allStudents = [] } = useQuery({
     queryKey: ['students'],
     queryFn: () => base44.entities.User.list('-created_date', 500),
   });
+
+  // Filter to only show students enrolled in this tutor's courses
+  const myCourseIds = courses.map(c => c.id);
+  const myEnrollments = enrollments.filter(e => myCourseIds.includes(e.course_id));
+  const myStudentEmails = [...new Set(myEnrollments.map(e => e.created_by))];
+  const students = allStudents.filter(s => myStudentEmails.includes(s.email));
 
   const suspendMutation = useMutation({
     mutationFn: ({ email, suspend, reason }) => {

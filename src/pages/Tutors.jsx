@@ -142,19 +142,18 @@ export default function Tutors() {
             Learn from experienced educators and industry professionals
           </p>
           {(currentUser?.is_tutor || currentUser?.role === 'admin') && (
-            <div className="flex justify-center gap-3">
-              <Link to={createPageUrl('TutorDashboard')}>
-                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700">
-                  <Plus className="w-5 h-5 mr-2" />
-                  Create New Course
-                </Button>
-              </Link>
-              <Link to={createPageUrl('TutorDashboard')}>
-                <Button size="lg" variant="outline">
-                  My Tutor Dashboard
-                </Button>
-              </Link>
-            </div>
+           <div className="flex justify-center gap-3">
+             <Link to={createPageUrl('TutorSetup')}>
+               <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700">
+                 Set Up Profile
+               </Button>
+             </Link>
+             <Link to={createPageUrl('TutorDashboard')}>
+               <Button size="lg" variant="outline">
+                 My Tutor Dashboard
+               </Button>
+             </Link>
+           </div>
           )}
           {!currentUser?.is_tutor && currentUser?.role !== 'admin' && (
             <div className="mt-6">
@@ -280,9 +279,24 @@ export default function Tutors() {
                       </div>
                     </div>
 
-                    <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">
-                      {tutor.bio || 'Passionate educator dedicated to helping students achieve their learning goals and master new skills.'}
-                    </p>
+                    {tutor.bio && (
+                     <p className="text-sm text-gray-600 mb-4 line-clamp-3 flex-1">
+                       {tutor.bio}
+                     </p>
+                    )}
+
+                    {tutor.expertise_subjects && tutor.expertise_subjects.length > 0 && (
+                     <div className="mb-4">
+                       <p className="text-xs font-medium text-gray-500 mb-2">SUBJECTS</p>
+                       <div className="flex flex-wrap gap-2">
+                         {tutor.expertise_subjects.map(subject => (
+                           <span key={subject} className="px-2 py-1 bg-indigo-50 text-indigo-700 rounded-lg text-xs capitalize">
+                             {subject}
+                           </span>
+                         ))}
+                       </div>
+                     </div>
+                    )}
 
                     <div className="flex items-center gap-4 mb-4 text-sm text-gray-600 pb-4 border-b">
                       <span className="flex items-center gap-1">
