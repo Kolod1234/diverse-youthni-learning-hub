@@ -89,6 +89,8 @@ export default function TutorDashboard() {
   const handleCreateCourse = () => {
     createCourseMutation.mutate({
       ...courseForm,
+      instructor: user?.full_name || 'Instructor',
+      instructor_avatar: user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'Instructor')}&background=6366f1&color=fff`,
       rating: 4.5,
       enrolled_count: 0,
       price: parseFloat(courseForm.price) || 0,
@@ -648,14 +650,7 @@ function CourseFormFields({ formData, setFormData }) {
               placeholder="Complete Web Development Course" 
             />
           </div>
-          <div>
-            <Label>Instructor Name *</Label>
-            <Input 
-              value={formData.instructor || ''} 
-              onChange={(e) => setFormData({ ...formData, instructor: e.target.value })}
-              placeholder="Your full name" 
-            />
-          </div>
+
         </div>
         
         <div className="mt-4">
