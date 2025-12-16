@@ -20,6 +20,16 @@ export default function Home() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['all-enrollments'],
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+  });
+
+  const totalStudents = new Set(enrollments.map(e => e.created_by)).size;
+  const averageRating = courses.length > 0 
+    ? (courses.reduce((sum, c) => sum + (c.rating || 0), 0) / courses.length).toFixed(1)
+    : '4.8';
+
   const featuredCourses = courses.filter(c => c.is_featured).slice(0, 3);
 
   const filteredCourses = courses.filter(course => {
