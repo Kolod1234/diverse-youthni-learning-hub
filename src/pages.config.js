@@ -4,6 +4,8 @@ import Dashboard from './pages/Dashboard';
 import CourseDetails from './pages/CourseDetails';
 import LessonPlayer from './pages/LessonPlayer';
 import Quiz from './pages/Quiz';
+import Profile from './pages/Profile';
+import CourseDiscussion from './pages/CourseDiscussion';
 import __Layout from './Layout.jsx';
 
 
@@ -14,6 +16,8 @@ export const PAGES = {
     "CourseDetails": CourseDetails,
     "LessonPlayer": LessonPlayer,
     "Quiz": Quiz,
+    "Profile": Profile,
+    "CourseDiscussion": CourseDiscussion,
 }
 
 export const pagesConfig = {
