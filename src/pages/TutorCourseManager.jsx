@@ -8,10 +8,12 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2 } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
+import RichTextEditor from '@/components/editor/RichTextEditor';
+import FileUploadManager from '@/components/editor/FileUploadManager';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -221,6 +223,12 @@ export default function TutorCourseManager() {
                                               Video
                                             </Badge>
                                           )}
+                                          {lesson.resources?.length > 0 && (
+                                            <Badge variant="secondary" className="text-xs">
+                                              <FileText className="w-3 h-3 mr-1" />
+                                              {lesson.resources.length} files
+                                            </Badge>
+                                          )}
                                         </div>
                                         <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
@@ -292,51 +300,72 @@ function LessonFormFields({ formData, setFormData, courseId }) {
   };
 
   return (
-    <div className="grid gap-4">
-      <div className="grid sm:grid-cols-2 gap-4">
-        <div>
-          <Label>Lesson Title *</Label>
-          <Input 
-            value={formData.title || ''} 
-            onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-            placeholder="Introduction to the topic"
-          />
+    <div className="grid gap-6">
+      {/* Basic Info */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-4">Basic Information</h3>
+        <div className="grid sm:grid-cols-2 gap-4">
+          <div>
+            <Label>Lesson Title *</Label>
+            <Input 
+              value={formData.title || ''} 
+              onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              placeholder="Introduction to the topic"
+            />
+          </div>
+          <div>
+            <Label>Section/Module *</Label>
+            <Input 
+              value={formData.section || ''} 
+              onChange={(e) => setFormData({ ...formData, section: e.target.value })} 
+              placeholder="e.g. Getting Started, Module 1"
+            />
+          </div>
         </div>
-        <div>
-          <Label>Section/Module *</Label>
+
+        <div className="mt-4">
+          <Label>Duration (minutes)</Label>
           <Input 
-            value={formData.section || ''} 
-            onChange={(e) => setFormData({ ...formData, section: e.target.value })} 
-            placeholder="e.g. Getting Started, Module 1"
+            type="number" 
+            value={formData.duration_minutes || ''} 
+            onChange={(e) => setFormData({ ...formData, duration_minutes: e.target.value })}
+            placeholder="10"
+            className="max-w-xs"
           />
         </div>
       </div>
 
-      <div>
-        <Label>Description</Label>
-        <Textarea 
-          value={formData.description || ''} 
-          onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-          rows={3}
-          placeholder="What will students learn in this lesson?"
+      {/* Rich Text Description */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-4">Lesson Content</h3>
+        <RichTextEditor
+          label="Detailed Description"
+          value={formData.description || ''}
+          onChange={(value) => setFormData({ ...formData, description: value })}
+          placeholder="Write a comprehensive description with formatting, equations, symbols, and more..."
         />
+        <p className="text-xs text-gray-500 mt-2">
+          Use the toolbar to add formatting, mathematical equations, chemical formulas, superscripts, subscripts, and more
+        </p>
       </div>
 
-      <div>
-        <Label>Video Content</Label>
+      {/* Video Upload */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-4">Video Content</h3>
         <div className="space-y-3">
-          <div className="flex gap-3">
+          <div>
+            <Label>Video URL or Upload</Label>
             <Input 
               value={formData.video_url || ''} 
               onChange={(e) => setFormData({ ...formData, video_url: e.target.value })} 
-              placeholder="https://youtube.com/embed/... or upload below"
-              className="flex-1"
+              placeholder="https://youtube.com/embed/... or https://vimeo.com/..."
+              className="mb-3"
             />
           </div>
           
           <div className="flex items-center gap-3">
             <div className="h-px bg-gray-200 flex-1" />
-            <span className="text-xs text-gray-500">OR</span>
+            <span className="text-xs text-gray-500 font-medium">OR UPLOAD VIDEO</span>
             <div className="h-px bg-gray-200 flex-1" />
           </div>
 
@@ -360,52 +389,62 @@ function LessonFormFields({ formData, setFormData, courseId }) {
                 {uploading ? (
                   <>
                     <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                    Uploading...
+                    Uploading Video...
                   </>
                 ) : (
                   <>
                     <Upload className="w-4 h-4 mr-2" />
-                    Upload Video File
+                    Upload Video File (MP4, MOV, etc.)
                   </>
                 )}
               </Button>
             </label>
-            <p className="text-xs text-gray-500 mt-2">MP4, MOV, or other video formats accepted</p>
           </div>
 
           {formData.video_url && (
             <div className="bg-green-50 border border-green-200 rounded-lg p-3 flex items-center gap-2">
-              <Video className="w-4 h-4 text-green-600" />
-              <span className="text-sm text-green-800">Video added successfully</span>
+              <Video className="w-5 h-5 text-green-600" />
+              <div className="flex-1">
+                <span className="text-sm font-medium text-green-900">Video configured</span>
+                <p className="text-xs text-green-700">{formData.video_url.substring(0, 50)}...</p>
+              </div>
             </div>
           )}
         </div>
       </div>
 
-      <div>
-        <Label>Duration (minutes)</Label>
-        <Input 
-          type="number" 
-          value={formData.duration_minutes || ''} 
-          onChange={(e) => setFormData({ ...formData, duration_minutes: e.target.value })}
-          placeholder="10"
+      {/* Supplementary Materials */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-4">Supplementary Materials</h3>
+        <FileUploadManager
+          resources={formData.resources || []}
+          onChange={(resources) => setFormData({ ...formData, resources })}
         />
+        <p className="text-xs text-gray-500 mt-3">
+          Upload PDFs, slides, code files, worksheets, or any other materials students need
+        </p>
       </div>
 
-      <div className="bg-indigo-50 rounded-lg p-4 space-y-3">
-        <h4 className="font-medium text-sm text-gray-900">Lesson Options</h4>
+      {/* Options */}
+      <div className="bg-indigo-50 rounded-lg border border-indigo-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-3">Lesson Options</h3>
         
-        <div className="flex items-center gap-2">
+        <div className="flex items-start gap-3">
           <input 
             type="checkbox" 
             id="is_preview" 
             checked={formData.is_preview || false} 
             onChange={(e) => setFormData({ ...formData, is_preview: e.target.checked })}
-            className="w-4 h-4 text-indigo-600 rounded"
+            className="w-4 h-4 text-indigo-600 rounded mt-0.5"
           />
-          <Label htmlFor="is_preview" className="cursor-pointer font-normal">
-            <span className="font-medium">Allow free preview</span>
-            <p className="text-xs text-gray-600">Students can watch this lesson before enrolling</p>
+          <Label htmlFor="is_preview" className="cursor-pointer font-normal flex-1">
+            <div className="flex items-center gap-2 mb-1">
+              <Eye className="w-4 h-4 text-indigo-600" />
+              <span className="font-medium text-gray-900">Allow Free Preview</span>
+            </div>
+            <p className="text-xs text-gray-600">
+              Make this lesson available to non-enrolled students. Great for showcasing your course quality!
+            </p>
           </Label>
         </div>
       </div>
