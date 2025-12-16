@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Play, Users, Star, Award, ChevronLeft, ChevronRight } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
@@ -54,87 +54,129 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
-        <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1920')] bg-cover bg-center opacity-10" />
-        <div className="absolute inset-0 bg-gradient-to-r from-indigo-600/90 to-purple-600/90" />
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700">
+        {/* Animated background elements */}
+        <div className="absolute inset-0">
+          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-3xl" />
+        </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-32">
-          <div className="max-w-3xl">
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
+          <div className="text-center">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
+              initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
+              transition={{ duration: 0.8 }}
+              className="max-w-4xl mx-auto"
             >
-              <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/10 backdrop-blur-sm text-sm font-medium mb-6">
-                <Sparkles className="w-4 h-4" />
-                New courses added weekly
-              </span>
+              <motion.div
+                initial={{ scale: 0 }}
+                animate={{ scale: 1 }}
+                transition={{ duration: 0.5, delay: 0.2 }}
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8 border border-white/30"
+              >
+                <Sparkles className="w-4 h-4 text-yellow-300" />
+                <span>Transform Your Future with Quality Education</span>
+              </motion.div>
               
-              <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white">
                 Diverse Youth NI
-                <span className="block bg-gradient-to-r from-amber-200 to-yellow-400 bg-clip-text text-transparent">
+                <span className="block mt-3 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 bg-clip-text text-transparent">
                   Learning Hub
                 </span>
               </h1>
               
-              <p className="text-lg sm:text-xl text-indigo-100 mb-8 max-w-2xl">
-                Empowering young people through education. Join our community and unlock your potential with expert-led courses.
+              <p className="text-xl sm:text-2xl text-indigo-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+                Empowering young minds through innovative education. 
+                <span className="block mt-2 text-white/90">Join our thriving community today.</span>
               </p>
               
-              <div className="flex flex-wrap gap-4">
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.4 }}
+              >
                 <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 h-14 text-base font-semibold shadow-xl shadow-indigo-900/20">
-                    Explore Courses
-                    <ArrowRight className="w-5 h-5 ml-2" />
+                  <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                    Start Learning Now
+                    <ArrowRight className="w-6 h-6 ml-2" />
                   </Button>
                 </Link>
-                <Button size="lg" variant="outline" className="border-white/30 text-white hover:bg-white/10 rounded-full px-8 h-14 text-base font-semibold">
-                  <Play className="w-5 h-5 mr-2" />
-                  Watch Demo
-                </Button>
-              </div>
+              </motion.div>
             </motion.div>
           </div>
           
-          {/* Stats */}
+          {/* Enhanced Stats */}
           <motion.div 
-            initial={{ opacity: 0, y: 40 }}
+            initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.3 }}
-            className="grid grid-cols-3 gap-8 mt-16 max-w-2xl"
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="grid grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
           >
             {[
-              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Students', icon: Users },
-              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Courses', icon: Play },
-              { value: averageRating, label: 'Rating', icon: Star },
-            ].map((stat) => (
-              <div key={stat.label} className="text-center">
-                <div className="text-3xl sm:text-4xl font-bold mb-1">{stat.value}</div>
-                <div className="text-indigo-200 text-sm">{stat.label}</div>
-              </div>
-            ))}
+              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400' },
+              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400' },
+              { value: averageRating, label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' },
+            ].map((stat, idx) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={stat.label}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5, delay: 0.7 + idx * 0.1 }}
+                  className="text-center"
+                >
+                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} mb-4 shadow-lg`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">{stat.value}</div>
+                  <div className="text-indigo-200 text-base font-medium">{stat.label}</div>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
         
-        {/* Wave decoration */}
+        {/* Modern wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
-          <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
+          <svg className="w-full h-24 sm:h-32" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
+            <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="white"/>
           </svg>
         </div>
       </section>
 
       {/* Image Carousel */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Our Community</h2>
-          <p className="text-gray-500">See what's happening at Diverse Youth NI</p>
-        </div>
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <span className="inline-block px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold mb-4">
+            Our Community
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+            Experience the <span className="text-indigo-600">Diverse Youth NI</span> Journey
+          </h2>
+          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+            See what's happening in our vibrant learning community
+          </p>
+        </motion.div>
         
-        <div className="relative">
-          <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
+        <motion.div 
+          initial={{ opacity: 0, scale: 0.95 }}
+          whileInView={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="relative"
+        >
+          <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
             <div className="flex">
               {[
                 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200',
@@ -150,7 +192,7 @@ export default function Home() {
                       alt={`Community ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
                   </div>
                 </div>
               ))}
@@ -159,50 +201,70 @@ export default function Home() {
           
           <button
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-indigo-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
           >
-            <ChevronLeft className="w-6 h-6 text-gray-800" />
+            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-indigo-600 transition-colors" />
           </button>
           <button
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-indigo-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
           >
-            <ChevronRight className="w-6 h-6 text-gray-800" />
+            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-indigo-600 transition-colors" />
           </button>
-        </div>
+        </motion.div>
       </section>
 
       {/* Featured Courses */}
       {featuredCourses.length > 0 && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-          <div className="flex items-center justify-between mb-8">
-            <div>
-              <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-2">Featured Courses</h2>
-              <p className="text-gray-500">Hand-picked by our experts</p>
+        <section className="bg-gradient-to-b from-gray-50 to-white py-20">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
+              className="flex items-center justify-between mb-12"
+            >
+              <div>
+                <span className="inline-block px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold mb-3">
+                  Top Picks
+                </span>
+                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Featured Courses</h2>
+                <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
+              </div>
+              <Link to={createPageUrl('Explore')}>
+                <Button className="bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-lg hover:shadow-xl transition-all">
+                  View all <ArrowRight className="w-4 h-4 ml-2" />
+                </Button>
+              </Link>
+            </motion.div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {featuredCourses.map((course, index) => (
+                <CourseCard key={course.id} course={course} index={index} />
+              ))}
             </div>
-            <Link to={createPageUrl('Explore')}>
-              <Button variant="ghost" className="text-indigo-600 hover:text-indigo-700">
-                View all <ArrowRight className="w-4 h-4 ml-1" />
-              </Button>
-            </Link>
-          </div>
-          
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {featuredCourses.map((course, index) => (
-              <CourseCard key={course.id} course={course} index={index} />
-            ))}
           </div>
         </section>
       )}
 
       {/* Browse by Category */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
-        <div className="text-center mb-10">
-          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Browse by Category</h2>
-          <p className="text-gray-500 max-w-2xl mx-auto">
-            Explore our wide range of courses across different domains and find the perfect match for your learning goals.
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mb-12"
+        >
+          <span className="inline-block px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-4">
+            Explore Learning Paths
+          </span>
+          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Browse by Category</h2>
+          <p className="text-gray-600 text-lg max-w-3xl mx-auto">
+            Discover courses tailored to your interests and accelerate your learning journey
           </p>
-        </div>
+        </motion.div>
         
         <div className="mb-8">
           <CategoryFilter selected={category} onSelect={setCategory} />
@@ -245,38 +307,67 @@ export default function Home() {
         )}
         
         {sortedCourses.length > 8 && (
-          <div className="text-center mt-10">
-            <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700 rounded-full px-8">
-                View All Courses
-                <ArrowRight className="w-5 h-5 ml-2" />
-              </Button>
-            </Link>
-          </div>
-        )}
-      </section>
-
-      {/* CTA Section */}
-      <section className="bg-gradient-to-r from-indigo-600 to-violet-600 py-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
             viewport={{ once: true }}
+            className="text-center mt-12"
           >
-            <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">
-              Start Your Learning Journey Today
-            </h2>
-            <p className="text-indigo-100 text-lg mb-8 max-w-2xl mx-auto">
-              Join our community of learners and unlock your potential with expert-led courses.
-            </p>
-            <Link to={createPageUrl('Dashboard')}>
-              <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-100 rounded-full px-8 h-14 text-base font-semibold">
-                Get Started for Free
+            <Link to={createPageUrl('Explore')}>
+              <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+                View All Courses
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
             </Link>
+          </motion.div>
+        )}
+      </section>
+
+      {/* CTA Section */}
+      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-24">
+        <div className="absolute inset-0">
+          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+        </div>
+        
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8 }}
+            viewport={{ once: true }}
+          >
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8">
+              <Zap className="w-4 h-4 text-yellow-300" />
+              <span>Join Thousands of Successful Learners</span>
+            </div>
+            
+            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+              Ready to Transform
+              <span className="block mt-2 bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+                Your Future?
+              </span>
+            </h2>
+            
+            <p className="text-xl text-indigo-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+              Start your learning journey today and unlock endless possibilities with our expert-led courses
+            </p>
+            
+            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+              <Link to={createPageUrl('Dashboard')}>
+                <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                  Get Started for Free
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </Button>
+              </Link>
+              <Link to={createPageUrl('Explore')}>
+                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 rounded-full px-10 h-16 text-lg font-bold transition-all duration-300">
+                  Browse Courses
+                  <TrendingUp className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
           </motion.div>
         </div>
       </section>
