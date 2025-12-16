@@ -46,6 +46,7 @@ export default function Layout({ children, currentPageName }) {
   const navigation = [
     { name: 'Home', href: createPageUrl('Home'), icon: Home },
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
+    { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     { name: 'Profile', href: createPageUrl('Profile'), icon: User },
   ];

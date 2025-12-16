@@ -12,6 +12,7 @@ import TutorCourseManager from './pages/TutorCourseManager';
 import CreateAssignment from './pages/CreateAssignment';
 import GradeAssignments from './pages/GradeAssignments';
 import StudentAnalytics from './pages/StudentAnalytics';
+import Tutors from './pages/Tutors';
 import __Layout from './Layout.jsx';
 
 
@@ -30,6 +31,7 @@ export const PAGES = {
     "CreateAssignment": CreateAssignment,
     "GradeAssignments": GradeAssignments,
     "StudentAnalytics": StudentAnalytics,
+    "Tutors": Tutors,
 }
 
 export const pagesConfig = {
