@@ -6,6 +6,7 @@ import LessonPlayer from './pages/LessonPlayer';
 import Quiz from './pages/Quiz';
 import Profile from './pages/Profile';
 import CourseDiscussion from './pages/CourseDiscussion';
+import AdminDashboard from './pages/AdminDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -18,6 +19,7 @@ export const PAGES = {
     "Quiz": Quiz,
     "Profile": Profile,
     "CourseDiscussion": CourseDiscussion,
+    "AdminDashboard": AdminDashboard,
 }
 
 export const pagesConfig = {
