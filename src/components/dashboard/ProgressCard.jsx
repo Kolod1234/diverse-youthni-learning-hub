@@ -46,19 +46,22 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
               </span>
             </div>
             
-            <Progress 
-              value={enrollment.progress_percent || 0} 
-              className="h-2 mb-4"
-            />
+            <div className="mb-3">
+              <Progress 
+                value={enrollment.progress_percent || 0} 
+                className="h-2.5"
+              />
+            </div>
             
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {course.duration_hours}h left
-                </span>
-                <span>
+                  <CheckCircle className="w-4 h-4 text-emerald-500" />
                   {(enrollment.completed_lessons?.length || 0)}/{course.total_lessons || 0} lessons
+                </span>
+                <span className="flex items-center gap-1">
+                  <Clock className="w-4 h-4" />
+                  {Math.round((course.duration_hours || 0) * (1 - (enrollment.progress_percent || 0) / 100))}h left
                 </span>
               </div>
               

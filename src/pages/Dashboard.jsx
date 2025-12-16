@@ -10,6 +10,7 @@ import { motion } from 'framer-motion';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
+import CourseProgressWidget from '@/components/dashboard/CourseProgressWidget';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -172,8 +173,12 @@ export default function Dashboard() {
               </Tabs>
             </div>
 
-            {/* Sidebar - Achievements */}
-            <div>
+            {/* Sidebar */}
+            <div className="space-y-6">
+              {/* Quick Progress Widget */}
+              <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
+
+              {/* Achievements */}
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-gray-900">Achievements</h3>
@@ -203,7 +208,7 @@ export default function Dashboard() {
               </div>
 
               {/* Recommended */}
-              <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-6 mt-6 text-white">
+              <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-6 text-white">
                 <h3 className="font-semibold mb-2">Continue Learning</h3>
                 <p className="text-indigo-100 text-sm mb-4">
                   Discover new courses that match your interests.

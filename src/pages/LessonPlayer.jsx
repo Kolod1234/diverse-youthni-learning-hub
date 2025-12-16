@@ -81,11 +81,11 @@ export default function LessonPlayer() {
     },
   });
 
-  const markComplete = () => {
+  const markComplete = async () => {
     if (!enrollment || isCompleted) return;
     
     const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
-    const newProgress = (newCompletedLessons.length / lessons.length) * 100;
+    const newProgress = Math.round((newCompletedLessons.length / lessons.length) * 100);
     const isNowComplete = newCompletedLessons.length === lessons.length;
     
     updateEnrollmentMutation.mutate({
@@ -95,6 +95,13 @@ export default function LessonPlayer() {
       is_completed: isNowComplete,
       ...(isNowComplete && { completed_date: new Date().toISOString().split('T')[0] }),
     });
+
+    // Auto-navigate to next lesson after marking complete
+    if (nextLesson && !isNowComplete) {
+      setTimeout(() => {
+        window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
+      }, 1500);
+    }
   };
 
   const saveNote = () => {
@@ -306,13 +313,17 @@ export default function LessonPlayer() {
                     className="bg-emerald-600 hover:bg-emerald-700 shrink-0"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Mark Complete
+                    {updateEnrollmentMutation.isPending ? 'Completing...' : 'Mark Complete'}
                   </Button>
                 ) : (
-                  <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg">
+                  <motion.div 
+                    initial={{ scale: 0.8, opacity: 0 }}
+                    animate={{ scale: 1, opacity: 1 }}
+                    className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg"
+                  >
                     <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Completed</span>
-                  </div>
+                    <span className="font-medium">Completed ✓</span>
+                  </motion.div>
                 )}
               </div>
 
