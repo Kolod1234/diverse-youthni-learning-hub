@@ -4,16 +4,19 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Play, Users, Star, Award } from 'lucide-react';
+import { ArrowRight, Sparkles, Play, Users, Star, Award, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
 import SearchBar from '@/components/courses/SearchBar';
+import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000 })]);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
@@ -71,14 +74,14 @@ export default function Home() {
               </span>
               
               <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold leading-tight mb-6">
-                Learn Without
+                Diverse Youth NI
                 <span className="block bg-gradient-to-r from-amber-200 to-yellow-400 bg-clip-text text-transparent">
-                  Limits
+                  Learning Hub
                 </span>
               </h1>
               
               <p className="text-lg sm:text-xl text-indigo-100 mb-8 max-w-2xl">
-                Master new skills with expert-led courses. Join millions of learners advancing their careers with our world-class content.
+                Empowering young people through education. Join our community and unlock your potential with expert-led courses.
               </p>
               
               <div className="flex flex-wrap gap-4">
@@ -121,6 +124,52 @@ export default function Home() {
           <svg viewBox="0 0 1440 120" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M0 120L60 110C120 100 240 80 360 70C480 60 600 60 720 65C840 70 960 80 1080 85C1200 90 1320 90 1380 90L1440 90V120H1380C1320 120 1200 120 1080 120C960 120 840 120 720 120C600 120 480 120 360 120C240 120 120 120 60 120H0Z" fill="#f8fafc"/>
           </svg>
+        </div>
+      </section>
+
+      {/* Image Carousel */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+        <div className="text-center mb-10">
+          <h2 className="text-2xl sm:text-3xl font-bold text-gray-900 mb-3">Our Community</h2>
+          <p className="text-gray-500">See what's happening at Diverse Youth NI</p>
+        </div>
+        
+        <div className="relative">
+          <div className="overflow-hidden rounded-2xl" ref={emblaRef}>
+            <div className="flex">
+              {[
+                'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200',
+                'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200',
+                'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200',
+                'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
+                'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=1200',
+              ].map((img, idx) => (
+                <div key={idx} className="flex-[0_0_100%] min-w-0">
+                  <div className="relative aspect-[21/9] sm:aspect-[16/6]">
+                    <img
+                      src={img}
+                      alt={`Community ${idx + 1}`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+          
+          <button
+            onClick={() => emblaApi?.scrollPrev()}
+            className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+          >
+            <ChevronLeft className="w-6 h-6 text-gray-800" />
+          </button>
+          <button
+            onClick={() => emblaApi?.scrollNext()}
+            className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/90 hover:bg-white rounded-full flex items-center justify-center shadow-lg transition-all"
+          >
+            <ChevronRight className="w-6 h-6 text-gray-800" />
+          </button>
         </div>
       </section>
 
