@@ -47,6 +47,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Home', href: createPageUrl('Home'), icon: Home },
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    { name: 'Profile', href: createPageUrl('Profile'), icon: User },
   ];
 
   const NavLinks = ({ mobile = false, onItemClick }) => (

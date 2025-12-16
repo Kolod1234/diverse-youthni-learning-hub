@@ -10,8 +10,10 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Play, Clock, Users, Star, BookOpen, Award, CheckCircle, 
-  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft
+  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare
 } from 'lucide-react';
+import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 
@@ -48,6 +50,18 @@ export default function CourseDetails() {
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
+    enabled: !!courseId,
+  });
+
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['quizzes', courseId],
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
+    enabled: !!courseId,
+  });
+
+  const { data: reviews = [] } = useQuery({
+    queryKey: ['reviews', courseId],
+    queryFn: () => base44.entities.Review.filter({ course_id: courseId }, '-created_date', 20),
     enabled: !!courseId,
   });
 
@@ -251,6 +265,12 @@ export default function CourseDetails() {
                 <TabsTrigger value="overview" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
                   Overview
                 </TabsTrigger>
+                <TabsTrigger value="reviews" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+                  Reviews ({reviews.length})
+                </TabsTrigger>
+                <TabsTrigger value="discussion" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+                  Discussion
+                </TabsTrigger>
               </TabsList>
 
               <TabsContent value="curriculum">
@@ -344,7 +364,7 @@ export default function CourseDetails() {
                     </div>
                   )}
                   
-                  <div>
+                  <div className="mb-6">
                     <h4 className="font-semibold text-gray-900 mb-3">What You'll Learn</h4>
                     <ul className="grid sm:grid-cols-2 gap-3">
                       {['Master core concepts and fundamentals',
@@ -358,6 +378,97 @@ export default function CourseDetails() {
                       ))}
                     </ul>
                   </div>
+
+                  {quizzes.length > 0 && (
+                    <div>
+                      <h4 className="font-semibold text-gray-900 mb-3">Quizzes</h4>
+                      <div className="space-y-2">
+                        {quizzes.map((quiz) => (
+                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
+                            <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                              <div>
+                                <p className="font-medium text-gray-900">{quiz.title}</p>
+                                <p className="text-sm text-gray-500">{quiz.questions?.length} questions</p>
+                              </div>
+                              <ChevronRight className="w-5 h-5 text-indigo-600" />
+                            </div>
+                          </Link>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="reviews">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
+                  <div className="flex items-center justify-between mb-6">
+                    <h3 className="text-xl font-semibold text-gray-900">Student Reviews</h3>
+                    <div className="text-right">
+                      <div className="flex items-center gap-2 mb-1">
+                        <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                        <span className="text-2xl font-bold text-gray-900">{course.rating?.toFixed(1) || '4.5'}</span>
+                      </div>
+                      <p className="text-sm text-gray-500">{reviews.length} reviews</p>
+                    </div>
+                  </div>
+
+                  {reviews.length > 0 ? (
+                    <div className="space-y-4">
+                      {reviews.map((review) => (
+                        <div key={review.id} className="border-b border-gray-100 pb-4 last:border-0">
+                          <div className="flex items-start gap-3">
+                            <Avatar>
+                              <AvatarImage src={review.user_avatar} />
+                              <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                                {review.user_name?.charAt(0) || 'U'}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div className="flex-1">
+                              <div className="flex items-center gap-2 mb-2">
+                                <span className="font-medium text-gray-900">{review.user_name}</span>
+                                {review.is_verified_purchase && (
+                                  <Badge variant="secondary" className="text-xs bg-emerald-50 text-emerald-700">
+                                    Verified
+                                  </Badge>
+                                )}
+                              </div>
+                              <div className="flex items-center gap-1 mb-2">
+                                {[...Array(5)].map((_, i) => (
+                                  <Star 
+                                    key={i}
+                                    className={`w-4 h-4 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                                  />
+                                ))}
+                              </div>
+                              <p className="text-gray-600 text-sm">{review.comment}</p>
+                              <p className="text-xs text-gray-400 mt-2">
+                                {format(new Date(review.created_date), 'MMM d, yyyy')}
+                              </p>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  ) : (
+                    <div className="text-center py-8">
+                      <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
+                      <p className="text-gray-500">No reviews yet</p>
+                    </div>
+                  )}
+                </div>
+              </TabsContent>
+
+              <TabsContent value="discussion">
+                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
+                  <MessageSquare className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Join the Discussion</h3>
+                  <p className="text-gray-500 mb-4">Connect with other students and instructors</p>
+                  <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}`}>
+                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+                      Go to Discussion Forum
+                    </Button>
+                  </Link>
                 </div>
               </TabsContent>
             </Tabs>
