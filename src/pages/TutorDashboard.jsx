@@ -1,0 +1,613 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Plus, BookOpen, Users, MessageSquare, ClipboardList, 
+  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { toast } from 'sonner';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+
+export default function TutorDashboard() {
+  const [user, setUser] = useState(null);
+  const [selectedCourse, setSelectedCourse] = useState(null);
+  const [showCreateCourse, setShowCreateCourse] = useState(false);
+  const [courseForm, setCourseForm] = useState({});
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+      
+      if (!userData.is_tutor && userData.role !== 'admin') {
+        window.location.href = '/';
+      }
+    };
+    loadUser();
+  }, []);
+
+  const { data: courses = [] } = useQuery({
+    queryKey: ['tutor-courses', user?.email],
+    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
+    enabled: !!user?.email,
+  });
+
+  const { data: allEnrollments = [] } = useQuery({
+    queryKey: ['tutor-enrollments'],
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
+  });
+
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['tutor-assignments'],
+    queryFn: () => base44.entities.Assignment.list('-created_date', 200),
+  });
+
+  const { data: submissions = [] } = useQuery({
+    queryKey: ['tutor-submissions'],
+    queryFn: () => base44.entities.Submission.list('-created_date', 500),
+  });
+
+  const createCourseMutation = useMutation({
+    mutationFn: (data) => base44.entities.Course.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      setShowCreateCourse(false);
+      setCourseForm({});
+      toast.success('Course created!');
+    },
+  });
+
+  const updateCourseMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Course.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      toast.success('Course updated!');
+    },
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: (id) => base44.entities.Course.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      toast.success('Course deleted!');
+    },
+  });
+
+  const handleCreateCourse = () => {
+    createCourseMutation.mutate({
+      ...courseForm,
+      rating: 4.5,
+      enrolled_count: 0,
+      price: parseFloat(courseForm.price) || 0,
+      duration_hours: parseFloat(courseForm.duration_hours) || 0,
+      total_lessons: 0,
+    });
+  };
+
+  const courseEnrollments = selectedCourse 
+    ? allEnrollments.filter(e => e.course_id === selectedCourse.id)
+    : [];
+
+  const totalStudents = new Set(
+    allEnrollments.filter(e => courses.some(c => c.id === e.course_id)).map(e => e.created_by)
+  ).size;
+
+  if (!user || (!user.is_tutor && user.role !== 'admin')) {
+    return null;
+  }
+
+  return (
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <div className="mb-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tutor Dashboard</h1>
+          <p className="text-gray-500">Manage your courses and students</p>
+        </div>
+
+        {/* Stats */}
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+          {[
+            { label: 'My Courses', value: courses.length, icon: BookOpen, color: 'bg-blue-50', iconColor: 'text-blue-600' },
+            { label: 'Total Students', value: totalStudents, icon: Users, color: 'bg-purple-50', iconColor: 'text-purple-600' },
+            { label: 'Assignments', value: assignments.length, icon: ClipboardList, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
+            { label: 'Pending Grades', value: submissions.filter(s => !s.is_graded).length, icon: TrendingUp, color: 'bg-orange-50', iconColor: 'text-orange-600' },
+          ].map((stat, idx) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={stat.label}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: idx * 0.1 }}
+              >
+                <Card className="p-5">
+                  <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
+                    <Icon className={`w-6 h-6 ${stat.iconColor}`} />
+                  </div>
+                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
+                  <p className="text-sm text-gray-500">{stat.label}</p>
+                </Card>
+              </motion.div>
+            );
+          })}
+        </div>
+
+        <Tabs defaultValue="courses" className="w-full">
+          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
+            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <BookOpen className="w-4 h-4 mr-2" />
+              Courses
+            </TabsTrigger>
+            <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <Users className="w-4 h-4 mr-2" />
+              Students
+            </TabsTrigger>
+            <TabsTrigger value="assignments" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <ClipboardList className="w-4 h-4 mr-2" />
+              Assignments
+            </TabsTrigger>
+            <TabsTrigger value="messages" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Messages
+            </TabsTrigger>
+            <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <BarChart className="w-4 h-4 mr-2" />
+              Analytics
+            </TabsTrigger>
+          </TabsList>
+
+          <TabsContent value="courses">
+            <CoursesTab
+              courses={courses}
+              showCreateCourse={showCreateCourse}
+              setShowCreateCourse={setShowCreateCourse}
+              courseForm={courseForm}
+              setCourseForm={setCourseForm}
+              handleCreateCourse={handleCreateCourse}
+              updateCourseMutation={updateCourseMutation}
+              deleteCourseMutation={deleteCourseMutation}
+              createCourseMutation={createCourseMutation}
+              setSelectedCourse={setSelectedCourse}
+            />
+          </TabsContent>
+
+          <TabsContent value="students">
+            <StudentsTab 
+              courses={courses} 
+              enrollments={allEnrollments}
+              selectedCourse={selectedCourse}
+              setSelectedCourse={setSelectedCourse}
+            />
+          </TabsContent>
+
+          <TabsContent value="assignments">
+            <AssignmentsTab 
+              courses={courses}
+              assignments={assignments}
+              submissions={submissions}
+            />
+          </TabsContent>
+
+          <TabsContent value="messages">
+            <MessagesTab userEmail={user?.email} />
+          </TabsContent>
+
+          <TabsContent value="analytics">
+            <AnalyticsTab 
+              courses={courses}
+              enrollments={allEnrollments}
+            />
+          </TabsContent>
+        </Tabs>
+      </div>
+    </div>
+  );
+}
+
+function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse }) {
+  const [editingCourse, setEditingCourse] = useState(null);
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">My Courses</h2>
+        <Button onClick={() => setShowCreateCourse(true)} className="bg-indigo-600 hover:bg-indigo-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Course
+        </Button>
+      </div>
+
+      {showCreateCourse && (
+        <Card className="p-6 mb-6 bg-indigo-50 border-indigo-200">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="font-semibold">Create New Course</h3>
+            <Button variant="ghost" size="icon" onClick={() => setShowCreateCourse(false)}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <CourseFormFields formData={courseForm} setFormData={setCourseForm} />
+          <div className="flex gap-3 mt-4">
+            <Button onClick={handleCreateCourse} disabled={createCourseMutation.isPending} className="bg-indigo-600">
+              <Save className="w-4 h-4 mr-2" />
+              Create
+            </Button>
+            <Button variant="outline" onClick={() => setShowCreateCourse(false)}>Cancel</Button>
+          </div>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {courses.map((course) => (
+          <Card key={course.id} className="p-4">
+            {editingCourse?.id === course.id ? (
+              <div>
+                <CourseFormFields formData={courseForm} setFormData={setCourseForm} />
+                <div className="flex gap-3 mt-4">
+                  <Button onClick={() => {
+                    updateCourseMutation.mutate({ id: course.id, data: courseForm });
+                    setEditingCourse(null);
+                  }} size="sm" className="bg-indigo-600">
+                    <Save className="w-4 h-4 mr-2" />
+                    Save
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => setEditingCourse(null)}>Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <img src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200'} 
+                    alt={course.title} className="w-20 h-14 object-cover rounded-lg" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <Badge variant="secondary">{course.category}</Badge>
+                      <span>•</span>
+                      <span>{course.enrolled_count || 0} students</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Edit className="w-4 h-4 mr-2" />
+                      Manage
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setEditingCourse(course);
+                    setCourseForm(course);
+                  }}>
+                    <Edit className="w-4 h-4" />
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id);
+                  }}>
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </div>
+            )}
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }) {
+  const queryClient = useQueryClient();
+  const [searchTerm, setSearchTerm] = useState('');
+
+  const { data: students = [] } = useQuery({
+    queryKey: ['students'],
+    queryFn: () => base44.entities.User.list('-created_date', 500),
+  });
+
+  const suspendMutation = useMutation({
+    mutationFn: ({ email, suspend, reason }) => {
+      const student = students.find(s => s.email === email);
+      return base44.entities.User.update(student.id, { 
+        is_suspended: suspend,
+        suspended_reason: reason 
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['students']);
+      toast.success('Student status updated');
+    },
+  });
+
+  const courseStudents = selectedCourse
+    ? enrollments.filter(e => e.course_id === selectedCourse.id)
+    : enrollments.filter(e => courses.some(c => c.id === e.course_id));
+
+  const filteredStudents = courseStudents.filter(e => {
+    const student = students.find(s => s.email === e.created_by);
+    return !searchTerm || student?.full_name?.toLowerCase().includes(searchTerm.toLowerCase()) || 
+      student?.email?.toLowerCase().includes(searchTerm.toLowerCase());
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-4">Students</h2>
+        <div className="flex gap-3">
+          <Input 
+            placeholder="Search students..." 
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="max-w-xs"
+          />
+          <select 
+            className="px-3 py-2 border rounded-lg"
+            value={selectedCourse?.id || ''}
+            onChange={(e) => setSelectedCourse(courses.find(c => c.id === e.target.value) || null)}
+          >
+            <option value="">All Courses</option>
+            {courses.map(c => (
+              <option key={c.id} value={c.id}>{c.title}</option>
+            ))}
+          </select>
+        </div>
+      </div>
+
+      <div className="space-y-3">
+        {filteredStudents.map((enrollment) => {
+          const student = students.find(s => s.email === enrollment.created_by);
+          const course = courses.find(c => c.id === enrollment.course_id);
+          
+          return (
+            <Card key={enrollment.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
+                      <span className="text-indigo-600 font-medium">
+                        {student?.full_name?.charAt(0) || 'S'}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900">{student?.full_name || 'Student'}</p>
+                      <p className="text-sm text-gray-500">{student?.email}</p>
+                    </div>
+                  </div>
+                  <div className="mt-2 flex items-center gap-2 text-sm text-gray-600">
+                    <span>{course?.title || 'Unknown Course'}</span>
+                    <span>•</span>
+                    <span>{enrollment.progress_percent || 0}% complete</span>
+                    {student?.is_suspended && (
+                      <>
+                        <span>•</span>
+                        <Badge variant="destructive">Suspended</Badge>
+                      </>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('StudentAnalytics') + `?studentEmail=${student?.email}&courseId=${enrollment.course_id}`}>
+                    <Button variant="outline" size="sm">
+                      <BarChart className="w-4 h-4 mr-2" />
+                      Analytics
+                    </Button>
+                  </Link>
+                  {student && !student.is_suspended ? (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        const reason = prompt('Reason for suspension:');
+                        if (reason) suspendMutation.mutate({ email: student.email, suspend: true, reason });
+                      }}
+                    >
+                      <Ban className="w-4 h-4 text-red-600" />
+                    </Button>
+                  ) : (
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => suspendMutation.mutate({ email: student.email, suspend: false, reason: '' })}
+                    >
+                      Unsuspend
+                    </Button>
+                  )}
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+function AssignmentsTab({ courses, assignments, submissions }) {
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Assignments</h2>
+        <Link to={createPageUrl('CreateAssignment')}>
+          <Button className="bg-indigo-600 hover:bg-indigo-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Assignment
+          </Button>
+        </Link>
+      </div>
+
+      <div className="space-y-3">
+        {assignments.map((assignment) => {
+          const course = courses.find(c => c.id === assignment.course_id);
+          const assignmentSubmissions = submissions.filter(s => s.assignment_id === assignment.id);
+          const gradedCount = assignmentSubmissions.filter(s => s.is_graded).length;
+          
+          return (
+            <Card key={assignment.id} className="p-4">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
+                  <div className="flex items-center gap-2 text-sm text-gray-500 mt-1">
+                    <span>{course?.title}</span>
+                    <span>•</span>
+                    <span>{assignmentSubmissions.length} submissions</span>
+                    <span>•</span>
+                    <span>{gradedCount} graded</span>
+                  </div>
+                </div>
+                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${assignment.id}`}>
+                  <Button variant="outline" size="sm">
+                    Grade Submissions
+                  </Button>
+                </Link>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+function MessagesTab({ userEmail }) {
+  const { data: messages = [] } = useQuery({
+    queryKey: ['tutor-messages', userEmail],
+    queryFn: () => base44.entities.Message.filter({ recipient_email: userEmail }, '-created_date', 100),
+    enabled: !!userEmail,
+  });
+
+  return (
+    <Card className="p-6">
+      <h2 className="text-xl font-semibold mb-6">Messages from Students</h2>
+      <div className="space-y-3">
+        {messages.length > 0 ? messages.map((msg) => (
+          <Card key={msg.id} className="p-4 bg-gray-50">
+            <div className="flex items-start justify-between mb-2">
+              <div>
+                <p className="font-medium text-gray-900">{msg.sender_name}</p>
+                <p className="text-sm text-gray-500">{msg.sender_email}</p>
+              </div>
+              <Badge variant={msg.is_read ? 'secondary' : 'default'}>
+                {msg.is_read ? 'Read' : 'New'}
+              </Badge>
+            </div>
+            <p className="text-gray-700">{msg.content}</p>
+          </Card>
+        )) : (
+          <p className="text-gray-500 text-center py-8">No messages yet</p>
+        )}
+      </div>
+    </Card>
+  );
+}
+
+function AnalyticsTab({ courses, enrollments }) {
+  const completionData = courses.map(course => {
+    const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
+    const completed = courseEnrollments.filter(e => e.is_completed).length;
+    return {
+      course: course.title,
+      total: courseEnrollments.length,
+      completed,
+      rate: courseEnrollments.length > 0 ? Math.round((completed / courseEnrollments.length) * 100) : 0
+    };
+  });
+
+  return (
+    <div className="grid md:grid-cols-2 gap-6">
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">Course Completion Rates</h3>
+        <div className="space-y-3">
+          {completionData.map((data, idx) => (
+            <div key={idx}>
+              <div className="flex items-center justify-between mb-1">
+                <span className="text-sm font-medium text-gray-700">{data.course}</span>
+                <span className="text-sm text-gray-500">{data.rate}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2">
+                <div className="bg-indigo-600 h-2 rounded-full" style={{ width: `${data.rate}%` }} />
+              </div>
+            </div>
+          ))}
+        </div>
+      </Card>
+
+      <Card className="p-6">
+        <h3 className="font-semibold mb-4">Enrollment Stats</h3>
+        <div className="space-y-4">
+          {courses.map(course => {
+            const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
+            const avgProgress = courseEnrollments.length > 0
+              ? Math.round(courseEnrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / courseEnrollments.length)
+              : 0;
+            
+            return (
+              <div key={course.id} className="border-b pb-3 last:border-0">
+                <h4 className="font-medium text-gray-900">{course.title}</h4>
+                <div className="flex items-center gap-4 mt-2 text-sm text-gray-600">
+                  <span>{courseEnrollments.length} students</span>
+                  <span>•</span>
+                  <span>{avgProgress}% avg progress</span>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </Card>
+    </div>
+  );
+}
+
+function CourseFormFields({ formData, setFormData }) {
+  return (
+    <div className="grid sm:grid-cols-2 gap-4">
+      <div>
+        <Label>Title *</Label>
+        <Input value={formData.title || ''} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+      </div>
+      <div>
+        <Label>Instructor Name *</Label>
+        <Input value={formData.instructor || ''} onChange={(e) => setFormData({ ...formData, instructor: e.target.value })} />
+      </div>
+      <div className="sm:col-span-2">
+        <Label>Description *</Label>
+        <Textarea value={formData.description || ''} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
+      </div>
+      <div>
+        <Label>Category *</Label>
+        <select value={formData.category || ''} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full h-10 px-3 rounded-md border">
+          <option value="">Select</option>
+          <option value="development">Development</option>
+          <option value="design">Design</option>
+          <option value="business">Business</option>
+          <option value="marketing">Marketing</option>
+          <option value="data_science">Data Science</option>
+        </select>
+      </div>
+      <div>
+        <Label>Level</Label>
+        <select value={formData.level || 'beginner'} onChange={(e) => setFormData({ ...formData, level: e.target.value })} className="w-full h-10 px-3 rounded-md border">
+          <option value="beginner">Beginner</option>
+          <option value="intermediate">Intermediate</option>
+          <option value="advanced">Advanced</option>
+        </select>
+      </div>
+      <div>
+        <Label>Price</Label>
+        <Input type="number" value={formData.price || ''} onChange={(e) => setFormData({ ...formData, price: e.target.value })} />
+      </div>
+      <div>
+        <Label>Duration (hours)</Label>
+        <Input type="number" value={formData.duration_hours || ''} onChange={(e) => setFormData({ ...formData, duration_hours: e.target.value })} />
+      </div>
+    </div>
+  );
+}

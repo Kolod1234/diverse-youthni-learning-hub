@@ -7,6 +7,11 @@ import Quiz from './pages/Quiz';
 import Profile from './pages/Profile';
 import CourseDiscussion from './pages/CourseDiscussion';
 import AdminDashboard from './pages/AdminDashboard';
+import TutorDashboard from './pages/TutorDashboard';
+import TutorCourseManager from './pages/TutorCourseManager';
+import CreateAssignment from './pages/CreateAssignment';
+import GradeAssignments from './pages/GradeAssignments';
+import StudentAnalytics from './pages/StudentAnalytics';
 import __Layout from './Layout.jsx';
 
 
@@ -20,6 +25,11 @@ export const PAGES = {
     "Profile": Profile,
     "CourseDiscussion": CourseDiscussion,
     "AdminDashboard": AdminDashboard,
+    "TutorDashboard": TutorDashboard,
+    "TutorCourseManager": TutorCourseManager,
+    "CreateAssignment": CreateAssignment,
+    "GradeAssignments": GradeAssignments,
+    "StudentAnalytics": StudentAnalytics,
 }
 
 export const pagesConfig = {
