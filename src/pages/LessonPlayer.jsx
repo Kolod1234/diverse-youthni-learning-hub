@@ -15,12 +15,14 @@ import {
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 
 export default function LessonPlayer() {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [noteContent, setNoteContent] = useState('');
   const [showNotes, setShowNotes] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
   const queryClient = useQueryClient();
   
   const urlParams = new URLSearchParams(window.location.search);
@@ -96,11 +98,16 @@ export default function LessonPlayer() {
       ...(isNowComplete && { completed_date: new Date().toISOString().split('T')[0] }),
     });
 
-    // Auto-navigate to next lesson after marking complete
-    if (nextLesson && !isNowComplete) {
+    // Show rating dialog after marking complete
+    setShowRatingDialog(true);
+  };
+
+  const handleRatingComplete = () => {
+    // Auto-navigate to next lesson after rating
+    if (nextLesson) {
       setTimeout(() => {
         window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
-      }, 1500);
+      }, 500);
     }
   };
 
@@ -434,6 +441,15 @@ export default function LessonPlayer() {
           </AnimatePresence>
         </div>
       </div>
+
+      {/* Rating Dialog */}
+      <LessonRatingDialog
+        open={showRatingDialog}
+        onOpenChange={setShowRatingDialog}
+        lesson={currentLesson}
+        course={course}
+        onComplete={handleRatingComplete}
+      />
     </div>
   );
 }
