@@ -56,7 +56,7 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#FF8C00] via-[#FF9500] to-[#FFB366]">
         {/* Animated background elements */}
         <div className="absolute inset-0">
           <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400/20 rounded-full blur-3xl animate-pulse" />
@@ -78,7 +78,7 @@ export default function Home() {
                 transition={{ duration: 0.5, delay: 0.2 }}
                 className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8 border border-white/30"
               >
-                <Sparkles className="w-4 h-4 text-yellow-300" />
+                <Sparkles className="w-4 h-4 text-white" />
                 <span>Transform Your Future with Quality Education</span>
               </motion.div>
               
@@ -89,7 +89,7 @@ export default function Home() {
                 </span>
               </h1>
               
-              <p className="text-xl sm:text-2xl text-indigo-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl sm:text-2xl text-orange-50 mb-10 max-w-3xl mx-auto leading-relaxed">
                 Empowering young minds through innovative education. 
                 <span className="block mt-2 text-white/90">Join our thriving community today.</span>
               </p>
@@ -100,7 +100,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                  <Button size="lg" className="bg-white text-[#FF8C00] hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
                     Start Learning Now
                     <ArrowRight className="w-6 h-6 ml-2" />
                   </Button>
@@ -134,7 +134,7 @@ export default function Home() {
                     <Icon className="w-7 h-7 text-white" />
                   </div>
                   <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">{stat.value}</div>
-                  <div className="text-indigo-200 text-base font-medium">{stat.label}</div>
+                  <div className="text-orange-100 text-base font-medium">{stat.label}</div>
                 </motion.div>
               );
             })}
@@ -158,11 +158,11 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-indigo-100 text-indigo-700 text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-2 rounded-full bg-orange-100 text-[#FF8C00] text-sm font-semibold mb-4">
             Our Community
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Experience the <span className="text-indigo-600">Diverse Youth NI</span> Journey
+            Experience the <span className="text-[#FF8C00]">Diverse Youth NI</span> Journey
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             See what's happening in our vibrant learning community
@@ -201,15 +201,15 @@ export default function Home() {
           
           <button
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-indigo-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-orange-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
           >
-            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-indigo-600 transition-colors" />
+            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-[#FF8C00] transition-colors" />
           </button>
           <button
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-indigo-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-orange-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
           >
-            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-indigo-600 transition-colors" />
+            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-[#FF8C00] transition-colors" />
           </button>
         </motion.div>
       </section>
@@ -233,7 +233,7 @@ export default function Home() {
                 <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
-                <Button className="bg-indigo-600 hover:bg-indigo-700 rounded-full shadow-lg hover:shadow-xl transition-all">
+                <Button className="bg-[#FF8C00] hover:bg-[#CC7000] rounded-full shadow-lg hover:shadow-xl transition-all">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -315,7 +315,7 @@ export default function Home() {
             className="text-center mt-12"
           >
             <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Button size="lg" className="bg-gradient-to-r from-[#FF8C00] to-[#FFB366] hover:from-[#CC7000] hover:to-[#FF9933] rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
                 View All Courses
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -325,7 +325,7 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-indigo-600 via-purple-600 to-pink-600 py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-[#FF8C00] via-[#FF9500] to-[#FFB366] py-24">
         <div className="absolute inset-0">
           <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/20 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
@@ -350,13 +350,13 @@ export default function Home() {
               </span>
             </h2>
             
-            <p className="text-xl text-indigo-100 mb-10 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-orange-50 mb-10 max-w-3xl mx-auto leading-relaxed">
               Start your learning journey today and unlock endless possibilities with our expert-led courses
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to={createPageUrl('Dashboard')}>
-                <Button size="lg" className="bg-white text-indigo-600 hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                <Button size="lg" className="bg-white text-[#FF8C00] hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
                   Get Started for Free
                   <ArrowRight className="w-6 h-6 ml-2" />
                 </Button>

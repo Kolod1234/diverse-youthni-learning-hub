@@ -75,7 +75,7 @@ export default function Layout({ children, currentPageName }) {
               flex items-center gap-2 px-4 py-2 rounded-lg transition-all
               ${mobile ? 'w-full' : ''}
               ${isActive 
-                ? 'bg-indigo-50 text-indigo-600 font-medium' 
+                ? 'bg-orange-50 text-[#FF8C00] font-medium' 
                 : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
               }
             `}
@@ -90,6 +90,15 @@ export default function Layout({ children, currentPageName }) {
 
   return (
     <div className="min-h-screen bg-gray-50">
+      <style>
+        {`
+          :root {
+            --color-primary: #FF8C00;
+            --color-primary-light: #FFB366;
+            --color-primary-dark: #CC7000;
+          }
+        `}
+      </style>
       {/* Header */}
       <header 
         className={`
@@ -104,10 +113,11 @@ export default function Layout({ children, currentPageName }) {
           <div className="flex items-center justify-between h-16">
             {/* Logo */}
             <Link to={createPageUrl('Home')} className="flex items-center gap-2">
-              <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center">
-                <GraduationCap className="w-6 h-6 text-white" />
-              </div>
-              <span className="text-xl font-bold text-gray-900 hidden sm:block">LearnHub</span>
+              <img 
+                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
+                alt="Diverse Youth NI"
+                className="h-10 w-auto"
+              />
             </Link>
 
             {/* Desktop Navigation */}
@@ -128,7 +138,7 @@ export default function Layout({ children, currentPageName }) {
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user?.avatar} />
-                      <AvatarFallback className="bg-indigo-100 text-indigo-600 font-medium">
+                      <AvatarFallback className="bg-orange-100 text-[#FF8C00] font-medium">
                         {user?.full_name?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -190,10 +200,11 @@ export default function Layout({ children, currentPageName }) {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
               <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-4">
-                <div className="w-10 h-10 bg-gradient-to-br from-indigo-600 to-violet-600 rounded-xl flex items-center justify-center">
-                  <GraduationCap className="w-6 h-6 text-white" />
-                </div>
-                <span className="text-xl font-bold text-gray-900">LearnHub</span>
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
+                  alt="Diverse Youth NI"
+                  className="h-10 w-auto"
+                />
               </Link>
               <p className="text-gray-500 text-sm">
                 Empowering learners worldwide with expert-led courses and cutting-edge content.
@@ -203,8 +214,8 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Platform</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to={createPageUrl('Explore')} className="text-gray-500 hover:text-indigo-600">Browse Courses</Link></li>
-                <li><Link to={createPageUrl('Dashboard')} className="text-gray-500 hover:text-indigo-600">My Learning</Link></li>
+                <li><Link to={createPageUrl('Explore')} className="text-gray-500 hover:text-[#FF8C00]">Browse Courses</Link></li>
+                <li><Link to={createPageUrl('Dashboard')} className="text-gray-500 hover:text-[#FF8C00]">My Learning</Link></li>
               </ul>
             </div>
             
