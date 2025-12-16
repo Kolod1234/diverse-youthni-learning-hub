@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Star, BookOpen, Users, Search, GraduationCap, 
-  Award, TrendingUp, ChevronRight, Plus, Sparkles 
+  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut 
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -83,6 +83,12 @@ export default function Tutors() {
     }
   };
 
+  const handleLogout = () => {
+    localStorage.removeItem('tutorsUnlocked');
+    setIsUnlocked(false);
+    setAccessCode('');
+  };
+
   if (!isUnlocked) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
@@ -128,6 +134,18 @@ export default function Tutors() {
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        {/* Logout Button */}
+        <div className="flex justify-end mb-4">
+          <Button
+            onClick={handleLogout}
+            variant="outline"
+            className="gap-2"
+          >
+            <LogOut className="w-4 h-4" />
+            Logout from Tutors Area
+          </Button>
+        </div>
+
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
