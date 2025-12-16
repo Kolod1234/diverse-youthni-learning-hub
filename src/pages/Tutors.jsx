@@ -44,22 +44,35 @@ export default function Tutors() {
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
   });
 
+  const { data: reviews = [] } = useQuery({
+    queryKey: ['all-reviews'],
+    queryFn: () => base44.entities.Review.list('-created_date', 1000),
+  });
+
   const tutors = allUsers.filter(user => user.is_tutor || user.role === 'admin');
 
-  const getTutorStats = (tutorEmail) => {
+  const getTutorStats = (tutorEmail, tutorName) => {
     const tutorCourses = courses.filter(c => c.created_by === tutorEmail);
     const tutorEnrollments = enrollments.filter(e => 
       tutorCourses.some(c => c.id === e.course_id)
     );
     const totalStudents = new Set(tutorEnrollments.map(e => e.created_by)).size;
-    const avgRating = tutorCourses.length > 0
-      ? tutorCourses.reduce((sum, c) => sum + (c.rating || 0), 0) / tutorCourses.length
-      : 4.5;
+    
+    // Get tutor ratings from reviews
+    const tutorReviews = reviews.filter(r => 
+      r.rating_type === 'tutor' && 
+      tutorCourses.some(c => c.id === r.course_id)
+    );
+    
+    const avgRating = tutorReviews.length > 0
+      ? tutorReviews.reduce((sum, r) => sum + r.rating, 0) / tutorReviews.length
+      : 0;
 
     return {
       courseCount: tutorCourses.length,
       studentCount: totalStudents,
       rating: avgRating,
+      reviewCount: tutorReviews.length,
       courses: tutorCourses
     };
   };
@@ -258,7 +271,7 @@ export default function Tutors() {
         ) : filteredTutors.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             {filteredTutors.map((tutor, index) => {
-              const stats = getTutorStats(tutor.email);
+              const stats = getTutorStats(tutor.email, tutor.full_name);
               
               return (
                 <motion.div
@@ -280,13 +293,19 @@ export default function Tutors() {
                           {tutor.full_name || 'Expert Tutor'}
                         </h3>
                         <div className="flex items-center gap-1 mb-2">
-                          <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                          <span className="text-sm font-semibold text-gray-900">
-                            {stats.rating.toFixed(1)}
-                          </span>
-                          <span className="text-xs text-gray-500 ml-1">
-                            ({stats.courseCount} courses)
-                          </span>
+                          {stats.rating > 0 ? (
+                            <>
+                              <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                              <span className="text-sm font-semibold text-gray-900">
+                                {stats.rating.toFixed(1)}
+                              </span>
+                              <span className="text-xs text-gray-500 ml-1">
+                                ({stats.reviewCount} {stats.reviewCount === 1 ? 'review' : 'reviews'})
+                              </span>
+                            </>
+                          ) : (
+                            <span className="text-xs text-gray-500">No reviews yet</span>
+                          )}
                         </div>
                         {tutor.role === 'admin' && (
                           <Badge className="bg-indigo-100 text-indigo-700 border-0">
