@@ -22,6 +22,12 @@ export default function Home() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
+  const { data: carouselImages = [] } = useQuery({
+    queryKey: ['carousel-images'],
+    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true }, 'order', 20),
+    initialData: [],
+  });
+
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
@@ -178,17 +184,15 @@ export default function Home() {
         >
           <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
             <div className="flex">
-              {[
-                'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200',
-                'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200',
-                'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200',
-                'https://images.unsplash.com/photo-1517245386807-bb43f82c33c4?w=1200',
-                'https://images.unsplash.com/photo-1543269865-cbf427effbad?w=1200',
-              ].map((img, idx) => (
-                <div key={idx} className="flex-[0_0_100%] min-w-0">
+              {(carouselImages.length > 0 ? carouselImages : [
+                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200' },
+                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200' },
+                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200' },
+              ]).map((img, idx) => (
+                <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
                   <div className="relative aspect-[21/9] sm:aspect-[16/6]">
                     <img
-                      src={img}
+                      src={img.image_url}
                       alt={`Community ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />

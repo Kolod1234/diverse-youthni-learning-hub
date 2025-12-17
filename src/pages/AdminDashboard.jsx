@@ -213,17 +213,23 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
   );
 
   const handleBanToggle = (user) => {
-    updateUserMutation.mutate({
-      userId: user.id,
-      data: { is_suspended: !user.is_suspended }
-    });
+    const action = user.is_suspended ? 'unban' : 'ban';
+    if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
+      updateUserMutation.mutate({
+        userId: user.id,
+        data: { is_suspended: !user.is_suspended }
+      });
+    }
   };
 
   const handleTutorToggle = (user) => {
-    updateUserMutation.mutate({
-      userId: user.id,
-      data: { is_tutor: !user.is_tutor }
-    });
+    const action = user.is_tutor ? 'remove tutor status from' : 'make a tutor';
+    if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
+      updateUserMutation.mutate({
+        userId: user.id,
+        data: { is_tutor: !user.is_tutor }
+      });
+    }
   };
 
   const handleDeleteUser = (userId) => {
@@ -565,12 +571,29 @@ function MessagesMonitor({ messages, users }) {
 
 // Carousel Manager Component
 function CarouselManager() {
+  const queryClient = useQueryClient();
   const [imageUrl, setImageUrl] = useState('');
-  const [carouselImages, setCarouselImages] = useState([
-    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200',
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200',
-    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200',
-  ]);
+
+  const { data: carouselImages = [] } = useQuery({
+    queryKey: ['carousel-images'],
+    queryFn: () => base44.entities.CarouselImage.list('order', 100),
+  });
+
+  const createImageMutation = useMutation({
+    mutationFn: (data) => base44.entities.CarouselImage.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['carousel-images']);
+      toast.success('Image added to carousel');
+    },
+  });
+
+  const deleteImageMutation = useMutation({
+    mutationFn: (id) => base44.entities.CarouselImage.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['carousel-images']);
+      toast.success('Image removed from carousel');
+    },
+  });
 
   const handleUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -578,8 +601,10 @@ function CarouselManager() {
 
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setCarouselImages([...carouselImages, file_url]);
-      toast.success('Image uploaded successfully');
+      createImageMutation.mutate({ 
+        image_url: file_url,
+        order: carouselImages.length
+      });
     } catch (error) {
       toast.error('Failed to upload image');
     }
@@ -587,14 +612,17 @@ function CarouselManager() {
 
   const addImageUrl = () => {
     if (!imageUrl.trim()) return;
-    setCarouselImages([...carouselImages, imageUrl]);
+    createImageMutation.mutate({ 
+      image_url: imageUrl,
+      order: carouselImages.length
+    });
     setImageUrl('');
-    toast.success('Image added to carousel');
   };
 
-  const removeImage = (index) => {
-    setCarouselImages(carouselImages.filter((_, i) => i !== index));
-    toast.success('Image removed from carousel');
+  const removeImage = (id) => {
+    if (confirm('Remove this image from carousel?')) {
+      deleteImageMutation.mutate(id);
+    }
   };
 
   return (
@@ -621,13 +649,13 @@ function CarouselManager() {
       </div>
 
       <div className="grid grid-cols-2 gap-4">
-        {carouselImages.map((img, index) => (
-          <div key={index} className="relative group">
-            <img src={img} alt={`Carousel ${index + 1}`} className="w-full h-48 object-cover rounded-lg" />
+        {carouselImages.map((img) => (
+          <div key={img.id} className="relative group">
+            <img src={img.image_url} alt={`Carousel`} className="w-full h-48 object-cover rounded-lg" />
             <Button
               variant="destructive"
               size="sm"
-              onClick={() => removeImage(index)}
+              onClick={() => removeImage(img.id)}
               className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity"
             >
               <Trash2 className="w-4 h-4" />
