@@ -12,7 +12,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
-  Upload, Eye, Edit, Search, Send, UserCog, Briefcase, UserPlus
+  Upload, Eye, Edit, Search, Send, UserCog
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -58,16 +58,6 @@ export default function AdminDashboard() {
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
-  });
-
-  const { data: programs = [] } = useQuery({
-    queryKey: ['all-programs'],
-    queryFn: () => base44.entities.Program.list('-created_date', 100),
-  });
-
-  const { data: programParticipants = [] } = useQuery({
-    queryKey: ['all-program-participants'],
-    queryFn: () => base44.entities.ProgramParticipant.list('-created_date', 500),
   });
 
   if (!user || user.role !== 'admin') {
@@ -157,10 +147,6 @@ export default function AdminDashboard() {
               <FileText className="w-4 h-4 mr-2" />
               Blog
             </TabsTrigger>
-            <TabsTrigger value="programmes" className="rounded-lg">
-              <Briefcase className="w-4 h-4 mr-2" />
-              Programmes
-            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -193,10 +179,6 @@ export default function AdminDashboard() {
 
           <TabsContent value="blog">
             <BlogManagement />
-          </TabsContent>
-
-          <TabsContent value="programmes">
-            <ProgrammesManagement programmes={programs} participants={programParticipants} users={allUsers} />
           </TabsContent>
         </Tabs>
       </div>
@@ -811,131 +793,6 @@ function ThemeSettings() {
           <Palette className="w-4 h-4 mr-2" />
           Apply Theme
         </Button>
-      </div>
-    </Card>
-  );
-}
-
-// Programmes Management Component
-function ProgrammesManagement({ programmes, participants, users }) {
-  const queryClient = useQueryClient();
-  const [selectedProgramme, setSelectedProgramme] = useState(null);
-  const [selectedParticipant, setSelectedParticipant] = useState(null);
-  const [mentorEmail, setMentorEmail] = useState('');
-
-  const updateParticipantMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.ProgramParticipant.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['all-program-participants']);
-      toast.success('Participant updated successfully');
-      setSelectedParticipant(null);
-      setMentorEmail('');
-    },
-  });
-
-  const mentors = users.filter(u => u.is_tutor || u.role === 'admin');
-
-  const assignMentor = () => {
-    if (!selectedParticipant || !mentorEmail) return;
-    
-    const mentor = mentors.find(m => m.email === mentorEmail);
-    if (!mentor) return;
-
-    updateParticipantMutation.mutate({
-      id: selectedParticipant.id,
-      data: {
-        mentor_email: mentor.email,
-        mentor_name: mentor.full_name
-      }
-    });
-  };
-
-  return (
-    <Card className="p-6">
-      <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-4">Programmes Management</h2>
-        <p className="text-gray-500">Manage participants and assign mentors</p>
-      </div>
-
-      {selectedParticipant && (
-        <Card className="p-4 mb-6 bg-indigo-50 border-indigo-200">
-          <h3 className="font-semibold mb-3">Assign Mentor to: {selectedParticipant.participant_name}</h3>
-          <div className="flex gap-3">
-            <select
-              value={mentorEmail}
-              onChange={(e) => setMentorEmail(e.target.value)}
-              className="flex-1 h-10 px-3 rounded-md border border-gray-300"
-            >
-              <option value="">Select Mentor</option>
-              {mentors.map(mentor => (
-                <option key={mentor.id} value={mentor.email}>
-                  {mentor.full_name} ({mentor.email})
-                </option>
-              ))}
-            </select>
-            <Button onClick={assignMentor}>Assign</Button>
-            <Button variant="outline" onClick={() => setSelectedParticipant(null)}>Cancel</Button>
-          </div>
-        </Card>
-      )}
-
-      <div className="space-y-6">
-        {programmes.map((programme) => {
-          const programmeParticipants = participants.filter(p => p.program_id === programme.id);
-          
-          return (
-            <Card key={programme.id} className="p-4 border-gray-200">
-              <div className="mb-4">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-semibold text-lg text-gray-900">{programme.title}</h3>
-                  <Badge className={
-                    programme.status === 'active' ? 'bg-green-100 text-green-700' :
-                    programme.status === 'completed' ? 'bg-gray-100 text-gray-700' :
-                    'bg-blue-100 text-blue-700'
-                  }>
-                    {programme.status}
-                  </Badge>
-                </div>
-                <p className="text-sm text-gray-600">{programme.description}</p>
-              </div>
-
-              <div className="space-y-2">
-                <p className="text-sm font-medium text-gray-700">Participants ({programmeParticipants.length}):</p>
-                {programmeParticipants.map((participant) => (
-                  <div key={participant.id} className="flex items-center justify-between p-3 bg-gray-50 rounded-lg">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="w-10 h-10">
-                        <AvatarFallback className="bg-indigo-100 text-indigo-600">
-                          {participant.participant_name.charAt(0)}
-                        </AvatarFallback>
-                      </Avatar>
-                      <div>
-                        <p className="font-medium text-gray-900 text-sm">{participant.participant_name}</p>
-                        <p className="text-xs text-gray-500">{participant.participant_email}</p>
-                        {participant.mentor_name && (
-                          <p className="text-xs text-gray-600 mt-1">
-                            Mentor: <strong>{participant.mentor_name}</strong>
-                          </p>
-                        )}
-                      </div>
-                    </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => setSelectedParticipant(participant)}
-                    >
-                      <UserPlus className="w-4 h-4 mr-2" />
-                      {participant.mentor_name ? 'Change Mentor' : 'Assign Mentor'}
-                    </Button>
-                  </div>
-                ))}
-                {programmeParticipants.length === 0 && (
-                  <p className="text-sm text-gray-500 text-center py-4">No participants yet</p>
-                )}
-              </div>
-            </Card>
-          );
-        })}
       </div>
     </Card>
   );
