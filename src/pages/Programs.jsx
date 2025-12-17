@@ -10,16 +10,20 @@ import {
   Plus, Settings, Clock, MapPin, User
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { toast } from 'sonner';
 import ProgramCalendar from '@/components/programs/ProgramCalendar';
 import ActivitySchedule from '@/components/programs/ActivitySchedule';
 import RotaManager from '@/components/programs/RotaManager';
 import ParticipantManager from '@/components/programs/ParticipantManager';
 import LogbookManager from '@/components/programs/LogbookManager';
 import ProgramDetailsCard from '@/components/programs/ProgramDetailsCard';
+import ProgramForm from '@/components/programs/ProgramForm';
 
 export default function Programs() {
   const [user, setUser] = useState(null);
   const [selectedProgram, setSelectedProgram] = useState(null);
+  const [showProgramForm, setShowProgramForm] = useState(false);
+  const [showSignUpDialog, setShowSignUpDialog] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -43,6 +47,29 @@ export default function Programs() {
 
   const isAdmin = user?.role === 'admin';
   const isMentor = user?.is_tutor || isAdmin;
+
+  // Check if user is already enrolled
+  const isEnrolled = participants.some(p => p.participant_email === user?.email);
+
+  const enrollMutation = useMutation({
+    mutationFn: (data) => base44.entities.ProgramParticipant.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['program-participants']);
+      setShowSignUpDialog(false);
+      toast.success('Successfully enrolled in programme!');
+    },
+  });
+
+  const handleSignUp = () => {
+    if (!user || !selectedProgram) return;
+    
+    enrollMutation.mutate({
+      program_id: selectedProgram.id,
+      participant_email: user.email,
+      participant_name: user.full_name,
+      status: 'active',
+    });
+  };
 
   // Auto-select first program
   useEffect(() => {
@@ -69,12 +96,26 @@ export default function Programs() {
               <h1 className="text-3xl font-bold text-gray-900">Leadership Employment Programmes</h1>
               <p className="text-gray-500 mt-1">Manage programmes, activities, and participant progress</p>
             </div>
-            {isAdmin && (
-              <Button className="bg-[#FF8C00] hover:bg-[#CC7000]">
-                <Plus className="w-4 h-4 mr-2" />
-                New Programme
-              </Button>
-            )}
+            <div className="flex gap-2">
+              {!isAdmin && !isMentor && selectedProgram && !isEnrolled && (
+                <Button 
+                  onClick={() => setShowSignUpDialog(true)}
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Sign Up for Programme
+                </Button>
+              )}
+              {isAdmin && (
+                <Button 
+                  onClick={() => setShowProgramForm(true)}
+                  className="bg-[#FF8C00] hover:bg-[#CC7000]"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  New Programme
+                </Button>
+              )}
+            </div>
           </div>
 
           {/* Program Selector */}
@@ -155,7 +196,10 @@ export default function Programs() {
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No Programmes Yet</h3>
             <p className="text-gray-500 mb-6">Create your first leadership employment programme to get started</p>
             {isAdmin && (
-              <Button className="bg-[#FF8C00] hover:bg-[#CC7000]">
+              <Button 
+                onClick={() => setShowProgramForm(true)}
+                className="bg-[#FF8C00] hover:bg-[#CC7000]"
+              >
                 <Plus className="w-4 h-4 mr-2" />
                 Create Programme
               </Button>
@@ -163,6 +207,37 @@ export default function Programs() {
           </Card>
         )}
       </div>
+
+      {/* Program Form Dialog */}
+      <ProgramForm open={showProgramForm} onOpenChange={setShowProgramForm} />
+
+      {/* Sign Up Confirmation Dialog */}
+      {showSignUpDialog && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSignUpDialog(false)}>
+          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4">Sign Up for Programme</h3>
+            <p className="text-gray-600 mb-6">
+              Are you sure you want to sign up for <strong>{selectedProgram?.name}</strong>?
+            </p>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handleSignUp} 
+                disabled={enrollMutation.isPending}
+                className="flex-1 bg-green-600 hover:bg-green-700"
+              >
+                {enrollMutation.isPending ? 'Enrolling...' : 'Confirm Sign Up'}
+              </Button>
+              <Button 
+                onClick={() => setShowSignUpDialog(false)} 
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
