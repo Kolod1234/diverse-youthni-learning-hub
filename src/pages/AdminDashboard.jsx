@@ -596,17 +596,22 @@ function CarouselManager() {
   });
 
   const handleUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
+    const files = e.target.files;
+    if (!files || files.length === 0) return;
 
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      createImageMutation.mutate({ 
-        image_url: file_url,
-        order: carouselImages.length
+      const uploadPromises = Array.from(files).map(async (file, index) => {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        return createImageMutation.mutateAsync({ 
+          image_url: file_url,
+          order: carouselImages.length + index
+        });
       });
+
+      await Promise.all(uploadPromises);
+      toast.success(`${files.length} image(s) uploaded successfully`);
     } catch (error) {
-      toast.error('Failed to upload image');
+      toast.error('Failed to upload images');
     }
   };
 
@@ -631,8 +636,8 @@ function CarouselManager() {
       
       <div className="space-y-4 mb-6">
         <div>
-          <Label>Upload Image</Label>
-          <Input type="file" accept="image/*" onChange={handleUpload} />
+          <Label>Upload Images (Multiple)</Label>
+          <Input type="file" accept="image/*" multiple onChange={handleUpload} />
         </div>
         
         <div className="flex gap-3">
