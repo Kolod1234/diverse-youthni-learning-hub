@@ -10,12 +10,13 @@ import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
 import SearchBar from '@/components/courses/SearchBar';
 import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
@@ -190,13 +191,13 @@ export default function Home() {
                 { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200' },
               ]).map((img, idx) => (
                 <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                  <div className="relative aspect-[21/9] sm:aspect-[16/6]">
+                  <div className="relative aspect-[16/7] sm:aspect-[21/8] lg:aspect-[24/8]">
                     <img
                       src={img.image_url}
                       alt={`Community ${idx + 1}`}
                       className="w-full h-full object-cover"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </div>
                 </div>
               ))}
