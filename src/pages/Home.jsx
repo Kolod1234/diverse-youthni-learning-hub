@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
