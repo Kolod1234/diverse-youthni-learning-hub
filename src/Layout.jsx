@@ -43,11 +43,26 @@ export default function Layout({ children, currentPageName }) {
     return <>{children}</>;
   }
 
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
+
+  const handleAdminAccess = () => {
+    if (adminPassword === 'Edu24!') {
+      window.location.href = createPageUrl('AdminDashboard');
+    } else {
+      alert('Incorrect password');
+    }
+  };
+
   const tutorNavigation = (user?.is_tutor || user?.role === 'admin') 
     ? [
         { name: 'Tutor Setup', href: createPageUrl('TutorSetup'), icon: User },
         { name: 'Tutor Dashboard', href: createPageUrl('TutorDashboard'), icon: Settings }
       ]
+    : [];
+
+  const adminNavigation = user?.role === 'admin'
+    ? [{ name: 'Admin Panel', href: '#admin', icon: Settings, onClick: () => setShowAdminPassword(true) }]
     : [];
 
   const navigation = [
@@ -56,6 +71,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     ...tutorNavigation,
+    ...adminNavigation,
     { name: 'Profile', href: createPageUrl('Profile'), icon: User },
   ];
 
@@ -65,6 +81,26 @@ export default function Layout({ children, currentPageName }) {
         const Icon = item.icon;
         const isActive = location.pathname === item.href || 
           (item.href.includes('Home') && location.pathname === '/');
+        
+        if (item.onClick) {
+          return (
+            <button
+              key={item.name}
+              onClick={() => {
+                item.onClick();
+                onItemClick?.();
+              }}
+              className={`
+                flex items-center gap-2 px-4 py-2 rounded-lg transition-all
+                ${mobile ? 'w-full' : ''}
+                text-gray-600 hover:bg-gray-50 hover:text-gray-900
+              `}
+            >
+              <Icon className="w-5 h-5" />
+              <span>{item.name}</span>
+            </button>
+          );
+        }
         
         return (
           <Link
@@ -193,6 +229,31 @@ export default function Layout({ children, currentPageName }) {
 
       {/* Main Content */}
       <main>{children}</main>
+
+      {/* Admin Password Modal */}
+      {showAdminPassword && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAdminPassword(false)}>
+          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4">Admin Access</h3>
+            <input
+              type="password"
+              value={adminPassword}
+              onChange={(e) => setAdminPassword(e.target.value)}
+              placeholder="Enter admin password"
+              className="w-full px-4 py-2 border rounded-lg mb-4"
+              onKeyPress={(e) => e.key === 'Enter' && handleAdminAccess()}
+            />
+            <div className="flex gap-3">
+              <button onClick={handleAdminAccess} className="flex-1 bg-[#FF8C00] text-white py-2 rounded-lg hover:bg-[#CC7000]">
+                Access
+              </button>
+              <button onClick={() => setShowAdminPassword(false)} className="flex-1 border py-2 rounded-lg hover:bg-gray-50">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Footer */}
       <footer className="bg-white border-t border-gray-100 mt-20">
