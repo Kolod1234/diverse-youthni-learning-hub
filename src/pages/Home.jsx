@@ -191,7 +191,7 @@ export default function Home() {
                 { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200' },
               ]).map((img, idx) => (
                 <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                  <div className="relative aspect-[16/7] sm:aspect-[21/8] lg:aspect-[24/8]">
+                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
                     <img
                       src={img.image_url}
                       alt={`Community ${idx + 1}`}
