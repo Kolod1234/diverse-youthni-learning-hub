@@ -14,6 +14,9 @@ import GradeAssignments from './pages/GradeAssignments';
 import StudentAnalytics from './pages/StudentAnalytics';
 import Tutors from './pages/Tutors';
 import TutorSetup from './pages/TutorSetup';
+import Programs from './pages/Programs';
+import ProgramDetails from './pages/ProgramDetails';
+import ParticipantDashboard from './pages/ParticipantDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -34,6 +37,9 @@ export const PAGES = {
     "StudentAnalytics": StudentAnalytics,
     "Tutors": Tutors,
     "TutorSetup": TutorSetup,
+    "Programs": Programs,
+    "ProgramDetails": ProgramDetails,
+    "ParticipantDashboard": ParticipantDashboard,
 }
 
 export const pagesConfig = {
