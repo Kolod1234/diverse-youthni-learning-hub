@@ -219,6 +219,44 @@ export default function Home() {
         </motion.div>
       </section>
 
+      {/* Leadership Programmes CTA */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 p-12 shadow-2xl"
+        >
+          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
+
+          <div className="relative z-10 max-w-3xl">
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-6">
+              <ClipboardList className="w-4 h-4" />
+              <span>Leadership Development</span>
+            </div>
+
+            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
+              Join Our Leadership Employment Programmes
+            </h2>
+
+            <p className="text-xl text-purple-100 mb-8 leading-relaxed">
+              Develop essential leadership skills, gain real-world experience, and unlock your potential through our structured mentorship and employment programmes.
+            </p>
+
+            <div className="flex flex-wrap gap-4">
+              <Link to={createPageUrl('Programs')}>
+                <Button size="lg" className="bg-white text-purple-700 hover:bg-gray-100 rounded-full px-10 h-14 text-lg font-bold shadow-xl hover:scale-105 transition-all">
+                  Explore Programmes
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </motion.div>
+      </section>
+
       {/* Featured Courses */}
       {featuredCourses.length > 0 && (
         <section className="bg-gradient-to-b from-gray-50 to-white py-20">
