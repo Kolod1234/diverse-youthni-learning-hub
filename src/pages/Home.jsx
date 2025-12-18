@@ -89,12 +89,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#FF8C00] via-[#FF9500] to-[#FFB366]">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-500 via-rose-500 to-pink-500">
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-400/20 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-400/10 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400/30 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-fuchsia-400/30 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-400/20 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
@@ -115,9 +115,9 @@ export default function Home() {
                 <span>Transform Your Future with Quality Education</span>
               </motion.div>
               
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white">
+              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white drop-shadow-lg">
                 Diverse Youth NI
-                <span className="block mt-3 bg-gradient-to-r from-yellow-300 via-amber-300 to-orange-300 bg-clip-text text-transparent">
+                <span className="block mt-3 bg-gradient-to-r from-yellow-200 via-amber-200 to-white bg-clip-text text-transparent">
                   Learning Hub
                 </span>
               </h1>
@@ -133,7 +133,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-white text-[#FF8C00] hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                  <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl hover:shadow-orange-500/50 transition-all duration-300">
                     Start Learning Now
                     <ArrowRight className="w-6 h-6 ml-2" />
                   </Button>
@@ -155,7 +155,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.7 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-400 mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 mb-4 shadow-xl">
                 <Users className="w-7 h-7 text-white" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
@@ -170,7 +170,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-400 to-fuchsia-500 mb-4 shadow-xl">
                 <BookOpen className="w-7 h-7 text-white" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
@@ -185,7 +185,7 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.9 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 mb-4 shadow-lg">
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 mb-4 shadow-xl">
                 <Star className="w-7 h-7 text-white" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
@@ -213,11 +213,11 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-orange-100 text-[#FF8C00] text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-pink-100 text-orange-600 text-sm font-semibold mb-4 border border-orange-200">
             Our Community
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
-            Experience the <span className="text-[#FF8C00]">Diverse Youth NI</span> Journey
+            Experience the <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent">Diverse Youth NI</span> Journey
           </h2>
           <p className="text-gray-600 text-lg max-w-2xl mx-auto">
             See what's happening in our vibrant learning community
@@ -254,15 +254,15 @@ export default function Home() {
           
           <button
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-orange-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
           >
-            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-[#FF8C00] transition-colors" />
+            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
           </button>
           <button
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white hover:bg-orange-50 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group"
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
           >
-            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-[#FF8C00] transition-colors" />
+            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
           </button>
         </motion.div>
       </section>
@@ -274,7 +274,7 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 p-12 shadow-2xl"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
@@ -295,7 +295,7 @@ export default function Home() {
 
             <div className="flex flex-wrap gap-4">
               <Link to={createPageUrl('Programs')}>
-                <Button size="lg" className="bg-white text-purple-700 hover:bg-gray-100 rounded-full px-10 h-14 text-lg font-bold shadow-xl hover:scale-105 transition-all">
+                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl hover:shadow-violet-500/50 hover:scale-105 transition-all">
                   Explore Programmes
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
@@ -317,14 +317,14 @@ export default function Home() {
               className="flex items-center justify-between mb-12"
             >
               <div>
-                <span className="inline-block px-4 py-2 rounded-full bg-purple-100 text-purple-700 text-sm font-semibold mb-3">
+                <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 text-violet-700 text-sm font-semibold mb-3 border border-violet-200">
                   Top Picks
                 </span>
                 <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Featured Courses</h2>
                 <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
-                <Button className="bg-[#FF8C00] hover:bg-[#CC7000] rounded-full shadow-lg hover:shadow-xl transition-all">
+                <Button className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -348,7 +348,7 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-emerald-100 text-emerald-700 text-sm font-semibold mb-4">
+          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 text-sm font-semibold mb-4 border border-emerald-200">
             Explore Learning Paths
           </span>
           <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Browse by Category</h2>
@@ -406,7 +406,7 @@ export default function Home() {
             className="text-center mt-12"
           >
             <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-gradient-to-r from-[#FF8C00] to-[#FFB366] hover:from-[#CC7000] hover:to-[#FF9933] rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Button size="lg" className="bg-gradient-to-r from-orange-500 via-rose-500 to-pink-500 hover:from-orange-600 hover:via-rose-600 hover:to-pink-600 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
                 View All Courses
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -416,10 +416,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-[#FF8C00] via-[#FF9500] to-[#FFB366] py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-500 via-rose-500 to-pink-500 py-24">
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/30 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -436,7 +436,7 @@ export default function Home() {
             
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
               Ready to Transform
-              <span className="block mt-2 bg-gradient-to-r from-yellow-300 to-orange-300 bg-clip-text text-transparent">
+              <span className="block mt-2 bg-gradient-to-r from-yellow-200 via-amber-200 to-white bg-clip-text text-transparent">
                 Your Future?
               </span>
             </h2>
@@ -447,7 +447,7 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to={createPageUrl('Dashboard')}>
-                <Button size="lg" className="bg-white text-[#FF8C00] hover:bg-gray-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl transition-all duration-300">
+                <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl hover:shadow-orange-500/50 transition-all duration-300">
                   Get Started for Free
                   <ArrowRight className="w-6 h-6 ml-2" />
                 </Button>
