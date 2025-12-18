@@ -81,10 +81,12 @@ export default function CourseCard({ course, index = 0 }) {
                   {course.total_lessons || 0}
                 </span>
               </div>
-              <div className="flex items-center gap-1">
-                <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                <span className="font-medium text-gray-700">{course.rating?.toFixed(1) || '4.5'}</span>
-              </div>
+              {course.rating && (
+                <div className="flex items-center gap-1">
+                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                  <span className="font-medium text-gray-700">{course.rating.toFixed(1)}</span>
+                </div>
+              )}
             </div>
             
             <div className="flex items-center justify-between mt-4">
