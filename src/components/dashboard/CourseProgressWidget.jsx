@@ -17,15 +17,15 @@ export default function CourseProgressWidget({ enrollments, courses }) {
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', course?.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
-    enabled: !!course?.id,
+    enabled: !!course,
   });
 
-  const firstLesson = courseLessons[0];
-  const lessonId = topCourse?.current_lesson_id || firstLesson?.id;
-  const progressPercent = Math.round(topCourse?.progress_percent || 0);
-  const lessonsLeft = (course?.total_lessons || 0) - (topCourse?.completed_lessons?.length || 0);
-
   if (inProgressEnrollments.length === 0 || !course) return null;
+
+  const firstLesson = courseLessons[0];
+  const lessonId = topCourse.current_lesson_id || firstLesson?.id;
+  const progressPercent = Math.round(topCourse.progress_percent || 0);
+  const lessonsLeft = (course.total_lessons || 0) - (topCourse.completed_lessons?.length || 0);
 
   return (
     <motion.div

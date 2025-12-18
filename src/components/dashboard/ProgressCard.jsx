@@ -13,13 +13,13 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', course?.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
-    enabled: !!course?.id,
+    enabled: !!course,
   });
+
+  if (!course) return null;
 
   const firstLesson = courseLessons[0];
   const lessonId = enrollment?.current_lesson_id || firstLesson?.id;
-
-  if (!course) return null;
   
   return (
     <motion.div
