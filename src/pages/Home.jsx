@@ -239,11 +239,11 @@ export default function Home() {
                 { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200' },
               ]).map((img, idx) => (
                 <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[21/9]">
+                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[2.5/1]">
                     <img
                       src={img.image_url}
                       alt={`Community ${idx + 1}`}
-                      className="w-full h-full object-cover"
+                      className="w-full h-full object-cover object-center"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </div>
