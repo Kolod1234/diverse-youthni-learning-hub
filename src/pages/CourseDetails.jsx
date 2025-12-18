@@ -101,7 +101,7 @@ export default function CourseDetails() {
     },
   });
 
-  // Calculate instructor stats (must be after all hooks, before any returns)
+  // Calculate real instructor statistics from enrollment data
   const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
   const instructorCourseIds = instructorCourses.map(c => c.id);
   const instructorStudents = new Set(
