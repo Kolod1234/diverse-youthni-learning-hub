@@ -82,8 +82,8 @@ export default function CourseDetails() {
 
   const { data: instructorReviews = [] } = useQuery({
     queryKey: ['instructor-reviews', course?.instructor],
-    queryFn: () => base44.entities.Review.filter({ instructor_name: course.instructor, rating_type: 'tutor' }),
-    enabled: !!course?.instructor,
+    queryFn: () => base44.entities.Review.filter({ instructor_name: course?.instructor || '', rating_type: 'tutor' }),
+    enabled: !!courseId && !!course?.instructor,
   });
 
   const enrollment = enrollments[0];
