@@ -529,14 +529,18 @@ export default function CourseDetails() {
                 </div>
               </div>
               <div className="flex items-center gap-6 text-sm text-gray-600">
-                <span className="flex items-center gap-1">
-                  <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  {instructorRating} Rating
-                </span>
-                <span className="flex items-center gap-1">
-                  <Users className="w-4 h-4" />
-                  {instructorStudents.toLocaleString()} Students
-                </span>
+                {instructorRating && (
+                  <span className="flex items-center gap-1">
+                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                    {instructorRating} Rating
+                  </span>
+                )}
+                {instructorStudents > 0 && (
+                  <span className="flex items-center gap-1">
+                    <Users className="w-4 h-4" />
+                    {instructorStudents.toLocaleString()} Students
+                  </span>
+                )}
               </div>
             </Card>
 
