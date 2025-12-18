@@ -101,7 +101,15 @@ export default function CourseDetails() {
     },
   });
 
-  // Calculate real instructor statistics from enrollment data
+  // Group lessons by section (must be before conditional returns)
+  const sections = lessons.reduce((acc, lesson) => {
+    const section = lesson.section || 'Getting Started';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(lesson);
+    return acc;
+  }, {});
+
+  // Calculate real instructor statistics from enrollment data (must be before conditional returns)
   const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
   const instructorCourseIds = instructorCourses.map(c => c.id);
   const instructorStudents = new Set(
@@ -110,14 +118,6 @@ export default function CourseDetails() {
   const instructorRating = instructorReviews.length > 0
     ? (instructorReviews.reduce((sum, r) => sum + r.rating, 0) / instructorReviews.length).toFixed(1)
     : course?.rating?.toFixed(1) || '4.5';
-
-  // Group lessons by section
-  const sections = lessons.reduce((acc, lesson) => {
-    const section = lesson.section || 'Getting Started';
-    if (!acc[section]) acc[section] = [];
-    acc[section].push(lesson);
-    return acc;
-  }, {});
 
   if (loadingCourse) {
     return (
