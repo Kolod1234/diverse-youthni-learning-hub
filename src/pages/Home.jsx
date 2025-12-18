@@ -234,9 +234,9 @@ export default function Home() {
           <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
             <div className="flex">
               {(carouselImages.length > 0 ? carouselImages : [
-                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200' },
-                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1200' },
-                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200' },
+                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80' },
+                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80' },
+                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80' },
               ]).map((img, idx) => (
                 <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
                   <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[2.5/1]">

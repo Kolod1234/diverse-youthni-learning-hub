@@ -33,7 +33,7 @@ export default function CourseCard({ course, index = 0 }) {
         <Card className="group overflow-hidden border-0 shadow-sm hover:shadow-xl transition-all duration-500 bg-white">
           <div className="relative overflow-hidden aspect-video">
             <img
-              src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600'}
+              src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'}
               alt={course.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />

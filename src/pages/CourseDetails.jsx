@@ -229,7 +229,7 @@ export default function CourseDetails() {
               <Card className="overflow-hidden border-0 shadow-2xl">
                 <div className="aspect-video relative">
                   <img
-                    src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=600'}
+                    src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'}
                     alt={course.title}
                     className="w-full h-full object-cover"
                   />

@@ -31,7 +31,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
         <div className="flex flex-col sm:flex-row">
           <div className="sm:w-48 h-32 sm:h-auto relative overflow-hidden">
             <img
-              src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=400'}
+              src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80'}
               alt={course.title}
               className="w-full h-full object-cover"
             />
