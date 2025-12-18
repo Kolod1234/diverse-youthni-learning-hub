@@ -86,22 +86,11 @@ export default function CourseDetails() {
     enabled: !!courseId && !!course?.instructor,
   });
 
+  // Calculate data before any conditional returns
   const enrollment = enrollments[0];
   const isEnrolled = !!enrollment;
 
-  const enrollMutation = useMutation({
-    mutationFn: () => base44.entities.Enrollment.create({
-      course_id: courseId,
-      progress_percent: 0,
-      completed_lessons: [],
-      is_completed: false,
-    }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['enrollment', courseId]);
-    },
-  });
-
-  // Group lessons by section (must be before conditional returns)
+  // Group lessons by section
   const sections = lessons.reduce((acc, lesson) => {
     const section = lesson.section || 'Getting Started';
     if (!acc[section]) acc[section] = [];
@@ -118,7 +107,7 @@ export default function CourseDetails() {
   // Calculate actual student count from enrollments
   const actualStudentCount = allEnrollments.filter(e => e.course_id === courseId).length;
 
-  // Calculate real instructor statistics from enrollment data (must be before conditional returns)
+  // Calculate real instructor statistics from enrollment data
   const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
   const instructorCourseIds = instructorCourses.map(c => c.id);
   const instructorStudents = new Set(
@@ -127,6 +116,18 @@ export default function CourseDetails() {
   const instructorRating = instructorReviews.length > 0
     ? (instructorReviews.reduce((sum, r) => sum + r.rating, 0) / instructorReviews.length).toFixed(1)
     : null;
+
+  const enrollMutation = useMutation({
+    mutationFn: () => base44.entities.Enrollment.create({
+      course_id: courseId,
+      progress_percent: 0,
+      completed_lessons: [],
+      is_completed: false,
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['enrollment', courseId]);
+    },
+  });
 
   if (loadingCourse) {
     return (

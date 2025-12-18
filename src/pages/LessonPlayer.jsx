@@ -58,6 +58,7 @@ export default function LessonPlayer() {
     enabled: !!courseId && !!user?.email,
   });
 
+  // Calculate all data before any conditional returns or mutations
   const enrollment = enrollments[0];
   const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
   const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
@@ -75,6 +76,7 @@ export default function LessonPlayer() {
 
   const completedCount = enrollment?.completed_lessons?.length || 0;
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
+  const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
   const updateEnrollmentMutation = useMutation({
     mutationFn: (data) => base44.entities.Enrollment.update(enrollment.id, data),
@@ -123,8 +125,6 @@ export default function LessonPlayer() {
     updateEnrollmentMutation.mutate({ notes: newNotes });
     setNoteContent('');
   };
-
-  const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
   const SidebarContent = () => (
     <div className="h-full flex flex-col">

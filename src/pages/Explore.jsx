@@ -40,12 +40,12 @@ export default function Explore() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
-  const { data: allReviews = [] } = useQuery({
+  const { data: allReviews = [], isLoading: reviewsLoading } = useQuery({
     queryKey: ['all-reviews'],
     queryFn: () => base44.entities.Review.list('-created_date', 1000),
   });
 
-  const { data: allEnrollments = [] } = useQuery({
+  const { data: allEnrollments = [], isLoading: enrollmentsLoading } = useQuery({
     queryKey: ['all-enrollments'],
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
   });
