@@ -10,33 +10,20 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export default function CourseProgressWidget({ enrollments, courses }) {
-  const { data: allLessons = [] } = useQuery({
-    queryKey: ['all-lessons'],
-    queryFn: async () => {
-      const courseIds = enrollments.map(e => e.course_id);
-      if (courseIds.length === 0) return [];
-      const lessons = await Promise.all(
-        courseIds.map(id => base44.entities.Lesson.filter({ course_id: id }, 'order', 100))
-      );
-      return lessons.flat();
-    },
-    enabled: enrollments.length > 0,
+  const inProgressEnrollments = enrollments.filter(e => !e.is_completed && (e.progress_percent || 0) > 0);
+  const topCourse = inProgressEnrollments[0];
+  const course = courses.find(c => c.id === topCourse?.course_id);
+
+  const { data: courseLessons = [] } = useQuery({
+    queryKey: ['lessons', course?.id],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
+    enabled: !!course?.id,
   });
 
-  const inProgressEnrollments = enrollments.filter(e => !e.is_completed && (e.progress_percent || 0) > 0);
-  
-  if (inProgressEnrollments.length === 0) return null;
-
-  const topCourse = inProgressEnrollments[0];
-  const course = courses.find(c => c.id === topCourse.course_id);
-  
-  if (!course) return null;
-
-  const courseLessons = allLessons.filter(l => l.course_id === course.id);
   const firstLesson = courseLessons[0];
-  const lessonId = topCourse.current_lesson_id || firstLesson?.id;
-
-  if (!lessonId) return null;
+  const lessonId = topCourse?.current_lesson_id || firstLesson?.id;
+  
+  if (inProgressEnrollments.length === 0 || !course || !lessonId) return null;
 
   const progressPercent = Math.round(topCourse.progress_percent || 0);
   const lessonsLeft = (course.total_lessons || 0) - (topCourse.completed_lessons?.length || 0);
