@@ -93,14 +93,6 @@ export default function CourseDetails() {
     return acc;
   }, {});
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    };
-    loadUser();
-  }, []);
-
   if (loadingCourse) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
