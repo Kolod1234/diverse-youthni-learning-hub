@@ -34,14 +34,40 @@ export default function Home() {
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
   });
 
+  const { data: allReviews = [] } = useQuery({
+    queryKey: ['all-reviews'],
+    queryFn: () => base44.entities.Review.list('-created_date', 1000),
+  });
+
+  // Calculate actual ratings and enrollments for each course
+  const coursesWithActualData = courses.map(course => {
+    const courseReviews = allReviews.filter(r => 
+      r.course_id === course.id && (r.rating_type === 'course' || !r.rating_type)
+    );
+    const actualRating = courseReviews.length > 0
+      ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
+      : null;
+    
+    const enrollmentCount = enrollments.filter(e => e.course_id === course.id).length;
+    
+    return {
+      ...course,
+      rating: actualRating,
+      enrolled_count: enrollmentCount
+    };
+  });
+
   const totalStudents = new Set(enrollments.map(e => e.created_by)).size;
-  const averageRating = courses.length > 0 
-    ? (courses.reduce((sum, c) => sum + (c.rating || 0), 0) / courses.length).toFixed(1)
-    : '4.8';
+  
+  // Calculate average rating from actual reviews only
+  const coursesWithRatings = coursesWithActualData.filter(c => c.rating !== null);
+  const averageRating = coursesWithRatings.length > 0 
+    ? (coursesWithRatings.reduce((sum, c) => sum + c.rating, 0) / coursesWithRatings.length).toFixed(1)
+    : null;
 
-  const featuredCourses = courses.filter(c => c.is_featured).slice(0, 3);
+  const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
 
-  const filteredCourses = courses.filter(course => {
+  const filteredCourses = coursesWithActualData.filter(course => {
     const matchesCategory = category === 'all' || course.category === category;
     const matchesSearch = !searchQuery || 
       course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -126,7 +152,7 @@ export default function Home() {
             {[
               { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400' },
               { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400' },
-              { value: averageRating, label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' },
+              ...(averageRating ? [{ value: averageRating, label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' }] : []),
             ].map((stat, idx) => {
               const Icon = stat.icon;
               return (

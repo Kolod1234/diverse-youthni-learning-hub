@@ -40,7 +40,35 @@ export default function Explore() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
-  const filteredCourses = courses.filter(course => {
+  const { data: allReviews = [] } = useQuery({
+    queryKey: ['all-reviews'],
+    queryFn: () => base44.entities.Review.list('-created_date', 1000),
+  });
+
+  const { data: allEnrollments = [] } = useQuery({
+    queryKey: ['all-enrollments'],
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+  });
+
+  // Calculate actual ratings and enrollments for each course
+  const coursesWithActualData = courses.map(course => {
+    const courseReviews = allReviews.filter(r => 
+      r.course_id === course.id && (r.rating_type === 'course' || !r.rating_type)
+    );
+    const actualRating = courseReviews.length > 0
+      ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
+      : null;
+    
+    const enrollmentCount = allEnrollments.filter(e => e.course_id === course.id).length;
+    
+    return {
+      ...course,
+      rating: actualRating,
+      enrolled_count: enrollmentCount
+    };
+  });
+
+  const filteredCourses = coursesWithActualData.filter(course => {
     const matchesSearch = !searchQuery || 
       course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
       course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
