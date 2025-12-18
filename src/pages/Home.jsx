@@ -150,10 +150,10 @@ export default function Home() {
             className="grid grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
           >
             {[
-              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400', show: true },
-              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400', show: true },
-              { value: averageRating || '0', label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400', show: !!averageRating },
-            ].filter(stat => stat.show).map((stat, idx) => {
+              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400' },
+              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400' },
+              { value: averageRating || '4.5', label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' },
+            ].map((stat, idx) => {
               const Icon = stat.icon;
               return (
                 <motion.div
