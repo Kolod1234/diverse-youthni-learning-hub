@@ -147,30 +147,52 @@ export default function Home() {
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
+            className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
           >
-            {[
-              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400' },
-              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400' },
-              { value: averageRating || '4.5', label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' },
-            ].map((stat, idx) => {
-              const Icon = stat.icon;
-              return (
-                <motion.div
-                  key={stat.label}
-                  initial={{ opacity: 0, scale: 0.8 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  transition={{ duration: 0.5, delay: 0.7 + idx * 0.1 }}
-                  className="text-center"
-                >
-                  <div className={`inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br ${stat.gradient} mb-4 shadow-lg`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">{stat.value}</div>
-                  <div className="text-orange-100 text-base font-medium">{stat.label}</div>
-                </motion.div>
-              );
-            })}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.7 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-blue-400 to-cyan-400 mb-4 shadow-lg">
+                <Users className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
+                {totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0'}
+              </div>
+              <div className="text-orange-100 text-base font-medium">Active Learners</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.8 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-purple-400 to-pink-400 mb-4 shadow-lg">
+                <BookOpen className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
+                {courses.length > 0 ? courses.length : '0'}
+              </div>
+              <div className="text-orange-100 text-base font-medium">Expert Courses</div>
+            </motion.div>
+
+            <motion.div
+              initial={{ opacity: 0, scale: 0.8 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.5, delay: 0.9 }}
+              className="text-center"
+            >
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-yellow-400 to-orange-400 mb-4 shadow-lg">
+                <Star className="w-7 h-7 text-white" />
+              </div>
+              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
+                {averageRating || '4.5'}
+              </div>
+              <div className="text-orange-100 text-base font-medium">Average Rating</div>
+            </motion.div>
           </motion.div>
         </div>
         
