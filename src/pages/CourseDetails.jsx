@@ -86,16 +86,6 @@ export default function CourseDetails() {
     enabled: !!course?.instructor,
   });
 
-  // Calculate instructor stats
-  const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
-  const instructorCourseIds = instructorCourses.map(c => c.id);
-  const instructorStudents = new Set(
-    allEnrollments.filter(e => instructorCourseIds.includes(e.course_id)).map(e => e.created_by)
-  ).size;
-  const instructorRating = instructorReviews.length > 0
-    ? (instructorReviews.reduce((sum, r) => sum + r.rating, 0) / instructorReviews.length).toFixed(1)
-    : course?.rating?.toFixed(1) || '4.5';
-
   const enrollment = enrollments[0];
   const isEnrolled = !!enrollment;
 
