@@ -189,11 +189,13 @@ export default function CourseDetails() {
                     />
                     <span>{course.instructor || 'Expert Instructor'}</span>
                   </div>
-                  <div className="flex items-center gap-1">
-                    <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                    <span className="font-semibold text-white">{course.rating?.toFixed(1) || '4.5'}</span>
-                    <span>({(course.enrolled_count || 0).toLocaleString()} students)</span>
-                  </div>
+                  {actualCourseRating && (
+                    <div className="flex items-center gap-1">
+                      <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                      <span className="font-semibold text-white">{actualCourseRating}</span>
+                      <span>({actualStudentCount.toLocaleString()} students)</span>
+                    </div>
+                  )}
                 </div>
                 
                 <div className="flex flex-wrap gap-4 text-sm">
