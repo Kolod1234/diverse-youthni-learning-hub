@@ -29,14 +29,6 @@ export default function CourseDetails() {
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('id');
 
-  useEffect(() => {
-    const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    };
-    loadUser();
-  }, []);
-
   const { data: course, isLoading: loadingCourse } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
@@ -92,6 +84,14 @@ export default function CourseDetails() {
     acc[section].push(lesson);
     return acc;
   }, {});
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   if (loadingCourse) {
     return (
