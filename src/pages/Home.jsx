@@ -89,12 +89,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-500 via-rose-500 to-pink-500">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600">
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-400/30 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-fuchsia-400/30 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-400/20 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-300/40 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-400/40 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-300/25 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
@@ -133,7 +133,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl hover:shadow-orange-500/50 transition-all duration-300">
+                  <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-white/50 hover:shadow-orange-400/70 transition-all duration-300">
                     Start Learning Now
                     <ArrowRight className="w-6 h-6 ml-2" />
                   </Button>
@@ -155,8 +155,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.7 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-400 to-blue-500 mb-4 shadow-xl">
-                <Users className="w-7 h-7 text-white" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 mb-4 shadow-2xl shadow-cyan-500/50">
+                <Users className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0'}
@@ -170,8 +170,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.8 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-400 to-fuchsia-500 mb-4 shadow-xl">
-                <BookOpen className="w-7 h-7 text-white" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 mb-4 shadow-2xl shadow-violet-500/50">
+                <BookOpen className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {courses.length > 0 ? courses.length : '0'}
@@ -185,8 +185,8 @@ export default function Home() {
               transition={{ duration: 0.5, delay: 0.9 }}
               className="text-center"
             >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-400 to-orange-500 mb-4 shadow-xl">
-                <Star className="w-7 h-7 text-white" />
+              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-4 shadow-2xl shadow-amber-500/50">
+                <Star className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {averageRating || '4.5'}
@@ -286,7 +286,7 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl"
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50"
         >
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
@@ -307,7 +307,7 @@ export default function Home() {
 
             <div className="flex flex-wrap gap-4">
               <Link to={createPageUrl('Programs')}>
-                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl hover:shadow-violet-500/50 hover:scale-105 transition-all">
+                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-white/40 hover:shadow-violet-400/70 hover:scale-105 transition-all">
                   Explore Programmes
                   <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
@@ -336,7 +336,7 @@ export default function Home() {
                 <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
-                <Button className="bg-gradient-to-r from-orange-500 to-rose-500 hover:from-orange-600 hover:to-rose-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all">
+                <Button className="bg-gradient-to-r from-orange-600 to-rose-600 hover:from-orange-700 hover:to-rose-700 text-white rounded-full shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-rose-500/50 transition-all">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -409,7 +409,7 @@ export default function Home() {
             className="text-center mt-12"
           >
             <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-gradient-to-r from-orange-500 via-rose-500 to-pink-500 hover:from-orange-600 hover:via-rose-600 hover:to-pink-600 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl hover:shadow-2xl transition-all hover:scale-105">
+              <Button size="lg" className="bg-gradient-to-r from-orange-600 via-rose-600 to-pink-600 hover:from-orange-700 hover:via-rose-700 hover:to-pink-700 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl shadow-orange-500/50 hover:shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105">
                 View All Courses
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -419,10 +419,10 @@ export default function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-500 via-rose-500 to-pink-500 py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600 py-24">
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-400/30 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-400/30 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-300/40 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-300/40 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -450,7 +450,7 @@ export default function Home() {
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to={createPageUrl('Dashboard')}>
-                <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl hover:shadow-orange-500/50 transition-all duration-300">
+                <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-white/50 hover:shadow-orange-400/70 transition-all duration-300">
                   Get Started for Free
                   <ArrowRight className="w-6 h-6 ml-2" />
                 </Button>

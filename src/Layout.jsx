@@ -130,9 +130,9 @@ export default function Layout({ children, currentPageName }) {
       <style>
         {`
           :root {
-            --color-primary: #FF8C00;
-            --color-primary-light: #FFB366;
-            --color-primary-dark: #CC7000;
+            --color-primary: #EA580C;
+            --color-primary-light: #FB923C;
+            --color-primary-dark: #C2410C;
           }
         `}
       </style>
