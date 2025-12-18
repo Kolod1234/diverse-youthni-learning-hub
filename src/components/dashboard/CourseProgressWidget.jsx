@@ -14,16 +14,16 @@ export default function CourseProgressWidget({ enrollments, courses }) {
   const topCourse = inProgressEnrollments[0];
   const course = courses.find(c => c.id === topCourse?.course_id);
 
-  const { data: courseLessons = [] } = useQuery({
+  const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', course?.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
     enabled: !!course?.id,
   });
 
+  if (inProgressEnrollments.length === 0 || !course) return null;
+
   const firstLesson = courseLessons[0];
   const lessonId = topCourse?.current_lesson_id || firstLesson?.id;
-  
-  if (inProgressEnrollments.length === 0 || !course || !lessonId) return null;
 
   const progressPercent = Math.round(topCourse.progress_percent || 0);
   const lessonsLeft = (course.total_lessons || 0) - (topCourse.completed_lessons?.length || 0);
@@ -56,12 +56,25 @@ export default function CourseProgressWidget({ enrollments, courses }) {
           <Progress value={progressPercent} className="h-3" />
         </div>
 
-        <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}>
-          <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+        {lessonsLoading ? (
+          <Button className="w-full bg-gray-300" disabled>
             <Play className="w-4 h-4 mr-2" />
-            Continue Learning
+            Loading...
           </Button>
-        </Link>
+        ) : lessonId ? (
+          <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}>
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+              <Play className="w-4 h-4 mr-2" />
+              Continue Learning
+            </Button>
+          </Link>
+        ) : (
+          <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+              View Course
+            </Button>
+          </Link>
+        )}
       </Card>
     </motion.div>
   );

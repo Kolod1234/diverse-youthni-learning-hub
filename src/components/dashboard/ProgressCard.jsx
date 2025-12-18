@@ -10,16 +10,16 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export default function ProgressCard({ enrollment, course, index = 0 }) {
-  const { data: courseLessons = [] } = useQuery({
+  const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', course?.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
     enabled: !!course?.id,
   });
 
+  if (!course) return null;
+
   const firstLesson = courseLessons[0];
   const lessonId = enrollment?.current_lesson_id || firstLesson?.id;
-
-  if (!course) return null;
   
   return (
     <motion.div
@@ -76,7 +76,12 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
                 </span>
               </div>
               
-              {lessonId ? (
+              {lessonsLoading ? (
+                <Button size="sm" className="bg-gray-300 rounded-full" disabled>
+                  <Play className="w-4 h-4 mr-1" />
+                  Loading...
+                </Button>
+              ) : lessonId ? (
                 <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}>
                   <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 rounded-full">
                     <Play className="w-4 h-4 mr-1" />
@@ -84,10 +89,11 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
                   </Button>
                 </Link>
               ) : (
-                <Button size="sm" className="bg-gray-400 cursor-not-allowed rounded-full" disabled>
-                  <Play className="w-4 h-4 mr-1" />
-                  No Lessons
-                </Button>
+                <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
+                  <Button size="sm" variant="outline" className="rounded-full">
+                    View Course
+                  </Button>
+                </Link>
               )}
             </div>
           </div>
