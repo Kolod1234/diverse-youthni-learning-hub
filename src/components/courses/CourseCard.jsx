@@ -90,10 +90,12 @@ export default function CourseCard({ course, index = 0 }) {
             </div>
             
             <div className="flex items-center justify-between mt-4">
-              <div className="flex items-center gap-1 text-gray-500 text-sm">
-                <Users className="w-4 h-4" />
-                {(course.enrolled_count || 0).toLocaleString()} students
-              </div>
+              {course.enrolled_count > 0 && (
+                <div className="flex items-center gap-1 text-gray-500 text-sm">
+                  <Users className="w-4 h-4" />
+                  {course.enrolled_count.toLocaleString()} students
+                </div>
+              )}
               <span className="text-lg font-bold text-indigo-600">
                 {course.price === 0 ? 'Free' : `$${course.price}`}
               </span>
