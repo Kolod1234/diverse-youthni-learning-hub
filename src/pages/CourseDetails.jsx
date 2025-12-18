@@ -109,6 +109,15 @@ export default function CourseDetails() {
     return acc;
   }, {});
 
+  // Calculate actual course rating from reviews
+  const courseReviews = reviews.filter(r => r.rating_type === 'course' || !r.rating_type);
+  const actualCourseRating = courseReviews.length > 0
+    ? (courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length).toFixed(1)
+    : null;
+
+  // Calculate actual student count from enrollments
+  const actualStudentCount = allEnrollments.filter(e => e.course_id === courseId).length;
+
   // Calculate real instructor statistics from enrollment data (must be before conditional returns)
   const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
   const instructorCourseIds = instructorCourses.map(c => c.id);
@@ -117,7 +126,7 @@ export default function CourseDetails() {
   ).size;
   const instructorRating = instructorReviews.length > 0
     ? (instructorReviews.reduce((sum, r) => sum + r.rating, 0) / instructorReviews.length).toFixed(1)
-    : course?.rating?.toFixed(1) || '4.5';
+    : null;
 
   if (loadingCourse) {
     return (
