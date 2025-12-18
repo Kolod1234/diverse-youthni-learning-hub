@@ -153,7 +153,7 @@ export default function Layout({ children, currentPageName }) {
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                 alt="Diverse Youth NI"
-                className="h-10 w-auto"
+                className="h-12 lg:h-14 w-auto object-contain"
               />
             </Link>
 
@@ -265,7 +265,7 @@ export default function Layout({ children, currentPageName }) {
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                   alt="Diverse Youth NI"
-                  className="h-10 w-auto"
+                  className="h-12 w-auto object-contain"
                 />
               </Link>
               <p className="text-gray-500 text-sm">
