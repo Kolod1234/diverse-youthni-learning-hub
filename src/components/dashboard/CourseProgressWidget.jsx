@@ -22,11 +22,10 @@ export default function CourseProgressWidget({ enrollments, courses }) {
 
   const firstLesson = courseLessons[0];
   const lessonId = topCourse?.current_lesson_id || firstLesson?.id;
+  const progressPercent = Math.round(topCourse?.progress_percent || 0);
+  const lessonsLeft = (course?.total_lessons || 0) - (topCourse?.completed_lessons?.length || 0);
 
   if (inProgressEnrollments.length === 0 || !course) return null;
-
-  const progressPercent = Math.round(topCourse.progress_percent || 0);
-  const lessonsLeft = (course.total_lessons || 0) - (topCourse.completed_lessons?.length || 0);
 
   return (
     <motion.div
