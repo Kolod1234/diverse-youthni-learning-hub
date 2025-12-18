@@ -175,6 +175,7 @@ export default function LessonPlayer() {
               </div>
             );
           })}
+        </div>
       </div>
       
       <ScrollArea className="flex-1">
