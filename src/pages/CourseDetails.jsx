@@ -518,11 +518,11 @@ export default function CourseDetails() {
               <div className="flex items-center gap-6 text-sm text-gray-600">
                 <span className="flex items-center gap-1">
                   <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                  4.9 Rating
+                  {instructorRating} Rating
                 </span>
                 <span className="flex items-center gap-1">
                   <Users className="w-4 h-4" />
-                  10K+ Students
+                  {instructorStudents.toLocaleString()} Students
                 </span>
               </div>
             </Card>
