@@ -204,6 +204,18 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Search Section */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="max-w-4xl mx-auto">
+          <SearchBar 
+            value={searchQuery} 
+            onChange={setSearchQuery}
+            sortBy={sortBy}
+            onSortChange={setSortBy}
+          />
+        </div>
+      </section>
+
       {/* Image Carousel */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.div
@@ -359,15 +371,6 @@ export default function Home() {
         
         <div className="mb-8">
           <CategoryFilter selected={category} onSelect={setCategory} />
-        </div>
-        
-        <div className="mb-8">
-          <SearchBar 
-            value={searchQuery} 
-            onChange={setSearchQuery}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
         </div>
         
         {isLoading ? (
