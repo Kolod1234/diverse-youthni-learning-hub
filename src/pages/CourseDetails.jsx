@@ -440,13 +440,15 @@ export default function CourseDetails() {
                 <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
                   <div className="flex items-center justify-between mb-6">
                     <h3 className="text-xl font-semibold text-gray-900">Student Reviews</h3>
-                    <div className="text-right">
-                      <div className="flex items-center gap-2 mb-1">
-                        <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                        <span className="text-2xl font-bold text-gray-900">{course.rating?.toFixed(1) || '4.5'}</span>
+                    {actualCourseRating && (
+                      <div className="text-right">
+                        <div className="flex items-center gap-2 mb-1">
+                          <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
+                          <span className="text-2xl font-bold text-gray-900">{actualCourseRating}</span>
+                        </div>
+                        <p className="text-sm text-gray-500">{courseReviews.length} reviews</p>
                       </div>
-                      <p className="text-sm text-gray-500">{reviews.length} reviews</p>
-                    </div>
+                    )}
                   </div>
 
                   {reviews.length > 0 ? (
