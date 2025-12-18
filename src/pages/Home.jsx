@@ -143,22 +143,17 @@ export default function Home() {
           </div>
           
           {/* Enhanced Stats */}
-          {(() => {
-            const stats = [
-              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400' },
-              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400' },
-            ];
-            if (averageRating) {
-              stats.push({ value: averageRating, label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400' });
-            }
-            return (
-              <motion.div 
-                initial={{ opacity: 0, y: 50 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.8, delay: 0.6 }}
-                className={`grid ${stats.length === 3 ? 'grid-cols-3' : 'grid-cols-2'} gap-8 mt-24 max-w-4xl mx-auto`}
-              >
-                {stats.map((stat, idx) => {
+          <motion.div 
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.8, delay: 0.6 }}
+            className="grid grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
+          >
+            {[
+              { value: totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0', label: 'Active Learners', icon: Users, gradient: 'from-blue-400 to-cyan-400', show: true },
+              { value: courses.length > 0 ? `${courses.length}` : '0', label: 'Expert Courses', icon: BookOpen, gradient: 'from-purple-400 to-pink-400', show: true },
+              { value: averageRating || '0', label: 'Average Rating', icon: Star, gradient: 'from-yellow-400 to-orange-400', show: !!averageRating },
+            ].filter(stat => stat.show).map((stat, idx) => {
               const Icon = stat.icon;
               return (
                 <motion.div
@@ -175,10 +170,8 @@ export default function Home() {
                   <div className="text-orange-100 text-base font-medium">{stat.label}</div>
                 </motion.div>
               );
-                })}
-              </motion.div>
-            );
-          })()}
+            })}
+          </motion.div>
         </div>
         
         {/* Modern wave decoration */}
