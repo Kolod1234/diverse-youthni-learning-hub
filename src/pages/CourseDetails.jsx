@@ -600,6 +600,37 @@ export default function CourseDetails() {
                 </div>
               </div>
             </Card>
+
+            {/* GCSE Syllabus */}
+            {course.syllabus_url && (
+              <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-amber-50 to-orange-50">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
+                    <BookOpen className="w-5 h-5 text-amber-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">GCSE Syllabus</h3>
+                    {course.exam_board && (
+                      <p className="text-xs text-gray-500">{course.exam_board}</p>
+                    )}
+                  </div>
+                </div>
+                <a
+                  href={course.syllabus_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block"
+                >
+                  <Button variant="outline" className="w-full justify-between hover:bg-white">
+                    <span className="flex items-center gap-2">
+                      <Download className="w-4 h-4" />
+                      Download Syllabus PDF
+                    </span>
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </a>
+              </Card>
+            )}
           </div>
         </div>
       </section>
