@@ -6,9 +6,22 @@ import { Progress } from '@/components/ui/progress';
 import { Button } from '@/components/ui/button';
 import { Play, Clock, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { useQuery } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
 
 export default function ProgressCard({ enrollment, course, index = 0 }) {
+  const { data: courseLessons = [] } = useQuery({
+    queryKey: ['lessons', course?.id],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
+    enabled: !!course?.id,
+  });
+
   if (!course) return null;
+  
+  const firstLesson = courseLessons[0];
+  const lessonId = enrollment.current_lesson_id || firstLesson?.id;
+  
+  if (!lessonId) return null;
   
   return (
     <motion.div
@@ -65,7 +78,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
                 </span>
               </div>
               
-              <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${enrollment.current_lesson_id || ''}`}>
+              <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}>
                 <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 rounded-full">
                   <Play className="w-4 h-4 mr-1" />
                   {enrollment.is_completed ? 'Review' : 'Continue'}
