@@ -453,7 +453,7 @@ export default function Home() {
                 </Button>
               </Link>
               <Link to={createPageUrl('Explore')}>
-                <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white/10 rounded-full px-10 h-16 text-lg font-bold transition-all duration-300">
+                <Button size="lg" variant="outline" className="border-2 border-white bg-white/5 text-white hover:bg-white/20 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
                   Browse Courses
                   <TrendingUp className="w-5 h-5 ml-2" />
                 </Button>
