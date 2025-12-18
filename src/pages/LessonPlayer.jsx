@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Play, Pause, ChevronLeft, ChevronRight, CheckCircle, 
   BookOpen, Clock, FileText, Download, X, Menu, Lock,
-  StickyNote, Trash2, Save
+  StickyNote, Trash2, Save, Brain, MessageCircle, Code
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -56,6 +56,18 @@ export default function LessonPlayer() {
     queryKey: ['enrollment', courseId, user?.email],
     queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
     enabled: !!courseId && !!user?.email,
+  });
+
+  const { data: lessonQuizzes = [] } = useQuery({
+    queryKey: ['lesson-quizzes', courseId, lessonId],
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, lesson_id: lessonId }),
+    enabled: !!courseId && !!lessonId,
+  });
+
+  const { data: lessonDiscussions = [] } = useQuery({
+    queryKey: ['lesson-discussions', lessonId],
+    queryFn: () => base44.entities.Discussion.filter({ lesson_id: lessonId }),
+    enabled: !!lessonId,
   });
 
   // Calculate all data before any conditional returns or mutations
@@ -141,6 +153,28 @@ export default function LessonPlayer() {
           </div>
           <Progress value={progressPercent} className="h-2" />
         </div>
+        
+        {/* Module Progress */}
+        <div className="mt-4 pt-4 border-t border-gray-100">
+          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+            Section Progress
+          </h4>
+          {Object.entries(sections).map(([sectionName, sectionLessons]) => {
+            const sectionCompleted = sectionLessons.filter(l => 
+              enrollment?.completed_lessons?.includes(l.id)
+            ).length;
+            const sectionProgress = Math.round((sectionCompleted / sectionLessons.length) * 100);
+            
+            return (
+              <div key={sectionName} className="mb-3">
+                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                  <span className="truncate">{sectionName}</span>
+                  <span className="shrink-0 ml-2">{sectionProgress}%</span>
+                </div>
+                <Progress value={sectionProgress} className="h-1" />
+              </div>
+            );
+          })}
       </div>
       
       <ScrollArea className="flex-1">
@@ -354,6 +388,52 @@ export default function LessonPlayer() {
                 </div>
               )}
             </Card>
+
+            {/* Interactive Elements */}
+            <div className="grid md:grid-cols-2 gap-6 mb-6">
+              {/* Quizzes */}
+              {lessonQuizzes.length > 0 && (
+                <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50">
+                  <div className="flex items-center gap-3 mb-4">
+                    <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                      <Brain className="w-5 h-5 text-violet-600" />
+                    </div>
+                    <div>
+                      <h3 className="font-semibold text-gray-900">Practice Quiz</h3>
+                      <p className="text-sm text-gray-500">Test your knowledge</p>
+                    </div>
+                  </div>
+                  <div className="space-y-2">
+                    {lessonQuizzes.map((quiz) => (
+                      <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
+                        <Button variant="outline" className="w-full justify-between hover:bg-white">
+                          <span>{quiz.title}</span>
+                          <span className="text-xs text-gray-500">{quiz.questions?.length} questions</span>
+                        </Button>
+                      </Link>
+                    ))}
+                  </div>
+                </Card>
+              )}
+
+              {/* Discussion */}
+              <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-cyan-50">
+                <div className="flex items-center gap-3 mb-4">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold text-gray-900">Discussion</h3>
+                    <p className="text-sm text-gray-500">{lessonDiscussions.length} comments</p>
+                  </div>
+                </div>
+                <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}&lessonId=${lessonId}`}>
+                  <Button variant="outline" className="w-full hover:bg-white">
+                    Join Discussion
+                  </Button>
+                </Link>
+              </Card>
+            </div>
 
             {/* Navigation */}
             <div className="flex items-center justify-between">

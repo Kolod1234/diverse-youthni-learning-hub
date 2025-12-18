@@ -10,8 +10,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Play, Clock, Users, Star, BookOpen, Award, CheckCircle, 
-  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare
+  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare, Brain
 } from 'lucide-react';
+import ModuleProgress from '@/components/interactive/ModuleProgress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
@@ -339,42 +340,53 @@ export default function CourseDetails() {
                         </AccordionTrigger>
                         <AccordionContent className="pb-0">
                           <div className="divide-y divide-gray-50">
-                            {sectionLessons.map((lesson, index) => {
-                              const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
-                              const canAccess = isEnrolled || lesson.is_preview;
-                              
-                              return (
-                                <div
-                                  key={lesson.id}
-                                  className={`px-6 py-3 flex items-center justify-between ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
-                                >
-                                  <div className="flex items-center gap-3">
-                                    {isCompleted ? (
-                                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center">
-                                        <CheckCircle className="w-4 h-4 text-emerald-600" />
-                                      </div>
-                                    ) : canAccess ? (
-                                      <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <Play className="w-3 h-3 text-indigo-600 ml-0.5" />
-                                      </div>
-                                    ) : (
-                                      <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center">
-                                        <Lock className="w-3 h-3 text-gray-400" />
-                                      </div>
-                                    )}
-                                    <div>
-                                      <p className="font-medium text-gray-900 text-sm">{lesson.title}</p>
-                                      {lesson.is_preview && !isEnrolled && (
-                                        <Badge variant="outline" className="mt-1 text-xs">Preview</Badge>
-                                      )}
-                                    </div>
-                                  </div>
-                                  <span className="text-sm text-gray-500">
-                                    {lesson.duration_minutes || 10} min
-                                  </span>
-                                </div>
-                              );
-                            })}
+                           {sectionLessons.map((lesson, index) => {
+                             const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
+                             const canAccess = isEnrolled || lesson.is_preview;
+                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
+
+                             return (
+                               <div
+                                 key={lesson.id}
+                                 className={`px-6 py-3 ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
+                               >
+                                 <div className="flex items-center justify-between">
+                                   <div className="flex items-center gap-3">
+                                     {isCompleted ? (
+                                       <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+                                         <CheckCircle className="w-4 h-4 text-emerald-600" />
+                                       </div>
+                                     ) : canAccess ? (
+                                       <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                                         <Play className="w-3 h-3 text-indigo-600 ml-0.5" />
+                                       </div>
+                                     ) : (
+                                       <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
+                                         <Lock className="w-3 h-3 text-gray-400" />
+                                       </div>
+                                     )}
+                                     <div className="flex-1">
+                                       <p className="font-medium text-gray-900 text-sm">{lesson.title}</p>
+                                       <div className="flex items-center gap-2 mt-1">
+                                         {lesson.is_preview && !isEnrolled && (
+                                           <Badge variant="outline" className="text-xs">Preview</Badge>
+                                         )}
+                                         {lessonQuizCount > 0 && (
+                                           <span className="inline-flex items-center gap-1 text-xs text-violet-600">
+                                             <Brain className="w-3 h-3" />
+                                             {lessonQuizCount} quiz{lessonQuizCount > 1 ? 'zes' : ''}
+                                           </span>
+                                         )}
+                                       </div>
+                                     </div>
+                                   </div>
+                                   <span className="text-sm text-gray-500 shrink-0 ml-2">
+                                     {lesson.duration_minutes || 10} min
+                                   </span>
+                                 </div>
+                               </div>
+                             );
+                           })}
                           </div>
                         </AccordionContent>
                       </AccordionItem>
@@ -515,6 +527,15 @@ export default function CourseDetails() {
 
           {/* Sidebar */}
           <div className="space-y-6">
+            {/* Module Progress */}
+            {isEnrolled && (
+              <ModuleProgress 
+                sections={sections}
+                completedLessons={enrollment?.completed_lessons || []}
+                isEnrolled={isEnrolled}
+              />
+            )}
+
             {/* Instructor Card */}
             <Card className="p-6 border-0 shadow-sm">
               <h3 className="font-semibold text-gray-900 mb-4">Your Instructor</h3>
