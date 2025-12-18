@@ -10,15 +10,16 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 
 export default function ProgressCard({ enrollment, course, index = 0 }) {
-  if (!course) return null;
-
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
-    queryKey: ['lessons', course.id],
+    queryKey: ['lessons', course?.id],
     queryFn: () => base44.entities.Lesson.filter({ course_id: course.id }, 'order', 100),
+    enabled: !!course?.id,
   });
 
   const firstLesson = courseLessons[0];
   const lessonId = enrollment?.current_lesson_id || firstLesson?.id;
+
+  if (!course) return null;
   
   return (
     <motion.div
