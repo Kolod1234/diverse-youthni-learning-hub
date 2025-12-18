@@ -214,19 +214,17 @@ export default function LessonPlayer() {
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Desktop Sidebar */}
-      <AnimatePresence>
-        {sidebarOpen && (
-          <motion.aside
-            initial={{ width: 0, opacity: 0 }}
-            animate={{ width: 320, opacity: 1 }}
-            exit={{ width: 0, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden"
-          >
-            <SidebarContent />
-          </motion.aside>
-        )}
-      </AnimatePresence>
+      {sidebarOpen && (
+        <motion.aside
+          initial={{ width: 0, opacity: 0 }}
+          animate={{ width: 320, opacity: 1 }}
+          exit={{ width: 0, opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden"
+        >
+          <SidebarContent />
+        </motion.aside>
+      )}
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
@@ -389,56 +387,54 @@ export default function LessonPlayer() {
           </div>
 
           {/* Notes Panel */}
-          <AnimatePresence>
-            {showNotes && (
-              <motion.aside
-                initial={{ width: 0, opacity: 0 }}
-                animate={{ width: 320, opacity: 1 }}
-                exit={{ width: 0, opacity: 0 }}
-                transition={{ duration: 0.3 }}
-                className="hidden lg:block bg-white border-l border-gray-200 overflow-hidden"
-              >
-                <div className="h-full flex flex-col p-4">
-                  <h3 className="font-semibold text-gray-900 mb-4">Your Notes</h3>
-                  
-                  <div className="mb-4">
-                    <Textarea
-                      value={noteContent}
-                      onChange={(e) => setNoteContent(e.target.value)}
-                      placeholder="Write a note about this lesson..."
-                      className="min-h-24 resize-none"
-                    />
-                    <Button 
-                      onClick={saveNote}
-                      disabled={!noteContent.trim() || updateEnrollmentMutation.isPending}
-                      className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save Note
-                    </Button>
-                  </div>
-                  
-                  <ScrollArea className="flex-1">
-                    <div className="space-y-3">
-                      {currentLessonNotes.map((note, i) => (
-                        <Card key={i} className="p-3 bg-amber-50 border-amber-200">
-                          <p className="text-sm text-gray-700">{note.content}</p>
-                          <p className="text-xs text-gray-500 mt-2">
-                            {new Date(note.timestamp).toLocaleDateString()}
-                          </p>
-                        </Card>
-                      ))}
-                      {currentLessonNotes.length === 0 && (
-                        <p className="text-sm text-gray-500 text-center py-8">
-                          No notes for this lesson yet
-                        </p>
-                      )}
-                    </div>
-                  </ScrollArea>
+          {showNotes && (
+            <motion.aside
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 320, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              className="hidden lg:block bg-white border-l border-gray-200 overflow-hidden"
+            >
+              <div className="h-full flex flex-col p-4">
+                <h3 className="font-semibold text-gray-900 mb-4">Your Notes</h3>
+                
+                <div className="mb-4">
+                  <Textarea
+                    value={noteContent}
+                    onChange={(e) => setNoteContent(e.target.value)}
+                    placeholder="Write a note about this lesson..."
+                    className="min-h-24 resize-none"
+                  />
+                  <Button 
+                    onClick={saveNote}
+                    disabled={!noteContent.trim() || updateEnrollmentMutation.isPending}
+                    className="w-full mt-2 bg-indigo-600 hover:bg-indigo-700"
+                  >
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Note
+                  </Button>
                 </div>
-              </motion.aside>
-            )}
-          </AnimatePresence>
+                
+                <ScrollArea className="flex-1">
+                  <div className="space-y-3">
+                    {currentLessonNotes.map((note, i) => (
+                      <Card key={i} className="p-3 bg-amber-50 border-amber-200">
+                        <p className="text-sm text-gray-700">{note.content}</p>
+                        <p className="text-xs text-gray-500 mt-2">
+                          {new Date(note.timestamp).toLocaleDateString()}
+                        </p>
+                      </Card>
+                    ))}
+                    {currentLessonNotes.length === 0 && (
+                      <p className="text-sm text-gray-500 text-center py-8">
+                        No notes for this lesson yet
+                      </p>
+                    )}
+                  </div>
+                </ScrollArea>
+              </div>
+            </motion.aside>
+          )}
         </div>
       </div>
 
