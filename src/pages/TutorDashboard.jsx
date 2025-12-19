@@ -279,16 +279,56 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
   return (
     <div className="space-y-6">
       <AICourseAssistant
-        onApplySuggestion={(suggestion) => {
+        onApplySuggestion={async (suggestion) => {
           if (suggestion.course_title) {
-            setCourseForm({
-              ...courseForm,
-              title: suggestion.course_title,
-              description: suggestion.course_description,
-              duration_hours: suggestion.duration_hours,
-              level: suggestion.level,
-            });
-            setShowCreateCourse(true);
+            if (suggestion.createLessons && suggestion.units) {
+              // Create course with all lessons
+              try {
+                const newCourse = await createCourseMutation.mutateAsync({
+                  title: suggestion.course_title,
+                  description: suggestion.course_description,
+                  duration_hours: suggestion.duration_hours,
+                  level: suggestion.level,
+                  instructor: user?.full_name || 'Instructor',
+                  instructor_avatar: user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'Instructor')}&background=6366f1&color=fff`,
+                  rating: 4.5,
+                  enrolled_count: 0,
+                  price: 0,
+                  total_lessons: suggestion.units.reduce((sum, unit) => sum + unit.lessons.length, 0),
+                });
+
+                // Create all lessons
+                let order = 0;
+                for (const unit of suggestion.units) {
+                  for (const lesson of unit.lessons) {
+                    await base44.entities.Lesson.create({
+                      course_id: newCourse.id,
+                      title: lesson.title,
+                      description: lesson.description,
+                      duration_minutes: lesson.duration_minutes || 15,
+                      order: order++,
+                      section: unit.unit_name,
+                      is_preview: order <= 2,
+                    });
+                  }
+                }
+
+                toast.success('Course created with all lessons!');
+                queryClient.invalidateQueries(['tutor-courses']);
+              } catch (error) {
+                toast.error('Failed to create course');
+              }
+            } else {
+              // Just fill the form
+              setCourseForm({
+                ...courseForm,
+                title: suggestion.course_title,
+                description: suggestion.course_description,
+                duration_hours: suggestion.duration_hours,
+                level: suggestion.level,
+              });
+              setShowCreateCourse(true);
+            }
           }
         }}
       />

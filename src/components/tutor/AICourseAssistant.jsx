@@ -328,12 +328,20 @@ Format as JSON with questions, 4 options each, correct answer index (0-3), and e
                     </Card>
                   ))}
 
-                  <Button
-                    onClick={() => onApplySuggestion?.(suggestions.outline)}
-                    className="w-full bg-purple-600 hover:bg-purple-700"
-                  >
-                    Apply Course Structure
-                  </Button>
+                  <div className="flex gap-3">
+                    <Button
+                      onClick={() => onApplySuggestion?.(suggestions.outline)}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    >
+                      Apply to Course Form
+                    </Button>
+                    <Button
+                      onClick={() => onApplySuggestion?.({ ...suggestions.outline, createLessons: true })}
+                      className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      Create Course with Lessons
+                    </Button>
+                  </div>
                 </div>
               </TabsContent>
             )}
