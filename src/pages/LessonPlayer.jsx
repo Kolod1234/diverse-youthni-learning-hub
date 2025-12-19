@@ -17,6 +17,100 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 
+const SidebarContent = ({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
+  <div className="h-full flex flex-col">
+    <div className="p-4 border-b border-gray-100">
+      <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+        <h2 className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-2">
+          {course?.title}
+        </h2>
+      </Link>
+      <div className="mt-4">
+        <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
+          <span>{completedCount}/{lessons.length} lessons</span>
+          <span>{Math.round(progressPercent)}%</span>
+        </div>
+        <Progress value={progressPercent} className="h-2" />
+      </div>
+      
+      {/* Module Progress */}
+      <div className="mt-4 pt-4 border-t border-gray-100">
+        <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+          Section Progress
+        </h4>
+        {Object.entries(sections).map(([sectionName, sectionLessons]) => {
+          const sectionCompleted = sectionLessons.filter(l => 
+            enrollment?.completed_lessons?.includes(l.id)
+          ).length;
+          const sectionProgress = Math.round((sectionCompleted / sectionLessons.length) * 100);
+          
+          return (
+            <div key={sectionName} className="mb-3">
+              <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
+                <span className="truncate">{sectionName}</span>
+                <span className="shrink-0 ml-2">{sectionProgress}%</span>
+              </div>
+              <Progress value={sectionProgress} className="h-1" />
+            </div>
+          );
+        })}
+      </div>
+    </div>
+    
+    <ScrollArea className="flex-1">
+      <div className="p-4">
+        {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+          <div key={sectionName} className="mb-6">
+            <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
+              {sectionName}
+            </h3>
+            <div className="space-y-1">
+              {sectionLessons.map((lesson) => {
+                const isActive = lesson.id === currentLesson?.id;
+                const isLessonCompleted = enrollment?.completed_lessons?.includes(lesson.id);
+                
+                return (
+                  <Link
+                    key={lesson.id}
+                    to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                      isActive 
+                        ? 'bg-indigo-50 text-indigo-600' 
+                        : 'hover:bg-gray-50 text-gray-700'
+                    }`}
+                  >
+                    {isLessonCompleted ? (
+                      <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
+                        <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      </div>
+                    ) : isActive ? (
+                      <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
+                        <Play className="w-3 h-3 text-white ml-0.5" />
+                      </div>
+                    ) : (
+                      <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
+                        <Play className="w-3 h-3 text-gray-400 ml-0.5" />
+                      </div>
+                    )}
+                    <div className="flex-1 min-w-0">
+                      <p className={`text-sm font-medium truncate ${isActive ? 'text-indigo-600' : ''}`}>
+                        {lesson.title}
+                      </p>
+                      <p className="text-xs text-gray-500 mt-0.5">
+                        {lesson.duration_minutes || 10} min
+                      </p>
+                    </div>
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+    </ScrollArea>
+  </div>
+);
+
 export default function LessonPlayer() {
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
@@ -138,100 +232,6 @@ export default function LessonPlayer() {
     setNoteContent('');
   };
 
-  const SidebarContent = () => (
-    <div className="h-full flex flex-col">
-      <div className="p-4 border-b border-gray-100">
-        <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-          <h2 className="font-semibold text-gray-900 hover:text-indigo-600 transition-colors line-clamp-2">
-            {course?.title}
-          </h2>
-        </Link>
-        <div className="mt-4">
-          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-            <span>{completedCount}/{lessons.length} lessons</span>
-            <span>{Math.round(progressPercent)}%</span>
-          </div>
-          <Progress value={progressPercent} className="h-2" />
-        </div>
-        
-        {/* Module Progress */}
-        <div className="mt-4 pt-4 border-t border-gray-100">
-          <h4 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-            Section Progress
-          </h4>
-          {Object.entries(sections).map(([sectionName, sectionLessons]) => {
-            const sectionCompleted = sectionLessons.filter(l => 
-              enrollment?.completed_lessons?.includes(l.id)
-            ).length;
-            const sectionProgress = Math.round((sectionCompleted / sectionLessons.length) * 100);
-            
-            return (
-              <div key={sectionName} className="mb-3">
-                <div className="flex items-center justify-between text-xs text-gray-600 mb-1">
-                  <span className="truncate">{sectionName}</span>
-                  <span className="shrink-0 ml-2">{sectionProgress}%</span>
-                </div>
-                <Progress value={sectionProgress} className="h-1" />
-              </div>
-            );
-          })}
-        </div>
-      </div>
-      
-      <ScrollArea className="flex-1">
-        <div className="p-4">
-          {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-            <div key={sectionName} className="mb-6">
-              <h3 className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">
-                {sectionName}
-              </h3>
-              <div className="space-y-1">
-                {sectionLessons.map((lesson) => {
-                  const isActive = lesson.id === currentLesson?.id;
-                  const isLessonCompleted = enrollment?.completed_lessons?.includes(lesson.id);
-                  
-                  return (
-                    <Link
-                      key={lesson.id}
-                      to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`}
-                      className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
-                        isActive 
-                          ? 'bg-indigo-50 text-indigo-600' 
-                          : 'hover:bg-gray-50 text-gray-700'
-                      }`}
-                    >
-                      {isLessonCompleted ? (
-                        <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-                          <CheckCircle className="w-4 h-4 text-emerald-600" />
-                        </div>
-                      ) : isActive ? (
-                        <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
-                          <Play className="w-3 h-3 text-white ml-0.5" />
-                        </div>
-                      ) : (
-                        <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                          <Play className="w-3 h-3 text-gray-400 ml-0.5" />
-                        </div>
-                      )}
-                      <div className="flex-1 min-w-0">
-                        <p className={`text-sm font-medium truncate ${isActive ? 'text-indigo-600' : ''}`}>
-                          {lesson.title}
-                        </p>
-                        <p className="text-xs text-gray-500 mt-0.5">
-                          {lesson.duration_minutes || 10} min
-                        </p>
-                      </div>
-                    </Link>
-                  );
-                })}
-              </div>
-            </div>
-          ))}
-        </div>
-      </ScrollArea>
-    </div>
-  );
-
   if (!currentLesson) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -257,7 +257,16 @@ export default function LessonPlayer() {
           transition={{ duration: 0.3 }}
           className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden"
         >
-          <SidebarContent />
+          <SidebarContent 
+            course={course}
+            completedCount={completedCount}
+            lessons={lessons}
+            progressPercent={progressPercent}
+            sections={sections}
+            enrollment={enrollment}
+            currentLesson={currentLesson}
+            courseId={courseId}
+          />
         </motion.aside>
       )}
 
@@ -274,7 +283,16 @@ export default function LessonPlayer() {
                 </Button>
               </SheetTrigger>
               <SheetContent side="left" className="w-80 p-0">
-                <SidebarContent />
+                <SidebarContent 
+                  course={course}
+                  completedCount={completedCount}
+                  lessons={lessons}
+                  progressPercent={progressPercent}
+                  sections={sections}
+                  enrollment={enrollment}
+                  currentLesson={currentLesson}
+                  courseId={courseId}
+                />
               </SheetContent>
             </Sheet>
             
