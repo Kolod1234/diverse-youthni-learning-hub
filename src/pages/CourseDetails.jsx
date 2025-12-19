@@ -254,12 +254,18 @@ export default function CourseDetails() {
                   </div>
                   
                   {isEnrolled ? (
-                    <Link to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${enrollment.current_lesson_id || lessons[0]?.id || ''}`}>
-                      <Button className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl">
-                        <Play className="w-5 h-5 mr-2" />
-                        Continue Learning
-                      </Button>
-                    </Link>
+                    <Button 
+                      className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl"
+                      onClick={() => {
+                        const targetLessonId = enrollment.current_lesson_id || lessons[0]?.id;
+                        if (targetLessonId) {
+                          window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${targetLessonId}`;
+                        }
+                      }}
+                    >
+                      <Play className="w-5 h-5 mr-2" />
+                      Continue Learning
+                    </Button>
                   ) : (
                     <Button 
                       className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl"

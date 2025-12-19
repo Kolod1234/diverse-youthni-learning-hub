@@ -195,15 +195,8 @@ export default function LessonPlayer() {
     [lessons, currentLesson]
   );
   
-  const prevLesson = useMemo(() => 
-    currentIndex > 0 ? lessons[currentIndex - 1] : null,
-    [currentIndex, lessons]
-  );
-  
-  const nextLesson = useMemo(() => 
-    currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null,
-    [currentIndex, lessons]
-  );
+  const prevLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
+  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   
   const isCompleted = useMemo(() => 
     enrollment?.completed_lessons?.includes(currentLesson?.id),
@@ -228,7 +221,7 @@ export default function LessonPlayer() {
   );
 
   // STABLE EVENT HANDLERS
-  const markComplete = useCallback(async () => {
+  const markComplete = async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
     const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
@@ -247,17 +240,15 @@ export default function LessonPlayer() {
     });
 
     setShowRatingDialog(true);
-  }, [enrollment, currentLesson, isCompleted, lessons.length, nextLesson, updateEnrollmentMutation]);
+  };
 
-  const handleRatingComplete = useCallback(() => {
+  const handleRatingComplete = () => {
     if (nextLesson) {
-      setTimeout(() => {
-        window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
-      }, 500);
+      window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
     }
-  }, [nextLesson, courseId]);
+  };
 
-  const saveNote = useCallback(() => {
+  const saveNote = () => {
     if (!enrollment?.id || !currentLesson?.id || !noteContent.trim()) return;
     
     const newNotes = [...(enrollment.notes || []), {
@@ -271,7 +262,7 @@ export default function LessonPlayer() {
       data: { notes: newNotes }
     });
     setNoteContent('');
-  }, [enrollment, currentLesson, noteContent, updateEnrollmentMutation]);
+  };
 
   // RENDER - NO EARLY RETURNS TO MAINTAIN HOOK ORDER
   const showEmptyState = !currentLesson;
