@@ -273,27 +273,20 @@ export default function LessonPlayer() {
     setNoteContent('');
   }, [enrollment, currentLesson, noteContent, updateEnrollmentMutation]);
 
-  // CONDITIONAL RENDERING - AFTER ALL HOOKS
-  if (!currentLesson) {
+  // RENDER - NO EARLY RETURNS TO MAINTAIN HOOK ORDER
+  const showEmptyState = !currentLesson;
+
+  if (showEmptyState) {
     return (
-      <>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-          <div className="text-center text-white">
-            <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
-            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="outline">Back to Course</Button>
-            </Link>
-          </div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
+          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+            <Button variant="outline">Back to Course</Button>
+          </Link>
         </div>
-        <LessonRatingDialog
-          open={false}
-          onOpenChange={() => {}}
-          lesson={null}
-          course={null}
-          onComplete={() => {}}
-        />
-      </>
+      </div>
     );
   }
 
