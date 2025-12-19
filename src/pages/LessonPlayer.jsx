@@ -175,12 +175,12 @@ export default function LessonPlayer() {
 
   // MUTATION HOOK - UNCONDITIONAL
   const updateEnrollmentMutation = useMutation({
-    mutationFn: useCallback(({ enrollmentId, data }) => {
+    mutationFn: ({ enrollmentId, data }) => {
       return base44.entities.Enrollment.update(enrollmentId, data);
-    }, []),
-    onSuccess: useCallback(() => {
+    },
+    onSuccess: () => {
       queryClient.invalidateQueries(['enrollment', courseId]);
-    }, [queryClient, courseId]),
+    },
   });
 
   // DERIVED STATE - ALWAYS COMPUTED
