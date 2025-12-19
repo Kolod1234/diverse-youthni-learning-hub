@@ -185,7 +185,10 @@ export default function LessonPlayer() {
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
   const updateEnrollmentMutation = useMutation({
-    mutationFn: (data) => base44.entities.Enrollment.update(enrollment.id, data),
+    mutationFn: (data) => {
+      if (!enrollment?.id) throw new Error('No enrollment found');
+      return base44.entities.Enrollment.update(enrollment.id, data);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['enrollment', courseId]);
     },
