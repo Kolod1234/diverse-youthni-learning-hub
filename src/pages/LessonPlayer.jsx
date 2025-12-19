@@ -71,10 +71,10 @@ const SidebarContent = React.memo(({ course, completedCount, lessons, progressPe
                 const isLessonCompleted = enrollment?.completed_lessons?.includes(lesson.id);
                 
                 return (
-                  <Link
+                  <button
                     key={lesson.id}
-                    to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`}
-                    className={`flex items-center gap-3 p-3 rounded-xl transition-all ${
+                    onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`}
+                    className={`flex items-center gap-3 p-3 rounded-xl transition-all w-full text-left ${
                       isActive 
                         ? 'bg-indigo-50 text-indigo-600' 
                         : 'hover:bg-gray-50 text-gray-700'
@@ -101,7 +101,7 @@ const SidebarContent = React.memo(({ course, completedCount, lessons, progressPe
                         {lesson.duration_minutes || 10} min
                       </p>
                     </div>
-                  </Link>
+                  </button>
                 );
               })}
             </div>
@@ -503,23 +503,26 @@ export default function LessonPlayer() {
             {/* Navigation */}
             <div className="flex items-center justify-between">
               {prevLesson ? (
-                <Link to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${prevLesson.id}`}>
-                  <Button variant="outline" className="gap-2">
-                    <ChevronLeft className="w-4 h-4" />
-                    Previous
-                  </Button>
-                </Link>
+                <Button 
+                  variant="outline" 
+                  className="gap-2"
+                  onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${prevLesson.id}`}
+                >
+                  <ChevronLeft className="w-4 h-4" />
+                  Previous
+                </Button>
               ) : (
                 <div />
               )}
               
               {nextLesson ? (
-                <Link to={createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700 gap-2">
-                    Next Lesson
-                    <ChevronRight className="w-4 h-4" />
-                  </Button>
-                </Link>
+                <Button 
+                  className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                  onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
+                >
+                  Next Lesson
+                  <ChevronRight className="w-4 h-4" />
+                </Button>
               ) : (
                 <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
                   <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
