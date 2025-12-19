@@ -112,17 +112,20 @@ const SidebarContent = ({ course, completedCount, lessons, progressPercent, sect
 );
 
 export default function LessonPlayer() {
-  const [user, setUser] = useState(null);
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [noteContent, setNoteContent] = useState('');
-  const [showNotes, setShowNotes] = useState(false);
-  const [showRatingDialog, setShowRatingDialog] = useState(false);
   const queryClient = useQueryClient();
   
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('courseId');
   const lessonId = urlParams.get('lessonId');
 
+  // ALL STATE HOOKS FIRST - ALWAYS CALLED
+  const [user, setUser] = useState(null);
+  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [noteContent, setNoteContent] = useState('');
+  const [showNotes, setShowNotes] = useState(false);
+  const [showRatingDialog, setShowRatingDialog] = useState(false);
+
+  // ALL EFFECT HOOKS - ALWAYS CALLED
   useEffect(() => {
     const loadUser = async () => {
       const userData = await base44.auth.me();
@@ -131,6 +134,7 @@ export default function LessonPlayer() {
     loadUser();
   }, []);
 
+  // ALL DATA FETCHING HOOKS - ALWAYS CALLED
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
@@ -164,7 +168,17 @@ export default function LessonPlayer() {
     enabled: !!lessonId,
   });
 
-  // Calculate all data before any conditional returns or mutations
+  // ALL MUTATION HOOKS - ALWAYS CALLED
+  const updateEnrollmentMutation = useMutation({
+    mutationFn: ({ enrollmentId, data }) => {
+      return base44.entities.Enrollment.update(enrollmentId, data);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['enrollment', courseId]);
+    },
+  });
+
+  // CALCULATE DERIVED STATE - ALWAYS DONE
   const enrollment = enrollments[0];
   const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
   const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
@@ -172,7 +186,6 @@ export default function LessonPlayer() {
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
 
-  // Group lessons by section
   const sections = lessons.reduce((acc, lesson) => {
     const section = lesson.section || 'Getting Started';
     if (!acc[section]) acc[section] = [];
@@ -184,15 +197,7 @@ export default function LessonPlayer() {
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
-  const updateEnrollmentMutation = useMutation({
-    mutationFn: ({ enrollmentId, data }) => {
-      return base44.entities.Enrollment.update(enrollmentId, data);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['enrollment', courseId]);
-    },
-  });
-
+  // EVENT HANDLERS
   const markComplete = async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
@@ -211,12 +216,10 @@ export default function LessonPlayer() {
       }
     });
 
-    // Show rating dialog after marking complete
     setShowRatingDialog(true);
   };
 
   const handleRatingComplete = () => {
-    // Auto-navigate to next lesson after rating
     if (nextLesson) {
       setTimeout(() => {
         window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
@@ -240,6 +243,7 @@ export default function LessonPlayer() {
     setNoteContent('');
   };
 
+  // CONDITIONAL RENDERING - AFTER ALL HOOKS
   if (!currentLesson) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
