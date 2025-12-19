@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
@@ -17,7 +17,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 
-const SidebarContent = ({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
+// SIDEBAR COMPONENT OUTSIDE - STABLE
+const SidebarContent = React.memo(({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
   <div className="h-full flex flex-col">
     <div className="p-4 border-b border-gray-100">
       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
@@ -109,7 +110,7 @@ const SidebarContent = ({ course, completedCount, lessons, progressPercent, sect
       </div>
     </ScrollArea>
   </div>
-);
+));
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -118,23 +119,27 @@ export default function LessonPlayer() {
   const courseId = urlParams.get('courseId');
   const lessonId = urlParams.get('lessonId');
 
-  // ALL STATE HOOKS FIRST - ALWAYS CALLED
+  // ALL STATE HOOKS - UNCONDITIONAL
   const [user, setUser] = useState(null);
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const [noteContent, setNoteContent] = useState('');
   const [showNotes, setShowNotes] = useState(false);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
 
-  // ALL EFFECT HOOKS - ALWAYS CALLED
+  // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      }
     };
     loadUser();
   }, []);
 
-  // ALL DATA FETCHING HOOKS - ALWAYS CALLED
+  // ALL QUERY HOOKS - UNCONDITIONAL (with enabled flags)
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
@@ -168,37 +173,62 @@ export default function LessonPlayer() {
     enabled: !!lessonId,
   });
 
-  // ALL MUTATION HOOKS - ALWAYS CALLED
+  // MUTATION HOOK - UNCONDITIONAL
   const updateEnrollmentMutation = useMutation({
-    mutationFn: ({ enrollmentId, data }) => {
+    mutationFn: useCallback(({ enrollmentId, data }) => {
       return base44.entities.Enrollment.update(enrollmentId, data);
-    },
-    onSuccess: () => {
+    }, []),
+    onSuccess: useCallback(() => {
       queryClient.invalidateQueries(['enrollment', courseId]);
-    },
+    }, [queryClient, courseId]),
   });
 
-  // CALCULATE DERIVED STATE - ALWAYS DONE
+  // DERIVED STATE - ALWAYS COMPUTED
   const enrollment = enrollments[0];
-  const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
-  const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
-  const prevLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
-  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
-  const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
+  const currentLesson = useMemo(() => 
+    lessons.find(l => l.id === lessonId) || lessons[0],
+    [lessons, lessonId]
+  );
+  
+  const currentIndex = useMemo(() => 
+    lessons.findIndex(l => l.id === currentLesson?.id),
+    [lessons, currentLesson]
+  );
+  
+  const prevLesson = useMemo(() => 
+    currentIndex > 0 ? lessons[currentIndex - 1] : null,
+    [currentIndex, lessons]
+  );
+  
+  const nextLesson = useMemo(() => 
+    currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null,
+    [currentIndex, lessons]
+  );
+  
+  const isCompleted = useMemo(() => 
+    enrollment?.completed_lessons?.includes(currentLesson?.id),
+    [enrollment, currentLesson]
+  );
 
-  const sections = lessons.reduce((acc, lesson) => {
-    const section = lesson.section || 'Getting Started';
-    if (!acc[section]) acc[section] = [];
-    acc[section].push(lesson);
-    return acc;
-  }, {});
+  const sections = useMemo(() => 
+    lessons.reduce((acc, lesson) => {
+      const section = lesson.section || 'Getting Started';
+      if (!acc[section]) acc[section] = [];
+      acc[section].push(lesson);
+      return acc;
+    }, {}),
+    [lessons]
+  );
 
   const completedCount = enrollment?.completed_lessons?.length || 0;
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
-  const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
+  const currentLessonNotes = useMemo(() => 
+    enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [],
+    [enrollment, currentLesson]
+  );
 
-  // EVENT HANDLERS
-  const markComplete = async () => {
+  // STABLE EVENT HANDLERS
+  const markComplete = useCallback(async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
     const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
@@ -217,17 +247,17 @@ export default function LessonPlayer() {
     });
 
     setShowRatingDialog(true);
-  };
+  }, [enrollment, currentLesson, isCompleted, lessons.length, nextLesson, updateEnrollmentMutation]);
 
-  const handleRatingComplete = () => {
+  const handleRatingComplete = useCallback(() => {
     if (nextLesson) {
       setTimeout(() => {
         window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
       }, 500);
     }
-  };
+  }, [nextLesson, courseId]);
 
-  const saveNote = () => {
+  const saveNote = useCallback(() => {
     if (!enrollment?.id || !currentLesson?.id || !noteContent.trim()) return;
     
     const newNotes = [...(enrollment.notes || []), {
@@ -241,7 +271,7 @@ export default function LessonPlayer() {
       data: { notes: newNotes }
     });
     setNoteContent('');
-  };
+  }, [enrollment, currentLesson, noteContent, updateEnrollmentMutation]);
 
   // CONDITIONAL RENDERING - AFTER ALL HOOKS
   if (!currentLesson) {
