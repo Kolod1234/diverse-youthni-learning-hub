@@ -276,15 +276,24 @@ export default function LessonPlayer() {
   // CONDITIONAL RENDERING - AFTER ALL HOOKS
   if (!currentLesson) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
-          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-            <Button variant="outline">Back to Course</Button>
-          </Link>
+      <>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="text-center text-white">
+            <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
+            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+              <Button variant="outline">Back to Course</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+        <LessonRatingDialog
+          open={false}
+          onOpenChange={() => {}}
+          lesson={null}
+          course={null}
+          onComplete={() => {}}
+        />
+      </>
     );
   }
 
