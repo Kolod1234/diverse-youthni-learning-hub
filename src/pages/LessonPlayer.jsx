@@ -185,9 +185,8 @@ export default function LessonPlayer() {
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
   const updateEnrollmentMutation = useMutation({
-    mutationFn: (data) => {
-      if (!enrollment?.id) throw new Error('No enrollment found');
-      return base44.entities.Enrollment.update(enrollment.id, data);
+    mutationFn: ({ enrollmentId, data }) => {
+      return base44.entities.Enrollment.update(enrollmentId, data);
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['enrollment', courseId]);
@@ -195,18 +194,21 @@ export default function LessonPlayer() {
   });
 
   const markComplete = async () => {
-    if (!enrollment || isCompleted) return;
+    if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
     const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
     const newProgress = Math.round((newCompletedLessons.length / lessons.length) * 100);
     const isNowComplete = newCompletedLessons.length === lessons.length;
     
     updateEnrollmentMutation.mutate({
-      completed_lessons: newCompletedLessons,
-      progress_percent: newProgress,
-      current_lesson_id: nextLesson?.id || currentLesson.id,
-      is_completed: isNowComplete,
-      ...(isNowComplete && { completed_date: new Date().toISOString().split('T')[0] }),
+      enrollmentId: enrollment.id,
+      data: {
+        completed_lessons: newCompletedLessons,
+        progress_percent: newProgress,
+        current_lesson_id: nextLesson?.id || currentLesson.id,
+        is_completed: isNowComplete,
+        ...(isNowComplete && { completed_date: new Date().toISOString().split('T')[0] }),
+      }
     });
 
     // Show rating dialog after marking complete
@@ -223,7 +225,7 @@ export default function LessonPlayer() {
   };
 
   const saveNote = () => {
-    if (!enrollment || !noteContent.trim()) return;
+    if (!enrollment?.id || !currentLesson?.id || !noteContent.trim()) return;
     
     const newNotes = [...(enrollment.notes || []), {
       lesson_id: currentLesson.id,
@@ -231,7 +233,10 @@ export default function LessonPlayer() {
       timestamp: Date.now(),
     }];
     
-    updateEnrollmentMutation.mutate({ notes: newNotes });
+    updateEnrollmentMutation.mutate({
+      enrollmentId: enrollment.id,
+      data: { notes: newNotes }
+    });
     setNoteContent('');
   };
 
