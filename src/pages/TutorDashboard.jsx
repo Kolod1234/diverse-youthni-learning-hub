@@ -16,6 +16,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import AICourseAssistant from '@/components/tutor/AICourseAssistant';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -276,17 +277,33 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
   const [editingCourse, setEditingCourse] = useState(null);
 
   return (
-    <Card className="p-6">
-      <div className="flex items-center justify-between mb-6">
-        <div>
-          <h2 className="text-xl font-semibold">My Courses</h2>
-          <p className="text-sm text-gray-500 mt-1">Create and manage your courses</p>
+    <div className="space-y-6">
+      <AICourseAssistant
+        onApplySuggestion={(suggestion) => {
+          if (suggestion.course_title) {
+            setCourseForm({
+              ...courseForm,
+              title: suggestion.course_title,
+              description: suggestion.course_description,
+              duration_hours: suggestion.duration_hours,
+              level: suggestion.level,
+            });
+            setShowCreateCourse(true);
+          }
+        }}
+      />
+
+      <Card className="p-6">
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold">My Courses</h2>
+            <p className="text-sm text-gray-500 mt-1">Create and manage your courses</p>
+          </div>
+          <Button onClick={() => setShowCreateCourse(true)} className="bg-indigo-600 hover:bg-indigo-700 h-11">
+            <Plus className="w-5 h-5 mr-2" />
+            Create New Course
+          </Button>
         </div>
-        <Button onClick={() => setShowCreateCourse(true)} className="bg-indigo-600 hover:bg-indigo-700 h-11">
-          <Plus className="w-5 h-5 mr-2" />
-          Create New Course
-        </Button>
-      </div>
 
       {showCreateCourse && (
         <Card className="p-6 mb-6 bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200">
@@ -366,6 +383,7 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
         ))}
       </div>
     </Card>
+    </div>
   );
 }
 
