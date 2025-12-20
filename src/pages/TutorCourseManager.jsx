@@ -148,9 +148,22 @@ export default function TutorCourseManager() {
                 courseId={courseId}
               />
               <div className="flex gap-3 mt-4">
-                <Button onClick={handleCreate} disabled={createLessonMutation.isPending}>
-                  <Save className="w-4 h-4 mr-2" />
-                  Create Lesson
+                <Button 
+                  onClick={handleCreate} 
+                  disabled={createLessonMutation.isPending || !lessonForm.title}
+                  className="bg-indigo-600"
+                >
+                  {createLessonMutation.isPending ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Saving...
+                    </>
+                  ) : (
+                    <>
+                      <Save className="w-4 h-4 mr-2" />
+                      Save Lesson
+                    </>
+                  )}
                 </Button>
                 <Button variant="outline" onClick={() => setShowCreate(false)}>Cancel</Button>
               </div>
@@ -193,11 +206,25 @@ export default function TutorCourseManager() {
                                         courseId={courseId}
                                       />
                                       <div className="flex gap-3 mt-4">
-                                        <Button onClick={() => {
-                                          updateLessonMutation.mutate({ id: lesson.id, data: lessonForm });
-                                        }} size="sm">
-                                          <Save className="w-4 h-4 mr-2" />
-                                          Save
+                                        <Button 
+                                          onClick={() => {
+                                            updateLessonMutation.mutate({ id: lesson.id, data: lessonForm });
+                                          }} 
+                                          size="sm"
+                                          disabled={updateLessonMutation.isPending || !lessonForm.title}
+                                          className="bg-indigo-600"
+                                        >
+                                          {updateLessonMutation.isPending ? (
+                                            <>
+                                              <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                                              Saving...
+                                            </>
+                                          ) : (
+                                            <>
+                                              <Save className="w-4 h-4 mr-2" />
+                                              Save Changes
+                                            </>
+                                          )}
                                         </Button>
                                         <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>
                                           Cancel

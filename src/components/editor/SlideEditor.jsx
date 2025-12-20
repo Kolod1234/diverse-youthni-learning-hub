@@ -3,25 +3,60 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { Plus, Trash2, ChevronUp, ChevronDown, FileText } from 'lucide-react';
+import { Plus, Trash2, ChevronUp, ChevronDown, FileText, Layout, LayoutTemplate } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+
+const SLIDE_TEMPLATES = {
+  blank: {
+    name: 'Blank Slide',
+    content: '<p></p>'
+  },
+  title: {
+    name: 'Title Slide',
+    content: '<h1>Main Title</h1><p>Subtitle or key point</p>'
+  },
+  content: {
+    name: 'Content Slide',
+    content: '<h2>Section Title</h2><p>Add your content here with details and explanations.</p>'
+  },
+  bullets: {
+    name: 'Bullet Points',
+    content: '<h2>Key Points</h2><ul><li>First point</li><li>Second point</li><li>Third point</li></ul>'
+  },
+  twoColumn: {
+    name: 'Two Column',
+    content: '<h2>Title</h2><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;"><div><h3>Left Column</h3><p>Content for left side</p></div><div><h3>Right Column</h3><p>Content for right side</p></div></div>'
+  },
+  definition: {
+    name: 'Definition',
+    content: '<h2>Term or Concept</h2><blockquote><strong>Definition:</strong> Explain the term clearly and concisely.</blockquote><p><strong>Example:</strong> Provide a practical example.</p>'
+  }
+};
 
 export default function SlideEditor({ slides = [], onChange }) {
   const [expandedSlide, setExpandedSlide] = useState(0);
+  const [showTemplateMenu, setShowTemplateMenu] = useState(false);
 
-  const addSlide = () => {
+  const addSlide = (template = 'blank') => {
+    const templateData = SLIDE_TEMPLATES[template];
     const newSlides = [
       ...slides,
       {
         title: `Slide ${slides.length + 1}`,
-        content: '',
+        content: templateData.content,
         order: slides.length + 1
       }
     ];
     onChange(newSlides);
     setExpandedSlide(slides.length);
-    toast.success('Slide added!');
+    toast.success(`${templateData.name} added!`);
   };
 
   const updateSlide = (index, field, value) => {
@@ -72,20 +107,52 @@ export default function SlideEditor({ slides = [], onChange }) {
           <h3 className="font-semibold text-gray-900">Lesson Slides</h3>
           <p className="text-sm text-gray-500">Create written content with multiple pages/slides</p>
         </div>
-        <Button onClick={addSlide} variant="outline" size="sm">
-          <Plus className="w-4 h-4 mr-2" />
-          Add Slide
-        </Button>
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Slide
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end" className="w-56">
+            {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+              <DropdownMenuItem 
+                key={key}
+                onClick={() => addSlide(key)}
+                className="cursor-pointer"
+              >
+                <LayoutTemplate className="w-4 h-4 mr-2" />
+                {template.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       {slides.length === 0 ? (
         <Card className="p-8 text-center border-dashed border-2">
           <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 mb-4">No slides yet. Add your first slide to start writing your lesson!</p>
-          <Button onClick={addSlide} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
-            Create First Slide
-          </Button>
+          <p className="text-gray-500 mb-4">No slides yet. Choose a template to start writing your lesson!</p>
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline">
+                <Plus className="w-4 h-4 mr-2" />
+                Create First Slide
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="center" className="w-56">
+              {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+                <DropdownMenuItem 
+                  key={key}
+                  onClick={() => addSlide(key)}
+                  className="cursor-pointer"
+                >
+                  <LayoutTemplate className="w-4 h-4 mr-2" />
+                  {template.name}
+                </DropdownMenuItem>
+              ))}
+            </DropdownMenuContent>
+          </DropdownMenu>
         </Card>
       ) : (
         <div className="space-y-3">
