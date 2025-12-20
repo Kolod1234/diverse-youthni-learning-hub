@@ -264,7 +264,7 @@ export default function LessonPlayer() {
     setNoteContent('');
   };
 
-  // RENDER - NO EARLY RETURNS TO MAINTAIN HOOK ORDER
+  // RENDER
   if (!currentLesson) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
