@@ -55,7 +55,8 @@ export default function SlideEditor({ slides = [], onChange }) {
       }
     ];
     onChange(newSlides);
-    setExpandedSlide(slides.length);
+    // Keep new slide expanded
+    setTimeout(() => setExpandedSlide(slides.length), 0);
     toast.success(`${templateData.name} added!`);
   };
 
@@ -204,7 +205,7 @@ export default function SlideEditor({ slides = [], onChange }) {
               </div>
 
               {expandedSlide === index && (
-                <div className="p-4 border-t space-y-4">
+                <div className="p-4 border-t space-y-4" onClick={(e) => e.stopPropagation()}>
                   <div>
                     <Label>Slide Title</Label>
                     <Input
