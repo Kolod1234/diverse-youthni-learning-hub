@@ -207,8 +207,11 @@ export default function SlideEditor({ slides = [], onChange }) {
               {expandedSlide === index && (
                 <div 
                   className="p-4 border-t space-y-4" 
+                  onMouseDown={(e) => e.stopPropagation()}
                   onClick={(e) => e.stopPropagation()}
                   onKeyDown={(e) => e.stopPropagation()}
+                  onKeyUp={(e) => e.stopPropagation()}
+                  onKeyPress={(e) => e.stopPropagation()}
                 >
                   <div>
                     <Label>Slide Title</Label>
@@ -216,12 +219,14 @@ export default function SlideEditor({ slides = [], onChange }) {
                       value={slide.title || ''}
                       onChange={(e) => updateSlide(index, 'title', e.target.value)}
                       placeholder={`Slide ${index + 1} title`}
+                      onKeyDown={(e) => e.stopPropagation()}
                     />
                   </div>
 
                   <div>
                     <Label>Slide Content</Label>
                     <RichTextEditor
+                      key={`slide-${index}`}
                       value={slide.content || ''}
                       onChange={(value) => updateSlide(index, 'content', value)}
                       placeholder="Write your lesson content here with full formatting..."
