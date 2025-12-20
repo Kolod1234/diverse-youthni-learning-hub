@@ -265,30 +265,17 @@ export default function LessonPlayer() {
   };
 
   // RENDER - NO EARLY RETURNS TO MAINTAIN HOOK ORDER
-  const showEmptyState = !currentLesson;
-
-  if (showEmptyState) {
+  if (!currentLesson) {
     return (
-      <>
-        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-          <div className="text-center text-white">
-            <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
-            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="outline">Back to Course</Button>
-            </Link>
-          </div>
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
+          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+            <Button variant="outline">Back to Course</Button>
+          </Link>
         </div>
-        
-        {/* Rating Dialog - must render in all paths */}
-        <LessonRatingDialog
-          open={showRatingDialog}
-          onOpenChange={setShowRatingDialog}
-          lesson={currentLesson}
-          course={course}
-          onComplete={handleRatingComplete}
-        />
-      </>
+      </div>
     );
   }
 
