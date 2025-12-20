@@ -205,7 +205,11 @@ export default function SlideEditor({ slides = [], onChange }) {
               </div>
 
               {expandedSlide === index && (
-                <div className="p-4 border-t space-y-4" onClick={(e) => e.stopPropagation()}>
+                <div 
+                  className="p-4 border-t space-y-4" 
+                  onClick={(e) => e.stopPropagation()}
+                  onKeyDown={(e) => e.stopPropagation()}
+                >
                   <div>
                     <Label>Slide Title</Label>
                     <Input
