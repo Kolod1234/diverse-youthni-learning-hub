@@ -146,6 +146,8 @@ export default function TutorCourseManager() {
                 formData={lessonForm} 
                 setFormData={setLessonForm}
                 courseId={courseId}
+                onSave={handleCreate}
+                isSaving={createLessonMutation.isPending}
               />
               <div className="flex gap-3 mt-4">
                 <Button 
@@ -204,6 +206,8 @@ export default function TutorCourseManager() {
                                         formData={lessonForm} 
                                         setFormData={setLessonForm}
                                         courseId={courseId}
+                                        onSave={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}
+                                        isSaving={updateLessonMutation.isPending}
                                       />
                                       <div className="flex gap-3 mt-4">
                                         <Button 
@@ -309,7 +313,7 @@ export default function TutorCourseManager() {
   );
 }
 
-function LessonFormFields({ formData, setFormData, courseId }) {
+function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving }) {
   const [uploading, setUploading] = useState(false);
 
   const handleVideoUpload = async (e) => {
@@ -449,7 +453,29 @@ function LessonFormFields({ formData, setFormData, courseId }) {
 
       {/* Written Lesson Content (Slides) */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Written Lesson Content (Slides)</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Written Lesson Content (Slides)</h3>
+          {formData.slides?.length > 0 && (
+            <Button
+              onClick={onSave}
+              disabled={isSaving}
+              size="sm"
+              className="bg-indigo-600"
+            >
+              {isSaving ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Saving...
+                </>
+              ) : (
+                <>
+                  <Save className="w-4 h-4 mr-2" />
+                  Save Lesson
+                </>
+              )}
+            </Button>
+          )}
+        </div>
         <SlideEditor
           slides={formData.slides || []}
           onChange={(slides) => setFormData({ ...formData, slides })}
