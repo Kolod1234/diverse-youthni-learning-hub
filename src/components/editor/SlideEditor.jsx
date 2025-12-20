@@ -109,20 +109,20 @@ export default function SlideEditor({ slides = [], onChange }) {
         </div>
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
-            <Button variant="outline" size="sm">
+            <Button className="bg-indigo-600 hover:bg-indigo-700" size="sm">
               <Plus className="w-4 h-4 mr-2" />
-              Add Slide
+              Add Slide Template
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-56">
+          <DropdownMenuContent align="end" className="w-64">
             {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
               <DropdownMenuItem 
                 key={key}
                 onClick={() => addSlide(key)}
-                className="cursor-pointer"
+                className="cursor-pointer py-3"
               >
-                <LayoutTemplate className="w-4 h-4 mr-2" />
-                {template.name}
+                <LayoutTemplate className="w-4 h-4 mr-3 text-indigo-600" />
+                <span className="font-medium">{template.name}</span>
               </DropdownMenuItem>
             ))}
           </DropdownMenuContent>
@@ -131,28 +131,22 @@ export default function SlideEditor({ slides = [], onChange }) {
 
       {slides.length === 0 ? (
         <Card className="p-8 text-center border-dashed border-2">
-          <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500 mb-4">No slides yet. Choose a template to start writing your lesson!</p>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline">
-                <Plus className="w-4 h-4 mr-2" />
-                Create First Slide
+          <LayoutTemplate className="w-12 h-12 text-indigo-600 mx-auto mb-3" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">Choose a Slide Template</h3>
+          <p className="text-gray-500 mb-6">Select a template to start creating your lesson content</p>
+          <div className="grid grid-cols-2 gap-3 max-w-md mx-auto">
+            {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+              <Button
+                key={key}
+                variant="outline"
+                onClick={() => addSlide(key)}
+                className="h-auto py-4 flex-col gap-2 hover:bg-indigo-50 hover:border-indigo-300"
+              >
+                <LayoutTemplate className="w-5 h-5 text-indigo-600" />
+                <span className="font-medium text-sm">{template.name}</span>
               </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="center" className="w-56">
-              {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
-                <DropdownMenuItem 
-                  key={key}
-                  onClick={() => addSlide(key)}
-                  className="cursor-pointer"
-                >
-                  <LayoutTemplate className="w-4 h-4 mr-2" />
-                  {template.name}
-                </DropdownMenuItem>
-              ))}
-            </DropdownMenuContent>
-          </DropdownMenu>
+            ))}
+          </div>
         </Card>
       ) : (
         <div className="space-y-3">
