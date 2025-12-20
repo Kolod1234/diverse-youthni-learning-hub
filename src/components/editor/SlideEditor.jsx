@@ -41,7 +41,7 @@ const SLIDE_TEMPLATES = {
 };
 
 export default function SlideEditor({ slides = [], onChange }) {
-  const [expandedSlide, setExpandedSlide] = useState(0);
+  const [expandedSlide, setExpandedSlide] = useState(slides.length > 0 ? 0 : -1);
   const [showTemplateMenu, setShowTemplateMenu] = useState(false);
 
   const addSlide = (template = 'blank') => {
@@ -55,8 +55,8 @@ export default function SlideEditor({ slides = [], onChange }) {
       }
     ];
     onChange(newSlides);
-    // Keep new slide expanded
-    setTimeout(() => setExpandedSlide(slides.length), 0);
+    // Expand the new slide immediately
+    setExpandedSlide(slides.length);
     toast.success(`${templateData.name} added!`);
   };
 
