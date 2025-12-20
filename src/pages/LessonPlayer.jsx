@@ -381,7 +381,7 @@ export default function LessonPlayer() {
         {/* Video/Content Area */}
         <div className="flex-1 flex">
           <div className={`flex-1 p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
-            {/* Content Display - Slides or Video */}
+            {/* Content Display - Slides, Written Content, or Video */}
             {currentLesson.slides?.length > 0 ? (
               <Card className="mb-6 border-0 shadow-lg overflow-hidden">
                 {/* Slide Content */}
@@ -425,26 +425,35 @@ export default function LessonPlayer() {
                   </Button>
                 </div>
               </Card>
+            ) : currentLesson.description ? (
+              <Card className="mb-6 p-8 border-0 shadow-lg">
+                <div className="max-w-4xl mx-auto">
+                  <div 
+                    className="prose prose-lg max-w-none text-gray-700"
+                    dangerouslySetInnerHTML={{ __html: currentLesson.description }}
+                  />
+                </div>
+              </Card>
+            ) : currentLesson.video_url ? (
+              <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
+                <iframe
+                  src={currentLesson.video_url}
+                  className="w-full h-full"
+                  allowFullScreen
+                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                />
+              </div>
             ) : (
               <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
-                {currentLesson.video_url ? (
-                  <iframe
-                    src={currentLesson.video_url}
-                    className="w-full h-full"
-                    allowFullScreen
-                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  />
-                ) : (
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                        <Play className="w-8 h-8 ml-1" />
-                      </div>
-                      <p className="text-lg font-medium">{currentLesson.title}</p>
-                      <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="text-center text-white">
+                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                      <BookOpen className="w-8 h-8" />
                     </div>
+                    <p className="text-lg font-medium">{currentLesson.title}</p>
+                    <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
                   </div>
-                )}
+                </div>
               </div>
             )}
 
