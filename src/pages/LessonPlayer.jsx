@@ -149,7 +149,7 @@ export default function LessonPlayer() {
     enabled: !!courseId,
   });
 
-  const { data: lessons = [] } = useQuery({
+  const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
     enabled: !!courseId,
@@ -265,12 +265,25 @@ export default function LessonPlayer() {
   };
 
   // RENDER
+  if (lessonsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-lg">Loading lesson...</p>
+        </div>
+      </div>
+    );
+  }
+
   if (!currentLesson) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
         <div className="text-center text-white">
           <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
+          <p className="text-gray-400 mb-4">Course ID: {courseId}, Lesson ID: {lessonId}</p>
+          <p className="text-gray-400 mb-4">Total Lessons Found: {lessons.length}</p>
           <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
             <Button variant="outline">Back to Course</Button>
           </Link>
