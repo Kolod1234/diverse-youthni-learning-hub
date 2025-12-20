@@ -11,7 +11,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Play, Pause, ChevronLeft, ChevronRight, CheckCircle, 
   BookOpen, Clock, FileText, Download, X, Menu, Lock,
-  StickyNote, Trash2, Save, Brain, MessageCircle, Code
+  StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -125,6 +125,7 @@ export default function LessonPlayer() {
   const [noteContent, setNoteContent] = useState('');
   const [showNotes, setShowNotes] = useState(false);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -380,27 +381,72 @@ export default function LessonPlayer() {
         {/* Video/Content Area */}
         <div className="flex-1 flex">
           <div className={`flex-1 p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
-            {/* Video Player Placeholder */}
-            <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
-              {currentLesson.video_url ? (
-                <iframe
-                  src={currentLesson.video_url}
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                />
-              ) : (
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <Play className="w-8 h-8 ml-1" />
-                    </div>
-                    <p className="text-lg font-medium">{currentLesson.title}</p>
-                    <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
+            {/* Content Display - Slides or Video */}
+            {currentLesson.slides?.length > 0 ? (
+              <Card className="mb-6 border-0 shadow-lg overflow-hidden">
+                {/* Slide Content */}
+                <div className="bg-white p-8 min-h-[500px]">
+                  <div className="max-w-4xl mx-auto">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                      {currentLesson.slides[currentSlideIndex]?.title}
+                    </h2>
+                    <div 
+                      className="prose prose-lg max-w-none text-gray-700"
+                      dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+                    />
                   </div>
                 </div>
-              )}
-            </div>
+
+                {/* Slide Navigation */}
+                <div className="bg-gray-50 border-t px-6 py-4 flex items-center justify-between">
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+                    disabled={currentSlideIndex === 0}
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-2" />
+                    Previous Slide
+                  </Button>
+
+                  <div className="flex items-center gap-2">
+                    <FileSliders className="w-5 h-5 text-indigo-600" />
+                    <span className="text-sm font-medium text-gray-700">
+                      Slide {currentSlideIndex + 1} of {currentLesson.slides.length}
+                    </span>
+                  </div>
+
+                  <Button
+                    variant="outline"
+                    onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
+                    disabled={currentSlideIndex === currentLesson.slides.length - 1}
+                  >
+                    Next Slide
+                    <ChevronRight className="w-4 h-4 ml-2" />
+                  </Button>
+                </div>
+              </Card>
+            ) : (
+              <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
+                {currentLesson.video_url ? (
+                  <iframe
+                    src={currentLesson.video_url}
+                    className="w-full h-full"
+                    allowFullScreen
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                  />
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <Play className="w-8 h-8 ml-1" />
+                      </div>
+                      <p className="text-lg font-medium">{currentLesson.title}</p>
+                      <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
 
             {/* Lesson Info */}
             <Card className="p-6 border-0 shadow-sm mb-6">

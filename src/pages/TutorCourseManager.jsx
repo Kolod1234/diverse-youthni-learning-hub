@@ -8,12 +8,13 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
+import SlideEditor from '@/components/editor/SlideEditor';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -229,6 +230,12 @@ export default function TutorCourseManager() {
                                               {lesson.resources.length} files
                                             </Badge>
                                           )}
+                                          {lesson.slides?.length > 0 && (
+                                            <Badge variant="secondary" className="text-xs bg-green-100 text-green-700">
+                                              <FileSliders className="w-3 h-3 mr-1" />
+                                              {lesson.slides.length} slides
+                                            </Badge>
+                                          )}
                                         </div>
                                         <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
@@ -411,6 +418,17 @@ function LessonFormFields({ formData, setFormData, courseId }) {
             </div>
           )}
         </div>
+      </div>
+
+      {/* Written Lesson Content (Slides) */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <SlideEditor
+          slides={formData.slides || []}
+          onChange={(slides) => setFormData({ ...formData, slides })}
+        />
+        <p className="text-xs text-gray-500 mt-3">
+          Create multi-page written lessons. Perfect for text-based learning without videos!
+        </p>
       </div>
 
       {/* Supplementary Materials */}
