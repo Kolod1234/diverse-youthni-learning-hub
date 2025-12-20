@@ -152,7 +152,12 @@ export default function LessonPlayer() {
 
   const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
+    queryFn: async () => {
+      console.log('Fetching lessons for courseId:', courseId);
+      const result = await base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
+      console.log('Lessons fetched:', result.length, result);
+      return result;
+    },
     enabled: !!courseId,
   });
 
@@ -186,10 +191,12 @@ export default function LessonPlayer() {
 
   // DERIVED STATE - ALWAYS COMPUTED
   const enrollment = enrollments[0];
-  const currentLesson = useMemo(() => 
-    lessons.find(l => l.id === lessonId) || lessons[0],
-    [lessons, lessonId]
-  );
+  const currentLesson = useMemo(() => {
+    console.log('Computing currentLesson. lessonId:', lessonId, 'lessons:', lessons.length);
+    const found = lessons.find(l => l.id === lessonId);
+    console.log('Found lesson:', found ? found.title : 'none', 'fallback to first:', lessons[0]?.title);
+    return found || lessons[0];
+  }, [lessons, lessonId]);
   
   const currentIndex = useMemo(() => 
     lessons.findIndex(l => l.id === currentLesson?.id),
@@ -279,12 +286,18 @@ export default function LessonPlayer() {
 
   if (!currentLesson) {
     return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center text-white">
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <div className="text-center text-white max-w-2xl">
           <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
-          <p className="text-gray-400 mb-4">Course ID: {courseId}, Lesson ID: {lessonId}</p>
-          <p className="text-gray-400 mb-4">Total Lessons Found: {lessons.length}</p>
+          <div className="text-left bg-gray-800 p-4 rounded-lg mb-4 text-sm">
+            <p className="text-gray-400 mb-2">Debug Info:</p>
+            <p className="text-gray-400">Course ID: {courseId || 'missing'}</p>
+            <p className="text-gray-400">Lesson ID: {lessonId || 'missing'}</p>
+            <p className="text-gray-400">Total Lessons Found: {lessons.length}</p>
+            <p className="text-gray-400">Lessons IDs: {lessons.map(l => l.id).join(', ')}</p>
+            <p className="text-gray-400 mt-2">Check browser console for more details</p>
+          </div>
           <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
             <Button variant="outline">Back to Course</Button>
           </Link>
