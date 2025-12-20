@@ -152,12 +152,7 @@ export default function LessonPlayer() {
 
   const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['lessons', courseId],
-    queryFn: async () => {
-      console.log('Fetching lessons for courseId:', courseId);
-      const result = await base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
-      console.log('Lessons fetched:', result.length, result);
-      return result;
-    },
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
     enabled: !!courseId,
   });
 
@@ -191,42 +186,23 @@ export default function LessonPlayer() {
 
   // DERIVED STATE - ALWAYS COMPUTED
   const enrollment = enrollments[0];
-  const currentLesson = useMemo(() => {
-    console.log('Computing currentLesson. lessonId:', lessonId, 'lessons:', lessons.length);
-    const found = lessons.find(l => l.id === lessonId);
-    console.log('Found lesson:', found ? found.title : 'none', 'fallback to first:', lessons[0]?.title);
-    return found || lessons[0];
-  }, [lessons, lessonId]);
+  const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
   
-  const currentIndex = useMemo(() => 
-    lessons.findIndex(l => l.id === currentLesson?.id),
-    [lessons, currentLesson]
-  );
-  
+  const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
   const prevLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
-  
-  const isCompleted = useMemo(() => 
-    enrollment?.completed_lessons?.includes(currentLesson?.id),
-    [enrollment, currentLesson]
-  );
+  const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
 
-  const sections = useMemo(() => 
-    lessons.reduce((acc, lesson) => {
-      const section = lesson.section || 'Getting Started';
-      if (!acc[section]) acc[section] = [];
-      acc[section].push(lesson);
-      return acc;
-    }, {}),
-    [lessons]
-  );
+  const sections = lessons.reduce((acc, lesson) => {
+    const section = lesson.section || 'Getting Started';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(lesson);
+    return acc;
+  }, {});
 
   const completedCount = enrollment?.completed_lessons?.length || 0;
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
-  const currentLessonNotes = useMemo(() => 
-    enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [],
-    [enrollment, currentLesson]
-  );
+  const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
   // STABLE EVENT HANDLERS
   const markComplete = async () => {
