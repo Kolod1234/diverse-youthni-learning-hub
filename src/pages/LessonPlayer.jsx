@@ -407,7 +407,10 @@ export default function LessonPlayer() {
               <div className="flex items-start justify-between gap-4 mb-4">
                 <div>
                   <h2 className="text-xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
-                  <p className="text-gray-600">{currentLesson.description}</p>
+                  <div 
+                    className="text-gray-600 prose prose-sm max-w-none"
+                    dangerouslySetInnerHTML={{ __html: currentLesson.description }}
+                  />
                 </div>
                 
                 {!isCompleted ? (
