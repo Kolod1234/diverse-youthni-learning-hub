@@ -354,6 +354,11 @@ export default function CourseDetails() {
                              return (
                                <div
                                  key={lesson.id}
+                                 onClick={() => {
+                                   if (canAccess) {
+                                     window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`;
+                                   }
+                                 }}
                                  className={`px-6 py-3 ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
                                >
                                  <div className="flex items-center justify-between">
