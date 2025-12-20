@@ -27,22 +27,30 @@ export default function PPTUploadButton({ onSlidesConverted }) {
 
     try {
       // Upload file
+      console.log('Uploading file...', file.name);
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      console.log('File uploaded:', file_url);
 
       // Convert PPT to slides
+      console.log('Converting PPT to slides...');
       const response = await base44.functions.invoke('convertPPTToSlides', {
         fileUrl: file_url
       });
 
+      console.log('Function response:', response);
+
       if (response.data.success && response.data.slides) {
+        console.log('Conversion successful, slides:', response.data.slides);
         onSlidesConverted(response.data.slides);
         toast.success(`Successfully converted ${response.data.slides.length} slides!`, { id: 'ppt-convert' });
       } else {
+        console.error('Conversion failed:', response.data);
         throw new Error(response.data.error || 'Conversion failed');
       }
     } catch (error) {
       console.error('PPT conversion error:', error);
-      toast.error('Failed to convert PowerPoint. Please try again.', { id: 'ppt-convert' });
+      console.error('Error details:', error.response?.data);
+      toast.error(error.message || 'Failed to convert PowerPoint. Please try again.', { id: 'ppt-convert' });
     } finally {
       setIsConverting(false);
       event.target.value = '';
