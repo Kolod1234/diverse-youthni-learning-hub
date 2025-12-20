@@ -15,7 +15,6 @@ import { toast } from 'sonner';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import SlideEditor from '@/components/editor/SlideEditor';
-import PPTUploadButton from '@/components/editor/PPTUploadButton';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -423,18 +422,13 @@ function LessonFormFields({ formData, setFormData, courseId }) {
 
       {/* Written Lesson Content (Slides) */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <div className="flex items-center justify-between mb-4">
-          <h3 className="font-semibold text-gray-900">Written Lesson Content (Slides)</h3>
-          <PPTUploadButton 
-            onSlidesConverted={(slides) => setFormData({ ...formData, slides })} 
-          />
-        </div>
+        <h3 className="font-semibold text-gray-900 mb-4">Written Lesson Content (Slides)</h3>
         <SlideEditor
           slides={formData.slides || []}
           onChange={(slides) => setFormData({ ...formData, slides })}
         />
         <p className="text-xs text-gray-500 mt-3">
-          Upload a PowerPoint to convert it automatically, or create multi-page written lessons manually. Perfect for text-based learning without videos!
+          Create multi-page written lessons like Open University. Perfect for mixing videos with detailed text content!
         </p>
       </div>
 
