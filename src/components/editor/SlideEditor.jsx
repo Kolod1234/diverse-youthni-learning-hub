@@ -399,25 +399,28 @@ export default function SlideEditor({ slides = [], onChange }) {
                 <ScrollArea className="h-full">
                   <div className="p-6 space-y-6">
                     {/* Template Selector */}
-                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-                      <Label className="text-sm font-semibold mb-3 block text-indigo-900">Apply Template to This Slide</Label>
-                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
+                      <div className="flex items-center gap-3 mb-4">
+                        <LayoutTemplate className="w-5 h-5 text-indigo-600" />
+                        <Label className="text-base font-semibold text-indigo-900">Choose a Template</Label>
+                      </div>
+                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                         {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
                           <Button
                             key={key}
                             variant="outline"
-                            size="sm"
                             onClick={() => {
                               updateSlide(currentSlide, 'content', template.content);
                               toast.success(`${template.name} applied!`);
                             }}
-                            className="h-auto py-3 flex-col gap-1 hover:bg-white hover:border-indigo-400"
+                            className="h-24 bg-white hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md transition-all flex-col gap-2 p-3"
                           >
-                            <span className="text-xl">{template.icon}</span>
-                            <span className="text-[10px] font-medium leading-tight">{template.name}</span>
+                            <span className="text-3xl">{template.icon}</span>
+                            <span className="text-xs font-medium text-center leading-tight text-gray-700">{template.name}</span>
                           </Button>
                         ))}
                       </div>
+                      <p className="text-xs text-indigo-700 mt-3">💡 Click any template to instantly apply it to this slide</p>
                     </div>
 
                     <div>
@@ -431,22 +434,28 @@ export default function SlideEditor({ slides = [], onChange }) {
                       />
                     </div>
 
-                    <div 
-                      onMouseDown={(e) => e.stopPropagation()}
-                      onClick={(e) => e.stopPropagation()}
-                      onKeyDown={(e) => e.stopPropagation()}
-                      onKeyUp={(e) => e.stopPropagation()}
-                      onKeyPress={(e) => e.stopPropagation()}
-                    >
-                      <Label className="text-base font-semibold mb-2 block">Slide Content</Label>
-                      <RichTextEditor
-                        key={`slide-editor-${currentSlide}`}
-                        value={currentSlideData.content || ''}
-                        onChange={(value) => updateSlide(currentSlide, 'content', value)}
-                        placeholder="Write your lesson content with rich formatting..."
-                      />
-                      <p className="text-xs text-gray-500 mt-2">
-                        💡 Tip: Use the formatting toolbar to add headings, lists, images, equations, and chemical formulas
+                    <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
+                      <div className="flex items-center gap-2 mb-4">
+                        <FileText className="w-5 h-5 text-indigo-600" />
+                        <Label className="text-base font-semibold">Slide Content</Label>
+                      </div>
+                      <div 
+                        onMouseDown={(e) => e.stopPropagation()}
+                        onClick={(e) => e.stopPropagation()}
+                        onKeyDown={(e) => e.stopPropagation()}
+                        onKeyUp={(e) => e.stopPropagation()}
+                        onKeyPress={(e) => e.stopPropagation()}
+                      >
+                        <RichTextEditor
+                          key={`slide-editor-${currentSlide}`}
+                          value={currentSlideData.content || ''}
+                          onChange={(value) => updateSlide(currentSlide, 'content', value)}
+                          placeholder="Write your lesson content with rich formatting..."
+                        />
+                      </div>
+                      <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
+                        <span>💡</span>
+                        <span>Use the toolbar above to add headings, lists, images, equations, and symbols. Click any image to replace it.</span>
                       </p>
                     </div>
                   </div>
