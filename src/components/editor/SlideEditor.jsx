@@ -439,20 +439,12 @@ export default function SlideEditor({ slides = [], onChange }) {
                         <FileText className="w-5 h-5 text-indigo-600" />
                         <Label className="text-base font-semibold">Slide Content</Label>
                       </div>
-                      <div 
-                        onMouseDown={(e) => e.stopPropagation()}
-                        onClick={(e) => e.stopPropagation()}
-                        onKeyDown={(e) => e.stopPropagation()}
-                        onKeyUp={(e) => e.stopPropagation()}
-                        onKeyPress={(e) => e.stopPropagation()}
-                      >
-                        <RichTextEditor
-                          key={`slide-editor-${currentSlide}`}
-                          value={currentSlideData.content || ''}
-                          onChange={(value) => updateSlide(currentSlide, 'content', value)}
-                          placeholder="Write your lesson content with rich formatting..."
-                        />
-                      </div>
+                      <RichTextEditor
+                        key={`slide-editor-${currentSlide}`}
+                        value={currentSlideData.content || ''}
+                        onChange={(value) => updateSlide(currentSlide, 'content', value)}
+                        placeholder="Write your lesson content with rich formatting..."
+                      />
                       <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
                         <span>💡</span>
                         <span>Use the toolbar above to add headings, lists, images, equations, and symbols. Click any image to replace it.</span>
