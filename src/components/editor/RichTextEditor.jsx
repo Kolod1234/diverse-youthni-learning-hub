@@ -1,9 +1,30 @@
-import React, { useRef, useMemo, useEffect } from 'react';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import React, { useCallback } from 'react';
+import { useEditor, EditorContent } from '@tiptap/react';
+import StarterKit from '@tiptap/starter-kit';
+import Image from '@tiptap/extension-image';
+import Link from '@tiptap/extension-link';
+import Table from '@tiptap/extension-table';
+import TableRow from '@tiptap/extension-table-row';
+import TableCell from '@tiptap/extension-table-cell';
+import TableHeader from '@tiptap/extension-table-header';
+import TextAlign from '@tiptap/extension-text-align';
+import TextStyle from '@tiptap/extension-text-style';
+import Color from '@tiptap/extension-color';
+import Highlight from '@tiptap/extension-highlight';
+import Subscript from '@tiptap/extension-subscript';
+import Superscript from '@tiptap/extension-superscript';
+import Underline from '@tiptap/extension-underline';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
+import { 
+  Bold, Italic, Underline as UnderlineIcon, Strikethrough, 
+  Code, Heading1, Heading2, Heading3, List, ListOrdered,
+  AlignLeft, AlignCenter, AlignRight, AlignJustify,
+  Quote, Minus, Link as LinkIcon, Image as ImageIcon,
+  Undo, Redo, Table as TableIcon, Subscript as SubIcon,
+  Superscript as SuperIcon, Highlighter
+} from 'lucide-react';
 
 const SYMBOLS = {
   arrows: ['→', '←', '↑', '↓', '↔', '⇒', '⇐', '⇔', '↗', '↘'],
@@ -13,10 +34,84 @@ const SYMBOLS = {
   organic: ['—', '≡', '⌬', '⟲', '⟳', 'CH₃', 'CH₂', 'COOH', 'OH', 'NH₂']
 };
 
-export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
-  const quillRef = useRef(null);
+const MenuButton = ({ onClick, isActive, children, title }) => (
+  <button
+    onClick={onClick}
+    type="button"
+    title={title}
+    className={`p-2 rounded hover:bg-indigo-100 transition-colors ${
+      isActive ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700'
+    }`}
+  >
+    {children}
+  </button>
+);
 
-  const imageHandler = async () => {
+export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
+  const editor = useEditor({
+    extensions: [
+      StarterKit.configure({
+        heading: {
+          levels: [1, 2, 3, 4, 5, 6]
+        }
+      }),
+      Image.configure({
+        inline: true,
+        HTMLAttributes: {
+          class: 'max-w-full h-auto rounded cursor-pointer',
+        },
+      }),
+      Link.configure({
+        openOnClick: false,
+      }),
+      Table.configure({
+        resizable: true,
+        HTMLAttributes: {
+          class: 'border-collapse table-auto w-full',
+        },
+      }),
+      TableRow,
+      TableCell.configure({
+        HTMLAttributes: {
+          class: 'border border-gray-300 p-2',
+        },
+      }),
+      TableHeader.configure({
+        HTMLAttributes: {
+          class: 'border border-gray-300 p-2 bg-gray-100 font-bold',
+        },
+      }),
+      TextAlign.configure({
+        types: ['heading', 'paragraph'],
+      }),
+      TextStyle,
+      Color,
+      Highlight.configure({
+        multicolor: true
+      }),
+      Subscript,
+      Superscript,
+      Underline,
+    ],
+    content: value,
+    onUpdate: ({ editor }) => {
+      onChange(editor.getHTML());
+    },
+    editorProps: {
+      attributes: {
+        class: 'prose prose-sm max-w-none focus:outline-none min-h-[250px] max-h-[600px] overflow-y-auto p-4',
+        placeholder: placeholder || 'Start writing...',
+      },
+      handleClickOn: (view, pos, node, nodePos, event) => {
+        if (node.type.name === 'image') {
+          event.preventDefault();
+          handleImageReplace(node, nodePos);
+        }
+      },
+    },
+  }, []);
+
+  const handleImageUpload = useCallback(async () => {
     const input = document.createElement('input');
     input.type = 'file';
     input.accept = 'image/*';
@@ -34,14 +129,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       
       try {
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
-        
-        const quill = quillRef.current?.getEditor();
-        if (quill) {
-          const range = quill.getSelection(true);
-          quill.insertEmbed(range.index, 'image', file_url);
-          quill.setSelection(range.index + 1);
-        }
-        
+        editor?.chain().focus().setImage({ src: file_url }).run();
         toast.dismiss(loadingToast);
         toast.success('Image inserted!');
       } catch (error) {
@@ -51,106 +139,52 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     };
     
     input.click();
-  };
+  }, [editor]);
 
-  const modules = useMemo(() => ({
-    toolbar: {
-      container: [
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': [] }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        ['blockquote', 'code-block'],
-        ['link', 'image', 'video'],
-        ['clean']
-      ],
-      handlers: {
-        image: imageHandler
-      }
-    },
-    clipboard: {
-      matchVisual: false
-    }
-  }), []);
-
-  const formats = [
-    'header', 'font', 'size',
-    'bold', 'italic', 'underline', 'strike',
-    'color', 'background',
-    'script',
-    'list', 'bullet', 'indent',
-    'align',
-    'blockquote', 'code-block',
-    'link', 'image', 'video'
-  ];
-
-  const handleChange = (content, delta, source, editor) => {
-    onChange(content);
-  };
-
-  const handleSymbolClick = (symbol) => {
-    const quill = quillRef.current?.getEditor();
-    if (quill) {
-      const range = quill.getSelection(true);
-      const position = range ? range.index : 0;
-      quill.insertText(position, symbol, 'user');
-      quill.setSelection(position + symbol.length);
-    }
-  };
-
-  // Add click handler for images to allow replacement
-  useEffect(() => {
-    const quill = quillRef.current?.getEditor();
-    if (!quill) return;
-
-    const editorElement = quill.root;
+  const handleImageReplace = useCallback(async (node, pos) => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
     
-    const handleImageClick = async (e) => {
-      if (e.target.tagName === 'IMG') {
-        e.preventDefault();
-        e.stopPropagation();
-        
-        const input = document.createElement('input');
-        input.type = 'file';
-        input.accept = 'image/*';
-        
-        input.onchange = async (event) => {
-          const file = event.target.files?.[0];
-          if (!file) return;
-          
-          if (!file.type.startsWith('image/')) {
-            toast.error('Please select an image file');
-            return;
-          }
-          
-          toast.loading('Uploading image...');
-          
-          try {
-            const { file_url } = await base44.integrations.Core.UploadFile({ file });
-            e.target.src = file_url;
-            toast.dismiss();
-            toast.success('Image updated!');
-          } catch (error) {
-            toast.dismiss();
-            toast.error('Failed to upload image');
-          }
-        };
-        
-        input.click();
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      if (!file.type.startsWith('image/')) {
+        toast.error('Please select an image file');
+        return;
+      }
+      
+      const loadingToast = toast.loading('Uploading image...');
+      
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        editor?.chain().focus().setNodeSelection(pos).setImage({ src: file_url }).run();
+        toast.dismiss(loadingToast);
+        toast.success('Image updated!');
+      } catch (error) {
+        toast.dismiss(loadingToast);
+        toast.error('Failed to upload image');
       }
     };
     
-    editorElement.addEventListener('click', handleImageClick);
-    
-    return () => {
-      editorElement.removeEventListener('click', handleImageClick);
-    };
-  }, []);
+    input.click();
+  }, [editor]);
+
+  const addLink = useCallback(() => {
+    const url = window.prompt('Enter URL:');
+    if (url) {
+      editor?.chain().focus().setLink({ href: url }).run();
+    }
+  }, [editor]);
+
+  const insertSymbol = useCallback((symbol) => {
+    editor?.chain().focus().insertContent(symbol).run();
+  }, [editor]);
+
+  if (!editor) {
+    return null;
+  }
 
   return (
     <div className="rich-text-editor-wrapper">
@@ -158,107 +192,71 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       
       <style>
         {`
-          .rich-text-editor-wrapper .quill {
+          .rich-text-editor-wrapper .ProseMirror {
             background: white;
-            border-radius: 0.5rem;
             border: 1px solid #e5e7eb;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar.ql-snow {
-            border: none;
-            border-bottom: 1px solid #e5e7eb;
-            background: #f9fafb;
-            border-radius: 0.5rem 0.5rem 0 0;
-            padding: 12px;
-          }
-          
-          .rich-text-editor-wrapper .ql-container.ql-snow {
-            border: none;
+            border-top: none;
             border-radius: 0 0 0.5rem 0.5rem;
-          }
-          
-          .rich-text-editor-wrapper .ql-editor {
-            min-height: 250px;
-            max-height: 600px;
-            overflow-y: auto;
             font-size: 15px;
             line-height: 1.6;
-            padding: 16px;
           }
           
-          .rich-text-editor-wrapper .ql-editor.ql-blank::before {
-            font-style: normal;
+          .rich-text-editor-wrapper .ProseMirror:focus {
+            outline: none;
+          }
+          
+          .rich-text-editor-wrapper .ProseMirror p.is-editor-empty:first-child::before {
+            content: attr(placeholder);
             color: #9ca3af;
-            left: 16px;
+            pointer-events: none;
+            float: left;
+            height: 0;
           }
           
-          .rich-text-editor-wrapper .ql-editor p {
-            margin-bottom: 0.5em;
-          }
-          
-          .rich-text-editor-wrapper .ql-editor img {
+          .rich-text-editor-wrapper .ProseMirror img {
             max-width: 100%;
             height: auto;
             border-radius: 4px;
             margin: 8px 0;
           }
           
-          .rich-text-editor-wrapper .ql-editor h1,
-          .rich-text-editor-wrapper .ql-editor h2,
-          .rich-text-editor-wrapper .ql-editor h3 {
+          .rich-text-editor-wrapper .ProseMirror h1,
+          .rich-text-editor-wrapper .ProseMirror h2,
+          .rich-text-editor-wrapper .ProseMirror h3 {
             margin-top: 1em;
             margin-bottom: 0.5em;
             font-weight: 600;
           }
           
-          .rich-text-editor-wrapper .ql-editor ul,
-          .rich-text-editor-wrapper .ql-editor ol {
+          .rich-text-editor-wrapper .ProseMirror ul,
+          .rich-text-editor-wrapper .ProseMirror ol {
             padding-left: 1.5em;
             margin: 0.5em 0;
           }
           
-          .rich-text-editor-wrapper .ql-editor blockquote {
+          .rich-text-editor-wrapper .ProseMirror blockquote {
             border-left: 4px solid #4f46e5;
             padding-left: 16px;
             margin: 1em 0;
             color: #4b5563;
           }
           
-          .rich-text-editor-wrapper .ql-toolbar button {
-            width: 28px !important;
-            height: 28px !important;
+          .rich-text-editor-wrapper .ProseMirror table {
+            border-collapse: collapse;
+            margin: 1em 0;
+            width: 100%;
           }
           
-          .rich-text-editor-wrapper .ql-toolbar button:hover {
-            color: #4f46e5 !important;
+          .rich-text-editor-wrapper .ProseMirror table td,
+          .rich-text-editor-wrapper .ProseMirror table th {
+            border: 1px solid #e5e7eb;
+            padding: 8px 12px;
+            min-width: 50px;
           }
           
-          .rich-text-editor-wrapper .ql-toolbar .ql-stroke {
-            stroke: #374151 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar .ql-fill {
-            fill: #374151 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar button:hover .ql-stroke {
-            stroke: #4f46e5 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar button:hover .ql-fill {
-            fill: #4f46e5 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar button.ql-active {
-            color: #4f46e5 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar button.ql-active .ql-stroke {
-            stroke: #4f46e5 !important;
-          }
-          
-          .rich-text-editor-wrapper .ql-toolbar button.ql-active .ql-fill {
-            fill: #4f46e5 !important;
+          .rich-text-editor-wrapper .ProseMirror table th {
+            background-color: #f9fafb;
+            font-weight: 600;
           }
           
           .symbol-picker {
@@ -312,17 +310,180 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         `}
       </style>
       
-      <ReactQuill 
-        ref={quillRef}
-        theme="snow"
-        value={value || ''}
-        onChange={handleChange}
-        modules={modules}
-        formats={formats}
-        placeholder={placeholder || "Start writing..."}
-        preserveWhitespace
-      />
+      {/* Toolbar */}
+      <div className="bg-gray-50 border border-gray-200 rounded-t-lg p-2 flex flex-wrap gap-1">
+        <MenuButton
+          onClick={() => editor.chain().focus().undo().run()}
+          title="Undo"
+        >
+          <Undo className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().redo().run()}
+          title="Redo"
+        >
+          <Redo className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 1 }).run()}
+          isActive={editor.isActive('heading', { level: 1 })}
+          title="Heading 1"
+        >
+          <Heading1 className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          isActive={editor.isActive('heading', { level: 2 })}
+          title="Heading 2"
+        >
+          <Heading2 className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleHeading({ level: 3 }).run()}
+          isActive={editor.isActive('heading', { level: 3 })}
+          title="Heading 3"
+        >
+          <Heading3 className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleBold().run()}
+          isActive={editor.isActive('bold')}
+          title="Bold"
+        >
+          <Bold className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleItalic().run()}
+          isActive={editor.isActive('italic')}
+          title="Italic"
+        >
+          <Italic className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleUnderline().run()}
+          isActive={editor.isActive('underline')}
+          title="Underline"
+        >
+          <UnderlineIcon className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleStrike().run()}
+          isActive={editor.isActive('strike')}
+          title="Strikethrough"
+        >
+          <Strikethrough className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleSubscript().run()}
+          isActive={editor.isActive('subscript')}
+          title="Subscript"
+        >
+          <SubIcon className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleSuperscript().run()}
+          isActive={editor.isActive('superscript')}
+          title="Superscript"
+        >
+          <SuperIcon className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleBulletList().run()}
+          isActive={editor.isActive('bulletList')}
+          title="Bullet List"
+        >
+          <List className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleOrderedList().run()}
+          isActive={editor.isActive('orderedList')}
+          title="Numbered List"
+        >
+          <ListOrdered className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().setTextAlign('left').run()}
+          isActive={editor.isActive({ textAlign: 'left' })}
+          title="Align Left"
+        >
+          <AlignLeft className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setTextAlign('center').run()}
+          isActive={editor.isActive({ textAlign: 'center' })}
+          title="Align Center"
+        >
+          <AlignCenter className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setTextAlign('right').run()}
+          isActive={editor.isActive({ textAlign: 'right' })}
+          title="Align Right"
+        >
+          <AlignRight className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          isActive={editor.isActive('blockquote')}
+          title="Quote"
+        >
+          <Quote className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          title="Horizontal Rule"
+        >
+          <Minus className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
+          title="Insert Table"
+        >
+          <TableIcon className="w-4 h-4" />
+        </MenuButton>
+        
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+        
+        <MenuButton
+          onClick={addLink}
+          isActive={editor.isActive('link')}
+          title="Add Link"
+        >
+          <LinkIcon className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={handleImageUpload}
+          title="Insert Image"
+        >
+          <ImageIcon className="w-4 h-4" />
+        </MenuButton>
+      </div>
       
+      {/* Editor */}
+      <EditorContent editor={editor} />
+      
+      {/* Symbol Picker */}
       <div className="symbol-picker">
         <div className="symbol-section">
           <div className="symbol-section-title">Quick Insert Symbols</div>
@@ -331,7 +492,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
               <button
                 key={`arrow-${i}`}
                 className="symbol-btn"
-                onClick={() => handleSymbolClick(symbol)}
+                onClick={() => insertSymbol(symbol)}
                 type="button"
                 title={symbol}
               >
@@ -342,7 +503,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
               <button
                 key={`chem-${i}`}
                 className="symbol-btn"
-                onClick={() => handleSymbolClick(symbol)}
+                onClick={() => insertSymbol(symbol)}
                 type="button"
                 style={{ fontSize: '13px' }}
                 title={symbol}
@@ -354,7 +515,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
               <button
                 key={`math-${i}`}
                 className="symbol-btn"
-                onClick={() => handleSymbolClick(symbol)}
+                onClick={() => insertSymbol(symbol)}
                 type="button"
                 title={symbol}
               >
@@ -376,7 +537,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   <button
                     key={`all-chem-${i}`}
                     className="symbol-btn"
-                    onClick={() => handleSymbolClick(symbol)}
+                    onClick={() => insertSymbol(symbol)}
                     type="button"
                     style={{ fontSize: '13px' }}
                   >
@@ -393,7 +554,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   <button
                     key={`organic-${i}`}
                     className="symbol-btn"
-                    onClick={() => handleSymbolClick(symbol)}
+                    onClick={() => insertSymbol(symbol)}
                     type="button"
                   >
                     {symbol}
@@ -409,7 +570,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   <button
                     key={`all-math-${i}`}
                     className="symbol-btn"
-                    onClick={() => handleSymbolClick(symbol)}
+                    onClick={() => insertSymbol(symbol)}
                     type="button"
                   >
                     {symbol}
@@ -425,7 +586,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   <button
                     key={`shape-${i}`}
                     className="symbol-btn"
-                    onClick={() => handleSymbolClick(symbol)}
+                    onClick={() => insertSymbol(symbol)}
                     type="button"
                   >
                     {symbol}
