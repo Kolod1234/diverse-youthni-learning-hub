@@ -1,56 +1,38 @@
-import React, { useRef } from 'react';
-import ReactQuill, { Quill } from 'react-quill';
+import React, { useRef, useMemo } from 'react';
+import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Label } from '@/components/ui/label';
-
-// Custom insert buttons
-const insertSymbol = (quill, symbol) => {
-  const cursorPosition = quill.getSelection()?.index || 0;
-  quill.insertText(cursorPosition, symbol);
-  quill.setSelection(cursorPosition + symbol.length);
-};
 
 const SYMBOLS = {
   arrows: ['→', '←', '↑', '↓', '↔', '⇒', '⇐', '⇔', '↗', '↘'],
   chemistry: ['H₂O', 'CO₂', 'O₂', 'N₂', 'CH₄', 'NH₃', 'H₂SO₄', 'NaCl', 'Ca²⁺', 'OH⁻', 'Fe³⁺', 'SO₄²⁻'],
   math: ['π', '∑', '∫', '√', '∞', '≈', '≠', '≤', '≥', '±', '×', '÷', '∂', 'Δ', 'α', 'β', 'γ', 'θ', 'λ', 'μ'],
-  shapes: ['○', '●', '□', '■', '△', '▲', '◇', '◆', '☆', '★', '→', '⟶', '⇢', '⟹'],
+  shapes: ['○', '●', '□', '■', '△', '▲', '◇', '◆', '☆', '★'],
   organic: ['—', '≡', '⌬', '⟲', '⟳', 'CH₃', 'CH₂', 'COOH', 'OH', 'NH₂']
 };
 
-export default function RichTextEditor({ value, onChange, placeholder, label }) {
+export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
   const quillRef = useRef(null);
 
-  const modules = {
-    toolbar: {
-      container: [
-        [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-        [{ 'font': [] }],
-        [{ 'size': ['small', false, 'large', 'huge'] }],
-        ['bold', 'italic', 'underline', 'strike'],
-        [{ 'color': [] }, { 'background': [] }],
-        [{ 'script': 'sub'}, { 'script': 'super' }],
-        [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-        [{ 'indent': '-1'}, { 'indent': '+1' }],
-        [{ 'align': [] }],
-        ['blockquote', 'code-block'],
-        ['link', 'image', 'video'],
-        ['clean'],
-        ['symbol-menu']
-      ],
-      handlers: {
-        'symbol-menu': function() {
-          const menu = document.getElementById('symbol-menu');
-          if (menu) {
-            menu.style.display = menu.style.display === 'none' ? 'block' : 'none';
-          }
-        }
-      }
-    },
+  const modules = useMemo(() => ({
+    toolbar: [
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
+      [{ 'font': [] }],
+      [{ 'size': ['small', false, 'large', 'huge'] }],
+      ['bold', 'italic', 'underline', 'strike'],
+      [{ 'color': [] }, { 'background': [] }],
+      [{ 'script': 'sub'}, { 'script': 'super' }],
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
+      [{ 'indent': '-1'}, { 'indent': '+1' }],
+      [{ 'align': [] }],
+      ['blockquote', 'code-block'],
+      ['link', 'image', 'video'],
+      ['clean']
+    ],
     clipboard: {
       matchVisual: false
     }
-  };
+  }), []);
 
   const formats = [
     'header', 'font', 'size',
@@ -60,201 +42,306 @@ export default function RichTextEditor({ value, onChange, placeholder, label }) 
     'list', 'bullet', 'indent',
     'align',
     'blockquote', 'code-block',
-    'link', 'image', 'video', 'width', 'height', 'style'
+    'link', 'image', 'video'
   ];
+
+  const handleChange = (content, delta, source, editor) => {
+    onChange(content);
+  };
 
   const handleSymbolClick = (symbol) => {
     const quill = quillRef.current?.getEditor();
     if (quill) {
-      insertSymbol(quill, symbol);
+      const range = quill.getSelection(true);
+      const position = range ? range.index : 0;
+      quill.insertText(position, symbol, 'user');
+      quill.setSelection(position + symbol.length);
     }
-    const menu = document.getElementById('symbol-menu');
-    if (menu) menu.style.display = 'none';
   };
 
   return (
-    <div className="space-y-2">
-      {label && <Label>{label}</Label>}
+    <div className="rich-text-editor-wrapper">
+      {label && <Label className="mb-2 block">{label}</Label>}
+      
       <style>
         {`
-          .ql-container {
-            font-size: 15px;
-            border-bottom-left-radius: 0.5rem;
-            border-bottom-right-radius: 0.5rem;
+          .rich-text-editor-wrapper .quill {
+            background: white;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
           }
-          .ql-toolbar {
-            border-top-left-radius: 0.5rem;
-            border-top-right-radius: 0.5rem;
+          
+          .rich-text-editor-wrapper .ql-toolbar.ql-snow {
+            border: none;
+            border-bottom: 1px solid #e5e7eb;
             background: #f9fafb;
+            border-radius: 0.5rem 0.5rem 0 0;
+            padding: 12px;
           }
-          .ql-editor {
-            min-height: 200px;
+          
+          .rich-text-editor-wrapper .ql-container.ql-snow {
+            border: none;
+            border-radius: 0 0 0.5rem 0.5rem;
           }
-          .ql-editor.ql-blank::before {
+          
+          .rich-text-editor-wrapper .ql-editor {
+            min-height: 250px;
+            max-height: 600px;
+            overflow-y: auto;
+            font-size: 15px;
+            line-height: 1.6;
+            padding: 16px;
+          }
+          
+          .rich-text-editor-wrapper .ql-editor.ql-blank::before {
             font-style: normal;
             color: #9ca3af;
+            left: 16px;
           }
-          .ql-editor img {
+          
+          .rich-text-editor-wrapper .ql-editor p {
+            margin-bottom: 0.5em;
+          }
+          
+          .rich-text-editor-wrapper .ql-editor img {
             max-width: 100%;
             height: auto;
-            cursor: move;
-            resize: both;
-            overflow: auto;
-            display: inline-block;
+            border-radius: 4px;
+            margin: 8px 0;
           }
-          .ql-editor img:hover {
-            outline: 2px solid #4f46e5;
+          
+          .rich-text-editor-wrapper .ql-editor h1,
+          .rich-text-editor-wrapper .ql-editor h2,
+          .rich-text-editor-wrapper .ql-editor h3 {
+            margin-top: 1em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
           }
-          .ql-snow button.ql-symbol-menu {
-            width: auto !important;
+          
+          .rich-text-editor-wrapper .ql-editor ul,
+          .rich-text-editor-wrapper .ql-editor ol {
+            padding-left: 1.5em;
+            margin: 0.5em 0;
           }
-          .ql-snow button.ql-symbol-menu::before {
-            content: '⚛️';
-            font-size: 18px;
+          
+          .rich-text-editor-wrapper .ql-editor blockquote {
+            border-left: 4px solid #4f46e5;
+            padding-left: 16px;
+            margin: 1em 0;
+            color: #4b5563;
           }
-          #symbol-menu {
-            display: none;
-            position: absolute;
-            z-index: 1000;
-            background: white;
-            border: 1px solid #e5e7eb;
-            border-radius: 0.5rem;
+          
+          .rich-text-editor-wrapper .ql-toolbar button {
+            width: 28px !important;
+            height: 28px !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button:hover {
+            color: #4f46e5 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar .ql-stroke {
+            stroke: #374151 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar .ql-fill {
+            fill: #374151 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button:hover .ql-stroke {
+            stroke: #4f46e5 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button:hover .ql-fill {
+            fill: #4f46e5 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button.ql-active {
+            color: #4f46e5 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button.ql-active .ql-stroke {
+            stroke: #4f46e5 !important;
+          }
+          
+          .rich-text-editor-wrapper .ql-toolbar button.ql-active .ql-fill {
+            fill: #4f46e5 !important;
+          }
+          
+          .symbol-picker {
+            margin-top: 12px;
             padding: 12px;
-            box-shadow: 0 10px 15px -3px rgb(0 0 0 / 0.1);
-            max-width: 500px;
-            margin-top: 4px;
-            max-height: 400px;
-            overflow-y: auto;
+            background: #f9fafb;
+            border-radius: 0.5rem;
+            border: 1px solid #e5e7eb;
           }
+          
           .symbol-section {
             margin-bottom: 12px;
           }
+          
           .symbol-section:last-child {
             margin-bottom: 0;
           }
+          
           .symbol-section-title {
             font-size: 11px;
             font-weight: 600;
             color: #6b7280;
             text-transform: uppercase;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             letter-spacing: 0.5px;
           }
+          
           .symbol-grid {
-            display: grid;
-            grid-template-columns: repeat(10, 1fr);
+            display: flex;
+            flex-wrap: wrap;
             gap: 4px;
           }
+          
           .symbol-btn {
-            padding: 8px;
+            padding: 8px 10px;
             border: 1px solid #e5e7eb;
             border-radius: 4px;
             background: white;
             cursor: pointer;
             font-size: 16px;
-            text-align: center;
             transition: all 0.15s;
+            min-width: 38px;
+            text-align: center;
           }
+          
           .symbol-btn:hover {
             background: #eef2ff;
             border-color: #4f46e5;
-            transform: scale(1.15);
+            transform: scale(1.05);
           }
         `}
       </style>
-      <div style={{ position: 'relative' }}>
-        <ReactQuill 
-          ref={quillRef}
-          theme="snow" 
-          value={value} 
-          onChange={onChange}
-          modules={modules}
-          formats={formats}
-          placeholder={placeholder}
-        />
-        <div id="symbol-menu">
-          <div className="symbol-section">
-            <div className="symbol-section-title">Arrows</div>
-            <div className="symbol-grid">
-              {SYMBOLS.arrows.map((symbol, i) => (
-                <button
-                  key={i}
-                  className="symbol-btn"
-                  onClick={() => handleSymbolClick(symbol)}
-                  type="button"
-                  title={symbol}
-                >
-                  {symbol}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="symbol-section">
-            <div className="symbol-section-title">Chemistry Formulas</div>
-            <div className="symbol-grid">
-              {SYMBOLS.chemistry.map((symbol, i) => (
-                <button
-                  key={i}
-                  className="symbol-btn"
-                  onClick={() => handleSymbolClick(symbol)}
-                  type="button"
-                  style={{ fontSize: '13px' }}
-                  title={symbol}
-                >
-                  {symbol}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="symbol-section">
-            <div className="symbol-section-title">Organic Chemistry</div>
-            <div className="symbol-grid">
-              {SYMBOLS.organic.map((symbol, i) => (
-                <button
-                  key={i}
-                  className="symbol-btn"
-                  onClick={() => handleSymbolClick(symbol)}
-                  type="button"
-                  title={symbol}
-                >
-                  {symbol}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="symbol-section">
-            <div className="symbol-section-title">Math Symbols</div>
-            <div className="symbol-grid">
-              {SYMBOLS.math.map((symbol, i) => (
-                <button
-                  key={i}
-                  className="symbol-btn"
-                  onClick={() => handleSymbolClick(symbol)}
-                  type="button"
-                  title={symbol}
-                >
-                  {symbol}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="symbol-section">
-            <div className="symbol-section-title">Shapes & Markers</div>
-            <div className="symbol-grid">
-              {SYMBOLS.shapes.map((symbol, i) => (
-                <button
-                  key={i}
-                  className="symbol-btn"
-                  onClick={() => handleSymbolClick(symbol)}
-                  type="button"
-                  title={symbol}
-                >
-                  {symbol}
-                </button>
-              ))}
-            </div>
+      
+      <ReactQuill 
+        ref={quillRef}
+        theme="snow"
+        value={value || ''}
+        onChange={handleChange}
+        modules={modules}
+        formats={formats}
+        placeholder={placeholder || "Start writing..."}
+        preserveWhitespace
+      />
+      
+      <div className="symbol-picker">
+        <div className="symbol-section">
+          <div className="symbol-section-title">Quick Insert Symbols</div>
+          <div className="symbol-grid">
+            {SYMBOLS.arrows.map((symbol, i) => (
+              <button
+                key={`arrow-${i}`}
+                className="symbol-btn"
+                onClick={() => handleSymbolClick(symbol)}
+                type="button"
+                title={symbol}
+              >
+                {symbol}
+              </button>
+            ))}
+            {SYMBOLS.chemistry.slice(0, 8).map((symbol, i) => (
+              <button
+                key={`chem-${i}`}
+                className="symbol-btn"
+                onClick={() => handleSymbolClick(symbol)}
+                type="button"
+                style={{ fontSize: '13px' }}
+                title={symbol}
+              >
+                {symbol}
+              </button>
+            ))}
+            {SYMBOLS.math.slice(0, 10).map((symbol, i) => (
+              <button
+                key={`math-${i}`}
+                className="symbol-btn"
+                onClick={() => handleSymbolClick(symbol)}
+                type="button"
+                title={symbol}
+              >
+                {symbol}
+              </button>
+            ))}
           </div>
         </div>
+        
+        <details className="mt-3">
+          <summary className="cursor-pointer text-xs font-medium text-gray-600 hover:text-indigo-600 transition-colors">
+            Show All Symbols
+          </summary>
+          <div className="mt-3 space-y-3">
+            <div className="symbol-section">
+              <div className="symbol-section-title">All Chemistry</div>
+              <div className="symbol-grid">
+                {SYMBOLS.chemistry.map((symbol, i) => (
+                  <button
+                    key={`all-chem-${i}`}
+                    className="symbol-btn"
+                    onClick={() => handleSymbolClick(symbol)}
+                    type="button"
+                    style={{ fontSize: '13px' }}
+                  >
+                    {symbol}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="symbol-section">
+              <div className="symbol-section-title">Organic Chemistry</div>
+              <div className="symbol-grid">
+                {SYMBOLS.organic.map((symbol, i) => (
+                  <button
+                    key={`organic-${i}`}
+                    className="symbol-btn"
+                    onClick={() => handleSymbolClick(symbol)}
+                    type="button"
+                  >
+                    {symbol}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="symbol-section">
+              <div className="symbol-section-title">All Math</div>
+              <div className="symbol-grid">
+                {SYMBOLS.math.map((symbol, i) => (
+                  <button
+                    key={`all-math-${i}`}
+                    className="symbol-btn"
+                    onClick={() => handleSymbolClick(symbol)}
+                    type="button"
+                  >
+                    {symbol}
+                  </button>
+                ))}
+              </div>
+            </div>
+            
+            <div className="symbol-section">
+              <div className="symbol-section-title">Shapes</div>
+              <div className="symbol-grid">
+                {SYMBOLS.shapes.map((symbol, i) => (
+                  <button
+                    key={`shape-${i}`}
+                    className="symbol-btn"
+                    onClick={() => handleSymbolClick(symbol)}
+                    type="button"
+                  >
+                    {symbol}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        </details>
       </div>
     </div>
   );
