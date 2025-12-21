@@ -1,7 +1,9 @@
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useEffect } from 'react';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
 import { Label } from '@/components/ui/label';
+import { base44 } from '@/api/base44Client';
+import { toast } from 'sonner';
 
 const SYMBOLS = {
   arrows: ['→', '←', '↑', '↓', '↔', '⇒', '⇐', '⇔', '↗', '↘'],
@@ -58,6 +60,55 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       quill.setSelection(position + symbol.length);
     }
   };
+
+  // Add click handler for images to allow replacement
+  useEffect(() => {
+    const quill = quillRef.current?.getEditor();
+    if (!quill) return;
+
+    const editorElement = quill.root;
+    
+    const handleImageClick = async (e) => {
+      if (e.target.tagName === 'IMG') {
+        e.preventDefault();
+        e.stopPropagation();
+        
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*';
+        
+        input.onchange = async (event) => {
+          const file = event.target.files?.[0];
+          if (!file) return;
+          
+          if (!file.type.startsWith('image/')) {
+            toast.error('Please select an image file');
+            return;
+          }
+          
+          toast.loading('Uploading image...');
+          
+          try {
+            const { file_url } = await base44.integrations.Core.UploadFile({ file });
+            e.target.src = file_url;
+            toast.dismiss();
+            toast.success('Image updated!');
+          } catch (error) {
+            toast.dismiss();
+            toast.error('Failed to upload image');
+          }
+        };
+        
+        input.click();
+      }
+    };
+    
+    editorElement.addEventListener('click', handleImageClick);
+    
+    return () => {
+      editorElement.removeEventListener('click', handleImageClick);
+    };
+  }, []);
 
   return (
     <div className="rich-text-editor-wrapper">
