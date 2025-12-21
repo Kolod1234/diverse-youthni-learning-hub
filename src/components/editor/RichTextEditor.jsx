@@ -182,6 +182,13 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     editor?.chain().focus().insertContent(symbol).run();
   }, [editor]);
 
+  // Update editor content when value prop changes externally
+  useEffect(() => {
+    if (editor && value !== editor.getHTML()) {
+      editor.commands.setContent(value);
+    }
+  }, [value, editor]);
+
   if (!editor) {
     return null;
   }
