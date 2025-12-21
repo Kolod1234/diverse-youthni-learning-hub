@@ -19,22 +19,22 @@ const SLIDE_TEMPLATES = {
   blank: {
     name: 'Blank Slide',
     icon: '📄',
-    content: '<p>Start writing your content here...</p>'
+    content: '<p style="line-height: 1.8; font-size: 16px;">Start writing your content here...</p>'
   },
   title: {
     name: 'Title Slide',
     icon: '📌',
-    content: '<h1 style="text-align: center; color: #4F46E5; margin-bottom: 20px;">Main Title</h1><p style="text-align: center; font-size: 18px; color: #6B7280;">Subtitle or key point</p>'
+    content: '<h1 style="font-size: 42px; font-weight: bold; color: #1F2937; margin-bottom: 16px; line-height: 1.2;">Main Heading</h1><p style="font-size: 14px; color: #6B7280; text-transform: uppercase; letter-spacing: 1px; font-weight: 600;">LESSON 1 OF 10</p>'
   },
   content: {
     name: 'Content Slide',
     icon: '📝',
-    content: '<h2 style="color: #4F46E5; border-bottom: 2px solid #E0E7FF; padding-bottom: 10px;">Section Title</h2><p style="margin-top: 15px; line-height: 1.8;">Add your main content here with detailed explanations and examples.</p>'
+    content: '<div style="border-left: 4px solid #4F46E5; padding-left: 24px; margin: 24px 0;"><h3 style="color: #4F46E5; font-size: 20px; font-weight: 600; margin-bottom: 16px; font-style: italic;">Section heading</h3><p style="line-height: 1.8; font-size: 16px; color: #1F2937;">Add your main content here with detailed explanations. Use clear, concise language to explain complex concepts. Break down information into digestible paragraphs.</p></div><p style="line-height: 1.8; font-size: 16px; color: #1F2937; margin-top: 16px;">Continue with additional paragraphs as needed. Maintain consistent spacing and formatting throughout.</p>'
   },
   bullets: {
     name: 'Bullet Points',
     icon: '📋',
-    content: '<h2 style="color: #4F46E5;">Key Points</h2><ul style="margin-top: 15px; line-height: 2;"><li>First important point</li><li>Second important point</li><li>Third important point</li><li>Add more points as needed</li></ul>'
+    content: '<h2 style="font-size: 28px; font-weight: bold; color: #1F2937; margin-bottom: 20px;">Key Points</h2><ul style="margin-left: 0; padding-left: 24px; line-height: 2;"><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">First important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Second important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Third important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Add more points as needed</li></ul>'
   },
   twoColumn: {
     name: 'Two Column Layout',
@@ -44,7 +44,7 @@ const SLIDE_TEMPLATES = {
   definition: {
     name: 'Definition Box',
     icon: '📖',
-    content: '<h2 style="color: #4F46E5;">Term or Concept</h2><blockquote style="border-left: 4px solid #4F46E5; padding-left: 20px; margin: 20px 0; background: #EEF2FF; padding: 15px; border-radius: 4px;"><strong style="color: #312E81;">Definition:</strong> Explain the term clearly and concisely with proper academic rigor.</blockquote><p style="margin-top: 15px;"><strong>Example:</strong> Provide a practical, real-world example to illustrate the concept.</p>'
+    content: '<h2 style="font-size: 28px; font-weight: bold; color: #1F2937; margin-bottom: 20px;">Term or Concept</h2><div style="border-left: 4px solid #4F46E5; padding-left: 24px; margin: 24px 0;"><p style="line-height: 1.8; font-size: 16px; color: #1F2937; margin-bottom: 16px;">Explain the term clearly and concisely with proper academic rigor. Provide comprehensive details that help students understand the core meaning.</p></div><div style="margin-top: 24px;"><h3 style="color: #4F46E5; font-size: 18px; font-weight: 600; margin-bottom: 12px;">Example</h3><p style="line-height: 1.8; font-size: 16px; color: #1F2937;">Provide a practical, real-world example to illustrate the concept and help students apply their understanding.</p></div>'
   },
   imageText: {
     name: 'Image & Text',
