@@ -348,6 +348,28 @@ export default function SlideEditor({ slides = [], onChange }) {
               <Card className="flex-1 overflow-hidden border-2">
                 <ScrollArea className="h-full">
                   <div className="p-6 space-y-6">
+                    {/* Template Selector */}
+                    <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+                      <Label className="text-sm font-semibold mb-3 block text-indigo-900">Apply Template to This Slide</Label>
+                      <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
+                        {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+                          <Button
+                            key={key}
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              updateSlide(currentSlide, 'content', template.content);
+                              toast.success(`${template.name} applied!`);
+                            }}
+                            className="h-auto py-3 flex-col gap-1 hover:bg-white hover:border-indigo-400"
+                          >
+                            <span className="text-xl">{template.icon}</span>
+                            <span className="text-[10px] font-medium leading-tight">{template.name}</span>
+                          </Button>
+                        ))}
+                      </div>
+                    </div>
+
                     <div>
                       <Label className="text-base font-semibold mb-2 block">Slide Title</Label>
                       <Input
