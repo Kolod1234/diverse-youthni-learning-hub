@@ -53,7 +53,6 @@ export default function TutorCourseManager() {
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['lessons']);
-      setEditingLesson(null);
       toast.success('Lesson updated!');
     },
   });
