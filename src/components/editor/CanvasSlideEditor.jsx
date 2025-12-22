@@ -57,8 +57,9 @@ const CANVAS_TEMPLATES = [
         content: 'Left column content', backgroundColor: '#F9FAFB', borderColor: '#E5E7EB', zIndex: 2 
       },
       { 
-        type: 'card', cardType: 'default', x: 1020, y: 250, width: 800, height: 700, 
-        content: 'Right column content', backgroundColor: '#F9FAFB', borderColor: '#E5E7EB', zIndex: 3 
+        type: 'image', x: 1020, y: 250, width: 800, height: 700, 
+        src: 'https://via.placeholder.com/800x700/4F46E5/FFFFFF?text=Click+to+Upload', 
+        objectFit: 'cover', opacity: 1, zIndex: 3 
       }
     ]
   },
