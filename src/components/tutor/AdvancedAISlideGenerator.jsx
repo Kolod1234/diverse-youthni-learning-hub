@@ -139,48 +139,6 @@ Return ONLY valid JSON with this structure:
       }
 
       const slidesResult = slidesResponse.data.result;
-        prompt: `You are an expert educational content creator. Generate comprehensive, modern lesson slides for:
-
-TOPIC: ${topic}
-${additionalPrompt ? `ADDITIONAL REQUIREMENTS: ${additionalPrompt}` : ''}
-
-CURRICULUM: ${curriculum} - ${examBoard} Exam Board
-NUMBER OF SLIDES: ${numSlides}
-
-Requirements:
-1. Search and research current ${curriculum} ${examBoard} curriculum standards, textbooks, teaching resources, and academic materials from trusted online sources
-2. Create ${numSlides} detailed, engaging slides with:
-   - Clear, modern visual HTML layouts
-   - Relevant diagrams, charts, and visual elements (use placeholder images with descriptive URLs)
-   - Key definitions, concepts, and explanations
-   - Real-world examples and applications
-   - Use proper HTML formatting with inline styles
-3. Make content age-appropriate for ${curriculum} level students
-4. Include academic rigor aligned with ${examBoard} standards
-5. Use proper HTML formatting with inline styles for visual appeal
-
-IMPORTANT: Return a JSON object with a "slides" array property containing the slide objects.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            slides: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  content: { type: "string" },
-                  speaker_notes: { type: "string" }
-                },
-                required: ["title", "content"]
-              }
-            }
-          },
-          required: ["slides"]
-        }
-      });
-
       const slides = slidesResult?.slides || [];
       
       if (!slides || slides.length === 0) {
@@ -234,43 +192,6 @@ Return ONLY valid JSON:
         });
 
         const quizResult = quizResponse.data?.success ? quizResponse.data.result : null;
-          prompt: `Based on the topic "${topic}" for ${curriculum} ${examBoard}, create a challenging time-based quiz.
-
-DIFFICULTY: ${quizDifficulty}
-NUMBER OF QUESTIONS: ${quizDifficulty === 'easy' ? '15' : quizDifficulty === 'medium' ? '25' : '40'}
-
-Requirements:
-1. Create questions that assess deep understanding, not just memorization
-2. Include a mix of: concept application, analysis, and problem-solving
-3. Each question should have 4 well-crafted options
-4. Provide detailed explanations for correct answers
-5. Align with ${curriculum} ${examBoard} assessment objectives
-
-IMPORTANT: Return the exact JSON structure specified in the schema with all required fields.`,
-          add_context_from_internet: true,
-          response_json_schema: {
-            type: "object",
-            properties: {
-              title: { type: "string" },
-              description: { type: "string" },
-              questions: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    question: { type: "string" },
-                    options: { type: "array", items: { type: "string" } },
-                    correct_answer: { type: "number" },
-                    explanation: { type: "string" }
-                  },
-                  required: ["question", "options", "correct_answer"]
-                }
-              },
-              assessment_criteria: { type: "string" }
-            },
-            required: ["title", "questions"]
-          }
-        });
 
         if (!quizResult || !quizResult.questions || quizResult.questions.length === 0) {
           toast.error('Quiz generation failed, but slides were created successfully');
@@ -306,25 +227,6 @@ Return ONLY valid JSON:
       });
 
       const objectivesResult = objectivesResponse.data?.success ? objectivesResponse.data.result : null;
-        prompt: `For the topic "${topic}" aligned with ${curriculum} ${examBoard}, generate:
-
-1. Clear learning objectives (array of strings)
-2. Success criteria for student assessment (array of strings)
-3. Common misconceptions to address (array of strings)
-4. Extension activities for advanced students (array of strings)
-
-IMPORTANT: Return the exact JSON structure with all required array fields.`,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            learning_objectives: { type: "array", items: { type: "string" } },
-            success_criteria: { type: "array", items: { type: "string" } },
-            common_misconceptions: { type: "array", items: { type: "string" } },
-            extension_activities: { type: "array", items: { type: "string" } }
-          },
-          required: ["learning_objectives", "success_criteria", "common_misconceptions", "extension_activities"]
-        }
-      });
 
       const objectives = {
         learning_objectives: objectivesResult?.learning_objectives || [],
