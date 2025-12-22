@@ -284,6 +284,11 @@ Return ONLY valid JSON:
     if (!generatedContent) return;
 
     try {
+      const finalSection = sectionName === '_new_section' ? newSectionName : sectionName;
+      console.log('Saving with section:', finalSection);
+      console.log('sectionName:', sectionName);
+      console.log('newSectionName:', newSectionName);
+      
       // Save lesson with slides
       const lesson = await base44.entities.Lesson.create({
         course_id: courseId,
@@ -295,7 +300,7 @@ Return ONLY valid JSON:
           order: idx + 1
         })),
         order: 999,
-        section: sectionName === '_new_section' ? newSectionName : (sectionName || generatedContent.metadata.curriculum)
+        section: finalSection || 'General'
       });
 
       // Save quiz if generated
