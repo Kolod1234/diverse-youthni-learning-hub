@@ -33,6 +33,9 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [includeQuiz, setIncludeQuiz] = useState(true);
   const [quizDifficulty, setQuizDifficulty] = useState('medium');
   const [quizTimeLimit, setQuizTimeLimit] = useState('15');
+  const [targetAudience, setTargetAudience] = useState('secondary');
+  const [complexityLevel, setComplexityLevel] = useState('intermediate');
+  const [includeMultimedia, setIncludeMultimedia] = useState(true);
   
   const [generating, setGenerating] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
@@ -74,10 +77,19 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
       
       const slidesPrompt = `You are an expert educational content creator with expertise in visual design and pedagogy.
 
-Create ${numSlides} HIGHLY DETAILED, PROFESSIONAL lesson slides for: "${topic}"
-${additionalPrompt ? `\n\nADDITIONAL REQUIREMENTS: ${additionalPrompt}` : ''}
+      Create a COMPREHENSIVE LESSON OUTLINE with ${numSlides} HIGHLY DETAILED, PROFESSIONAL lesson slides for: "${topic}"
+      ${additionalPrompt ? `\n\nADDITIONAL REQUIREMENTS: ${additionalPrompt}` : ''}
 
-CURRICULUM: ${curriculum} - ${examBoard} Exam Board
+      CURRICULUM: ${curriculum} - ${examBoard} Exam Board
+      TARGET AUDIENCE: ${targetAudience} students
+      COMPLEXITY LEVEL: ${complexityLevel}
+
+      LESSON STRUCTURE REQUIREMENTS:
+      - Begin with clear learning objectives
+      - Identify key concepts to be covered
+      - Progress from simple to complex
+      - Include real-world applications
+      - End with summary and key takeaways
 
 CRITICAL REQUIREMENTS FOR PROFESSIONAL QUALITY:
 
@@ -117,20 +129,44 @@ CRITICAL REQUIREMENTS FOR PROFESSIONAL QUALITY:
    - Progressive difficulty across slides
    - Include mnemonics or memory aids where helpful
 
+${includeMultimedia ? `
+MULTIMEDIA REQUIREMENTS:
+- Suggest relevant images with descriptive placeholder URLs
+- Include video suggestions where appropriate
+- Add interactive elements (drag-drop, fill-blanks, branching scenarios)
+- Use diagrams and infographics for complex concepts
+` : ''}
+
 EXAMPLE FORMAT:
 {
   "title": "Introduction to Photosynthesis",
   "content": "<div style='background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%); padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'><h2 style='color: #0C4A6E; font-size: 32px; margin-bottom: 20px;'>🌿 What is Photosynthesis?</h2><p style='font-size: 18px; line-height: 1.8; color: #334155;'>Photosynthesis is the remarkable process by which plants convert light energy into chemical energy...</p><img src='https://via.placeholder.com/800x400/10B981/FFFFFF?text=Photosynthesis+Process+Diagram' style='width: 100%; border-radius: 12px; margin: 20px 0;' alt='Detailed diagram showing photosynthesis process'/><div style='background: white; padding: 20px; border-left: 5px solid #10B981; border-radius: 8px; margin: 20px 0;'><h3 style='color: #059669;'>💡 Key Equation</h3><p style='font-size: 20px; text-align: center; font-weight: bold;'>6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂</p></div></div>",
-  "speaker_notes": "Start by asking students what they ate for breakfast and trace it back to plants. Emphasize that ALL food energy ultimately comes from the sun via photosynthesis."
+  "speaker_notes": "Start by asking students what they ate for breakfast and trace it back to plants. Emphasize that ALL food energy ultimately comes from the sun via photosynthesis.",
+  "multimedia_suggestions": {
+    "images": ["Photosynthesis diagram", "Chloroplast structure"],
+    "videos": ["Time-lapse of plant growth"],
+    "interactive": ["Label the parts of a leaf"]
+  }
 }
 
 Return ONLY valid JSON with this structure:
 {
+  "lesson_outline": {
+    "learning_objectives": ["Objective 1", "Objective 2", "Objective 3"],
+    "key_concepts": ["Concept 1", "Concept 2", "Concept 3"],
+    "prerequisites": ["What students should know before"],
+    "difficulty_rating": "Easy/Medium/Advanced"
+  },
   "slides": [
     {
       "title": "Slide title here",
-      "content": "Rich HTML content with inline styles, images, tables, etc.",
-      "speaker_notes": "Teaching tips and discussion prompts"
+      "content": "Rich HTML content with inline styles, images, tables, interactive elements, etc.",
+      "speaker_notes": "Teaching tips and discussion prompts",
+      "multimedia_suggestions": {
+        "images": ["Image description 1", "Image description 2"],
+        "videos": ["Video topic suggestion"],
+        "interactive": ["Interactive element suggestion"]
+      }
     }
   ]
 }`;
@@ -141,6 +177,15 @@ Return ONLY valid JSON with this structure:
         response_json_schema: {
           type: "object",
           properties: {
+            lesson_outline: {
+              type: "object",
+              properties: {
+                learning_objectives: { type: "array", items: { type: "string" } },
+                key_concepts: { type: "array", items: { type: "string" } },
+                prerequisites: { type: "array", items: { type: "string" } },
+                difficulty_rating: { type: "string" }
+              }
+            },
             slides: {
               type: "array",
               items: {
@@ -148,7 +193,15 @@ Return ONLY valid JSON with this structure:
                 properties: {
                   title: { type: "string" },
                   content: { type: "string" },
-                  speaker_notes: { type: "string" }
+                  speaker_notes: { type: "string" },
+                  multimedia_suggestions: {
+                    type: "object",
+                    properties: {
+                      images: { type: "array", items: { type: "string" } },
+                      videos: { type: "array", items: { type: "string" } },
+                      interactive: { type: "array", items: { type: "string" } }
+                    }
+                  }
                 }
               }
             }
@@ -279,6 +332,7 @@ Return ONLY valid JSON:
 
       
       setGeneratedContent({
+        lesson_outline: slidesResult.lesson_outline || {},
         slides: slides || [],
         quiz: quiz || null,
         objectives,
@@ -286,6 +340,8 @@ Return ONLY valid JSON:
           topic,
           curriculum,
           examBoard,
+          targetAudience,
+          complexityLevel,
           generatedDate: new Date().toISOString(),
         }
       });
@@ -540,21 +596,67 @@ Return ONLY valid JSON:
                       </SelectContent>
                     </Select>
                   </div>
-                </div>
 
-                <div className="flex items-center gap-2">
-                  <input
-                    type="checkbox"
-                    id="includeQuiz"
-                    checked={includeQuiz}
-                    onChange={(e) => setIncludeQuiz(e.target.checked)}
-                    className="w-4 h-4"
-                  />
-                  <Label htmlFor="includeQuiz" className="cursor-pointer">
-                    Generate assessment quiz with auto-grading
-                  </Label>
+                  <div>
+                    <Label>Target Audience</Label>
+                    <Select value={targetAudience} onValueChange={setTargetAudience}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="primary">Primary (Ages 5-11)</SelectItem>
+                        <SelectItem value="secondary">Secondary (Ages 11-16)</SelectItem>
+                        <SelectItem value="college">College (Ages 16-18)</SelectItem>
+                        <SelectItem value="university">University</SelectItem>
+                        <SelectItem value="adult">Adult Learners</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+
+                  <div>
+                    <Label>Complexity Level</Label>
+                    <Select value={complexityLevel} onValueChange={setComplexityLevel}>
+                      <SelectTrigger className="mt-2">
+                        <SelectValue />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="beginner">Beginner - Foundational concepts</SelectItem>
+                        <SelectItem value="intermediate">Intermediate - Standard depth</SelectItem>
+                        <SelectItem value="advanced">Advanced - In-depth analysis</SelectItem>
+                        <SelectItem value="expert">Expert - Research level</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  </div>
+
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="includeQuiz"
+                      checked={includeQuiz}
+                      onChange={(e) => setIncludeQuiz(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <Label htmlFor="includeQuiz" className="cursor-pointer">
+                      Generate assessment quiz with auto-grading
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="includeMultimedia"
+                      checked={includeMultimedia}
+                      onChange={(e) => setIncludeMultimedia(e.target.checked)}
+                      className="w-4 h-4"
+                    />
+                    <Label htmlFor="includeMultimedia" className="cursor-pointer">
+                      Include multimedia suggestions (images, videos, interactive elements)
+                    </Label>
+                  </div>
                 </div>
-              </div>
+                </div>
 
               <Button
                 onClick={generateContent}
@@ -593,20 +695,26 @@ Return ONLY valid JSON:
                     <CheckCircle className="w-6 h-6 text-green-600" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-bold text-gray-900">Content Generated Successfully!</h3>
+                    <h3 className="text-lg font-bold text-gray-900">Comprehensive Lesson Generated!</h3>
                     <p className="text-sm text-gray-600">
                       {generatedContent?.slides?.length || 0} slides
                       {generatedContent?.quiz?.questions && ` + ${generatedContent.quiz.questions.length} question quiz`}
                     </p>
                   </div>
                 </div>
-                
+
                 <div className="flex flex-wrap gap-2">
                   <Badge className="bg-blue-100 text-blue-800">
                     {generatedContent.metadata.curriculum}
                   </Badge>
                   <Badge className="bg-purple-100 text-purple-800">
                     {generatedContent.metadata.examBoard}
+                  </Badge>
+                  <Badge className="bg-teal-100 text-teal-800">
+                    {generatedContent.metadata.targetAudience}
+                  </Badge>
+                  <Badge className="bg-indigo-100 text-indigo-800">
+                    {generatedContent.metadata.complexityLevel}
                   </Badge>
                   {generatedContent.quiz && (
                     <Badge className="bg-orange-100 text-orange-800">
@@ -616,6 +724,46 @@ Return ONLY valid JSON:
                   )}
                 </div>
               </Card>
+
+              {/* Lesson Outline */}
+              {generatedContent?.lesson_outline && (
+                <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
+                  <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
+                    <BookOpen className="w-5 h-5 text-blue-600" />
+                    Lesson Outline
+                  </h3>
+                  <div className="grid md:grid-cols-2 gap-4">
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Learning Objectives:</h4>
+                      <ul className="space-y-1">
+                        {generatedContent.lesson_outline.learning_objectives?.map((obj, idx) => (
+                          <li key={idx} className="text-sm text-gray-600 flex items-start gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
+                            <span>{obj}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                    <div>
+                      <h4 className="font-semibold text-sm text-gray-700 mb-2">Key Concepts:</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {generatedContent.lesson_outline.key_concepts?.map((concept, idx) => (
+                          <Badge key={idx} variant="secondary" className="text-xs">
+                            {concept}
+                          </Badge>
+                        ))}
+                      </div>
+                      {generatedContent.lesson_outline.difficulty_rating && (
+                        <div className="mt-3">
+                          <Badge className="bg-yellow-100 text-yellow-800">
+                            {generatedContent.lesson_outline.difficulty_rating}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              )}
 
               {/* Learning Objectives */}
               <Card className="p-6">
@@ -687,14 +835,39 @@ Return ONLY valid JSON:
                     </div>
                   </div>
                   
-                  {generatedContent?.slides?.[previewSlideIndex]?.speaker_notes && (
-                    <div className="bg-blue-50 border-t border-blue-200 px-4 py-3">
-                      <p className="text-xs text-blue-900">
-                        <strong>Speaker Notes:</strong> {generatedContent.slides[previewSlideIndex].speaker_notes}
-                      </p>
-                    </div>
-                  )}
-                </div>
+                  <div className="bg-gradient-to-r from-blue-50 to-purple-50 border-t border-blue-200">
+                    {generatedContent?.slides?.[previewSlideIndex]?.speaker_notes && (
+                      <div className="px-4 py-3 border-b border-blue-100">
+                        <p className="text-xs text-blue-900">
+                          <strong>💡 Speaker Notes:</strong> {generatedContent.slides[previewSlideIndex].speaker_notes}
+                        </p>
+                      </div>
+                    )}
+
+                    {generatedContent?.slides?.[previewSlideIndex]?.multimedia_suggestions && (
+                      <div className="px-4 py-3">
+                        <p className="text-xs font-semibold text-purple-900 mb-2">🎨 Multimedia Suggestions:</p>
+                        <div className="space-y-2">
+                          {generatedContent.slides[previewSlideIndex].multimedia_suggestions.images?.length > 0 && (
+                            <div className="text-xs text-purple-800">
+                              <strong>Images:</strong> {generatedContent.slides[previewSlideIndex].multimedia_suggestions.images.join(', ')}
+                            </div>
+                          )}
+                          {generatedContent.slides[previewSlideIndex].multimedia_suggestions.videos?.length > 0 && (
+                            <div className="text-xs text-purple-800">
+                              <strong>Videos:</strong> {generatedContent.slides[previewSlideIndex].multimedia_suggestions.videos.join(', ')}
+                            </div>
+                          )}
+                          {generatedContent.slides[previewSlideIndex].multimedia_suggestions.interactive?.length > 0 && (
+                            <div className="text-xs text-purple-800">
+                              <strong>Interactive:</strong> {generatedContent.slides[previewSlideIndex].multimedia_suggestions.interactive.join(', ')}
+                            </div>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </div>
+                  </div>
 
                 {/* Slide Thumbnails - Horizontal Scroll */}
                 <ScrollArea className="w-full">
