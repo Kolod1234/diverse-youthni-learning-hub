@@ -1343,14 +1343,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        <div className="relative group">
+        <div className="relative group/interactive">
           <MenuButton
             onClick={() => {}}
             title="Interactive Elements"
           >
             <Zap className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block hover:block z-50 min-w-[240px]">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover/interactive:block z-50 min-w-[240px]" onMouseEnter={(e) => e.currentTarget.style.display = 'block'} onMouseLeave={(e) => e.currentTarget.style.display = 'none'}>
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Interactive Elements</p>
             <button
               onClick={() => editor.chain().focus().insertPoll({ 
@@ -1431,14 +1431,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             </div>
             </div>
 
-        <div className="relative group">
+        <div className="relative group/cards">
           <MenuButton
             onClick={() => {}}
             title="Insert Cards"
           >
             <Square className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block hover:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover/cards:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto" onMouseEnter={(e) => e.currentTarget.style.display = 'block'} onMouseLeave={(e) => e.currentTarget.style.display = 'none'}>
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
