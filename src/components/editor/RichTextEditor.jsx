@@ -720,8 +720,8 @@ const MenuButton = ({ onClick, isActive, children, title }) => (
 );
 
 export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
-  const [showInteractive, setShowInteractive] = useState(false);
-  const [showCards, setShowCards] = useState(false);
+  const [showInteractive, setShowInteractive] = React.useState(false);
+  const [showCards, setShowCards] = React.useState(false);
   
   const editor = useEditor({
     extensions: [
@@ -1370,83 +1370,105 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[240px]">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Interactive Elements</p>
             <button
-              onClick={() => editor.chain().focus().insertPoll({ 
-                question: 'What do you think?',
-                options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree']
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertPoll({ 
+                  question: 'What do you think?',
+                  options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree']
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-indigo-50 transition-colors text-left mb-1"
             >
               <BarChart3 className="w-4 h-4 text-indigo-600" />
               <span className="text-sm font-medium text-gray-700">Poll</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertQuiz({ 
-                question: 'Test your knowledge:',
-                options: ['Option A', 'Option B', 'Option C', 'Option D'],
-                correct: 0
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertQuiz({ 
+                  question: 'Test your knowledge:',
+                  options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                  correct: 0
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-yellow-50 transition-colors text-left mb-1"
             >
               <HelpCircle className="w-4 h-4 text-yellow-600" />
               <span className="text-sm font-medium text-gray-700">Quiz Question</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertInteractiveImage({ 
-                src: 'https://via.placeholder.com/800x500/6366F1/FFFFFF?text=Click+Image+to+Upload',
-                hotspots: [
-                  { x: 30, y: 30, label: 'Point 1', info: 'First key area' },
-                  { x: 70, y: 70, label: 'Point 2', info: 'Second key area' }
-                ]
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertInteractiveImage({ 
+                  src: 'https://via.placeholder.com/800x500/6366F1/FFFFFF?text=Click+Image+to+Upload',
+                  hotspots: [
+                    { x: 30, y: 30, label: 'Point 1', info: 'First key area' },
+                    { x: 70, y: 70, label: 'Point 2', info: 'Second key area' }
+                  ]
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 transition-colors text-left mb-1"
             >
               <ImageIcon className="w-4 h-4 text-red-600" />
               <span className="text-sm font-medium text-gray-700">Interactive Image</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertQASection().run()}
+              onClick={() => {
+                editor.chain().focus().insertQASection().run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-teal-50 transition-colors text-left mb-1"
             >
               <HelpCircle className="w-4 h-4 text-teal-600" />
               <span className="text-sm font-medium text-gray-700">Q&A Section</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertDragDropExercise({ 
-                question: 'Match the items to their correct targets:',
-                items: ['Item 1', 'Item 2', 'Item 3'],
-                targets: ['Target A', 'Target B', 'Target C']
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertDragDropExercise({ 
+                  question: 'Match the items to their correct targets:',
+                  items: ['Item 1', 'Item 2', 'Item 3'],
+                  targets: ['Target A', 'Target B', 'Target C']
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-indigo-50 transition-colors text-left mb-1"
             >
               <Square className="w-4 h-4 text-indigo-600" />
               <span className="text-sm font-medium text-gray-700">Drag & Drop</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertFillInBlanks({ 
-                instruction: 'Fill in the blanks:',
-                text: 'Water freezes at [0] degrees Celsius and boils at [100] degrees.'
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertFillInBlanks({ 
+                  instruction: 'Fill in the blanks:',
+                  text: 'Water freezes at [0] degrees Celsius and boils at [100] degrees.'
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-yellow-50 transition-colors text-left mb-1"
             >
               <Code className="w-4 h-4 text-yellow-600" />
               <span className="text-sm font-medium text-gray-700">Fill in Blanks</span>
             </button>
             <button
-              onClick={() => editor.chain().focus().insertBranchingScenario({ 
-                scenario: 'You face a challenge. What do you do?',
-                choices: [
-                  { text: 'Option A: Research', outcome: 'Good choice! You found helpful information.' },
-                  { text: 'Option B: Ask for help', outcome: 'Excellent! Collaboration is powerful.' },
-                  { text: 'Option C: Try differently', outcome: 'Creative thinking leads to innovation!' }
-                ]
-              }).run()}
+              onClick={() => {
+                editor.chain().focus().insertBranchingScenario({ 
+                  scenario: 'You face a challenge. What do you do?',
+                  choices: [
+                    { text: 'Option A: Research', outcome: 'Good choice! You found helpful information.' },
+                    { text: 'Option B: Ask for help', outcome: 'Excellent! Collaboration is powerful.' },
+                    { text: 'Option C: Try differently', outcome: 'Creative thinking leads to innovation!' }
+                  ]
+                }).run();
+                setShowInteractive(false);
+              }}
               className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-pink-50 transition-colors text-left"
             >
               <Zap className="w-4 h-4 text-pink-600" />
               <span className="text-sm font-medium text-gray-700">Branching Scenario</span>
             </button>
-            </div>
-            </div>
+          </div>
+          )}
+        </div>
 
         <div className="relative">
           <MenuButton
@@ -1461,70 +1483,100 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'definition' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'definition' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-left"
               >
                 <Info className="w-5 h-5 text-blue-600" />
                 <span className="text-xs font-medium text-blue-900">Definition</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'concept' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'concept' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors text-left"
               >
                 <CheckCircle className="w-5 h-5 text-green-600" />
                 <span className="text-xs font-medium text-green-900">Concept</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'key' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'key' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors text-left"
               >
                 <Lightbulb className="w-5 h-5 text-yellow-600" />
                 <span className="text-xs font-medium text-yellow-900">Key Point</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'note' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'note' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors text-left"
               >
                 <Info className="w-5 h-5 text-purple-600" />
                 <span className="text-xs font-medium text-purple-900">Note</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'warning' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'warning' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors text-left"
               >
                 <AlertTriangle className="w-5 h-5 text-red-600" />
                 <span className="text-xs font-medium text-red-900">Warning</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'diagram' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'diagram' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-left"
               >
                 <Square className="w-5 h-5 text-gray-600" />
                 <span className="text-xs font-medium text-gray-900">Diagram</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'example' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'example' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors text-left"
               >
                 <CheckCircle2 className="w-5 h-5 text-teal-600" />
                 <span className="text-xs font-medium text-teal-900">Example</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'important' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'important' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors text-left"
               >
                 <AlertTriangle className="w-5 h-5 text-orange-600" />
                 <span className="text-xs font-medium text-orange-900">Important</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'tip' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'tip' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-cyan-50 hover:bg-cyan-100 transition-colors text-left"
               >
                 <Lightbulb className="w-5 h-5 text-cyan-600" />
                 <span className="text-xs font-medium text-cyan-900">Tip</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().setCard({ type: 'summary' }).run()}
+                onClick={() => {
+                  editor.chain().focus().setCard({ type: 'summary' }).run();
+                  setShowCards(false);
+                }}
                 className="flex flex-col items-center gap-1 p-3 rounded-lg bg-violet-50 hover:bg-violet-100 transition-colors text-left"
               >
                 <Info className="w-5 h-5 text-violet-600" />
@@ -1534,7 +1586,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             <div className="border-t pt-3">
               <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Layouts</p>
               <button
-                onClick={() => editor.chain().focus().insertCardGrid({ columns: 2 }).run()}
+                onClick={() => {
+                  editor.chain().focus().insertCardGrid({ columns: 2 }).run();
+                  setShowCards(false);
+                }}
                 className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex gap-1">
@@ -1544,7 +1599,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                 <span className="text-xs font-medium text-gray-700">2 Column Grid</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().insertCardGrid({ columns: 3 }).run()}
+                onClick={() => {
+                  editor.chain().focus().insertCardGrid({ columns: 3 }).run();
+                  setShowCards(false);
+                }}
                 className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex gap-1">
@@ -1555,7 +1613,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                 <span className="text-xs font-medium text-gray-700">3 Column Grid</span>
               </button>
               <button
-                onClick={() => editor.chain().focus().insertCardGrid({ columns: 4 }).run()}
+                onClick={() => {
+                  editor.chain().focus().insertCardGrid({ columns: 4 }).run();
+                  setShowCards(false);
+                }}
                 className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
               >
                 <div className="flex gap-1">
@@ -1684,9 +1745,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   </button>
                 ))}
               </div>
-              </div>
-              )}
-              </div>
+            </div>
+          </div>
         </details>
       </div>
     </div>
