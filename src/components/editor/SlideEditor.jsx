@@ -4,10 +4,12 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText } from 'lucide-react';
+import { Textarea } from '@/components/ui/textarea';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2 } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { base44 } from '@/api/base44Client';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -143,6 +145,10 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [templateName, setTemplateName] = useState('');
   const [templateIcon, setTemplateIcon] = useState('📄');
   const [showManageTemplates, setShowManageTemplates] = useState(false);
+  const [showAIDialog, setShowAIDialog] = useState(false);
+  const [aiAction, setAiAction] = useState('generate'); // 'generate', 'rewrite', 'images'
+  const [aiPrompt, setAiPrompt] = useState('');
+  const [aiLoading, setAiLoading] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template];
@@ -240,6 +246,112 @@ export default function SlideEditor({ slides = [], onChange }) {
     setCustomTemplates(updated);
     localStorage.setItem('customSlideTemplates', JSON.stringify(updated));
     toast.success('Template deleted');
+  };
+
+  const handleAIGenerate = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please enter a topic or prompt');
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate comprehensive, educational slide content for: "${aiPrompt}". 
+        
+Include:
+- A clear, engaging title
+- Well-structured HTML content with headings, paragraphs, lists, and emphasis
+- Educational explanations suitable for students
+- Use proper HTML formatting with inline styles for visual appeal
+- Make it engaging and easy to understand
+
+Return ONLY the HTML content, starting with an <h2> title tag.`,
+        add_context_from_internet: false
+      });
+
+      const newSlide = {
+        title: aiPrompt,
+        content: result,
+        order: slides.length + 1
+      };
+
+      onChange([...slides, newSlide]);
+      setCurrentSlide(slides.length);
+      setShowAIDialog(false);
+      setAiPrompt('');
+      toast.success('AI-generated slide added!');
+    } catch (error) {
+      toast.error('Failed to generate content');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAIRewrite = async () => {
+    if (!currentSlideData) return;
+
+    setAiLoading(true);
+    try {
+      const currentContent = currentSlideData.content || '';
+      const plainText = currentContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Rewrite and improve the following educational content to be ${aiPrompt || 'clearer, more concise, and more engaging'}:
+
+"${plainText}"
+
+Requirements:
+- Maintain the educational value
+- Use proper HTML formatting with inline styles
+- Make it more ${aiPrompt || 'clear and engaging'}
+- Keep the same general structure but improve readability
+- Use headings, paragraphs, lists as appropriate
+
+Return ONLY the improved HTML content.`,
+        add_context_from_internet: false
+      });
+
+      updateSlide(currentSlide, 'content', result);
+      setShowAIDialog(false);
+      setAiPrompt('');
+      toast.success('Content rewritten successfully!');
+    } catch (error) {
+      toast.error('Failed to rewrite content');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAISuggestImages = async () => {
+    if (!currentSlideData) return;
+
+    setAiLoading(true);
+    try {
+      const currentContent = currentSlideData.content || currentSlideData.title || '';
+      const plainText = currentContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Based on this educational content: "${plainText.substring(0, 500)}"
+
+Suggest 3-5 relevant images or visual elements that would enhance learning. For each suggestion, provide:
+1. A clear description of what the image should show
+2. Why it would be helpful for learning
+3. Where it should be placed in the content
+
+Format as a simple bulleted list.`,
+        add_context_from_internet: false
+      });
+
+      // Show suggestions in a toast
+      toast.success('Image suggestions generated! Check the prompt field for ideas.');
+      setAiPrompt(result);
+      setAiLoading(false);
+      
+    } catch (error) {
+      toast.error('Failed to generate suggestions');
+      setAiLoading(false);
+    }
   };
 
   const allTemplates = {
@@ -500,6 +612,41 @@ export default function SlideEditor({ slides = [], onChange }) {
                     <Save className="w-4 h-4 mr-1" />
                     Save as Template
                   </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                      >
+                        <Sparkles className="w-4 h-4 mr-1" />
+                        AI Tools
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setAiAction('rewrite');
+                          setAiPrompt('');
+                          setShowAIDialog(true);
+                        }}
+                      >
+                        <Wand2 className="w-4 h-4 mr-2" />
+                        Rewrite Content
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setAiAction('images');
+                          setAiPrompt('');
+                          handleAISuggestImages();
+                          setShowAIDialog(true);
+                        }}
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Suggest Images
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <Button
                     variant="outline"
                     size="sm"
@@ -598,53 +745,165 @@ export default function SlideEditor({ slides = [], onChange }) {
 
         {/* Save Template Modal */}
         {showSaveTemplate && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSaveTemplate(false)}>
-          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4">Save as Template</h3>
-            <div className="space-y-4">
-              <div>
-                <Label>Template Name</Label>
-                <Input
-                  value={templateName}
-                  onChange={(e) => setTemplateName(e.target.value)}
-                  placeholder="My Custom Template"
-                  className="mt-1"
-                />
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSaveTemplate(false)}>
+            <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-xl font-bold mb-4">Save as Template</h3>
+              <div className="space-y-4">
+                <div>
+                  <Label>Template Name</Label>
+                  <Input
+                    value={templateName}
+                    onChange={(e) => setTemplateName(e.target.value)}
+                    placeholder="My Custom Template"
+                    className="mt-1"
+                  />
+                </div>
+                <div>
+                  <Label>Icon (Emoji)</Label>
+                  <Input
+                    value={templateIcon}
+                    onChange={(e) => setTemplateIcon(e.target.value)}
+                    placeholder="📝"
+                    className="mt-1"
+                    maxLength={2}
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Choose an emoji to represent your template</p>
+                </div>
               </div>
-              <div>
-                <Label>Icon (Emoji)</Label>
-                <Input
-                  value={templateIcon}
-                  onChange={(e) => setTemplateIcon(e.target.value)}
-                  placeholder="📝"
-                  className="mt-1"
-                  maxLength={2}
-                />
-                <p className="text-xs text-gray-500 mt-1">Choose an emoji to represent your template</p>
+              <div className="flex gap-3 mt-6">
+                <Button 
+                  onClick={saveCustomTemplate} 
+                  className="flex-1 bg-green-600 hover:bg-green-700"
+                  disabled={!templateName.trim()}
+                >
+                  Save Template
+                </Button>
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    setShowSaveTemplate(false);
+                    setTemplateName('');
+                    setTemplateIcon('📄');
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
               </div>
-            </div>
-            <div className="flex gap-3 mt-6">
-              <Button 
-                onClick={saveCustomTemplate} 
-                className="flex-1 bg-green-600 hover:bg-green-700"
-                disabled={!templateName.trim()}
-              >
-                Save Template
-              </Button>
-              <Button 
-                variant="outline" 
-                onClick={() => {
-                  setShowSaveTemplate(false);
-                  setTemplateName('');
-                  setTemplateIcon('📄');
-                }}
-                className="flex-1"
-              >
-                Cancel
-              </Button>
             </div>
           </div>
-        </div>
+        )}
+
+        {/* AI Assistant Modal */}
+        {showAIDialog && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => !aiLoading && setShowAIDialog(false)}>
+            <div className="bg-white rounded-2xl p-6 w-[500px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center gap-3 mb-4">
+                <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                  <Sparkles className="w-5 h-5 text-purple-600" />
+                </div>
+                <div>
+                  <h3 className="text-xl font-bold">AI Assistant</h3>
+                  <p className="text-sm text-gray-500">
+                    {aiAction === 'generate' && 'Generate slide content from a topic'}
+                    {aiAction === 'rewrite' && 'Rewrite and improve slide content'}
+                    {aiAction === 'images' && 'Visual suggestions for your slide'}
+                  </p>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                {aiAction === 'generate' && (
+                  <div>
+                    <Label>Topic or Prompt</Label>
+                    <Textarea
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      placeholder="E.g., 'Introduction to Photosynthesis' or 'The Water Cycle explained for students'"
+                      className="mt-1 h-24"
+                      disabled={aiLoading}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Describe what you want the slide to cover
+                    </p>
+                  </div>
+                )}
+
+                {aiAction === 'rewrite' && (
+                  <div>
+                    <Label>How should we improve it?</Label>
+                    <Input
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      placeholder="E.g., 'more concise', 'simpler language', 'more engaging'"
+                      className="mt-1"
+                      disabled={aiLoading}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Leave blank for general improvement, or specify tone/style
+                    </p>
+                    <div className="mt-3 p-3 bg-gray-50 rounded-lg">
+                      <p className="text-xs text-gray-600 font-medium mb-1">Current content preview:</p>
+                      <p className="text-xs text-gray-500 line-clamp-3">
+                        {currentSlideData?.content?.replace(/<[^>]*>/g, ' ').substring(0, 150)}...
+                      </p>
+                    </div>
+                  </div>
+                )}
+
+                {aiAction === 'images' && (
+                  <div>
+                    <Label>Image Suggestions</Label>
+                    <Textarea
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      className="mt-1 h-48"
+                      disabled={aiLoading}
+                      readOnly
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      {aiLoading ? 'Generating suggestions...' : 'Use these suggestions to find or create relevant images for your slide'}
+                    </p>
+                  </div>
+                )}
+              </div>
+
+              <div className="flex gap-3 mt-6">
+                {aiAction !== 'images' && (
+                  <Button 
+                    onClick={aiAction === 'generate' ? handleAIGenerate : handleAIRewrite}
+                    className="flex-1 bg-purple-600 hover:bg-purple-700"
+                    disabled={aiLoading || (aiAction === 'generate' && !aiPrompt.trim())}
+                  >
+                    {aiLoading ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Processing...
+                      </>
+                    ) : (
+                      <>
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        {aiAction === 'generate' ? 'Generate Slide' : 'Rewrite Content'}
+                      </>
+                    )}
+                  </Button>
+                )}
+                <Button 
+                  variant="outline" 
+                  onClick={() => {
+                    if (!aiLoading) {
+                      setShowAIDialog(false);
+                      setAiPrompt('');
+                    }
+                  }}
+                  className="flex-1"
+                  disabled={aiLoading}
+                >
+                  {aiAction === 'images' ? 'Close' : 'Cancel'}
+                </Button>
+              </div>
+            </div>
+          </div>
         )}
         </div>
         );
