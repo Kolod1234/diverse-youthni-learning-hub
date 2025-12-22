@@ -7,8 +7,17 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   ChevronLeft, ChevronRight, X, MessageSquare, 
   BarChart3, User, Clock, Send, Maximize, Minimize,
-  Users, Share2, Play, Pause, RotateCcw, MousePointer2, Copy
+  Users, Share2, Play, Pause, RotateCcw, MousePointer2, Copy,
+  FileText, Wand2, Zap
 } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { 
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -18,7 +27,12 @@ export default function PresentationMode({ slides, onClose }) {
   const [showQA, setShowQA] = useState(true);
   const [questions, setQuestions] = useState([]);
   const [newQuestion, setNewQuestion] = useState('');
-  const [speakerNotes, setSpeakerNotes] = useState({});
+  const [speakerNotes, setSpeakerNotes] = useState(
+    slides.reduce((acc, slide, idx) => {
+      acc[idx] = slide.speaker_notes || '';
+      return acc;
+    }, {})
+  );
   const [pollResults, setPollResults] = useState({});
   const [isFullscreen, setIsFullscreen] = useState(false);
   
@@ -35,6 +49,9 @@ export default function PresentationMode({ slides, onClose }) {
   
   // Laser pointer
   const [laserPointer, setLaserPointer] = useState({ active: false, x: 0, y: 0 });
+  
+  // Transition effects
+  const [transitionEffect, setTransitionEffect] = useState('slide');
 
   const currentSlideData = slides[currentSlide] || null;
 
@@ -50,6 +67,8 @@ export default function PresentationMode({ slides, onClose }) {
         onClose();
       } else if (e.key === 'l' || e.key === 'L') {
         setLaserPointer(prev => ({ ...prev, active: !prev.active }));
+      } else if (e.key === 'n' || e.key === 'N') {
+        setShowNotes(!showNotes);
       }
     };
 
@@ -146,6 +165,39 @@ export default function PresentationMode({ slides, onClose }) {
     return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
   };
 
+  const processSlideContent = (content) => {
+    // Convert YouTube URLs to embedded iframes
+    let processed = content;
+    
+    // Match YouTube URLs and convert to embeds
+    const youtubeRegex = /(?:https?:\/\/)?(?:www\.)?(?:youtube\.com\/watch\?v=|youtu\.be\/)([a-zA-Z0-9_-]{11})/g;
+    processed = processed.replace(youtubeRegex, (match, videoId) => {
+      return `<div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+          src="https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1" 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>`;
+    });
+    
+    // Match Vimeo URLs
+    const vimeoRegex = /(?:https?:\/\/)?(?:www\.)?vimeo\.com\/(\d+)/g;
+    processed = processed.replace(vimeoRegex, (match, videoId) => {
+      return `<div style="position: relative; padding-bottom: 56.25%; height: 0; margin: 20px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);">
+        <iframe 
+          src="https://player.vimeo.com/video/${videoId}?title=0&byline=0&portrait=0" 
+          style="position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;"
+          allow="autoplay; fullscreen; picture-in-picture" 
+          allowfullscreen>
+        </iframe>
+      </div>`;
+    });
+    
+    return processed;
+  };
+
   const handleMouseMove = (e) => {
     if (laserPointer.active) {
       const rect = e.currentTarget.getBoundingClientRect();
@@ -157,20 +209,59 @@ export default function PresentationMode({ slides, onClose }) {
     }
   };
 
-  const slideVariants = {
-    enter: (direction) => ({
-      x: direction > 0 ? 1000 : -1000,
-      opacity: 0
-    }),
-    center: {
-      x: 0,
-      opacity: 1
-    },
-    exit: (direction) => ({
-      x: direction < 0 ? 1000 : -1000,
-      opacity: 0
-    })
+  const getSlideVariants = () => {
+    switch (transitionEffect) {
+      case 'fade':
+        return {
+          enter: { opacity: 0, scale: 0.95 },
+          center: { opacity: 1, scale: 1 },
+          exit: { opacity: 0, scale: 1.05 }
+        };
+      case 'zoom':
+        return {
+          enter: { opacity: 0, scale: 0.5 },
+          center: { opacity: 1, scale: 1 },
+          exit: { opacity: 0, scale: 1.5 }
+        };
+      case 'flip':
+        return {
+          enter: (direction) => ({ 
+            opacity: 0, 
+            rotateY: direction > 0 ? 90 : -90,
+            transformPerspective: 1000
+          }),
+          center: { opacity: 1, rotateY: 0 },
+          exit: (direction) => ({ 
+            opacity: 0, 
+            rotateY: direction < 0 ? 90 : -90 
+          })
+        };
+      case 'cube':
+        return {
+          enter: (direction) => ({ 
+            opacity: 0, 
+            rotateY: direction > 0 ? -90 : 90,
+            x: direction > 0 ? 500 : -500,
+            transformPerspective: 1000
+          }),
+          center: { opacity: 1, rotateY: 0, x: 0 },
+          exit: (direction) => ({ 
+            opacity: 0, 
+            rotateY: direction < 0 ? -90 : 90,
+            x: direction < 0 ? 500 : -500
+          })
+        };
+      case 'slide':
+      default:
+        return {
+          enter: (direction) => ({ x: direction > 0 ? 1000 : -1000, opacity: 0 }),
+          center: { x: 0, opacity: 1 },
+          exit: (direction) => ({ x: direction < 0 ? 1000 : -1000, opacity: 0 })
+        };
+    }
   };
+
+  const slideVariants = getSlideVariants();
 
   const [direction, setDirection] = useState(0);
 
@@ -200,6 +291,19 @@ export default function PresentationMode({ slides, onClose }) {
           </div>
           
           <div className="flex items-center gap-2">
+            <Select value={transitionEffect} onValueChange={setTransitionEffect}>
+              <SelectTrigger className="w-32 h-8 bg-gray-700 border-gray-600 text-white text-xs">
+                <Wand2 className="w-3 h-3 mr-1" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="slide">Slide</SelectItem>
+                <SelectItem value="fade">Fade</SelectItem>
+                <SelectItem value="zoom">Zoom</SelectItem>
+                <SelectItem value="flip">Flip</SelectItem>
+                <SelectItem value="cube">Cube</SelectItem>
+              </SelectContent>
+            </Select>
             <Button
               variant="ghost"
               size="sm"
@@ -331,10 +435,19 @@ export default function PresentationMode({ slides, onClose }) {
               initial="enter"
               animate="center"
               exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
+              transition={
+                transitionEffect === 'slide' 
+                  ? { x: { type: "spring", stiffness: 300, damping: 30 }, opacity: { duration: 0.2 } }
+                  : transitionEffect === 'fade'
+                  ? { opacity: { duration: 0.5 }, scale: { duration: 0.5 } }
+                  : transitionEffect === 'zoom'
+                  ? { opacity: { duration: 0.4 }, scale: { type: "spring", stiffness: 200, damping: 20 } }
+                  : transitionEffect === 'flip'
+                  ? { rotateY: { duration: 0.6 }, opacity: { duration: 0.3 } }
+                  : transitionEffect === 'cube'
+                  ? { rotateY: { duration: 0.7 }, x: { duration: 0.7 }, opacity: { duration: 0.3 } }
+                  : { duration: 0.3 }
+              }
               className="absolute inset-0 flex items-center justify-center p-12"
             >
               <Card className="w-full h-full max-w-6xl bg-white overflow-auto">
@@ -346,7 +459,9 @@ export default function PresentationMode({ slides, onClose }) {
                       </h1>
                       <div 
                         className="prose prose-lg max-w-none"
-                        dangerouslySetInnerHTML={{ __html: currentSlideData.content || '' }}
+                        dangerouslySetInnerHTML={{ 
+                          __html: processSlideContent(currentSlideData.content || '') 
+                        }}
                       />
                     </>
                   )}
@@ -398,15 +513,65 @@ export default function PresentationMode({ slides, onClose }) {
               </h3>
             </div>
             <ScrollArea className="flex-1 p-4">
-              <Textarea
-                value={speakerNotes[currentSlide] || ''}
-                onChange={(e) => setSpeakerNotes({ ...speakerNotes, [currentSlide]: e.target.value })}
-                placeholder="Add notes for this slide..."
-                className="min-h-[150px] bg-gray-700 border-gray-600 text-white"
-              />
-              <p className="text-xs text-gray-400 mt-2">
-                💡 These notes are only visible to you
-              </p>
+              {speakerNotes[currentSlide] ? (
+                <div className="space-y-3">
+                  <div className="bg-gray-700 rounded-lg p-4 border border-gray-600">
+                    <div className="flex items-start gap-2 mb-2">
+                      <FileText className="w-4 h-4 text-indigo-400 mt-0.5" />
+                      <h4 className="text-sm font-semibold text-indigo-400">Presenter Notes</h4>
+                    </div>
+                    <p className="text-white text-sm whitespace-pre-wrap leading-relaxed">
+                      {speakerNotes[currentSlide]}
+                    </p>
+                  </div>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSpeakerNotes({ ...speakerNotes, [currentSlide]: '' })}
+                    className="w-full bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                  >
+                    Clear Notes
+                  </Button>
+                </div>
+              ) : (
+                <div className="text-center py-8">
+                  <FileText className="w-12 h-12 text-gray-600 mx-auto mb-3" />
+                  <p className="text-gray-400 text-sm mb-4">No presenter notes for this slide</p>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      const notes = prompt('Enter presenter notes for this slide:');
+                      if (notes) setSpeakerNotes({ ...speakerNotes, [currentSlide]: notes });
+                    }}
+                    className="bg-gray-700 border-gray-600 text-white hover:bg-gray-600"
+                  >
+                    <FileText className="w-4 h-4 mr-2" />
+                    Add Notes
+                  </Button>
+                </div>
+              )}
+              
+              {/* Slide Preview Thumbnails */}
+              <div className="mt-4 pt-4 border-t border-gray-700">
+                <h4 className="text-xs font-semibold text-gray-400 mb-2">UPCOMING SLIDES</h4>
+                <div className="space-y-2">
+                  {slides.slice(currentSlide + 1, currentSlide + 4).map((slide, idx) => (
+                    <button
+                      key={currentSlide + idx + 1}
+                      onClick={() => setCurrentSlide(currentSlide + idx + 1)}
+                      className="w-full p-2 bg-gray-700 hover:bg-gray-600 rounded-lg text-left transition-colors"
+                    >
+                      <div className="text-xs text-gray-400 mb-1">
+                        Slide {currentSlide + idx + 2}
+                      </div>
+                      <div className="text-xs text-white font-medium truncate">
+                        {slide.title || 'Untitled'}
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </div>
             </ScrollArea>
           </div>
         )}
@@ -467,8 +632,9 @@ export default function PresentationMode({ slides, onClose }) {
       </div>
 
       {/* Keyboard Shortcuts Hint */}
-      <div className="fixed bottom-4 left-4 bg-gray-800/90 rounded-lg px-4 py-2 text-xs text-gray-300">
-        <span className="font-semibold">Shortcuts:</span> ← → Space: Navigate | L: Laser | ESC: Exit
+      <div className="fixed bottom-4 left-4 bg-gray-800/90 rounded-lg px-4 py-2 text-xs text-gray-300 space-y-1">
+        <div><span className="font-semibold">Navigation:</span> ← → Space</div>
+        <div><span className="font-semibold">Features:</span> L: Laser | N: Notes | ESC: Exit</div>
       </div>
 
       {/* Session Modal */}
