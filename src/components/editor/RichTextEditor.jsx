@@ -25,7 +25,7 @@ import {
   Quote, Minus, Link as LinkIcon, Image as ImageIcon,
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
-  CheckCircle, Lightbulb, Square, BarChart3, HelpCircle, Zap
+  CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap
 } from 'lucide-react';
 
 const SYMBOLS = {
