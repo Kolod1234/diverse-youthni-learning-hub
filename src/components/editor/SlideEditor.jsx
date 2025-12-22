@@ -594,7 +594,58 @@ export default function SlideEditor({ slides = [], onChange }) {
             </>
           )}
         </div>
-      </div>
-    </div>
-  );
-}
+        </div>
+
+        {/* Save Template Modal */}
+        {showSaveTemplate && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSaveTemplate(false)}>
+          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4">Save as Template</h3>
+            <div className="space-y-4">
+              <div>
+                <Label>Template Name</Label>
+                <Input
+                  value={templateName}
+                  onChange={(e) => setTemplateName(e.target.value)}
+                  placeholder="My Custom Template"
+                  className="mt-1"
+                />
+              </div>
+              <div>
+                <Label>Icon (Emoji)</Label>
+                <Input
+                  value={templateIcon}
+                  onChange={(e) => setTemplateIcon(e.target.value)}
+                  placeholder="📝"
+                  className="mt-1"
+                  maxLength={2}
+                />
+                <p className="text-xs text-gray-500 mt-1">Choose an emoji to represent your template</p>
+              </div>
+            </div>
+            <div className="flex gap-3 mt-6">
+              <Button 
+                onClick={saveCustomTemplate} 
+                className="flex-1 bg-green-600 hover:bg-green-700"
+                disabled={!templateName.trim()}
+              >
+                Save Template
+              </Button>
+              <Button 
+                variant="outline" 
+                onClick={() => {
+                  setShowSaveTemplate(false);
+                  setTemplateName('');
+                  setTemplateIcon('📄');
+                }}
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </div>
+        )}
+        </div>
+        );
+        }
