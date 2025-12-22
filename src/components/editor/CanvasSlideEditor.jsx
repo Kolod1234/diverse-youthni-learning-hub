@@ -602,7 +602,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                 {/* Image Element */}
                 {element.type === 'image' && (
                   <div 
-                    style={{ width: '100%', height: '100%', position: 'relative' }}
+                    style={{ width: '100%', height: '100%', position: 'relative', overflow: 'hidden' }}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (selectedElement === element.id) handleImageUpload(element.id);
@@ -614,10 +614,10 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                       style={{
                         width: '100%',
                         height: '100%',
-                        objectFit: element.objectFit,
-                        opacity: element.opacity || 1,
+                        objectFit: element.objectFit || 'cover',
+                        opacity: element.opacity !== undefined ? element.opacity : 1,
                         filter: element.filter ? 
-                          `grayscale(${element.filter.grayscale}%) sepia(${element.filter.sepia}%) blur(${element.filter.blur}px) brightness(${element.filter.brightness}%) contrast(${element.filter.contrast}%) saturate(${element.filter.saturate}%)` 
+                          `grayscale(${element.filter.grayscale || 0}%) sepia(${element.filter.sepia || 0}%) blur(${element.filter.blur || 0}px) brightness(${element.filter.brightness || 100}%) contrast(${element.filter.contrast || 100}%) saturate(${element.filter.saturate || 100}%)` 
                           : 'none',
                         display: 'block',
                       }}
