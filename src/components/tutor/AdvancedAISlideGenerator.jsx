@@ -69,8 +69,8 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
     setGenerating(true);
     
     try {
-      // Step 1: Generate slides with Gemini
-      setCurrentStep('Using Gemini AI to create professional slides with rich graphics...');
+      // Step 1: Generate slides with Base44 AI
+      setCurrentStep('Using Base44 AI to create professional slides with rich graphics...');
       
       const slidesPrompt = `You are an expert educational content creator with expertise in visual design and pedagogy.
 
@@ -135,37 +135,36 @@ Return ONLY valid JSON with this structure:
   ]
 }`;
 
-      const slidesResponse = await base44.functions.invoke('generateWithGemini', {
+      const slidesResult = await base44.integrations.Core.InvokeLLM({
         prompt: slidesPrompt,
-        type: 'slides'
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            slides: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  content: { type: "string" },
+                  speaker_notes: { type: "string" }
+                }
+              }
+            }
+          }
+        }
       });
-
-      console.log('Full Manus API response:', slidesResponse);
-      console.log('Response data:', slidesResponse.data);
-
-      if (!slidesResponse.data?.success) {
-        throw new Error(slidesResponse.data?.error || 'Failed to generate slides with Manus');
-      }
-
-      const slidesResult = slidesResponse.data.result;
-      console.log('Slides result from Manus:', slidesResult);
-      
       const slides = slidesResult?.slides || [];
-      console.log('Extracted slides array:', slides);
-      console.log('Number of slides extracted:', slides.length);
-      
+
       if (!slides || slides.length === 0) {
         throw new Error('No slides were generated. Please try again with a different topic or instructions.');
       }
       
-      // Log first and last slide to verify
-      console.log('First slide:', slides[0]);
-      console.log('Last slide:', slides[slides.length - 1]);
-      
-      // Step 2: Generate quiz if requested with Gemini
+      // Step 2: Generate quiz if requested with Base44 AI
       let quiz = null;
       if (includeQuiz) {
-        setCurrentStep('Creating comprehensive assessment quiz with Gemini...');
+        setCurrentStep('Creating comprehensive assessment quiz with Base44 AI...');
         
         const quizPrompt = `Create a COMPREHENSIVE, CHALLENGING quiz for "${topic}" (${curriculum} ${examBoard}).
 
@@ -203,12 +202,30 @@ Return ONLY valid JSON:
   "assessment_criteria": "This quiz assesses [specific skills and knowledge areas]"
 }`;
 
-        const quizResponse = await base44.functions.invoke('generateWithGemini', {
+        const quizResult = await base44.integrations.Core.InvokeLLM({
           prompt: quizPrompt,
-          type: 'quiz'
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              title: { type: "string" },
+              description: { type: "string" },
+              questions: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    question: { type: "string" },
+                    options: { type: "array", items: { type: "string" } },
+                    correct_answer: { type: "number" },
+                    explanation: { type: "string" }
+                  }
+                }
+              },
+              assessment_criteria: { type: "string" }
+            }
+          }
         });
-
-        const quizResult = quizResponse.data?.success ? quizResponse.data.result : null;
 
         if (!quizResult || !quizResult.questions || quizResult.questions.length === 0) {
           toast.error('Quiz generation failed, but slides were created successfully');
@@ -218,7 +235,7 @@ Return ONLY valid JSON:
         }
       }
 
-      // Step 3: Generate learning objectives with Gemini
+      // Step 3: Generate learning objectives with Base44 AI
       setCurrentStep('Generating comprehensive learning objectives...');
       
       const objectivesPrompt = `For "${topic}" (${curriculum} ${examBoard}), create comprehensive pedagogical materials:
@@ -238,12 +255,19 @@ Return ONLY valid JSON:
   "extension_activities": ["Research and present...", "Create a model of...", "..."]
 }`;
 
-      const objectivesResponse = await base44.functions.invoke('generateWithGemini', {
+      const objectivesResult = await base44.integrations.Core.InvokeLLM({
         prompt: objectivesPrompt,
-        type: 'objectives'
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            learning_objectives: { type: "array", items: { type: "string" } },
+            success_criteria: { type: "array", items: { type: "string" } },
+            common_misconceptions: { type: "array", items: { type: "string" } },
+            extension_activities: { type: "array", items: { type: "string" } }
+          }
+        }
       });
-
-      const objectivesResult = objectivesResponse.data?.success ? objectivesResponse.data.result : null;
 
       const objectives = {
         learning_objectives: objectivesResult?.learning_objectives || [],
@@ -252,8 +276,7 @@ Return ONLY valid JSON:
         extension_activities: objectivesResult?.extension_activities || []
       };
 
-      console.log('Generated slides:', slides);
-      console.log('Number of slides:', slides?.length);
+
       
       setGeneratedContent({
         slides: slides || [],

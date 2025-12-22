@@ -161,16 +161,26 @@ Return ONLY valid JSON with this structure:
   "improvement_summary": "Brief summary of what was improved (one sentence)"
 }`;
 
-      const response = await base44.functions.invoke('generateWithGemini', {
+      const result = await base44.integrations.Core.InvokeLLM({
         prompt: improvementPrompt,
-        type: 'improvement'
+        add_context_from_internet: true,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            improved_slides: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  title: { type: "string" },
+                  content: { type: "string" }
+                }
+              }
+            },
+            improvement_summary: { type: "string" }
+          }
+        }
       });
-
-      if (!response.data?.success) {
-        throw new Error('Failed to generate improvements');
-      }
-
-      const result = response.data.result;
       
       await base44.entities.Lesson.update(lesson.id, {
         slides: result.improved_slides.map((slide, idx) => ({
