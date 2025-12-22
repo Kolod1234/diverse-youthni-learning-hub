@@ -5,11 +5,12 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3 } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
 import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder';
+import TemplateBlocks from '@/components/editor/TemplateBlocks';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -160,6 +161,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [aiLoading, setAiLoading] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
   const [showAdvancedBuilder, setShowAdvancedBuilder] = useState(false);
+  const [showTemplateBlocks, setShowTemplateBlocks] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -495,6 +497,15 @@ Format as a simple bulleted list.`,
               Canvas
             </Button>
           </div>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowTemplateBlocks(true)}
+            className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+          >
+            <Grid3x3 className="w-4 h-4 mr-2" />
+            Blocks
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -1126,6 +1137,17 @@ Format as a simple bulleted list.`,
             onSave={saveAdvancedTemplate}
             onClose={() => setShowAdvancedBuilder(false)}
             initialTemplate={null}
+          />
+        )}
+
+        {/* Template Blocks */}
+        {showTemplateBlocks && (
+          <TemplateBlocks
+            onInsert={(html) => {
+              const currentContent = currentSlideData?.content || '';
+              updateSlide(currentSlide, 'content', currentContent + html);
+            }}
+            onClose={() => setShowTemplateBlocks(false)}
           />
         )}
 
