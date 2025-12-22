@@ -100,7 +100,7 @@ export default function Quiz() {
     }));
   };
 
-  const handleSubmitQuiz = () => {
+  const handleSubmitQuiz = async () => {
     if (!quiz) return;
 
     const timeTaken = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
