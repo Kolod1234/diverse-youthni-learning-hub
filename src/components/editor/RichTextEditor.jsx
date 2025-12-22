@@ -728,9 +728,11 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         }
       }),
       Image.configure({
-        inline: true,
+        inline: false,
+        allowBase64: true,
         HTMLAttributes: {
           class: 'max-w-full h-auto rounded cursor-pointer',
+          style: 'display: block; margin: 8px 0;',
         },
       }),
       Link.configure({
@@ -908,6 +910,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             height: auto;
             border-radius: 4px;
             margin: 8px 0;
+            display: block !important;
+            object-fit: contain;
           }
           
           .rich-text-editor-wrapper .ProseMirror h1,
