@@ -132,6 +132,17 @@ const SLIDE_TEMPLATES = {
 export default function SlideEditor({ slides = [], onChange }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreenEdit, setFullscreenEdit] = useState(false);
+  const [customTemplates, setCustomTemplates] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem('customSlideTemplates') || '{}');
+    } catch {
+      return {};
+    }
+  });
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [templateName, setTemplateName] = useState('');
+  const [templateIcon, setTemplateIcon] = useState('📄');
+  const [showManageTemplates, setShowManageTemplates] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template];
@@ -201,6 +212,41 @@ export default function SlideEditor({ slides = [], onChange }) {
     toast.success('Slides reordered');
   };
 
+  const saveCustomTemplate = () => {
+    if (!templateName.trim() || !currentSlideData) return;
+    
+    const newTemplate = {
+      name: templateName.trim(),
+      icon: templateIcon,
+      content: currentSlideData.content
+    };
+    
+    const updated = {
+      ...customTemplates,
+      [Date.now().toString()]: newTemplate
+    };
+    
+    setCustomTemplates(updated);
+    localStorage.setItem('customSlideTemplates', JSON.stringify(updated));
+    setShowSaveTemplate(false);
+    setTemplateName('');
+    setTemplateIcon('📄');
+    toast.success('Template saved!');
+  };
+
+  const deleteCustomTemplate = (key) => {
+    const updated = { ...customTemplates };
+    delete updated[key];
+    setCustomTemplates(updated);
+    localStorage.setItem('customSlideTemplates', JSON.stringify(updated));
+    toast.success('Template deleted');
+  };
+
+  const allTemplates = {
+    ...SLIDE_TEMPLATES,
+    ...customTemplates
+  };
+
   const currentSlideData = slides[currentSlide] || null;
 
   if (slides.length === 0) {
@@ -211,6 +257,19 @@ export default function SlideEditor({ slides = [], onChange }) {
           <h3 className="text-2xl font-bold text-gray-900 mb-3">Create Your First Slide</h3>
           <p className="text-gray-500 mb-8">Choose from professional templates to get started with your lesson</p>
           
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-sm text-gray-600">Choose a template to get started</p>
+            {Object.keys(customTemplates).length > 0 && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowManageTemplates(!showManageTemplates)}
+              >
+                Manage Templates
+              </Button>
+            )}
+          </div>
+
           <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
             {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
               <Button
@@ -223,7 +282,44 @@ export default function SlideEditor({ slides = [], onChange }) {
                 <span className="font-medium text-sm">{template.name}</span>
               </Button>
             ))}
+
+            {Object.entries(customTemplates).map(([key, template]) => (
+              <Button
+                key={key}
+                variant="outline"
+                onClick={() => addSlide(key)}
+                className="h-auto py-6 flex-col gap-3 hover:bg-green-50 hover:border-green-300 hover:shadow-md transition-all relative group"
+              >
+                <span className="text-3xl">{template.icon}</span>
+                <span className="font-medium text-sm">{template.name}</span>
+                <span className="absolute top-1 right-1 text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">Custom</span>
+              </Button>
+            ))}
           </div>
+
+          {showManageTemplates && Object.keys(customTemplates).length > 0 && (
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg border">
+              <h4 className="font-semibold mb-3 text-sm">Your Custom Templates</h4>
+              <div className="space-y-2">
+                {Object.entries(customTemplates).map(([key, template]) => (
+                  <div key={key} className="flex items-center justify-between bg-white p-3 rounded border">
+                    <div className="flex items-center gap-3">
+                      <span className="text-2xl">{template.icon}</span>
+                      <span className="font-medium">{template.name}</span>
+                    </div>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => deleteCustomTemplate(key)}
+                      className="text-red-600 hover:text-red-700"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
       </Card>
     );
@@ -266,6 +362,23 @@ export default function SlideEditor({ slides = [], onChange }) {
                   <span className="font-medium">{template.name}</span>
                 </DropdownMenuItem>
               ))}
+
+              {Object.keys(customTemplates).length > 0 && (
+                <>
+                  <div className="border-t my-2" />
+                  <div className="px-2 py-1 text-xs font-semibold text-gray-500">CUSTOM TEMPLATES</div>
+                  {Object.entries(customTemplates).map(([key, template]) => (
+                    <DropdownMenuItem 
+                      key={key}
+                      onClick={() => addSlide(key)}
+                      className="cursor-pointer py-3 bg-green-50"
+                    >
+                      <span className="text-xl mr-3">{template.icon}</span>
+                      <span className="font-medium">{template.name}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
         </div>
@@ -378,6 +491,15 @@ export default function SlideEditor({ slides = [], onChange }) {
                   <span className="text-sm font-medium text-gray-700">
                     Slide {currentSlide + 1} of {slides.length}
                   </span>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setShowSaveTemplate(true)}
+                    className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                  >
+                    <Save className="w-4 h-4 mr-1" />
+                    Save as Template
+                  </Button>
                   <Button
                     variant="outline"
                     size="sm"
