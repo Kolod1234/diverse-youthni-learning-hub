@@ -268,9 +268,11 @@ Return JSON format.`,
           </div>
         </div>
 
-        <ScrollArea className="flex-1 p-6">
-          {!generatedContent ? (
-            <div className="space-y-6 max-w-3xl mx-auto">
+        <div className="flex-1 overflow-hidden">
+          <ScrollArea className="h-full">
+            <div className="p-6">
+              {!generatedContent ? (
+                <div className="space-y-6 max-w-3xl mx-auto">
               <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
                 <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                   <Sparkles className="w-5 h-5 text-blue-600" />
@@ -643,9 +645,12 @@ Return JSON format.`,
                   </ul>
                 </Card>
               </div>
-            </div>
-          )}
-        </ScrollArea>
+                </div>
+              ) : (
+                <div className="space-y-6">
+                  {/* Generated content sections */}
+                  {/* Success Header */}
+                  <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
 
         {/* Footer */}
         {generatedContent && (
