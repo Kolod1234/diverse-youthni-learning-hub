@@ -8,6 +8,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import PresentationMode from '@/components/editor/PresentationMode';
+import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -135,6 +136,7 @@ const SLIDE_TEMPLATES = {
 export default function SlideEditor({ slides = [], onChange }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreenEdit, setFullscreenEdit] = useState(false);
+  const [editorMode, setEditorMode] = useState('rich'); // 'rich' or 'canvas'
   const [customTemplates, setCustomTemplates] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('customSlideTemplates') || '{}');
@@ -450,6 +452,26 @@ Format as a simple bulleted list.`,
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
+            <Button
+              variant={editorMode === 'rich' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setEditorMode('rich')}
+              className="h-8"
+            >
+              <FileText className="w-4 h-4 mr-2" />
+              Rich Text
+            </Button>
+            <Button
+              variant={editorMode === 'canvas' ? 'default' : 'ghost'}
+              size="sm"
+              onClick={() => setEditorMode('canvas')}
+              className="h-8"
+            >
+              <LayoutTemplate className="w-4 h-4 mr-2" />
+              Canvas
+            </Button>
+          </div>
           <Button
             variant="outline"
             size="sm"
@@ -705,6 +727,16 @@ Format as a simple bulleted list.`,
 
               {/* Editor Area */}
               <Card className="flex-1 overflow-hidden border-2">
+                {editorMode === 'canvas' ? (
+                  <CanvasSlideEditor
+                    slide={currentSlideData}
+                    onChange={(updatedSlide) => {
+                      const newSlides = [...slides];
+                      newSlides[currentSlide] = updatedSlide;
+                      onChange(newSlides);
+                    }}
+                  />
+                ) : (
                 <ScrollArea className="h-full">
                   <div className="p-6 space-y-6">
                     {/* Template Selector */}
@@ -761,6 +793,7 @@ Format as a simple bulleted list.`,
                     </div>
                   </div>
                 </ScrollArea>
+                )}
               </Card>
             </>
           )}
