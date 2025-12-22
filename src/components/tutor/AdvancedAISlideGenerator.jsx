@@ -8,7 +8,7 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { base44 } from '@/api/base44Client';
 import { 
-  Sparkles, Loader2, CheckCircle, BookOpen, 
+  Sparkles, Loader2, CheckCircle, CheckCircle2, BookOpen, 
   Brain, Clock, Target, FileText, X, Wand2, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
