@@ -15,6 +15,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 export default function LessonContentAnalyzer({ lesson, onClose }) {
   const [analyzing, setAnalyzing] = useState(false);
   const [analysis, setAnalysis] = useState(null);
+  const [improving, setImproving] = useState(false);
 
   const analyzeContent = async () => {
     setAnalyzing(true);
