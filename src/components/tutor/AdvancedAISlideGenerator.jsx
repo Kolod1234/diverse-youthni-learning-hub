@@ -647,8 +647,8 @@ Return JSON format.`,
               </div>
             </div>
           )}
-          </ScrollArea>
-        </div>
+        </ScrollArea>
+      </div>
 
         {/* Footer */}
         {generatedContent && (
