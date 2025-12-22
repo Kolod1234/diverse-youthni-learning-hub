@@ -63,10 +63,82 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
     setGenerating(true);
     
     try {
-      // Step 1: Generate slides
-      setCurrentStep('Searching online resources and generating slides...');
+      // Step 1: Generate slides with Gemini
+      setCurrentStep('Using Gemini AI to create professional slides with rich graphics...');
       
-      const slidesResult = await base44.integrations.Core.InvokeLLM({
+      const slidesPrompt = `You are an expert educational content creator with expertise in visual design and pedagogy.
+
+Create ${numSlides} HIGHLY DETAILED, PROFESSIONAL lesson slides for: "${topic}"
+${additionalPrompt ? `\n\nADDITIONAL REQUIREMENTS: ${additionalPrompt}` : ''}
+
+CURRICULUM: ${curriculum} - ${examBoard} Exam Board
+
+CRITICAL REQUIREMENTS FOR PROFESSIONAL QUALITY:
+
+1. **Rich HTML Content**: Each slide MUST include:
+   - Professional styling with gradients, shadows, and modern design
+   - Multiple sections with clear visual hierarchy
+   - Color-coded information boxes (definitions, examples, key points)
+   - Real placeholder images with DESCRIPTIVE alt text (e.g., "diagram-of-photosynthesis-process.png")
+   - Tables, charts, and diagrams where appropriate
+   - Visual callouts and highlights for important information
+
+2. **Visual Elements**: Include in your HTML:
+   - <img> tags with descriptive placeholder URLs like: https://via.placeholder.com/800x500/4F46E5/FFFFFF?text=Photosynthesis+Diagram
+   - Styled <div> boxes for definitions (blue gradient background)
+   - <table> for comparing concepts
+   - Color-coded <span> elements for key terms
+   - Icons using emoji or symbols (✓, →, ★, 💡, ⚠️)
+
+3. **Content Structure**: Each slide should have:
+   - A clear, engaging title
+   - 3-5 main points with detailed explanations
+   - Visual examples or diagrams
+   - Real-world applications
+   - Key vocabulary highlighted
+   - At least 200-400 words of well-formatted content
+
+4. **HTML Styling**: Use inline styles for:
+   - Background gradients: linear-gradient(135deg, #667eea 0%, #764ba2 100%)
+   - Box shadows: box-shadow: 0 4px 12px rgba(0,0,0,0.1)
+   - Rounded corners: border-radius: 12px
+   - Padding and spacing: padding: 20px; margin: 15px 0
+   - Font sizes: h2 {font-size: 28px}, p {font-size: 16px}
+
+5. **Educational Quality**:
+   - Aligned with ${curriculum} ${examBoard} curriculum
+   - Age-appropriate language and examples
+   - Progressive difficulty across slides
+   - Include mnemonics or memory aids where helpful
+
+EXAMPLE FORMAT:
+{
+  "title": "Introduction to Photosynthesis",
+  "content": "<div style='background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%); padding: 30px; border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);'><h2 style='color: #0C4A6E; font-size: 32px; margin-bottom: 20px;'>🌿 What is Photosynthesis?</h2><p style='font-size: 18px; line-height: 1.8; color: #334155;'>Photosynthesis is the remarkable process by which plants convert light energy into chemical energy...</p><img src='https://via.placeholder.com/800x400/10B981/FFFFFF?text=Photosynthesis+Process+Diagram' style='width: 100%; border-radius: 12px; margin: 20px 0;' alt='Detailed diagram showing photosynthesis process'/><div style='background: white; padding: 20px; border-left: 5px solid #10B981; border-radius: 8px; margin: 20px 0;'><h3 style='color: #059669;'>💡 Key Equation</h3><p style='font-size: 20px; text-align: center; font-weight: bold;'>6CO₂ + 6H₂O + Light Energy → C₆H₁₂O₆ + 6O₂</p></div></div>",
+  "speaker_notes": "Start by asking students what they ate for breakfast and trace it back to plants. Emphasize that ALL food energy ultimately comes from the sun via photosynthesis."
+}
+
+Return ONLY valid JSON with this structure:
+{
+  "slides": [
+    {
+      "title": "Slide title here",
+      "content": "Rich HTML content with inline styles, images, tables, etc.",
+      "speaker_notes": "Teaching tips and discussion prompts"
+    }
+  ]
+}`;
+
+      const slidesResponse = await base44.functions.invoke('generateWithGemini', {
+        prompt: slidesPrompt,
+        type: 'slides'
+      });
+
+      if (!slidesResponse.data?.success) {
+        throw new Error(slidesResponse.data?.error || 'Failed to generate slides with Gemini');
+      }
+
+      const slidesResult = slidesResponse.data.result;
         prompt: `You are an expert educational content creator. Generate comprehensive, modern lesson slides for:
 
 TOPIC: ${topic}
@@ -115,12 +187,53 @@ IMPORTANT: Return a JSON object with a "slides" array property containing the sl
         throw new Error('No slides were generated. Please try again with a different topic or instructions.');
       }
       
-      // Step 2: Generate quiz if requested
+      // Step 2: Generate quiz if requested with Gemini
       let quiz = null;
       if (includeQuiz) {
-        setCurrentStep('Creating advanced assessment quiz...');
+        setCurrentStep('Creating comprehensive assessment quiz with Gemini...');
         
-        const quizResult = await base44.integrations.Core.InvokeLLM({
+        const quizPrompt = `Create a COMPREHENSIVE, CHALLENGING quiz for "${topic}" (${curriculum} ${examBoard}).
+
+DIFFICULTY: ${quizDifficulty}
+NUMBER OF QUESTIONS: ${quizDifficulty === 'easy' ? '15' : quizDifficulty === 'medium' ? '25' : '40'}
+
+REQUIREMENTS:
+1. Questions should test deep understanding, not just memorization
+2. Mix of question types: concept application, analysis, problem-solving, and critical thinking
+3. Each question MUST have exactly 4 well-crafted, plausible options
+4. Include questions of varying difficulty within the ${quizDifficulty} level
+5. Provide DETAILED explanations (3-5 sentences) for correct answers
+6. Align with ${curriculum} ${examBoard} assessment objectives and mark schemes
+7. Include real-world scenarios where applicable
+
+QUESTION QUALITY:
+- Avoid obvious wrong answers
+- Use diagrams/scenarios in questions where appropriate
+- Include numerical problems if relevant to the topic
+- Test both knowledge recall AND application
+- Ensure distractors (wrong answers) are plausible but clearly incorrect
+
+Return ONLY valid JSON:
+{
+  "title": "Comprehensive ${topic} Assessment",
+  "description": "A challenging ${quizDifficulty}-level quiz testing your understanding of ${topic}",
+  "questions": [
+    {
+      "question": "Question text here (can include HTML for formatting)",
+      "options": ["Option A", "Option B", "Option C", "Option D"],
+      "correct_answer": 0,
+      "explanation": "Detailed explanation of why this answer is correct and why others are wrong"
+    }
+  ],
+  "assessment_criteria": "This quiz assesses [specific skills and knowledge areas]"
+}`;
+
+        const quizResponse = await base44.functions.invoke('generateWithGemini', {
+          prompt: quizPrompt,
+          type: 'quiz'
+        });
+
+        const quizResult = quizResponse.data?.success ? quizResponse.data.result : null;
           prompt: `Based on the topic "${topic}" for ${curriculum} ${examBoard}, create a challenging time-based quiz.
 
 DIFFICULTY: ${quizDifficulty}
@@ -167,10 +280,32 @@ IMPORTANT: Return the exact JSON structure specified in the schema with all requ
         }
       }
 
-      // Step 3: Generate learning objectives and success criteria
-      setCurrentStep('Generating learning objectives...');
+      // Step 3: Generate learning objectives with Gemini
+      setCurrentStep('Generating comprehensive learning objectives...');
       
-      const objectivesResult = await base44.integrations.Core.InvokeLLM({
+      const objectivesPrompt = `For "${topic}" (${curriculum} ${examBoard}), create comprehensive pedagogical materials:
+
+1. **Learning Objectives** (5-7 items): Clear, measurable objectives using Bloom's taxonomy verbs
+2. **Success Criteria** (5-7 items): Specific, observable criteria students can use for self-assessment
+3. **Common Misconceptions** (4-6 items): Typical student errors or misunderstandings with explanations
+4. **Extension Activities** (4-6 items): Challenging tasks for advanced learners
+
+Make all items specific to ${curriculum} ${examBoard} standards and curriculum.
+
+Return ONLY valid JSON:
+{
+  "learning_objectives": ["Students will be able to...", "..."],
+  "success_criteria": ["I can explain...", "I can calculate...", "..."],
+  "common_misconceptions": ["Students often think... but actually...", "..."],
+  "extension_activities": ["Research and present...", "Create a model of...", "..."]
+}`;
+
+      const objectivesResponse = await base44.functions.invoke('generateWithGemini', {
+        prompt: objectivesPrompt,
+        type: 'objectives'
+      });
+
+      const objectivesResult = objectivesResponse.data?.success ? objectivesResponse.data.result : null;
         prompt: `For the topic "${topic}" aligned with ${curriculum} ${examBoard}, generate:
 
 1. Clear learning objectives (array of strings)
