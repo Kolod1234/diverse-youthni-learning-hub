@@ -241,6 +241,9 @@ Return ONLY valid JSON:
         extension_activities: objectivesResult?.extension_activities || []
       };
 
+      console.log('Generated slides:', slides);
+      console.log('Number of slides:', slides?.length);
+      
       setGeneratedContent({
         slides: slides || [],
         quiz: quiz || null,
@@ -254,7 +257,7 @@ Return ONLY valid JSON:
       });
 
       setCurrentStep('');
-      toast.success('Content generated successfully!');
+      toast.success(`Content generated successfully! ${slides?.length || 0} slides created`);
     } catch (error) {
       const errorMessage = error.message || 'Failed to generate content';
       toast.error(errorMessage);
@@ -590,10 +593,15 @@ Return ONLY valid JSON:
 
               {/* Slides Preview with Slider */}
               <Card className="p-6">
-                <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
-                  <FileText className="w-5 h-5 text-indigo-600" />
-                  Generated Slides Preview
-                </h3>
+                <div className="flex items-center justify-between mb-4">
+                  <h3 className="font-bold text-gray-900 flex items-center gap-2">
+                    <FileText className="w-5 h-5 text-indigo-600" />
+                    Generated Slides Preview
+                  </h3>
+                  <Badge className="bg-indigo-100 text-indigo-800 text-base px-3 py-1">
+                    {generatedContent?.slides?.length || 0} Total Slides
+                  </Badge>
+                </div>
                 
                 {/* Slide Viewer */}
                 <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
