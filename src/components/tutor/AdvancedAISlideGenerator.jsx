@@ -583,7 +583,7 @@ Return JSON format.`,
                 </Card>
               </div>
             </div>
-          ) : null}
+          )}
         </ScrollArea>
 
         {/* Footer */}
