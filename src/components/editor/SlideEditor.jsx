@@ -9,6 +9,7 @@ import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVert
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
+import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -153,6 +154,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
+  const [showAdvancedBuilder, setShowAdvancedBuilder] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -246,6 +248,18 @@ export default function SlideEditor({ slides = [], onChange }) {
     setTemplateName('');
     setTemplateIcon('📄');
     toast.success('Template saved!');
+  };
+
+  const saveAdvancedTemplate = (template) => {
+    const updated = {
+      ...customTemplates,
+      [Date.now().toString()]: template
+    };
+    
+    setCustomTemplates(updated);
+    localStorage.setItem('customSlideTemplates', JSON.stringify(updated));
+    setShowAdvancedBuilder(false);
+    toast.success('Advanced template saved!');
   };
 
   const deleteCustomTemplate = (key) => {
@@ -653,15 +667,28 @@ Format as a simple bulleted list.`,
                   <span className="text-sm font-medium text-gray-700">
                     Slide {currentSlide + 1} of {slides.length}
                   </span>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => setShowSaveTemplate(true)}
-                    className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
-                  >
-                    <Save className="w-4 h-4 mr-1" />
-                    Save as Template
-                  </Button>
+                  <DropdownMenu>
+                    <DropdownMenuTrigger asChild>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                      >
+                        <Save className="w-4 h-4 mr-1" />
+                        Save as Template
+                      </Button>
+                    </DropdownMenuTrigger>
+                    <DropdownMenuContent align="end">
+                      <DropdownMenuItem onClick={() => setShowSaveTemplate(true)}>
+                        <Save className="w-4 h-4 mr-2" />
+                        Quick Save
+                      </DropdownMenuItem>
+                      <DropdownMenuItem onClick={() => setShowAdvancedBuilder(true)}>
+                        <LayoutTemplate className="w-4 h-4 mr-2" />
+                        Advanced Builder
+                      </DropdownMenuItem>
+                    </DropdownMenuContent>
+                  </DropdownMenu>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -1086,6 +1113,15 @@ Format as a simple bulleted list.`,
               </div>
             </div>
           </div>
+        )}
+
+        {/* Advanced Template Builder */}
+        {showAdvancedBuilder && (
+          <AdvancedTemplateBuilder
+            onSave={saveAdvancedTemplate}
+            onClose={() => setShowAdvancedBuilder(false)}
+            initialTemplate={null}
+          />
         )}
 
         {/* Presentation Mode */}
