@@ -9,7 +9,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { base44 } from '@/api/base44Client';
 import { 
   Sparkles, Loader2, CheckCircle, BookOpen, 
-  Brain, Clock, Target, FileText, X, Wand2
+  Brain, Clock, Target, FileText, X, Wand2, ChevronLeft, ChevronRight
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -34,6 +34,7 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [generating, setGenerating] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
   const [generatedContent, setGeneratedContent] = useState(null);
+  const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
 
   const generateContent = async () => {
     if (!topic.trim()) {
@@ -483,25 +484,81 @@ Return JSON format.`,
                 </ul>
               </Card>
 
-              {/* Slides Preview */}
+              {/* Slides Preview with Slider */}
               <Card className="p-6">
                 <h3 className="font-bold text-gray-900 mb-4 flex items-center gap-2">
                   <FileText className="w-5 h-5 text-indigo-600" />
-                  Generated Slides ({generatedContent.slides.length})
+                  Generated Slides Preview
                 </h3>
-                <div className="space-y-3">
-                  {generatedContent.slides.map((slide, idx) => (
-                    <div key={idx} className="p-4 bg-gray-50 rounded-lg border border-gray-200">
-                      <div className="flex items-center gap-2 mb-2">
-                        <Badge variant="outline">Slide {idx + 1}</Badge>
-                        <h4 className="font-semibold text-gray-900">{slide.title}</h4>
-                      </div>
-                      {slide.speaker_notes && (
-                        <p className="text-xs text-gray-600 mt-2">
-                          <strong>Notes:</strong> {slide.speaker_notes}
-                        </p>
-                      )}
+                
+                {/* Slide Viewer */}
+                <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden mb-4">
+                  <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <Badge variant="outline">
+                        Slide {previewSlideIndex + 1} of {generatedContent.slides.length}
+                      </Badge>
+                      <h4 className="font-semibold text-gray-900">
+                        {generatedContent.slides[previewSlideIndex]?.title}
+                      </h4>
                     </div>
+                    <div className="flex gap-1">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPreviewSlideIndex(Math.max(0, previewSlideIndex - 1))}
+                        disabled={previewSlideIndex === 0}
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => setPreviewSlideIndex(Math.min(generatedContent.slides.length - 1, previewSlideIndex + 1))}
+                        disabled={previewSlideIndex === generatedContent.slides.length - 1}
+                      >
+                        <ChevronRight className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="p-6 min-h-[400px] bg-white">
+                    <div 
+                      className="prose prose-sm max-w-none"
+                      dangerouslySetInnerHTML={{ 
+                        __html: generatedContent.slides[previewSlideIndex]?.content || '' 
+                      }}
+                    />
+                  </div>
+                  
+                  {generatedContent.slides[previewSlideIndex]?.speaker_notes && (
+                    <div className="bg-blue-50 border-t border-blue-200 px-4 py-3">
+                      <p className="text-xs text-blue-900">
+                        <strong>Speaker Notes:</strong> {generatedContent.slides[previewSlideIndex].speaker_notes}
+                      </p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Slide Thumbnails */}
+                <div className="grid grid-cols-5 gap-2">
+                  {generatedContent.slides.map((slide, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setPreviewSlideIndex(idx)}
+                      className={`p-2 text-left rounded-lg border-2 transition-all ${
+                        previewSlideIndex === idx
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-gray-200 hover:border-gray-300 bg-white'
+                      }`}
+                    >
+                      <div className="text-xs font-medium text-gray-900 truncate mb-1">
+                        {idx + 1}. {slide.title}
+                      </div>
+                      <div className="w-full h-12 bg-gray-100 rounded text-[8px] text-gray-500 overflow-hidden p-1">
+                        {slide.content.replace(/<[^>]*>/g, ' ').substring(0, 50)}...
+                      </div>
+                    </button>
                   ))}
                 </div>
               </Card>
