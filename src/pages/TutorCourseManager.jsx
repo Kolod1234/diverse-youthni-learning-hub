@@ -8,13 +8,14 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import SlideEditor from '@/components/editor/SlideEditor';
+import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -22,6 +23,7 @@ export default function TutorCourseManager() {
   const [editingLesson, setEditingLesson] = useState(null);
   const [showCreate, setShowCreate] = useState(false);
   const [lessonForm, setLessonForm] = useState({});
+  const [analyzingLesson, setAnalyzingLesson] = useState(null);
   const queryClient = useQueryClient();
 
   const { data: course } = useQuery({
@@ -270,6 +272,14 @@ export default function TutorCourseManager() {
                                         <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          onClick={() => setAnalyzingLesson(lesson)}
+                                          className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+                                        >
+                                          <Brain className="w-4 h-4" />
+                                        </Button>
                                         <Button variant="outline" size="sm" onClick={() => {
                                           setEditingLesson(lesson);
                                           setLessonForm(lesson);
@@ -307,6 +317,14 @@ export default function TutorCourseManager() {
             </div>
           )}
         </Card>
+
+        {/* AI Content Analyzer */}
+        {analyzingLesson && (
+          <LessonContentAnalyzer
+            lesson={analyzingLesson}
+            onClose={() => setAnalyzingLesson(null)}
+          />
+        )}
       </div>
     </div>
   );

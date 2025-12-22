@@ -1,41 +1,41 @@
-import Home from './pages/Home';
-import Explore from './pages/Explore';
-import Dashboard from './pages/Dashboard';
-import CourseDetails from './pages/CourseDetails';
-import LessonPlayer from './pages/LessonPlayer';
-import Quiz from './pages/Quiz';
-import Profile from './pages/Profile';
-import CourseDiscussion from './pages/CourseDiscussion';
 import AdminDashboard from './pages/AdminDashboard';
-import TutorDashboard from './pages/TutorDashboard';
-import TutorCourseManager from './pages/TutorCourseManager';
+import CourseDetails from './pages/CourseDetails';
+import CourseDiscussion from './pages/CourseDiscussion';
 import CreateAssignment from './pages/CreateAssignment';
+import Dashboard from './pages/Dashboard';
+import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
-import StudentAnalytics from './pages/StudentAnalytics';
-import Tutors from './pages/Tutors';
-import TutorSetup from './pages/TutorSetup';
+import Home from './pages/Home';
+import LessonPlayer from './pages/LessonPlayer';
+import Profile from './pages/Profile';
 import Programs from './pages/Programs';
+import Quiz from './pages/Quiz';
+import StudentAnalytics from './pages/StudentAnalytics';
+import TutorCourseManager from './pages/TutorCourseManager';
+import TutorDashboard from './pages/TutorDashboard';
+import TutorSetup from './pages/TutorSetup';
+import Tutors from './pages/Tutors';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
-    "Home": Home,
-    "Explore": Explore,
-    "Dashboard": Dashboard,
-    "CourseDetails": CourseDetails,
-    "LessonPlayer": LessonPlayer,
-    "Quiz": Quiz,
-    "Profile": Profile,
-    "CourseDiscussion": CourseDiscussion,
     "AdminDashboard": AdminDashboard,
-    "TutorDashboard": TutorDashboard,
-    "TutorCourseManager": TutorCourseManager,
+    "CourseDetails": CourseDetails,
+    "CourseDiscussion": CourseDiscussion,
     "CreateAssignment": CreateAssignment,
+    "Dashboard": Dashboard,
+    "Explore": Explore,
     "GradeAssignments": GradeAssignments,
-    "StudentAnalytics": StudentAnalytics,
-    "Tutors": Tutors,
-    "TutorSetup": TutorSetup,
+    "Home": Home,
+    "LessonPlayer": LessonPlayer,
+    "Profile": Profile,
     "Programs": Programs,
+    "Quiz": Quiz,
+    "StudentAnalytics": StudentAnalytics,
+    "TutorCourseManager": TutorCourseManager,
+    "TutorDashboard": TutorDashboard,
+    "TutorSetup": TutorSetup,
+    "Tutors": Tutors,
 }
 
 export const pagesConfig = {
