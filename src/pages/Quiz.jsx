@@ -13,6 +13,8 @@ import {
   ArrowLeft, ArrowRight, RefreshCw, Award, Target
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import PointsAnimation from '@/components/gamification/PointsAnimation';
+import confetti from 'canvas-confetti';
 
 export default function Quiz() {
   const [user, setUser] = useState(null);
@@ -21,6 +23,8 @@ export default function Quiz() {
   const [showResults, setShowResults] = useState(false);
   const [timeLeft, setTimeLeft] = useState(null);
   const [startTime, setStartTime] = useState(null);
+  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+  const [pointsEarned, setPointsEarned] = useState(0);
   const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -120,7 +124,49 @@ export default function Quiz() {
       attempt_number: attempts.length + 1,
     });
 
+    if (passed) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+      
+      // Award points
+      await awardPoints(20);
+    }
+
     setShowResults(true);
+  };
+
+  const awardPoints = async (points) => {
+    try {
+      const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
+      
+      if (progressList.length > 0) {
+        const progress = progressList[0];
+        const newPoints = (progress.points || 0) + points;
+        const newLevel = Math.floor(newPoints / 100) + 1;
+        
+        await base44.entities.UserProgress.update(progress.id, {
+          points: newPoints,
+          level: newLevel,
+          total_quizzes_completed: (progress.total_quizzes_completed || 0) + 1,
+          last_activity_date: new Date().toISOString().split('T')[0]
+        });
+      } else {
+        await base44.entities.UserProgress.create({
+          points: points,
+          level: 1,
+          total_quizzes_completed: 1,
+          last_activity_date: new Date().toISOString().split('T')[0]
+        });
+      }
+      
+      setPointsEarned(points);
+      setShowPointsAnimation(true);
+    } catch (error) {
+      console.error('Failed to award points:', error);
+    }
   };
 
   const handleRetake = () => {

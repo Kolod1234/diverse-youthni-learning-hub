@@ -16,6 +16,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
+import PointsAnimation from '@/components/gamification/PointsAnimation';
 
 // SIDEBAR COMPONENT OUTSIDE - STABLE
 const SidebarContent = React.memo(({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
@@ -126,6 +127,8 @@ export default function LessonPlayer() {
   const [showNotes, setShowNotes] = useState(false);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+  const [pointsEarned, setPointsEarned] = useState(0);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -223,7 +226,41 @@ export default function LessonPlayer() {
       }
     });
 
+    // Award points
+    await awardPoints(10);
+
     setShowRatingDialog(true);
+  };
+
+  const awardPoints = async (points) => {
+    try {
+      const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
+      
+      if (progressList.length > 0) {
+        const progress = progressList[0];
+        const newPoints = (progress.points || 0) + points;
+        const newLevel = Math.floor(newPoints / 100) + 1;
+        
+        await base44.entities.UserProgress.update(progress.id, {
+          points: newPoints,
+          level: newLevel,
+          total_lessons_completed: (progress.total_lessons_completed || 0) + 1,
+          last_activity_date: new Date().toISOString().split('T')[0]
+        });
+      } else {
+        await base44.entities.UserProgress.create({
+          points: points,
+          level: 1,
+          total_lessons_completed: 1,
+          last_activity_date: new Date().toISOString().split('T')[0]
+        });
+      }
+      
+      setPointsEarned(points);
+      setShowPointsAnimation(true);
+    } catch (error) {
+      console.error('Failed to award points:', error);
+    }
   };
 
   const handleRatingComplete = () => {
@@ -641,6 +678,13 @@ export default function LessonPlayer() {
         course={course}
         onComplete={handleRatingComplete}
       />
+
+      {showPointsAnimation && (
+        <PointsAnimation 
+          points={pointsEarned}
+          onComplete={() => setShowPointsAnimation(false)}
+        />
+      )}
     </div>
   );
 }

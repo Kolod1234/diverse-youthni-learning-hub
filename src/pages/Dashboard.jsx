@@ -11,6 +11,8 @@ import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
 import CourseProgressWidget from '@/components/dashboard/CourseProgressWidget';
+import PointsDisplay from '@/components/gamification/PointsDisplay';
+import Leaderboard from '@/components/gamification/Leaderboard';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -40,6 +42,15 @@ export default function Dashboard() {
     enabled: !!user?.email,
   });
 
+  const { data: userProgress } = useQuery({
+    queryKey: ['user-progress', user?.email],
+    queryFn: async () => {
+      const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
+      return progressList[0] || { points: 0, level: 1, streak_days: 0 };
+    },
+    enabled: !!user?.email,
+  });
+
   const inProgressEnrollments = enrollments.filter(e => !e.is_completed);
   const completedEnrollments = enrollments.filter(e => e.is_completed);
 
@@ -59,10 +70,18 @@ export default function Dashboard() {
           animate={{ opacity: 1, y: 0 }}
           className="mb-8"
         >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">
-            {getGreeting()}, {user?.full_name?.split(' ')[0] || 'Learner'}! 👋
-          </h1>
-          <p className="text-gray-500">Track your progress and continue your learning journey.</p>
+          <div className="flex items-center justify-between flex-wrap gap-4">
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+                {getGreeting()}, {user?.full_name?.split(' ')[0] || 'Learner'}! 👋
+              </h1>
+              <p className="text-gray-500">Track your progress and continue your learning journey.</p>
+            </div>
+            <PointsDisplay 
+              points={userProgress?.points || 0} 
+              level={userProgress?.level || 1}
+            />
+          </div>
         </motion.div>
 
         {/* Stats Overview */}
@@ -177,6 +196,9 @@ export default function Dashboard() {
             <div className="space-y-6">
               {/* Quick Progress Widget */}
               <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
+
+              {/* Leaderboard */}
+              <Leaderboard limit={5} />
 
               {/* Achievements */}
               <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
