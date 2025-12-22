@@ -27,6 +27,7 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [curriculum, setCurriculum] = useState('GCSE');
   const [examBoard, setExamBoard] = useState('AQA');
   const [numSlides, setNumSlides] = useState('5');
+  const [sectionName, setSectionName] = useState('');
   const [includeQuiz, setIncludeQuiz] = useState(true);
   const [quizDifficulty, setQuizDifficulty] = useState('medium');
   const [quizTimeLimit, setQuizTimeLimit] = useState('15');
@@ -46,7 +47,7 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
     
     try {
       // Step 1: Generate slides
-      setCurrentStep('Researching curriculum standards and generating slides...');
+      setCurrentStep('Searching online resources and generating slides...');
       
       const slidesResult = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an expert educational content creator. Generate comprehensive, modern lesson slides for:
@@ -58,7 +59,7 @@ CURRICULUM: ${curriculum} - ${examBoard} Exam Board
 NUMBER OF SLIDES: ${numSlides}
 
 Requirements:
-1. Research current ${curriculum} ${examBoard} curriculum standards using online resources
+1. Search and research current ${curriculum} ${examBoard} curriculum standards, textbooks, teaching resources, and academic materials from trusted online sources
 2. Create ${numSlides} detailed, engaging slides with:
    - Clear, modern visual HTML layouts
    - Relevant diagrams, charts, and visual elements (use placeholder images with descriptive URLs)
@@ -217,7 +218,7 @@ Return JSON format.`,
           order: idx + 1
         })),
         order: 999,
-        section: generatedContent.metadata.curriculum
+        section: sectionName || generatedContent.metadata.curriculum
       });
 
       // Save quiz if generated
@@ -309,6 +310,17 @@ Return JSON format.`,
                 </div>
 
                 <div>
+                  <Label className="text-base font-semibold">Section/Path (Optional)</Label>
+                  <Input
+                    value={sectionName}
+                    onChange={(e) => setSectionName(e.target.value)}
+                    placeholder="e.g., Module 1, Getting Started, Biology - Unit 3"
+                    className="mt-2"
+                  />
+                  <p className="text-xs text-gray-500 mt-1">Organize lesson into a course section or learning path</p>
+                </div>
+
+                <div>
                   <Label className="text-base font-semibold">Additional Instructions (Optional)</Label>
                   <Textarea
                     value={additionalPrompt}
@@ -361,6 +373,9 @@ Return JSON format.`,
                         <SelectItem value="5">5 slides</SelectItem>
                         <SelectItem value="8">8 slides</SelectItem>
                         <SelectItem value="10">10 slides</SelectItem>
+                        <SelectItem value="15">15 slides</SelectItem>
+                        <SelectItem value="20">20 slides</SelectItem>
+                        <SelectItem value="30">30 slides</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
@@ -660,6 +675,7 @@ Return JSON format.`,
                   setGeneratedContent(null);
                   setTopic('');
                   setAdditionalPrompt('');
+                  setSectionName('');
                 }}
               >
                 Generate New Content
