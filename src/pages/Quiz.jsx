@@ -415,6 +415,13 @@ export default function Quiz() {
           </div>
         </Card>
       </div>
+
+      {showPointsAnimation && (
+        <PointsAnimation 
+          points={pointsEarned}
+          onComplete={() => setShowPointsAnimation(false)}
+        />
+      )}
     </div>
   );
 }
