@@ -15,6 +15,8 @@ import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
 import { Node } from '@tiptap/core';
+import FontFamily from '@tiptap/extension-font-family';
+import { Extension } from '@tiptap/core';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -35,6 +37,55 @@ const SYMBOLS = {
   shapes: ['○', '●', '□', '■', '△', '▲', '◇', '◆', '☆', '★'],
   organic: ['—', '≡', '⌬', '⟲', '⟳', 'CH₃', 'CH₂', 'COOH', 'OH', 'NH₂']
 };
+
+// Font Size Extension
+const FontSize = Extension.create({
+  name: 'fontSize',
+  
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+  
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          fontSize: {
+            default: null,
+            parseHTML: element => element.style.fontSize.replace(/['"]+/g, ''),
+            renderHTML: attributes => {
+              if (!attributes.fontSize) {
+                return {};
+              }
+              return {
+                style: `font-size: ${attributes.fontSize}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+  
+  addCommands() {
+    return {
+      setFontSize: fontSize => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontSize })
+          .run();
+      },
+      unsetFontSize: () => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { fontSize: null })
+          .removeEmptyTextStyle()
+          .run();
+      },
+    };
+  },
+});
 
 // Custom Card Extension
 const Card = Node.create({
@@ -665,6 +716,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       Subscript,
       Superscript,
       Underline,
+      FontFamily,
+      FontSize,
       Card,
       CardGrid,
       Poll,
@@ -994,7 +1047,59 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         </MenuButton>
         
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
+
+        {/* Font Family */}
+        <select
+          onChange={(e) => {
+            if (e.target.value === 'default') {
+              editor.chain().focus().unsetFontFamily().run();
+            } else {
+              editor.chain().focus().setFontFamily(e.target.value).run();
+            }
+          }}
+          className="h-8 px-2 text-sm border border-gray-300 rounded hover:bg-gray-50"
+          value={editor.getAttributes('textStyle').fontFamily || 'default'}
+        >
+          <option value="default">Default</option>
+          <option value="Arial, sans-serif">Arial</option>
+          <option value="'Times New Roman', serif">Times New Roman</option>
+          <option value="'Courier New', monospace">Courier New</option>
+          <option value="Georgia, serif">Georgia</option>
+          <option value="Verdana, sans-serif">Verdana</option>
+          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+          <option value="Impact, sans-serif">Impact</option>
+          <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+        </select>
+
+        {/* Font Size */}
+        <select
+          onChange={(e) => {
+            if (e.target.value === 'default') {
+              editor.chain().focus().unsetFontSize().run();
+            } else {
+              editor.chain().focus().setFontSize(e.target.value).run();
+            }
+          }}
+          className="h-8 px-2 text-sm border border-gray-300 rounded hover:bg-gray-50"
+          value={editor.getAttributes('textStyle').fontSize || 'default'}
+        >
+          <option value="default">Size</option>
+          <option value="12px">12px</option>
+          <option value="14px">14px</option>
+          <option value="16px">16px</option>
+          <option value="18px">18px</option>
+          <option value="20px">20px</option>
+          <option value="24px">24px</option>
+          <option value="28px">28px</option>
+          <option value="32px">32px</option>
+          <option value="36px">36px</option>
+          <option value="48px">48px</option>
+          <option value="64px">64px</option>
+          <option value="72px">72px</option>
+        </select>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
         <MenuButton
           onClick={() => editor.chain().focus().toggleSubscript().run()}
           isActive={editor.isActive('subscript')}
