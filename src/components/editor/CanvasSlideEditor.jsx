@@ -14,7 +14,7 @@ import {
   Layers, Lock, Unlock, ChevronUp, ChevronDown, Music,
   Triangle, Diamond, Star, ArrowRight, MessageSquare, StickyNote,
   BarChart3, PieChart, LineChart, TrendingUp, Minus, Grid3x3,
-  FileText, Lightbulb, AlertCircle, CheckCircle, Sparkles
+  FileText, Lightbulb, AlertCircle, CheckCircle, Sparkles, Clipboard
 } from 'lucide-react';
 
 const CANVAS_WIDTH = 1920;
@@ -138,6 +138,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
   const canvasRef = useRef(null);
   const [uploading, setUploading] = useState(false);
+  const [copiedElement, setCopiedElement] = useState(null);
 
   const updateElements = (newElements) => {
     setElements(newElements);
@@ -350,6 +351,85 @@ export default function CanvasSlideEditor({ slide, onChange }) {
     input.click();
   };
 
+  const handleCopy = () => {
+    if (!selectedElement) return;
+    const element = elements.find(el => el.id === selectedElement);
+    setCopiedElement(element);
+    toast.success('Element copied');
+  };
+
+  const handlePaste = (mode = 'normal') => {
+    if (!copiedElement) {
+      toast.error('Nothing to paste');
+      return;
+    }
+    
+    const selectedEl = elements.find(e => e.id === selectedElement);
+    
+    if (mode === 'merge' && selectedEl && copiedElement.type === selectedEl.type) {
+      // Merge styles: copy visual properties but keep position/size
+      const styleProps = {};
+      
+      if (copiedElement.type === 'text') {
+        Object.assign(styleProps, {
+          fontSize: copiedElement.fontSize,
+          fontWeight: copiedElement.fontWeight,
+          fontStyle: copiedElement.fontStyle,
+          textAlign: copiedElement.textAlign,
+          color: copiedElement.color,
+          backgroundColor: copiedElement.backgroundColor,
+          fontFamily: copiedElement.fontFamily,
+          lineHeight: copiedElement.lineHeight,
+          letterSpacing: copiedElement.letterSpacing,
+          textShadow: copiedElement.textShadow,
+        });
+      } else if (copiedElement.type === 'shape') {
+        Object.assign(styleProps, {
+          fill: copiedElement.fill,
+          stroke: copiedElement.stroke,
+          strokeWidth: copiedElement.strokeWidth,
+          strokeStyle: copiedElement.strokeStyle,
+          gradientType: copiedElement.gradientType,
+          gradientColor1: copiedElement.gradientColor1,
+          gradientColor2: copiedElement.gradientColor2,
+          gradientDirection: copiedElement.gradientDirection,
+          opacity: copiedElement.opacity,
+        });
+      } else if (copiedElement.type === 'image') {
+        Object.assign(styleProps, {
+          opacity: copiedElement.opacity,
+          filter: copiedElement.filter,
+          objectFit: copiedElement.objectFit,
+        });
+      } else if (copiedElement.type === 'card') {
+        Object.assign(styleProps, {
+          backgroundColor: copiedElement.backgroundColor,
+          borderColor: copiedElement.borderColor,
+          borderWidth: copiedElement.borderWidth,
+          borderRadius: copiedElement.borderRadius,
+          shadow: copiedElement.shadow,
+          padding: copiedElement.padding,
+        });
+      }
+      
+      updateElement(selectedEl.id, styleProps);
+      toast.success('Styles merged');
+    } else {
+      // Normal paste: create new element
+      const newElement = {
+        ...copiedElement,
+        id: Date.now().toString(),
+        x: copiedElement.x + 20,
+        y: copiedElement.y + 20,
+        zIndex: elements.length,
+      };
+      
+      updateElements([...elements, newElement]);
+      setSelectedElement(newElement.id);
+      toast.success('Element pasted');
+    }
+  };
+
   const selectedEl = elements.find(el => el.id === selectedElement);
 
   return (
@@ -476,15 +556,16 @@ export default function CanvasSlideEditor({ slide, onChange }) {
             .map(element => (
               <div
                 key={element.id}
-                className={`absolute cursor-move ${
-                  selectedElement === element.id ? 'ring-2 ring-blue-500' : ''
-                } ${element.locked ? 'cursor-not-allowed' : ''}`}
+                className={`absolute cursor-move ${element.locked ? 'cursor-not-allowed' : ''}`}
                 style={{
                   left: element.x * zoom,
                   top: element.y * zoom,
                   width: element.width * zoom,
                   height: element.height * zoom,
                   transform: `rotate(${element.rotation || 0}deg)`,
+                  outline: selectedElement === element.id ? '3px solid #6366F1' : 'none',
+                  outlineOffset: '2px',
+                  boxShadow: selectedElement === element.id ? '0 0 0 4px rgba(99, 102, 241, 0.1)' : 'none',
                 }}
                 onMouseDown={(e) => handleMouseDown(e, element)}
               >
@@ -750,10 +831,10 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                 {/* Selection Handles */}
                 {selectedElement === element.id && !element.locked && (
                   <>
-                    <div className="absolute -top-1 -left-1 w-3 h-3 bg-blue-500 rounded-full" />
-                    <div className="absolute -top-1 -right-1 w-3 h-3 bg-blue-500 rounded-full" />
-                    <div className="absolute -bottom-1 -left-1 w-3 h-3 bg-blue-500 rounded-full" />
-                    <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-blue-500 rounded-full" />
+                    <div className="absolute -top-1.5 -left-1.5 w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow-lg" />
+                    <div className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow-lg" />
+                    <div className="absolute -bottom-1.5 -left-1.5 w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow-lg" />
+                    <div className="absolute -bottom-1.5 -right-1.5 w-4 h-4 bg-indigo-500 border-2 border-white rounded-full shadow-lg" />
                   </>
                 )}
               </div>
@@ -1594,6 +1675,40 @@ export default function CanvasSlideEditor({ slide, onChange }) {
               </Tabs>
 
               <div className="border-t pt-4 space-y-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={handleCopy}
+                  className="w-full"
+                >
+                  <Copy className="w-4 h-4 mr-2" />
+                  Copy
+                </Button>
+                
+                <div className="grid grid-cols-2 gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePaste('normal')}
+                    disabled={!copiedElement}
+                    className="w-full"
+                  >
+                    <Clipboard className="w-4 h-4 mr-1" />
+                    Paste
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => handlePaste('merge')}
+                    disabled={!copiedElement || copiedElement.type !== selectedEl.type}
+                    className="w-full"
+                    title="Merge styles from copied element"
+                  >
+                    <Palette className="w-4 h-4 mr-1" />
+                    Merge
+                  </Button>
+                </div>
+                
                 <Button
                   variant="outline"
                   size="sm"
