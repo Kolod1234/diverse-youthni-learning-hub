@@ -907,8 +907,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           
           .rich-text-editor-wrapper .ProseMirror img {
             max-width: 100%;
-            width: auto;
-            min-width: 200px;
+            width: 600px;
             height: auto;
             border-radius: 4px;
             margin: 8px 0;
