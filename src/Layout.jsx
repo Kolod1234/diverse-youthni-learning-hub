@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, Bell, ClipboardList
+  Settings, LogOut, Menu, User, Bell, ClipboardList, BarChart3
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -70,6 +70,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Programmes', href: createPageUrl('Programs'), icon: ClipboardList },
     ...tutorNavigation,
     ...adminNavigation,
