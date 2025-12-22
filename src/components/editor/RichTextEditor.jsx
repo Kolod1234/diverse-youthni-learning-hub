@@ -45,7 +45,7 @@ const Card = Node.create({
   addAttributes() {
     return {
       type: {
-        default: 'info',
+        default: 'definition',
       },
     };
   },
@@ -61,18 +61,19 @@ const Card = Node.create({
   renderHTML({ node, HTMLAttributes }) {
     const type = node.attrs.type;
     const styles = {
-      info: 'background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border-left: 4px solid #4F46E5; color: #312E81;',
-      warning: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid #F59E0B; color: #78350F;',
-      success: 'background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-left: 4px solid #10B981; color: #064E3B;',
-      tip: 'background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-left: 4px solid #EC4899; color: #831843;',
-      default: 'background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%); border-left: 4px solid #6B7280; color: #1F2937;',
+      definition: 'background: linear-gradient(135deg, #E0F2FE 0%, #BAE6FD 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #0C4A6E; border: 1px solid #7DD3FC;',
+      concept: 'background: linear-gradient(135deg, #DCFCE7 0%, #BBF7D0 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #14532D; border: 1px solid #86EFAC;',
+      diagram: 'background: white; border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); color: #1F2937; border: 2px solid #E5E7EB;',
+      key: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #78350F; border: 1px solid #FCD34D;',
+      note: 'background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #581C87; border: 1px solid #D8B4FE;',
+      warning: 'background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #7F1D1D; border: 1px solid #FCA5A5;',
     };
 
     return [
       'div',
       {
         'data-card': type,
-        style: `${styles[type] || styles.default} padding: 20px; border-radius: 12px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);`,
+        style: `${styles[type] || styles.definition} margin: 16px 0;`,
       },
       0,
     ];
@@ -82,6 +83,64 @@ const Card = Node.create({
     return {
       setCard: (attributes) => ({ commands }) => {
         return commands.wrapIn(this.name, attributes);
+      },
+    };
+  },
+});
+
+// Card Grid Extension
+const CardGrid = Node.create({
+  name: 'cardGrid',
+  group: 'block',
+  content: 'card+',
+  
+  addAttributes() {
+    return {
+      columns: {
+        default: 2,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div[data-card-grid]',
+      },
+    ];
+  },
+
+  renderHTML({ node }) {
+    const cols = node.attrs.columns;
+    return [
+      'div',
+      {
+        'data-card-grid': cols,
+        style: `display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 20px; margin: 24px 0;`,
+      },
+      0,
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertCardGrid: (attributes) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs: attributes,
+          content: [
+            {
+              type: 'card',
+              attrs: { type: 'definition' },
+              content: [{ type: 'paragraph' }],
+            },
+            {
+              type: 'card',
+              attrs: { type: 'definition' },
+              content: [{ type: 'paragraph' }],
+            },
+          ],
+        });
       },
     };
   },
@@ -146,6 +205,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       Superscript,
       Underline,
       Card,
+      CardGrid,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -322,8 +382,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
           .rich-text-editor-wrapper .ProseMirror div[data-card] {
             margin: 16px 0;
-            padding: 20px;
-            border-radius: 12px;
+            padding: 24px;
+            border-radius: 16px;
           }
 
           .rich-text-editor-wrapper .ProseMirror div[data-card] p:first-child {
@@ -332,6 +392,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
           .rich-text-editor-wrapper .ProseMirror div[data-card] p:last-child {
             margin-bottom: 0;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] {
+            margin: 24px 0;
+            display: grid;
+            gap: 20px;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] > div[data-card] {
+            margin: 0;
           }
           
           .symbol-picker {
@@ -556,36 +626,97 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        <MenuButton
-          onClick={() => editor.chain().focus().setCard({ type: 'info' }).run()}
-          title="Info Card"
-        >
-          <Info className="w-4 h-4" />
-        </MenuButton>
-        <MenuButton
-          onClick={() => editor.chain().focus().setCard({ type: 'warning' }).run()}
-          title="Warning Card"
-        >
-          <AlertTriangle className="w-4 h-4" />
-        </MenuButton>
-        <MenuButton
-          onClick={() => editor.chain().focus().setCard({ type: 'success' }).run()}
-          title="Success Card"
-        >
-          <CheckCircle className="w-4 h-4" />
-        </MenuButton>
-        <MenuButton
-          onClick={() => editor.chain().focus().setCard({ type: 'tip' }).run()}
-          title="Tip Card"
-        >
-          <Lightbulb className="w-4 h-4" />
-        </MenuButton>
-        <MenuButton
-          onClick={() => editor.chain().focus().setCard({ type: 'default' }).run()}
-          title="Default Card"
-        >
-          <Square className="w-4 h-4" />
-        </MenuButton>
+        <div className="relative group">
+          <MenuButton
+            onClick={() => {}}
+            title="Insert Cards"
+          >
+            <Square className="w-4 h-4" />
+          </MenuButton>
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[280px]">
+            <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'definition' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-blue-50 hover:bg-blue-100 transition-colors text-left"
+              >
+                <Info className="w-5 h-5 text-blue-600" />
+                <span className="text-xs font-medium text-blue-900">Definition</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'concept' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition-colors text-left"
+              >
+                <CheckCircle className="w-5 h-5 text-green-600" />
+                <span className="text-xs font-medium text-green-900">Concept</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'key' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-yellow-50 hover:bg-yellow-100 transition-colors text-left"
+              >
+                <Lightbulb className="w-5 h-5 text-yellow-600" />
+                <span className="text-xs font-medium text-yellow-900">Key Point</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'note' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-purple-50 hover:bg-purple-100 transition-colors text-left"
+              >
+                <Info className="w-5 h-5 text-purple-600" />
+                <span className="text-xs font-medium text-purple-900">Note</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'warning' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-red-50 hover:bg-red-100 transition-colors text-left"
+              >
+                <AlertTriangle className="w-5 h-5 text-red-600" />
+                <span className="text-xs font-medium text-red-900">Warning</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'diagram' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors text-left"
+              >
+                <Square className="w-5 h-5 text-gray-600" />
+                <span className="text-xs font-medium text-gray-900">Diagram</span>
+              </button>
+            </div>
+            <div className="border-t pt-3">
+              <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Layouts</p>
+              <button
+                onClick={() => editor.chain().focus().insertCardGrid({ columns: 2 }).run()}
+                className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex gap-1">
+                  <div className="w-3 h-3 bg-blue-200 rounded"></div>
+                  <div className="w-3 h-3 bg-blue-200 rounded"></div>
+                </div>
+                <span className="text-xs font-medium text-gray-700">2 Column Grid</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().insertCardGrid({ columns: 3 }).run()}
+                className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex gap-1">
+                  <div className="w-2 h-3 bg-green-200 rounded"></div>
+                  <div className="w-2 h-3 bg-green-200 rounded"></div>
+                  <div className="w-2 h-3 bg-green-200 rounded"></div>
+                </div>
+                <span className="text-xs font-medium text-gray-700">3 Column Grid</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().insertCardGrid({ columns: 4 }).run()}
+                className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-gray-100 transition-colors"
+              >
+                <div className="flex gap-1">
+                  <div className="w-2 h-3 bg-purple-200 rounded"></div>
+                  <div className="w-2 h-3 bg-purple-200 rounded"></div>
+                  <div className="w-2 h-3 bg-purple-200 rounded"></div>
+                  <div className="w-2 h-3 bg-purple-200 rounded"></div>
+                </div>
+                <span className="text-xs font-medium text-gray-700">4 Column Grid</span>
+              </button>
+            </div>
+          </div>
+        </div>
       </div>
       
       {/* Editor */}
