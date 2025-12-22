@@ -82,19 +82,12 @@ Requirements:
    - Relevant diagrams, charts, and visual elements (use placeholder images with descriptive URLs)
    - Key definitions, concepts, and explanations
    - Real-world examples and applications
-   - Interactive elements (use the card, poll, quiz extensions we have)
+   - Use proper HTML formatting with inline styles
 3. Make content age-appropriate for ${curriculum} level students
 4. Include academic rigor aligned with ${examBoard} standards
 5. Use proper HTML formatting with inline styles for visual appeal
 
-Return JSON array of slides:
-[
-  {
-    "title": "Slide title",
-    "content": "Rich HTML content with inline styles, diagrams, cards, etc.",
-    "speaker_notes": "Teaching tips and key points for instructors"
-  }
-]`,
+IMPORTANT: Return a JSON object with a "slides" array property containing the slide objects.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
@@ -107,10 +100,12 @@ Return JSON array of slides:
                   title: { type: "string" },
                   content: { type: "string" },
                   speaker_notes: { type: "string" }
-                }
+                },
+                required: ["title", "content"]
               }
             }
-          }
+          },
+          required: ["slides"]
         }
       });
 
@@ -134,20 +129,7 @@ Requirements:
 4. Provide detailed explanations for correct answers
 5. Align with ${curriculum} ${examBoard} assessment objectives
 
-Return JSON:
-{
-  "title": "Quiz title",
-  "description": "Brief description",
-  "questions": [
-    {
-      "question": "Question text",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correct_answer": 0,
-      "explanation": "Detailed explanation of why this is correct"
-    }
-  ],
-  "assessment_criteria": "What skills this quiz assesses"
-}`,
+IMPORTANT: Return the exact JSON structure specified in the schema with all required fields.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -180,12 +162,12 @@ Return JSON:
       const objectivesResult = await base44.integrations.Core.InvokeLLM({
         prompt: `For the topic "${topic}" aligned with ${curriculum} ${examBoard}, generate:
 
-1. Clear learning objectives
-2. Success criteria for student assessment
-3. Common misconceptions to address
-4. Extension activities for advanced students
+1. Clear learning objectives (array of strings)
+2. Success criteria for student assessment (array of strings)
+3. Common misconceptions to address (array of strings)
+4. Extension activities for advanced students (array of strings)
 
-Return JSON format.`,
+IMPORTANT: Return the exact JSON structure with all required array fields.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -193,7 +175,8 @@ Return JSON format.`,
             success_criteria: { type: "array", items: { type: "string" } },
             common_misconceptions: { type: "array", items: { type: "string" } },
             extension_activities: { type: "array", items: { type: "string" } }
-          }
+          },
+          required: ["learning_objectives", "success_criteria", "common_misconceptions", "extension_activities"]
         }
       });
 
