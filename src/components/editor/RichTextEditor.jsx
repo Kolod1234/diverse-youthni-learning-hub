@@ -932,20 +932,23 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             border-radius: 12px;
             margin: 8px 0;
             display: block !important;
-            object-fit: cover;
             cursor: pointer;
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
           }
           
-          .rich-text-editor-wrapper .ProseMirror img:not([width]):not([height]) {
+          .rich-text-editor-wrapper .ProseMirror img:not([width]):not([height]):not([style*="width"]):not([style*="height"]) {
             width: 100%;
             height: auto;
             min-height: 300px;
+            object-fit: cover;
           }
           
-          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] img:not([width]):not([height]) {
-            width: 100%;
-            height: 400px;
+          .rich-text-editor-wrapper .ProseMirror table img {
+            width: 100% !important;
+            height: auto !important;
+            max-width: none !important;
+            min-height: 0 !important;
+            object-fit: contain !important;
           }
           
           .rich-text-editor-wrapper .ProseMirror h1,
