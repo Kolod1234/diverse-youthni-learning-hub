@@ -522,13 +522,15 @@ Return JSON format.`,
                     </div>
                   </div>
                   
-                  <div className="p-6 min-h-[400px] bg-white">
-                    <div 
-                      className="prose prose-sm max-w-none"
-                      dangerouslySetInnerHTML={{ 
-                        __html: generatedContent.slides[previewSlideIndex]?.content || '' 
-                      }}
-                    />
+                  <div className="max-h-[400px] overflow-y-auto bg-white">
+                    <div className="p-6">
+                      <div 
+                        className="prose prose-sm max-w-none"
+                        dangerouslySetInnerHTML={{ 
+                          __html: generatedContent.slides[previewSlideIndex]?.content || '' 
+                        }}
+                      />
+                    </div>
                   </div>
                   
                   {generatedContent.slides[previewSlideIndex]?.speaker_notes && (
@@ -540,27 +542,29 @@ Return JSON format.`,
                   )}
                 </div>
 
-                {/* Slide Thumbnails */}
-                <div className="grid grid-cols-5 gap-2">
-                  {generatedContent.slides.map((slide, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setPreviewSlideIndex(idx)}
-                      className={`p-2 text-left rounded-lg border-2 transition-all ${
-                        previewSlideIndex === idx
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
-                    >
-                      <div className="text-xs font-medium text-gray-900 truncate mb-1">
-                        {idx + 1}. {slide.title}
-                      </div>
-                      <div className="w-full h-12 bg-gray-100 rounded text-[8px] text-gray-500 overflow-hidden p-1">
-                        {slide.content.replace(/<[^>]*>/g, ' ').substring(0, 50)}...
-                      </div>
-                    </button>
-                  ))}
-                </div>
+                {/* Slide Thumbnails - Horizontal Scroll */}
+                <ScrollArea className="w-full">
+                  <div className="flex gap-2 pb-2">
+                    {generatedContent.slides.map((slide, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => setPreviewSlideIndex(idx)}
+                        className={`flex-shrink-0 w-48 p-2 text-left rounded-lg border-2 transition-all ${
+                          previewSlideIndex === idx
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      >
+                        <div className="text-xs font-medium text-gray-900 truncate mb-1">
+                          {idx + 1}. {slide.title}
+                        </div>
+                        <div className="w-full h-12 bg-gray-100 rounded text-[8px] text-gray-500 overflow-hidden p-1">
+                          {slide.content.replace(/<[^>]*>/g, ' ').substring(0, 50)}...
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
               </Card>
 
               {/* Quiz Preview */}
