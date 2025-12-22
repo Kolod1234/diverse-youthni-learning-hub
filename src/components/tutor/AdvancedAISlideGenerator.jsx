@@ -107,7 +107,7 @@ Return JSON array of slides:
           prompt: `Based on the topic "${topic}" for ${curriculum} ${examBoard}, create a challenging time-based quiz.
 
 DIFFICULTY: ${quizDifficulty}
-NUMBER OF QUESTIONS: ${quizDifficulty === 'easy' ? '8' : quizDifficulty === 'medium' ? '10' : '12'}
+NUMBER OF QUESTIONS: ${quizDifficulty === 'easy' ? '15' : quizDifficulty === 'medium' ? '25' : '40'}
 
 Requirements:
 1. Create questions that assess deep understanding, not just memorization
@@ -372,9 +372,9 @@ Return JSON format.`,
                         <SelectValue />
                       </SelectTrigger>
                       <SelectContent>
-                        <SelectItem value="easy">Easy (8 questions)</SelectItem>
-                        <SelectItem value="medium">Medium (10 questions)</SelectItem>
-                        <SelectItem value="hard">Hard (12 questions)</SelectItem>
+                        <SelectItem value="easy">Easy (15 questions)</SelectItem>
+                        <SelectItem value="medium">Medium (25 questions)</SelectItem>
+                        <SelectItem value="hard">Hard (40 questions)</SelectItem>
                       </SelectContent>
                     </Select>
                   </div>
