@@ -601,23 +601,49 @@ export default function CanvasSlideEditor({ slide, onChange }) {
 
                 {/* Image Element */}
                 {element.type === 'image' && (
-                  <img
-                    src={element.src}
-                    alt=""
-                    style={{
-                      width: '100%',
-                      height: '100%',
-                      objectFit: element.objectFit,
-                      opacity: element.opacity || 1,
-                      filter: element.filter ? 
-                        `grayscale(${element.filter.grayscale}%) sepia(${element.filter.sepia}%) blur(${element.filter.blur}px) brightness(${element.filter.brightness}%) contrast(${element.filter.contrast}%) saturate(${element.filter.saturate}%)` 
-                        : 'none',
-                    }}
+                  <div 
+                    style={{ width: '100%', height: '100%', position: 'relative' }}
                     onClick={(e) => {
                       e.stopPropagation();
                       if (selectedElement === element.id) handleImageUpload(element.id);
                     }}
-                  />
+                  >
+                    <img
+                      src={element.src}
+                      alt=""
+                      style={{
+                        width: '100%',
+                        height: '100%',
+                        objectFit: element.objectFit,
+                        opacity: element.opacity || 1,
+                        filter: element.filter ? 
+                          `grayscale(${element.filter.grayscale}%) sepia(${element.filter.sepia}%) blur(${element.filter.blur}px) brightness(${element.filter.brightness}%) contrast(${element.filter.contrast}%) saturate(${element.filter.saturate}%)` 
+                          : 'none',
+                        display: 'block',
+                      }}
+                      onError={(e) => {
+                        e.target.style.display = 'none';
+                        e.target.nextSibling.style.display = 'flex';
+                      }}
+                    />
+                    <div
+                      style={{
+                        display: 'none',
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: '#F3F4F6',
+                        border: '2px dashed #D1D5DB',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        gap: '8px',
+                        cursor: 'pointer',
+                      }}
+                    >
+                      <Upload style={{ width: '32px', height: '32px', color: '#9CA3AF' }} />
+                      <span style={{ fontSize: '14px', color: '#6B7280' }}>Click to upload image</span>
+                    </div>
+                  </div>
                 )}
 
                 {/* Video Element */}
