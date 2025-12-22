@@ -1,4 +1,5 @@
 import AdminDashboard from './pages/AdminDashboard';
+import Analytics from './pages/Analytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
 import CreateAssignment from './pages/CreateAssignment';
@@ -15,12 +16,12 @@ import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
-import Analytics from './pages/Analytics';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "AdminDashboard": AdminDashboard,
+    "Analytics": Analytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
     "CreateAssignment": CreateAssignment,
@@ -37,7 +38,6 @@ export const PAGES = {
     "TutorDashboard": TutorDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
-    "Analytics": Analytics,
 }
 
 export const pagesConfig = {

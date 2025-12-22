@@ -16,6 +16,7 @@ import RichTextEditor from '@/components/editor/RichTextEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import SlideEditor from '@/components/editor/SlideEditor';
 import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
+import AdvancedAISlideGenerator from '@/components/tutor/AdvancedAISlideGenerator';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -24,6 +25,7 @@ export default function TutorCourseManager() {
   const [showCreate, setShowCreate] = useState(false);
   const [lessonForm, setLessonForm] = useState({});
   const [analyzingLesson, setAnalyzingLesson] = useState(null);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: course } = useQuery({
@@ -124,16 +126,25 @@ export default function TutorCourseManager() {
         </div>
 
         <Card className="p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold">Course Structure</h2>
-              <p className="text-sm text-gray-500 mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
-            </div>
+        <div className="flex items-center justify-between mb-6">
+          <div>
+            <h2 className="text-xl font-semibold">Course Structure</h2>
+            <p className="text-sm text-gray-500 mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
+          </div>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setShowAIGenerator(true)} 
+              className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            >
+              <Brain className="w-4 h-4 mr-2" />
+              AI Generator
+            </Button>
             <Button onClick={() => setShowCreate(true)} className="bg-indigo-600">
               <Plus className="w-4 h-4 mr-2" />
               Add Lesson
             </Button>
           </div>
+        </div>
 
           {showCreate && (
             <Card className="p-6 mb-6 bg-indigo-50 border-indigo-200">
@@ -323,6 +334,15 @@ export default function TutorCourseManager() {
           <LessonContentAnalyzer
             lesson={analyzingLesson}
             onClose={() => setAnalyzingLesson(null)}
+          />
+        )}
+
+        {/* Advanced AI Slide Generator */}
+        {showAIGenerator && (
+          <AdvancedAISlideGenerator
+            courseId={courseId}
+            onSlidesGenerated={() => queryClient.invalidateQueries(['lessons'])}
+            onClose={() => setShowAIGenerator(false)}
           />
         )}
       </div>

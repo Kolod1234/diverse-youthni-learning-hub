@@ -88,8 +88,17 @@ export default function Quiz() {
 
   const submitAttemptMutation = useMutation({
     mutationFn: (attemptData) => base44.entities.QuizAttempt.create(attemptData),
-    onSuccess: () => {
+    onSuccess: async (newAttempt) => {
       queryClient.invalidateQueries(['quiz-attempts', quizId]);
+      
+      // Trigger AI analysis and recommendations
+      try {
+        await base44.functions.invoke('analyzeQuizAndProvideRecommendations', {
+          quizAttemptId: newAttempt.id
+        });
+      } catch (error) {
+        console.error('Failed to generate recommendations:', error);
+      }
     },
   });
 
