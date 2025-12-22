@@ -720,6 +720,9 @@ const MenuButton = ({ onClick, isActive, children, title }) => (
 );
 
 export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
+  const [showInteractive, setShowInteractive] = useState(false);
+  const [showCards, setShowCards] = useState(false);
+  
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -895,6 +898,18 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       editor.commands.setContent(value);
     }
   }, [value, editor]);
+
+  // Close dropdowns when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (!e.target.closest('.relative')) {
+        setShowInteractive(false);
+        setShowCards(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
 
   if (!editor) {
     return null;
@@ -1343,14 +1358,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
-        <div className="relative group/interactive">
+        <div className="relative">
           <MenuButton
-            onClick={() => {}}
+            onClick={() => setShowInteractive(!showInteractive)}
+            isActive={showInteractive}
             title="Interactive Elements"
           >
             <Zap className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover/interactive:block z-50 min-w-[240px]" onMouseEnter={(e) => e.currentTarget.style.display = 'block'} onMouseLeave={(e) => e.currentTarget.style.display = 'none'}>
+          {showInteractive && (
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[240px]">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Interactive Elements</p>
             <button
               onClick={() => editor.chain().focus().insertPoll({ 
@@ -1431,14 +1448,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             </div>
             </div>
 
-        <div className="relative group/cards">
+        <div className="relative">
           <MenuButton
-            onClick={() => {}}
+            onClick={() => setShowCards(!showCards)}
+            isActive={showCards}
             title="Insert Cards"
           >
             <Square className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover/cards:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto" onMouseEnter={(e) => e.currentTarget.style.display = 'block'} onMouseLeave={(e) => e.currentTarget.style.display = 'none'}>
+          {showCards && (
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
@@ -1548,8 +1567,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                 <span className="text-xs font-medium text-gray-700">4 Column Grid</span>
               </button>
             </div>
-          </div>
-        </div>
+            </div>
+            )}
       </div>
       
       {/* Editor */}
@@ -1665,8 +1684,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                   </button>
                 ))}
               </div>
-            </div>
-          </div>
+              </div>
+              )}
+              </div>
         </details>
       </div>
     </div>
