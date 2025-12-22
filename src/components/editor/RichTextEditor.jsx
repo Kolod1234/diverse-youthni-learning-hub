@@ -907,13 +907,21 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           
           .rich-text-editor-wrapper .ProseMirror img {
             max-width: 100%;
-            width: 600px;
+            width: 100%;
             height: auto;
-            border-radius: 4px;
+            min-height: 300px;
+            border-radius: 12px;
             margin: 8px 0;
             display: block !important;
-            object-fit: contain;
+            object-fit: cover;
             cursor: pointer;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+          }
+          
+          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] img {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
           }
           
           .rich-text-editor-wrapper .ProseMirror h1,
