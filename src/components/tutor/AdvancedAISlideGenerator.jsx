@@ -645,12 +645,10 @@ Return JSON format.`,
                   </ul>
                 </Card>
               </div>
-                </div>
-              ) : (
-                <div className="space-y-6">
-                  {/* Generated content sections */}
-                  {/* Success Header */}
-                  <Card className="p-6 bg-gradient-to-br from-green-50 to-emerald-50 border-green-200">
+            )}
+            </div>
+          </ScrollArea>
+        </div>
 
         {/* Footer */}
         {generatedContent && (
