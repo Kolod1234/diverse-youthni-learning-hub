@@ -194,6 +194,20 @@ export default function TutorCourseManager() {
                       {sectionName}
                     </h3>
                     <div className="h-px bg-gray-200 flex-1" />
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm(`Delete section "${sectionName}" and all its lessons?`)) {
+                          const lessonIds = sectionLessons.map(l => l.id);
+                          Promise.all(lessonIds.map(id => deleteLessonMutation.mutateAsync(id)))
+                            .then(() => toast.success('Section deleted!'));
+                        }
+                      }}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </Button>
                   </div>
 
                   <DragDropContext onDragEnd={handleDragEnd}>
