@@ -163,10 +163,23 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         color: '#000000',
         backgroundColor: 'transparent',
         textBoxType: 'default',
+        fontFamily: 'Arial, sans-serif',
+        lineHeight: 1.5,
+        textShadow: 'none',
+        letterSpacing: 0,
       }),
       ...(type === 'image' && {
         src: 'https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=Click+to+Upload',
         objectFit: 'cover',
+        opacity: 1,
+        filter: {
+          grayscale: 0,
+          sepia: 0,
+          blur: 0,
+          brightness: 100,
+          contrast: 100,
+          saturate: 100,
+        },
       }),
       ...(type === 'video' && {
         src: '',
@@ -178,6 +191,11 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         stroke: '#000000',
         strokeWidth: 2,
         opacity: 1,
+        strokeStyle: 'solid',
+        gradientType: 'none',
+        gradientColor1: '#4F46E5',
+        gradientColor2: '#9333EA',
+        gradientDirection: 'to bottom',
       }),
       ...(type === 'card' && {
         cardType: 'default',
@@ -186,6 +204,8 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         borderColor: '#E5E7EB',
         borderWidth: 2,
         padding: 20,
+        borderRadius: 8,
+        shadow: 'medium',
       }),
       ...(type === 'graph' && {
         graphType: 'bar',
@@ -481,6 +501,12 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                       textAlign: element.textAlign,
                       color: element.color,
                       backgroundColor: element.backgroundColor,
+                      fontFamily: element.fontFamily || 'Arial, sans-serif',
+                      lineHeight: element.lineHeight || 1.5,
+                      letterSpacing: `${element.letterSpacing || 0}px`,
+                      textShadow: element.textShadow === 'light' ? '2px 2px 4px rgba(0,0,0,0.1)' :
+                                  element.textShadow === 'medium' ? '3px 3px 6px rgba(0,0,0,0.3)' :
+                                  element.textShadow === 'strong' ? '4px 4px 8px rgba(0,0,0,0.5)' : 'none',
                       padding: 10 * zoom,
                       width: '100%',
                       height: '100%',
@@ -501,6 +527,10 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                       width: '100%',
                       height: '100%',
                       objectFit: element.objectFit,
+                      opacity: element.opacity || 1,
+                      filter: element.filter ? 
+                        `grayscale(${element.filter.grayscale}%) sepia(${element.filter.sepia}%) blur(${element.filter.blur}px) brightness(${element.filter.brightness}%) contrast(${element.filter.contrast}%) saturate(${element.filter.saturate}%)` 
+                        : 'none',
                     }}
                     onClick={(e) => {
                       e.stopPropagation();
@@ -545,8 +575,12 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                         style={{
                           width: '100%',
                           height: '100%',
-                          backgroundColor: element.fill,
-                          border: `${element.strokeWidth}px solid ${element.stroke}`,
+                          background: element.gradientType === 'linear' 
+                            ? `linear-gradient(${element.gradientDirection}, ${element.gradientColor1}, ${element.gradientColor2})`
+                            : element.gradientType === 'radial'
+                            ? `radial-gradient(circle, ${element.gradientColor1}, ${element.gradientColor2})`
+                            : element.fill,
+                          border: `${element.strokeWidth}px ${element.strokeStyle || 'solid'} ${element.stroke}`,
                           opacity: element.opacity,
                         }}
                       />
@@ -556,8 +590,12 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                         style={{
                           width: '100%',
                           height: '100%',
-                          backgroundColor: element.fill,
-                          border: `${element.strokeWidth}px solid ${element.stroke}`,
+                          background: element.gradientType === 'linear' 
+                            ? `linear-gradient(${element.gradientDirection}, ${element.gradientColor1}, ${element.gradientColor2})`
+                            : element.gradientType === 'radial'
+                            ? `radial-gradient(circle, ${element.gradientColor1}, ${element.gradientColor2})`
+                            : element.fill,
+                          border: `${element.strokeWidth}px ${element.strokeStyle || 'solid'} ${element.stroke}`,
                           borderRadius: '50%',
                           opacity: element.opacity,
                         }}
@@ -638,13 +676,16 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                       height: '100%',
                       backgroundColor: element.backgroundColor,
                       border: `${element.borderWidth}px solid ${element.borderColor}`,
-                      borderRadius: element.cardType === 'rounded' ? '16px' : '8px',
+                      borderRadius: `${element.borderRadius || 8}px`,
                       padding: element.padding * zoom,
                       fontSize: 18 * zoom,
                       color: '#1F2937',
                       overflow: 'auto',
                       whiteSpace: 'pre-wrap',
-                      boxShadow: element.cardType === 'elevated' ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+                      boxShadow: element.shadow === 'none' ? 'none' :
+                                 element.shadow === 'small' ? '0 1px 3px rgba(0,0,0,0.1)' :
+                                 element.shadow === 'medium' ? '0 4px 12px rgba(0,0,0,0.15)' :
+                                 element.shadow === 'large' ? '0 10px 30px rgba(0,0,0,0.25)' : 'none',
                     }}
                     className="outline-none"
                   >
@@ -790,6 +831,24 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                       </div>
 
                       <div>
+                        <Label>Font Family</Label>
+                        <select
+                          value={selectedEl.fontFamily || 'Arial, sans-serif'}
+                          onChange={(e) => updateElement(selectedEl.id, { fontFamily: e.target.value })}
+                          className="w-full mt-2 h-10 px-3 rounded-md border border-gray-300 bg-white text-sm"
+                        >
+                          <option value="Arial, sans-serif">Arial</option>
+                          <option value="'Times New Roman', serif">Times New Roman</option>
+                          <option value="'Courier New', monospace">Courier New</option>
+                          <option value="Georgia, serif">Georgia</option>
+                          <option value="Verdana, sans-serif">Verdana</option>
+                          <option value="'Comic Sans MS', cursive">Comic Sans</option>
+                          <option value="Impact, sans-serif">Impact</option>
+                          <option value="'Trebuchet MS', sans-serif">Trebuchet</option>
+                        </select>
+                      </div>
+
+                      <div>
                         <Label>Font Size</Label>
                         <Slider
                           value={[selectedEl.fontSize]}
@@ -800,6 +859,48 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                           className="mt-2"
                         />
                         <span className="text-xs text-gray-500">{selectedEl.fontSize}px</span>
+                      </div>
+
+                      <div>
+                        <Label>Line Height</Label>
+                        <Slider
+                          value={[selectedEl.lineHeight || 1.5]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { lineHeight: value })}
+                          min={1}
+                          max={3}
+                          step={0.1}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{(selectedEl.lineHeight || 1.5).toFixed(1)}</span>
+                      </div>
+
+                      <div>
+                        <Label>Letter Spacing</Label>
+                        <Slider
+                          value={[selectedEl.letterSpacing || 0]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { letterSpacing: value })}
+                          min={-5}
+                          max={20}
+                          step={0.5}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.letterSpacing || 0}px</span>
+                      </div>
+
+                      <div>
+                        <Label>Text Shadow</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['none', 'light', 'medium', 'strong'].map(shadow => (
+                            <Button
+                              key={shadow}
+                              variant={selectedEl.textShadow === shadow ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => updateElement(selectedEl.id, { textShadow: shadow })}
+                            >
+                              {shadow}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
 
                       <div>
@@ -882,6 +983,72 @@ export default function CanvasSlideEditor({ slide, onChange }) {
 
                   {selectedEl.type === 'shape' && (
                     <>
+                      <div>
+                        <Label>Gradient Fill</Label>
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          <Button
+                            variant={selectedEl.gradientType === 'none' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { gradientType: 'none' })}
+                          >
+                            None
+                          </Button>
+                          <Button
+                            variant={selectedEl.gradientType === 'linear' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { gradientType: 'linear' })}
+                          >
+                            Linear
+                          </Button>
+                          <Button
+                            variant={selectedEl.gradientType === 'radial' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { gradientType: 'radial' })}
+                          >
+                            Radial
+                          </Button>
+                        </div>
+                      </div>
+
+                      {selectedEl.gradientType !== 'none' && (
+                        <>
+                          <div>
+                            <Label>Gradient Color 1</Label>
+                            <input
+                              type="color"
+                              value={selectedEl.gradientColor1 || selectedEl.fill}
+                              onChange={(e) => updateElement(selectedEl.id, { gradientColor1: e.target.value })}
+                              className="h-10 w-full mt-2"
+                            />
+                          </div>
+                          <div>
+                            <Label>Gradient Color 2</Label>
+                            <input
+                              type="color"
+                              value={selectedEl.gradientColor2 || '#9333EA'}
+                              onChange={(e) => updateElement(selectedEl.id, { gradientColor2: e.target.value })}
+                              className="h-10 w-full mt-2"
+                            />
+                          </div>
+                          {selectedEl.gradientType === 'linear' && (
+                            <div>
+                              <Label>Direction</Label>
+                              <select
+                                value={selectedEl.gradientDirection || 'to bottom'}
+                                onChange={(e) => updateElement(selectedEl.id, { gradientDirection: e.target.value })}
+                                className="w-full mt-2 h-10 px-3 rounded-md border border-gray-300"
+                              >
+                                <option value="to right">→ Left to Right</option>
+                                <option value="to left">← Right to Left</option>
+                                <option value="to bottom">↓ Top to Bottom</option>
+                                <option value="to top">↑ Bottom to Top</option>
+                                <option value="to bottom right">↘ Diagonal</option>
+                              </select>
+                            </div>
+                          )}
+                        </>
+                      )}
+
                       <div>
                         <Label>Shape</Label>
                         <div className="grid grid-cols-2 gap-2 mt-2">
@@ -984,6 +1151,34 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                           step={1}
                           className="mt-2"
                         />
+                        <span className="text-xs text-gray-500">{selectedEl.strokeWidth}px</span>
+                      </div>
+
+                      <div>
+                        <Label>Stroke Style</Label>
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          <Button
+                            variant={selectedEl.strokeStyle === 'solid' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { strokeStyle: 'solid' })}
+                          >
+                            Solid
+                          </Button>
+                          <Button
+                            variant={selectedEl.strokeStyle === 'dashed' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { strokeStyle: 'dashed' })}
+                          >
+                            Dashed
+                          </Button>
+                          <Button
+                            variant={selectedEl.strokeStyle === 'dotted' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { strokeStyle: 'dotted' })}
+                          >
+                            Dotted
+                          </Button>
+                        </div>
                       </div>
 
                       <div>
@@ -1004,29 +1199,27 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                   {selectedEl.type === 'card' && (
                     <>
                       <div>
-                        <Label>Card Type</Label>
+                        <Label>Card Preset</Label>
                         <div className="grid grid-cols-2 gap-2 mt-2">
-                          {['default', 'success', 'info', 'warning', 'rounded', 'elevated'].map(type => (
+                          {[
+                            { type: 'default', bg: '#F9FAFB', border: '#E5E7EB' },
+                            { type: 'success', bg: '#D1FAE5', border: '#10B981' },
+                            { type: 'info', bg: '#DBEAFE', border: '#3B82F6' },
+                            { type: 'warning', bg: '#FEF3C7', border: '#F59E0B' },
+                            { type: 'danger', bg: '#FEE2E2', border: '#EF4444' },
+                            { type: 'purple', bg: '#F3E8FF', border: '#A855F7' }
+                          ].map(preset => (
                             <Button
-                              key={type}
-                              variant={selectedEl.cardType === type ? 'default' : 'outline'}
+                              key={preset.type}
+                              variant={selectedEl.cardType === preset.type ? 'default' : 'outline'}
                               size="sm"
-                              onClick={() => {
-                                const updates = { cardType: type };
-                                if (type === 'success') {
-                                  updates.backgroundColor = '#D1FAE5';
-                                  updates.borderColor = '#10B981';
-                                } else if (type === 'info') {
-                                  updates.backgroundColor = '#DBEAFE';
-                                  updates.borderColor = '#3B82F6';
-                                } else if (type === 'warning') {
-                                  updates.backgroundColor = '#FEF3C7';
-                                  updates.borderColor = '#F59E0B';
-                                }
-                                updateElement(selectedEl.id, updates);
-                              }}
+                              onClick={() => updateElement(selectedEl.id, {
+                                cardType: preset.type,
+                                backgroundColor: preset.bg,
+                                borderColor: preset.border
+                              })}
                             >
-                              {type}
+                              {preset.type}
                             </Button>
                           ))}
                         </div>
@@ -1050,6 +1243,35 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                           onChange={(e) => updateElement(selectedEl.id, { borderColor: e.target.value })}
                           className="h-10 w-full mt-2"
                         />
+                      </div>
+
+                      <div>
+                        <Label>Border Radius</Label>
+                        <Slider
+                          value={[selectedEl.borderRadius || 8]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { borderRadius: value })}
+                          min={0}
+                          max={50}
+                          step={1}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.borderRadius || 8}px</span>
+                      </div>
+
+                      <div>
+                        <Label>Shadow</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['none', 'small', 'medium', 'large'].map(shadow => (
+                            <Button
+                              key={shadow}
+                              variant={selectedEl.shadow === shadow ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => updateElement(selectedEl.id, { shadow })}
+                            >
+                              {shadow}
+                            </Button>
+                          ))}
+                        </div>
                       </div>
                     </>
                   )}
@@ -1150,7 +1372,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
 
                       <div>
                         <Label>Object Fit</Label>
-                        <div className="grid grid-cols-2 gap-2 mt-2">
+                        <div className="grid grid-cols-3 gap-2 mt-2">
                           {['cover', 'contain', 'fill'].map(fit => (
                             <Button
                               key={fit}
@@ -1163,6 +1385,121 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                           ))}
                         </div>
                       </div>
+
+                      <div>
+                        <Label>Opacity</Label>
+                        <Slider
+                          value={[(selectedEl.opacity || 1) * 100]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { opacity: value / 100 })}
+                          min={0}
+                          max={100}
+                          step={1}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{Math.round((selectedEl.opacity || 1) * 100)}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Grayscale</Label>
+                        <Slider
+                          value={[selectedEl.filter?.grayscale || 0]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, grayscale: value }
+                          })}
+                          min={0}
+                          max={100}
+                          step={1}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.grayscale || 0}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Sepia</Label>
+                        <Slider
+                          value={[selectedEl.filter?.sepia || 0]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, sepia: value }
+                          })}
+                          min={0}
+                          max={100}
+                          step={1}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.sepia || 0}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Blur</Label>
+                        <Slider
+                          value={[selectedEl.filter?.blur || 0]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, blur: value }
+                          })}
+                          min={0}
+                          max={10}
+                          step={0.5}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.blur || 0}px</span>
+                      </div>
+
+                      <div>
+                        <Label>Brightness</Label>
+                        <Slider
+                          value={[selectedEl.filter?.brightness || 100]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, brightness: value }
+                          })}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.brightness || 100}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Contrast</Label>
+                        <Slider
+                          value={[selectedEl.filter?.contrast || 100]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, contrast: value }
+                          })}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.contrast || 100}%</span>
+                      </div>
+
+                      <div>
+                        <Label>Saturation</Label>
+                        <Slider
+                          value={[selectedEl.filter?.saturate || 100]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { 
+                            filter: { ...selectedEl.filter, saturate: value }
+                          })}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.filter?.saturate || 100}%</span>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => updateElement(selectedEl.id, { 
+                          filter: { grayscale: 0, sepia: 0, blur: 0, brightness: 100, contrast: 100, saturate: 100 },
+                          opacity: 1
+                        })}
+                        className="w-full"
+                      >
+                        Reset Filters
+                      </Button>
                     </>
                   )}
                 </TabsContent>
