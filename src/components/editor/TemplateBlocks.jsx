@@ -5,7 +5,7 @@ import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   Lightbulb, AlertTriangle, CheckCircle, Info, MessageSquare, 
   BookOpen, Target, Zap, Award, Code, FileText, Image as ImageIcon,
-  Plus, X, Search
+  Plus, X, Search, Columns, Type, Grid3x3
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
 
@@ -79,6 +79,30 @@ const TEMPLATE_BLOCKS = {
         icon: BookOpen,
         color: 'cyan',
         html: '<div style="background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); border-left: 5px solid #06B6D4; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #06B6D4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📚</div><div style="flex: 1;"><h4 style="color: #164E63; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Study Tip</h4><p style="color: #155E75; font-size: 15px; line-height: 1.6; margin: 0;">Provide effective study strategies and learning techniques.</p></div></div></div>'
+      },
+      {
+        name: 'Note Box',
+        icon: FileText,
+        color: 'yellow',
+        html: '<div style="background: #FFFBEB; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #FBBF24; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📝</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Note</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Additional notes or supplementary information.</p></div></div></div>'
+      },
+      {
+        name: 'Attention Box',
+        icon: Zap,
+        color: 'red',
+        html: '<div style="background: linear-gradient(135deg, #FEE2E2 0%, #FCA5A5 100%); border: 3px solid #DC2626; border-radius: 12px; padding: 24px; margin: 20px 0; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.2);"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 40px; height: 40px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 22px; animation: pulse 2s infinite;">⚡</div><div style="flex: 1;"><h4 style="color: #7F1D1D; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">Attention!</h4><p style="color: #991B1B; font-size: 15px; line-height: 1.6; margin: 0;">Critical alert requiring immediate attention from students.</p></div></div></div>'
+      },
+      {
+        name: 'Caution Box',
+        icon: AlertTriangle,
+        color: 'amber',
+        html: '<div style="background: #FFFBEB; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0; border: 2px solid #FCD34D;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚠</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Caution</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Advise students to proceed carefully or note potential issues.</p></div></div></div>'
+      },
+      {
+        name: 'Quick Tip',
+        icon: Lightbulb,
+        color: 'lime',
+        html: '<div style="background: linear-gradient(135deg, #ECFCCB 0%, #D9F99D 100%); border-radius: 8px; padding: 16px 20px; margin: 20px 0; border-left: 4px solid #84CC16;"><p style="color: #3F6212; font-size: 15px; line-height: 1.6; margin: 0;"><strong style="color: #365314;">💡 Quick Tip:</strong> Short, actionable advice in one sentence.</p></div>'
       }
     ]
   },
@@ -145,6 +169,18 @@ const TEMPLATE_BLOCKS = {
         icon: BookOpen,
         color: 'amber',
         html: '<div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;"><span style="font-size: 24px;">📖</span><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0;">Word Origin</h4></div><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;"><strong>Origin:</strong> Latin/Greek root<br><strong>Meaning:</strong> Original meaning<br><strong>Evolution:</strong> How the term evolved</p></div>'
+      },
+      {
+        name: 'Concept Map',
+        icon: Target,
+        color: 'violet',
+        html: '<div style="background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%); border-radius: 12px; padding: 24px; margin: 20px 0; text-align: center;"><h3 style="color: #6B21A8; font-size: 20px; font-weight: 700; margin: 0 0 20px 0;">Central Concept</h3><div style="display: flex; justify-content: center; gap: 16px; flex-wrap: wrap;"><div style="background: white; border: 2px solid #A855F7; border-radius: 8px; padding: 12px 16px; color: #7E22CE; font-weight: 600;">Related 1</div><div style="background: white; border: 2px solid #A855F7; border-radius: 8px; padding: 12px 16px; color: #7E22CE; font-weight: 600;">Related 2</div><div style="background: white; border: 2px solid #A855F7; border-radius: 8px; padding: 12px 16px; color: #7E22CE; font-weight: 600;">Related 3</div></div></div>'
+      },
+      {
+        name: 'Key Terms List',
+        icon: FileText,
+        color: 'sky',
+        html: '<div style="background: #F0F9FF; border: 2px solid #0EA5E9; border-radius: 12px; padding: 24px; margin: 20px 0;"><h4 style="color: #0369A1; font-size: 20px; font-weight: 700; margin: 0 0 16px 0;">Key Terms</h4><div style="display: grid; gap: 12px;"><div style="background: white; border-radius: 8px; padding: 12px;"><strong style="color: #0369A1;">Term 1:</strong> <span style="color: #0C4A6E;">Definition</span></div><div style="background: white; border-radius: 8px; padding: 12px;"><strong style="color: #0369A1;">Term 2:</strong> <span style="color: #0C4A6E;">Definition</span></div><div style="background: white; border-radius: 8px; padding: 12px;"><strong style="color: #0369A1;">Term 3:</strong> <span style="color: #0C4A6E;">Definition</span></div></div></div>'
       }
     ]
   },
@@ -211,6 +247,18 @@ const TEMPLATE_BLOCKS = {
         icon: BookOpen,
         color: 'amber',
         html: '<div style="background: white; border: 2px solid #F59E0B; border-radius: 12px; padding: 24px; margin: 20px 0;"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 12px;"><span style="font-size: 24px;">📜</span><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0;">Historical Context</h4></div><p style="color: #78350F; font-size: 15px; line-height: 1.7; margin: 0;">Provide historical background or examples from the past.</p></div>'
+      },
+      {
+        name: 'Lab Experiment',
+        icon: Zap,
+        color: 'violet',
+        html: '<div style="background: linear-gradient(135deg, #EDE9FE 0%, #DDD6FE 100%); border: 2px solid #8B5CF6; border-radius: 12px; padding: 24px; margin: 20px 0;"><div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;"><span style="font-size: 24px;">🔬</span><h4 style="color: #6B21A8; font-size: 18px; font-weight: 700; margin: 0;">Lab Example</h4></div><p style="color: #581C87; font-size: 15px; margin: 0 0 12px 0;"><strong>Objective:</strong> What to test</p><p style="color: #581C87; font-size: 15px; margin: 0 0 12px 0;"><strong>Procedure:</strong> Step-by-step method</p><p style="color: #581C87; font-size: 15px; margin: 0;"><strong>Result:</strong> Expected outcome</p></div>'
+      },
+      {
+        name: 'Calculation Example',
+        icon: Code,
+        color: 'emerald',
+        html: '<div style="background: white; border: 2px solid #10B981; border-radius: 12px; padding: 24px; margin: 20px 0;"><div style="background: #10B981; color: white; padding: 10px 16px; border-radius: 8px; display: inline-block; margin-bottom: 16px; font-size: 14px; font-weight: 700;">CALCULATION</div><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 16px 0;">Sample Calculation</h4><div style="background: #F0FDF4; border-radius: 8px; padding: 16px; font-family: monospace;"><p style="color: #064E3B; font-size: 15px; margin: 0;">Given: x = 5, y = 10<br>Calculate: x + y = ?<br>Solution: 5 + 10 = 15</p></div></div>'
       }
     ]
   },
@@ -283,6 +331,246 @@ const TEMPLATE_BLOCKS = {
         icon: Code,
         color: 'gray',
         html: '<div style="background: #1F2937; border-radius: 12px; padding: 20px; margin: 20px 0; font-family: monospace;"><div style="display: flex; align-items: center; justify-content: between; margin-bottom: 12px;"><span style="color: #9CA3AF; font-size: 12px; text-transform: uppercase; font-weight: 700;">Code Example</span></div><pre style="margin: 0; color: #E5E7EB; font-size: 14px; line-height: 1.6; overflow-x: auto;"><code>function example() {\n  // Add your code here\n  return true;\n}</code></pre></div>'
+      },
+      {
+        name: 'Objectives List',
+        icon: Target,
+        color: 'blue',
+        html: '<div style="background: white; border: 2px solid #3B82F6; border-radius: 12px; padding: 24px; margin: 20px 0;"><h4 style="color: #1E40AF; font-size: 20px; font-weight: 700; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;"><span>🎯</span> Learning Objectives</h4><ul style="margin: 0; padding-left: 24px; color: #1E3A8A; font-size: 15px; line-height: 2; list-style-type: none;"><li style="margin-bottom: 8px;">✓ Objective 1</li><li style="margin-bottom: 8px;">✓ Objective 2</li><li style="margin-bottom: 8px;">✓ Objective 3</li></ul></div>'
+      },
+      {
+        name: 'Resources Box',
+        icon: BookOpen,
+        color: 'indigo',
+        html: '<div style="background: #EEF2FF; border: 2px solid #6366F1; border-radius: 12px; padding: 24px; margin: 20px 0;"><h4 style="color: #4338CA; font-size: 20px; font-weight: 700; margin: 0 0 16px 0; display: flex; align-items: center; gap: 8px;"><span>📚</span> Additional Resources</h4><ul style="margin: 0; padding-left: 24px; color: #312E81; font-size: 15px; line-height: 2;"><li><a href="#" style="color: #6366F1; text-decoration: underline;">Resource Link 1</a></li><li><a href="#" style="color: #6366F1; text-decoration: underline;">Resource Link 2</a></li><li><a href="#" style="color: #6366F1; text-decoration: underline;">Resource Link 3</a></li></ul></div>'
+      },
+      {
+        name: 'Highlighted Text',
+        icon: Zap,
+        color: 'yellow',
+        html: '<div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 8px; padding: 16px 24px; margin: 20px 0; border-left: 4px solid #F59E0B;"><p style="color: #78350F; font-size: 16px; line-height: 1.7; margin: 0; font-weight: 600;">✨ Highlighted key information that deserves special attention.</p></div>'
+      }
+    ]
+  },
+  columns: {
+    name: 'Columns',
+    icon: Columns,
+    blocks: [
+      {
+        name: 'Two Columns',
+        icon: Columns,
+        color: 'blue',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 15px;"><div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 24px;"><h3 style="color: #1F2937; font-size: 20px; font-weight: 700; margin: 0 0 12px 0;">Column 1</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.7; margin: 0;">Add content for the first column here.</p></div></td><td style="width: 50%; vertical-align: top; padding-left: 15px;"><div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 24px;"><h3 style="color: #1F2937; font-size: 20px; font-weight: 700; margin: 0 0 12px 0;">Column 2</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.7; margin: 0;">Add content for the second column here.</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Three Columns',
+        icon: Grid3x3,
+        color: 'green',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 20px;"><h4 style="color: #1F2937; font-size: 18px; font-weight: 700; margin: 0 0 12px 0;">Column 1</h4><p style="color: #4B5563; font-size: 14px; line-height: 1.6; margin: 0;">Content here</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 20px;"><h4 style="color: #1F2937; font-size: 18px; font-weight: 700; margin: 0 0 12px 0;">Column 2</h4><p style="color: #4B5563; font-size: 14px; line-height: 1.6; margin: 0;">Content here</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border: 2px solid #E5E7EB; border-radius: 12px; padding: 20px;"><h4 style="color: #1F2937; font-size: 18px; font-weight: 700; margin: 0 0 12px 0;">Column 3</h4><p style="color: #4B5563; font-size: 14px; line-height: 1.6; margin: 0;">Content here</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Four Columns',
+        icon: Grid3x3,
+        color: 'purple',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: #EEF2FF; border-radius: 12px; padding: 16px; text-align: center;"><h5 style="color: #4338CA; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Col 1</h5><p style="color: #312E81; font-size: 13px; line-height: 1.5; margin: 0;">Content</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: #EEF2FF; border-radius: 12px; padding: 16px; text-align: center;"><h5 style="color: #4338CA; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Col 2</h5><p style="color: #312E81; font-size: 13px; line-height: 1.5; margin: 0;">Content</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: #EEF2FF; border-radius: 12px; padding: 16px; text-align: center;"><h5 style="color: #4338CA; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Col 3</h5><p style="color: #312E81; font-size: 13px; line-height: 1.5; margin: 0;">Content</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: #EEF2FF; border-radius: 12px; padding: 16px; text-align: center;"><h5 style="color: #4338CA; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Col 4</h5><p style="color: #312E81; font-size: 13px; line-height: 1.5; margin: 0;">Content</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Two Columns - Text Only',
+        icon: Type,
+        color: 'slate',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 20px;"><p style="color: #1F2937; font-size: 15px; line-height: 1.8; margin: 0;">First column text content. Add paragraphs, explanations, or detailed information here.</p></td><td style="width: 50%; vertical-align: top; padding-left: 20px; border-left: 2px solid #E5E7EB;"><p style="color: #1F2937; font-size: 15px; line-height: 1.8; margin: 0;">Second column text content. Continue with related or contrasting information.</p></td></tr></table></div>'
+      },
+      {
+        name: 'Three Columns - Cards',
+        icon: Grid3x3,
+        color: 'cyan',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-radius: 12px; padding: 20px; text-align: center;"><div style="font-size: 32px; margin-bottom: 12px;">📘</div><h4 style="color: #1E40AF; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature 1</h4><p style="color: #1E3A8A; font-size: 13px; line-height: 1.5; margin: 0;">Description</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-radius: 12px; padding: 20px; text-align: center;"><div style="font-size: 32px; margin-bottom: 12px;">📗</div><h4 style="color: #065F46; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature 2</h4><p style="color: #064E3B; font-size: 13px; line-height: 1.5; margin: 0;">Description</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 12px; padding: 20px; text-align: center;"><div style="font-size: 32px; margin-bottom: 12px;">📙</div><h4 style="color: #92400E; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature 3</h4><p style="color: #78350F; font-size: 13px; line-height: 1.5; margin: 0;">Description</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Two Columns - Comparison',
+        icon: Columns,
+        color: 'pink',
+        html: '<div style="margin: 20px 0;"><h3 style="color: #1F2937; font-size: 22px; font-weight: 700; margin: 0 0 16px 0; text-align: center;">Comparison</h3><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding: 0 12px;"><div style="background: #DBEAFE; border: 2px solid #3B82F6; border-radius: 12px; padding: 24px;"><h4 style="color: #1E40AF; font-size: 18px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Option A</h4><ul style="margin: 0; padding-left: 20px; color: #1E3A8A; font-size: 14px; line-height: 2;"><li>Point 1</li><li>Point 2</li><li>Point 3</li></ul></div></td><td style="width: 50%; vertical-align: top; padding: 0 12px;"><div style="background: #D1FAE5; border: 2px solid #10B981; border-radius: 12px; padding: 24px;"><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 12px 0; text-align: center;">Option B</h4><ul style="margin: 0; padding-left: 20px; color: #064E3B; font-size: 14px; line-height: 2;"><li>Point 1</li><li>Point 2</li><li>Point 3</li></ul></div></td></tr></table></div>'
+      },
+      {
+        name: 'Four Columns - Stats',
+        icon: Grid3x3,
+        color: 'emerald',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: white; border: 2px solid #10B981; border-radius: 12px; padding: 16px; text-align: center;"><div style="font-size: 32px; font-weight: 700; color: #10B981; margin-bottom: 8px;">85%</div><p style="color: #065F46; font-size: 13px; font-weight: 600; margin: 0;">Stat 1</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: white; border: 2px solid #3B82F6; border-radius: 12px; padding: 16px; text-align: center;"><div style="font-size: 32px; font-weight: 700; color: #3B82F6; margin-bottom: 8px;">92%</div><p style="color: #1E40AF; font-size: 13px; font-weight: 600; margin: 0;">Stat 2</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: white; border: 2px solid #F59E0B; border-radius: 12px; padding: 16px; text-align: center;"><div style="font-size: 32px; font-weight: 700; color: #F59E0B; margin-bottom: 8px;">78%</div><p style="color: #92400E; font-size: 13px; font-weight: 600; margin: 0;">Stat 3</p></div></td><td style="width: 25%; vertical-align: top; padding: 0 8px;"><div style="background: white; border: 2px solid #A855F7; border-radius: 12px; padding: 16px; text-align: center;"><div style="font-size: 32px; font-weight: 700; color: #A855F7; margin-bottom: 8px;">96%</div><p style="color: #7E22CE; font-size: 13px; font-weight: 600; margin: 0;">Stat 4</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Three Columns - Features',
+        icon: Grid3x3,
+        color: 'indigo',
+        html: '<div style="margin: 20px 0;"><h3 style="color: #1F2937; font-size: 22px; font-weight: 700; margin: 0 0 20px 0; text-align: center;">Key Features</h3><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"><div style="width: 48px; height: 48px; background: #6366F1; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 24px;">1</div><h4 style="color: #4338CA; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature One</h4><p style="color: #6B7280; font-size: 13px; line-height: 1.5; margin: 0;">Describe the feature</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"><div style="width: 48px; height: 48px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 24px;">2</div><h4 style="color: #065F46; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature Two</h4><p style="color: #6B7280; font-size: 13px; line-height: 1.5; margin: 0;">Describe the feature</p></div></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><div style="background: white; border-radius: 12px; padding: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); text-align: center;"><div style="width: 48px; height: 48px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; margin: 0 auto 12px; color: white; font-size: 24px;">3</div><h4 style="color: #92400E; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Feature Three</h4><p style="color: #6B7280; font-size: 13px; line-height: 1.5; margin: 0;">Describe the feature</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Two Columns - List',
+        icon: Columns,
+        color: 'teal',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 15px;"><h4 style="color: #0F766E; font-size: 18px; font-weight: 700; margin: 0 0 12px 0;">List A</h4><ul style="margin: 0; padding-left: 20px; color: #134E4A; font-size: 15px; line-height: 2;"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></td><td style="width: 50%; vertical-align: top; padding-left: 15px;"><h4 style="color: #0F766E; font-size: 18px; font-weight: 700; margin: 0 0 12px 0;">List B</h4><ul style="margin: 0; padding-left: 20px; color: #134E4A; font-size: 15px; line-height: 2;"><li>Item 1</li><li>Item 2</li><li>Item 3</li></ul></td></tr></table></div>'
+      },
+      {
+        name: 'Three Columns - Text',
+        icon: Grid3x3,
+        color: 'amber',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><p style="color: #374151; font-size: 14px; line-height: 1.7; margin: 0;">First column content with regular text formatting.</p></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px; border-left: 2px solid #E5E7EB; border-right: 2px solid #E5E7EB;"><p style="color: #374151; font-size: 14px; line-height: 1.7; margin: 0;">Second column content with regular text formatting.</p></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><p style="color: #374151; font-size: 14px; line-height: 1.7; margin: 0;">Third column content with regular text formatting.</p></td></tr></table></div>'
+      },
+      {
+        name: 'Two Columns - Heading + Content',
+        icon: Columns,
+        color: 'rose',
+        html: '<div style="background: #FFF1F2; border-radius: 12px; padding: 24px; margin: 20px 0;"><h3 style="color: #9F1239; font-size: 22px; font-weight: 700; margin: 0 0 20px 0; text-align: center;">Section Title</h3><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 15px;"><div style="background: white; border-radius: 8px; padding: 16px;"><h4 style="color: #BE185D; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Heading 1</h4><p style="color: #831843; font-size: 14px; line-height: 1.6; margin: 0;">Content here</p></div></td><td style="width: 50%; vertical-align: top; padding-left: 15px;"><div style="background: white; border-radius: 8px; padding: 16px;"><h4 style="color: #BE185D; font-size: 16px; font-weight: 700; margin: 0 0 8px 0;">Heading 2</h4><p style="color: #831843; font-size: 14px; line-height: 1.6; margin: 0;">Content here</p></div></td></tr></table></div>'
+      },
+      {
+        name: 'Four Columns - Icons',
+        icon: Grid3x3,
+        color: 'violet',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 25%; padding: 0 8px; text-align: center; vertical-align: top;"><div style="font-size: 40px; margin-bottom: 8px;">🎯</div><p style="color: #1F2937; font-size: 13px; font-weight: 600; margin: 0;">Label 1</p></td><td style="width: 25%; padding: 0 8px; text-align: center; vertical-align: top;"><div style="font-size: 40px; margin-bottom: 8px;">🚀</div><p style="color: #1F2937; font-size: 13px; font-weight: 600; margin: 0;">Label 2</p></td><td style="width: 25%; padding: 0 8px; text-align: center; vertical-align: top;"><div style="font-size: 40px; margin-bottom: 8px;">⭐</div><p style="color: #1F2937; font-size: 13px; font-weight: 600; margin: 0;">Label 3</p></td><td style="width: 25%; padding: 0 8px; text-align: center; vertical-align: top;"><div style="font-size: 40px; margin-bottom: 8px;">💎</div><p style="color: #1F2937; font-size: 13px; font-weight: 600; margin: 0;">Label 4</p></td></tr></table></div>'
+      }
+    ]
+  },
+  text: {
+    name: 'Text',
+    icon: Type,
+    blocks: [
+      {
+        name: 'Large Heading',
+        icon: Type,
+        color: 'gray',
+        html: '<h1 style="color: #1F2937; font-size: 48px; font-weight: 700; margin: 20px 0; line-height: 1.2;">Main Heading</h1>'
+      },
+      {
+        name: 'Section Heading',
+        icon: Type,
+        color: 'blue',
+        html: '<h2 style="color: #1E40AF; font-size: 36px; font-weight: 700; margin: 20px 0; line-height: 1.3; border-bottom: 3px solid #3B82F6; padding-bottom: 12px;">Section Title</h2>'
+      },
+      {
+        name: 'Subheading',
+        icon: Type,
+        color: 'indigo',
+        html: '<h3 style="color: #4338CA; font-size: 24px; font-weight: 700; margin: 20px 0;">Subheading</h3>'
+      },
+      {
+        name: 'Paragraph',
+        icon: FileText,
+        color: 'slate',
+        html: '<p style="color: #1F2937; font-size: 16px; line-height: 1.8; margin: 20px 0;">Add your paragraph text here. Write clear, concise explanations that help students understand the topic.</p>'
+      },
+      {
+        name: 'Bullet List',
+        icon: FileText,
+        color: 'green',
+        html: '<ul style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First bullet point</li><li>Second bullet point</li><li>Third bullet point</li></ul>'
+      },
+      {
+        name: 'Numbered List',
+        icon: FileText,
+        color: 'blue',
+        html: '<ol style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First item</li><li>Second item</li><li>Third item</li></ol>'
+      },
+      {
+        name: 'Highlighted Quote',
+        icon: MessageSquare,
+        color: 'purple',
+        html: '<blockquote style="border-left: 4px solid #A855F7; background: #F3E8FF; padding: 20px 24px; margin: 20px 0; border-radius: 8px;"><p style="color: #6B21A8; font-size: 18px; line-height: 1.7; margin: 0; font-style: italic;">"Insert important quote or statement here"</p></blockquote>'
+      },
+      {
+        name: 'Centered Text',
+        icon: Type,
+        color: 'pink',
+        html: '<div style="text-align: center; margin: 20px 0;"><p style="color: #1F2937; font-size: 20px; font-weight: 600; line-height: 1.6; margin: 0;">Centered text for emphasis</p></div>'
+      },
+      {
+        name: 'Text with Background',
+        icon: Type,
+        color: 'cyan',
+        html: '<div style="background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); border-radius: 12px; padding: 24px; margin: 20px 0;"><p style="color: #164E63; font-size: 16px; line-height: 1.8; margin: 0;">Text content with colored background for visual emphasis.</p></div>'
+      },
+      {
+        name: 'Intro Paragraph',
+        icon: FileText,
+        color: 'indigo',
+        html: '<p style="color: #4B5563; font-size: 18px; line-height: 1.8; margin: 20px 0; font-weight: 500; background: #F9FAFB; padding: 20px; border-radius: 8px; border-left: 4px solid #6366F1;">Introductory paragraph with emphasis to set the context and grab attention.</p>'
+      },
+      {
+        name: 'Conclusion Text',
+        icon: CheckCircle,
+        color: 'green',
+        html: '<div style="background: #F0FDF4; border: 2px solid #10B981; border-radius: 12px; padding: 20px; margin: 20px 0;"><p style="color: #065F46; font-size: 16px; line-height: 1.8; margin: 0; font-weight: 600;">✓ Conclusion: Summarize the main takeaways and reinforce learning.</p></div>'
+      }
+    ]
+  },
+  images: {
+    name: 'Images',
+    icon: ImageIcon,
+    blocks: [
+      {
+        name: 'Single Image',
+        icon: ImageIcon,
+        color: 'blue',
+        html: '<div style="margin: 20px 0; text-align: center;"><img src="https://via.placeholder.com/800x400/3B82F6/FFFFFF?text=Click+to+Replace" style="width: 100%; max-width: 800px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" /><p style="margin-top: 12px; color: #6B7280; font-size: 14px; font-style: italic;">Image caption or description</p></div>'
+      },
+      {
+        name: 'Two Images Side by Side',
+        icon: Columns,
+        color: 'green',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; padding: 0 10px; text-align: center; vertical-align: top;"><img src="https://via.placeholder.com/400x300/10B981/FFFFFF?text=Image+1" style="width: 100%; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /><p style="margin-top: 8px; color: #6B7280; font-size: 13px;">Caption 1</p></td><td style="width: 50%; padding: 0 10px; text-align: center; vertical-align: top;"><img src="https://via.placeholder.com/400x300/3B82F6/FFFFFF?text=Image+2" style="width: 100%; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /><p style="margin-top: 8px; color: #6B7280; font-size: 13px;">Caption 2</p></td></tr></table></div>'
+      },
+      {
+        name: 'Three Images Row',
+        icon: Grid3x3,
+        color: 'purple',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; padding: 0 8px; text-align: center; vertical-align: top;"><img src="https://via.placeholder.com/300x200/8B5CF6/FFFFFF?text=1" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /><p style="margin-top: 8px; color: #6B7280; font-size: 12px;">Image 1</p></td><td style="width: 33.33%; padding: 0 8px; text-align: center; vertical-align: top;"><img src="https://via.placeholder.com/300x200/EC4899/FFFFFF?text=2" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /><p style="margin-top: 8px; color: #6B7280; font-size: 12px;">Image 2</p></td><td style="width: 33.33%; padding: 0 8px; text-align: center; vertical-align: top;"><img src="https://via.placeholder.com/300x200/F59E0B/FFFFFF?text=3" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" /><p style="margin-top: 8px; color: #6B7280; font-size: 12px;">Image 3</p></td></tr></table></div>'
+      },
+      {
+        name: 'Four Images Grid',
+        icon: Grid3x3,
+        color: 'rose',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; padding: 8px; vertical-align: top;"><img src="https://via.placeholder.com/400x300/F43F5E/FFFFFF?text=1" style="width: 100%; border-radius: 8px;" /></td><td style="width: 50%; padding: 8px; vertical-align: top;"><img src="https://via.placeholder.com/400x300/10B981/FFFFFF?text=2" style="width: 100%; border-radius: 8px;" /></td></tr><tr><td style="width: 50%; padding: 8px; vertical-align: top;"><img src="https://via.placeholder.com/400x300/3B82F6/FFFFFF?text=3" style="width: 100%; border-radius: 8px;" /></td><td style="width: 50%; padding: 8px; vertical-align: top;"><img src="https://via.placeholder.com/400x300/F59E0B/FFFFFF?text=4" style="width: 100%; border-radius: 8px;" /></td></tr></table></div>'
+      },
+      {
+        name: 'Image Left Text Right',
+        icon: Columns,
+        color: 'teal',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 40%; vertical-align: top; padding-right: 20px;"><img src="https://via.placeholder.com/400x300/14B8A6/FFFFFF?text=Image" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" /></td><td style="width: 60%; vertical-align: top; padding-left: 20px;"><h3 style="color: #0F766E; font-size: 22px; font-weight: 700; margin: 0 0 12px 0;">Topic Title</h3><p style="color: #134E4A; font-size: 15px; line-height: 1.7; margin: 0;">Detailed explanation and content goes here next to the image.</p></td></tr></table></div>'
+      },
+      {
+        name: 'Image Right Text Left',
+        icon: Columns,
+        color: 'orange',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 60%; vertical-align: top; padding-right: 20px;"><h3 style="color: #EA580C; font-size: 22px; font-weight: 700; margin: 0 0 12px 0;">Topic Title</h3><p style="color: #9A3412; font-size: 15px; line-height: 1.7; margin: 0;">Detailed explanation and content goes here next to the image.</p></td><td style="width: 40%; vertical-align: top; padding-left: 20px;"><img src="https://via.placeholder.com/400x300/F97316/FFFFFF?text=Image" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" /></td></tr></table></div>'
+      },
+      {
+        name: 'Image Top Text Bottom',
+        icon: ImageIcon,
+        color: 'indigo',
+        html: '<div style="margin: 20px 0;"><img src="https://via.placeholder.com/800x400/6366F1/FFFFFF?text=Main+Image" style="width: 100%; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); margin-bottom: 16px;" /><h3 style="color: #4338CA; font-size: 20px; font-weight: 700; margin: 0 0 12px 0;">Image Title</h3><p style="color: #312E81; font-size: 15px; line-height: 1.7; margin: 0;">Detailed description or explanation below the image.</p></div>'
+      },
+      {
+        name: 'Diagram with Labels',
+        icon: ImageIcon,
+        color: 'emerald',
+        html: '<div style="margin: 20px 0;"><div style="position: relative; text-align: center; margin-bottom: 16px;"><img src="https://via.placeholder.com/700x400/10B981/FFFFFF?text=Add+Diagram" style="width: 100%; max-width: 700px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" /></div><div style="display: flex; flex-wrap: wrap; gap: 12px; justify-content: center;"><span style="background: #D1FAE5; color: #065F46; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">Label 1</span><span style="background: #D1FAE5; color: #065F46; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">Label 2</span><span style="background: #D1FAE5; color: #065F46; padding: 8px 16px; border-radius: 20px; font-size: 13px; font-weight: 600;">Label 3</span></div></div>'
+      },
+      {
+        name: 'Image Gallery 2x2',
+        icon: Grid3x3,
+        color: 'pink',
+        html: '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse; gap: 12px;"><tr><td style="width: 50%; padding: 6px;"><img src="https://via.placeholder.com/400x300/EC4899/FFFFFF?text=1" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;" /></td><td style="width: 50%; padding: 6px;"><img src="https://via.placeholder.com/400x300/8B5CF6/FFFFFF?text=2" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;" /></td></tr><tr><td style="width: 50%; padding: 6px;"><img src="https://via.placeholder.com/400x300/3B82F6/FFFFFF?text=3" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;" /></td><td style="width: 50%; padding: 6px;"><img src="https://via.placeholder.com/400x300/10B981/FFFFFF?text=4" style="width: 100%; height: 250px; object-fit: cover; border-radius: 8px;" /></td></tr></table></div>'
+      },
+      {
+        name: 'Hero Image',
+        icon: ImageIcon,
+        color: 'slate',
+        html: '<div style="position: relative; margin: 20px 0; border-radius: 16px; overflow: hidden;"><img src="https://via.placeholder.com/1200x500/1F2937/FFFFFF?text=Hero+Image" style="width: 100%; height: 400px; object-fit: cover;" /><div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)); display: flex; align-items: center; justify-content: center;"><h2 style="color: white; font-size: 48px; font-weight: 700; text-align: center; text-shadow: 2px 2px 8px rgba(0,0,0,0.5);">Overlay Text</h2></div></div>'
+      },
+      {
+        name: 'Featured Image',
+        icon: ImageIcon,
+        color: 'amber',
+        html: '<div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 16px; padding: 24px; margin: 20px 0;"><img src="https://via.placeholder.com/800x400/F59E0B/FFFFFF?text=Featured" style="width: 100%; border-radius: 12px; box-shadow: 0 8px 24px rgba(245, 158, 11, 0.3); margin-bottom: 16px;" /><h3 style="color: #92400E; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; text-align: center;">Featured Title</h3><p style="color: #78350F; font-size: 14px; text-align: center; margin: 0;">Featured description</p></div>'
       }
     ]
   }
