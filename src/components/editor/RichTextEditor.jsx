@@ -14,6 +14,7 @@ import Highlight from '@tiptap/extension-highlight';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
+import { Node } from '@tiptap/core';
 import { Label } from '@/components/ui/label';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
@@ -23,7 +24,8 @@ import {
   AlignLeft, AlignCenter, AlignRight, AlignJustify,
   Quote, Minus, Link as LinkIcon, Image as ImageIcon,
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
-  Superscript as SuperIcon, Highlighter
+  Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
+  CheckCircle, Lightbulb, Square
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -33,6 +35,57 @@ const SYMBOLS = {
   shapes: ['○', '●', '□', '■', '△', '▲', '◇', '◆', '☆', '★'],
   organic: ['—', '≡', '⌬', '⟲', '⟳', 'CH₃', 'CH₂', 'COOH', 'OH', 'NH₂']
 };
+
+// Custom Card Extension
+const Card = Node.create({
+  name: 'card',
+  group: 'block',
+  content: 'block+',
+  
+  addAttributes() {
+    return {
+      type: {
+        default: 'info',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [
+      {
+        tag: 'div[data-card]',
+      },
+    ];
+  },
+
+  renderHTML({ node, HTMLAttributes }) {
+    const type = node.attrs.type;
+    const styles = {
+      info: 'background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); border-left: 4px solid #4F46E5; color: #312E81;',
+      warning: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-left: 4px solid #F59E0B; color: #78350F;',
+      success: 'background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-left: 4px solid #10B981; color: #064E3B;',
+      tip: 'background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-left: 4px solid #EC4899; color: #831843;',
+      default: 'background: linear-gradient(135deg, #F3F4F6 0%, #E5E7EB 100%); border-left: 4px solid #6B7280; color: #1F2937;',
+    };
+
+    return [
+      'div',
+      {
+        'data-card': type,
+        style: `${styles[type] || styles.default} padding: 20px; border-radius: 12px; margin: 16px 0; box-shadow: 0 2px 8px rgba(0,0,0,0.05);`,
+      },
+      0,
+    ];
+  },
+
+  addCommands() {
+    return {
+      setCard: (attributes) => ({ commands }) => {
+        return commands.wrapIn(this.name, attributes);
+      },
+    };
+  },
+});
 
 const MenuButton = ({ onClick, isActive, children, title }) => (
   <button
@@ -92,6 +145,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       Subscript,
       Superscript,
       Underline,
+      Card,
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -264,6 +318,20 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           .rich-text-editor-wrapper .ProseMirror table th {
             background-color: #f9fafb;
             font-weight: 600;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror div[data-card] {
+            margin: 16px 0;
+            padding: 20px;
+            border-radius: 12px;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror div[data-card] p:first-child {
+            margin-top: 0;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror div[data-card] p:last-child {
+            margin-bottom: 0;
           }
           
           .symbol-picker {
@@ -462,16 +530,16 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         </MenuButton>
         
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
+
         <MenuButton
           onClick={() => editor.chain().focus().insertTable({ rows: 3, cols: 3 }).run()}
           title="Insert Table"
         >
           <TableIcon className="w-4 h-4" />
         </MenuButton>
-        
+
         <div className="w-px h-6 bg-gray-300 mx-1" />
-        
+
         <MenuButton
           onClick={addLink}
           isActive={editor.isActive('link')}
@@ -484,6 +552,39 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           title="Insert Image"
         >
           <ImageIcon className="w-4 h-4" />
+        </MenuButton>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        <MenuButton
+          onClick={() => editor.chain().focus().setCard({ type: 'info' }).run()}
+          title="Info Card"
+        >
+          <Info className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setCard({ type: 'warning' }).run()}
+          title="Warning Card"
+        >
+          <AlertTriangle className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setCard({ type: 'success' }).run()}
+          title="Success Card"
+        >
+          <CheckCircle className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setCard({ type: 'tip' }).run()}
+          title="Tip Card"
+        >
+          <Lightbulb className="w-4 h-4" />
+        </MenuButton>
+        <MenuButton
+          onClick={() => editor.chain().focus().setCard({ type: 'default' }).run()}
+          title="Default Card"
+        >
+          <Square className="w-4 h-4" />
         </MenuButton>
       </div>
       
