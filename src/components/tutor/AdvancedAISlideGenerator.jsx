@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -22,6 +22,7 @@ import {
 } from '@/components/ui/select';
 
 export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, onClose }) {
+  const [existingSections, setExistingSections] = useState([]);
   const [topic, setTopic] = useState('');
   const [additionalPrompt, setAdditionalPrompt] = useState('');
   const [curriculum, setCurriculum] = useState('GCSE');
@@ -36,6 +37,22 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [currentStep, setCurrentStep] = useState('');
   const [generatedContent, setGeneratedContent] = useState(null);
   const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
+
+  useEffect(() => {
+    const fetchSections = async () => {
+      try {
+        const lessons = await base44.entities.Lesson.filter({ course_id: courseId });
+        const sections = [...new Set(lessons.map(l => l.section).filter(Boolean))];
+        setExistingSections(sections);
+      } catch (error) {
+        console.error('Failed to fetch sections:', error);
+      }
+    };
+    
+    if (courseId) {
+      fetchSections();
+    }
+  }, [courseId]);
 
   const generateContent = async () => {
     if (!topic.trim()) {
@@ -311,12 +328,31 @@ Return JSON format.`,
 
                 <div>
                   <Label className="text-base font-semibold">Section/Path (Optional)</Label>
-                  <Input
-                    value={sectionName}
-                    onChange={(e) => setSectionName(e.target.value)}
-                    placeholder="e.g., Module 1, Getting Started, Biology - Unit 3"
-                    className="mt-2"
-                  />
+                  <Select value={sectionName} onValueChange={setSectionName}>
+                    <SelectTrigger className="mt-2">
+                      <SelectValue placeholder="Select existing section or type new one" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {existingSections.length > 0 && (
+                        <>
+                          {existingSections.map((section) => (
+                            <SelectItem key={section} value={section}>
+                              {section}
+                            </SelectItem>
+                          ))}
+                        </>
+                      )}
+                      <SelectItem value="_new_section">+ Create New Section</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {sectionName === '_new_section' && (
+                    <Input
+                      value=""
+                      onChange={(e) => setSectionName(e.target.value)}
+                      placeholder="Enter new section name"
+                      className="mt-2"
+                    />
+                  )}
                   <p className="text-xs text-gray-500 mt-1">Organize lesson into a course section or learning path</p>
                 </div>
 
