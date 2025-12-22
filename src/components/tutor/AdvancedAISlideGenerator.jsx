@@ -109,7 +109,11 @@ IMPORTANT: Return a JSON object with a "slides" array property containing the sl
         }
       });
 
-      const slides = slidesResult.slides || [];
+      const slides = slidesResult?.slides || [];
+      
+      if (!slides || slides.length === 0) {
+        throw new Error('No slides were generated. Please try again with a different topic or instructions.');
+      }
       
       // Step 2: Generate quiz if requested
       let quiz = null;
@@ -155,7 +159,12 @@ IMPORTANT: Return the exact JSON structure specified in the schema with all requ
           }
         });
 
-        quiz = quizResult;
+        if (!quizResult || !quizResult.questions || quizResult.questions.length === 0) {
+          toast.error('Quiz generation failed, but slides were created successfully');
+          quiz = null;
+        } else {
+          quiz = quizResult;
+        }
       }
 
       // Step 3: Generate learning objectives and success criteria
@@ -182,10 +191,17 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
         }
       });
 
+      const objectives = {
+        learning_objectives: objectivesResult?.learning_objectives || [],
+        success_criteria: objectivesResult?.success_criteria || [],
+        common_misconceptions: objectivesResult?.common_misconceptions || [],
+        extension_activities: objectivesResult?.extension_activities || []
+      };
+
       setGeneratedContent({
-        slides,
-        quiz,
-        objectives: objectivesResult,
+        slides: slides || [],
+        quiz: quiz || null,
+        objectives,
         metadata: {
           topic,
           curriculum,
@@ -197,9 +213,11 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
       setCurrentStep('');
       toast.success('Content generated successfully!');
     } catch (error) {
-      toast.error('Failed to generate content');
-      console.error(error);
+      const errorMessage = error.message || 'Failed to generate content';
+      toast.error(errorMessage);
+      console.error('Generation error:', error);
       setCurrentStep('');
+      setGeneratedContent(null);
     } finally {
       setGenerating(false);
     }
@@ -214,7 +232,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
         course_id: courseId,
         title: topic,
         description: `${curriculum} ${examBoard} aligned lesson on ${topic}`,
-        slides: generatedContent.slides.map((slide, idx) => ({
+        slides: (generatedContent?.slides || []).map((slide, idx) => ({
           title: slide.title,
           content: slide.content,
           order: idx + 1
@@ -224,12 +242,12 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
       });
 
       // Save quiz if generated
-      if (generatedContent.quiz) {
+      if (generatedContent?.quiz?.questions?.length > 0) {
         await base44.entities.Quiz.create({
           course_id: courseId,
           lesson_id: lesson.id,
-          title: generatedContent.quiz.title,
-          description: generatedContent.quiz.description,
+          title: generatedContent.quiz.title || 'Quiz',
+          description: generatedContent.quiz.description || '',
           passing_score: quizDifficulty === 'hard' ? 75 : 70,
           time_limit_minutes: parseInt(quizTimeLimit),
           questions: generatedContent.quiz.questions,
@@ -484,8 +502,8 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                   <div>
                     <h3 className="text-lg font-bold text-gray-900">Content Generated Successfully!</h3>
                     <p className="text-sm text-gray-600">
-                      {generatedContent.slides.length} slides
-                      {generatedContent.quiz && ` + ${generatedContent.quiz.questions.length} question quiz`}
+                      {generatedContent?.slides?.length || 0} slides
+                      {generatedContent?.quiz?.questions && ` + ${generatedContent.quiz.questions.length} question quiz`}
                     </p>
                   </div>
                 </div>
@@ -513,7 +531,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                   Learning Objectives
                 </h3>
                 <ul className="space-y-2">
-                  {generatedContent.objectives.learning_objectives?.map((obj, idx) => (
+                  {(generatedContent?.objectives?.learning_objectives || []).map((obj, idx) => (
                     <li key={idx} className="flex items-start gap-2 text-sm text-gray-700">
                       <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 shrink-0" />
                       <span>{obj}</span>
@@ -534,10 +552,10 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                   <div className="bg-gray-50 px-4 py-3 border-b flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Badge variant="outline">
-                        Slide {previewSlideIndex + 1} of {generatedContent.slides.length}
+                        Slide {previewSlideIndex + 1} of {generatedContent?.slides?.length || 0}
                       </Badge>
                       <h4 className="font-semibold text-gray-900">
-                        {generatedContent.slides[previewSlideIndex]?.title}
+                        {generatedContent?.slides?.[previewSlideIndex]?.title || 'Untitled'}
                       </h4>
                     </div>
                     <div className="flex gap-1">
@@ -552,8 +570,8 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                       <Button
                         variant="outline"
                         size="sm"
-                        onClick={() => setPreviewSlideIndex(Math.min(generatedContent.slides.length - 1, previewSlideIndex + 1))}
-                        disabled={previewSlideIndex === generatedContent.slides.length - 1}
+                        onClick={() => setPreviewSlideIndex(Math.min((generatedContent?.slides?.length || 1) - 1, previewSlideIndex + 1))}
+                        disabled={previewSlideIndex === (generatedContent?.slides?.length || 1) - 1}
                       >
                         <ChevronRight className="w-4 h-4" />
                       </Button>
@@ -563,15 +581,15 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                   <div className="max-h-[400px] overflow-y-auto bg-white">
                     <div className="p-6">
                       <div 
-                        className="prose prose-sm max-w-none"
-                        dangerouslySetInnerHTML={{ 
-                          __html: generatedContent.slides[previewSlideIndex]?.content || '' 
-                        }}
+                       className="prose prose-sm max-w-none"
+                       dangerouslySetInnerHTML={{ 
+                         __html: generatedContent?.slides?.[previewSlideIndex]?.content || '<p>No content available</p>' 
+                       }}
                       />
                     </div>
                   </div>
                   
-                  {generatedContent.slides[previewSlideIndex]?.speaker_notes && (
+                  {generatedContent?.slides?.[previewSlideIndex]?.speaker_notes && (
                     <div className="bg-blue-50 border-t border-blue-200 px-4 py-3">
                       <p className="text-xs text-blue-900">
                         <strong>Speaker Notes:</strong> {generatedContent.slides[previewSlideIndex].speaker_notes}
@@ -583,7 +601,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                 {/* Slide Thumbnails - Horizontal Scroll */}
                 <ScrollArea className="w-full">
                   <div className="flex gap-2 pb-2">
-                    {generatedContent.slides.map((slide, idx) => (
+                    {(generatedContent?.slides || []).map((slide, idx) => (
                       <button
                         key={idx}
                         onClick={() => setPreviewSlideIndex(idx)}
@@ -615,7 +633,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                   <div className="space-y-3 mb-4">
                     <div className="flex items-center gap-2">
                       <Badge className="bg-purple-100 text-purple-800">
-                        {generatedContent.quiz.questions.length} questions
+                        {generatedContent?.quiz?.questions?.length || 0} questions
                       </Badge>
                       <Badge className="bg-orange-100 text-orange-800">
                         <Clock className="w-3 h-3 mr-1" />
@@ -625,9 +643,11 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                         {quizDifficulty} difficulty
                       </Badge>
                     </div>
-                    <p className="text-sm text-gray-700">
-                      <strong>Assessment Criteria:</strong> {generatedContent.quiz.assessment_criteria}
-                    </p>
+                    {generatedContent?.quiz?.assessment_criteria && (
+                      <p className="text-sm text-gray-700">
+                        <strong>Assessment Criteria:</strong> {generatedContent.quiz.assessment_criteria}
+                      </p>
+                    )}
                   </div>
                   
                   <details className="mt-4">
@@ -635,7 +655,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                       Preview Questions
                     </summary>
                     <div className="mt-3 space-y-3">
-                      {generatedContent.quiz.questions.slice(0, 3).map((q, idx) => (
+                      {(generatedContent?.quiz?.questions || []).slice(0, 3).map((q, idx) => (
                         <div key={idx} className="p-3 bg-white rounded-lg border">
                           <p className="font-medium text-sm text-gray-900 mb-2">
                             Q{idx + 1}: {q.question}
@@ -666,7 +686,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                 <Card className="p-4">
                   <h4 className="font-semibold text-gray-900 mb-2 text-sm">Common Misconceptions</h4>
                   <ul className="space-y-1">
-                    {generatedContent.objectives.common_misconceptions?.map((misc, idx) => (
+                    {(generatedContent?.objectives?.common_misconceptions || []).map((misc, idx) => (
                       <li key={idx} className="text-xs text-gray-600">• {misc}</li>
                     ))}
                   </ul>
@@ -675,7 +695,7 @@ IMPORTANT: Return the exact JSON structure with all required array fields.`,
                 <Card className="p-4">
                   <h4 className="font-semibold text-gray-900 mb-2 text-sm">Extension Activities</h4>
                   <ul className="space-y-1">
-                    {generatedContent.objectives.extension_activities?.map((act, idx) => (
+                    {(generatedContent?.objectives?.extension_activities || []).map((act, idx) => (
                       <li key={idx} className="text-xs text-gray-600">• {act}</li>
                     ))}
                   </ul>
