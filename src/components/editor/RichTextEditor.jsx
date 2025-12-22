@@ -1630,6 +1630,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             </div>
             </div>
             )}
+        </div>
       </div>
       
       {/* Editor */}
