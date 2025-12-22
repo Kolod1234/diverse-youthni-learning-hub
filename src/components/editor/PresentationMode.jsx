@@ -451,6 +451,29 @@ export default function PresentationMode({ slides, onClose }) {
               className="absolute inset-0 flex items-center justify-center p-12"
             >
               <Card className="w-full h-full max-w-6xl bg-white overflow-auto">
+                <style>
+                  {`
+                    .presentation-content img {
+                      max-width: 100% !important;
+                      height: auto !important;
+                      display: block !important;
+                      object-fit: contain !important;
+                      min-height: 0 !important;
+                    }
+                    .presentation-content table {
+                      width: 100% !important;
+                    }
+                    .presentation-content table td {
+                      vertical-align: top !important;
+                    }
+                    .presentation-content table img {
+                      width: 100% !important;
+                      height: auto !important;
+                      max-width: 100% !important;
+                      object-fit: contain !important;
+                    }
+                  `}
+                </style>
                 <div className="p-12">
                   {currentSlideData && (
                     <>
@@ -458,7 +481,7 @@ export default function PresentationMode({ slides, onClose }) {
                         {currentSlideData.title || `Slide ${currentSlide + 1}`}
                       </h1>
                       <div 
-                        className="prose prose-lg max-w-none"
+                        className="prose prose-lg max-w-none presentation-content"
                         dangerouslySetInnerHTML={{ 
                           __html: processSlideContent(currentSlideData.content || '') 
                         }}
