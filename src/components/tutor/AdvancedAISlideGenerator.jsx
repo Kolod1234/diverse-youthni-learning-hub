@@ -29,6 +29,7 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [examBoard, setExamBoard] = useState('AQA');
   const [numSlides, setNumSlides] = useState('5');
   const [sectionName, setSectionName] = useState('');
+  const [newSectionName, setNewSectionName] = useState('');
   const [includeQuiz, setIncludeQuiz] = useState(true);
   const [quizDifficulty, setQuizDifficulty] = useState('medium');
   const [quizTimeLimit, setQuizTimeLimit] = useState('15');
@@ -275,7 +276,7 @@ Return ONLY valid JSON:
           order: idx + 1
         })),
         order: 999,
-        section: sectionName || generatedContent.metadata.curriculum
+        section: sectionName === '_new_section' ? newSectionName : (sectionName || generatedContent.metadata.curriculum)
       });
 
       // Save quiz if generated
@@ -368,7 +369,12 @@ Return ONLY valid JSON:
 
                 <div>
                   <Label className="text-base font-semibold">Section/Path (Optional)</Label>
-                  <Select value={sectionName} onValueChange={setSectionName}>
+                  <Select value={sectionName} onValueChange={(value) => {
+                    setSectionName(value);
+                    if (value !== '_new_section') {
+                      setNewSectionName('');
+                    }
+                  }}>
                     <SelectTrigger className="mt-2">
                       <SelectValue placeholder="Select existing section or type new one" />
                     </SelectTrigger>
@@ -387,8 +393,8 @@ Return ONLY valid JSON:
                   </Select>
                   {sectionName === '_new_section' && (
                     <Input
-                      value=""
-                      onChange={(e) => setSectionName(e.target.value)}
+                      value={newSectionName}
+                      onChange={(e) => setNewSectionName(e.target.value)}
                       placeholder="Enter new section name"
                       className="mt-2"
                     />
@@ -754,6 +760,7 @@ Return ONLY valid JSON:
                   setTopic('');
                   setAdditionalPrompt('');
                   setSectionName('');
+                  setNewSectionName('');
                 }}
               >
                 Generate New Content
