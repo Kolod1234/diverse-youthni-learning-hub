@@ -44,6 +44,8 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
       try {
         const lessons = await base44.entities.Lesson.filter({ course_id: courseId });
         const sections = [...new Set(lessons.map(l => l.section).filter(Boolean))];
+        console.log('Fetched lessons:', lessons);
+        console.log('Extracted sections:', sections);
         setExistingSections(sections);
       } catch (error) {
         console.error('Failed to fetch sections:', error);
@@ -51,7 +53,10 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
     };
     
     if (courseId) {
+      console.log('Fetching sections for courseId:', courseId);
       fetchSections();
+    } else {
+      console.warn('No courseId provided to AdvancedAISlideGenerator');
     }
   }, [courseId]);
 
