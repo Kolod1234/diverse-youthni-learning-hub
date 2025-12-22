@@ -25,7 +25,7 @@ import {
   Quote, Minus, Link as LinkIcon, Image as ImageIcon,
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
-  CheckCircle, Lightbulb, Square
+  CheckCircle, Lightbulb, Square, BarChart3, HelpCircle, Zap
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -87,6 +87,253 @@ const Card = Node.create({
     return {
       setCard: (attributes) => ({ commands }) => {
         return commands.wrapIn(this.name, attributes);
+      },
+    };
+  },
+});
+
+// Poll Extension
+const Poll = Node.create({
+  name: 'poll',
+  group: 'block',
+  atom: true,
+
+  addAttributes() {
+    return {
+      question: {
+        default: 'What do you think?',
+      },
+      options: {
+        default: ['Option 1', 'Option 2', 'Option 3'],
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-poll]' }];
+  },
+
+  renderHTML({ node }) {
+    const { question, options } = node.attrs;
+    const optionsHtml = options.map((opt, i) => 
+      `<div style="padding: 12px 16px; margin: 8px 0; background: white; border: 2px solid #E5E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onmouseover="this.style.borderColor='#6366F1'; this.style.background='#EEF2FF'" onmouseout="this.style.borderColor='#E5E7EB'; this.style.background='white'">
+        <input type="radio" name="poll-${Date.now()}" id="opt-${i}" style="margin-right: 8px;">
+        <label for="opt-${i}" style="cursor: pointer; font-size: 15px;">${opt}</label>
+      </div>`
+    ).join('');
+
+    return [
+      'div',
+      {
+        'data-poll': '',
+        style: 'background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #C7D2FE;',
+      },
+      [
+        'div',
+        { style: 'margin-bottom: 16px;' },
+        [
+          'h4',
+          { style: 'font-size: 18px; font-weight: 600; color: #312E81; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;' },
+          ['span', { innerHTML: '📊' }],
+          ['span', {}, question]
+        ],
+        ['p', { style: 'font-size: 13px; color: #6366F1;' }, 'Interactive Poll - Click to vote'],
+      ],
+      ['div', { innerHTML: optionsHtml }],
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertPoll: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
+// Quiz Extension
+const Quiz = Node.create({
+  name: 'quiz',
+  group: 'block',
+  atom: true,
+
+  addAttributes() {
+    return {
+      question: {
+        default: 'What is the correct answer?',
+      },
+      options: {
+        default: ['Answer A', 'Answer B', 'Answer C', 'Answer D'],
+      },
+      correct: {
+        default: 0,
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-quiz]' }];
+  },
+
+  renderHTML({ node }) {
+    const { question, options, correct } = node.attrs;
+    const optionsHtml = options.map((opt, i) => 
+      `<div style="padding: 12px 16px; margin: 8px 0; background: white; border: 2px solid #E5E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s;" onclick="
+        if(${i} === ${correct}) {
+          this.style.borderColor='#10B981'; 
+          this.style.background='#D1FAE5';
+          this.innerHTML='✅ ' + this.textContent;
+        } else {
+          this.style.borderColor='#EF4444'; 
+          this.style.background='#FEE2E2';
+          this.innerHTML='❌ ' + this.textContent;
+        }
+      ">${opt}</div>`
+    ).join('');
+
+    return [
+      'div',
+      {
+        'data-quiz': '',
+        style: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #FCD34D;',
+      },
+      [
+        'div',
+        { style: 'margin-bottom: 16px;' },
+        [
+          'h4',
+          { style: 'font-size: 18px; font-weight: 600; color: #78350F; margin-bottom: 4px; display: flex; align-items: center; gap: 8px;' },
+          ['span', { innerHTML: '🎯' }],
+          ['span', {}, question]
+        ],
+        ['p', { style: 'font-size: 13px; color: #D97706;' }, 'Click an option to check your answer'],
+      ],
+      ['div', { innerHTML: optionsHtml }],
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertQuiz: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
+// Interactive Image with Hotspots
+const InteractiveImage = Node.create({
+  name: 'interactiveImage',
+  group: 'block',
+  atom: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: 'https://via.placeholder.com/800x500/4F46E5/FFFFFF?text=Add+Your+Image',
+      },
+      hotspots: {
+        default: [
+          { x: 25, y: 25, label: 'Point 1', info: 'Click to learn more' },
+          { x: 75, y: 75, label: 'Point 2', info: 'Additional information' },
+        ],
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-interactive-image]' }];
+  },
+
+  renderHTML({ node }) {
+    const { src, hotspots } = node.attrs;
+    const hotspotsHtml = hotspots.map((spot, i) => 
+      `<div style="position: absolute; left: ${spot.x}%; top: ${spot.y}%; transform: translate(-50%, -50%);">
+        <div style="width: 24px; height: 24px; background: #EF4444; border: 3px solid white; border-radius: 50%; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.3); animation: pulse 2s infinite;" 
+             onclick="alert('${spot.label}: ${spot.info}')"></div>
+        <div style="position: absolute; top: -35px; left: 50%; transform: translateX(-50%); background: #1F2937; color: white; padding: 4px 8px; border-radius: 6px; font-size: 11px; white-space: nowrap; opacity: 0; transition: opacity 0.2s;" 
+             onmouseenter="this.style.opacity='1'" onmouseleave="this.style.opacity='0'">${spot.label}</div>
+      </div>`
+    ).join('');
+
+    return [
+      'div',
+      {
+        'data-interactive-image': '',
+        style: 'position: relative; margin: 16px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);',
+      },
+      ['img', { src, style: 'width: 100%; display: block;' }],
+      ['div', { innerHTML: hotspotsHtml, style: 'position: absolute; inset: 0;' }],
+      [
+        'style',
+        {},
+        '@keyframes pulse { 0%, 100% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); } }'
+      ],
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertInteractiveImage: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
+// Q&A Section
+const QASection = Node.create({
+  name: 'qaSection',
+  group: 'block',
+  content: 'block+',
+
+  parseHTML() {
+    return [{ tag: 'div[data-qa-section]' }];
+  },
+
+  renderHTML() {
+    return [
+      'div',
+      {
+        'data-qa-section': '',
+        style: 'background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border-left: 6px solid #14B8A6;',
+      },
+      [
+        'div',
+        { style: 'display: flex; align-items: center; gap: 10px; margin-bottom: 16px;' },
+        ['span', { style: 'font-size: 24px;' }, '💬'],
+        ['h4', { style: 'font-size: 18px; font-weight: 600; color: #134E4A; margin: 0;' }, 'Question & Answer'],
+      ],
+      ['div', { style: 'background: white; padding: 16px; border-radius: 8px; margin-bottom: 12px;' }, 0],
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertQASection: () => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          content: [
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: '❓ Question: Type your question here' }],
+            },
+            {
+              type: 'paragraph',
+              content: [{ type: 'text', text: '✅ Answer: Type the answer here' }],
+            },
+          ],
+        });
       },
     };
   },
@@ -210,7 +457,11 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       Underline,
       Card,
       CardGrid,
-    ],
+      Poll,
+      Quiz,
+      InteractiveImage,
+      QASection,
+      ],
     content: value,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
@@ -629,6 +880,59 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         </MenuButton>
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        <div className="relative group">
+          <MenuButton
+            onClick={() => {}}
+            title="Interactive Elements"
+          >
+            <Zap className="w-4 h-4" />
+          </MenuButton>
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[240px]">
+            <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Interactive Elements</p>
+            <button
+              onClick={() => editor.chain().focus().insertPoll({ 
+                question: 'What do you think?',
+                options: ['Strongly Agree', 'Agree', 'Neutral', 'Disagree']
+              }).run()}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-indigo-50 transition-colors text-left mb-1"
+            >
+              <BarChart3 className="w-4 h-4 text-indigo-600" />
+              <span className="text-sm font-medium text-gray-700">Poll</span>
+            </button>
+            <button
+              onClick={() => editor.chain().focus().insertQuiz({ 
+                question: 'Test your knowledge:',
+                options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                correct: 0
+              }).run()}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-yellow-50 transition-colors text-left mb-1"
+            >
+              <HelpCircle className="w-4 h-4 text-yellow-600" />
+              <span className="text-sm font-medium text-gray-700">Quiz Question</span>
+            </button>
+            <button
+              onClick={() => editor.chain().focus().insertInteractiveImage({ 
+                src: 'https://via.placeholder.com/800x500/6366F1/FFFFFF?text=Click+Image+to+Upload',
+                hotspots: [
+                  { x: 30, y: 30, label: 'Point 1', info: 'First key area' },
+                  { x: 70, y: 70, label: 'Point 2', info: 'Second key area' }
+                ]
+              }).run()}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 transition-colors text-left mb-1"
+            >
+              <ImageIcon className="w-4 h-4 text-red-600" />
+              <span className="text-sm font-medium text-gray-700">Interactive Image</span>
+            </button>
+            <button
+              onClick={() => editor.chain().focus().insertQASection().run()}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-teal-50 transition-colors text-left"
+            >
+              <HelpCircle className="w-4 h-4 text-teal-600" />
+              <span className="text-sm font-medium text-gray-700">Q&A Section</span>
+            </button>
+          </div>
+        </div>
 
         <div className="relative group">
           <MenuButton
