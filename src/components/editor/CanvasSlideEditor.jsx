@@ -11,11 +11,124 @@ import {
   Image as ImageIcon, Type, Square, Circle, Video, 
   Upload, Trash2, Copy, AlignLeft, AlignCenter, AlignRight,
   Bold, Italic, Underline, Palette, ZoomIn, ZoomOut,
-  Layers, Lock, Unlock, ChevronUp, ChevronDown, Music
+  Layers, Lock, Unlock, ChevronUp, ChevronDown, Music,
+  Triangle, Diamond, Star, ArrowRight, MessageSquare, StickyNote,
+  BarChart3, PieChart, LineChart, TrendingUp, Minus, Grid3x3,
+  FileText, Lightbulb, AlertCircle, CheckCircle, Sparkles
 } from 'lucide-react';
 
 const CANVAS_WIDTH = 1920;
 const CANVAS_HEIGHT = 1080;
+
+const CANVAS_TEMPLATES = [
+  {
+    name: 'Blank',
+    elements: []
+  },
+  {
+    name: 'Title Slide',
+    elements: [
+      { 
+        type: 'text', x: 100, y: 400, width: 1720, height: 150, 
+        content: 'Your Title Here', fontSize: 80, fontWeight: 'bold', 
+        textAlign: 'center', color: '#1F2937', backgroundColor: 'transparent', zIndex: 1 
+      },
+      { 
+        type: 'text', x: 100, y: 600, width: 1720, height: 80, 
+        content: 'Subtitle or tagline', fontSize: 40, fontWeight: 'normal', 
+        textAlign: 'center', color: '#6B7280', backgroundColor: 'transparent', zIndex: 2 
+      },
+      { 
+        type: 'shape', shape: 'rectangle', x: 60, y: 350, width: 1800, height: 400, 
+        fill: '#F3F4F6', stroke: '#E5E7EB', strokeWidth: 2, opacity: 0.5, zIndex: 0 
+      }
+    ]
+  },
+  {
+    name: 'Two Column',
+    elements: [
+      { 
+        type: 'text', x: 100, y: 80, width: 1720, height: 100, 
+        content: 'Section Title', fontSize: 60, fontWeight: 'bold', 
+        textAlign: 'center', color: '#1F2937', backgroundColor: 'transparent', zIndex: 1 
+      },
+      { 
+        type: 'card', cardType: 'default', x: 100, y: 250, width: 800, height: 700, 
+        content: 'Left column content', backgroundColor: '#F9FAFB', borderColor: '#E5E7EB', zIndex: 2 
+      },
+      { 
+        type: 'card', cardType: 'default', x: 1020, y: 250, width: 800, height: 700, 
+        content: 'Right column content', backgroundColor: '#F9FAFB', borderColor: '#E5E7EB', zIndex: 3 
+      }
+    ]
+  },
+  {
+    name: 'Image + Text',
+    elements: [
+      { 
+        type: 'image', x: 100, y: 150, width: 800, height: 800, 
+        src: 'https://via.placeholder.com/800x800/4F46E5/FFFFFF?text=Your+Image', 
+        objectFit: 'cover', zIndex: 1 
+      },
+      { 
+        type: 'text', x: 1000, y: 200, width: 800, height: 150, 
+        content: 'Key Point Title', fontSize: 48, fontWeight: 'bold', 
+        textAlign: 'left', color: '#1F2937', backgroundColor: 'transparent', zIndex: 2 
+      },
+      { 
+        type: 'text', x: 1000, y: 400, width: 800, height: 500, 
+        content: 'Description text goes here. Add your detailed explanation or key points.', 
+        fontSize: 28, fontWeight: 'normal', textAlign: 'left', color: '#4B5563', 
+        backgroundColor: 'transparent', zIndex: 3 
+      }
+    ]
+  },
+  {
+    name: 'Process Flow',
+    elements: [
+      { 
+        type: 'shape', shape: 'circle', x: 200, y: 400, width: 200, height: 200, 
+        fill: '#3B82F6', stroke: '#1E40AF', strokeWidth: 3, opacity: 1, zIndex: 1 
+      },
+      { 
+        type: 'shape', shape: 'arrow', x: 450, y: 475, width: 200, height: 50, 
+        fill: '#6B7280', stroke: '#374151', strokeWidth: 2, opacity: 1, zIndex: 2 
+      },
+      { 
+        type: 'shape', shape: 'circle', x: 700, y: 400, width: 200, height: 200, 
+        fill: '#10B981', stroke: '#059669', strokeWidth: 3, opacity: 1, zIndex: 3 
+      },
+      { 
+        type: 'shape', shape: 'arrow', x: 950, y: 475, width: 200, height: 50, 
+        fill: '#6B7280', stroke: '#374151', strokeWidth: 2, opacity: 1, zIndex: 4 
+      },
+      { 
+        type: 'shape', shape: 'circle', x: 1200, y: 400, width: 200, height: 200, 
+        fill: '#F59E0B', stroke: '#D97706', strokeWidth: 3, opacity: 1, zIndex: 5 
+      }
+    ]
+  },
+  {
+    name: 'Comparison',
+    elements: [
+      { 
+        type: 'text', x: 100, y: 100, width: 1720, height: 100, 
+        content: 'Comparison', fontSize: 60, fontWeight: 'bold', 
+        textAlign: 'center', color: '#1F2937', backgroundColor: 'transparent', zIndex: 1 
+      },
+      { 
+        type: 'card', cardType: 'success', x: 100, y: 300, width: 800, height: 650, 
+        content: 'Option A\n\n✓ Benefit 1\n✓ Benefit 2\n✓ Benefit 3', 
+        backgroundColor: '#D1FAE5', borderColor: '#10B981', zIndex: 2 
+      },
+      { 
+        type: 'card', cardType: 'info', x: 1020, y: 300, width: 800, height: 650, 
+        content: 'Option B\n\n✓ Feature 1\n✓ Feature 2\n✓ Feature 3', 
+        backgroundColor: '#DBEAFE', borderColor: '#3B82F6', zIndex: 3 
+      }
+    ]
+  }
+];
 
 export default function CanvasSlideEditor({ slide, onChange }) {
   const [elements, setElements] = useState(slide?.canvas_elements || []);
@@ -31,14 +144,14 @@ export default function CanvasSlideEditor({ slide, onChange }) {
     onChange({ ...slide, canvas_elements: newElements });
   };
 
-  const addElement = (type) => {
+  const addElement = (type, extraProps = {}) => {
     const newElement = {
       id: Date.now().toString(),
       type,
       x: 100,
       y: 100,
-      width: type === 'text' ? 300 : 400,
-      height: type === 'text' ? 60 : 300,
+      width: type === 'text' ? 300 : type === 'card' ? 500 : type === 'graph' ? 600 : 400,
+      height: type === 'text' ? 60 : type === 'card' ? 400 : type === 'graph' ? 400 : 300,
       zIndex: elements.length,
       locked: false,
       ...(type === 'text' && {
@@ -49,6 +162,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         textAlign: 'left',
         color: '#000000',
         backgroundColor: 'transparent',
+        textBoxType: 'default',
       }),
       ...(type === 'image' && {
         src: 'https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=Click+to+Upload',
@@ -65,9 +179,45 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         strokeWidth: 2,
         opacity: 1,
       }),
+      ...(type === 'card' && {
+        cardType: 'default',
+        content: 'Card content here',
+        backgroundColor: '#F9FAFB',
+        borderColor: '#E5E7EB',
+        borderWidth: 2,
+        padding: 20,
+      }),
+      ...(type === 'graph' && {
+        graphType: 'bar',
+        data: [
+          { label: 'A', value: 30 },
+          { label: 'B', value: 50 },
+          { label: 'C', value: 70 },
+          { label: 'D', value: 40 }
+        ],
+        primaryColor: '#3B82F6',
+        secondaryColor: '#93C5FD',
+      }),
+      ...(type === 'icon' && {
+        icon: 'star',
+        iconColor: '#F59E0B',
+        iconSize: 64,
+      }),
+      ...extraProps
     };
     updateElements([...elements, newElement]);
     setSelectedElement(newElement.id);
+  };
+
+  const applyTemplate = (template) => {
+    const templateElements = template.elements.map((el, idx) => ({
+      ...el,
+      id: `${Date.now()}-${idx}`,
+      locked: false
+    }));
+    updateElements(templateElements);
+    setSelectedElement(null);
+    toast.success(`Applied ${template.name} template`);
   };
 
   const updateElement = (id, updates) => {
@@ -185,7 +335,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
   return (
     <div className="flex h-full gap-4">
       {/* Toolbar */}
-      <Card className="w-20 p-3 flex flex-col gap-2">
+      <Card className="w-24 p-3 flex flex-col gap-2 overflow-y-auto">
         <Button
           variant="outline"
           size="icon"
@@ -225,6 +375,36 @@ export default function CanvasSlideEditor({ slide, onChange }) {
         >
           <Square className="w-5 h-5" />
           <span className="text-xs">Shape</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => addElement('card')}
+          title="Add Card"
+          className="h-14 w-full flex-col gap-1 p-2"
+        >
+          <StickyNote className="w-5 h-5" />
+          <span className="text-xs">Card</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => addElement('graph')}
+          title="Add Graph"
+          className="h-14 w-full flex-col gap-1 p-2"
+        >
+          <BarChart3 className="w-5 h-5" />
+          <span className="text-xs">Graph</span>
+        </Button>
+        <Button
+          variant="outline"
+          size="icon"
+          onClick={() => addElement('icon', { icon: 'star' })}
+          title="Add Icon"
+          className="h-14 w-full flex-col gap-1 p-2"
+        >
+          <Star className="w-5 h-5" />
+          <span className="text-xs">Icon</span>
         </Button>
         
         <div className="h-px bg-gray-200 my-2" />
@@ -383,7 +563,147 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                         }}
                       />
                     )}
+                    {element.shape === 'triangle' && (
+                      <div
+                        style={{
+                          width: 0,
+                          height: 0,
+                          borderLeft: `${element.width * zoom / 2}px solid transparent`,
+                          borderRight: `${element.width * zoom / 2}px solid transparent`,
+                          borderBottom: `${element.height * zoom}px solid ${element.fill}`,
+                          opacity: element.opacity,
+                        }}
+                      />
+                    )}
+                    {element.shape === 'diamond' && (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: '100%',
+                          backgroundColor: element.fill,
+                          border: `${element.strokeWidth}px solid ${element.stroke}`,
+                          transform: 'rotate(45deg)',
+                          opacity: element.opacity,
+                        }}
+                      />
+                    )}
+                    {element.shape === 'star' && (
+                      <div style={{ fontSize: element.height * zoom, opacity: element.opacity, color: element.fill }}>⭐</div>
+                    )}
+                    {element.shape === 'arrow' && (
+                      <div
+                        style={{
+                          width: '70%',
+                          height: '40%',
+                          backgroundColor: element.fill,
+                          position: 'relative',
+                          opacity: element.opacity,
+                        }}
+                      >
+                        <div
+                          style={{
+                            width: 0,
+                            height: 0,
+                            borderTop: `${element.height * zoom / 2}px solid transparent`,
+                            borderBottom: `${element.height * zoom / 2}px solid transparent`,
+                            borderLeft: `${element.width * zoom * 0.3}px solid ${element.fill}`,
+                            position: 'absolute',
+                            right: `-${element.width * zoom * 0.3}px`,
+                            top: `-${element.height * zoom * 0.3}px`,
+                          }}
+                        />
+                      </div>
+                    )}
+                    {element.shape === 'line' && (
+                      <div
+                        style={{
+                          width: '100%',
+                          height: `${element.strokeWidth}px`,
+                          backgroundColor: element.fill,
+                          opacity: element.opacity,
+                        }}
+                      />
+                    )}
                   </>
+                )}
+
+                {/* Card Element */}
+                {element.type === 'card' && (
+                  <div
+                    contentEditable={selectedElement === element.id && !element.locked}
+                    suppressContentEditableWarning
+                    onBlur={(e) => updateElement(element.id, { content: e.target.innerText })}
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: element.backgroundColor,
+                      border: `${element.borderWidth}px solid ${element.borderColor}`,
+                      borderRadius: element.cardType === 'rounded' ? '16px' : '8px',
+                      padding: element.padding * zoom,
+                      fontSize: 18 * zoom,
+                      color: '#1F2937',
+                      overflow: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      boxShadow: element.cardType === 'elevated' ? '0 4px 12px rgba(0,0,0,0.1)' : 'none',
+                    }}
+                    className="outline-none"
+                  >
+                    {element.content}
+                  </div>
+                )}
+
+                {/* Graph Element */}
+                {element.type === 'graph' && (
+                  <div
+                    style={{
+                      width: '100%',
+                      height: '100%',
+                      backgroundColor: 'white',
+                      border: '2px solid #E5E7EB',
+                      borderRadius: '8px',
+                      padding: 20 * zoom,
+                      display: 'flex',
+                      alignItems: 'flex-end',
+                      justifyContent: 'space-around',
+                    }}
+                  >
+                    {element.graphType === 'bar' && element.data.map((item, idx) => (
+                      <div key={idx} style={{ textAlign: 'center', flex: 1 }}>
+                        <div
+                          style={{
+                            height: `${(item.value / 100) * (element.height * zoom - 60)}px`,
+                            backgroundColor: element.primaryColor,
+                            margin: '0 5px',
+                            borderRadius: '4px 4px 0 0',
+                          }}
+                        />
+                        <div style={{ fontSize: 12 * zoom, marginTop: 5 * zoom }}>{item.label}</div>
+                      </div>
+                    ))}
+                    {element.graphType === 'line' && (
+                      <svg width="100%" height="100%" style={{ overflow: 'visible' }}>
+                        <polyline
+                          points={element.data.map((item, idx) => 
+                            `${(idx / (element.data.length - 1)) * element.width * zoom},${element.height * zoom - (item.value / 100) * element.height * zoom}`
+                          ).join(' ')}
+                          fill="none"
+                          stroke={element.primaryColor}
+                          strokeWidth={3}
+                        />
+                      </svg>
+                    )}
+                  </div>
+                )}
+
+                {/* Icon Element */}
+                {element.type === 'icon' && (
+                  <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', width: '100%', height: '100%' }}>
+                    {element.icon === 'star' && <Star style={{ width: element.iconSize * zoom, height: element.iconSize * zoom, color: element.iconColor }} />}
+                    {element.icon === 'lightbulb' && <Lightbulb style={{ width: element.iconSize * zoom, height: element.iconSize * zoom, color: element.iconColor }} />}
+                    {element.icon === 'alert' && <AlertCircle style={{ width: element.iconSize * zoom, height: element.iconSize * zoom, color: element.iconColor }} />}
+                    {element.icon === 'check' && <CheckCircle style={{ width: element.iconSize * zoom, height: element.iconSize * zoom, color: element.iconColor }} />}
+                    {element.icon === 'sparkles' && <Sparkles style={{ width: element.iconSize * zoom, height: element.iconSize * zoom, color: element.iconColor }} />}
+                  </div>
                 )}
 
                 {/* Selection Handles */}
@@ -403,6 +723,25 @@ export default function CanvasSlideEditor({ slide, onChange }) {
       {/* Properties Panel */}
       <Card className="w-80 p-4 overflow-y-auto">
         <div className="space-y-4">
+          {!selectedEl && (
+            <div className="mb-4">
+              <Label className="font-semibold mb-2 block">Canvas Templates</Label>
+              <div className="grid grid-cols-1 gap-2">
+                {CANVAS_TEMPLATES.map((template, idx) => (
+                  <Button
+                    key={idx}
+                    variant="outline"
+                    size="sm"
+                    onClick={() => applyTemplate(template)}
+                    className="justify-start"
+                  >
+                    <Grid3x3 className="w-4 h-4 mr-2" />
+                    {template.name}
+                  </Button>
+                ))}
+              </div>
+            </div>
+          )}
           {selectedEl ? (
             <>
               <div>
@@ -421,6 +760,35 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                 <TabsContent value="style" className="space-y-4 mt-4">
                   {selectedEl.type === 'text' && (
                     <>
+                      <div>
+                        <Label>Text Box Type</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['default', 'heading', 'subtitle', 'callout'].map(type => (
+                            <Button
+                              key={type}
+                              variant={selectedEl.textBoxType === type ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => {
+                                const updates = { textBoxType: type };
+                                if (type === 'heading') {
+                                  updates.fontSize = 60;
+                                  updates.fontWeight = 'bold';
+                                } else if (type === 'subtitle') {
+                                  updates.fontSize = 36;
+                                  updates.color = '#6B7280';
+                                } else if (type === 'callout') {
+                                  updates.backgroundColor = '#FEF3C7';
+                                  updates.fontSize = 28;
+                                }
+                                updateElement(selectedEl.id, updates);
+                              }}
+                            >
+                              {type}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
                       <div>
                         <Label>Font Size</Label>
                         <Slider
@@ -519,29 +887,81 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                         <div className="grid grid-cols-2 gap-2 mt-2">
                           <Button
                             variant={selectedEl.shape === 'rectangle' ? 'default' : 'outline'}
+                            size="sm"
                             onClick={() => updateElement(selectedEl.id, { shape: 'rectangle' })}
                           >
-                            <Square className="w-4 h-4 mr-2" />
-                            Rectangle
+                            <Square className="w-4 h-4 mr-1" />
+                            Rect
                           </Button>
                           <Button
                             variant={selectedEl.shape === 'circle' ? 'default' : 'outline'}
+                            size="sm"
                             onClick={() => updateElement(selectedEl.id, { shape: 'circle' })}
                           >
-                            <Circle className="w-4 h-4 mr-2" />
+                            <Circle className="w-4 h-4 mr-1" />
                             Circle
+                          </Button>
+                          <Button
+                            variant={selectedEl.shape === 'triangle' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { shape: 'triangle' })}
+                          >
+                            <Triangle className="w-4 h-4 mr-1" />
+                            Triangle
+                          </Button>
+                          <Button
+                            variant={selectedEl.shape === 'diamond' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { shape: 'diamond' })}
+                          >
+                            <Diamond className="w-4 h-4 mr-1" />
+                            Diamond
+                          </Button>
+                          <Button
+                            variant={selectedEl.shape === 'star' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { shape: 'star' })}
+                          >
+                            <Star className="w-4 h-4 mr-1" />
+                            Star
+                          </Button>
+                          <Button
+                            variant={selectedEl.shape === 'arrow' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { shape: 'arrow' })}
+                          >
+                            <ArrowRight className="w-4 h-4 mr-1" />
+                            Arrow
+                          </Button>
+                          <Button
+                            variant={selectedEl.shape === 'line' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { shape: 'line' })}
+                          >
+                            <Minus className="w-4 h-4 mr-1" />
+                            Line
                           </Button>
                         </div>
                       </div>
 
                       <div>
                         <Label>Fill Color</Label>
-                        <input
-                          type="color"
-                          value={selectedEl.fill}
-                          onChange={(e) => updateElement(selectedEl.id, { fill: e.target.value })}
-                          className="h-10 w-full mt-2"
-                        />
+                        <div className="flex gap-2 mt-2">
+                          <input
+                            type="color"
+                            value={selectedEl.fill}
+                            onChange={(e) => updateElement(selectedEl.id, { fill: e.target.value })}
+                            className="h-10 flex-1"
+                          />
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { fill: 'transparent', strokeWidth: Math.max(2, selectedEl.strokeWidth) })}
+                            title="Make transparent"
+                          >
+                            Clear
+                          </Button>
+                        </div>
                       </div>
 
                       <div>
@@ -576,6 +996,143 @@ export default function CanvasSlideEditor({ slide, onChange }) {
                           step={1}
                           className="mt-2"
                         />
+                        <span className="text-xs text-gray-500">{Math.round(selectedEl.opacity * 100)}%</span>
+                      </div>
+                    </>
+                  )}
+
+                  {selectedEl.type === 'card' && (
+                    <>
+                      <div>
+                        <Label>Card Type</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          {['default', 'success', 'info', 'warning', 'rounded', 'elevated'].map(type => (
+                            <Button
+                              key={type}
+                              variant={selectedEl.cardType === type ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => {
+                                const updates = { cardType: type };
+                                if (type === 'success') {
+                                  updates.backgroundColor = '#D1FAE5';
+                                  updates.borderColor = '#10B981';
+                                } else if (type === 'info') {
+                                  updates.backgroundColor = '#DBEAFE';
+                                  updates.borderColor = '#3B82F6';
+                                } else if (type === 'warning') {
+                                  updates.backgroundColor = '#FEF3C7';
+                                  updates.borderColor = '#F59E0B';
+                                }
+                                updateElement(selectedEl.id, updates);
+                              }}
+                            >
+                              {type}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Background Color</Label>
+                        <input
+                          type="color"
+                          value={selectedEl.backgroundColor}
+                          onChange={(e) => updateElement(selectedEl.id, { backgroundColor: e.target.value })}
+                          className="h-10 w-full mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Border Color</Label>
+                        <input
+                          type="color"
+                          value={selectedEl.borderColor}
+                          onChange={(e) => updateElement(selectedEl.id, { borderColor: e.target.value })}
+                          className="h-10 w-full mt-2"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {selectedEl.type === 'graph' && (
+                    <>
+                      <div>
+                        <Label>Graph Type</Label>
+                        <div className="grid grid-cols-2 gap-2 mt-2">
+                          <Button
+                            variant={selectedEl.graphType === 'bar' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { graphType: 'bar' })}
+                          >
+                            <BarChart3 className="w-4 h-4 mr-1" />
+                            Bar
+                          </Button>
+                          <Button
+                            variant={selectedEl.graphType === 'line' ? 'default' : 'outline'}
+                            size="sm"
+                            onClick={() => updateElement(selectedEl.id, { graphType: 'line' })}
+                          >
+                            <LineChart className="w-4 h-4 mr-1" />
+                            Line
+                          </Button>
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Primary Color</Label>
+                        <input
+                          type="color"
+                          value={selectedEl.primaryColor}
+                          onChange={(e) => updateElement(selectedEl.id, { primaryColor: e.target.value })}
+                          className="h-10 w-full mt-2"
+                        />
+                      </div>
+                    </>
+                  )}
+
+                  {selectedEl.type === 'icon' && (
+                    <>
+                      <div>
+                        <Label>Icon</Label>
+                        <div className="grid grid-cols-3 gap-2 mt-2">
+                          {['star', 'lightbulb', 'alert', 'check', 'sparkles'].map(icon => (
+                            <Button
+                              key={icon}
+                              variant={selectedEl.icon === icon ? 'default' : 'outline'}
+                              size="sm"
+                              onClick={() => updateElement(selectedEl.id, { icon })}
+                            >
+                              {icon === 'star' && <Star className="w-4 h-4" />}
+                              {icon === 'lightbulb' && <Lightbulb className="w-4 h-4" />}
+                              {icon === 'alert' && <AlertCircle className="w-4 h-4" />}
+                              {icon === 'check' && <CheckCircle className="w-4 h-4" />}
+                              {icon === 'sparkles' && <Sparkles className="w-4 h-4" />}
+                            </Button>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div>
+                        <Label>Icon Color</Label>
+                        <input
+                          type="color"
+                          value={selectedEl.iconColor}
+                          onChange={(e) => updateElement(selectedEl.id, { iconColor: e.target.value })}
+                          className="h-10 w-full mt-2"
+                        />
+                      </div>
+
+                      <div>
+                        <Label>Icon Size</Label>
+                        <Slider
+                          value={[selectedEl.iconSize]}
+                          onValueChange={([value]) => updateElement(selectedEl.id, { iconSize: value })}
+                          min={24}
+                          max={200}
+                          step={4}
+                          className="mt-2"
+                        />
+                        <span className="text-xs text-gray-500">{selectedEl.iconSize}px</span>
                       </div>
                     </>
                   )}
