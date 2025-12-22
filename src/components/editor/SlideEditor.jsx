@@ -451,6 +451,19 @@ Format as a simple bulleted list.`,
           <Button
             variant="outline"
             size="sm"
+            onClick={() => {
+              setAiAction('generate');
+              setAiPrompt('');
+              setShowAIDialog(true);
+            }}
+            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+          >
+            <Sparkles className="w-4 h-4 mr-2" />
+            AI Assistant
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
             onClick={() => setFullscreenEdit(!fullscreenEdit)}
           >
             <Maximize2 className="w-4 h-4 mr-2" />
