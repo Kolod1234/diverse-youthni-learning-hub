@@ -145,11 +145,13 @@ IMPORTANT: Return the exact JSON structure specified in the schema with all requ
                     options: { type: "array", items: { type: "string" } },
                     correct_answer: { type: "number" },
                     explanation: { type: "string" }
-                  }
+                  },
+                  required: ["question", "options", "correct_answer"]
                 }
               },
               assessment_criteria: { type: "string" }
-            }
+            },
+            required: ["title", "questions"]
           }
         });
 
