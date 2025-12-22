@@ -7,7 +7,7 @@ import { base44 } from '@/api/base44Client';
 import { 
   Brain, Loader2, CheckCircle, AlertCircle, 
   BookOpen, Target, Link as LinkIcon, Lightbulb,
-  TrendingUp, X
+  TrendingUp, X, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -118,6 +118,73 @@ Provide analysis in the following JSON format:
       console.error(error);
     } finally {
       setAnalyzing(false);
+    }
+  };
+
+  const applyImprovements = async () => {
+    setImproving(true);
+    try {
+      const textContent = lesson.slides?.map(slide => {
+        const plainText = slide.content?.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
+        return `${slide.title || ''}\n${plainText}`;
+      }).join('\n\n') || lesson.description || '';
+
+      const improvementPrompt = `You are an expert educational content creator. Improve this lesson content based on the following analysis:
+
+LESSON TITLE: ${lesson.title}
+CURRENT CONTENT:
+${textContent.substring(0, 3000)}
+
+AREAS FOR IMPROVEMENT:
+${analysis.areas_for_improvement?.map((area, i) => `${i + 1}. ${area}`).join('\n')}
+
+READABILITY IMPROVEMENTS:
+${analysis.readability?.improvements?.map((imp, i) => `${i + 1}. ${imp}`).join('\n')}
+
+Your task:
+1. Add interactive elements (polls, quizzes, Q&A sections, interactive images with hotspots)
+2. Expand explanations for complex concepts with detailed examples, analogies, and real-world applications
+3. Add visual elements using <img> tags with descriptive placeholder URLs
+4. Include colorful info boxes using the card system for definitions, key points, warnings, examples, and tips
+5. Add diagrams, charts, and tables where appropriate
+6. Include summary sections and key takeaways
+7. Make content more engaging and student-friendly
+
+Return ONLY valid JSON with this structure:
+{
+  "improved_slides": [
+    {
+      "title": "Slide title",
+      "content": "Enhanced HTML content with inline styles, interactive elements, detailed explanations, visual aids, and card elements"
+    }
+  ],
+  "improvement_summary": "Brief summary of what was improved (one sentence)"
+}`;
+
+      const response = await base44.functions.invoke('generateWithGemini', {
+        prompt: improvementPrompt,
+        type: 'improvement'
+      });
+
+      if (!response.data?.success) {
+        throw new Error('Failed to generate improvements');
+      }
+
+      const result = response.data.result;
+      
+      await base44.entities.Lesson.update(lesson.id, {
+        slides: result.improved_slides.map((slide, idx) => ({
+          ...slide,
+          order: idx + 1
+        }))
+      });
+
+      toast.success('✨ ' + result.improvement_summary);
+      onClose();
+    } catch (error) {
+      toast.error('Failed to apply improvements: ' + error.message);
+    } finally {
+      setImproving(false);
     }
   };
 
@@ -237,11 +304,31 @@ Provide analysis in the following JSON format:
                         <TrendingUp className="w-4 h-4 text-orange-600" />
                         Areas for Improvement
                       </h4>
-                      <ul className="space-y-1">
+                      <ul className="space-y-1 mb-3">
                         {analysis.areas_for_improvement?.map((area, idx) => (
                           <li key={idx} className="text-sm text-gray-700">• {area}</li>
                         ))}
                       </ul>
+                      {analysis.areas_for_improvement?.length > 0 && (
+                        <Button
+                          onClick={applyImprovements}
+                          disabled={improving}
+                          size="sm"
+                          className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 mt-2"
+                        >
+                          {improving ? (
+                            <>
+                              <Loader2 className="w-3 h-3 mr-2 animate-spin" />
+                              Fixing...
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-3 h-3 mr-2" />
+                              Fix All
+                            </>
+                          )}
+                        </Button>
+                      )}
                     </div>
                   </div>
                 </Card>
