@@ -268,9 +268,8 @@ Return JSON format.`,
           </div>
         </div>
 
-        <div className="flex-1 overflow-hidden">
-          <ScrollArea className="h-full">
-            <div className="p-6">
+        <div className="flex-1 overflow-y-auto">
+          <div className="p-6">
               {!generatedContent ? (
                 <div className="space-y-6 max-w-3xl mx-auto">
               <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
@@ -413,17 +412,18 @@ Return JSON format.`,
               <Button
                 onClick={generateContent}
                 disabled={generating || !topic.trim()}
-                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 h-12"
+                size="lg"
+                className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 h-14 text-base font-semibold shadow-lg"
               >
                 {generating ? (
                   <>
                     <Loader2 className="w-5 h-5 mr-2 animate-spin" />
-                    Generating...
+                    Generating Content...
                   </>
                 ) : (
                   <>
                     <Wand2 className="w-5 h-5 mr-2" />
-                    Generate AI Content
+                    Generate Lesson Content
                   </>
                 )}
               </Button>
@@ -647,8 +647,7 @@ Return JSON format.`,
               </div>
             </div>
           )}
-            </div>
-          </ScrollArea>
+          </div>
         </div>
 
         {/* Footer */}
