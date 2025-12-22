@@ -918,6 +918,18 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           .rich-text-editor-wrapper .ProseMirror:focus {
             outline: none;
           }
+
+          .rich-text-editor-wrapper .ProseMirror {
+            caret-color: #4F46E5;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror::selection {
+            background-color: #C7D2FE;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror::-moz-selection {
+            background-color: #C7D2FE;
+          }
           
           .rich-text-editor-wrapper .ProseMirror p.is-editor-empty:first-child::before {
             content: attr(placeholder);
@@ -1338,7 +1350,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           >
             <Zap className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[240px]">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block hover:block z-50 min-w-[240px]">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Interactive Elements</p>
             <button
               onClick={() => editor.chain().focus().insertPoll({ 
@@ -1426,7 +1438,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           >
             <Square className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block hover:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
