@@ -907,11 +907,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           
           .rich-text-editor-wrapper .ProseMirror img {
             max-width: 100%;
+            width: auto;
+            min-width: 200px;
             height: auto;
             border-radius: 4px;
             margin: 8px 0;
             display: block !important;
             object-fit: contain;
+            cursor: pointer;
           }
           
           .rich-text-editor-wrapper .ProseMirror h1,
