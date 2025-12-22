@@ -250,7 +250,7 @@ export default function SlideEditor({ slides = [], onChange }) {
                 Add Slide
               </Button>
             </DropdownMenuTrigger>
-            <DropdownMenuContent align="end" className="w-64">
+            <DropdownMenuContent align="end" className="w-64 max-h-[500px] overflow-y-auto">
               {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
                 <DropdownMenuItem 
                   key={key}
