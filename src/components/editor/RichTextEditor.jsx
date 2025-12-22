@@ -734,6 +734,28 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           class: 'max-w-full h-auto rounded cursor-pointer',
           style: 'display: block; margin: 8px 0;',
         },
+      }).extend({
+        addAttributes() {
+          return {
+            ...this.parent?.(),
+            width: {
+              default: null,
+              parseHTML: element => element.getAttribute('width'),
+              renderHTML: attributes => {
+                if (!attributes.width) return {};
+                return { width: attributes.width };
+              },
+            },
+            height: {
+              default: null,
+              parseHTML: element => element.getAttribute('height'),
+              renderHTML: attributes => {
+                if (!attributes.height) return {};
+                return { height: attributes.height };
+              },
+            },
+          };
+        },
       }),
       Link.configure({
         openOnClick: false,
@@ -907,9 +929,6 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           
           .rich-text-editor-wrapper .ProseMirror img {
             max-width: 100%;
-            width: 100%;
-            height: auto;
-            min-height: 300px;
             border-radius: 12px;
             margin: 8px 0;
             display: block !important;
@@ -918,10 +937,15 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             box-shadow: 0 4px 12px rgba(0,0,0,0.1);
           }
           
-          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] img {
+          .rich-text-editor-wrapper .ProseMirror img:not([width]):not([height]) {
+            width: 100%;
+            height: auto;
+            min-height: 300px;
+          }
+          
+          .rich-text-editor-wrapper .ProseMirror div[data-card-grid] img:not([width]):not([height]) {
             width: 100%;
             height: 400px;
-            object-fit: cover;
           }
           
           .rich-text-editor-wrapper .ProseMirror h1,
@@ -1258,6 +1282,49 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         >
           <ImageIcon className="w-4 h-4" />
         </MenuButton>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        {editor.isActive('image') && (
+          <>
+            <input
+              type="number"
+              placeholder="Width"
+              className="h-8 w-20 px-2 text-sm border border-gray-300 rounded"
+              value={editor.getAttributes('image').width || ''}
+              onChange={(e) => {
+                const width = e.target.value;
+                if (width) {
+                  editor.chain().focus().updateAttributes('image', { width: width + 'px' }).run();
+                } else {
+                  editor.chain().focus().updateAttributes('image', { width: null }).run();
+                }
+              }}
+            />
+            <input
+              type="number"
+              placeholder="Height"
+              className="h-8 w-20 px-2 text-sm border border-gray-300 rounded"
+              value={editor.getAttributes('image').height || ''}
+              onChange={(e) => {
+                const height = e.target.value;
+                if (height) {
+                  editor.chain().focus().updateAttributes('image', { height: height + 'px' }).run();
+                } else {
+                  editor.chain().focus().updateAttributes('image', { height: null }).run();
+                }
+              }}
+            />
+            <button
+              onClick={() => editor.chain().focus().updateAttributes('image', { width: null, height: null }).run()}
+              className="h-8 px-2 text-xs border border-gray-300 rounded hover:bg-gray-100"
+              title="Reset size"
+            >
+              Reset
+            </button>
+            <div className="w-px h-6 bg-gray-300 mx-1" />
+          </>
+        )}
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
