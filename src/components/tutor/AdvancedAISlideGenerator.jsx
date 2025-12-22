@@ -140,16 +140,27 @@ Return ONLY valid JSON with this structure:
         type: 'slides'
       });
 
+      console.log('Full Manus API response:', slidesResponse);
+      console.log('Response data:', slidesResponse.data);
+
       if (!slidesResponse.data?.success) {
-        throw new Error(slidesResponse.data?.error || 'Failed to generate slides with Gemini');
+        throw new Error(slidesResponse.data?.error || 'Failed to generate slides with Manus');
       }
 
       const slidesResult = slidesResponse.data.result;
+      console.log('Slides result from Manus:', slidesResult);
+      
       const slides = slidesResult?.slides || [];
+      console.log('Extracted slides array:', slides);
+      console.log('Number of slides extracted:', slides.length);
       
       if (!slides || slides.length === 0) {
         throw new Error('No slides were generated. Please try again with a different topic or instructions.');
       }
+      
+      // Log first and last slide to verify
+      console.log('First slide:', slides[0]);
+      console.log('Last slide:', slides[slides.length - 1]);
       
       // Step 2: Generate quiz if requested with Gemini
       let quiz = null;
