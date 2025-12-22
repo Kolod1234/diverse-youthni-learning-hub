@@ -316,7 +316,10 @@ Return ONLY valid JSON:
         });
       }
 
-      toast.success('Lesson and quiz saved!');
+      console.log('Lesson saved successfully:', lesson);
+      toast.success(`✓ Saved "${topic}" with ${generatedContent.slides.length} slides to "${finalSection || 'General'}" section!`, {
+        duration: 5000
+      });
       onSlidesGenerated?.();
       onClose?.();
     } catch (error) {
