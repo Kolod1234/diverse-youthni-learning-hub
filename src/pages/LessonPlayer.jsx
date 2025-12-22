@@ -417,7 +417,7 @@ export default function LessonPlayer() {
                       {currentLesson.slides[currentSlideIndex]?.title}
                     </h2>
                     <div 
-                      className="prose prose-lg max-w-none text-gray-700"
+                      className="max-w-none"
                       dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
                     />
                   </div>
