@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
@@ -155,7 +155,11 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showPresentation, setShowPresentation] = useState(false);
 
   const addSlide = (template = 'blank') => {
-    const templateData = SLIDE_TEMPLATES[template];
+    const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
+    if (!templateData) {
+      toast.error('Template not found');
+      return;
+    }
     const newSlides = [
       ...slides,
       {
@@ -760,8 +764,36 @@ Format as a simple bulleted list.`,
                             <span className="text-xs font-medium text-center leading-tight text-gray-700">{template.name}</span>
                           </Button>
                         ))}
+                        
+                        {Object.entries(customTemplates).map(([key, template]) => (
+                          <Button
+                            key={key}
+                            variant="outline"
+                            onClick={() => {
+                              updateSlide(currentSlide, 'content', template.content);
+                              toast.success(`${template.name} applied!`);
+                            }}
+                            className="h-24 bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-300 hover:border-green-400 hover:shadow-md transition-all flex-col gap-2 p-3 relative"
+                          >
+                            <span className="text-3xl">{template.icon}</span>
+                            <span className="text-xs font-medium text-center leading-tight text-gray-700">{template.name}</span>
+                            <span className="absolute top-1 right-1 text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded-full font-semibold">MY</span>
+                          </Button>
+                        ))}
                       </div>
-                      <p className="text-xs text-indigo-700 mt-3">💡 Click any template to instantly apply it to this slide</p>
+                      <div className="flex items-center justify-between mt-3">
+                        <p className="text-xs text-indigo-700">💡 Click any template to instantly apply it to this slide</p>
+                        {Object.keys(customTemplates).length > 0 && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => setShowManageTemplates(true)}
+                            className="text-xs h-7"
+                          >
+                            Manage My Templates ({Object.keys(customTemplates).length})
+                          </Button>
+                        )}
+                      </div>
                     </div>
 
                     <div>
@@ -958,6 +990,99 @@ Format as a simple bulleted list.`,
                 >
                   {aiAction === 'images' ? 'Close' : 'Cancel'}
                 </Button>
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* Manage Templates Modal */}
+        {showManageTemplates && (
+          <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowManageTemplates(false)}>
+            <div className="bg-white rounded-2xl p-6 w-[600px] max-h-[80vh] overflow-y-auto shadow-xl" onClick={(e) => e.stopPropagation()}>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="text-xl font-bold">My Custom Templates</h3>
+                <Button variant="ghost" size="sm" onClick={() => setShowManageTemplates(false)}>
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+              
+              {Object.keys(customTemplates).length === 0 ? (
+                <div className="text-center py-12">
+                  <LayoutTemplate className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                  <p className="text-gray-500 mb-2">No custom templates yet</p>
+                  <p className="text-sm text-gray-400">Create a slide you like and save it as a template</p>
+                </div>
+              ) : (
+                <div className="space-y-3">
+                  {Object.entries(customTemplates).map(([key, template]) => (
+                    <Card key={key} className="p-4 hover:shadow-md transition-shadow">
+                      <div className="flex items-start gap-4">
+                        <div className="w-16 h-16 rounded-lg bg-gradient-to-br from-green-100 to-emerald-100 flex items-center justify-center flex-shrink-0 border-2 border-green-200">
+                          <span className="text-3xl">{template.icon}</span>
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <h4 className="font-semibold text-gray-900 mb-1">{template.name}</h4>
+                          <div 
+                            className="text-xs text-gray-500 line-clamp-2 mb-2"
+                            dangerouslySetInnerHTML={{ 
+                              __html: template.content?.replace(/<[^>]*>/g, ' ').substring(0, 120) + '...' 
+                            }}
+                          />
+                          <div className="flex gap-2">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                updateSlide(currentSlide, 'content', template.content);
+                                toast.success(`${template.name} applied!`);
+                                setShowManageTemplates(false);
+                              }}
+                              className="h-7 text-xs"
+                            >
+                              Apply to Current Slide
+                            </Button>
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => {
+                                addSlide(key);
+                                setShowManageTemplates(false);
+                              }}
+                              className="h-7 text-xs"
+                            >
+                              <Plus className="w-3 h-3 mr-1" />
+                              Add New Slide
+                            </Button>
+                          </div>
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm(`Delete template "${template.name}"?`)) {
+                              deleteCustomTemplate(key);
+                            }
+                          }}
+                          className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </Button>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              )}
+              
+              <div className="mt-6 p-4 bg-green-50 border border-green-200 rounded-lg">
+                <div className="flex gap-3">
+                  <div className="w-10 h-10 rounded-lg bg-green-100 flex items-center justify-center flex-shrink-0">
+                    <Save className="w-5 h-5 text-green-700" />
+                  </div>
+                  <div>
+                    <p className="font-medium text-green-900 mb-1">How to create templates</p>
+                    <p className="text-sm text-green-700">Design a slide you like, then click "Save as Template" to reuse it anytime!</p>
+                  </div>
+                </div>
               </div>
             </div>
           </div>
