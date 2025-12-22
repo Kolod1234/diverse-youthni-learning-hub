@@ -5,8 +5,9 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2 } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
+import PresentationMode from '@/components/editor/PresentationMode';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -149,6 +150,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [aiAction, setAiAction] = useState('generate'); // 'generate', 'rewrite', 'images'
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
+  const [showPresentation, setShowPresentation] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template];
@@ -448,6 +450,15 @@ Format as a simple bulleted list.`,
           </div>
         </div>
         <div className="flex items-center gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowPresentation(true)}
+            className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+          >
+            <Presentation className="w-4 h-4 mr-2" />
+            Present
+          </Button>
           <Button
             variant="outline"
             size="sm"
@@ -917,6 +928,14 @@ Format as a simple bulleted list.`,
               </div>
             </div>
           </div>
+        )}
+
+        {/* Presentation Mode */}
+        {showPresentation && (
+          <PresentationMode 
+            slides={slides}
+            onClose={() => setShowPresentation(false)}
+          />
         )}
         </div>
         );
