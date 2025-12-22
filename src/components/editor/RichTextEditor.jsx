@@ -67,6 +67,10 @@ const Card = Node.create({
       key: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #78350F; border: 1px solid #FCD34D;',
       note: 'background: linear-gradient(135deg, #F3E8FF 0%, #E9D5FF 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #581C87; border: 1px solid #D8B4FE;',
       warning: 'background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #7F1D1D; border: 1px solid #FCA5A5;',
+      example: 'background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #064E3B; border: 1px solid #6EE7B7;',
+      important: 'background: linear-gradient(135deg, #FED7AA 0%, #FDBA74 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #7C2D12; border: 1px solid #FB923C;',
+      tip: 'background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #164E63; border: 1px solid #67E8F9;',
+      summary: 'background: linear-gradient(135deg, #DDD6FE 0%, #C4B5FD 100%); border-radius: 16px; padding: 24px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); color: #4C1D95; border: 1px solid #A78BFA;',
     };
 
     return [
@@ -633,7 +637,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           >
             <Square className="w-4 h-4" />
           </MenuButton>
-          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[280px]">
+          <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border border-gray-200 p-3 hidden group-hover:block z-50 min-w-[280px] max-h-[500px] overflow-y-auto">
             <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Types</p>
             <div className="grid grid-cols-2 gap-2 mb-3">
               <button
@@ -678,7 +682,35 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                 <Square className="w-5 h-5 text-gray-600" />
                 <span className="text-xs font-medium text-gray-900">Diagram</span>
               </button>
-            </div>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'example' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-teal-50 hover:bg-teal-100 transition-colors text-left"
+              >
+                <CheckCircle2 className="w-5 h-5 text-teal-600" />
+                <span className="text-xs font-medium text-teal-900">Example</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'important' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-orange-50 hover:bg-orange-100 transition-colors text-left"
+              >
+                <AlertTriangle className="w-5 h-5 text-orange-600" />
+                <span className="text-xs font-medium text-orange-900">Important</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'tip' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-cyan-50 hover:bg-cyan-100 transition-colors text-left"
+              >
+                <Lightbulb className="w-5 h-5 text-cyan-600" />
+                <span className="text-xs font-medium text-cyan-900">Tip</span>
+              </button>
+              <button
+                onClick={() => editor.chain().focus().setCard({ type: 'summary' }).run()}
+                className="flex flex-col items-center gap-1 p-3 rounded-lg bg-violet-50 hover:bg-violet-100 transition-colors text-left"
+              >
+                <Info className="w-5 h-5 text-violet-600" />
+                <span className="text-xs font-medium text-violet-900">Summary</span>
+              </button>
+              </div>
             <div className="border-t pt-3">
               <p className="text-xs font-semibold text-gray-600 uppercase mb-2">Card Layouts</p>
               <button
