@@ -122,7 +122,7 @@ export default function Dashboard() {
             <div className="grid lg:grid-cols-3 gap-8">
               {/* Main Content */}
               <div className="lg:col-span-2 space-y-6">
-              <Tabs defaultValue="in-progress" className="w-full">
+                <Tabs defaultValue="in-progress" className="w-full">
                 <TabsList className="bg-white border border-gray-200 p-1 rounded-xl">
                   <TabsTrigger 
                     value="in-progress" 
@@ -194,11 +194,11 @@ export default function Dashboard() {
                     </div>
                   )}
                 </TabsContent>
-              </Tabs>
-            </div>
+                </Tabs>
+              </div>
 
-            {/* Sidebar */}
-            <div className="space-y-6">
+              {/* Sidebar */}
+              <div className="space-y-6">
               {/* Quick Progress Widget */}
               <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
 
