@@ -1112,33 +1112,7 @@ export default function LessonPlayer() {
                 />
               </div>
 
-              {/* Scroll Control Buttons - Up/Down */}
-              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3">
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const element = document.getElementById('slideContent');
-                    if (element) {
-                      element.scrollTop -= 200;
-                    }
-                  }}
-                  className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
-                >
-                  <ChevronLeft className="w-8 h-8 rotate-90" />
-                </button>
-                <button
-                  onClick={(e) => {
-                    e.preventDefault();
-                    const element = document.getElementById('slideContent');
-                    if (element) {
-                      element.scrollTop += 200;
-                    }
-                  }}
-                  className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
-                >
-                  <ChevronRight className="w-8 h-8 rotate-90" />
-                </button>
-              </div>
+
 
               {/* Navigation Arrows - Left/Right - Hidden, use keyboard instead */}
               <div className="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-3 py-2 rounded-lg flex items-center gap-2">
