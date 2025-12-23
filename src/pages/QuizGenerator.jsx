@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, List, BookOpen, ArrowLeft, Sparkles } from 'lucide-react';
+import { Brain, List, BookOpen, ArrowLeft, Sparkles, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import QuizBuilder from '@/components/quiz/QuizBuilder';
