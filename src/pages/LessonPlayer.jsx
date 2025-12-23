@@ -982,7 +982,7 @@ export default function LessonPlayer() {
           </div>
 
           {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-2 pb-0">
+          <div className="flex-1 flex items-center justify-center relative p-4">
             <style>{`
               .slide-scroller::-webkit-scrollbar {
                 width: 16px;
@@ -1005,58 +1005,71 @@ export default function LessonPlayer() {
                 background: #e5e7eb;
               }
             `}</style>
-            <div id="slideContent" className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-auto slide-scroller">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
+            <div 
+              id="slideContent" 
+              className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-full p-8 md:p-12 overflow-auto slide-scroller"
+            >
+              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
               <div 
-                className="prose prose-lg max-w-none"
+                className="prose prose-sm md:prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
               />
             </div>
 
             {/* Scroll Control Buttons - Up/Down */}
-            <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4" style={{ zIndex: 9999 }}>
+            <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
               <button
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   const element = document.getElementById('slideContent');
                   if (element) {
-                    element.scrollBy({ top: -300, behavior: 'smooth' });
+                    element.scrollTop = Math.max(0, element.scrollTop - 300);
                   }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
+                className="w-12 h-12 md:w-16 md:h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-2 md:ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
               >
-                <ChevronLeft className="w-10 h-10 rotate-90" />
+                <ChevronLeft className="w-6 h-6 md:w-10 md:h-10 rotate-90" />
               </button>
               <button
                 onClick={(e) => {
+                  e.preventDefault();
                   e.stopPropagation();
                   const element = document.getElementById('slideContent');
                   if (element) {
-                    element.scrollBy({ top: 300, behavior: 'smooth' });
+                    element.scrollTop = element.scrollTop + 300;
                   }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
+                className="w-12 h-12 md:w-16 md:h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-2 md:ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
               >
-                <ChevronRight className="w-10 h-10 rotate-90" />
+                <ChevronRight className="w-6 h-6 md:w-10 md:h-10 rotate-90" />
               </button>
             </div>
 
             {/* Navigation Arrows - Left/Right */}
             <button
-              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+              }}
               disabled={currentSlideIndex === 0}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
+              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-50 cursor-pointer"
             >
-              <ChevronLeft className="w-8 h-8" />
+              <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
             </button>
             <button
-              onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
+              }}
               disabled={currentSlideIndex === currentLesson.slides.length - 1}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
+              className="absolute left-16 md:left-24 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-50 cursor-pointer"
             >
-              <ChevronRight className="w-8 h-8" />
+              <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
             </button>
           </div>
 
