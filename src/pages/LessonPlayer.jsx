@@ -1043,6 +1043,6 @@ export default function LessonPlayer() {
           </div>
         </div>
       )}
-      </div>
-      );
-      }
+    </div>
+  );
+}
