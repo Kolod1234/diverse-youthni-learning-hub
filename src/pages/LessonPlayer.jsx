@@ -704,9 +704,10 @@ export default function LessonPlayer() {
                   <p className="text-xs text-gray-500 truncate leading-tight mt-0.5">{currentLesson.section || 'Getting Started'}</p>
                 </div>
               </div>
-          
-          {/* Action Buttons - Below on Mobile, Inline on Desktop */}
-          <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100">
+            </div>
+            
+            {/* Action Buttons - Below on Mobile, Inline on Desktop */}
+            <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100">
             {currentLesson.slides?.length > 0 && !liveSession && (
               <>
                 <Button
@@ -830,19 +831,11 @@ export default function LessonPlayer() {
             >
               <StickyNote className="w-4 h-4" />
             </Button>
-            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="icon">
-                <X className="w-5 h-5" />
-              </Button>
-            </Link>
-          </div>
-
-          <div className="flex items-center gap-1 shrink-0">
-            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
-              </Button>
-            </Link>
+              <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+                <Button variant="ghost" size="icon">
+                  <X className="w-5 h-5" />
+                </Button>
+              </Link>
             </div>
           </header>
 
