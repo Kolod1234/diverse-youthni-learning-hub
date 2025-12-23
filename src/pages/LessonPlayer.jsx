@@ -952,14 +952,13 @@ export default function LessonPlayer() {
         </div>
       )}
 
-      {/* Presentation Mode */}
-      {presentationMode && currentLesson.slides?.length > 0 && (
+      {/* Presentation Mode - Google Slides */}
+      {presentationMode && currentLesson.google_slides_url && (
         <div className="fixed inset-0 bg-black z-50 flex flex-col">
           {/* Presentation Header */}
           <div className="bg-gray-900 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700">
             <div className="flex items-center gap-4">
-              <span className="text-sm font-medium">Slide {currentSlideIndex + 1} / {currentLesson.slides.length}</span>
-              <span className="text-xs text-gray-400">4:30:54 AM</span>
+              <span className="text-sm font-medium">{currentLesson.title}</span>
             </div>
             <div className="flex items-center gap-2">
               {lessonQuizzes.length > 0 && (
@@ -981,134 +980,14 @@ export default function LessonPlayer() {
             </div>
           </div>
 
-          {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-2 pb-0">
-            <style>{`
-              .slide-scroller::-webkit-scrollbar {
-                width: 16px;
-                height: 16px;
-              }
-              .slide-scroller::-webkit-scrollbar-track {
-                background: #e5e7eb;
-                border-radius: 10px;
-                border: 2px solid #d1d5db;
-              }
-              .slide-scroller::-webkit-scrollbar-thumb {
-                background: #6366f1;
-                border-radius: 10px;
-                border: 2px solid #e5e7eb;
-              }
-              .slide-scroller::-webkit-scrollbar-thumb:hover {
-                background: #4f46e5;
-              }
-              .slide-scroller::-webkit-scrollbar-corner {
-                background: #e5e7eb;
-              }
-            `}</style>
-            <div id="slideContent" className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-auto slide-scroller">
-              <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                {currentLesson.slides[currentSlideIndex]?.title}
-              </h2>
-              <div 
-                className="prose prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-              />
-            </div>
-
-            {/* Scroll Control Buttons - Up/Down */}
-            <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4" style={{ zIndex: 9999 }}>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const element = document.getElementById('slideContent');
-                  if (element) {
-                    element.scrollBy({ top: -300, behavior: 'smooth' });
-                  }
-                }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
-              >
-                <ChevronLeft className="w-10 h-10 rotate-90" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.stopPropagation();
-                  const element = document.getElementById('slideContent');
-                  if (element) {
-                    element.scrollBy({ top: 300, behavior: 'smooth' });
-                  }
-                }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
-              >
-                <ChevronRight className="w-10 h-10 rotate-90" />
-              </button>
-            </div>
-
-            {/* Navigation Arrows - Left/Right */}
-            <button
-              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-              disabled={currentSlideIndex === 0}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
-            >
-              <ChevronLeft className="w-8 h-8" />
-            </button>
-            <button
-              onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
-              disabled={currentSlideIndex === currentLesson.slides.length - 1}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
-            >
-              <ChevronRight className="w-8 h-8" />
-            </button>
-          </div>
-
-          {/* Slide Thumbnails - Bottom */}
-          <div className="bg-gray-900 border-t-2 border-gray-700 p-4 shadow-2xl">
-            <style>{`
-              .thumbnail-scroller::-webkit-scrollbar {
-                height: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-track {
-                background: #1f2937;
-                border-radius: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-thumb {
-                background: #4b5563;
-                border-radius: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-thumb:hover {
-                background: #6b7280;
-              }
-            `}</style>
-            <div className="max-w-full mx-auto">
-              <div className="overflow-x-auto thumbnail-scroller pb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-300 uppercase tracking-wide shrink-0 font-semibold">Next Slides</span>
-                  {currentLesson.slides.map((slide, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlideIndex(idx)}
-                      className={`shrink-0 rounded-lg border-2 transition-all hover:scale-105 ${
-                        idx === currentSlideIndex
-                          ? 'border-indigo-500 ring-2 ring-indigo-500/50 scale-105'
-                          : 'border-gray-700 hover:border-gray-500'
-                      }`}
-                    >
-                      <div className="w-40 aspect-video bg-white p-3 rounded-md flex flex-col items-center justify-center">
-                        <span className="text-xs text-gray-500 mb-1 font-semibold">Slide {idx + 1}</span>
-                        <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
-                          {slide.title}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* Keyboard Navigation Hint */}
-          <div className="absolute bottom-32 left-6 bg-black/80 text-white text-sm px-4 py-3 rounded-lg shadow-xl">
-            <div className="font-semibold mb-1">Navigation:</div>
-            <div>← → arrows or Space | ESC to Exit</div>
+          {/* Google Slides Embed */}
+          <div className="flex-1 bg-gray-900">
+            <iframe
+              src={currentLesson.google_slides_url}
+              className="w-full h-full"
+              allowFullScreen
+              frameBorder="0"
+            />
           </div>
         </div>
       )}
