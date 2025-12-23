@@ -982,13 +982,13 @@ export default function LessonPlayer() {
           </div>
 
           {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative px-2 py-4 mx-auto">
-            <div className="bg-white rounded-lg shadow-2xl w-full aspect-video p-8 overflow-auto">
-              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+          <div className="flex-1 flex items-center justify-center relative p-2">
+            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-[90vh] p-12 overflow-auto">
+              <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
               <div 
-                className="prose prose-sm max-w-none"
+                className="prose prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
               />
             </div>
