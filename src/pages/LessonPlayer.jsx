@@ -1317,8 +1317,8 @@ export default function LessonPlayer() {
             {/* Slide Thumbnails - Bottom */}
             {(!liveSession || isPresenter) && (
               <div className="bg-gray-800 border-t border-gray-700 p-3 flex-none">
-                <ScrollArea className="w-full">
-                  <div className="flex items-center gap-3 pb-2">
+                <ScrollArea className="w-full" orientation="horizontal">
+                  <div className="flex items-center gap-3 pb-2 w-max">
                     <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0 font-semibold">Slides</span>
                     {currentLesson.slides.map((slide, idx) => (
                       <button
