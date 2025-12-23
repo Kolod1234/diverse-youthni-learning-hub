@@ -595,8 +595,8 @@ export default function LessonPlayer() {
         </header>
 
         {/* Video/Content Area */}
-        <div className="flex-1 flex overflow-hidden">
-          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
+        <div className="flex-1 flex overflow-hidden min-h-0">
+          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
