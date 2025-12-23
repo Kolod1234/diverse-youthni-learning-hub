@@ -38,13 +38,14 @@ export default function Quiz() {
     loadUser();
   }, []);
 
-  const { data: quizzes = [] } = useQuery({
+  const { data: quiz, isLoading: loadingQuiz } = useQuery({
     queryKey: ['quiz', quizId],
-    queryFn: () => base44.entities.Quiz.filter({ id: quizId }),
+    queryFn: async () => {
+      const quizzes = await base44.entities.Quiz.filter({ id: quizId });
+      return quizzes[0];
+    },
     enabled: !!quizId,
   });
-
-  const quiz = quizzes[0];
 
   const { data: attempts = [] } = useQuery({
     queryKey: ['quiz-attempts', quizId, user?.email],
@@ -191,6 +192,17 @@ export default function Quiz() {
     const secs = seconds % 60;
     return `${mins}:${secs.toString().padStart(2, '0')}`;
   };
+
+  if (loadingQuiz) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
+        <Card className="p-8 text-center max-w-md">
+          <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4" />
+          <p className="text-gray-500">Loading quiz...</p>
+        </Card>
+      </div>
+    );
+  }
 
   if (!quiz) {
     return (

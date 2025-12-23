@@ -12,13 +12,13 @@ import LessonPlayer from './pages/LessonPlayer';
 import Profile from './pages/Profile';
 import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
+import QuizGenerator from './pages/QuizGenerator';
 import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
-import QuizGenerator from './pages/QuizGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -37,13 +37,13 @@ export const PAGES = {
     "Profile": Profile,
     "Programs": Programs,
     "Quiz": Quiz,
+    "QuizGenerator": QuizGenerator,
     "StudentAnalytics": StudentAnalytics,
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
-    "QuizGenerator": QuizGenerator,
 }
 
 export const pagesConfig = {
