@@ -689,26 +689,6 @@ export default function LessonPlayer() {
 
         {/* Video/Content Area */}
         <div className="flex-1 flex overflow-hidden min-h-0">
-          {/* Live Session Users Panel */}
-          {liveSession && participants.length > 0 && (
-            <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col flex-none overflow-hidden">
-              <div className="p-4 border-b border-gray-700 flex items-center gap-2 flex-none">
-                <Users className="w-4 h-4 text-blue-400" />
-                <span className="text-sm font-semibold text-white">Online ({participants.length})</span>
-              </div>
-              <ScrollArea className="flex-1">
-                <div className="p-2 space-y-2">
-                  {participants.map((participant) => (
-                    <div key={participant.id} className="flex items-center gap-2 p-2 rounded hover:bg-white/5 transition-colors">
-                      <div className="w-2 h-2 rounded-full bg-green-500" />
-                      <span className="text-sm text-white truncate">{participant.participant_name}</span>
-                    </div>
-                  ))}
-                </div>
-              </ScrollArea>
-            </aside>
-          )}
-
           <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''} min-w-0`} style={{ WebkitOverflowScrolling: 'touch', maxWidth: '100%' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
