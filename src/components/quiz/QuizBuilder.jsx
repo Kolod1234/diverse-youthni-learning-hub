@@ -45,7 +45,7 @@ export default function QuizBuilder({ courses }) {
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['quizzes']);
-      toast.success('Quiz created successfully!');
+      toast.success('Quiz published successfully! Students can now take it.');
       setQuizData({
         title: '',
         description: '',
@@ -128,7 +128,7 @@ export default function QuizBuilder({ courses }) {
 
   const handleSave = () => {
     if (!quizData.title || !quizData.course_id) {
-      toast.error('Please fill in title and select a course');
+      toast.error('Please fill in title and select a course to publish to');
       return;
     }
 
@@ -138,7 +138,10 @@ export default function QuizBuilder({ courses }) {
       return;
     }
 
-    createQuizMutation.mutate(quizData);
+    createQuizMutation.mutate({
+      ...quizData,
+      is_published: true
+    });
   };
 
   const totalMarks = quizData.questions.reduce((sum, q) => sum + (q.marks || 1), 0);
@@ -158,17 +161,19 @@ export default function QuizBuilder({ courses }) {
             />
           </div>
           <div>
-            <Label>Course *</Label>
+            <Label>Publish Quiz To Course *</Label>
             <select
               value={quizData.course_id}
               onChange={(e) => setQuizData({ ...quizData, course_id: e.target.value })}
               className="w-full h-10 px-3 rounded-md border border-gray-300"
+              required
             >
               <option value="">Select Course</option>
               {courses.map(c => (
                 <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
+            <p className="text-xs text-gray-500 mt-1">Students enrolled in this course will see and take this quiz</p>
           </div>
           <div>
             <Label>Difficulty Level</Label>

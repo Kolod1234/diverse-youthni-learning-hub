@@ -27,14 +27,18 @@ export default function AIQuizGenerator({ courses }) {
   const queryClient = useQueryClient();
 
   const saveQuizMutation = useMutation({
-    mutationFn: (data) => base44.entities.Quiz.create(data),
+    mutationFn: (data) => base44.entities.Quiz.create({
+      ...data,
+      is_published: true
+    }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['quizzes'] });
-      toast.success('Quiz saved successfully!');
+      toast.success('Quiz published successfully! Students can now take it.');
       setGeneratedQuiz(null);
       setTopic('');
       setSubtopic('');
       setAdditionalContext('');
+      setCourseId('');
     },
   });
 
@@ -146,8 +150,7 @@ Return JSON:
       subtopic,
       difficulty,
       passing_score: 70,
-      total_marks: totalMarks,
-      is_published: false
+      total_marks: totalMarks
     });
   };
 
@@ -186,17 +189,19 @@ Return JSON:
           </div>
 
           <div>
-            <Label>Course *</Label>
+            <Label>Publish Quiz To Course *</Label>
             <select
               value={courseId}
               onChange={(e) => setCourseId(e.target.value)}
               className="w-full h-10 px-3 rounded-md border border-gray-300"
+              required
             >
               <option value="">Select Course</option>
               {courses.map(c => (
                 <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
+            <p className="text-xs text-gray-500 mt-1">Quiz will be visible to students enrolled in this course</p>
           </div>
 
           <div>
