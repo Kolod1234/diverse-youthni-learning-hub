@@ -32,6 +32,18 @@ export default function QuizList({ quizzes, courses }) {
     },
   });
 
+  if (quizzes.length === 0) {
+    return (
+      <Card className="p-12 text-center">
+        <div className="max-w-md mx-auto">
+          <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Quizzes Yet</h3>
+          <p className="text-gray-500 mb-6">Create your first quiz using the Manual Builder or AI Generator</p>
+        </div>
+      </Card>
+    );
+  }
+
   // Organize quizzes by topic
   const topics = [...new Set(quizzes.map(q => q.topic).filter(Boolean))];
   const quizzesByTopic = quizzes.reduce((acc, quiz) => {
@@ -52,18 +64,6 @@ export default function QuizList({ quizzes, courses }) {
     const matchesTopic = selectedTopic === 'all' || quiz.topic === selectedTopic;
     return matchesSearch && matchesTopic;
   });
-
-  if (quizzes.length === 0) {
-    return (
-      <Card className="p-12 text-center">
-        <div className="max-w-md mx-auto">
-          <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-900 mb-2">No Quizzes Yet</h3>
-          <p className="text-gray-500 mb-6">Create your first quiz using the Manual Builder or AI Generator</p>
-        </div>
-      </Card>
-    );
-  }
 
   return (
     <div className="space-y-6">
