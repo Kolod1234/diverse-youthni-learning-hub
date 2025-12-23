@@ -76,7 +76,7 @@ export default function Programs() {
     if (programs.length > 0 && !selectedProgram) {
       setSelectedProgram(programs[0]);
     }
-  }, [programs]);
+  }, [programs, selectedProgram]);
 
   if (!user) {
     return null;
