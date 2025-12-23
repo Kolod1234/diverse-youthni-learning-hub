@@ -554,8 +554,8 @@ export default function LessonPlayer() {
 
   // RENDER
   return (
-    <div className="fixed inset-0 flex flex-col h-screen w-screen bg-gray-50" style={{ overflow: 'hidden', maxWidth: '100vw' }}>
-      <div className="flex flex-1 overflow-hidden">
+    <div className="fixed inset-0 flex flex-col h-screen w-screen bg-gray-50" style={{ overflow: 'hidden', maxWidth: '100vw', maxHeight: '100vh' }}>
+      <div className="flex flex-1 overflow-hidden min-h-0">
         {/* Desktop Sidebar */}
         {sidebarOpen && (
           <motion.aside
@@ -580,9 +580,9 @@ export default function LessonPlayer() {
         )}
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
           {/* Top Bar */}
-          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40">
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40 min-h-0">
           <div className="flex items-center gap-3">
             {/* Mobile Menu */}
             <Sheet>
@@ -689,7 +689,27 @@ export default function LessonPlayer() {
 
         {/* Video/Content Area */}
         <div className="flex-1 flex overflow-hidden min-h-0">
-          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
+          {/* Live Session Users Panel */}
+          {liveSession && participants.length > 0 && (
+            <aside className="w-64 bg-gray-800 border-r border-gray-700 flex flex-col flex-none overflow-hidden">
+              <div className="p-4 border-b border-gray-700 flex items-center gap-2 flex-none">
+                <Users className="w-4 h-4 text-blue-400" />
+                <span className="text-sm font-semibold text-white">Online ({participants.length})</span>
+              </div>
+              <ScrollArea className="flex-1">
+                <div className="p-2 space-y-2">
+                  {participants.map((participant) => (
+                    <div key={participant.id} className="flex items-center gap-2 p-2 rounded hover:bg-white/5 transition-colors">
+                      <div className="w-2 h-2 rounded-full bg-green-500" />
+                      <span className="text-sm text-white truncate">{participant.participant_name}</span>
+                    </div>
+                  ))}
+                </div>
+              </ScrollArea>
+            </aside>
+          )}
+
+          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''} min-w-0`} style={{ WebkitOverflowScrolling: 'touch', maxWidth: '100%' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
@@ -1050,7 +1070,7 @@ export default function LessonPlayer() {
       {/* Presentation Mode */}
       {presentationMode && currentLesson.slides?.length > 0 && (
         <div className="fixed inset-0 bg-black z-50 flex items-center justify-center" style={{ overflow: 'hidden', width: '100vw', height: '100vh' }}>
-          <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
             {/* Presentation Header */}
             <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700 rounded-t-2xl">
               <div className="flex items-center gap-4">
@@ -1077,11 +1097,12 @@ export default function LessonPlayer() {
             </div>
 
             {/* Slide Display */}
-            <div className="flex-1 flex items-center justify-center relative p-6 overflow-hidden">
+            <div className="flex-1 flex items-center justify-center relative p-6 overflow-hidden min-h-0">
               <style>{`
                 #slideContent {
                   scrollbar-width: thin;
                   scrollbar-color: #6366f1 #e5e7eb;
+                  max-width: 100%;
                 }
                 #slideContent::-webkit-scrollbar {
                   width: 12px;
@@ -1102,6 +1123,7 @@ export default function LessonPlayer() {
               <div 
                 id="slideContent" 
                 className="bg-white rounded-xl shadow-xl w-full h-full p-8 overflow-y-auto overflow-x-hidden"
+                style={{ maxWidth: '100%', maxHeight: '100%' }}
               >
                 <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
                   {currentLesson.slides[currentSlideIndex]?.title}
