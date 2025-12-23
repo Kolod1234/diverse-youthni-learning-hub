@@ -1016,24 +1016,24 @@ export default function LessonPlayer() {
             </div>
 
             {/* Scroll Control Buttons - Up/Down */}
-            <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
+            <div className="absolute right-24 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50">
               <button
                 onClick={() => {
                   const element = document.getElementById('slideContent');
                   element.scrollBy({ top: -200, behavior: 'smooth' });
                 }}
-                className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30"
               >
-                <ChevronLeft className="w-8 h-8 rotate-90" />
+                <ChevronLeft className="w-10 h-10 rotate-90" />
               </button>
               <button
                 onClick={() => {
                   const element = document.getElementById('slideContent');
                   element.scrollBy({ top: 200, behavior: 'smooth' });
                 }}
-                className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30"
               >
-                <ChevronRight className="w-8 h-8 rotate-90" />
+                <ChevronRight className="w-10 h-10 rotate-90" />
               </button>
             </div>
 
