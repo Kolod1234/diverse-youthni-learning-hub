@@ -55,7 +55,7 @@ export default function CourseDetails() {
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['quizzes', courseId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, is_published: true }),
     enabled: !!courseId,
   });
 
@@ -444,11 +444,15 @@ export default function CourseDetails() {
                       <h4 className="font-semibold text-gray-900 mb-3">Quizzes</h4>
                       <div className="space-y-2">
                         {quizzes.map((quiz) => (
-                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
+                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}>
                             <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
                               <div>
                                 <p className="font-medium text-gray-900">{quiz.title}</p>
-                                <p className="text-sm text-gray-500">{quiz.questions?.length} questions</p>
+                                <div className="flex gap-2 text-sm text-gray-500">
+                                  <span>{quiz.questions?.length} questions</span>
+                                  {quiz.topic && <span>• {quiz.topic}</span>}
+                                  {quiz.subtopic && <span>• {quiz.subtopic}</span>}
+                                </div>
                               </div>
                               <ChevronRight className="w-5 h-5 text-indigo-600" />
                             </div>
