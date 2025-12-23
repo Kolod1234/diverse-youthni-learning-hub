@@ -21,6 +21,8 @@ import { motion } from 'framer-motion';
 export default function Layout({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
+  const [showAdminPassword, setShowAdminPassword] = useState(false);
+  const [adminPassword, setAdminPassword] = useState('');
   const location = useLocation();
 
   useEffect(() => {
@@ -42,9 +44,6 @@ export default function Layout({ children, currentPageName }) {
   if (isLessonPlayer) {
     return <>{children}</>;
   }
-
-  const [showAdminPassword, setShowAdminPassword] = useState(false);
-  const [adminPassword, setAdminPassword] = useState('');
 
   const handleAdminAccess = () => {
     if (adminPassword === 'Edu24!') {
