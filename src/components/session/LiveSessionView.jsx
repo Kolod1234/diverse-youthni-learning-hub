@@ -150,7 +150,7 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
 
         {/* Slide Display */}
         <div className="flex-1 flex items-center justify-center relative p-4 bg-gray-950">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl aspect-video p-8 overflow-auto relative">
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl aspect-video p-8 overflow-auto relative mx-auto">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlideIndex}
