@@ -1,0 +1,16 @@
+/* Base Styles */
+html {
+  overflow-y: scroll; /* Forces vertical scrollbar to prevent layout jumping */
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  min-width: 320px; /* Prevents layout collapse on tiny screens */
+  overflow-x: clip; /* Modern version of hidden that allows sticky elements */
+}
+
+/* Tailwind Directives */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
