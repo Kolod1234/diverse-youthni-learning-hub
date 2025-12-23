@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, GripVertical, Save, Clock } from 'lucide-react';
+import { Plus, Trash2, GripVertical, Save, Clock, Image as ImageIcon, Upload, Type, FileText } from 'lucide-react';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { toast } from 'sonner';
 
@@ -16,14 +16,19 @@ export default function QuizBuilder({ courses }) {
     description: '',
     course_id: '',
     lesson_id: '',
+    topic: '',
+    subtopic: '',
     passing_score: 70,
     time_limit_minutes: null,
     difficulty: 'medium',
     questions: [
       {
         question: '',
+        question_type: 'multiple_choice',
         options: ['', '', '', ''],
         correct_answer: 0,
+        correct_text_answer: '',
+        image_url: '',
         explanation: '',
         marks: 1,
         time_limit_seconds: null
@@ -46,14 +51,19 @@ export default function QuizBuilder({ courses }) {
         description: '',
         course_id: '',
         lesson_id: '',
+        topic: '',
+        subtopic: '',
         passing_score: 70,
         time_limit_minutes: null,
         difficulty: 'medium',
         questions: [
           {
             question: '',
+            question_type: 'multiple_choice',
             options: ['', '', '', ''],
             correct_answer: 0,
+            correct_text_answer: '',
+            image_url: '',
             explanation: '',
             marks: 1,
             time_limit_seconds: null
@@ -63,17 +73,20 @@ export default function QuizBuilder({ courses }) {
     },
   });
 
-  const addQuestion = () => {
+  const addQuestion = (type = 'multiple_choice') => {
     setQuizData({
       ...quizData,
       questions: [
         ...quizData.questions,
         {
           question: '',
-          options: ['', '', '', ''],
+          question_type: type,
+          options: type === 'multiple_choice' ? ['', '', '', ''] : [],
           correct_answer: 0,
+          correct_text_answer: '',
+          image_url: '',
           explanation: '',
-          marks: 1,
+          marks: type === 'long_answer' ? 5 : 1,
           time_limit_seconds: null
         }
       ]
@@ -199,6 +212,24 @@ export default function QuizBuilder({ courses }) {
             <p className="text-xs text-gray-500 mt-1">Calculated from question marks</p>
           </div>
         </div>
+        <div className="grid md:grid-cols-2 gap-4 mt-4">
+          <div>
+            <Label>Topic</Label>
+            <Input
+              value={quizData.topic || ''}
+              onChange={(e) => setQuizData({ ...quizData, topic: e.target.value })}
+              placeholder="e.g., Algebra, Photosynthesis"
+            />
+          </div>
+          <div>
+            <Label>Subtopic</Label>
+            <Input
+              value={quizData.subtopic || ''}
+              onChange={(e) => setQuizData({ ...quizData, subtopic: e.target.value })}
+              placeholder="e.g., Linear Equations, Light Reactions"
+            />
+          </div>
+        </div>
         <div className="mt-4">
           <Label>Description</Label>
           <Textarea
@@ -214,10 +245,24 @@ export default function QuizBuilder({ courses }) {
       <Card className="p-6">
         <div className="flex items-center justify-between mb-6">
           <h2 className="text-xl font-semibold">Questions ({quizData.questions.length})</h2>
-          <Button onClick={addQuestion} variant="outline">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Question
-          </Button>
+          <div className="flex gap-2">
+            <Button onClick={() => addQuestion('multiple_choice')} variant="outline" size="sm">
+              <Plus className="w-4 h-4 mr-1" />
+              Multiple Choice
+            </Button>
+            <Button onClick={() => addQuestion('short_answer')} variant="outline" size="sm">
+              <Type className="w-4 h-4 mr-1" />
+              Short Answer
+            </Button>
+            <Button onClick={() => addQuestion('long_answer')} variant="outline" size="sm">
+              <FileText className="w-4 h-4 mr-1" />
+              Long Answer
+            </Button>
+            <Button onClick={() => addQuestion('image_based')} variant="outline" size="sm">
+              <ImageIcon className="w-4 h-4 mr-1" />
+              Image Question
+            </Button>
+          </div>
         </div>
 
         <DragDropContext onDragEnd={handleDragEnd}>
@@ -243,7 +288,19 @@ export default function QuizBuilder({ courses }) {
 
                           <div className="flex-1 space-y-4">
                             <div className="flex items-center justify-between">
-                              <h3 className="font-semibold text-gray-900">Question {qIndex + 1}</h3>
+                              <div className="flex items-center gap-3">
+                                <h3 className="font-semibold text-gray-900">Question {qIndex + 1}</h3>
+                                <select
+                                  value={question.question_type || 'multiple_choice'}
+                                  onChange={(e) => updateQuestion(qIndex, 'question_type', e.target.value)}
+                                  className="h-8 px-2 text-xs border border-gray-300 rounded"
+                                >
+                                  <option value="multiple_choice">Multiple Choice</option>
+                                  <option value="short_answer">Short Answer</option>
+                                  <option value="long_answer">Long Answer</option>
+                                  <option value="image_based">Image Question</option>
+                                </select>
+                              </div>
                               <Button
                                 variant="ghost"
                                 size="sm"
@@ -265,7 +322,43 @@ export default function QuizBuilder({ courses }) {
                                 />
                               </div>
 
-                              {question.options.map((option, optIndex) => (
+                              {(question.question_type === 'image_based' || question.question_type === 'multiple_choice') && (
+                                <div className="md:col-span-2">
+                                  <Label>Image/Diagram URL (Optional)</Label>
+                                  <div className="flex gap-2">
+                                    <Input
+                                      value={question.image_url || ''}
+                                      onChange={(e) => updateQuestion(qIndex, 'image_url', e.target.value)}
+                                      placeholder="https://... or upload below"
+                                    />
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={async () => {
+                                        const input = document.createElement('input');
+                                        input.type = 'file';
+                                        input.accept = 'image/*';
+                                        input.onchange = async (e) => {
+                                          const file = e.target.files?.[0];
+                                          if (file) {
+                                            const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                                            updateQuestion(qIndex, 'image_url', file_url);
+                                            toast.success('Image uploaded!');
+                                          }
+                                        };
+                                        input.click();
+                                      }}
+                                    >
+                                      <Upload className="w-4 h-4" />
+                                    </Button>
+                                  </div>
+                                  {question.image_url && (
+                                    <img src={question.image_url} className="mt-2 w-full max-w-md rounded-lg border" alt="Question" />
+                                  )}
+                                </div>
+                              )}
+
+                              {question.question_type === 'multiple_choice' && question.options.map((option, optIndex) => (
                                 <div key={optIndex}>
                                   <Label>Option {String.fromCharCode(65 + optIndex)} *</Label>
                                   <div className="flex gap-2">
@@ -285,6 +378,23 @@ export default function QuizBuilder({ courses }) {
                                   </div>
                                 </div>
                               ))}
+
+                              {(question.question_type === 'short_answer' || question.question_type === 'long_answer') && (
+                                <div className="md:col-span-2">
+                                  <Label>Model Answer *</Label>
+                                  <Textarea
+                                    value={question.correct_text_answer || ''}
+                                    onChange={(e) => updateQuestion(qIndex, 'correct_text_answer', e.target.value)}
+                                    placeholder="Enter the expected answer or key points..."
+                                    rows={question.question_type === 'long_answer' ? 4 : 2}
+                                  />
+                                  <p className="text-xs text-gray-500 mt-1">
+                                    {question.question_type === 'long_answer' 
+                                      ? 'Provide key points for manual grading' 
+                                      : 'Exact answer or acceptable variations'}
+                                  </p>
+                                </div>
+                              )}
 
                               <div>
                                 <Label>Marks</Label>

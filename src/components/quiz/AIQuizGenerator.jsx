@@ -11,12 +11,16 @@ import { toast } from 'sonner';
 
 export default function AIQuizGenerator({ courses }) {
   const [topic, setTopic] = useState('');
+  const [subtopic, setSubtopic] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [courseId, setCourseId] = useState('');
   const [numQuestions, setNumQuestions] = useState(10);
   const [difficulty, setDifficulty] = useState('medium');
   const [timePerQuestion, setTimePerQuestion] = useState(60);
   const [marksPerQuestion, setMarksPerQuestion] = useState(1);
+  const [includeShortAnswer, setIncludeShortAnswer] = useState(false);
+  const [includeLongAnswer, setIncludeLongAnswer] = useState(false);
+  const [includeImageQuestions, setIncludeImageQuestions] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedQuiz, setGeneratedQuiz] = useState(null);
 
@@ -41,33 +45,59 @@ export default function AIQuizGenerator({ courses }) {
 
     setGenerating(true);
     try {
+      const questionTypes = [];
+      let mcCount = numQuestions;
+      
+      if (includeShortAnswer) {
+        questionTypes.push('short_answer');
+        mcCount = Math.floor(numQuestions * 0.7);
+      }
+      if (includeLongAnswer) {
+        questionTypes.push('long_answer');
+        mcCount = Math.floor(numQuestions * 0.6);
+      }
+      if (includeImageQuestions) {
+        questionTypes.push('image_based');
+      }
+
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create ${numQuestions} multiple-choice quiz questions about: "${topic}"
+        prompt: `Create ${numQuestions} quiz questions about: "${topic}"${subtopic ? ` (Subtopic: ${subtopic})` : ''}
         
 ${additionalContext ? `Additional context: ${additionalContext}` : ''}
 
 Difficulty level: ${difficulty}
 
-For each question:
-- Create a clear, educational question
-- Provide 4 distinct options (A, B, C, D)
-- Mark the correct answer (0-3)
-- Provide a brief explanation of why it's correct
-- Assign ${marksPerQuestion} mark(s) per question
-${timePerQuestion ? `- Set ${timePerQuestion} seconds time limit` : ''}
+Question Types Distribution:
+- ${mcCount} Multiple Choice questions
+${includeShortAnswer ? `- ${Math.ceil(numQuestions * 0.2)} Short Answer questions (1-2 sentence answers)` : ''}
+${includeLongAnswer ? `- ${Math.ceil(numQuestions * 0.15)} Long Answer questions (paragraph answers, ${marksPerQuestion * 3}-${marksPerQuestion * 5} marks)` : ''}
+${includeImageQuestions ? `- ${Math.ceil(numQuestions * 0.15)} Image/Diagram based questions (include placeholder image URLs)` : ''}
 
-Return a JSON object with this structure:
+For each question create:
+- Clear, educational question text
+- Set question_type: "multiple_choice", "short_answer", "long_answer", or "image_based"
+- For multiple choice: 4 options, correct_answer (0-3)
+- For short/long answer: correct_text_answer with model answer
+- For image questions: image_url (use "https://via.placeholder.com/600x400/6366F1/FFFFFF?text=Diagram+Here"), and either options or correct_text_answer
+- Brief explanation
+- Marks: ${marksPerQuestion} for MC/short, ${marksPerQuestion * 3} for long answer
+${timePerQuestion ? `- Time limit: ${timePerQuestion}s for MC, ${timePerQuestion * 2}s for short answer, ${timePerQuestion * 3}s for long answer` : ''}
+
+Return JSON:
 {
-  "title": "Quiz title based on topic",
-  "description": "Brief description of what the quiz covers",
+  "title": "Quiz title",
+  "description": "What the quiz covers",
   "questions": [
     {
       "question": "Question text",
-      "options": ["Option A", "Option B", "Option C", "Option D"],
-      "correct_answer": 0,
-      "explanation": "Why this is correct",
-      "marks": ${marksPerQuestion},
-      "time_limit_seconds": ${timePerQuestion || 'null'}
+      "question_type": "multiple_choice|short_answer|long_answer|image_based",
+      "image_url": "url for image questions",
+      "options": ["A", "B", "C", "D"] // only for multiple_choice,
+      "correct_answer": 0, // only for multiple_choice
+      "correct_text_answer": "model answer", // for short/long answer
+      "explanation": "Why correct",
+      "marks": 1,
+      "time_limit_seconds": 60
     }
   ]
 }`,
@@ -111,6 +141,8 @@ Return a JSON object with this structure:
     saveQuizMutation.mutate({
       ...generatedQuiz,
       course_id: courseId,
+      topic,
+      subtopic,
       difficulty,
       passing_score: 70,
       total_marks: totalMarks,
@@ -133,13 +165,23 @@ Return a JSON object with this structure:
         </div>
 
         <div className="space-y-4">
-          <div>
-            <Label>Topic *</Label>
-            <Input
-              value={topic}
-              onChange={(e) => setTopic(e.target.value)}
-              placeholder="e.g., Photosynthesis, World War II, Pythagoras Theorem"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Topic *</Label>
+              <Input
+                value={topic}
+                onChange={(e) => setTopic(e.target.value)}
+                placeholder="e.g., Photosynthesis"
+              />
+            </div>
+            <div>
+              <Label>Subtopic</Label>
+              <Input
+                value={subtopic}
+                onChange={(e) => setSubtopic(e.target.value)}
+                placeholder="e.g., Light Reactions"
+              />
+            </div>
           </div>
 
           <div>
@@ -210,6 +252,39 @@ Return a JSON object with this structure:
                 min="10"
                 placeholder="e.g., 60"
               />
+            </div>
+          </div>
+
+          <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+            <Label className="mb-3 block">Question Types to Include</Label>
+            <div className="space-y-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeShortAnswer}
+                  onChange={(e) => setIncludeShortAnswer(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">Short Answer Questions</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeLongAnswer}
+                  onChange={(e) => setIncludeLongAnswer(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">Long Answer Questions (essay-style)</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeImageQuestions}
+                  onChange={(e) => setIncludeImageQuestions(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">Image/Diagram Based Questions</span>
+              </label>
             </div>
           </div>
 

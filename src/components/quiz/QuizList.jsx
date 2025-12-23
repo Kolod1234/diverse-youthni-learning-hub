@@ -4,12 +4,15 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle, FolderOpen } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function QuizList({ quizzes, courses }) {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [selectedTopic, setSelectedTopic] = useState('all');
   const queryClient = useQueryClient();
 
   const deleteQuizMutation = useMutation({
@@ -29,6 +32,27 @@ export default function QuizList({ quizzes, courses }) {
     },
   });
 
+  // Organize quizzes by topic
+  const topics = [...new Set(quizzes.map(q => q.topic).filter(Boolean))];
+  const quizzesByTopic = quizzes.reduce((acc, quiz) => {
+    const topic = quiz.topic || 'Uncategorized';
+    if (!acc[topic]) acc[topic] = {};
+    const subtopic = quiz.subtopic || 'General';
+    if (!acc[topic][subtopic]) acc[topic][subtopic] = [];
+    acc[topic][subtopic].push(quiz);
+    return acc;
+  }, {});
+
+  // Filter
+  const filteredQuizzes = quizzes.filter(quiz => {
+    const matchesSearch = !searchTerm || 
+      quiz.title?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quiz.description?.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      quiz.topic?.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesTopic = selectedTopic === 'all' || quiz.topic === selectedTopic;
+    return matchesSearch && matchesTopic;
+  });
+
   if (quizzes.length === 0) {
     return (
       <Card className="p-12 text-center">
@@ -42,93 +66,164 @@ export default function QuizList({ quizzes, courses }) {
   }
 
   return (
-    <div className="space-y-4">
-      {quizzes.map((quiz) => {
-        const course = courses.find(c => c.id === quiz.course_id);
-        const totalMarks = quiz.total_marks || quiz.questions?.reduce((sum, q) => sum + (q.marks || 1), 0) || 0;
-        const difficultyColors = {
-          easy: 'bg-green-100 text-green-700',
-          medium: 'bg-yellow-100 text-yellow-700',
-          hard: 'bg-red-100 text-red-700'
-        };
+    <div className="space-y-6">
+      {/* Filters */}
+      <Card className="p-4">
+        <div className="grid md:grid-cols-3 gap-4">
+          <div className="md:col-span-2">
+            <Input
+              placeholder="Search quizzes..."
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+            />
+          </div>
+          <div>
+            <select
+              value={selectedTopic}
+              onChange={(e) => setSelectedTopic(e.target.value)}
+              className="w-full h-10 px-3 rounded-md border border-gray-300"
+            >
+              <option value="all">All Topics</option>
+              {topics.map(topic => (
+                <option key={topic} value={topic}>{topic}</option>
+              ))}
+            </select>
+          </div>
+        </div>
+      </Card>
 
-        return (
-          <Card key={quiz.id} className="p-6">
-            <div className="flex items-start justify-between">
-              <div className="flex-1">
-                <div className="flex items-center gap-3 mb-2">
-                  <h3 className="text-xl font-semibold text-gray-900">{quiz.title}</h3>
-                  {quiz.is_published ? (
-                    <Badge className="bg-green-100 text-green-700">
-                      <CheckCircle className="w-3 h-3 mr-1" />
-                      Published
-                    </Badge>
-                  ) : (
-                    <Badge variant="secondary">
-                      <XCircle className="w-3 h-3 mr-1" />
-                      Draft
-                    </Badge>
-                  )}
-                </div>
-                <p className="text-gray-600 mb-3">{quiz.description}</p>
-                
-                <div className="flex gap-2 flex-wrap">
-                  <Badge variant="outline">{course?.title || 'Course'}</Badge>
-                  <Badge className={difficultyColors[quiz.difficulty] || difficultyColors.medium}>
-                    {quiz.difficulty || 'medium'}
-                  </Badge>
-                  <Badge variant="secondary">
-                    {quiz.questions?.length || 0} questions
-                  </Badge>
-                  <Badge variant="secondary">
-                    <Award className="w-3 h-3 mr-1" />
-                    {totalMarks} marks
-                  </Badge>
-                  {quiz.time_limit_minutes && (
-                    <Badge variant="secondary">
-                      <Clock className="w-3 h-3 mr-1" />
-                      {quiz.time_limit_minutes} min
-                    </Badge>
-                  )}
-                  <Badge variant="secondary">
-                    Pass: {quiz.passing_score}%
-                  </Badge>
-                </div>
+      {/* Topic Directory View */}
+      <div className="space-y-6">
+        {Object.entries(quizzesByTopic).map(([topic, subtopics]) => {
+          const topicQuizzes = Object.values(subtopics).flat();
+          const hasMatchingQuiz = topicQuizzes.some(q => filteredQuizzes.includes(q));
+          
+          if (!hasMatchingQuiz && selectedTopic !== 'all' && selectedTopic !== topic) return null;
 
-                <div className="mt-4 text-sm text-gray-500">
-                  Created {new Date(quiz.created_date).toLocaleDateString()}
+          return (
+            <div key={topic} className="bg-white rounded-lg border-2 border-gray-200 overflow-hidden">
+              <div className="bg-gradient-to-r from-indigo-50 to-purple-50 px-6 py-4 border-b">
+                <div className="flex items-center gap-3">
+                  <FolderOpen className="w-5 h-5 text-indigo-600" />
+                  <h3 className="text-lg font-bold text-gray-900">{topic}</h3>
+                  <Badge variant="secondary">{topicQuizzes.length} quiz{topicQuizzes.length !== 1 ? 'zes' : ''}</Badge>
                 </div>
               </div>
+              
+              <div className="p-6 space-y-4">
+                {Object.entries(subtopics).map(([subtopic, subtopicQuizzes]) => {
+                  const hasMatch = subtopicQuizzes.some(q => filteredQuizzes.includes(q));
+                  if (!hasMatch) return null;
 
-              <div className="flex gap-2">
-                <Link to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}>
-                  <Button variant="outline" size="sm">
-                    <Eye className="w-4 h-4 mr-2" />
-                    Preview
-                  </Button>
-                </Link>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => togglePublishMutation.mutate({ id: quiz.id, isPublished: quiz.is_published })}
-                >
-                  {quiz.is_published ? 'Unpublish' : 'Publish'}
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => {
-                    if (confirm('Delete this quiz?')) deleteQuizMutation.mutate(quiz.id);
-                  }}
-                  className="text-red-600 hover:text-red-700"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </Button>
+                  return (
+                    <div key={subtopic}>
+                      <h4 className="text-sm font-semibold text-gray-700 mb-3 flex items-center gap-2">
+                        <div className="w-2 h-2 bg-indigo-400 rounded-full" />
+                        {subtopic}
+                      </h4>
+                      <div className="space-y-2 ml-4">
+                        {subtopicQuizzes.filter(q => filteredQuizzes.includes(q)).map((quiz) => {
+                          const course = courses.find(c => c.id === quiz.course_id);
+                          const totalMarks = quiz.total_marks || quiz.questions?.reduce((sum, q) => sum + (q.marks || 1), 0) || 0;
+                          const difficultyColors = {
+                            easy: 'bg-green-100 text-green-700',
+                            medium: 'bg-yellow-100 text-yellow-700',
+                            hard: 'bg-red-100 text-red-700'
+                          };
+                          
+                          const questionTypes = quiz.questions?.reduce((acc, q) => {
+                            acc[q.question_type] = (acc[q.question_type] || 0) + 1;
+                            return acc;
+                          }, {}) || {};
+
+                          return (
+                            <Card key={quiz.id} className="p-4 hover:shadow-md transition-shadow">
+                              <div className="flex items-start justify-between">
+                                <div className="flex-1">
+                                  <div className="flex items-center gap-2 mb-2">
+                                    <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
+                                    {quiz.is_published ? (
+                                      <Badge className="bg-green-100 text-green-700" size="sm">
+                                        <CheckCircle className="w-3 h-3 mr-1" />
+                                        Published
+                                      </Badge>
+                                    ) : (
+                                      <Badge variant="secondary" size="sm">
+                                        <XCircle className="w-3 h-3 mr-1" />
+                                        Draft
+                                      </Badge>
+                                    )}
+                                  </div>
+                                  {quiz.description && (
+                                    <p className="text-sm text-gray-600 mb-2">{quiz.description}</p>
+                                  )}
+                                  
+                                  <div className="flex gap-1 flex-wrap">
+                                    <Badge className={difficultyColors[quiz.difficulty] || difficultyColors.medium} variant="secondary">
+                                      {quiz.difficulty || 'medium'}
+                                    </Badge>
+                                    <Badge variant="secondary">
+                                      <Award className="w-3 h-3 mr-1" />
+                                      {totalMarks} marks
+                                    </Badge>
+                                    {quiz.time_limit_minutes && (
+                                      <Badge variant="secondary">
+                                        <Clock className="w-3 h-3 mr-1" />
+                                        {quiz.time_limit_minutes} min
+                                      </Badge>
+                                    )}
+                                    {questionTypes.multiple_choice > 0 && (
+                                      <Badge variant="outline">MC: {questionTypes.multiple_choice}</Badge>
+                                    )}
+                                    {questionTypes.short_answer > 0 && (
+                                      <Badge variant="outline">SA: {questionTypes.short_answer}</Badge>
+                                    )}
+                                    {questionTypes.long_answer > 0 && (
+                                      <Badge variant="outline">LA: {questionTypes.long_answer}</Badge>
+                                    )}
+                                    {questionTypes.image_based > 0 && (
+                                      <Badge variant="outline">IMG: {questionTypes.image_based}</Badge>
+                                    )}
+                                  </div>
+                                </div>
+
+                                <div className="flex gap-2">
+                                  <Link to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}>
+                                    <Button variant="outline" size="sm">
+                                      <Eye className="w-4 h-4" />
+                                    </Button>
+                                  </Link>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => togglePublishMutation.mutate({ id: quiz.id, isPublished: quiz.is_published })}
+                                  >
+                                    {quiz.is_published ? 'Unpublish' : 'Publish'}
+                                  </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (confirm('Delete this quiz?')) deleteQuizMutation.mutate(quiz.id);
+                                    }}
+                                    className="text-red-600 hover:text-red-700"
+                                  >
+                                    <Trash2 className="w-4 h-4" />
+                                  </Button>
+                                </div>
+                              </div>
+                            </Card>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
             </div>
-          </Card>
-        );
-      })}
+          );
+        })}
+      </div>
     </div>
   );
 }
