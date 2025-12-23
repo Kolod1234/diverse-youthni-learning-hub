@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card } from '@/components/ui/card';
 import { X, Users } from 'lucide-react';
-import { toast } from 'sonner';
+
 
 export default function JoinSessionDialog({ user, onJoinSession, onClose }) {
   const [sessionCode, setSessionCode] = useState('');
@@ -14,7 +14,7 @@ export default function JoinSessionDialog({ user, onJoinSession, onClose }) {
 
   const handleJoinSession = async () => {
     if (!sessionCode.trim()) {
-      toast.error('Please enter a session code');
+      alert('Please enter a session code');
       return;
     }
 
@@ -27,7 +27,7 @@ export default function JoinSessionDialog({ user, onJoinSession, onClose }) {
       });
 
       if (sessions.length === 0) {
-        toast.error('Session not found or has ended');
+        alert('Session not found or has ended');
         setIsLoading(false);
         return;
       }
@@ -52,11 +52,11 @@ export default function JoinSessionDialog({ user, onJoinSession, onClose }) {
       const lessons = await base44.entities.Lesson.filter({ id: session.lesson_id });
       const lesson = lessons[0];
 
-      toast.success('Joined session!');
+      alert('Joined session!');
       onJoinSession(session, lesson, false);
     } catch (error) {
       console.error('Failed to join session:', error);
-      toast.error('Failed to join session');
+      alert('Failed to join session');
     } finally {
       setIsLoading(false);
     }
