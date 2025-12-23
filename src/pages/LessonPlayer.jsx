@@ -664,8 +664,8 @@ export default function LessonPlayer() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Top Bar */}
-          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between z-40">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between z-40 overflow-hidden">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 overflow-hidden">
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
@@ -698,9 +698,9 @@ export default function LessonPlayer() {
               {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
 
-            <div className="min-w-0 flex-1">
-              <h1 className="font-semibold text-gray-900 line-clamp-1 text-sm sm:text-base">{currentLesson.title}</h1>
-              <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">{currentLesson.section || 'Getting Started'}</p>
+            <div className="min-w-0 flex-1 overflow-hidden">
+              <h1 className="font-semibold text-gray-900 truncate text-sm sm:text-base">{currentLesson.title}</h1>
+              <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">{currentLesson.section || 'Getting Started'}</p>
             </div>
           </div>
 
