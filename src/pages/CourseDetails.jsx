@@ -53,6 +53,16 @@ export default function CourseDetails() {
     enabled: !!courseId,
   });
 
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['enrollment', courseId, user?.email],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
+    enabled: !!courseId && !!user?.email,
+  });
+
+  // Calculate enrollment status first
+  const enrollment = enrollments[0];
+  const isEnrolled = !!enrollment;
+
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['quizzes', courseId],
     queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
@@ -66,12 +76,6 @@ export default function CourseDetails() {
     queryKey: ['reviews', courseId],
     queryFn: () => base44.entities.Review.filter({ course_id: courseId }, '-created_date', 20),
     enabled: !!courseId,
-  });
-
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['enrollment', courseId, user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
-    enabled: !!courseId && !!user?.email,
   });
 
   const { data: allCourses = [] } = useQuery({
@@ -101,10 +105,6 @@ export default function CourseDetails() {
       queryClient.invalidateQueries(['enrollment', courseId]);
     },
   });
-
-  // Calculate data after all hooks
-  const enrollment = enrollments[0];
-  const isEnrolled = !!enrollment;
 
   // Group lessons by section
   const sections = lessons.reduce((acc, lesson) => {
