@@ -444,7 +444,7 @@ export default function CourseDetails() {
                       <h4 className="font-semibold text-gray-900 mb-3">Quizzes</h4>
                       <div className="space-y-2">
                         {quizzes.map((quiz) => (
-                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}>
+                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
                             <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
                               <div>
                                 <p className="font-medium text-gray-900">{quiz.title}</p>
