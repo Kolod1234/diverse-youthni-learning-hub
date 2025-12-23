@@ -28,7 +28,7 @@ export default function Quiz() {
   const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
-  const quizId = urlParams.get('id');
+  const quizId = urlParams.get('quizId') || urlParams.get('id');
 
   useEffect(() => {
     const loadUser = async () => {

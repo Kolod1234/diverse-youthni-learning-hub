@@ -29,10 +29,11 @@ export default function AIQuizGenerator({ courses }) {
   const saveQuizMutation = useMutation({
     mutationFn: (data) => base44.entities.Quiz.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['quizzes']);
+      queryClient.invalidateQueries({ queryKey: ['quizzes'] });
       toast.success('Quiz saved successfully!');
       setGeneratedQuiz(null);
       setTopic('');
+      setSubtopic('');
       setAdditionalContext('');
     },
   });

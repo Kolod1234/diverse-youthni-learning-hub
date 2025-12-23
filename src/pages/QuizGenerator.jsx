@@ -32,12 +32,8 @@ export default function QuizGenerator() {
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['quizzes', user?.email],
-    queryFn: async () => {
-      const allQuizzes = await base44.entities.Quiz.list('-created_date', 200);
-      const myCourseIds = courses.map(c => c.id);
-      return allQuizzes.filter(q => myCourseIds.includes(q.course_id));
-    },
-    enabled: !!user?.email && courses.length > 0,
+    queryFn: () => base44.entities.Quiz.filter({ created_by: user?.email }, '-created_date', 200),
+    enabled: !!user?.email,
   });
 
   return (
