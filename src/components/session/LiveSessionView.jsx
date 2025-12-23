@@ -173,16 +173,16 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
               <button
                 onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
                 disabled={currentSlideIndex === 0}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-xl border-2 border-gray-200"
               >
-                <ChevronLeft className="w-6 h-6" />
+                <ChevronLeft className="w-8 h-8" />
               </button>
               <button
                 onClick={() => handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
                 disabled={currentSlideIndex === lesson.slides.length - 1}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-xl border-2 border-gray-200"
               >
-                <ChevronRight className="w-6 h-6" />
+                <ChevronRight className="w-8 h-8" />
               </button>
             </>
           )}
