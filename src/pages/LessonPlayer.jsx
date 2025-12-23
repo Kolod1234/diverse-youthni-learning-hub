@@ -707,7 +707,7 @@ export default function LessonPlayer() {
             </div>
             
             {/* Action Buttons - Below on Mobile, Inline on Desktop */}
-            <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100">
+            <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100 overflow-x-auto" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
             {currentLesson.slides?.length > 0 && !liveSession && (
               <>
                 <Button
@@ -761,7 +761,7 @@ export default function LessonPlayer() {
             </div>
             
             {/* Desktop Action Buttons */}
-            <div className="hidden sm:flex items-center gap-2 px-2 sm:px-4 py-2">
+            <div className="hidden sm:flex items-center gap-2 px-2 sm:px-4 py-2 flex-shrink-0">
             {currentLesson.slides?.length > 0 && (
               <>
                 {!liveSession ? (
@@ -1317,8 +1317,8 @@ export default function LessonPlayer() {
             {/* Slide Thumbnails - Bottom */}
             {(!liveSession || isPresenter) && (
               <div className="bg-gray-800 border-t border-gray-700 p-3 flex-none">
-                <ScrollArea className="w-full" orientation="horizontal">
-                  <div className="flex items-center gap-3 pb-2 w-max">
+                <div className="overflow-x-auto w-full" style={{ WebkitOverflowScrolling: 'touch', touchAction: 'pan-x' }}>
+                  <div className="flex items-center gap-3 pb-2" style={{ minWidth: 'max-content' }}>
                     <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0 font-semibold">Slides</span>
                     {currentLesson.slides.map((slide, idx) => (
                       <button
@@ -1339,7 +1339,7 @@ export default function LessonPlayer() {
                       </button>
                     ))}
                   </div>
-                </ScrollArea>
+                </div>
               </div>
             )}
             </div>
