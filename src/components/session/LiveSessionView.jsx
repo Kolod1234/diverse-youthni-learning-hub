@@ -159,9 +159,6 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                 exit={{ opacity: 0, x: -20 }}
                 className="max-w-4xl mx-auto"
               >
-                <h2 className="text-4xl font-bold text-gray-900 mb-8">
-                  {currentSlide?.title}
-                </h2>
                 <div 
                   className="prose prose-lg max-w-none"
                   dangerouslySetInnerHTML={{ __html: currentSlide?.content || '' }}
