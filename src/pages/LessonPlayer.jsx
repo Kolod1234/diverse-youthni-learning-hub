@@ -664,7 +664,8 @@ export default function LessonPlayer() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Top Bar */}
-          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between z-40 overflow-hidden">
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 z-40">
+            <div className="px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between overflow-hidden">
           <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 overflow-hidden">
             {/* Mobile Menu */}
             <Sheet>
@@ -699,12 +700,67 @@ export default function LessonPlayer() {
             </Button>
 
             <div className="min-w-0 flex-1 overflow-hidden">
-              <h1 className="font-semibold text-gray-900 truncate text-sm sm:text-base">{currentLesson.title}</h1>
-              <p className="text-xs sm:text-sm text-gray-500 hidden sm:block truncate">{currentLesson.section || 'Getting Started'}</p>
+              <h1 className="font-semibold text-gray-900 truncate text-sm sm:text-base leading-tight">{currentLesson.title}</h1>
+              <p className="text-xs text-gray-500 truncate leading-tight mt-0.5">{currentLesson.section || 'Getting Started'}</p>
             </div>
           </div>
-
-          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          
+          {/* Action Buttons - Below on Mobile, Inline on Desktop */}
+          <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100">
+            {currentLesson.slides?.length > 0 && !liveSession && (
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPresentationMode(true)}
+                  className="flex-1 gap-1 text-xs h-8"
+                >
+                  <FileSliders className="w-3 h-3" />
+                  Present
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleStartSession}
+                  className="flex-1 gap-1 bg-red-600 hover:bg-red-700 text-xs h-8"
+                >
+                  <Radio className="w-3 h-3" />
+                  Go Live
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowJoinDialog(true)}
+                  className="flex-1 gap-1 text-xs h-8"
+                >
+                  Join
+                </Button>
+              </>
+            )}
+            {liveSession && (
+              <>
+                <Badge className="bg-red-500 text-white px-3 py-1.5 text-xs animate-pulse flex-none">
+                  🔴 LIVE
+                </Badge>
+                <span className="text-xs text-gray-600 flex items-center">
+                  {sessionParticipants.length} watching
+                </span>
+                {isPresenter && (
+                  <Button
+                    variant="destructive"
+                    size="sm"
+                    onClick={() => endSessionMutation.mutate(liveSession.id)}
+                    className="text-xs h-8 ml-auto"
+                  >
+                    End Session
+                  </Button>
+                )}
+              </>
+            )}
+          </div>
+          
+          {/* Desktop Action Buttons */}
+          <div className="hidden sm:flex items-center gap-2">
             {currentLesson.slides?.length > 0 && (
               <>
                 {!liveSession ? (
@@ -713,45 +769,44 @@ export default function LessonPlayer() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPresentationMode(true)}
-                      className="gap-1 sm:gap-2 hidden sm:flex text-xs sm:text-sm"
+                      className="gap-2"
                     >
-                      <FileSliders className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="hidden md:inline">Present</span>
+                      <FileSliders className="w-4 h-4" />
+                      <span className="hidden lg:inline">Present</span>
                     </Button>
                     <Button
                       variant="default"
                       size="sm"
                       onClick={handleStartSession}
-                      className="gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex text-xs sm:text-sm"
+                      className="gap-2 bg-red-600 hover:bg-red-700"
                     >
-                      <Radio className="w-3 h-3 sm:w-4 sm:h-4" />
-                      <span className="hidden md:inline">Live</span>
+                      <Radio className="w-4 h-4" />
+                      <span className="hidden lg:inline">Go Live</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowJoinDialog(true)}
-                      className="gap-1 sm:gap-2 hidden sm:flex text-xs sm:text-sm"
+                      className="gap-2"
                     >
-                      <span className="hidden md:inline">Join</span>
+                      <span className="hidden lg:inline">Join Live</span>
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Badge className="bg-red-500 text-white px-2 py-1 text-xs animate-pulse">
-                      🔴 <span className="hidden sm:inline">LIVE</span>
+                    <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">
+                      🔴 LIVE
                     </Badge>
-                    <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
-                      {sessionParticipants.length}
+                    <span className="text-sm text-gray-600">
+                      {sessionParticipants.length} watching
                     </span>
                     {isPresenter && (
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => endSessionMutation.mutate(liveSession.id)}
-                        className="text-xs"
                       >
-                        End
+                        End Session
                       </Button>
                     )}
                   </>
@@ -763,7 +818,6 @@ export default function LessonPlayer() {
               size="icon"
               onClick={toggleFullscreen}
               title="Fullscreen"
-              className="hidden sm:flex"
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
             </Button>
@@ -772,18 +826,25 @@ export default function LessonPlayer() {
               size="icon"
               onClick={() => setShowNotes(!showNotes)}
               title="Notes"
-              className={`hidden lg:flex ${showNotes ? 'bg-indigo-600 text-white' : ''}`}
+              className={showNotes ? 'bg-indigo-600 text-white' : ''}
             >
               <StickyNote className="w-4 h-4" />
             </Button>
-
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="icon" className="shrink-0">
-                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              <Button variant="ghost" size="icon">
+                <X className="w-5 h-5" />
               </Button>
             </Link>
           </div>
-        </header>
+
+          <div className="flex items-center gap-1 shrink-0">
+            <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+              <Button variant="ghost" size="icon" className="h-8 w-8 sm:h-10 sm:w-10">
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
+              </Button>
+            </Link>
+            </div>
+          </header>
 
         {/* Video/Content Area */}
         <div className="flex-1 flex min-w-0 overflow-hidden w-full">
