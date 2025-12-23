@@ -11,8 +11,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Play, Pause, ChevronLeft, ChevronRight, CheckCircle, 
   BookOpen, Clock, FileText, Download, X, Menu, Lock,
-  StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders
+  StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders, Radio
 } from 'lucide-react';
+import LiveSessionView from '@/components/session/LiveSessionView';
+import JoinSessionDialog from '@/components/session/JoinSessionDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
@@ -130,6 +132,10 @@ export default function LessonPlayer() {
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [presentationMode, setPresentationMode] = useState(false);
+  const [liveSession, setLiveSession] = useState(null);
+  const [liveLesson, setLiveLesson] = useState(null);
+  const [isPresenter, setIsPresenter] = useState(false);
+  const [showJoinDialog, setShowJoinDialog] = useState(false);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -208,6 +214,12 @@ export default function LessonPlayer() {
     },
   });
 
+  const startSessionMutation = useMutation({
+    mutationFn: async (sessionData) => {
+      return await base44.entities.LiveSession.create(sessionData);
+    },
+  });
+
   // DERIVED STATE - ALWAYS COMPUTED
   const enrollment = enrollments[0];
   const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
@@ -282,6 +294,42 @@ export default function LessonPlayer() {
     } catch (error) {
       console.error('Failed to award points:', error);
     }
+  };
+
+  const handleStartSession = async () => {
+    if (!currentLesson?.slides || currentLesson.slides.length === 0) {
+      toast.error('This lesson has no slides for live session');
+      return;
+    }
+
+    const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase();
+    
+    try {
+      const newSession = await startSessionMutation.mutateAsync({
+        lesson_id: currentLesson.id,
+        course_id: courseId,
+        presenter_email: user.email,
+        presenter_name: user.full_name,
+        session_code: sessionCode,
+        started_at: new Date().toISOString(),
+        current_slide_index: 0,
+      });
+
+      setLiveSession(newSession);
+      setLiveLesson(currentLesson);
+      setIsPresenter(true);
+      toast.success(`Session started! Code: ${sessionCode}`);
+    } catch (error) {
+      console.error('Failed to start session:', error);
+      toast.error('Failed to start session');
+    }
+  };
+
+  const handleJoinSession = (session, lesson, presenter) => {
+    setLiveSession(session);
+    setLiveLesson(lesson);
+    setIsPresenter(presenter);
+    setShowJoinDialog(false);
   };
 
   const handleRatingComplete = () => {
@@ -408,17 +456,36 @@ export default function LessonPlayer() {
           
           <div className="flex items-center gap-2">
             {currentLesson.slides?.length > 0 && (
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={() => setPresentationMode(true)}
-                className="gap-2"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-                </svg>
-                Present
-              </Button>
+              <>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setPresentationMode(true)}
+                  className="gap-2"
+                >
+                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                  </svg>
+                  Present
+                </Button>
+                <Button
+                  variant="default"
+                  size="sm"
+                  onClick={handleStartSession}
+                  className="gap-2 bg-red-600 hover:bg-red-700"
+                >
+                  <Radio className="w-4 h-4" />
+                  Start Session
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setShowJoinDialog(true)}
+                  className="gap-2"
+                >
+                  Join Session
+                </Button>
+              </>
             )}
             <Button
               variant={showNotes ? 'default' : 'outline'}
@@ -717,6 +784,29 @@ export default function LessonPlayer() {
         <PointsAnimation 
           points={pointsEarned}
           onComplete={() => setShowPointsAnimation(false)}
+        />
+      )}
+
+      {/* Live Session */}
+      {liveSession && liveLesson && (
+        <LiveSessionView
+          session={liveSession}
+          lesson={liveLesson}
+          isPresenter={isPresenter}
+          onClose={() => {
+            setLiveSession(null);
+            setLiveLesson(null);
+            setIsPresenter(false);
+          }}
+        />
+      )}
+
+      {/* Join Session Dialog */}
+      {showJoinDialog && user && (
+        <JoinSessionDialog
+          user={user}
+          onJoinSession={handleJoinSession}
+          onClose={() => setShowJoinDialog(false)}
         />
       )}
 
