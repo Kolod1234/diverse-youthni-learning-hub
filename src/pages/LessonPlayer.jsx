@@ -985,22 +985,27 @@ export default function LessonPlayer() {
           <div className="flex-1 flex items-center justify-center relative p-2 pb-0">
             <style>{`
               .slide-scroller::-webkit-scrollbar {
-                width: 12px;
-                height: 12px;
+                width: 16px;
+                height: 16px;
               }
               .slide-scroller::-webkit-scrollbar-track {
-                background: #f1f1f1;
+                background: #e5e7eb;
                 border-radius: 10px;
+                border: 2px solid #d1d5db;
               }
               .slide-scroller::-webkit-scrollbar-thumb {
-                background: #888;
+                background: #6366f1;
                 border-radius: 10px;
+                border: 2px solid #e5e7eb;
               }
               .slide-scroller::-webkit-scrollbar-thumb:hover {
-                background: #555;
+                background: #4f46e5;
+              }
+              .slide-scroller::-webkit-scrollbar-corner {
+                background: #e5e7eb;
               }
             `}</style>
-            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-auto slide-scroller">
+            <div id="slideContent" className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-auto slide-scroller">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
@@ -1008,6 +1013,28 @@ export default function LessonPlayer() {
                 className="prose prose-lg max-w-none"
                 dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
               />
+            </div>
+
+            {/* Scroll Control Buttons - Up/Down */}
+            <div className="absolute right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-20">
+              <button
+                onClick={() => {
+                  const element = document.getElementById('slideContent');
+                  element.scrollBy({ top: -200, behavior: 'smooth' });
+                }}
+                className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl"
+              >
+                <ChevronLeft className="w-8 h-8 rotate-90" />
+              </button>
+              <button
+                onClick={() => {
+                  const element = document.getElementById('slideContent');
+                  element.scrollBy({ top: 200, behavior: 'smooth' });
+                }}
+                className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl"
+              >
+                <ChevronRight className="w-8 h-8 rotate-90" />
+              </button>
             </div>
 
             {/* Navigation Arrows - Left/Right */}
