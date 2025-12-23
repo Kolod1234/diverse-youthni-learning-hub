@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -597,90 +596,65 @@ export default function LessonPlayer() {
         {/* Video/Content Area */}
         <div className="flex-1 flex">
           <div className={`flex-1 p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
-            {/* Content Display - Slides, Written Content, or Video */}
-            {currentLesson.slides?.length > 0 ? (
+            {/* H5P Interactive Content */}
+            {currentLesson.h5p_content_url ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 className="mb-6"
               >
-                <Card className="border-0 shadow-xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
-                  {/* Slide Content with Animation */}
-                  <div className="bg-white p-8 min-h-[500px] relative">
-                    <AnimatePresence mode="wait">
-                      <motion.div
-                        key={currentSlideIndex}
-                        initial={{ opacity: 0, x: 50 }}
-                        animate={{ opacity: 1, x: 0 }}
-                        exit={{ opacity: 0, x: -50 }}
-                        transition={{ duration: 0.3 }}
-                        className="max-w-4xl mx-auto"
-                      >
-                        <div 
-                          className="prose prose-lg max-w-none"
-                          dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-                        />
-                      </motion.div>
-                    </AnimatePresence>
-
-                    {/* Progress Dots */}
-                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
-                      {currentLesson.slides.map((_, idx) => (
-                        <button
-                          key={idx}
-                          onClick={() => setCurrentSlideIndex(idx)}
-                          className={`h-2 rounded-full transition-all ${
-                            idx === currentSlideIndex 
-                              ? 'w-8 bg-indigo-600' 
-                              : 'w-2 bg-gray-300 hover:bg-gray-400'
-                          }`}
-                        />
-                      ))}
+                <Card className="border-0 shadow-xl overflow-hidden">
+                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-6 py-4">
+                    <div className="flex items-center gap-3">
+                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <Zap className="w-5 h-5" />
+                      </div>
+                      <div>
+                        <h2 className="text-lg font-bold">Interactive Learning</h2>
+                        <p className="text-sm text-indigo-100">H5P Interactive Content</p>
+                      </div>
                     </div>
                   </div>
 
-                  {/* Modern Slide Navigation */}
+                  <div className="bg-white" style={{ minHeight: '600px' }}>
+                    <iframe
+                      src={currentLesson.h5p_content_url}
+                      className="w-full h-full"
+                      style={{ minHeight: '600px', border: 'none' }}
+                      allowFullScreen
+                      allow="geolocation *; microphone *; camera *; midi *; encrypted-media *"
+                      title={currentLesson.title}
+                    />
+                  </div>
+
                   <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-t px-6 py-4">
-                    <div className="flex items-center justify-between max-w-4xl mx-auto">
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                        disabled={currentSlideIndex === 0}
-                        className="gap-2 bg-white hover:bg-gray-50 border-2"
-                      >
-                        <ChevronLeft className="w-5 h-5" />
-                        <span className="hidden sm:inline">Previous</span>
-                      </Button>
-
-                      <div className="flex items-center gap-4">
-                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-indigo-200 shadow-sm">
-                          <Zap className="w-4 h-4 text-indigo-600" />
-                          <span className="text-sm font-bold text-gray-900">
-                            {currentSlideIndex + 1} / {currentLesson.slides.length}
-                          </span>
-                        </div>
-
-                        {/* Progress Bar */}
-                        <div className="hidden md:block w-32">
-                          <Progress 
-                            value={((currentSlideIndex + 1) / currentLesson.slides.length) * 100} 
-                            className="h-2"
-                          />
-                        </div>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2 text-sm text-gray-600">
+                        <Clock className="w-4 h-4" />
+                        <span>{currentLesson.duration_minutes || 15} minutes</span>
                       </div>
-
-                      <Button
-                        variant="outline"
-                        size="lg"
-                        onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
-                        disabled={currentSlideIndex === currentLesson.slides.length - 1}
-                        className="gap-2 bg-white hover:bg-gray-50 border-2"
-                      >
-                        <span className="hidden sm:inline">Next</span>
-                        <ChevronRight className="w-5 h-5" />
-                      </Button>
+                      <div className="flex items-center gap-2 text-sm font-medium text-indigo-600">
+                        <Zap className="w-4 h-4" />
+                        <span>Interactive Content</span>
+                      </div>
                     </div>
+                  </div>
+                </Card>
+              </motion.div>
+            ) : currentLesson.video_url ? (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6"
+              >
+                <Card className="border-0 shadow-xl overflow-hidden">
+                  <div className="aspect-video bg-gray-900 relative">
+                    <iframe
+                      src={currentLesson.video_url}
+                      className="w-full h-full"
+                      allowFullScreen
+                      allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    />
                   </div>
                 </Card>
               </motion.div>
@@ -693,17 +667,8 @@ export default function LessonPlayer() {
                   />
                 </div>
               </Card>
-            ) : currentLesson.video_url ? (
-              <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
-                <iframe
-                  src={currentLesson.video_url}
-                  className="w-full h-full"
-                  allowFullScreen
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                />
-              </div>
             ) : (
-              <div className="aspect-video bg-gray-900 rounded-2xl overflow-hidden mb-6 relative">
+              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden mb-6 relative">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center text-white">
                     <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -711,6 +676,7 @@ export default function LessonPlayer() {
                     </div>
                     <p className="text-lg font-medium">{currentLesson.title}</p>
                     <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
+                    <p className="text-sm text-gray-500 mt-3">No content available</p>
                   </div>
                 </div>
               </div>
