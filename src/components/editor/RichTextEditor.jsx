@@ -473,6 +473,7 @@ const Quiz = Node.create({
   name: 'quiz',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -512,8 +513,16 @@ const Quiz = Node.create({
       'div',
       {
         'data-quiz': '',
-        style: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #FCD34D;',
+        style: 'position: relative; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #FCD34D;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'margin-bottom: 16px;' },
@@ -546,6 +555,7 @@ const InteractiveImage = Node.create({
   name: 'interactiveImage',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -582,6 +592,14 @@ const InteractiveImage = Node.create({
         'data-interactive-image': '',
         style: 'position: relative; margin: 16px 0; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 12px rgba(0,0,0,0.1);',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 20;',
+        },
+        '✕ Delete'
+      ],
       ['img', { src, style: 'width: 100%; display: block;' }],
       ['div', { innerHTML: hotspotsHtml, style: 'position: absolute; inset: 0;' }],
       [
@@ -609,6 +627,7 @@ const QASection = Node.create({
   name: 'qaSection',
   group: 'block',
   content: 'block+',
+  selectable: true,
 
   parseHTML() {
     return [{ tag: 'div[data-qa-section]' }];
@@ -619,8 +638,16 @@ const QASection = Node.create({
       'div',
       {
         'data-qa-section': '',
-        style: 'background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border-left: 6px solid #14B8A6;',
+        style: 'position: relative; background: linear-gradient(135deg, #F0FDFA 0%, #CCFBF1 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border-left: 6px solid #14B8A6;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'display: flex; align-items: center; gap: 10px; margin-bottom: 16px;' },
@@ -657,6 +684,7 @@ const DragDropExercise = Node.create({
   name: 'dragDropExercise',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -681,7 +709,7 @@ const DragDropExercise = Node.create({
     const itemsHtml = items.map((item, i) => 
       `<div draggable="true" style="padding: 12px 16px; margin: 4px; background: linear-gradient(135deg, #6366F1 0%, #8B5CF6 100%); color: white; border-radius: 8px; cursor: move; font-weight: 500; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" ondragstart="event.dataTransfer.setData('text', '${i}')">${item}</div>`
     ).join('');
-    
+
     const targetsHtml = targets.map((target, i) => 
       `<div ondrop="event.preventDefault(); this.style.background='#D1FAE5'; this.style.borderColor='#10B981'; this.innerHTML='✓ ' + this.getAttribute('data-target');" ondragover="event.preventDefault(); this.style.borderColor='#6366F1';" ondragleave="this.style.borderColor='#E5E7EB';" data-target="${target}" style="padding: 16px; margin: 8px 0; background: white; border: 2px dashed #E5E7EB; border-radius: 8px; min-height: 60px; transition: all 0.2s; display: flex; align-items: center; justify-content: center; font-weight: 500; color: #6B7280;">${target}</div>`
     ).join('');
@@ -690,8 +718,16 @@ const DragDropExercise = Node.create({
       'div',
       {
         'data-drag-drop': '',
-        style: 'background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #C7D2FE;',
+        style: 'position: relative; background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #C7D2FE;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 10;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'margin-bottom: 16px;' },
@@ -727,6 +763,7 @@ const FillInBlanks = Node.create({
   name: 'fillInBlanks',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -747,7 +784,7 @@ const FillInBlanks = Node.create({
     const { text, instruction } = node.attrs;
     const parts = text.split(/\[([^\]]+)\]/g);
     let htmlContent = '';
-    
+
     parts.forEach((part, i) => {
       if (i % 2 === 0) {
         htmlContent += part;
@@ -760,8 +797,16 @@ const FillInBlanks = Node.create({
       'div',
       {
         'data-fill-blanks': '',
-        style: 'background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #FCD34D;',
+        style: 'position: relative; background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #FCD34D;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'margin-bottom: 16px;' },
@@ -980,6 +1025,7 @@ const BranchingScenario = Node.create({
   name: 'branchingScenario',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -1018,8 +1064,16 @@ const BranchingScenario = Node.create({
       'div',
       {
         'data-branching': '',
-        style: 'background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #F9A8D4;',
+        style: 'position: relative; background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #F9A8D4;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 10;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'margin-bottom: 16px;' },
