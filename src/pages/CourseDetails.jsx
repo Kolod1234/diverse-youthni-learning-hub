@@ -444,20 +444,39 @@ export default function CourseDetails() {
 
                   {quizzes.length > 0 && (
                     <div>
-                      <h4 className="font-semibold text-gray-900 mb-3">Quizzes</h4>
+                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                        <Award className="w-5 h-5 text-indigo-600" />
+                        Course Quizzes
+                      </h4>
                       <div className="space-y-2">
                         {quizzes.map((quiz) => (
                           <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
-                            <div className="flex items-center justify-between p-4 bg-indigo-50 rounded-lg hover:bg-indigo-100 transition-colors">
+                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg hover:shadow-md transition-all border border-indigo-100">
                               <div>
                                 <p className="font-medium text-gray-900">{quiz.title}</p>
-                                <div className="flex gap-2 text-sm text-gray-500">
-                                  <span>{quiz.questions?.length} questions</span>
-                                  {quiz.topic && <span>• {quiz.topic}</span>}
-                                  {quiz.subtopic && <span>• {quiz.subtopic}</span>}
+                                <div className="flex gap-2 text-sm text-gray-600 mt-1">
+                                  <span className="flex items-center gap-1">
+                                    <Award className="w-3 h-3" />
+                                    {quiz.questions?.length} questions
+                                  </span>
+                                  {quiz.time_limit_minutes && (
+                                    <>
+                                      <span>•</span>
+                                      <span>{quiz.time_limit_minutes} min</span>
+                                    </>
+                                  )}
+                                  {quiz.difficulty && (
+                                    <>
+                                      <span>•</span>
+                                      <span className="capitalize">{quiz.difficulty}</span>
+                                    </>
+                                  )}
                                 </div>
                               </div>
-                              <ChevronRight className="w-5 h-5 text-indigo-600" />
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm text-indigo-600 font-medium">Take Quiz</span>
+                                <ChevronRight className="w-5 h-5 text-indigo-600" />
+                              </div>
                             </div>
                           </Link>
                         ))}
