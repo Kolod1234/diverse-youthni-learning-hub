@@ -167,24 +167,26 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
             </AnimatePresence>
           </div>
 
-          {/* Navigation Arrows (Presenter only) */}
-          {isPresenter && (
-            <>
-              <button
-                onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
-                disabled={currentSlideIndex === 0}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-xl border-2 border-gray-200"
-              >
-                <ChevronLeft className="w-8 h-8" />
-              </button>
-              <button
-                onClick={() => handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
-                disabled={currentSlideIndex === lesson.slides.length - 1}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-xl border-2 border-gray-200"
-              >
-                <ChevronRight className="w-8 h-8" />
-              </button>
-            </>
+          {/* Navigation Arrows */}
+          <button
+            onClick={() => isPresenter && handleSlideChange(Math.max(0, currentSlideIndex - 1))}
+            disabled={currentSlideIndex === 0 || !isPresenter}
+            className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-2xl border-2 border-gray-200 z-50"
+          >
+            <ChevronLeft className="w-8 h-8" />
+          </button>
+          <button
+            onClick={() => isPresenter && handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
+            disabled={currentSlideIndex === lesson.slides.length - 1 || !isPresenter}
+            className="absolute right-8 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-2xl border-2 border-gray-200 z-50"
+          >
+            <ChevronRight className="w-8 h-8" />
+          </button>
+          
+          {!isPresenter && (
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg">
+              Presenter is in control of slides
+            </div>
           )}
         </div>
 
