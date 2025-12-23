@@ -41,7 +41,7 @@ function ShortcutItem({ keys, description }) {
 }
 
 // SIDEBAR COMPONENT OUTSIDE - STABLE
-const SidebarContent = React.memo(({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
+const SidebarContent = React.memo(({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId, isLessonAccessible }) => (
   <div className="h-full flex flex-col">
     <div className="p-4 border-b border-gray-100">
       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
@@ -574,6 +574,7 @@ export default function LessonPlayer() {
               enrollment={enrollment}
               currentLesson={currentLesson}
               courseId={courseId}
+              isLessonAccessible={isLessonAccessible}
             />
           </motion.aside>
         )}
@@ -600,6 +601,7 @@ export default function LessonPlayer() {
                   enrollment={enrollment}
                   currentLesson={currentLesson}
                   courseId={courseId}
+                  isLessonAccessible={isLessonAccessible}
                 />
               </SheetContent>
             </Sheet>
