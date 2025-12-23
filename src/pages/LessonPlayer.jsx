@@ -982,8 +982,8 @@ export default function LessonPlayer() {
           </div>
 
           {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-8">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl aspect-video p-8 overflow-auto">
+          <div className="flex-1 flex items-center justify-center relative p-8 mx-auto">
+            <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl aspect-video p-8 overflow-auto mx-auto">
               <h2 className="text-2xl font-bold text-gray-900 mb-4">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
