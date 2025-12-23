@@ -19,6 +19,7 @@ import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
+import LearningPaths from './pages/LearningPaths';
 import __Layout from './Layout.jsx';
 
 
@@ -44,6 +45,7 @@ export const PAGES = {
     "TutorDashboard": TutorDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
+    "LearningPaths": LearningPaths,
 }
 
 export const pagesConfig = {

@@ -73,6 +73,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
+    { name: 'Learning Paths', href: createPageUrl('LearningPaths'), icon: Award },
     { name: 'Programmes', href: createPageUrl('Programs'), icon: ClipboardList },
     ...tutorNavigation,
     ...adminNavigation,

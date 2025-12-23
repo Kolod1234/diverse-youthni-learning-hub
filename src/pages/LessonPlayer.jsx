@@ -92,20 +92,32 @@ const SidebarContent = React.memo(({ course, completedCount, lessons, progressPe
               {sectionLessons.map((lesson) => {
                 const isActive = lesson.id === currentLesson?.id;
                 const isLessonCompleted = enrollment?.completed_lessons?.includes(lesson.id);
-                
+                const canAccess = isLessonAccessible(lesson);
+
                 return (
                   <button
                     key={lesson.id}
-                    onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`}
+                    onClick={() => {
+                      if (canAccess) {
+                        window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`;
+                      }
+                    }}
+                    disabled={!canAccess}
                     className={`flex items-center gap-3 p-3 rounded-xl transition-all w-full text-left ${
                       isActive 
                         ? 'bg-indigo-50 text-indigo-600' 
-                        : 'hover:bg-gray-50 text-gray-700'
+                        : canAccess
+                        ? 'hover:bg-gray-50 text-gray-700'
+                        : 'opacity-50 cursor-not-allowed text-gray-500'
                     }`}
                   >
                     {isLessonCompleted ? (
                       <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
                         <CheckCircle className="w-4 h-4 text-emerald-600" />
+                      </div>
+                    ) : !canAccess ? (
+                      <div className="w-6 h-6 bg-amber-100 rounded-full flex items-center justify-center shrink-0">
+                        <Lock className="w-3 h-3 text-amber-600" />
                       </div>
                     ) : isActive ? (
                       <div className="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center shrink-0">
@@ -232,6 +244,31 @@ export default function LessonPlayer() {
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
 
+  // Check if lesson is accessible (drip schedule + prerequisites)
+  const isLessonAccessible = (lesson) => {
+    if (!enrollment) return lesson.is_preview;
+
+    // Check drip schedule
+    if (lesson.drip_schedule_days > 0) {
+      const enrollmentDate = new Date(enrollment.created_date);
+      const unlockDate = new Date(enrollmentDate);
+      unlockDate.setDate(unlockDate.getDate() + lesson.drip_schedule_days);
+      if (new Date() < unlockDate) return false;
+    }
+
+    // Check prerequisites
+    if (lesson.prerequisite_lesson_ids?.length > 0) {
+      const allPrereqsCompleted = lesson.prerequisite_lesson_ids.every(
+        prereqId => enrollment.completed_lessons?.includes(prereqId)
+      );
+      if (!allPrereqsCompleted) return false;
+    }
+
+    return true;
+  };
+
+  const canAccessCurrentLesson = currentLesson ? isLessonAccessible(currentLesson) : false;
+
   const sections = lessons.reduce((acc, lesson) => {
     const section = lesson.section || 'Getting Started';
     if (!acc[section]) acc[section] = [];
@@ -343,11 +380,65 @@ export default function LessonPlayer() {
             <Button variant="outline">Back to Course</Button>
           </Link>
         </div>
-      </div>
-    );
-  }
+        </div>
+        );
+        }
 
-  // STABLE EVENT HANDLERS
+        // Check lesson access
+        if (!canAccessCurrentLesson) {
+        const getDaysUntilUnlock = () => {
+        if (currentLesson.drip_schedule_days > 0 && enrollment) {
+        const enrollmentDate = new Date(enrollment.created_date);
+        const unlockDate = new Date(enrollmentDate);
+        unlockDate.setDate(unlockDate.getDate() + currentLesson.drip_schedule_days);
+        const daysLeft = Math.ceil((unlockDate - new Date()) / (1000 * 60 * 60 * 24));
+        return daysLeft > 0 ? daysLeft : 0;
+        }
+        return 0;
+        };
+
+        const getPrerequisiteLessons = () => {
+        if (!currentLesson.prerequisite_lesson_ids?.length) return [];
+        return lessons.filter(l => currentLesson.prerequisite_lesson_ids.includes(l.id));
+        };
+
+        return (
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <div className="text-center text-white max-w-2xl">
+          <Lock className="w-16 h-16 text-amber-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Lesson Locked</h2>
+          <p className="text-gray-400 mb-4">{currentLesson.title}</p>
+
+          {getDaysUntilUnlock() > 0 && (
+            <div className="bg-amber-500/10 border border-amber-500/30 rounded-lg p-4 mb-4">
+              <p className="text-amber-300">
+                This lesson will unlock in {getDaysUntilUnlock()} days
+              </p>
+            </div>
+          )}
+
+          {getPrerequisiteLessons().length > 0 && (
+            <div className="bg-blue-500/10 border border-blue-500/30 rounded-lg p-4 mb-4">
+              <p className="text-blue-300 mb-2">Complete these lessons first:</p>
+              <ul className="space-y-1">
+                {getPrerequisiteLessons().map(prereq => (
+                  <li key={prereq.id} className="text-sm">
+                    {enrollment?.completed_lessons?.includes(prereq.id) ? '✓' : '○'} {prereq.title}
+                  </li>
+                ))}
+              </ul>
+            </div>
+          )}
+
+          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+            <Button variant="outline">Back to Course</Button>
+          </Link>
+        </div>
+        </div>
+        );
+        }
+
+        // STABLE EVENT HANDLERS
   const markComplete = async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
