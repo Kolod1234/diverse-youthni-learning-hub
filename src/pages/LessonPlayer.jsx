@@ -554,7 +554,7 @@ export default function LessonPlayer() {
 
   // RENDER
   return (
-    <div className="fixed inset-0 flex flex-col h-screen w-screen overflow-hidden bg-gray-50">
+    <div className="fixed inset-0 flex flex-col h-screen w-screen bg-gray-50" style={{ overflow: 'hidden', maxWidth: '100vw' }}>
       <div className="flex flex-1 overflow-hidden">
         {/* Desktop Sidebar */}
         {sidebarOpen && (
@@ -1049,7 +1049,7 @@ export default function LessonPlayer() {
 
       {/* Presentation Mode */}
       {presentationMode && currentLesson.slides?.length > 0 && (
-        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center" style={{ overflow: 'hidden', width: '100vw', height: '100vh' }}>
           <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col">
             {/* Presentation Header */}
             <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700 rounded-t-2xl">
@@ -1140,27 +1140,10 @@ export default function LessonPlayer() {
                 </button>
               </div>
 
-              {/* Navigation Arrows - Left/Right */}
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-                }}
-                disabled={currentSlideIndex === 0}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
-              >
-                <ChevronLeft className="w-7 h-7" />
-              </button>
-              <button
-                onClick={(e) => {
-                  e.preventDefault();
-                  setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
-                }}
-                disabled={currentSlideIndex === currentLesson.slides.length - 1}
-                className="absolute left-20 top-1/2 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
-              >
-                <ChevronRight className="w-7 h-7" />
-              </button>
+              {/* Navigation Arrows - Left/Right - Hidden, use keyboard instead */}
+              <div className="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-3 py-2 rounded-lg flex items-center gap-2">
+                <span>Use ← → arrow keys to navigate</span>
+              </div>
             </div>
 
             {/* Slide Thumbnails - Bottom */}
