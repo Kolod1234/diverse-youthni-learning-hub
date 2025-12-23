@@ -463,33 +463,34 @@ export default function LessonPlayer() {
 
   // RENDER
   return (
-    <div className="h-screen w-screen overflow-hidden flex bg-gray-50">
-      {/* Desktop Sidebar */}
-      {sidebarOpen && (
-        <motion.aside
-          initial={{ width: 0, opacity: 0 }}
-          animate={{ width: 320, opacity: 1 }}
-          exit={{ width: 0, opacity: 0 }}
-          transition={{ duration: 0.3 }}
-          className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden"
-        >
-          <SidebarContent 
-            course={course}
-            completedCount={completedCount}
-            lessons={lessons}
-            progressPercent={progressPercent}
-            sections={sections}
-            enrollment={enrollment}
-            currentLesson={currentLesson}
-            courseId={courseId}
-          />
-        </motion.aside>
-      )}
+    <div className="fixed inset-0 flex flex-col h-screen w-screen overflow-hidden bg-gray-50">
+      <div className="flex flex-1 overflow-hidden">
+        {/* Desktop Sidebar */}
+        {sidebarOpen && (
+          <motion.aside
+            initial={{ width: 0, opacity: 0 }}
+            animate={{ width: 320, opacity: 1 }}
+            exit={{ width: 0, opacity: 0 }}
+            transition={{ duration: 0.3 }}
+            className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden flex-none"
+          >
+            <SidebarContent 
+              course={course}
+              completedCount={completedCount}
+              lessons={lessons}
+              progressPercent={progressPercent}
+              sections={sections}
+              enrollment={enrollment}
+              currentLesson={currentLesson}
+              courseId={courseId}
+            />
+          </motion.aside>
+        )}
 
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col">
-        {/* Top Bar */}
-        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
+        {/* Main Content */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Top Bar */}
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40">
           <div className="flex items-center gap-3">
             {/* Mobile Menu */}
             <Sheet>
@@ -594,8 +595,8 @@ export default function LessonPlayer() {
         </header>
 
         {/* Video/Content Area */}
-        <div className="flex-1 flex">
-          <div className={`flex-1 p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
+        <div className="flex-1 flex overflow-hidden">
+          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
@@ -824,7 +825,7 @@ export default function LessonPlayer() {
               animate={{ width: 320, opacity: 1 }}
               exit={{ width: 0, opacity: 0 }}
               transition={{ duration: 0.3 }}
-              className="hidden lg:block bg-white border-l border-gray-200 overflow-hidden"
+              className="hidden lg:block bg-white border-l border-gray-200 overflow-hidden flex-none"
             >
               <div className="h-full flex flex-col p-4">
                 <h3 className="font-semibold text-gray-900 mb-4">Your Notes</h3>
