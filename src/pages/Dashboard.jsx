@@ -88,15 +88,6 @@ export default function Dashboard() {
           </div>
         </motion.div>
 
-        {/* Stats Overview */}
-        <div className="mb-8">
-          <StatsOverview 
-            enrollments={enrollments} 
-            courses={courses}
-            achievements={achievements}
-          />
-        </div>
-
         {enrollments.length === 0 ? (
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -118,9 +109,19 @@ export default function Dashboard() {
             </Link>
           </motion.div>
         ) : (
-          <div className="grid lg:grid-cols-3 gap-8">
-            {/* Main Content */}
-            <div className="lg:col-span-2 space-y-6">
+          <>
+            {/* Stats Overview */}
+            <div className="mb-8">
+              <StatsOverview 
+                enrollments={enrollments} 
+                courses={courses}
+                achievements={achievements}
+              />
+            </div>
+            
+            <div className="grid lg:grid-cols-3 gap-8">
+              {/* Main Content */}
+              <div className="lg:col-span-2 space-y-6">
               <Tabs defaultValue="in-progress" className="w-full">
                 <TabsList className="bg-white border border-gray-200 p-1 rounded-xl">
                   <TabsTrigger 
@@ -247,7 +248,7 @@ export default function Dashboard() {
                 </Link>
               </div>
             </div>
-          </div>
+          </>
         )}
       </div>
     </div>
