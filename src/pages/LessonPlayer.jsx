@@ -129,6 +129,7 @@ export default function LessonPlayer() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [presentationMode, setPresentationMode] = useState(false);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -142,6 +143,26 @@ export default function LessonPlayer() {
     };
     loadUser();
   }, []);
+
+  // Keyboard navigation for presentation mode
+  useEffect(() => {
+    if (!presentationMode) return;
+    
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+      } else if (e.key === 'Escape') {
+        setPresentationMode(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentLesson]);
 
   // ALL QUERY HOOKS - UNCONDITIONAL (with enabled flags)
   const { data: course } = useQuery({
@@ -386,6 +407,19 @@ export default function LessonPlayer() {
           </div>
           
           <div className="flex items-center gap-2">
+            {currentLesson.slides?.length > 0 && (
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setPresentationMode(true)}
+                className="gap-2"
+              >
+                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
+                </svg>
+                Present
+              </Button>
+            )}
             <Button
               variant={showNotes ? 'default' : 'outline'}
               size="sm"
@@ -395,7 +429,7 @@ export default function LessonPlayer() {
               <StickyNote className="w-4 h-4 mr-2" />
               Notes
             </Button>
-            
+
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
               <Button variant="ghost" size="icon">
                 <X className="w-5 h-5" />
@@ -685,6 +719,100 @@ export default function LessonPlayer() {
           onComplete={() => setShowPointsAnimation(false)}
         />
       )}
-    </div>
-  );
-}
+
+      {/* Presentation Mode */}
+      {presentationMode && currentLesson.slides?.length > 0 && (
+        <div className="fixed inset-0 bg-black z-50 flex flex-col">
+          {/* Presentation Header */}
+          <div className="bg-gray-900 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700">
+            <div className="flex items-center gap-4">
+              <span className="text-sm font-medium">Slide {currentSlideIndex + 1} / {currentLesson.slides.length}</span>
+              <span className="text-xs text-gray-400">4:30:54 AM</span>
+            </div>
+            <div className="flex items-center gap-2">
+              {lessonQuizzes.length > 0 && (
+                <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`} target="_blank">
+                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800 gap-2">
+                    <Brain className="w-4 h-4" />
+                    Take Quiz
+                  </Button>
+                </Link>
+              )}
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setPresentationMode(false)}
+                className="text-white hover:bg-gray-800"
+              >
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+          </div>
+
+          {/* Slide Display */}
+          <div className="flex-1 flex items-center justify-center relative p-8">
+            <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl aspect-video p-12 overflow-auto">
+              <div className="max-w-4xl mx-auto">
+                <h2 className="text-4xl font-bold text-gray-900 mb-8">
+                  {currentLesson.slides[currentSlideIndex]?.title}
+                </h2>
+                <div 
+                  className="prose prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+                />
+              </div>
+            </div>
+
+            {/* Navigation Arrows */}
+            <button
+              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+              disabled={currentSlideIndex === 0}
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+            >
+              <ChevronLeft className="w-6 h-6" />
+            </button>
+            <button
+              onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
+              disabled={currentSlideIndex === currentLesson.slides.length - 1}
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+            >
+              <ChevronRight className="w-6 h-6" />
+            </button>
+          </div>
+
+          {/* Slide Thumbnails */}
+          <div className="bg-gray-900 border-t border-gray-700 p-4">
+            <div className="max-w-7xl mx-auto">
+              <div className="flex items-center gap-3 overflow-x-auto pb-2">
+                <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0">Upcoming Slides</span>
+                {currentLesson.slides.map((slide, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setCurrentSlideIndex(idx)}
+                    className={`shrink-0 rounded-lg border-2 transition-all ${
+                      idx === currentSlideIndex
+                        ? 'border-indigo-500 ring-2 ring-indigo-500/50'
+                        : 'border-gray-700 hover:border-gray-500'
+                    }`}
+                  >
+                    <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
+                      <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
+                      <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
+                        {slide.title}
+                      </span>
+                    </div>
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Keyboard Navigation Hint */}
+          <div className="absolute bottom-24 left-6 bg-black/70 text-white text-xs px-3 py-2 rounded-lg">
+            Navigation: ← → Space | ESC: Exit
+          </div>
+        </div>
+      )}
+      </div>
+      );
+      }
