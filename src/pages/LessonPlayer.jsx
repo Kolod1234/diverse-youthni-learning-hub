@@ -666,7 +666,7 @@ export default function LessonPlayer() {
           {/* Top Bar */}
           <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 z-40">
             <div className="px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between overflow-hidden">
-          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 overflow-hidden">
+              <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1 overflow-hidden">
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
@@ -699,11 +699,11 @@ export default function LessonPlayer() {
               {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
 
-            <div className="min-w-0 flex-1 overflow-hidden">
-              <h1 className="font-semibold text-gray-900 truncate text-sm sm:text-base leading-tight">{currentLesson.title}</h1>
-              <p className="text-xs text-gray-500 truncate leading-tight mt-0.5">{currentLesson.section || 'Getting Started'}</p>
-            </div>
-          </div>
+                <div className="min-w-0 flex-1 overflow-hidden">
+                  <h1 className="font-semibold text-gray-900 truncate text-sm sm:text-base leading-tight">{currentLesson.title}</h1>
+                  <p className="text-xs text-gray-500 truncate leading-tight mt-0.5">{currentLesson.section || 'Getting Started'}</p>
+                </div>
+              </div>
           
           {/* Action Buttons - Below on Mobile, Inline on Desktop */}
           <div className="flex sm:hidden w-full px-2 py-2 gap-2 border-t border-gray-100">
@@ -757,10 +757,10 @@ export default function LessonPlayer() {
                 )}
               </>
             )}
-          </div>
-          
-          {/* Desktop Action Buttons */}
-          <div className="hidden sm:flex items-center gap-2">
+            </div>
+            
+            {/* Desktop Action Buttons */}
+            <div className="hidden sm:flex items-center gap-2 px-2 sm:px-4 py-2">
             {currentLesson.slides?.length > 0 && (
               <>
                 {!liveSession ? (
@@ -846,8 +846,8 @@ export default function LessonPlayer() {
             </div>
           </header>
 
-        {/* Video/Content Area */}
-        <div className="flex-1 flex min-w-0 overflow-hidden w-full">
+          {/* Video/Content Area */}
+          <div className="flex-1 flex min-w-0 overflow-hidden w-full">
           <div className={`flex-1 min-w-0 overflow-y-auto p-3 sm:p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch', width: '100%' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
@@ -1121,8 +1121,8 @@ export default function LessonPlayer() {
               </div>
             </motion.aside>
           )}
+          </div>
         </div>
-      </div>
       </div>
 
       {/* Rating Dialog */}
