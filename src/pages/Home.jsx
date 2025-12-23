@@ -20,36 +20,36 @@ export default function Home() {
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
-    queryFn: () => base44.entities.Course.list('-created_date', 100),
+    queryFn: () => base44.entities.Course.list('-created_date', 100)
   });
 
   const { data: carouselImages = [] } = useQuery({
     queryKey: ['carousel-images'],
     queryFn: () => base44.entities.CarouselImage.filter({ is_active: true }, 'order', 20),
-    initialData: [],
+    initialData: []
   });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000)
   });
 
   const { data: allReviews = [] } = useQuery({
     queryKey: ['all-reviews'],
-    queryFn: () => base44.entities.Review.list('-created_date', 1000),
+    queryFn: () => base44.entities.Review.list('-created_date', 1000)
   });
 
   // Calculate actual ratings and enrollments for each course
-  const coursesWithActualData = courses.map(course => {
-    const courseReviews = allReviews.filter(r => 
-      r.course_id === course.id && (r.rating_type === 'course' || !r.rating_type)
+  const coursesWithActualData = courses.map((course) => {
+    const courseReviews = allReviews.filter((r) =>
+    r.course_id === course.id && (r.rating_type === 'course' || !r.rating_type)
     );
-    const actualRating = courseReviews.length > 0
-      ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
-      : null;
-    
-    const enrollmentCount = enrollments.filter(e => e.course_id === course.id).length;
-    
+    const actualRating = courseReviews.length > 0 ?
+    courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length :
+    null;
+
+    const enrollmentCount = enrollments.filter((e) => e.course_id === course.id).length;
+
     return {
       ...course,
       rating: actualRating,
@@ -57,32 +57,32 @@ export default function Home() {
     };
   });
 
-  const totalStudents = new Set(enrollments.map(e => e.created_by)).size;
-  
+  const totalStudents = new Set(enrollments.map((e) => e.created_by)).size;
+
   // Calculate average rating from actual reviews only
-  const coursesWithRatings = coursesWithActualData.filter(c => c.rating !== null);
-  const averageRating = coursesWithRatings.length > 0 
-    ? (coursesWithRatings.reduce((sum, c) => sum + c.rating, 0) / coursesWithRatings.length).toFixed(1)
-    : null;
+  const coursesWithRatings = coursesWithActualData.filter((c) => c.rating !== null);
+  const averageRating = coursesWithRatings.length > 0 ?
+  (coursesWithRatings.reduce((sum, c) => sum + c.rating, 0) / coursesWithRatings.length).toFixed(1) :
+  null;
 
-  const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
+  const featuredCourses = coursesWithActualData.filter((c) => c.is_featured).slice(0, 3);
 
-  const filteredCourses = coursesWithActualData.filter(course => {
+  const filteredCourses = coursesWithActualData.filter((course) => {
     const matchesCategory = category === 'all' || course.category === category;
-    const matchesSearch = !searchQuery || 
-      course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSearch = !searchQuery ||
+    course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+    course.instructor?.toLowerCase().includes(searchQuery.toLowerCase());
     return matchesCategory && matchesSearch;
   });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     switch (sortBy) {
-      case 'rating': return (b.rating || 0) - (a.rating || 0);
-      case 'newest': return new Date(b.created_date) - new Date(a.created_date);
-      case 'price_low': return (a.price || 0) - (b.price || 0);
-      case 'price_high': return (b.price || 0) - (a.price || 0);
-      default: return (b.enrolled_count || 0) - (a.enrolled_count || 0);
+      case 'rating':return (b.rating || 0) - (a.rating || 0);
+      case 'newest':return new Date(b.created_date) - new Date(a.created_date);
+      case 'price_low':return (a.price || 0) - (b.price || 0);
+      case 'price_high':return (b.price || 0) - (a.price || 0);
+      default:return (b.enrolled_count || 0) - (a.enrolled_count || 0);
     }
   });
 
@@ -103,22 +103,22 @@ export default function Home() {
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="max-w-4xl mx-auto"
-            >
+              className="max-w-4xl mx-auto">
+
               <motion.div
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ duration: 0.5, delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8 border border-white/30"
-              >
+                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8 border border-white/30">
+
                 <Sparkles className="w-4 h-4 text-white" />
                 <span>Transform Your Future with Quality Education</span>
               </motion.div>
               
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white drop-shadow-lg">
                 Diverse Youth NI
-                <span className="block mt-3 bg-gradient-to-r from-yellow-200 via-amber-200 to-white bg-clip-text text-transparent">
-                  Learning Hub
+                <span className="bg-clip-text text-transparent mt-3 rounded-none block from-yellow-200 via-amber-200 to-white">Learning Hub
+
                 </span>
               </h1>
               
@@ -130,8 +130,8 @@ export default function Home() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
+                transition={{ duration: 0.6, delay: 0.4 }}>
+
                 <Link to={createPageUrl('Explore')}>
                   <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-white/50 hover:shadow-orange-400/70 transition-all duration-300">
                     Start Learning Now
@@ -143,18 +143,18 @@ export default function Home() {
           </div>
           
           {/* Enhanced Stats */}
-          <motion.div 
+          <motion.div
             initial={{ opacity: 0, y: 50 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
-          >
+            className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto">
+
             <motion.div
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-center"
-            >
+              className="text-center">
+
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 mb-4 shadow-2xl shadow-cyan-500/50">
                 <Users className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
@@ -168,8 +168,8 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.8 }}
-              className="text-center"
-            >
+              className="text-center">
+
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 mb-4 shadow-2xl shadow-violet-500/50">
                 <BookOpen className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
@@ -183,8 +183,8 @@ export default function Home() {
               initial={{ opacity: 0, scale: 0.8 }}
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 0.5, delay: 0.9 }}
-              className="text-center"
-            >
+              className="text-center">
+
               <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-4 shadow-2xl shadow-amber-500/50">
                 <Star className="w-7 h-7 text-white drop-shadow-lg" />
               </div>
@@ -199,7 +199,7 @@ export default function Home() {
         {/* Modern wave decoration */}
         <div className="absolute bottom-0 left-0 right-0">
           <svg className="w-full h-24 sm:h-32" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
-            <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="white"/>
+            <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="white" />
           </svg>
         </div>
       </section>
@@ -207,12 +207,12 @@ export default function Home() {
       {/* Search Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="max-w-4xl mx-auto">
-          <SearchBar 
-            value={searchQuery} 
+          <SearchBar
+            value={searchQuery}
             onChange={setSearchQuery}
             sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
+            onSortChange={setSortBy} />
+
         </div>
       </section>
 
@@ -223,8 +223,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
-        >
+          className="text-center mb-12">
+
           <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-pink-100 text-orange-600 text-sm font-semibold mb-4 border border-orange-200">
             Our Community
           </span>
@@ -236,44 +236,44 @@ export default function Home() {
           </p>
         </motion.div>
         
-        <motion.div 
+        <motion.div
           initial={{ opacity: 0, scale: 0.95 }}
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="relative"
-        >
+          className="relative">
+
           <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
             <div className="flex">
               {(carouselImages.length > 0 ? carouselImages : [
-                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80' },
-                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80' },
-                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80' },
-              ]).map((img, idx) => (
-                <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
+              { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80' },
+              { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80' },
+              { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80' }]).
+              map((img, idx) =>
+              <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
                   <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[16/9]">
                     <img
-                      src={img.image_url}
-                      alt={`Community ${idx + 1}`}
-                      className="w-full h-full object-cover object-center"
-                    />
+                    src={img.image_url}
+                    alt={`Community ${idx + 1}`}
+                    className="w-full h-full object-cover object-center" />
+
                     <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
                   </div>
                 </div>
-              ))}
+              )}
             </div>
           </div>
           
           <button
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
-          >
+            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent">
+
             <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
           </button>
           <button
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
-          >
+            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent">
+
             <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
           </button>
         </motion.div>
@@ -286,8 +286,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50"
-        >
+          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50">
+
           <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
 
@@ -318,16 +318,16 @@ export default function Home() {
       </section>
 
       {/* Featured Courses */}
-      {featuredCourses.length > 0 && (
-        <section className="bg-gradient-to-b from-gray-50 to-white py-20">
+      {featuredCourses.length > 0 &&
+      <section className="bg-gradient-to-b from-gray-50 to-white py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6 }}
-              viewport={{ once: true }}
-              className="flex items-center justify-between mb-12"
-            >
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-between mb-12">
+
               <div>
                 <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 text-violet-700 text-sm font-semibold mb-3 border border-violet-200">
                   Top Picks
@@ -343,13 +343,13 @@ export default function Home() {
             </motion.div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {featuredCourses.map((course, index) => (
-                <CourseCard key={course.id} course={course} index={index} />
-              ))}
+              {featuredCourses.map((course, index) =>
+            <CourseCard key={course.id} course={course} index={index} />
+            )}
             </div>
           </div>
         </section>
-      )}
+      }
 
       {/* Browse by Category */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -358,8 +358,8 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
-        >
+          className="text-center mb-12">
+
           <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 text-sm font-semibold mb-4 border border-emerald-200">
             Explore Learning Paths
           </span>
@@ -373,10 +373,10 @@ export default function Home() {
           <CategoryFilter selected={category} onSelect={setCategory} />
         </div>
         
-        {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
+        {isLoading ?
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {[...Array(8)].map((_, i) =>
+          <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
                 <div className="aspect-video bg-gray-200" />
                 <div className="p-5 space-y-3">
                   <div className="h-4 bg-gray-200 rounded w-1/3" />
@@ -384,30 +384,30 @@ export default function Home() {
                   <div className="h-4 bg-gray-200 rounded w-2/3" />
                 </div>
               </div>
-            ))}
-          </div>
-        ) : sortedCourses.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedCourses.slice(0, 8).map((course, index) => (
-              <CourseCard key={course.id} course={course} index={index} />
-            ))}
-          </div>
-        ) : (
-          <div className="text-center py-16">
+          )}
+          </div> :
+        sortedCourses.length > 0 ?
+        <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {sortedCourses.slice(0, 8).map((course, index) =>
+          <CourseCard key={course.id} course={course} index={index} />
+          )}
+          </div> :
+
+        <div className="text-center py-16">
             <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No courses found</h3>
             <p className="text-gray-500">Try adjusting your search or filter criteria</p>
           </div>
-        )}
+        }
         
-        {sortedCourses.length > 8 && (
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-            viewport={{ once: true }}
-            className="text-center mt-12"
-          >
+        {sortedCourses.length > 8 &&
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.6 }}
+          viewport={{ once: true }}
+          className="text-center mt-12">
+
             <Link to={createPageUrl('Explore')}>
               <Button size="lg" className="bg-gradient-to-r from-orange-600 via-rose-600 to-pink-600 hover:from-orange-700 hover:via-rose-700 hover:to-pink-700 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl shadow-orange-500/50 hover:shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105">
                 View All Courses
@@ -415,7 +415,7 @@ export default function Home() {
               </Button>
             </Link>
           </motion.div>
-        )}
+        }
       </section>
 
       {/* CTA Section */}
@@ -430,8 +430,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
+            viewport={{ once: true }}>
+
             <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8">
               <Zap className="w-4 h-4 text-yellow-300" />
               <span>Join Thousands of Successful Learners</span>
@@ -465,6 +465,6 @@ export default function Home() {
           </motion.div>
         </div>
       </section>
-    </div>
-  );
+    </div>);
+
 }
