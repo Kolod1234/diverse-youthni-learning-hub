@@ -40,15 +40,17 @@ export default function TutorDashboard() {
     loadUser();
   }, []);
 
-  const { data: courses = [] } = useQuery({
+  const { data: courses = [], isLoading: loadingCourses } = useQuery({
     queryKey: ['tutor-courses', user?.email],
     queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
     enabled: !!user?.email,
+    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
   const { data: allEnrollments = [] } = useQuery({
     queryKey: ['tutor-enrollments'],
     queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
+    staleTime: 3 * 60 * 1000, // Cache for 3 minutes
   });
 
   const { data: assignments = [] } = useQuery({
