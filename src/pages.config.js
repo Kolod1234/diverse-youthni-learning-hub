@@ -7,6 +7,7 @@ import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
+import Home from './pages/Home';
 import LessonPlayer from './pages/LessonPlayer';
 import Profile from './pages/Profile';
 import Programs from './pages/Programs';
@@ -18,7 +19,6 @@ import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
-import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -32,6 +32,7 @@ export const PAGES = {
     "DataPresentation": DataPresentation,
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
+    "Home": Home,
     "LessonPlayer": LessonPlayer,
     "Profile": Profile,
     "Programs": Programs,
@@ -43,7 +44,6 @@ export const PAGES = {
     "TutorDashboard": TutorDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
-    "Home": Home,
 }
 
 export const pagesConfig = {

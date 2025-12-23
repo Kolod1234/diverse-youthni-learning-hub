@@ -220,7 +220,7 @@ export default function LessonPlayer() {
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
-  // Keyboard navigation for presentation mode - AFTER currentLesson is defined
+  // Keyboard navigation for presentation mode
   useEffect(() => {
     if (!presentationMode || !currentLesson?.slides) return;
     
@@ -238,7 +238,41 @@ export default function LessonPlayer() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [presentationMode, currentLesson]);
+  }, [presentationMode, currentLesson?.slides]);
+
+  // RENDER EARLY RETURNS BEFORE EVENT HANDLERS
+  if (lessonsLoading) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
+          <p className="text-lg">Loading lesson...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!currentLesson) {
+    return (
+      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
+        <div className="text-center text-white max-w-2xl">
+          <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
+          <div className="text-left bg-gray-800 p-4 rounded-lg mb-4 text-sm">
+            <p className="text-gray-400 mb-2">Debug Info:</p>
+            <p className="text-gray-400">Course ID: {courseId || 'missing'}</p>
+            <p className="text-gray-400">Lesson ID: {lessonId || 'missing'}</p>
+            <p className="text-gray-400">Total Lessons Found: {lessons.length}</p>
+            <p className="text-gray-400">Lessons IDs: {lessons.map(l => l.id).join(', ')}</p>
+            <p className="text-gray-400 mt-2">Check browser console for more details</p>
+          </div>
+          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+            <Button variant="outline">Back to Course</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // STABLE EVENT HANDLERS
   const markComplete = async () => {
@@ -355,39 +389,6 @@ export default function LessonPlayer() {
   };
 
   // RENDER
-  if (lessonsLoading) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-white mx-auto mb-4"></div>
-          <p className="text-lg">Loading lesson...</p>
-        </div>
-      </div>
-    );
-  }
-
-  if (!currentLesson) {
-    return (
-      <div className="min-h-screen bg-gray-900 flex items-center justify-center p-4">
-        <div className="text-center text-white max-w-2xl">
-          <BookOpen className="w-16 h-16 text-gray-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">No lessons available</h2>
-          <div className="text-left bg-gray-800 p-4 rounded-lg mb-4 text-sm">
-            <p className="text-gray-400 mb-2">Debug Info:</p>
-            <p className="text-gray-400">Course ID: {courseId || 'missing'}</p>
-            <p className="text-gray-400">Lesson ID: {lessonId || 'missing'}</p>
-            <p className="text-gray-400">Total Lessons Found: {lessons.length}</p>
-            <p className="text-gray-400">Lessons IDs: {lessons.map(l => l.id).join(', ')}</p>
-            <p className="text-gray-400 mt-2">Check browser console for more details</p>
-          </div>
-          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-            <Button variant="outline">Back to Course</Button>
-          </Link>
-        </div>
-      </div>
-    );
-  }
-
   return (
     <div className="min-h-screen bg-gray-50 flex">
       {/* Desktop Sidebar */}
