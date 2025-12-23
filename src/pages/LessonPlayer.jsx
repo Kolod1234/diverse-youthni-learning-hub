@@ -868,6 +868,7 @@ export default function LessonPlayer() {
             </motion.aside>
           )}
         </div>
+        </div>
       </div>
 
       {/* Rating Dialog */}
