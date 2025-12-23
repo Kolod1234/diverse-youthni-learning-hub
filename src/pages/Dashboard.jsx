@@ -29,17 +29,20 @@ export default function Dashboard() {
     queryKey: ['enrollments', user?.email],
     queryFn: () => base44.entities.Enrollment.filter({ created_by: user?.email }, '-updated_date', 50),
     enabled: !!user?.email,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.list('-created_date', 100),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: achievements = [] } = useQuery({
     queryKey: ['achievements', user?.email],
     queryFn: () => base44.entities.Achievement.filter({ created_by: user?.email }, '-earned_date', 20),
     enabled: !!user?.email,
+    staleTime: 3 * 60 * 1000,
   });
 
   const { data: userProgress } = useQuery({
@@ -49,6 +52,7 @@ export default function Dashboard() {
       return progressList[0] || { points: 0, level: 1, streak_days: 0 };
     },
     enabled: !!user?.email,
+    staleTime: 2 * 60 * 1000,
   });
 
   const getGreeting = () => {
