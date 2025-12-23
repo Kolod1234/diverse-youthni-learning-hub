@@ -1020,18 +1020,22 @@ export default function LessonPlayer() {
               <button
                 onClick={() => {
                   const element = document.getElementById('slideContent');
-                  element.scrollBy({ top: -200, behavior: 'smooth' });
+                  if (element) {
+                    element.scrollTop = Math.max(0, element.scrollTop - 300);
+                  }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50"
               >
                 <ChevronLeft className="w-10 h-10 rotate-90" />
               </button>
               <button
                 onClick={() => {
                   const element = document.getElementById('slideContent');
-                  element.scrollBy({ top: 200, behavior: 'smooth' });
+                  if (element) {
+                    element.scrollTop = element.scrollTop + 300;
+                  }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50"
               >
                 <ChevronRight className="w-10 h-10 rotate-90" />
               </button>
