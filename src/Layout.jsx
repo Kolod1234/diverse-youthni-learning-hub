@@ -129,7 +129,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
-    <div className="flex flex-col min-h-screen bg-gray-50 overflow-x-hidden">
+    <div className="relative min-h-screen w-full flex flex-col bg-gray-50">
       <style>
         {`
           :root {
@@ -232,7 +232,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-grow">{children}</main>
+      <main className="flex-1 w-full max-w-full">{children}</main>
 
       {/* Admin Password Modal */}
       {showAdminPassword && (
