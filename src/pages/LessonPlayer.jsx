@@ -954,160 +954,138 @@ export default function LessonPlayer() {
 
       {/* Presentation Mode */}
       {presentationMode && currentLesson.slides?.length > 0 && (
-        <div className="fixed inset-0 bg-black z-50 flex flex-col">
-          {/* Presentation Header */}
-          <div className="bg-gray-900 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700">
-            <div className="flex items-center gap-4">
-              <span className="text-sm font-medium">Slide {currentSlideIndex + 1} / {currentLesson.slides.length}</span>
-              <span className="text-xs text-gray-400">4:30:54 AM</span>
+        <div className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+          <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col">
+            {/* Presentation Header */}
+            <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700 rounded-t-2xl">
+              <div className="flex items-center gap-4">
+                <span className="text-sm font-medium">Slide {currentSlideIndex + 1} / {currentLesson.slides.length}</span>
+              </div>
+              <div className="flex items-center gap-2">
+                {lessonQuizzes.length > 0 && (
+                  <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`} target="_blank">
+                    <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700 gap-2">
+                      <Brain className="w-4 h-4" />
+                      Take Quiz
+                    </Button>
+                  </Link>
+                )}
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setPresentationMode(false)}
+                  className="text-white hover:bg-gray-700"
+                >
+                  <X className="w-5 h-5" />
+                </Button>
+              </div>
             </div>
-            <div className="flex items-center gap-2">
-              {lessonQuizzes.length > 0 && (
-                <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`} target="_blank">
-                  <Button variant="ghost" size="sm" className="text-white hover:bg-gray-800 gap-2">
-                    <Brain className="w-4 h-4" />
-                    Take Quiz
-                  </Button>
-                </Link>
-              )}
-              <Button
-                variant="ghost"
-                size="sm"
-                onClick={() => setPresentationMode(false)}
-                className="text-white hover:bg-gray-800"
-              >
-                <X className="w-5 h-5" />
-              </Button>
-            </div>
-          </div>
 
-          {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-4">
-            <style>{`
-              .slide-scroller::-webkit-scrollbar {
-                width: 16px;
-                height: 16px;
-              }
-              .slide-scroller::-webkit-scrollbar-track {
-                background: #e5e7eb;
-                border-radius: 10px;
-                border: 2px solid #d1d5db;
-              }
-              .slide-scroller::-webkit-scrollbar-thumb {
-                background: #6366f1;
-                border-radius: 10px;
-                border: 2px solid #e5e7eb;
-              }
-              .slide-scroller::-webkit-scrollbar-thumb:hover {
-                background: #4f46e5;
-              }
-              .slide-scroller::-webkit-scrollbar-corner {
-                background: #e5e7eb;
-              }
-            `}</style>
-            <div 
-              id="slideContent" 
-              className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-full p-8 md:p-12 overflow-auto slide-scroller"
-            >
-              <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-4 md:mb-6">
-                {currentLesson.slides[currentSlideIndex]?.title}
-              </h2>
+            {/* Slide Display */}
+            <div className="flex-1 flex items-center justify-center relative p-6 overflow-hidden">
+              <style>{`
+                #slideContent {
+                  scrollbar-width: thin;
+                  scrollbar-color: #6366f1 #e5e7eb;
+                }
+                #slideContent::-webkit-scrollbar {
+                  width: 12px;
+                  height: 12px;
+                }
+                #slideContent::-webkit-scrollbar-track {
+                  background: #e5e7eb;
+                  border-radius: 6px;
+                }
+                #slideContent::-webkit-scrollbar-thumb {
+                  background: #6366f1;
+                  border-radius: 6px;
+                }
+                #slideContent::-webkit-scrollbar-thumb:hover {
+                  background: #4f46e5;
+                }
+              `}</style>
               <div 
-                className="prose prose-sm md:prose-lg max-w-none"
-                dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-              />
-            </div>
+                id="slideContent" 
+                className="bg-white rounded-xl shadow-xl w-full h-full p-8 overflow-y-auto overflow-x-hidden"
+              >
+                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+                  {currentLesson.slides[currentSlideIndex]?.title}
+                </h2>
+                <div 
+                  className="prose prose-base md:prose-lg max-w-none"
+                  dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+                />
+              </div>
 
-            {/* Scroll Control Buttons - Up/Down */}
-            <div className="absolute right-4 md:right-8 top-1/2 -translate-y-1/2 flex flex-col gap-3 z-50">
+              {/* Scroll Control Buttons - Up/Down */}
+              <div className="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col gap-3">
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('slideContent');
+                    if (element) {
+                      element.scrollTop -= 200;
+                    }
+                  }}
+                  className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
+                >
+                  <ChevronLeft className="w-8 h-8 rotate-90" />
+                </button>
+                <button
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById('slideContent');
+                    if (element) {
+                      element.scrollTop += 200;
+                    }
+                  }}
+                  className="w-14 h-14 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
+                >
+                  <ChevronRight className="w-8 h-8 rotate-90" />
+                </button>
+              </div>
+
+              {/* Navigation Arrows - Left/Right */}
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  e.stopPropagation();
-                  const element = document.getElementById('slideContent');
-                  if (element) {
-                    element.scrollTop = Math.max(0, element.scrollTop - 300);
-                  }
+                  setCurrentSlideIndex(prev => Math.max(0, prev - 1));
                 }}
-                className="w-12 h-12 md:w-16 md:h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-2 md:ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
+                disabled={currentSlideIndex === 0}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
               >
-                <ChevronLeft className="w-6 h-6 md:w-10 md:h-10 rotate-90" />
+                <ChevronLeft className="w-7 h-7" />
               </button>
               <button
                 onClick={(e) => {
                   e.preventDefault();
-                  e.stopPropagation();
-                  const element = document.getElementById('slideContent');
-                  if (element) {
-                    element.scrollTop = element.scrollTop + 300;
-                  }
+                  setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
                 }}
-                className="w-12 h-12 md:w-16 md:h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-2 md:ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
+                disabled={currentSlideIndex === currentLesson.slides.length - 1}
+                className="absolute left-20 top-1/2 -translate-y-1/2 w-14 h-14 bg-gray-800/80 hover:bg-gray-700 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl cursor-pointer"
               >
-                <ChevronRight className="w-6 h-6 md:w-10 md:h-10 rotate-90" />
+                <ChevronRight className="w-7 h-7" />
               </button>
             </div>
 
-            {/* Navigation Arrows - Left/Right */}
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-              }}
-              disabled={currentSlideIndex === 0}
-              className="absolute left-2 md:left-4 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-50 cursor-pointer"
-            >
-              <ChevronLeft className="w-6 h-6 md:w-8 md:h-8" />
-            </button>
-            <button
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
-              }}
-              disabled={currentSlideIndex === currentLesson.slides.length - 1}
-              className="absolute left-16 md:left-24 top-1/2 -translate-y-1/2 w-12 h-12 md:w-16 md:h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-50 cursor-pointer"
-            >
-              <ChevronRight className="w-6 h-6 md:w-8 md:h-8" />
-            </button>
-          </div>
-
-          {/* Slide Thumbnails - Bottom */}
-          <div className="bg-gray-900 border-t-2 border-gray-700 p-4 shadow-2xl">
-            <style>{`
-              .thumbnail-scroller::-webkit-scrollbar {
-                height: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-track {
-                background: #1f2937;
-                border-radius: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-thumb {
-                background: #4b5563;
-                border-radius: 10px;
-              }
-              .thumbnail-scroller::-webkit-scrollbar-thumb:hover {
-                background: #6b7280;
-              }
-            `}</style>
-            <div className="max-w-full mx-auto">
-              <div className="overflow-x-auto thumbnail-scroller pb-2">
-                <div className="flex items-center gap-3">
-                  <span className="text-xs text-gray-300 uppercase tracking-wide shrink-0 font-semibold">Next Slides</span>
+            {/* Slide Thumbnails - Bottom */}
+            <div className="bg-gray-800 border-t border-gray-700 p-3 rounded-b-2xl">
+              <div className="overflow-x-auto">
+                <div className="flex items-center gap-3 pb-2">
+                  <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0 font-semibold">Slides</span>
                   {currentLesson.slides.map((slide, idx) => (
                     <button
                       key={idx}
                       onClick={() => setCurrentSlideIndex(idx)}
-                      className={`shrink-0 rounded-lg border-2 transition-all hover:scale-105 ${
+                      className={`shrink-0 rounded-lg border-2 transition-all ${
                         idx === currentSlideIndex
-                          ? 'border-indigo-500 ring-2 ring-indigo-500/50 scale-105'
-                          : 'border-gray-700 hover:border-gray-500'
+                          ? 'border-indigo-500 ring-2 ring-indigo-400'
+                          : 'border-gray-600 hover:border-gray-500'
                       }`}
                     >
-                      <div className="w-40 aspect-video bg-white p-3 rounded-md flex flex-col items-center justify-center">
-                        <span className="text-xs text-gray-500 mb-1 font-semibold">Slide {idx + 1}</span>
-                        <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
+                      <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
+                        <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
+                        <span className="text-xs font-medium text-gray-900 line-clamp-1 text-center">
                           {slide.title}
                         </span>
                       </div>
@@ -1116,12 +1094,6 @@ export default function LessonPlayer() {
                 </div>
               </div>
             </div>
-          </div>
-
-          {/* Keyboard Navigation Hint */}
-          <div className="absolute bottom-32 left-6 bg-black/80 text-white text-sm px-4 py-3 rounded-lg shadow-xl">
-            <div className="font-semibold mb-1">Navigation:</div>
-            <div>← → arrows or Space | ESC to Exit</div>
           </div>
         </div>
       )}
