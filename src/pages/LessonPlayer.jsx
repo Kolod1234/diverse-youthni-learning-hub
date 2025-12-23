@@ -870,13 +870,15 @@ export default function LessonPlayer() {
       </div>
 
       {/* Rating Dialog */}
-      <LessonRatingDialog
-        open={showRatingDialog}
-        onOpenChange={setShowRatingDialog}
-        lesson={currentLesson}
-        course={course}
-        onComplete={handleRatingComplete}
-      />
+      {course && currentLesson && (
+        <LessonRatingDialog
+          open={showRatingDialog}
+          onOpenChange={setShowRatingDialog}
+          lesson={currentLesson}
+          course={course}
+          onComplete={handleRatingComplete}
+        />
+      )}
 
       {showPointsAnimation && (
         <PointsAnimation 
