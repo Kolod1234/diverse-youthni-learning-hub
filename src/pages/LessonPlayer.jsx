@@ -167,7 +167,7 @@ export default function LessonPlayer() {
 
   const { data: lessonQuizzes = [] } = useQuery({
     queryKey: ['lesson-quizzes', courseId, lessonId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, lesson_id: lessonId }),
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, lesson_id: lessonId, is_published: true }),
     enabled: !!courseId && !!lessonId,
   });
 
