@@ -53,30 +53,30 @@ export default function CourseDetails() {
     enabled: !!courseId,
   });
 
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['enrollment', courseId, user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
-    enabled: !!courseId && !!user?.email,
-  });
-
-  // Calculate enrollment status first
-  const enrollment = enrollments[0];
-  const isEnrolled = !!enrollment;
-
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['quizzes', courseId],
     queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
     enabled: !!courseId,
   });
 
-  // Show all quizzes to enrolled students, only published to non-enrolled
-  const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
-
   const { data: reviews = [] } = useQuery({
     queryKey: ['reviews', courseId],
     queryFn: () => base44.entities.Review.filter({ course_id: courseId }, '-created_date', 20),
     enabled: !!courseId,
   });
+
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['enrollment', courseId, user?.email],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
+    enabled: !!courseId && !!user?.email,
+  });
+
+  // Calculate enrollment status
+  const enrollment = enrollments[0];
+  const isEnrolled = !!enrollment;
+
+  // Show all quizzes to enrolled students, only published to non-enrolled
+  const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
 
   const { data: allCourses = [] } = useQuery({
     queryKey: ['all-courses'],
