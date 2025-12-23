@@ -53,11 +53,14 @@ export default function CourseDetails() {
     enabled: !!courseId,
   });
 
-  const { data: quizzes = [] } = useQuery({
+  const { data: allQuizzes = [] } = useQuery({
     queryKey: ['quizzes', courseId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, is_published: true }),
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
     enabled: !!courseId,
   });
+
+  // Show all quizzes to enrolled students, only published to non-enrolled
+  const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
 
   const { data: reviews = [] } = useQuery({
     queryKey: ['reviews', courseId],
