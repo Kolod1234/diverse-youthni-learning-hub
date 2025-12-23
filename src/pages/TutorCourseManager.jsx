@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain, LayoutTemplate } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
@@ -17,6 +17,7 @@ import FileUploadManager from '@/components/editor/FileUploadManager';
 import SlideEditor from '@/components/editor/SlideEditor';
 import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
 import AdvancedAISlideGenerator from '@/components/tutor/AdvancedAISlideGenerator';
+import TemplateSelector from '@/components/templates/TemplateSelector';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -26,7 +27,25 @@ export default function TutorCourseManager() {
   const [lessonForm, setLessonForm] = useState({});
   const [analyzingLesson, setAnalyzingLesson] = useState(null);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
+  const [showTemplates, setShowTemplates] = useState(false);
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const pendingTemplate = localStorage.getItem('pendingTemplate');
+    if (pendingTemplate) {
+      try {
+        const template = JSON.parse(pendingTemplate);
+        if (template.category === 'lesson' && template.content?.slides) {
+          setLessonForm({ slides: template.content.slides, title: template.name });
+          setShowCreate(true);
+          toast.success(`Template "${template.name}" loaded!`);
+        }
+        localStorage.removeItem('pendingTemplate');
+      } catch (e) {
+        console.error('Failed to load template', e);
+      }
+    }
+  }, []);
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -365,6 +384,20 @@ export default function TutorCourseManager() {
             courseId={courseId}
             onSlidesGenerated={() => queryClient.invalidateQueries(['lessons'])}
             onClose={() => setShowAIGenerator(false)}
+          />
+        )}
+
+        {/* Template Selector */}
+        {showTemplates && (
+          <TemplateSelector
+            category="lesson"
+            onSelect={(template) => {
+              setLessonForm({ slides: template.content.slides, title: template.name });
+              setShowCreate(true);
+              setShowTemplates(false);
+              toast.success(`Template "${template.name}" loaded!`);
+            }}
+            onClose={() => setShowTemplates(false)}
           />
         )}
       </div>
