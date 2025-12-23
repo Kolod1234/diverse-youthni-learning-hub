@@ -33,7 +33,7 @@ import {
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
   CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
-  Palette, Type, Space
+  Palette, Type, Space, Clock
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -401,6 +401,7 @@ const Poll = Node.create({
   name: 'poll',
   group: 'block',
   atom: true,
+  selectable: true,
 
   addAttributes() {
     return {
@@ -430,8 +431,16 @@ const Poll = Node.create({
       'div',
       {
         'data-poll': '',
-        style: 'background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #C7D2FE;',
+        style: 'position: relative; background: linear-gradient(135deg, #EEF2FF 0%, #E0E7FF 100%); padding: 24px; border-radius: 16px; margin: 16px 0; border: 2px solid #C7D2FE;',
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600;',
+        },
+        '✕ Delete'
+      ],
       [
         'div',
         { style: 'margin-bottom: 16px;' },
@@ -780,6 +789,192 @@ const FillInBlanks = Node.create({
   },
 });
 
+// Timed Question Extension
+const TimedQuestion = Node.create({
+  name: 'timedQuestion',
+  group: 'block',
+  atom: true,
+  selectable: true,
+
+  addAttributes() {
+    return {
+      question: {
+        default: 'Solve this problem:',
+      },
+      options: {
+        default: ['Option A', 'Option B', 'Option C', 'Option D'],
+      },
+      correct: {
+        default: 0,
+      },
+      timeLimit: {
+        default: 60,
+      },
+      marks: {
+        default: 10,
+      },
+      difficulty: {
+        default: 'medium',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-timed-question]' }];
+  },
+
+  renderHTML({ node }) {
+    const { question, options, correct, timeLimit, marks, difficulty } = node.attrs;
+    const difficultyColors = {
+      easy: '#10B981',
+      medium: '#F59E0B',
+      hard: '#EF4444'
+    };
+
+    const optionsHtml = options.map((opt, i) => 
+      `<button data-option="${i}" style="display: block; width: 100%; padding: 14px 18px; margin: 8px 0; background: white; border: 2px solid #E5E7EB; border-radius: 8px; cursor: pointer; transition: all 0.2s; font-size: 15px; text-align: left; font-weight: 500;" onmouseover="this.style.borderColor='#6366F1'; this.style.background='#EEF2FF';" onmouseout="if(!this.disabled) { this.style.borderColor='#E5E7EB'; this.style.background='white'; }">${opt}</button>`
+    ).join('');
+
+    return [
+      'div',
+      {
+        'data-timed-question': '',
+        'data-correct': correct,
+        'data-marks': marks,
+        'data-time-limit': timeLimit,
+        style: 'position: relative; background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); padding: 28px; border-radius: 16px; margin: 16px 0; border: 3px solid #3B82F6;',
+      },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 10;',
+        },
+        '✕ Delete'
+      ],
+      [
+        'div',
+        { style: 'display: flex; justify-content: space-between; align-items: start; margin-bottom: 16px;' },
+        [
+          'div',
+          {},
+          [
+            'h4',
+            { style: 'font-size: 18px; font-weight: 700; color: #1E40AF; margin-bottom: 8px; display: flex; align-items: center; gap: 8px;' },
+            ['span', { innerHTML: '⏱️' }],
+            ['span', {}, question]
+          ],
+          [
+            'div',
+            { style: 'display: flex; gap: 8px; flex-wrap: wrap;' },
+            [
+              'span',
+              { style: `background: ${difficultyColors[difficulty]}; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;` },
+              difficulty.toUpperCase()
+            ],
+            [
+              'span',
+              { style: 'background: #10B981; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;' },
+              `${marks} marks`
+            ],
+            [
+              'span',
+              { style: 'background: #6366F1; color: white; padding: 4px 12px; border-radius: 12px; font-size: 12px; font-weight: 600;' },
+              `${timeLimit}s`
+            ]
+          ]
+        ],
+        [
+          'div',
+          { 
+            class: 'timer-display',
+            style: 'font-size: 32px; font-weight: 700; color: #1E40AF; min-width: 80px; text-align: center;'
+          },
+          `${timeLimit}s`
+        ]
+      ],
+      [
+        'div',
+        { class: 'question-content' },
+        [
+          'button',
+          {
+            onclick: `
+              const container = this.closest('[data-timed-question]');
+              const timerDisplay = container.querySelector('.timer-display');
+              const resultArea = container.querySelector('.result-area');
+              const options = container.querySelectorAll('[data-option]');
+              const timeLimit = parseInt(container.dataset.timeLimit);
+              const correct = parseInt(container.dataset.correct);
+              const marks = parseInt(container.dataset.marks);
+              let timeLeft = timeLimit;
+              this.disabled = true;
+              this.style.opacity = '0.5';
+
+              const timer = setInterval(() => {
+                timeLeft--;
+                timerDisplay.textContent = timeLeft + 's';
+                if (timeLeft <= 10) timerDisplay.style.color = '#EF4444';
+
+                if (timeLeft <= 0) {
+                  clearInterval(timer);
+                  options.forEach(opt => opt.disabled = true);
+                  resultArea.innerHTML = '<div style="background: #FEE2E2; border: 2px solid #EF4444; padding: 16px; border-radius: 8px; margin-top: 16px;"><strong style="color: #991B1B;">⏰ Time Up!</strong><p style="color: #7F1D1D; margin-top: 4px;">Score: 0/${marks}</p></div>';
+                  return;
+                }
+              }, 1000);
+
+              options.forEach(opt => {
+                opt.onclick = function() {
+                  clearInterval(timer);
+                  const selected = parseInt(this.dataset.option);
+                  const isCorrect = selected === correct;
+                  const score = isCorrect ? marks : 0;
+                  const grade = isCorrect ? 'A+' : 'F';
+
+                  options.forEach(o => {
+                    o.disabled = true;
+                    if(parseInt(o.dataset.option) === correct) {
+                      o.style.borderColor = '#10B981';
+                      o.style.background = '#D1FAE5';
+                      o.innerHTML = '✅ ' + o.textContent;
+                    } else if(parseInt(o.dataset.option) === selected && !isCorrect) {
+                      o.style.borderColor = '#EF4444';
+                      o.style.background = '#FEE2E2';
+                      o.innerHTML = '❌ ' + o.textContent;
+                    }
+                  });
+
+                  const bgColor = isCorrect ? '#D1FAE5' : '#FEE2E2';
+                  const borderColor = isCorrect ? '#10B981' : '#EF4444';
+                  const textColor = isCorrect ? '#14532D' : '#991B1B';
+
+                  resultArea.innerHTML = '<div style="background: ' + bgColor + '; border: 2px solid ' + borderColor + '; padding: 16px; border-radius: 8px; margin-top: 16px;"><div style="display: flex; justify-content: space-between; align-items: center;"><div><strong style="color: ' + textColor + '; font-size: 18px;">' + (isCorrect ? '✅ Correct!' : '❌ Incorrect') + '</strong><p style="color: ' + textColor + '; margin-top: 4px;">Time taken: ' + (timeLimit - timeLeft) + 's</p></div><div style="text-align: right;"><div style="font-size: 28px; font-weight: 700; color: ' + textColor + ';">' + grade + '</div><div style="font-size: 14px; color: ' + textColor + ';">Score: ' + score + '/' + marks + '</div></div></div></div>';
+                };
+              });
+            `,
+            style: 'background: linear-gradient(135deg, #3B82F6 0%, #2563EB 100%); color: white; border: none; padding: 12px 24px; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; margin-bottom: 16px; box-shadow: 0 2px 8px rgba(59, 130, 246, 0.3);',
+          },
+          '▶️ Start Timer & Answer'
+        ],
+        ['div', { innerHTML: optionsHtml }],
+        ['div', { class: 'result-area' }]
+      ]
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertTimedQuestion: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
 // Branching Scenario
 const BranchingScenario = Node.create({
   name: 'branchingScenario',
@@ -858,7 +1053,8 @@ const CardGrid = Node.create({
   name: 'cardGrid',
   group: 'block',
   content: 'card+',
-  
+  selectable: true,
+
   addAttributes() {
     return {
       columns: {
@@ -881,8 +1077,16 @@ const CardGrid = Node.create({
       'div',
       {
         'data-card-grid': cols,
-        style: `display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 20px; margin: 24px 0;`,
+        style: `position: relative; display: grid; grid-template-columns: repeat(${cols}, 1fr); gap: 20px; margin: 24px 0; padding: 20px; border: 2px dashed #E5E7EB; border-radius: 12px;`,
       },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 4px; right: 4px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 10;',
+        },
+        '✕ Delete Grid'
+      ],
       0,
     ];
   },
@@ -1011,6 +1215,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       CardGrid,
       Poll,
       Quiz,
+      TimedQuestion,
       InteractiveImage,
       QASection,
       DragDropExercise,
@@ -1883,6 +2088,23 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             >
               <HelpCircle className="w-4 h-4 text-yellow-600" />
               <span className="text-sm font-medium text-gray-700">Quiz Question</span>
+            </button>
+            <button
+              onClick={() => {
+                editor.chain().focus().insertTimedQuestion({ 
+                  question: 'Solve within the time limit:',
+                  options: ['Option A', 'Option B', 'Option C', 'Option D'],
+                  correct: 0,
+                  timeLimit: 60,
+                  marks: 10,
+                  difficulty: 'medium'
+                }).run();
+                setShowInteractive(false);
+              }}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-blue-50 transition-colors text-left mb-1"
+            >
+              <Clock className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">Timed Assessment</span>
             </button>
             <button
               onClick={() => {
