@@ -636,8 +636,8 @@ export default function LessonPlayer() {
 
   // RENDER
   return (
-    <div className="fixed inset-0 flex h-screen w-screen bg-gray-50 overflow-hidden">
-      <div className="flex flex-1 min-w-0 overflow-hidden">
+    <div className="fixed inset-0 flex bg-gray-50 overflow-hidden" style={{ width: '100vw', height: '100vh', maxHeight: '-webkit-fill-available' }}>
+      <div className="flex flex-1 min-w-0 overflow-hidden w-full">
         {/* Desktop Sidebar */}
         {sidebarOpen && (
           <motion.aside
@@ -1135,7 +1135,7 @@ export default function LessonPlayer() {
 
       {/* Presentation Mode */}
       {presentationMode && currentLesson.slides?.length > 0 && (
-        <div className="fixed inset-0 bg-black z-50 flex" style={{ overflow: 'hidden', width: '100vw', height: '100vh' }}>
+        <div className="fixed inset-0 bg-black z-50 flex" style={{ overflow: 'hidden', width: '100vw', height: '100vh', maxHeight: '-webkit-fill-available' }}>
           {/* Main presentation area */}
           <div className="flex-1 flex flex-col overflow-hidden">
             {/* Presentation Header */}
