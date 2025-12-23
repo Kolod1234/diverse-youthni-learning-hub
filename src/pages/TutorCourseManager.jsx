@@ -143,6 +143,14 @@ export default function TutorCourseManager() {
               <Plus className="w-4 h-4 mr-2" />
               Add Lesson
             </Button>
+            <Button
+              onClick={() => setShowTemplates(true)}
+              variant="outline"
+              className="gap-2"
+            >
+              <LayoutTemplate className="w-4 h-4" />
+              From Template
+            </Button>
           </div>
         </div>
 

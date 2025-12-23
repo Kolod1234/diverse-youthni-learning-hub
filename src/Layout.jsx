@@ -70,6 +70,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    { name: 'Templates', href: createPageUrl('Templates'), icon: ClipboardList },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Programmes', href: createPageUrl('Programs'), icon: ClipboardList },
     ...tutorNavigation,
