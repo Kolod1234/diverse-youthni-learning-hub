@@ -71,13 +71,6 @@ export default function CourseDetails() {
     enabled: !!courseId && !!user?.email,
   });
 
-  // Calculate enrollment status
-  const enrollment = enrollments[0];
-  const isEnrolled = !!enrollment;
-
-  // Show all quizzes to enrolled students, only published to non-enrolled
-  const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
-
   const { data: allCourses = [] } = useQuery({
     queryKey: ['all-courses'],
     queryFn: () => base44.entities.Course.list('-created_date', 100),
@@ -105,6 +98,13 @@ export default function CourseDetails() {
       queryClient.invalidateQueries(['enrollment', courseId]);
     },
   });
+
+  // Calculate enrollment status - move after all hooks
+  const enrollment = enrollments[0];
+  const isEnrolled = !!enrollment;
+
+  // Show all quizzes to enrolled students, only published to non-enrolled
+  const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
 
   // Group lessons by section
   const sections = lessons.reduce((acc, lesson) => {
