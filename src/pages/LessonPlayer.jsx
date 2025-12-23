@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState, useMemo, useCallback } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -11,7 +12,8 @@ import { Textarea } from '@/components/ui/textarea';
 import { 
   Play, Pause, ChevronLeft, ChevronRight, CheckCircle, 
   BookOpen, Clock, FileText, Download, X, Menu, Lock,
-  StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders, Radio
+  StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders, Radio,
+  Maximize, Minimize, Keyboard, Volume2, Settings, Zap
 } from 'lucide-react';
 import LiveSessionView from '@/components/session/LiveSessionView';
 import JoinSessionDialog from '@/components/session/JoinSessionDialog';
@@ -19,6 +21,25 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
+
+// Helper component for keyboard shortcuts
+function ShortcutItem({ keys, description }) {
+  return (
+    <div className="flex items-center justify-between py-2 border-b border-gray-100 last:border-0">
+      <span className="text-gray-700">{description}</span>
+      <div className="flex gap-1">
+        {keys.map((key, idx) => (
+          <React.Fragment key={idx}>
+            <kbd className="px-2 py-1 bg-gray-100 border border-gray-300 rounded text-xs font-semibold text-gray-800">
+              {key}
+            </kbd>
+            {idx < keys.length - 1 && <span className="text-gray-400">+</span>}
+          </React.Fragment>
+        ))}
+      </div>
+    </div>
+  );
+}
 
 // SIDEBAR COMPONENT OUTSIDE - STABLE
 const SidebarContent = React.memo(({ course, completedCount, lessons, progressPercent, sections, enrollment, currentLesson, courseId }) => (
@@ -136,6 +157,9 @@ export default function LessonPlayer() {
   const [liveLesson, setLiveLesson] = useState(null);
   const [isPresenter, setIsPresenter] = useState(false);
   const [showJoinDialog, setShowJoinDialog] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
+  const [autoPlay, setAutoPlay] = useState(false);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -220,25 +244,75 @@ export default function LessonPlayer() {
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
-  // Keyboard navigation for presentation mode
+  // Keyboard navigation
   useEffect(() => {
-    if (!presentationMode || !currentLesson?.slides) return;
-    
     const handleKeyPress = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-      } else if (e.key === 'Escape') {
-        setPresentationMode(false);
+      // Presentation mode shortcuts
+      if (presentationMode && currentLesson?.slides) {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+        } else if (e.key === 'Escape') {
+          setPresentationMode(false);
+        }
+        return;
+      }
+
+      // Global shortcuts
+      if (e.ctrlKey || e.metaKey) {
+        switch(e.key) {
+          case 'f':
+            e.preventDefault();
+            toggleFullscreen();
+            break;
+          case 'n':
+            e.preventDefault();
+            setShowNotes(!showNotes);
+            break;
+          case 'k':
+            e.preventDefault();
+            setShowKeyboardShortcuts(!showKeyboardShortcuts);
+            break;
+        }
+      }
+
+      // Navigation shortcuts
+      if (!e.ctrlKey && !e.metaKey && currentLesson?.slides) {
+        if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
+        } else if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+        }
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [presentationMode, currentLesson?.slides]);
+  }, [presentationMode, currentLesson?.slides, showNotes, showKeyboardShortcuts]);
+
+  // Fullscreen handling
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      document.documentElement.requestFullscreen();
+      setIsFullscreen(true);
+    } else {
+      document.exitFullscreen();
+      setIsFullscreen(false);
+    }
+  };
+
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
   // RENDER EARLY RETURNS BEFORE EVENT HANDLERS
   if (lessonsLoading) {
@@ -416,7 +490,7 @@ export default function LessonPlayer() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col">
         {/* Top Bar */}
-        <header className="bg-white border-b border-gray-200 px-4 py-3 flex items-center justify-between">
+        <header className="bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between sticky top-0 z-40">
           <div className="flex items-center gap-3">
             {/* Mobile Menu */}
             <Sheet>
@@ -438,7 +512,7 @@ export default function LessonPlayer() {
                 />
               </SheetContent>
             </Sheet>
-            
+
             {/* Desktop Toggle */}
             <Button
               variant="ghost"
@@ -448,13 +522,13 @@ export default function LessonPlayer() {
             >
               {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
-            
+
             <div>
               <h1 className="font-semibold text-gray-900 line-clamp-1">{currentLesson.title}</h1>
               <p className="text-sm text-gray-500">{currentLesson.section || 'Getting Started'}</p>
             </div>
           </div>
-          
+
           <div className="flex items-center gap-2">
             {currentLesson.slides?.length > 0 && (
               <>
@@ -462,40 +536,54 @@ export default function LessonPlayer() {
                   variant="outline"
                   size="sm"
                   onClick={() => setPresentationMode(true)}
-                  className="gap-2"
+                  className="gap-2 hidden sm:flex"
                 >
-                  <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 4v16M17 4v16M3 8h4m10 0h4M3 12h18M3 16h4m10 0h4M4 20h16a1 1 0 001-1V5a1 1 0 00-1-1H4a1 1 0 00-1 1v14a1 1 0 001 1z" />
-                  </svg>
+                  <FileSliders className="w-4 h-4" />
                   Present
                 </Button>
                 <Button
                   variant="default"
                   size="sm"
                   onClick={handleStartSession}
-                  className="gap-2 bg-red-600 hover:bg-red-700"
+                  className="gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex"
                 >
                   <Radio className="w-4 h-4" />
-                  Start Session
+                  Live
                 </Button>
                 <Button
                   variant="outline"
                   size="sm"
                   onClick={() => setShowJoinDialog(true)}
-                  className="gap-2"
+                  className="gap-2 hidden sm:flex"
                 >
-                  Join Session
+                  Join
                 </Button>
               </>
             )}
             <Button
-              variant={showNotes ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setShowNotes(!showNotes)}
-              className={showNotes ? 'bg-indigo-600' : ''}
+              variant="ghost"
+              size="icon"
+              onClick={toggleFullscreen}
+              title="Fullscreen (Ctrl+F)"
             >
-              <StickyNote className="w-4 h-4 mr-2" />
-              Notes
+              {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            </Button>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setShowKeyboardShortcuts(true)}
+              title="Keyboard Shortcuts (Ctrl+K)"
+            >
+              <Keyboard className="w-4 h-4" />
+            </Button>
+            <Button
+              variant={showNotes ? 'default' : 'ghost'}
+              size="icon"
+              onClick={() => setShowNotes(!showNotes)}
+              title="Notes (Ctrl+N)"
+              className={showNotes ? 'bg-indigo-600 text-white' : ''}
+            >
+              <StickyNote className="w-4 h-4" />
             </Button>
 
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
@@ -511,52 +599,91 @@ export default function LessonPlayer() {
           <div className={`flex-1 p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`}>
             {/* Content Display - Slides, Written Content, or Video */}
             {currentLesson.slides?.length > 0 ? (
-              <Card className="mb-6 border-0 shadow-lg overflow-hidden">
-                {/* Slide Content */}
-                <div className="bg-white p-8 min-h-[500px]">
-                  <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                      {currentLesson.slides[currentSlideIndex]?.title}
-                    </h2>
-                    <div 
-                      className="max-w-none"
-                      dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-                    />
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="mb-6"
+              >
+                <Card className="border-0 shadow-xl overflow-hidden bg-gradient-to-br from-white to-gray-50">
+                  {/* Slide Content with Animation */}
+                  <div className="bg-white p-8 min-h-[500px] relative">
+                    <AnimatePresence mode="wait">
+                      <motion.div
+                        key={currentSlideIndex}
+                        initial={{ opacity: 0, x: 50 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        exit={{ opacity: 0, x: -50 }}
+                        transition={{ duration: 0.3 }}
+                        className="max-w-4xl mx-auto"
+                      >
+                        <div 
+                          className="prose prose-lg max-w-none"
+                          dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+                        />
+                      </motion.div>
+                    </AnimatePresence>
+
+                    {/* Progress Dots */}
+                    <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2">
+                      {currentLesson.slides.map((_, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setCurrentSlideIndex(idx)}
+                          className={`h-2 rounded-full transition-all ${
+                            idx === currentSlideIndex 
+                              ? 'w-8 bg-indigo-600' 
+                              : 'w-2 bg-gray-300 hover:bg-gray-400'
+                          }`}
+                        />
+                      ))}
+                    </div>
                   </div>
-                </div>
 
-                {/* Slide Navigation */}
-                <div className="bg-gray-50 border-t px-6 py-4 flex items-center justify-between sticky bottom-0">
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                    disabled={currentSlideIndex === 0}
-                    className="gap-2"
-                  >
-                    <ChevronLeft className="w-5 h-5" />
-                    Previous
-                  </Button>
+                  {/* Modern Slide Navigation */}
+                  <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-t px-6 py-4">
+                    <div className="flex items-center justify-between max-w-4xl mx-auto">
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+                        disabled={currentSlideIndex === 0}
+                        className="gap-2 bg-white hover:bg-gray-50 border-2"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                        <span className="hidden sm:inline">Previous</span>
+                      </Button>
 
-                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200">
-                    <FileSliders className="w-5 h-5 text-indigo-600" />
-                    <span className="text-sm font-semibold text-gray-900">
-                      Slide {currentSlideIndex + 1} / {currentLesson.slides.length}
-                    </span>
+                      <div className="flex items-center gap-4">
+                        <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-full border-2 border-indigo-200 shadow-sm">
+                          <Zap className="w-4 h-4 text-indigo-600" />
+                          <span className="text-sm font-bold text-gray-900">
+                            {currentSlideIndex + 1} / {currentLesson.slides.length}
+                          </span>
+                        </div>
+
+                        {/* Progress Bar */}
+                        <div className="hidden md:block w-32">
+                          <Progress 
+                            value={((currentSlideIndex + 1) / currentLesson.slides.length) * 100} 
+                            className="h-2"
+                          />
+                        </div>
+                      </div>
+
+                      <Button
+                        variant="outline"
+                        size="lg"
+                        onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
+                        disabled={currentSlideIndex === currentLesson.slides.length - 1}
+                        className="gap-2 bg-white hover:bg-gray-50 border-2"
+                      >
+                        <span className="hidden sm:inline">Next</span>
+                        <ChevronRight className="w-5 h-5" />
+                      </Button>
+                    </div>
                   </div>
-
-                  <Button
-                    variant="outline"
-                    size="lg"
-                    onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
-                    disabled={currentSlideIndex === currentLesson.slides.length - 1}
-                    className="gap-2"
-                  >
-                    Next
-                    <ChevronRight className="w-5 h-5" />
-                  </Button>
-                </div>
-              </Card>
+                </Card>
+              </motion.div>
             ) : currentLesson.description ? (
               <Card className="mb-6 p-8 border-0 shadow-lg">
                 <div className="max-w-4xl mx-auto">
@@ -813,6 +940,48 @@ export default function LessonPlayer() {
           onJoinSession={handleJoinSession}
           onClose={() => setShowJoinDialog(false)}
         />
+      )}
+
+      {/* Keyboard Shortcuts Modal */}
+      {showKeyboardShortcuts && (
+        <div 
+          className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4"
+          onClick={() => setShowKeyboardShortcuts(false)}
+        >
+          <motion.div
+            initial={{ opacity: 0, scale: 0.9 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="bg-white rounded-2xl p-6 max-w-md w-full shadow-2xl"
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div className="flex items-center justify-between mb-6">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-indigo-100 rounded-xl flex items-center justify-center">
+                  <Keyboard className="w-5 h-5 text-indigo-600" />
+                </div>
+                <h3 className="text-xl font-bold text-gray-900">Keyboard Shortcuts</h3>
+              </div>
+              <Button variant="ghost" size="icon" onClick={() => setShowKeyboardShortcuts(false)}>
+                <X className="w-5 h-5" />
+              </Button>
+            </div>
+
+            <div className="space-y-3">
+              <ShortcutItem keys={['←', '→']} description="Navigate slides" />
+              <ShortcutItem keys={['Ctrl', 'F']} description="Toggle fullscreen" />
+              <ShortcutItem keys={['Ctrl', 'N']} description="Toggle notes" />
+              <ShortcutItem keys={['Ctrl', 'K']} description="Show shortcuts" />
+              <ShortcutItem keys={['Space']} description="Next slide (presentation)" />
+              <ShortcutItem keys={['Esc']} description="Exit presentation" />
+            </div>
+
+            <div className="mt-6 p-4 bg-indigo-50 rounded-xl">
+              <p className="text-sm text-indigo-900">
+                <strong>Tip:</strong> Use keyboard shortcuts for faster navigation and a better learning experience!
+              </p>
+            </div>
+          </motion.div>
+        </div>
       )}
 
       {/* Presentation Mode */}
