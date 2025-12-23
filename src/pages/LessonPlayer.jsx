@@ -526,30 +526,34 @@ export default function LessonPlayer() {
                 </div>
 
                 {/* Slide Navigation */}
-                <div className="bg-gray-50 border-t px-6 py-4 flex items-center justify-between">
+                <div className="bg-gray-50 border-t px-6 py-4 flex items-center justify-between sticky bottom-0">
                   <Button
                     variant="outline"
+                    size="lg"
                     onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                     disabled={currentSlideIndex === 0}
+                    className="gap-2"
                   >
-                    <ChevronLeft className="w-4 h-4 mr-2" />
-                    Previous Slide
+                    <ChevronLeft className="w-5 h-5" />
+                    Previous
                   </Button>
 
-                  <div className="flex items-center gap-2">
+                  <div className="flex items-center gap-2 bg-white px-4 py-2 rounded-lg border border-gray-200">
                     <FileSliders className="w-5 h-5 text-indigo-600" />
-                    <span className="text-sm font-medium text-gray-700">
-                      Slide {currentSlideIndex + 1} of {currentLesson.slides.length}
+                    <span className="text-sm font-semibold text-gray-900">
+                      Slide {currentSlideIndex + 1} / {currentLesson.slides.length}
                     </span>
                   </div>
 
                   <Button
                     variant="outline"
+                    size="lg"
                     onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
                     disabled={currentSlideIndex === currentLesson.slides.length - 1}
+                    className="gap-2"
                   >
-                    Next Slide
-                    <ChevronRight className="w-4 h-4 ml-2" />
+                    Next
+                    <ChevronRight className="w-5 h-5" />
                   </Button>
                 </div>
               </Card>
