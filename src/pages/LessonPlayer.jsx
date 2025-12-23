@@ -983,7 +983,24 @@ export default function LessonPlayer() {
 
           {/* Slide Display */}
           <div className="flex-1 flex items-center justify-center relative p-2 pb-0">
-            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-y-auto overflow-x-hidden">
+            <style>{`
+              .slide-scroller::-webkit-scrollbar {
+                width: 12px;
+                height: 12px;
+              }
+              .slide-scroller::-webkit-scrollbar-track {
+                background: #f1f1f1;
+                border-radius: 10px;
+              }
+              .slide-scroller::-webkit-scrollbar-thumb {
+                background: #888;
+                border-radius: 10px;
+              }
+              .slide-scroller::-webkit-scrollbar-thumb:hover {
+                background: #555;
+              }
+            `}</style>
+            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-auto slide-scroller">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
@@ -1012,9 +1029,25 @@ export default function LessonPlayer() {
 
           {/* Slide Thumbnails - Bottom */}
           <div className="bg-gray-900 border-t-2 border-gray-700 p-4 shadow-2xl">
+            <style>{`
+              .thumbnail-scroller::-webkit-scrollbar {
+                height: 10px;
+              }
+              .thumbnail-scroller::-webkit-scrollbar-track {
+                background: #1f2937;
+                border-radius: 10px;
+              }
+              .thumbnail-scroller::-webkit-scrollbar-thumb {
+                background: #4b5563;
+                border-radius: 10px;
+              }
+              .thumbnail-scroller::-webkit-scrollbar-thumb:hover {
+                background: #6b7280;
+              }
+            `}</style>
             <div className="max-w-full mx-auto">
-              <ScrollArea className="w-full">
-                <div className="flex items-center gap-3 pb-2">
+              <div className="overflow-x-auto thumbnail-scroller pb-2">
+                <div className="flex items-center gap-3">
                   <span className="text-xs text-gray-300 uppercase tracking-wide shrink-0 font-semibold">Next Slides</span>
                   {currentLesson.slides.map((slide, idx) => (
                     <button
@@ -1035,7 +1068,7 @@ export default function LessonPlayer() {
                     </button>
                   ))}
                 </div>
-              </ScrollArea>
+              </div>
             </div>
           </div>
 
