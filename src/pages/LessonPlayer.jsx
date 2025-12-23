@@ -554,8 +554,8 @@ export default function LessonPlayer() {
 
   // RENDER
   return (
-    <div className="fixed inset-0 flex flex-col h-screen w-screen bg-gray-50" style={{ overflow: 'hidden', maxWidth: '100vw', maxHeight: '100vh' }}>
-      <div className="flex flex-1 overflow-hidden min-h-0">
+    <div className="fixed inset-0 flex h-screen w-screen bg-gray-50 overflow-hidden">
+      <div className="flex flex-1 min-w-0 overflow-hidden">
         {/* Desktop Sidebar */}
         {sidebarOpen && (
           <motion.aside
@@ -580,9 +580,9 @@ export default function LessonPlayer() {
         )}
 
         {/* Main Content */}
-        <div className="flex-1 flex flex-col overflow-hidden min-w-0">
+        <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Top Bar */}
-          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40 min-h-0">
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40">
           <div className="flex items-center gap-3">
             {/* Mobile Menu */}
             <Sheet>
@@ -688,14 +688,14 @@ export default function LessonPlayer() {
         </header>
 
         {/* Video/Content Area */}
-        <div className="flex-1 flex overflow-hidden min-h-0">
-          <div className={`flex-1 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''} min-w-0`} style={{ WebkitOverflowScrolling: 'touch', maxWidth: '100%' }}>
+        <div className="flex-1 flex min-w-0 overflow-hidden">
+          <div className={`flex-1 min-w-0 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6"
+                className="mb-6 w-full max-w-full"
               >
                 <Card className="border-0 shadow-xl overflow-hidden">
                   <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-6 py-4">
@@ -710,11 +710,11 @@ export default function LessonPlayer() {
                     </div>
                   </div>
 
-                  <div className="bg-white" style={{ minHeight: '600px' }}>
+                  <div className="bg-white w-full" style={{ minHeight: '600px', maxWidth: '100%' }}>
                     <iframe
                       src={currentLesson.h5p_content_url}
                       className="w-full h-full"
-                      style={{ minHeight: '600px', border: 'none' }}
+                      style={{ minHeight: '600px', border: 'none', maxWidth: '100%' }}
                       allowFullScreen
                       allow="geolocation *; microphone *; camera *; midi *; encrypted-media *"
                       title={currentLesson.title}
@@ -739,10 +739,10 @@ export default function LessonPlayer() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6"
+                className="mb-6 w-full max-w-full"
               >
                 <Card className="border-0 shadow-xl overflow-hidden">
-                  <div className="aspect-video bg-gray-900 relative">
+                  <div className="aspect-video bg-gray-900 relative w-full max-w-full">
                     <iframe
                       src={currentLesson.video_url}
                       className="w-full h-full"
@@ -753,8 +753,8 @@ export default function LessonPlayer() {
                 </Card>
               </motion.div>
             ) : currentLesson.description ? (
-              <Card className="mb-6 p-8 border-0 shadow-lg">
-                <div className="max-w-4xl mx-auto">
+              <Card className="mb-6 p-8 border-0 shadow-lg w-full max-w-full">
+                <div className="max-w-4xl mx-auto w-full">
                   <div 
                     className="prose prose-lg max-w-none text-gray-700"
                     dangerouslySetInnerHTML={{ __html: currentLesson.description }}
@@ -762,7 +762,7 @@ export default function LessonPlayer() {
                 </div>
               </Card>
             ) : (
-              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden mb-6 relative">
+              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden mb-6 relative w-full max-w-full">
                 <div className="absolute inset-0 flex items-center justify-center">
                   <div className="text-center text-white">
                     <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
