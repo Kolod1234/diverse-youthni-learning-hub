@@ -6,86 +6,13 @@ import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { 
-  Play, ChevronLeft, ChevronRight, CheckCircle, 
-  BookOpen, Clock, FileText, Download, X, Menu, Lock,
-  StickyNote, Save, Brain, MessageCircle, Zap
+  ChevronLeft, ChevronRight, CheckCircle, X, Trophy, Star, Brain, Zap,
+  MessageCircle, ArrowRight, ArrowLeft, Home
 } from 'lucide-react';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
+import { motion, AnimatePresence } from 'framer-motion';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
-import { motion } from 'framer-motion';
-
-// Sidebar component
-const CourseSidebar = ({ course, lessons, enrollment, currentLesson, courseId, sections }) => {
-  const completedCount = enrollment?.completed_lessons?.length || 0;
-  const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
-
-  return (
-    <div className="h-full flex flex-col bg-white">
-      {/* Course Header */}
-      <div className="p-4 border-b">
-        <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-          <h2 className="font-semibold text-gray-900 hover:text-indigo-600 line-clamp-2 mb-3">
-            {course?.title}
-          </h2>
-        </Link>
-        <div className="space-y-2">
-          <div className="flex justify-between text-sm text-gray-600">
-            <span>{completedCount}/{lessons.length} lessons</span>
-            <span>{Math.round(progressPercent)}%</span>
-          </div>
-          <Progress value={progressPercent} className="h-2" />
-        </div>
-      </div>
-
-      {/* Lessons List */}
-      <div className="flex-1 overflow-y-auto">
-        {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-          <div key={sectionName} className="p-4 border-b">
-            <h3 className="text-xs font-semibold text-gray-500 uppercase mb-3">
-              {sectionName}
-            </h3>
-            <div className="space-y-2">
-              {sectionLessons.map((lesson) => {
-                const isActive = lesson.id === currentLesson?.id;
-                const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
-
-                return (
-                  <button
-                    key={lesson.id}
-                    onClick={() => {
-                      window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`;
-                    }}
-                    className={`w-full flex items-center gap-3 p-2 rounded-lg transition-all text-left ${
-                      isActive ? 'bg-indigo-50 text-indigo-600' : 'hover:bg-gray-50'
-                    }`}
-                  >
-                    <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 ${
-                      isCompleted ? 'bg-emerald-100' : isActive ? 'bg-indigo-600' : 'bg-gray-100'
-                    }`}>
-                      {isCompleted ? (
-                        <CheckCircle className="w-4 h-4 text-emerald-600" />
-                      ) : (
-                        <Play className={`w-3 h-3 ${isActive ? 'text-white' : 'text-gray-400'}`} />
-                      )}
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <p className="text-sm font-medium truncate">{lesson.title}</p>
-                      <p className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</p>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-};
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -94,11 +21,11 @@ export default function LessonPlayer() {
   const lessonId = urlParams.get('lessonId');
 
   const [user, setUser] = useState(null);
-  const [showNotes, setShowNotes] = useState(false);
-  const [noteContent, setNoteContent] = useState('');
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [showRatingDialog, setShowRatingDialog] = useState(false);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [direction, setDirection] = useState(0);
 
   // Load user
   useEffect(() => {
@@ -141,12 +68,6 @@ export default function LessonPlayer() {
     enabled: !!courseId && !!lessonId,
   });
 
-  const { data: lessonDiscussions = [] } = useQuery({
-    queryKey: ['lesson-discussions', lessonId],
-    queryFn: () => base44.entities.Discussion.filter({ lesson_id: lessonId }),
-    enabled: !!lessonId,
-  });
-
   // Mutations
   const updateEnrollmentMutation = useMutation({
     mutationFn: ({ enrollmentId, data }) => base44.entities.Enrollment.update(enrollmentId, data),
@@ -159,19 +80,49 @@ export default function LessonPlayer() {
   const enrollment = enrollments[0];
   const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
   const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
-  const prevLesson = currentIndex > 0 ? lessons[currentIndex - 1] : null;
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
-  const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
+  
+  // Create slides from lesson content
+  const slides = currentLesson?.slides || [];
+  const totalSlides = slides.length;
+  const progressPercent = totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0;
 
-  const sections = lessons.reduce((acc, lesson) => {
-    const section = lesson.section || 'Getting Started';
-    if (!acc[section]) acc[section] = [];
-    acc[section].push(lesson);
-    return acc;
-  }, {});
+  // Touch handlers for mobile swipe
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
-  // Handlers
+  const handleTouchStart = (e) => {
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (touchStart - touchEnd > 75) {
+      nextSlide();
+    }
+    if (touchStart - touchEnd < -75) {
+      prevSlide();
+    }
+  };
+
+  const nextSlide = () => {
+    if (currentSlideIndex < totalSlides - 1) {
+      setDirection(1);
+      setCurrentSlideIndex(prev => prev + 1);
+    }
+  };
+
+  const prevSlide = () => {
+    if (currentSlideIndex > 0) {
+      setDirection(-1);
+      setCurrentSlideIndex(prev => prev - 1);
+    }
+  };
+
   const markComplete = async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
     
@@ -225,373 +176,257 @@ export default function LessonPlayer() {
     }
   };
 
-  const saveNote = () => {
-    if (!enrollment?.id || !currentLesson?.id || !noteContent.trim()) return;
-    
-    const newNotes = [...(enrollment.notes || []), {
-      lesson_id: currentLesson.id,
-      content: noteContent,
-      timestamp: Date.now(),
-    }];
-    
-    updateEnrollmentMutation.mutate({
-      enrollmentId: enrollment.id,
-      data: { notes: newNotes }
-    });
-    setNoteContent('');
-  };
-
   const handleRatingComplete = () => {
     if (nextLesson) {
       window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
+    } else {
+      window.location.href = createPageUrl('CourseDetails') + `?id=${courseId}`;
     }
   };
 
-  // Loading state
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        nextSlide();
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        prevSlide();
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [currentSlideIndex, totalSlides]);
+
+  // Loading
   if (lessonsLoading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading lesson...</p>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
+        <div className="text-center text-white">
+          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-lg font-medium">Loading your lesson...</p>
         </div>
       </div>
     );
   }
 
-  if (!currentLesson) {
+  if (!currentLesson || !slides.length) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center p-4">
-        <div className="text-center max-w-md">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">No lessons available</h2>
+      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-8 text-center">
+          <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">No Content Available</h2>
+          <p className="text-gray-600 mb-6">This lesson doesn't have slides yet.</p>
           <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-            <Button>Back to Course</Button>
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+              <Home className="w-4 h-4 mr-2" />
+              Back to Course
+            </Button>
           </Link>
-        </div>
+        </Card>
       </div>
     );
   }
+
+  const currentSlide = slides[currentSlideIndex];
+  const isLastSlide = currentSlideIndex === totalSlides - 1;
+
+  const slideVariants = {
+    enter: (direction) => ({
+      x: direction > 0 ? 1000 : -1000,
+      opacity: 0
+    }),
+    center: {
+      zIndex: 1,
+      x: 0,
+      opacity: 1
+    },
+    exit: (direction) => ({
+      zIndex: 0,
+      x: direction < 0 ? 1000 : -1000,
+      opacity: 0
+    })
+  };
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col md:flex-row">
-      {/* Mobile Header */}
-      <header className="md:hidden bg-white border-b sticky top-0 z-30">
-        <div className="flex items-center justify-between p-3">
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Menu className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-80 p-0">
-              <CourseSidebar 
-                course={course}
-                lessons={lessons}
-                enrollment={enrollment}
-                currentLesson={currentLesson}
-                courseId={courseId}
-                sections={sections}
-              />
-            </SheetContent>
-          </Sheet>
-
-          <div className="flex-1 text-center px-2">
-            <h1 className="font-semibold text-sm truncate">{currentLesson.title}</h1>
-          </div>
-
-          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-            <Button variant="ghost" size="icon">
-              <X className="w-5 h-5" />
-            </Button>
-          </Link>
-        </div>
-      </header>
-
-      {/* Desktop Sidebar */}
-      <aside className="hidden md:block w-80 border-r bg-white sticky top-0 h-screen overflow-hidden">
-        <CourseSidebar 
-          course={course}
-          lessons={lessons}
-          enrollment={enrollment}
-          currentLesson={currentLesson}
-          courseId={courseId}
-          sections={sections}
-        />
-      </aside>
-
-      {/* Main Content */}
-      <main className="flex-1 flex flex-col min-h-screen md:h-screen overflow-hidden">
-        {/* Desktop Header */}
-        <header className="hidden md:flex items-center justify-between p-4 bg-white border-b">
-          <div>
-            <h1 className="font-semibold text-gray-900">{currentLesson.title}</h1>
-            <p className="text-sm text-gray-500">{currentLesson.section || 'Getting Started'}</p>
-          </div>
-          <div className="flex items-center gap-2">
-            <Button
-              variant={showNotes ? 'default' : 'ghost'}
-              size="sm"
-              onClick={() => setShowNotes(!showNotes)}
-            >
-              <StickyNote className="w-4 h-4 mr-2" />
-              Notes
-            </Button>
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col">
+      {/* Top Bar */}
+      <div className="bg-white/10 backdrop-blur-md">
+        <div className="max-w-4xl mx-auto px-4 py-3">
+          <div className="flex items-center justify-between mb-2">
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="sm">
-                <X className="w-4 h-4" />
+              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+                <X className="w-5 h-5" />
               </Button>
             </Link>
+            
+            <div className="flex items-center gap-2 text-white">
+              <Trophy className="w-4 h-4" />
+              <span className="text-sm font-semibold">{enrollment?.progress_percent || 0}%</span>
+            </div>
           </div>
-        </header>
+          
+          <div className="flex items-center gap-2">
+            <Progress value={progressPercent} className="flex-1 h-2 bg-white/20" />
+            <span className="text-xs text-white font-medium">
+              {currentSlideIndex + 1}/{totalSlides}
+            </span>
+          </div>
+        </div>
+      </div>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-y-auto">
-          <div className="max-w-4xl mx-auto p-4 md:p-6 lg:p-8">
-            {/* Video/Content */}
-            {currentLesson.h5p_content_url ? (
-              <Card className="mb-6 overflow-hidden">
-                <div className="bg-gradient-to-r from-indigo-600 to-purple-600 text-white p-4">
-                  <div className="flex items-center gap-3">
-                    <Zap className="w-6 h-6" />
-                    <div>
-                      <h3 className="font-semibold">Interactive Content</h3>
-                      <p className="text-sm text-indigo-100">H5P Interactive Learning</p>
+      {/* Main Content */}
+      <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
+        <div className="w-full max-w-2xl">
+          <AnimatePresence initial={false} custom={direction} mode="wait">
+            <motion.div
+              key={currentSlideIndex}
+              custom={direction}
+              variants={slideVariants}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                x: { type: "spring", stiffness: 300, damping: 30 },
+                opacity: { duration: 0.2 }
+              }}
+              onTouchStart={handleTouchStart}
+              onTouchMove={handleTouchMove}
+              onTouchEnd={handleTouchEnd}
+              className="touch-pan-y select-none"
+            >
+              <Card className="p-6 md:p-8 shadow-2xl">
+                {/* Slide Content */}
+                <div className="mb-8">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <Zap className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+                          {currentLesson.section || 'Lesson'}
+                        </span>
+                      </div>
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        {currentSlide.title}
+                      </h1>
                     </div>
+                    {isCompleted && (
+                      <div className="ml-4">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        </div>
+                      </div>
+                    )}
                   </div>
-                </div>
-                <iframe
-                  src={currentLesson.h5p_content_url}
-                  className="w-full h-96 md:h-[500px]"
-                  allowFullScreen
-                  title={currentLesson.title}
-                />
-              </Card>
-            ) : currentLesson.video_url ? (
-              <Card className="mb-6 overflow-hidden">
-                <div className="aspect-video bg-black">
-                  <iframe
-                    src={currentLesson.video_url}
-                    className="w-full h-full"
-                    allowFullScreen
+                  
+                  <div 
+                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                    dangerouslySetInnerHTML={{ __html: currentSlide.content }}
                   />
                 </div>
-              </Card>
-            ) : (
-              <Card className="mb-6 p-6">
-                <div 
-                  className="prose max-w-none"
-                  dangerouslySetInnerHTML={{ __html: currentLesson.description || '' }}
-                />
-              </Card>
-            )}
 
-            {/* Lesson Details */}
-            <Card className="p-6 mb-6">
-              <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4 mb-4">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
-                  <div className="flex items-center gap-4 text-sm text-gray-600">
-                    <span className="flex items-center gap-1">
-                      <Clock className="w-4 h-4" />
-                      {currentLesson.duration_minutes || 10} min
-                    </span>
-                    <span className="flex items-center gap-1">
-                      <BookOpen className="w-4 h-4" />
-                      {currentLesson.section || 'Getting Started'}
-                    </span>
-                  </div>
-                </div>
-                
-                {!isCompleted ? (
-                  <Button 
-                    onClick={markComplete}
-                    disabled={updateEnrollmentMutation.isPending}
-                    className="bg-emerald-600 hover:bg-emerald-700 w-full md:w-auto"
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Mark Complete
-                  </Button>
-                ) : (
-                  <div className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg">
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Completed</span>
-                  </div>
-                )}
-              </div>
-
-              {/* Resources */}
-              {currentLesson.resources?.length > 0 && (
-                <div className="border-t pt-4 mt-4">
-                  <h3 className="font-semibold mb-3">Resources</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {currentLesson.resources.map((resource, i) => (
-                      <a
-                        key={i}
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100"
+                {/* Actions */}
+                {isLastSlide ? (
+                  <div className="space-y-3">
+                    {!isCompleted && (
+                      <Button 
+                        onClick={markComplete}
+                        disabled={updateEnrollmentMutation.isPending}
+                        className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg"
                       >
-                        <FileText className="w-4 h-4 text-indigo-600" />
-                        <span className="text-sm font-medium">{resource.name}</span>
-                        <Download className="w-4 h-4 text-gray-400" />
-                      </a>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </Card>
-
-            {/* Quiz and Discussion */}
-            <div className="grid md:grid-cols-2 gap-4 mb-6">
-              {lessonQuizzes.length > 0 && (
-                <Card className="p-6 bg-gradient-to-br from-violet-50 to-purple-50">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
-                      <Brain className="w-5 h-5 text-violet-600" />
-                    </div>
-                    <div>
-                      <h3 className="font-semibold">Practice Quiz</h3>
-                      <p className="text-sm text-gray-500">{lessonQuizzes[0].questions?.length} questions</p>
-                    </div>
-                  </div>
-                  {lessonQuizzes.map((quiz) => (
-                    <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
-                      <Button variant="outline" className="w-full">
-                        {quiz.title}
+                        <CheckCircle className="w-5 h-5 mr-2" />
+                        Complete Lesson
                       </Button>
-                    </Link>
-                  ))}
-                </Card>
-              )}
-
-              <Card className="p-6 bg-gradient-to-br from-blue-50 to-cyan-50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-blue-600" />
+                    )}
+                    
+                    {lessonQuizzes.length > 0 && (
+                      <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`}>
+                        <Button 
+                          variant="outline"
+                          className="w-full h-14 text-lg border-2 border-violet-500 text-violet-600 hover:bg-violet-50"
+                        >
+                          <Brain className="w-5 h-5 mr-2" />
+                          Take Quiz ({lessonQuizzes[0].questions?.length} questions)
+                        </Button>
+                      </Link>
+                    )}
+                    
+                    {nextLesson ? (
+                      <Button 
+                        onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
+                        className="w-full h-14 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                      >
+                        Next Lesson
+                        <ArrowRight className="w-5 h-5 ml-2" />
+                      </Button>
+                    ) : (
+                      <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+                        <Button className="w-full h-14 text-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                          <Trophy className="w-5 h-5 mr-2" />
+                          Course Complete!
+                        </Button>
+                      </Link>
+                    )}
                   </div>
-                  <div>
-                    <h3 className="font-semibold">Discussion</h3>
-                    <p className="text-sm text-gray-500">{lessonDiscussions.length} comments</p>
-                  </div>
-                </div>
-                <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}&lessonId=${lessonId}`}>
-                  <Button variant="outline" className="w-full">
-                    Join Discussion
+                ) : (
+                  <Button 
+                    onClick={nextSlide}
+                    className="w-full h-14 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
+                  >
+                    Continue
+                    <ArrowRight className="w-5 h-5 ml-2" />
                   </Button>
-                </Link>
-              </Card>
-            </div>
-
-            {/* Notes Section - Mobile */}
-            {showNotes && (
-              <Card className="mb-6 p-6 md:hidden">
-                <h3 className="font-semibold mb-4">Your Notes</h3>
-                <Textarea
-                  value={noteContent}
-                  onChange={(e) => setNoteContent(e.target.value)}
-                  placeholder="Write a note..."
-                  className="mb-2"
-                  rows={4}
-                />
-                <Button 
-                  onClick={saveNote}
-                  disabled={!noteContent.trim()}
-                  className="w-full"
-                >
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Note
-                </Button>
-                
-                {currentLessonNotes.length > 0 && (
-                  <div className="mt-4 space-y-2">
-                    {currentLessonNotes.map((note, i) => (
-                      <div key={i} className="p-3 bg-amber-50 rounded-lg">
-                        <p className="text-sm">{note.content}</p>
-                        <p className="text-xs text-gray-500 mt-1">
-                          {new Date(note.timestamp).toLocaleDateString()}
-                        </p>
-                      </div>
-                    ))}
-                  </div>
                 )}
               </Card>
-            )}
+            </motion.div>
+          </AnimatePresence>
 
-            {/* Navigation */}
-            <div className="flex justify-between gap-4">
-              {prevLesson ? (
-                <Button 
-                  variant="outline" 
-                  onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${prevLesson.id}`}
-                  className="flex-1 md:flex-none"
-                >
-                  <ChevronLeft className="w-4 h-4 mr-2" />
-                  Previous
-                </Button>
-              ) : (
-                <div />
-              )}
-
-              {nextLesson ? (
-                <Button 
-                  onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
-                  className="flex-1 md:flex-none bg-indigo-600 hover:bg-indigo-700"
-                >
-                  Next
-                  <ChevronRight className="w-4 h-4 ml-2" />
-                </Button>
-              ) : (
-                <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700">
-                    Finish Course
-                    <CheckCircle className="w-4 h-4 ml-2" />
-                  </Button>
-                </Link>
-              )}
-            </div>
+          {/* Navigation Dots */}
+          <div className="flex items-center justify-center gap-2 mt-6">
+            {slides.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setDirection(idx > currentSlideIndex ? 1 : -1);
+                  setCurrentSlideIndex(idx);
+                }}
+                className={`transition-all ${
+                  idx === currentSlideIndex
+                    ? 'w-8 h-2 bg-white'
+                    : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                } rounded-full`}
+              />
+            ))}
           </div>
 
-          {/* Desktop Notes Sidebar */}
-          {showNotes && (
-            <div className="hidden md:block fixed right-0 top-0 w-80 h-screen bg-white border-l p-6 overflow-y-auto">
-              <h3 className="font-semibold mb-4">Your Notes</h3>
-              <Textarea
-                value={noteContent}
-                onChange={(e) => setNoteContent(e.target.value)}
-                placeholder="Write a note..."
-                className="mb-2"
-                rows={4}
-              />
-              <Button 
-                onClick={saveNote}
-                disabled={!noteContent.trim()}
-                className="w-full mb-4"
-              >
-                <Save className="w-4 h-4 mr-2" />
-                Save Note
-              </Button>
-              
-              <div className="space-y-2">
-                {currentLessonNotes.map((note, i) => (
-                  <div key={i} className="p-3 bg-amber-50 rounded-lg">
-                    <p className="text-sm">{note.content}</p>
-                    <p className="text-xs text-gray-500 mt-1">
-                      {new Date(note.timestamp).toLocaleDateString()}
-                    </p>
-                  </div>
-                ))}
-                {currentLessonNotes.length === 0 && (
-                  <p className="text-sm text-gray-500 text-center py-8">
-                    No notes yet
-                  </p>
-                )}
-              </div>
-            </div>
-          )}
+          {/* Arrow Buttons */}
+          <div className="flex items-center justify-between mt-6 px-4">
+            <Button
+              onClick={prevSlide}
+              disabled={currentSlideIndex === 0}
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20 disabled:opacity-30 w-12 h-12"
+            >
+              <ArrowLeft className="w-6 h-6" />
+            </Button>
+            
+            <Button
+              onClick={nextSlide}
+              disabled={currentSlideIndex === totalSlides - 1}
+              variant="ghost"
+              size="icon"
+              className="text-white hover:bg-white/20 disabled:opacity-30 w-12 h-12"
+            >
+              <ArrowRight className="w-6 h-6" />
+            </Button>
+          </div>
         </div>
-      </main>
+      </div>
 
       {/* Dialogs */}
       {course && currentLesson && (
