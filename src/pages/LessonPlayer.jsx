@@ -645,7 +645,7 @@ export default function LessonPlayer() {
             animate={{ width: 320, opacity: 1 }}
             exit={{ width: 0, opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="hidden lg:block bg-white border-r border-gray-200 overflow-hidden flex-none"
+            className="hidden lg:flex bg-white border-r border-gray-200 overflow-hidden flex-none"
           >
             <SidebarContent 
               course={course}
@@ -664,12 +664,12 @@ export default function LessonPlayer() {
         {/* Main Content */}
         <div className="flex-1 flex flex-col min-w-0 overflow-hidden">
           {/* Top Bar */}
-          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-4 py-3 flex items-center justify-between z-40">
-          <div className="flex items-center gap-3">
+          <header className="flex-none bg-white/80 backdrop-blur-md border-b border-gray-200 px-2 sm:px-4 py-2 sm:py-3 flex items-center justify-between z-40">
+          <div className="flex items-center gap-2 sm:gap-3 min-w-0 flex-1">
             {/* Mobile Menu */}
             <Sheet>
               <SheetTrigger asChild>
-                <Button variant="ghost" size="icon" className="lg:hidden">
+                <Button variant="ghost" size="icon" className="lg:hidden shrink-0">
                   <Menu className="w-5 h-5" />
                 </Button>
               </SheetTrigger>
@@ -693,18 +693,18 @@ export default function LessonPlayer() {
               variant="ghost"
               size="icon"
               onClick={() => setSidebarOpen(!sidebarOpen)}
-              className="hidden lg:flex"
+              className="hidden lg:flex shrink-0"
             >
               {sidebarOpen ? <ChevronLeft className="w-5 h-5" /> : <Menu className="w-5 h-5" />}
             </Button>
 
-            <div>
-              <h1 className="font-semibold text-gray-900 line-clamp-1">{currentLesson.title}</h1>
-              <p className="text-sm text-gray-500">{currentLesson.section || 'Getting Started'}</p>
+            <div className="min-w-0 flex-1">
+              <h1 className="font-semibold text-gray-900 line-clamp-1 text-sm sm:text-base">{currentLesson.title}</h1>
+              <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">{currentLesson.section || 'Getting Started'}</p>
             </div>
           </div>
 
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2 shrink-0">
             {currentLesson.slides?.length > 0 && (
               <>
                 {!liveSession ? (
@@ -713,44 +713,45 @@ export default function LessonPlayer() {
                       variant="outline"
                       size="sm"
                       onClick={() => setPresentationMode(true)}
-                      className="gap-2 hidden sm:flex"
+                      className="gap-1 sm:gap-2 hidden sm:flex text-xs sm:text-sm"
                     >
-                      <FileSliders className="w-4 h-4" />
-                      Present
+                      <FileSliders className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden md:inline">Present</span>
                     </Button>
                     <Button
                       variant="default"
                       size="sm"
                       onClick={handleStartSession}
-                      className="gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex"
+                      className="gap-1 sm:gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex text-xs sm:text-sm"
                     >
-                      <Radio className="w-4 h-4" />
-                      Go Live
+                      <Radio className="w-3 h-3 sm:w-4 sm:h-4" />
+                      <span className="hidden md:inline">Live</span>
                     </Button>
                     <Button
                       variant="outline"
                       size="sm"
                       onClick={() => setShowJoinDialog(true)}
-                      className="gap-2 hidden sm:flex"
+                      className="gap-1 sm:gap-2 hidden sm:flex text-xs sm:text-sm"
                     >
-                      Join Live
+                      <span className="hidden md:inline">Join</span>
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">
-                      🔴 LIVE
+                    <Badge className="bg-red-500 text-white px-2 py-1 text-xs animate-pulse">
+                      🔴 <span className="hidden sm:inline">LIVE</span>
                     </Badge>
-                    <span className="text-sm text-gray-600">
-                      {sessionParticipants.length} watching
+                    <span className="text-xs sm:text-sm text-gray-600 hidden sm:inline">
+                      {sessionParticipants.length}
                     </span>
                     {isPresenter && (
                       <Button
                         variant="destructive"
                         size="sm"
                         onClick={() => endSessionMutation.mutate(liveSession.id)}
+                        className="text-xs"
                       >
-                        End Session
+                        End
                       </Button>
                     )}
                   </>
@@ -761,31 +762,24 @@ export default function LessonPlayer() {
               variant="ghost"
               size="icon"
               onClick={toggleFullscreen}
-              title="Fullscreen (Ctrl+F)"
+              title="Fullscreen"
+              className="hidden sm:flex"
             >
               {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
-            </Button>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setShowKeyboardShortcuts(true)}
-              title="Keyboard Shortcuts (Ctrl+K)"
-            >
-              <Keyboard className="w-4 h-4" />
             </Button>
             <Button
               variant={showNotes ? 'default' : 'ghost'}
               size="icon"
               onClick={() => setShowNotes(!showNotes)}
-              title="Notes (Ctrl+N)"
-              className={showNotes ? 'bg-indigo-600 text-white' : ''}
+              title="Notes"
+              className={`hidden lg:flex ${showNotes ? 'bg-indigo-600 text-white' : ''}`}
             >
               <StickyNote className="w-4 h-4" />
             </Button>
 
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="icon">
-                <X className="w-5 h-5" />
+              <Button variant="ghost" size="icon" className="shrink-0">
+                <X className="w-4 h-4 sm:w-5 sm:h-5" />
               </Button>
             </Link>
           </div>
@@ -793,7 +787,7 @@ export default function LessonPlayer() {
 
         {/* Video/Content Area */}
         <div className="flex-1 flex min-w-0 overflow-hidden">
-          <div className={`flex-1 min-w-0 overflow-y-auto p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
+          <div className={`flex-1 min-w-0 overflow-y-auto p-2 sm:p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
@@ -881,12 +875,12 @@ export default function LessonPlayer() {
             )}
 
             {/* Lesson Info */}
-            <Card className="p-6 border-0 shadow-sm mb-6">
-              <div className="flex items-start justify-between gap-4 mb-4">
-                <div>
-                  <h2 className="text-xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
+            <Card className="p-4 sm:p-6 border-0 shadow-sm mb-4 sm:mb-6">
+              <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+                <div className="flex-1 min-w-0">
+                  <h2 className="text-lg sm:text-xl font-bold text-gray-900 mb-2">{currentLesson.title}</h2>
                   <div 
-                    className="text-gray-600 prose prose-sm max-w-none"
+                    className="text-gray-600 prose prose-sm max-w-none text-sm sm:text-base"
                     dangerouslySetInnerHTML={{ __html: currentLesson.description }}
                   />
                 </div>
@@ -895,19 +889,19 @@ export default function LessonPlayer() {
                   <Button 
                     onClick={markComplete}
                     disabled={updateEnrollmentMutation.isPending}
-                    className="bg-emerald-600 hover:bg-emerald-700 shrink-0"
+                    className="bg-emerald-600 hover:bg-emerald-700 shrink-0 w-full sm:w-auto text-sm sm:text-base"
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    {updateEnrollmentMutation.isPending ? 'Completing...' : 'Mark Complete'}
+                    <span className="truncate">{updateEnrollmentMutation.isPending ? 'Completing...' : 'Mark Complete'}</span>
                   </Button>
                 ) : (
                   <motion.div 
                     initial={{ scale: 0.8, opacity: 0 }}
                     animate={{ scale: 1, opacity: 1 }}
-                    className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-4 py-2 rounded-lg"
+                    className="flex items-center gap-2 text-emerald-600 bg-emerald-50 px-3 sm:px-4 py-2 rounded-lg w-full sm:w-auto justify-center"
                   >
-                    <CheckCircle className="w-5 h-5" />
-                    <span className="font-medium">Completed ✓</span>
+                    <CheckCircle className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-medium text-sm sm:text-base">Completed ✓</span>
                   </motion.div>
                 )}
               </div>
@@ -982,33 +976,35 @@ export default function LessonPlayer() {
             </div>
 
             {/* Navigation */}
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between gap-2">
               {prevLesson ? (
                 <Button 
                   variant="outline" 
-                  className="gap-2"
+                  className="gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"
                   onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${prevLesson.id}`}
                 >
-                  <ChevronLeft className="w-4 h-4" />
-                  Previous
+                  <ChevronLeft className="w-3 h-3 sm:w-4 sm:h-4" />
+                  <span className="hidden sm:inline">Previous</span>
                 </Button>
               ) : (
                 <div />
               )}
-              
+
               {nextLesson ? (
                 <Button 
-                  className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                  className="bg-indigo-600 hover:bg-indigo-700 gap-1 sm:gap-2 text-xs sm:text-sm flex-1 sm:flex-none"
                   onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
                 >
-                  Next Lesson
-                  <ChevronRight className="w-4 h-4" />
+                  <span className="hidden sm:inline">Next Lesson</span>
+                  <span className="sm:hidden">Next</span>
+                  <ChevronRight className="w-3 h-3 sm:w-4 sm:h-4" />
                 </Button>
               ) : (
                 <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-                  <Button className="bg-emerald-600 hover:bg-emerald-700 gap-2">
-                    Finish Course
-                    <CheckCircle className="w-4 h-4" />
+                  <Button className="bg-emerald-600 hover:bg-emerald-700 gap-1 sm:gap-2 text-xs sm:text-sm">
+                    <span className="hidden sm:inline">Finish Course</span>
+                    <span className="sm:hidden">Finish</span>
+                    <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4" />
                   </Button>
                 </Link>
               )}
