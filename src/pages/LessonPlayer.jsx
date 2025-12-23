@@ -150,26 +150,6 @@ export default function LessonPlayer() {
     loadUser();
   }, []);
 
-  // Keyboard navigation for presentation mode
-  useEffect(() => {
-    if (!presentationMode) return;
-    
-    const handleKeyPress = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-      } else if (e.key === 'Escape') {
-        setPresentationMode(false);
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [presentationMode, currentLesson]);
-
   // ALL QUERY HOOKS - UNCONDITIONAL (with enabled flags)
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
@@ -240,6 +220,26 @@ export default function LessonPlayer() {
   const progressPercent = lessons.length > 0 ? (completedCount / lessons.length) * 100 : 0;
   const currentLessonNotes = enrollment?.notes?.filter(n => n.lesson_id === currentLesson?.id) || [];
 
+  // Keyboard navigation for presentation mode - AFTER currentLesson is defined
+  useEffect(() => {
+    if (!presentationMode || !currentLesson?.slides) return;
+    
+    const handleKeyPress = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.min(currentLesson.slides.length - 1, prev + 1));
+      } else if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+      } else if (e.key === 'Escape') {
+        setPresentationMode(false);
+      }
+    };
+
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [presentationMode, currentLesson]);
+
   // STABLE EVENT HANDLERS
   const markComplete = async () => {
     if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
@@ -298,7 +298,7 @@ export default function LessonPlayer() {
 
   const handleStartSession = async () => {
     if (!currentLesson?.slides || currentLesson.slides.length === 0) {
-      toast.error('This lesson has no slides for live session');
+      alert('This lesson has no slides for live session');
       return;
     }
 
@@ -318,10 +318,10 @@ export default function LessonPlayer() {
       setLiveSession(newSession);
       setLiveLesson(currentLesson);
       setIsPresenter(true);
-      toast.success(`Session started! Code: ${sessionCode}`);
+      alert(`Session started! Code: ${sessionCode}`);
     } catch (error) {
       console.error('Failed to start session:', error);
-      toast.error('Failed to start session');
+      alert('Failed to start session');
     }
   };
 
