@@ -72,6 +72,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     { name: 'Templates', href: createPageUrl('Templates'), icon: ClipboardList },
     { name: 'Data to Slides', href: createPageUrl('DataPresentation'), icon: BarChart3 },
+    { name: 'Quiz Generator', href: createPageUrl('QuizGenerator'), icon: Award },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Programmes', href: createPageUrl('Programs'), icon: ClipboardList },
     ...tutorNavigation,

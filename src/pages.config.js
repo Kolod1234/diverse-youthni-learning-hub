@@ -4,6 +4,7 @@ import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
 import CreateAssignment from './pages/CreateAssignment';
 import Dashboard from './pages/Dashboard';
+import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
@@ -12,12 +13,12 @@ import Profile from './pages/Profile';
 import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
 import StudentAnalytics from './pages/StudentAnalytics';
+import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
-import Templates from './pages/Templates';
-import DataPresentation from './pages/DataPresentation';
+import QuizGenerator from './pages/QuizGenerator';
 import __Layout from './Layout.jsx';
 
 
@@ -28,6 +29,7 @@ export const PAGES = {
     "CourseDiscussion": CourseDiscussion,
     "CreateAssignment": CreateAssignment,
     "Dashboard": Dashboard,
+    "DataPresentation": DataPresentation,
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
     "Home": Home,
@@ -36,12 +38,12 @@ export const PAGES = {
     "Programs": Programs,
     "Quiz": Quiz,
     "StudentAnalytics": StudentAnalytics,
+    "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
-    "Templates": Templates,
-    "DataPresentation": DataPresentation,
+    "QuizGenerator": QuizGenerator,
 }
 
 export const pagesConfig = {
