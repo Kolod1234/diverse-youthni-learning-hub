@@ -786,47 +786,47 @@ export default function LessonPlayer() {
         </header>
 
         {/* Video/Content Area */}
-        <div className="flex-1 flex min-w-0 overflow-hidden">
-          <div className={`flex-1 min-w-0 overflow-y-auto p-2 sm:p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch' }}>
+        <div className="flex-1 flex min-w-0 overflow-hidden w-full">
+          <div className={`flex-1 min-w-0 overflow-y-auto p-3 sm:p-4 lg:p-8 ${showNotes ? 'lg:pr-4' : ''}`} style={{ WebkitOverflowScrolling: 'touch', width: '100%' }}>
             {/* H5P Interactive Content */}
             {currentLesson.h5p_content_url ? (
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 w-full max-w-full"
+                className="mb-4 sm:mb-6 w-full"
               >
                 <Card className="border-0 shadow-xl overflow-hidden">
-                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-6 py-4">
-                    <div className="flex items-center gap-3">
-                      <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
-                        <Zap className="w-5 h-5" />
+                  <div className="bg-gradient-to-br from-indigo-500 to-purple-600 text-white px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="w-8 h-8 sm:w-10 sm:h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                        <Zap className="w-4 h-4 sm:w-5 sm:h-5" />
                       </div>
                       <div>
-                        <h2 className="text-lg font-bold">Interactive Learning</h2>
-                        <p className="text-sm text-indigo-100">H5P Interactive Content</p>
+                        <h2 className="text-base sm:text-lg font-bold">Interactive Learning</h2>
+                        <p className="text-xs sm:text-sm text-indigo-100">H5P Interactive Content</p>
                       </div>
                     </div>
                   </div>
 
-                  <div className="bg-white w-full" style={{ minHeight: '600px', maxWidth: '100%' }}>
+                  <div className="bg-white w-full" style={{ minHeight: '400px' }}>
                     <iframe
                       src={currentLesson.h5p_content_url}
-                      className="w-full h-full"
-                      style={{ minHeight: '600px', border: 'none', maxWidth: '100%' }}
+                      className="w-full"
+                      style={{ height: '400px', minHeight: '400px', border: 'none' }}
                       allowFullScreen
                       allow="geolocation *; microphone *; camera *; midi *; encrypted-media *"
                       title={currentLesson.title}
                     />
                   </div>
 
-                  <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-t px-6 py-4">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Clock className="w-4 h-4" />
+                  <div className="bg-gradient-to-r from-indigo-50 via-purple-50 to-pink-50 border-t px-3 sm:px-6 py-3 sm:py-4">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
+                      <div className="flex items-center gap-2 text-xs sm:text-sm text-gray-600">
+                        <Clock className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>{currentLesson.duration_minutes || 15} minutes</span>
                       </div>
-                      <div className="flex items-center gap-2 text-sm font-medium text-indigo-600">
-                        <Zap className="w-4 h-4" />
+                      <div className="flex items-center gap-2 text-xs sm:text-sm font-medium text-indigo-600">
+                        <Zap className="w-3 h-3 sm:w-4 sm:h-4" />
                         <span>Interactive Content</span>
                       </div>
                     </div>
@@ -837,13 +837,13 @@ export default function LessonPlayer() {
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
-                className="mb-6 w-full max-w-full"
+                className="mb-4 sm:mb-6 w-full"
               >
                 <Card className="border-0 shadow-xl overflow-hidden">
-                  <div className="aspect-video bg-gray-900 relative w-full max-w-full">
+                  <div className="aspect-video bg-gray-900 relative w-full">
                     <iframe
                       src={currentLesson.video_url}
-                      className="w-full h-full"
+                      className="w-full h-full absolute inset-0"
                       allowFullScreen
                       allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                     />
@@ -851,24 +851,24 @@ export default function LessonPlayer() {
                 </Card>
               </motion.div>
             ) : currentLesson.description ? (
-              <Card className="mb-6 p-8 border-0 shadow-lg w-full max-w-full">
+              <Card className="mb-4 sm:mb-6 p-4 sm:p-8 border-0 shadow-lg w-full">
                 <div className="max-w-4xl mx-auto w-full">
                   <div 
-                    className="prose prose-lg max-w-none text-gray-700"
+                    className="prose prose-sm sm:prose-lg max-w-none text-gray-700"
                     dangerouslySetInnerHTML={{ __html: currentLesson.description }}
                   />
                 </div>
               </Card>
             ) : (
-              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-2xl overflow-hidden mb-6 relative w-full max-w-full">
-                <div className="absolute inset-0 flex items-center justify-center">
+              <div className="aspect-video bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl sm:rounded-2xl overflow-hidden mb-4 sm:mb-6 relative w-full">
+                <div className="absolute inset-0 flex items-center justify-center p-4">
                   <div className="text-center text-white">
-                    <div className="w-20 h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-4">
-                      <BookOpen className="w-8 h-8" />
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 bg-white/10 rounded-full flex items-center justify-center mx-auto mb-3 sm:mb-4">
+                      <BookOpen className="w-6 h-6 sm:w-8 sm:h-8" />
                     </div>
-                    <p className="text-lg font-medium">{currentLesson.title}</p>
-                    <p className="text-gray-400 mt-1">{currentLesson.duration_minutes || 10} minutes</p>
-                    <p className="text-sm text-gray-500 mt-3">No content available</p>
+                    <p className="text-base sm:text-lg font-medium">{currentLesson.title}</p>
+                    <p className="text-gray-400 mt-1 text-sm sm:text-base">{currentLesson.duration_minutes || 10} minutes</p>
+                    <p className="text-xs sm:text-sm text-gray-500 mt-2 sm:mt-3">No content available</p>
                   </div>
                 </div>
               </div>
@@ -908,8 +908,8 @@ export default function LessonPlayer() {
 
               {/* Resources */}
               {currentLesson.resources?.length > 0 && (
-                <div className="border-t border-gray-100 pt-4 mt-4">
-                  <h3 className="font-semibold text-gray-900 mb-3">Resources</h3>
+                <div className="border-t border-gray-100 pt-3 sm:pt-4 mt-3 sm:mt-4">
+                  <h3 className="font-semibold text-gray-900 mb-2 sm:mb-3 text-sm sm:text-base">Resources</h3>
                   <div className="flex flex-wrap gap-2">
                     {currentLesson.resources.map((resource, i) => (
                       <a
@@ -917,11 +917,11 @@ export default function LessonPlayer() {
                         href={resource.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="flex items-center gap-2 px-4 py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
+                        className="flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors"
                       >
-                        <FileText className="w-4 h-4 text-indigo-600" />
-                        <span className="text-sm font-medium text-gray-700">{resource.name}</span>
-                        <Download className="w-4 h-4 text-gray-400" />
+                        <FileText className="w-3 h-3 sm:w-4 sm:h-4 text-indigo-600" />
+                        <span className="text-xs sm:text-sm font-medium text-gray-700 truncate max-w-[150px] sm:max-w-none">{resource.name}</span>
+                        <Download className="w-3 h-3 sm:w-4 sm:h-4 text-gray-400" />
                       </a>
                     ))}
                   </div>
@@ -930,25 +930,25 @@ export default function LessonPlayer() {
             </Card>
 
             {/* Interactive Elements */}
-            <div className="grid md:grid-cols-2 gap-6 mb-6">
+            <div className="grid sm:grid-cols-2 gap-3 sm:gap-6 mb-4 sm:mb-6">
               {/* Quizzes */}
               {lessonQuizzes.length > 0 && (
-                <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50">
-                  <div className="flex items-center gap-3 mb-4">
-                    <div className="w-10 h-10 bg-violet-100 rounded-lg flex items-center justify-center">
-                      <Brain className="w-5 h-5 text-violet-600" />
+                <Card className="p-4 sm:p-6 border-0 shadow-sm bg-gradient-to-br from-violet-50 to-purple-50">
+                  <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                    <div className="w-8 h-8 sm:w-10 sm:h-10 bg-violet-100 rounded-lg flex items-center justify-center">
+                      <Brain className="w-4 h-4 sm:w-5 sm:h-5 text-violet-600" />
                     </div>
                     <div>
-                      <h3 className="font-semibold text-gray-900">Practice Quiz</h3>
-                      <p className="text-sm text-gray-500">Test your knowledge</p>
+                      <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Practice Quiz</h3>
+                      <p className="text-xs sm:text-sm text-gray-500">Test your knowledge</p>
                     </div>
                   </div>
                   <div className="space-y-2">
                     {lessonQuizzes.map((quiz) => (
                       <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
-                        <Button variant="outline" className="w-full justify-between hover:bg-white">
-                          <span>{quiz.title}</span>
-                          <span className="text-xs text-gray-500">{quiz.questions?.length} questions</span>
+                        <Button variant="outline" className="w-full justify-between hover:bg-white text-xs sm:text-sm h-auto py-2">
+                          <span className="truncate">{quiz.title}</span>
+                          <span className="text-xs text-gray-500 ml-2">{quiz.questions?.length}q</span>
                         </Button>
                       </Link>
                     ))}
@@ -957,18 +957,18 @@ export default function LessonPlayer() {
               )}
 
               {/* Discussion */}
-              <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-cyan-50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                    <MessageCircle className="w-5 h-5 text-blue-600" />
+              <Card className="p-4 sm:p-6 border-0 shadow-sm bg-gradient-to-br from-blue-50 to-cyan-50">
+                <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                  <div className="w-8 h-8 sm:w-10 sm:h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600" />
                   </div>
                   <div>
-                    <h3 className="font-semibold text-gray-900">Discussion</h3>
-                    <p className="text-sm text-gray-500">{lessonDiscussions.length} comments</p>
+                    <h3 className="font-semibold text-gray-900 text-sm sm:text-base">Discussion</h3>
+                    <p className="text-xs sm:text-sm text-gray-500">{lessonDiscussions.length} comments</p>
                   </div>
                 </div>
                 <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}&lessonId=${lessonId}`}>
-                  <Button variant="outline" className="w-full hover:bg-white">
+                  <Button variant="outline" className="w-full hover:bg-white text-xs sm:text-sm h-auto py-2">
                     Join Discussion
                   </Button>
                 </Link>
