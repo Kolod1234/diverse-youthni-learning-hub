@@ -17,6 +17,7 @@ import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import Templates from './pages/Templates';
+import DataPresentation from './pages/DataPresentation';
 import __Layout from './Layout.jsx';
 
 
@@ -40,6 +41,7 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "Templates": Templates,
+    "DataPresentation": DataPresentation,
 }
 
 export const pagesConfig = {

@@ -1,0 +1,150 @@
+import React, { useState } from 'react';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Upload, FileText, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+
+export default function FileUploadMode({ onSlidesGenerated }) {
+  const [uploading, setUploading] = useState(false);
+  const [processing, setProcessing] = useState(false);
+
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setUploading(false);
+      await processFile(file_url, file.name);
+    } catch (error) {
+      toast.error('Failed to upload file');
+      setUploading(false);
+    }
+  };
+
+  const processFile = async (fileUrl, fileName) => {
+    setProcessing(true);
+    try {
+      // First, extract structured data from the file
+      const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
+        file_url: fileUrl,
+        json_schema: {
+          type: 'object',
+          properties: {
+            title: { type: 'string' },
+            sections: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  heading: { type: 'string' },
+                  content: { type: 'string' },
+                  data_points: { type: 'array', items: { type: 'string' } }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      if (extractionResult.status === 'error') {
+        throw new Error(extractionResult.details);
+      }
+
+      const extractedData = extractionResult.output;
+
+      // Generate slides using AI
+      const slideContent = await base44.integrations.Core.InvokeLLM({
+        prompt: `Create presentation slides from this data:
+        
+${JSON.stringify(extractedData, null, 2)}
+
+Generate 5-7 slides with:
+- Title slide with main topic
+- Content slides with key information
+- Data visualization suggestions
+- Summary slide
+
+Format each slide with HTML styling for beautiful presentation.`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            slides: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  title: { type: 'string' },
+                  content: { type: 'string' },
+                  order: { type: 'number' }
+                }
+              }
+            }
+          }
+        }
+      });
+
+      onSlidesGenerated(slideContent.slides || []);
+      toast.success('Presentation generated successfully!');
+    } catch (error) {
+      toast.error('Failed to process file: ' + error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
+  return (
+    <div className="space-y-6">
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-3">Upload Your Data File</h3>
+        <p className="text-sm text-gray-600 mb-4">
+          Supports CSV, Excel, JSON, PDF, and DOCX files
+        </p>
+
+        <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-colors">
+          <input
+            type="file"
+            onChange={handleFileUpload}
+            disabled={uploading || processing}
+            className="hidden"
+            id="file-upload"
+            accept=".csv,.xlsx,.xls,.json,.pdf,.docx,.txt"
+          />
+          <label htmlFor="file-upload" className="cursor-pointer">
+            {uploading || processing ? (
+              <div>
+                <Loader2 className="w-12 h-12 text-indigo-600 mx-auto mb-3 animate-spin" />
+                <p className="text-gray-900 font-medium">
+                  {uploading ? 'Uploading...' : 'Processing file...'}
+                </p>
+                <p className="text-sm text-gray-500 mt-1">This may take a moment</p>
+              </div>
+            ) : (
+              <div>
+                <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-900 font-medium mb-1">Click to upload or drag and drop</p>
+                <p className="text-sm text-gray-500">CSV, Excel, JSON, PDF, DOCX</p>
+              </div>
+            )}
+          </label>
+        </div>
+      </div>
+
+      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
+        <h4 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
+          <FileText className="w-4 h-4" />
+          How it works
+        </h4>
+        <ul className="text-sm text-indigo-700 space-y-1">
+          <li>• AI extracts key information from your file</li>
+          <li>• Automatically creates structured slides</li>
+          <li>• Generates charts for numerical data</li>
+          <li>• You can edit slides after generation</li>
+        </ul>
+      </div>
+    </div>
+  );
+}
