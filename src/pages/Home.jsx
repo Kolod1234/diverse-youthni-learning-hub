@@ -117,7 +117,7 @@ export default function Home() {
               
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white drop-shadow-lg">
                 Diverse Youth NI
-                <span className="bg-clip-text text-transparent mt-3 rounded-none block from-yellow-200 via-amber-200 to-white">Learning Hub
+                <span className="bg-clip-text text-transparent mt-5 rounded-sm block from-yellow-200 via-amber-200 to-white">Learning Hu
 
                 </span>
               </h1>
