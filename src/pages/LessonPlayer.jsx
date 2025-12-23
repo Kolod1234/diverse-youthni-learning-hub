@@ -14,7 +14,6 @@ import {
   StickyNote, Trash2, Save, Brain, MessageCircle, Code, FileSliders, Radio,
   Maximize, Minimize, Keyboard, Volume2, Settings, Zap
 } from 'lucide-react';
-import LiveSessionView from '@/components/session/LiveSessionView';
 import JoinSessionDialog from '@/components/session/JoinSessionDialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -171,6 +170,8 @@ export default function LessonPlayer() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showKeyboardShortcuts, setShowKeyboardShortcuts] = useState(false);
   const [autoPlay, setAutoPlay] = useState(false);
+  const [questionText, setQuestionText] = useState('');
+  const [showLivePanel, setShowLivePanel] = useState(false);
 
   // ALL EFFECT HOOKS - UNCONDITIONAL
   useEffect(() => {
@@ -219,6 +220,28 @@ export default function LessonPlayer() {
     enabled: !!lessonId,
   });
 
+  // Live session queries
+  const { data: activeSessions = [] } = useQuery({
+    queryKey: ['active-sessions', lessonId],
+    queryFn: () => base44.entities.LiveSession.filter({ lesson_id: lessonId, is_active: true }),
+    enabled: !!lessonId && !!liveSession,
+    refetchInterval: 3000
+  });
+
+  const { data: sessionParticipants = [] } = useQuery({
+    queryKey: ['session-participants', liveSession?.id],
+    queryFn: () => base44.entities.SessionParticipant.filter({ session_id: liveSession.id, is_active: true }),
+    enabled: !!liveSession?.id,
+    refetchInterval: 3000
+  });
+
+  const { data: sessionQuestions = [] } = useQuery({
+    queryKey: ['session-questions', liveSession?.id],
+    queryFn: () => base44.entities.SessionQuestion.filter({ session_id: liveSession.id }, '-created_date', 100),
+    enabled: !!liveSession?.id,
+    refetchInterval: 2000
+  });
+
   // MUTATION HOOK - UNCONDITIONAL
   const updateEnrollmentMutation = useMutation({
     mutationFn: ({ enrollmentId, data }) => {
@@ -233,6 +256,41 @@ export default function LessonPlayer() {
     mutationFn: async (sessionData) => {
       return await base44.entities.LiveSession.create(sessionData);
     },
+  });
+
+  const updateSlideMutation = useMutation({
+    mutationFn: ({ sessionId, slideIndex }) => base44.entities.LiveSession.update(sessionId, {
+      current_slide_index: slideIndex
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['active-sessions']);
+    }
+  });
+
+  const askQuestionMutation = useMutation({
+    mutationFn: (data) => base44.entities.SessionQuestion.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['session-questions']);
+    }
+  });
+
+  const answerQuestionMutation = useMutation({
+    mutationFn: ({ questionId, answer }) =>
+      base44.entities.SessionQuestion.update(questionId, { answer, is_answered: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['session-questions']);
+    }
+  });
+
+  const endSessionMutation = useMutation({
+    mutationFn: (sessionId) => base44.entities.LiveSession.update(sessionId, {
+      is_active: false,
+      ended_at: new Date().toISOString()
+    }),
+    onSuccess: () => {
+      setLiveSession(null);
+      setIsPresenter(false);
+    }
   });
 
   // DERIVED STATE - ALWAYS COMPUTED
@@ -501,7 +559,7 @@ export default function LessonPlayer() {
     }
 
     const sessionCode = Math.random().toString(36).substring(2, 8).toUpperCase();
-    
+
     try {
       const newSession = await startSessionMutation.mutateAsync({
         lesson_id: currentLesson.id,
@@ -516,11 +574,33 @@ export default function LessonPlayer() {
       setLiveSession(newSession);
       setLiveLesson(currentLesson);
       setIsPresenter(true);
-      alert(`Session started! Code: ${sessionCode}`);
+      setShowLivePanel(true);
+      setPresentationMode(true);
+      alert(`Session started! Share code: ${sessionCode}`);
     } catch (error) {
       console.error('Failed to start session:', error);
       alert('Failed to start session');
     }
+  };
+
+  const handleSlideChange = (newIndex) => {
+    if (liveSession && isPresenter) {
+      updateSlideMutation.mutate({ sessionId: liveSession.id, slideIndex: newIndex });
+    }
+    setCurrentSlideIndex(newIndex);
+  };
+
+  const handleAskQuestion = () => {
+    if (!questionText.trim() || !liveSession) return;
+
+    askQuestionMutation.mutate({
+      session_id: liveSession.id,
+      question: questionText,
+      asker_email: user?.email,
+      asker_name: user?.full_name,
+      slide_index: currentSlideIndex
+    });
+    setQuestionText('');
   };
 
   const handleJoinSession = (session, lesson, presenter) => {
@@ -528,6 +608,8 @@ export default function LessonPlayer() {
     setLiveLesson(lesson);
     setIsPresenter(presenter);
     setShowJoinDialog(false);
+    setShowLivePanel(true);
+    setPresentationMode(true);
   };
 
   const handleRatingComplete = () => {
@@ -625,32 +707,54 @@ export default function LessonPlayer() {
           <div className="flex items-center gap-2">
             {currentLesson.slides?.length > 0 && (
               <>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setPresentationMode(true)}
-                  className="gap-2 hidden sm:flex"
-                >
-                  <FileSliders className="w-4 h-4" />
-                  Present
-                </Button>
-                <Button
-                  variant="default"
-                  size="sm"
-                  onClick={handleStartSession}
-                  className="gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex"
-                >
-                  <Radio className="w-4 h-4" />
-                  Live
-                </Button>
-                <Button
-                  variant="outline"
-                  size="sm"
-                  onClick={() => setShowJoinDialog(true)}
-                  className="gap-2 hidden sm:flex"
-                >
-                  Join
-                </Button>
+                {!liveSession ? (
+                  <>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setPresentationMode(true)}
+                      className="gap-2 hidden sm:flex"
+                    >
+                      <FileSliders className="w-4 h-4" />
+                      Present
+                    </Button>
+                    <Button
+                      variant="default"
+                      size="sm"
+                      onClick={handleStartSession}
+                      className="gap-2 bg-red-600 hover:bg-red-700 hidden sm:flex"
+                    >
+                      <Radio className="w-4 h-4" />
+                      Go Live
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => setShowJoinDialog(true)}
+                      className="gap-2 hidden sm:flex"
+                    >
+                      Join Live
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">
+                      🔴 LIVE
+                    </Badge>
+                    <span className="text-sm text-gray-600">
+                      {sessionParticipants.length} watching
+                    </span>
+                    {isPresenter && (
+                      <Button
+                        variant="destructive"
+                        size="sm"
+                        onClick={() => endSessionMutation.mutate(liveSession.id)}
+                      >
+                        End Session
+                      </Button>
+                    )}
+                  </>
+                )}
               </>
             )}
             <Button
@@ -982,20 +1086,6 @@ export default function LessonPlayer() {
         />
       )}
 
-      {/* Live Session */}
-      {liveSession && liveLesson && (
-        <LiveSessionView
-          session={liveSession}
-          lesson={liveLesson}
-          isPresenter={isPresenter}
-          onClose={() => {
-            setLiveSession(null);
-            setLiveLesson(null);
-            setIsPresenter(false);
-          }}
-        />
-      )}
-
       {/* Join Session Dialog */}
       {showJoinDialog && user && (
         <JoinSessionDialog
@@ -1049,26 +1139,53 @@ export default function LessonPlayer() {
 
       {/* Presentation Mode */}
       {presentationMode && currentLesson.slides?.length > 0 && (
-        <div className="fixed inset-0 bg-black z-50 flex items-center justify-center" style={{ overflow: 'hidden', width: '100vw', height: '100vh' }}>
-          <div className="bg-gray-900 rounded-2xl shadow-2xl w-full max-w-7xl h-[90vh] flex flex-col overflow-hidden">
+        <div className="fixed inset-0 bg-black z-50 flex" style={{ overflow: 'hidden', width: '100vw', height: '100vh' }}>
+          {/* Main presentation area */}
+          <div className="flex-1 flex flex-col overflow-hidden">
             {/* Presentation Header */}
-            <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700 rounded-t-2xl">
+            <div className="bg-gray-800 text-white px-6 py-3 flex items-center justify-between border-b border-gray-700 flex-none">
               <div className="flex items-center gap-4">
+                {liveSession && (
+                  <>
+                    <Badge className="bg-red-500 text-white px-3 py-1 animate-pulse">
+                      🔴 LIVE
+                    </Badge>
+                    <span className="text-xs text-gray-400">Code: {liveSession.session_code}</span>
+                    <div className="flex items-center gap-2 text-gray-300">
+                      <Users className="w-4 h-4" />
+                      <span className="text-sm">{sessionParticipants.length} watching</span>
+                    </div>
+                  </>
+                )}
                 <span className="text-sm font-medium">Slide {currentSlideIndex + 1} / {currentLesson.slides.length}</span>
               </div>
               <div className="flex items-center gap-2">
+                {liveSession && (
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setShowLivePanel(!showLivePanel)}
+                    className="text-white hover:bg-gray-700 gap-2"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    Q&A ({sessionQuestions.length})
+                  </Button>
+                )}
                 {lessonQuizzes.length > 0 && (
                   <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`} target="_blank">
                     <Button variant="ghost" size="sm" className="text-white hover:bg-gray-700 gap-2">
                       <Brain className="w-4 h-4" />
-                      Take Quiz
+                      Quiz
                     </Button>
                   </Link>
                 )}
                 <Button
                   variant="ghost"
                   size="sm"
-                  onClick={() => setPresentationMode(false)}
+                  onClick={() => {
+                    setPresentationMode(false);
+                    setShowLivePanel(false);
+                  }}
                   className="text-white hover:bg-gray-700"
                 >
                   <X className="w-5 h-5" />
@@ -1077,7 +1194,7 @@ export default function LessonPlayer() {
             </div>
 
             {/* Slide Display */}
-            <div className="flex-1 flex items-center justify-center relative p-6 overflow-hidden min-h-0">
+            <div className="flex-1 flex items-center justify-center relative p-6 overflow-hidden min-h-0 bg-gray-950">
               <style>{`
                 #slideContent {
                   scrollbar-width: thin;
@@ -1100,57 +1217,182 @@ export default function LessonPlayer() {
                   background: #4f46e5;
                 }
               `}</style>
-              <div 
-                id="slideContent" 
-                className="bg-white rounded-xl shadow-xl w-full h-full p-8 overflow-y-auto overflow-x-hidden"
-                style={{ maxWidth: '100%', maxHeight: '100%' }}
-              >
-                <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
-                  {currentLesson.slides[currentSlideIndex]?.title}
-                </h2>
-                <div 
-                  className="prose prose-base md:prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-                />
-              </div>
+              <AnimatePresence mode="wait">
+                <motion.div
+                  key={currentSlideIndex}
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  exit={{ opacity: 0, x: -20 }}
+                  id="slideContent" 
+                  className="bg-white rounded-xl shadow-2xl w-full h-full max-w-4xl aspect-video p-8 overflow-y-auto overflow-x-hidden relative"
+                  style={{ maxWidth: '100%', maxHeight: '100%' }}
+                >
+                  <h2 className="text-2xl md:text-3xl font-bold text-gray-900 mb-6">
+                    {currentLesson.slides[currentSlideIndex]?.title}
+                  </h2>
+                  <div 
+                    className="prose prose-base md:prose-lg max-w-none"
+                    dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+                  />
 
+                  {/* Presenter controls */}
+                  {liveSession && isPresenter && (
+                    <>
+                      <button
+                        onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
+                        disabled={currentSlideIndex === 0}
+                        className="absolute left-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl"
+                      >
+                        <ChevronLeft className="w-5 h-5" />
+                      </button>
+                      <button
+                        onClick={() => handleSlideChange(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
+                        disabled={currentSlideIndex === currentLesson.slides.length - 1}
+                        className="absolute right-2 top-1/2 -translate-y-1/2 w-10 h-10 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl"
+                      >
+                        <ChevronRight className="w-5 h-5" />
+                      </button>
+                    </>
+                  )}
+                </motion.div>
+              </AnimatePresence>
 
-
-              {/* Navigation Arrows - Left/Right - Hidden, use keyboard instead */}
-              <div className="absolute bottom-4 right-4 bg-black/70 text-white text-xs px-3 py-2 rounded-lg flex items-center gap-2">
-                <span>Use ← → arrow keys to navigate</span>
-              </div>
+              {liveSession && !isPresenter && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg">
+                  Presenter is in control
+                </div>
+              )}
             </div>
 
             {/* Slide Thumbnails - Bottom */}
-            <div className="bg-gray-800 border-t border-gray-700 p-3 rounded-b-2xl">
-              <div className="overflow-x-auto">
-                <div className="flex items-center gap-3 pb-2">
-                  <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0 font-semibold">Slides</span>
-                  {currentLesson.slides.map((slide, idx) => (
-                    <button
-                      key={idx}
-                      onClick={() => setCurrentSlideIndex(idx)}
-                      className={`shrink-0 rounded-lg border-2 transition-all ${
-                        idx === currentSlideIndex
-                          ? 'border-indigo-500 ring-2 ring-indigo-400'
-                          : 'border-gray-600 hover:border-gray-500'
-                      }`}
-                    >
-                      <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
-                        <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
-                        <span className="text-xs font-medium text-gray-900 line-clamp-1 text-center">
-                          {slide.title}
-                        </span>
-                      </div>
-                    </button>
-                  ))}
-                </div>
+            {(!liveSession || isPresenter) && (
+              <div className="bg-gray-800 border-t border-gray-700 p-3 flex-none">
+                <ScrollArea className="w-full">
+                  <div className="flex items-center gap-3 pb-2">
+                    <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0 font-semibold">Slides</span>
+                    {currentLesson.slides.map((slide, idx) => (
+                      <button
+                        key={idx}
+                        onClick={() => liveSession && isPresenter ? handleSlideChange(idx) : setCurrentSlideIndex(idx)}
+                        className={`shrink-0 rounded-lg border-2 transition-all ${
+                          idx === currentSlideIndex
+                            ? 'border-indigo-500 ring-2 ring-indigo-400'
+                            : 'border-gray-600 hover:border-gray-500'
+                        }`}
+                      >
+                        <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
+                          <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
+                          <span className="text-xs font-medium text-gray-900 line-clamp-1 text-center px-2">
+                            {slide.title}
+                          </span>
+                        </div>
+                      </button>
+                    ))}
+                  </div>
+                </ScrollArea>
               </div>
+            )}
             </div>
-          </div>
-        </div>
-      )}
+
+            {/* Live Session Panel */}
+            {liveSession && showLivePanel && (
+            <motion.div
+              initial={{ width: 0, opacity: 0 }}
+              animate={{ width: 384, opacity: 1 }}
+              exit={{ width: 0, opacity: 0 }}
+              className="w-96 bg-gray-900 border-l border-gray-700 flex flex-col overflow-hidden flex-none"
+            >
+              <div className="flex border-b border-gray-700 flex-none">
+                <button className="flex-1 px-4 py-3 text-white bg-gray-800 border-b-2 border-indigo-500 text-sm font-medium">
+                  <MessageCircle className="w-4 h-4 inline mr-2" />
+                  Q&A ({sessionQuestions.length})
+                </button>
+                <button className="flex-1 px-4 py-3 text-gray-400 hover:text-white text-sm">
+                  <Users className="w-4 h-4 inline mr-2" />
+                  Online ({sessionParticipants.length})
+                </button>
+              </div>
+
+              {/* Questions */}
+              <ScrollArea className="flex-1">
+                <div className="p-4 space-y-3">
+                  {sessionQuestions.length === 0 ? (
+                    <div className="text-center text-gray-500 py-8">
+                      <MessageCircle className="w-8 h-8 mx-auto mb-2 opacity-50" />
+                      <p className="text-sm">No questions yet</p>
+                    </div>
+                  ) : (
+                    sessionQuestions.map((q) => (
+                      <Card key={q.id} className="p-3 bg-gray-800 border-gray-700">
+                        <div className="flex items-start gap-2">
+                          <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
+                            <User className="w-4 h-4 text-indigo-600" />
+                          </div>
+                          <div className="flex-1 min-w-0">
+                            <div className="flex items-center justify-between mb-1">
+                              <span className="text-sm font-medium text-white">{q.asker_name}</span>
+                              {q.is_answered && <CheckCircle className="w-4 h-4 text-emerald-500" />}
+                            </div>
+                            <p className="text-sm text-gray-300">{q.question}</p>
+                            <span className="text-xs text-gray-500 mt-1">Slide {q.slide_index + 1}</span>
+
+                            {q.is_answered && q.answer && (
+                              <div className="mt-2 p-2 bg-gray-900 rounded border border-gray-700">
+                                <p className="text-xs text-gray-400 mb-1">Answer:</p>
+                                <p className="text-sm text-white">{q.answer}</p>
+                              </div>
+                            )}
+
+                            {isPresenter && !q.is_answered && (
+                              <div className="mt-2">
+                                <Input
+                                  placeholder="Type your answer..."
+                                  className="bg-gray-900 border-gray-700 text-white text-sm"
+                                  onKeyPress={(e) => {
+                                    if (e.key === 'Enter' && e.target.value.trim()) {
+                                      answerQuestionMutation.mutate({
+                                        questionId: q.id,
+                                        answer: e.target.value
+                                      });
+                                      e.target.value = '';
+                                    }
+                                  }}
+                                />
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    ))
+                  )}
+                </div>
+              </ScrollArea>
+
+              {/* Ask Question Input */}
+              {!isPresenter && (
+                <div className="p-4 border-t border-gray-700 flex-none">
+                  <div className="flex gap-2">
+                    <Input
+                      value={questionText}
+                      onChange={(e) => setQuestionText(e.target.value)}
+                      placeholder="Ask a question..."
+                      className="bg-gray-800 border-gray-700 text-white"
+                      onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
+                    />
+                    <Button
+                      onClick={handleAskQuestion}
+                      disabled={!questionText.trim()}
+                      className="bg-indigo-600 hover:bg-indigo-700"
+                    >
+                      <Send className="w-4 h-4" />
+                    </Button>
+                  </div>
+                </div>
+              )}
+            </motion.div>
+            )}
+            </div>
+            )}
     </div>
   );
 }
