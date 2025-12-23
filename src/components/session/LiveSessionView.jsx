@@ -149,42 +149,46 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
         </div>
 
         {/* Slide Display */}
-        <div className="flex-1 flex items-center justify-center relative p-8 bg-gray-950">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl aspect-video p-12 overflow-auto">
+        <div className="flex-1 flex items-center justify-center relative p-4 bg-gray-950">
+          <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl aspect-video p-8 overflow-auto relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlideIndex}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="max-w-4xl mx-auto"
+                className="h-full flex flex-col"
               >
                 <div 
-                  className="prose prose-lg max-w-none"
+                  className="prose prose-base max-w-none"
                   dangerouslySetInnerHTML={{ __html: currentSlide?.content || '' }}
                 />
               </motion.div>
             </AnimatePresence>
+            
+            {/* Navigation Arrows Inside Slide */}
+            {isPresenter && (
+              <>
+                <button
+                  onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
+                  disabled={currentSlideIndex === 0}
+                  className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50"
+                >
+                  <ChevronLeft className="w-6 h-6" />
+                </button>
+                <button
+                  onClick={() => handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
+                  disabled={currentSlideIndex === lesson.slides.length - 1}
+                  className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50"
+                >
+                  <ChevronRight className="w-6 h-6" />
+                </button>
+              </>
+            )}
           </div>
-
-          {/* Navigation Arrows */}
-          <button
-            onClick={() => isPresenter && handleSlideChange(Math.max(0, currentSlideIndex - 1))}
-            disabled={currentSlideIndex === 0 || !isPresenter}
-            className="absolute left-8 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-2xl border-2 border-gray-200 z-50"
-          >
-            <ChevronLeft className="w-8 h-8" />
-          </button>
-          <button
-            onClick={() => isPresenter && handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
-            disabled={currentSlideIndex === lesson.slides.length - 1 || !isPresenter}
-            className="absolute right-8 top-1/2 -translate-y-1/2 w-16 h-16 bg-white hover:bg-gray-100 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-gray-900 transition-all shadow-2xl border-2 border-gray-200 z-50"
-          >
-            <ChevronRight className="w-8 h-8" />
-          </button>
           
           {!isPresenter && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg">
+            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg z-50">
               Presenter is in control of slides
             </div>
           )}
