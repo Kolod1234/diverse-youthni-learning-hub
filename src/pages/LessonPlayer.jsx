@@ -1016,26 +1016,28 @@ export default function LessonPlayer() {
             </div>
 
             {/* Scroll Control Buttons - Up/Down */}
-            <div className="absolute right-24 top-1/2 -translate-y-1/2 flex flex-col gap-4 z-50">
+            <div className="fixed right-8 top-1/2 -translate-y-1/2 flex flex-col gap-4" style={{ zIndex: 9999 }}>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   const element = document.getElementById('slideContent');
                   if (element) {
-                    element.scrollTop = Math.max(0, element.scrollTop - 300);
+                    element.scrollBy({ top: -300, behavior: 'smooth' });
                   }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
               >
                 <ChevronLeft className="w-10 h-10 rotate-90" />
               </button>
               <button
-                onClick={() => {
+                onClick={(e) => {
+                  e.stopPropagation();
                   const element = document.getElementById('slideContent');
                   if (element) {
-                    element.scrollTop = element.scrollTop + 300;
+                    element.scrollBy({ top: 300, behavior: 'smooth' });
                   }
                 }}
-                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50"
+                className="w-16 h-16 bg-indigo-600 hover:bg-indigo-700 active:scale-95 rounded-full flex items-center justify-center text-white transition-all shadow-2xl ring-4 ring-white/30 hover:ring-white/50 cursor-pointer"
               >
                 <ChevronRight className="w-10 h-10 rotate-90" />
               </button>
