@@ -17,6 +17,12 @@ import Underline from '@tiptap/extension-underline';
 import { Node } from '@tiptap/core';
 import { Extension } from '@tiptap/core';
 import { Label } from '@/components/ui/label';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import { 
@@ -26,7 +32,8 @@ import {
   Quote, Minus, Link as LinkIcon, Image as ImageIcon,
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
-  CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap
+  CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
+  Palette, Type, Space
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -89,13 +96,13 @@ const FontSize = Extension.create({
 // Font Family Extension
 const FontFamily = Extension.create({
   name: 'fontFamily',
-  
+
   addOptions() {
     return {
       types: ['textStyle'],
     };
   },
-  
+
   addGlobalAttributes() {
     return [
       {
@@ -117,7 +124,7 @@ const FontFamily = Extension.create({
       },
     ];
   },
-  
+
   addCommands() {
     return {
       setFontFamily: fontFamily => ({ chain }) => {
@@ -128,6 +135,204 @@ const FontFamily = Extension.create({
       unsetFontFamily: () => ({ chain }) => {
         return chain()
           .setMark('textStyle', { fontFamily: null })
+          .removeEmptyTextStyle()
+          .run();
+      },
+    };
+  },
+});
+
+// Background Color Extension
+const BackgroundColor = Extension.create({
+  name: 'backgroundColor',
+
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          backgroundColor: {
+            default: null,
+            parseHTML: element => element.style.backgroundColor,
+            renderHTML: attributes => {
+              if (!attributes.backgroundColor) {
+                return {};
+              }
+              return {
+                style: `background-color: ${attributes.backgroundColor}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+
+  addCommands() {
+    return {
+      setBackgroundColor: backgroundColor => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { backgroundColor })
+          .run();
+      },
+      unsetBackgroundColor: () => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { backgroundColor: null })
+          .removeEmptyTextStyle()
+          .run();
+      },
+    };
+  },
+});
+
+// Line Height Extension
+const LineHeight = Extension.create({
+  name: 'lineHeight',
+
+  addOptions() {
+    return {
+      types: ['paragraph', 'heading'],
+    };
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          lineHeight: {
+            default: null,
+            parseHTML: element => element.style.lineHeight,
+            renderHTML: attributes => {
+              if (!attributes.lineHeight) {
+                return {};
+              }
+              return {
+                style: `line-height: ${attributes.lineHeight}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+
+  addCommands() {
+    return {
+      setLineHeight: lineHeight => ({ commands }) => {
+        return this.options.types.every(type => commands.updateAttributes(type, { lineHeight }));
+      },
+      unsetLineHeight: () => ({ commands }) => {
+        return this.options.types.every(type => commands.resetAttributes(type, 'lineHeight'));
+      },
+    };
+  },
+});
+
+// Paragraph Spacing Extension
+const ParagraphSpacing = Extension.create({
+  name: 'paragraphSpacing',
+
+  addOptions() {
+    return {
+      types: ['paragraph'],
+    };
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          marginTop: {
+            default: null,
+            parseHTML: element => element.style.marginTop,
+            renderHTML: attributes => {
+              if (!attributes.marginTop) {
+                return {};
+              }
+              return {
+                style: `margin-top: ${attributes.marginTop}`,
+              };
+            },
+          },
+          marginBottom: {
+            default: null,
+            parseHTML: element => element.style.marginBottom,
+            renderHTML: attributes => {
+              if (!attributes.marginBottom) {
+                return {};
+              }
+              return {
+                style: `margin-bottom: ${attributes.marginBottom}`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+
+  addCommands() {
+    return {
+      setParagraphSpacing: (spacing) => ({ commands }) => {
+        return commands.updateAttributes('paragraph', { 
+          marginTop: spacing.top,
+          marginBottom: spacing.bottom 
+        });
+      },
+    };
+  },
+});
+
+// Border Extension
+const BorderStyle = Extension.create({
+  name: 'borderStyle',
+
+  addOptions() {
+    return {
+      types: ['textStyle'],
+    };
+  },
+
+  addGlobalAttributes() {
+    return [
+      {
+        types: this.options.types,
+        attributes: {
+          border: {
+            default: null,
+            parseHTML: element => element.style.border,
+            renderHTML: attributes => {
+              if (!attributes.border) {
+                return {};
+              }
+              return {
+                style: `border: ${attributes.border}; padding: 2px 4px; border-radius: 3px;`,
+              };
+            },
+          },
+        },
+      },
+    ];
+  },
+
+  addCommands() {
+    return {
+      setBorder: border => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { border })
+          .run();
+      },
+      unsetBorder: () => ({ chain }) => {
+        return chain()
+          .setMark('textStyle', { border: null })
           .removeEmptyTextStyle()
           .run();
       },
@@ -722,6 +927,11 @@ const MenuButton = ({ onClick, isActive, children, title }) => (
 export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
   const [showInteractive, setShowInteractive] = React.useState(false);
   const [showCards, setShowCards] = React.useState(false);
+  const [showFontColor, setShowFontColor] = React.useState(false);
+  const [showBgColor, setShowBgColor] = React.useState(false);
+  const [showHighlightColor, setShowHighlightColor] = React.useState(false);
+  const [showBorder, setShowBorder] = React.useState(false);
+  const [showSpacing, setShowSpacing] = React.useState(false);
   
   const editor = useEditor({
     extensions: [
@@ -793,6 +1003,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       Underline,
       FontFamily,
       FontSize,
+      BackgroundColor,
+      LineHeight,
+      ParagraphSpacing,
+      BorderStyle,
       Card,
       CardGrid,
       Poll,
@@ -892,6 +1106,26 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     editor?.chain().focus().insertContent(symbol).run();
   }, [editor]);
 
+  const changeCase = useCallback((caseType) => {
+    const { from, to } = editor.state.selection;
+    const text = editor.state.doc.textBetween(from, to, '');
+    
+    let newText = text;
+    switch (caseType) {
+      case 'uppercase':
+        newText = text.toUpperCase();
+        break;
+      case 'lowercase':
+        newText = text.toLowerCase();
+        break;
+      case 'capitalize':
+        newText = text.replace(/\b\w/g, l => l.toUpperCase());
+        break;
+    }
+    
+    editor.chain().focus().deleteRange({ from, to }).insertContent(newText).run();
+  }, [editor]);
+
   // Update editor content when value prop changes externally
   useEffect(() => {
     if (editor && value !== editor.getHTML()) {
@@ -905,6 +1139,11 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       if (!e.target.closest('.relative')) {
         setShowInteractive(false);
         setShowCards(false);
+        setShowFontColor(false);
+        setShowBgColor(false);
+        setShowHighlightColor(false);
+        setShowBorder(false);
+        setShowSpacing(false);
       }
     };
     document.addEventListener('mousedown', handleClickOutside);
@@ -1216,6 +1455,156 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
 
         <div className="w-px h-6 bg-gray-300 mx-1" />
 
+        {/* Font Color */}
+        <div className="relative">
+          <MenuButton
+            onClick={() => {
+              setShowFontColor(!showFontColor);
+              setShowBgColor(false);
+              setShowHighlightColor(false);
+              setShowBorder(false);
+              setShowSpacing(false);
+            }}
+            isActive={showFontColor}
+            title="Font Color"
+          >
+            <Palette className="w-4 h-4" />
+          </MenuButton>
+          {showFontColor && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border p-3 z-50 min-w-[200px]">
+              <p className="text-xs font-semibold mb-2">Font Color</p>
+              <div className="grid grid-cols-5 gap-1">
+                {['#000000', '#FF0000', '#00FF00', '#0000FF', '#FFFF00', '#FF00FF', '#00FFFF', '#FFA500', '#800080', '#FFC0CB'].map(color => (
+                  <button
+                    key={color}
+                    onClick={() => {
+                      editor.chain().focus().setColor(color).run();
+                      setShowFontColor(false);
+                    }}
+                    className="w-8 h-8 rounded border-2 border-gray-200 hover:border-gray-400"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Background Color (Shading) */}
+        <div className="relative">
+          <MenuButton
+            onClick={() => {
+              setShowBgColor(!showBgColor);
+              setShowFontColor(false);
+              setShowHighlightColor(false);
+              setShowBorder(false);
+              setShowSpacing(false);
+            }}
+            isActive={showBgColor}
+            title="Background Color (Shading)"
+          >
+            <Highlighter className="w-4 h-4" />
+          </MenuButton>
+          {showBgColor && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border p-3 z-50 min-w-[200px]">
+              <p className="text-xs font-semibold mb-2">Background Color</p>
+              <div className="grid grid-cols-5 gap-1">
+                {['#FFFF00', '#00FF00', '#00FFFF', '#FF00FF', '#FFA500', '#FFE4B5', '#E6E6FA', '#FFB6C1', '#ADD8E6', '#90EE90'].map(color => (
+                  <button
+                    key={color}
+                    onClick={() => {
+                      editor.chain().focus().setBackgroundColor(color).run();
+                      setShowBgColor(false);
+                    }}
+                    className="w-8 h-8 rounded border-2 border-gray-200 hover:border-gray-400"
+                    style={{ backgroundColor: color }}
+                  />
+                ))}
+              </div>
+              <button
+                onClick={() => {
+                  editor.chain().focus().unsetBackgroundColor().run();
+                  setShowBgColor(false);
+                }}
+                className="text-xs text-red-600 mt-2 hover:underline"
+              >
+                Remove Background
+              </button>
+            </div>
+          )}
+        </div>
+
+        {/* Border */}
+        <div className="relative">
+          <MenuButton
+            onClick={() => {
+              setShowBorder(!showBorder);
+              setShowFontColor(false);
+              setShowBgColor(false);
+              setShowHighlightColor(false);
+              setShowSpacing(false);
+            }}
+            isActive={showBorder}
+            title="Border"
+          >
+            <Square className="w-4 h-4" />
+          </MenuButton>
+          {showBorder && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border p-3 z-50 min-w-[180px]">
+              <p className="text-xs font-semibold mb-2">Border Style</p>
+              <div className="space-y-1">
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setBorder('1px solid #000').run();
+                    setShowBorder(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Solid Border
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setBorder('2px solid #000').run();
+                    setShowBorder(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Thick Border
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setBorder('1px dashed #000').run();
+                    setShowBorder(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Dashed Border
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setBorder('2px solid #4F46E5').run();
+                    setShowBorder(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Colored Border
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().unsetBorder().run();
+                    setShowBorder(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded text-red-600"
+                >
+                  Remove Border
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
         <MenuButton
           onClick={() => editor.chain().focus().toggleSubscript().run()}
           isActive={editor.isActive('subscript')}
@@ -1230,6 +1619,105 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
         >
           <SuperIcon className="w-4 h-4" />
         </MenuButton>
+
+        <div className="w-px h-6 bg-gray-300 mx-1" />
+
+        {/* Line & Paragraph Spacing */}
+        <div className="relative">
+          <MenuButton
+            onClick={() => {
+              setShowSpacing(!showSpacing);
+              setShowFontColor(false);
+              setShowBgColor(false);
+              setShowHighlightColor(false);
+              setShowBorder(false);
+            }}
+            isActive={showSpacing}
+            title="Line & Paragraph Spacing"
+          >
+            <Space className="w-4 h-4" />
+          </MenuButton>
+          {showSpacing && (
+            <div className="absolute top-full left-0 mt-1 bg-white rounded-lg shadow-xl border p-3 z-50 min-w-[180px]">
+              <p className="text-xs font-semibold mb-2">Line Height</p>
+              <div className="space-y-1 mb-3">
+                {['1.0', '1.5', '2.0', '2.5'].map(height => (
+                  <button
+                    key={height}
+                    onClick={() => {
+                      editor.chain().focus().setLineHeight(height).run();
+                      setShowSpacing(false);
+                    }}
+                    className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                  >
+                    {height}
+                  </button>
+                ))}
+              </div>
+              <p className="text-xs font-semibold mb-2">Paragraph Spacing</p>
+              <div className="space-y-1">
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setParagraphSpacing({ top: '0px', bottom: '0px' }).run();
+                    setShowSpacing(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  No spacing
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setParagraphSpacing({ top: '8px', bottom: '8px' }).run();
+                    setShowSpacing(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Small (8px)
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setParagraphSpacing({ top: '16px', bottom: '16px' }).run();
+                    setShowSpacing(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Medium (16px)
+                </button>
+                <button
+                  onClick={() => {
+                    editor.chain().focus().setParagraphSpacing({ top: '24px', bottom: '24px' }).run();
+                    setShowSpacing(false);
+                  }}
+                  className="w-full text-left px-2 py-1 text-xs hover:bg-gray-100 rounded"
+                >
+                  Large (24px)
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Change Case */}
+        <div className="relative">
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="p-2 rounded hover:bg-indigo-100 transition-colors text-gray-700" title="Change Case">
+                <Type className="w-4 h-4" />
+              </button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent>
+              <DropdownMenuItem onClick={() => changeCase('uppercase')}>
+                UPPERCASE
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeCase('lowercase')}>
+                lowercase
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => changeCase('capitalize')}>
+                Capitalize Each Word
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
         
         <div className="w-px h-6 bg-gray-300 mx-1" />
         
