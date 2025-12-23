@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Label } from '@/components/ui/label';
-import { Loader2, TrendingUp, Users, BookOpen, Award } from 'lucide-react';
+import { Loader2, TrendingUp, Users, BookOpen, Award, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 
 const DATA_SOURCES = [
