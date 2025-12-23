@@ -982,17 +982,15 @@ export default function LessonPlayer() {
           </div>
 
           {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-8 overflow-hidden">
-            <div className="bg-white rounded-lg shadow-2xl w-full max-w-6xl h-full overflow-auto">
-              <div className="p-12">
-                <h2 className="text-4xl font-bold text-gray-900 mb-8">
-                  {currentLesson.slides[currentSlideIndex]?.title}
-                </h2>
-                <div 
-                  className="prose prose-lg max-w-none"
-                  dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
-                />
-              </div>
+          <div className="flex-1 flex items-center justify-center relative p-8">
+            <div className="bg-white rounded-lg shadow-2xl w-full max-w-5xl aspect-video p-8 overflow-auto">
+              <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                {currentLesson.slides[currentSlideIndex]?.title}
+              </h2>
+              <div 
+                className="prose prose-sm max-w-none"
+                dangerouslySetInnerHTML={{ __html: currentLesson.slides[currentSlideIndex]?.content || '' }}
+              />
             </div>
 
             {/* Navigation Arrows */}
