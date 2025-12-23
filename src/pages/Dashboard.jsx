@@ -199,14 +199,14 @@ export default function Dashboard() {
 
               {/* Sidebar */}
               <div className="space-y-6">
-              {/* Quick Progress Widget */}
-              <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
+                {/* Quick Progress Widget */}
+                <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
 
-              {/* Leaderboard */}
-              <Leaderboard limit={5} />
+                {/* Leaderboard */}
+                <Leaderboard limit={5} />
 
-              {/* Achievements */}
-              <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
+                {/* Achievements */}
+                <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
                 <div className="flex items-center justify-between mb-6">
                   <h3 className="font-semibold text-gray-900">Achievements</h3>
                   <Award className="w-5 h-5 text-indigo-600" />
@@ -232,10 +232,10 @@ export default function Dashboard() {
                     </p>
                   </div>
                 )}
-              </div>
+                </div>
 
-              {/* Recommended */}
-              <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-6 text-white">
+                {/* Recommended */}
+                <div className="bg-gradient-to-br from-indigo-600 to-violet-600 rounded-2xl p-6 text-white">
                 <h3 className="font-semibold mb-2">Continue Learning</h3>
                 <p className="text-indigo-100 text-sm mb-4">
                   Discover new courses that match your interests.
@@ -246,6 +246,7 @@ export default function Dashboard() {
                     <ArrowRight className="w-4 h-4 ml-2" />
                   </Button>
                 </Link>
+                </div>
               </div>
             </div>
           </>
