@@ -7,10 +7,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Users, MessageCircle, ChevronLeft, ChevronRight, X, 
-  Send, CheckCircle, User, Clock
-} from 'lucide-react';
+import {
+  Users, MessageCircle, ChevronLeft, ChevronRight, X,
+  Send, CheckCircle, User, Clock } from
+'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function LiveSessionView({ session, lesson, isPresenter, onClose }) {
@@ -34,31 +34,31 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
       return sessions[0];
     },
     refetchInterval: 2000,
-    enabled: !!session.id,
+    enabled: !!session.id
   });
 
   const { data: participants = [] } = useQuery({
     queryKey: ['session-participants', session.id],
-    queryFn: () => base44.entities.SessionParticipant.filter({ 
-      session_id: session.id, 
-      is_active: true 
+    queryFn: () => base44.entities.SessionParticipant.filter({
+      session_id: session.id,
+      is_active: true
     }),
-    refetchInterval: 3000,
+    refetchInterval: 3000
   });
 
   const { data: questions = [] } = useQuery({
     queryKey: ['session-questions', session.id],
     queryFn: () => base44.entities.SessionQuestion.filter({ session_id: session.id }, '-created_date', 100),
-    refetchInterval: 2000,
+    refetchInterval: 2000
   });
 
   const updateSlideMutation = useMutation({
-    mutationFn: (slideIndex) => base44.entities.LiveSession.update(session.id, { 
-      current_slide_index: slideIndex 
+    mutationFn: (slideIndex) => base44.entities.LiveSession.update(session.id, {
+      current_slide_index: slideIndex
     }),
     onSuccess: () => {
       queryClient.invalidateQueries(['live-session']);
-    },
+    }
   });
 
   const askQuestionMutation = useMutation({
@@ -66,25 +66,25 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
     onSuccess: () => {
       queryClient.invalidateQueries(['session-questions']);
       setQuestionText('');
-    },
+    }
   });
 
   const answerQuestionMutation = useMutation({
-    mutationFn: ({ questionId, answer }) => 
-      base44.entities.SessionQuestion.update(questionId, { answer, is_answered: true }),
+    mutationFn: ({ questionId, answer }) =>
+    base44.entities.SessionQuestion.update(questionId, { answer, is_answered: true }),
     onSuccess: () => {
       queryClient.invalidateQueries(['session-questions']);
-    },
+    }
   });
 
   const endSessionMutation = useMutation({
     mutationFn: () => base44.entities.LiveSession.update(session.id, {
       is_active: false,
-      ended_at: new Date().toISOString(),
+      ended_at: new Date().toISOString()
     }),
     onSuccess: () => {
       onClose();
-    },
+    }
   });
 
   const handleSlideChange = (newIndex) => {
@@ -95,13 +95,13 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
 
   const handleAskQuestion = () => {
     if (!questionText.trim()) return;
-    
+
     askQuestionMutation.mutate({
       session_id: session.id,
       question: questionText,
       asker_email: user?.email,
       asker_name: user?.full_name,
-      slide_index: liveSession?.current_slide_index || 0,
+      slide_index: liveSession?.current_slide_index || 0
     });
   };
 
@@ -128,21 +128,21 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
             <span className="text-xs text-gray-400">Code: {session.session_code}</span>
           </div>
           <div className="flex items-center gap-2">
-            {isPresenter && (
-              <Button
-                variant="destructive"
-                size="sm"
-                onClick={() => endSessionMutation.mutate()}
-              >
+            {isPresenter &&
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={() => endSessionMutation.mutate()}>
+
                 End Session
               </Button>
-            )}
+            }
             <Button
               variant="ghost"
               size="sm"
               onClick={onClose}
-              className="text-white hover:bg-gray-800"
-            >
+              className="text-white hover:bg-gray-800">
+
               <X className="w-5 h-5" />
             </Button>
           </div>
@@ -150,65 +150,65 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
 
         {/* Slide Display */}
         <div className="flex-1 flex items-center justify-center relative p-4 bg-gray-950">
-          <div className="bg-white rounded-lg shadow-2xl w-full max-w-4xl aspect-video p-8 overflow-auto relative mx-auto">
+          <div className="bg-white mx-auto p-8 rounded-xl shadow-2xl w-full max-w-4xl aspect-video overflow-auto relative">
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentSlideIndex}
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 exit={{ opacity: 0, x: -20 }}
-                className="h-full flex flex-col"
-              >
-                <div 
+                className="h-full flex flex-col">
+
+                <div
                   className="prose prose-base max-w-none"
-                  dangerouslySetInnerHTML={{ __html: currentSlide?.content || '' }}
-                />
+                  dangerouslySetInnerHTML={{ __html: currentSlide?.content || '' }} />
+
               </motion.div>
             </AnimatePresence>
             
             {/* Navigation Arrows Inside Slide */}
-            {isPresenter && (
-              <>
+            {isPresenter &&
+            <>
                 <button
-                  onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
-                  disabled={currentSlideIndex === 0}
-                  className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50"
-                >
+                onClick={() => handleSlideChange(Math.max(0, currentSlideIndex - 1))}
+                disabled={currentSlideIndex === 0}
+                className="absolute left-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50">
+
                   <ChevronLeft className="w-6 h-6" />
                 </button>
                 <button
-                  onClick={() => handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
-                  disabled={currentSlideIndex === lesson.slides.length - 1}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50"
-                >
+                onClick={() => handleSlideChange(Math.min(lesson.slides.length - 1, currentSlideIndex + 1))}
+                disabled={currentSlideIndex === lesson.slides.length - 1}
+                className="absolute right-2 top-1/2 -translate-y-1/2 w-12 h-12 bg-gray-900/80 hover:bg-gray-900 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-xl z-50">
+
                   <ChevronRight className="w-6 h-6" />
                 </button>
               </>
-            )}
+            }
           </div>
           
-          {!isPresenter && (
-            <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg z-50">
+          {!isPresenter &&
+          <div className="absolute bottom-8 left-1/2 -translate-x-1/2 bg-black/70 text-white text-sm px-4 py-2 rounded-lg z-50">
               Presenter is in control of slides
             </div>
-          )}
+          }
         </div>
 
         {/* Slide Thumbnails (Presenter only) */}
-        {isPresenter && (
-          <div className="bg-gray-900 border-t border-gray-700 p-4">
+        {isPresenter &&
+        <div className="bg-gray-900 border-t border-gray-700 p-4">
             <ScrollArea className="w-full">
               <div className="flex gap-3 pb-2">
-                {lesson.slides.map((slide, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => handleSlideChange(idx)}
-                    className={`shrink-0 rounded-lg border-2 transition-all ${
-                      idx === currentSlideIndex
-                        ? 'border-indigo-500 ring-2 ring-indigo-500/50'
-                        : 'border-gray-700 hover:border-gray-500'
-                    }`}
-                  >
+                {lesson.slides.map((slide, idx) =>
+              <button
+                key={idx}
+                onClick={() => handleSlideChange(idx)}
+                className={`shrink-0 rounded-lg border-2 transition-all ${
+                idx === currentSlideIndex ?
+                'border-indigo-500 ring-2 ring-indigo-500/50' :
+                'border-gray-700 hover:border-gray-500'}`
+                }>
+
                     <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
                       <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
                       <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
@@ -216,11 +216,11 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                       </span>
                     </div>
                   </button>
-                ))}
+              )}
               </div>
             </ScrollArea>
           </div>
-        )}
+        }
       </div>
 
       {/* Sidebar - Q&A and Participants */}
@@ -239,8 +239,8 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
         {/* Questions */}
         <ScrollArea className="flex-1 p-4">
           <div className="space-y-3">
-            {questions.map((q) => (
-              <Card key={q.id} className="p-3 bg-gray-800 border-gray-700">
+            {questions.map((q) =>
+            <Card key={q.id} className="p-3 bg-gray-800 border-gray-700">
                 <div className="flex items-start gap-2 mb-2">
                   <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
                     <User className="w-4 h-4 text-indigo-600" />
@@ -248,66 +248,66 @@ export default function LiveSessionView({ session, lesson, isPresenter, onClose 
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
                       <span className="text-sm font-medium text-white">{q.asker_name}</span>
-                      {q.is_answered && (
-                        <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      )}
+                      {q.is_answered &&
+                    <CheckCircle className="w-4 h-4 text-emerald-500" />
+                    }
                     </div>
                     <p className="text-sm text-gray-300">{q.question}</p>
                     <span className="text-xs text-gray-500 mt-1">Slide {q.slide_index + 1}</span>
                     
-                    {q.is_answered && q.answer && (
-                      <div className="mt-2 p-2 bg-gray-900 rounded border border-gray-700">
+                    {q.is_answered && q.answer &&
+                  <div className="mt-2 p-2 bg-gray-900 rounded border border-gray-700">
                         <p className="text-xs text-gray-400 mb-1">Answer:</p>
                         <p className="text-sm text-white">{q.answer}</p>
                       </div>
-                    )}
+                  }
 
-                    {isPresenter && !q.is_answered && (
-                      <div className="mt-2">
+                    {isPresenter && !q.is_answered &&
+                  <div className="mt-2">
                         <Input
-                          placeholder="Type your answer..."
-                          className="bg-gray-900 border-gray-700 text-white text-sm"
-                          onKeyPress={(e) => {
-                            if (e.key === 'Enter') {
-                              answerQuestionMutation.mutate({
-                                questionId: q.id,
-                                answer: e.target.value,
-                              });
-                              e.target.value = '';
-                            }
-                          }}
-                        />
+                      placeholder="Type your answer..."
+                      className="bg-gray-900 border-gray-700 text-white text-sm"
+                      onKeyPress={(e) => {
+                        if (e.key === 'Enter') {
+                          answerQuestionMutation.mutate({
+                            questionId: q.id,
+                            answer: e.target.value
+                          });
+                          e.target.value = '';
+                        }
+                      }} />
+
                       </div>
-                    )}
+                  }
                   </div>
                 </div>
               </Card>
-            ))}
+            )}
           </div>
         </ScrollArea>
 
         {/* Ask Question Input */}
-        {!isPresenter && (
-          <div className="p-4 border-t border-gray-700">
+        {!isPresenter &&
+        <div className="p-4 border-t border-gray-700">
             <div className="flex gap-2">
               <Input
-                value={questionText}
-                onChange={(e) => setQuestionText(e.target.value)}
-                placeholder="Ask a question..."
-                className="bg-gray-800 border-gray-700 text-white"
-                onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()}
-              />
+              value={questionText}
+              onChange={(e) => setQuestionText(e.target.value)}
+              placeholder="Ask a question..."
+              className="bg-gray-800 border-gray-700 text-white"
+              onKeyPress={(e) => e.key === 'Enter' && handleAskQuestion()} />
+
               <Button
-                onClick={handleAskQuestion}
-                disabled={!questionText.trim()}
-                className="bg-indigo-600 hover:bg-indigo-700"
-              >
+              onClick={handleAskQuestion}
+              disabled={!questionText.trim()}
+              className="bg-indigo-600 hover:bg-indigo-700">
+
                 <Send className="w-4 h-4" />
               </Button>
             </div>
           </div>
-        )}
+        }
       </div>
-    </div>
-  );
+    </div>);
+
 }
