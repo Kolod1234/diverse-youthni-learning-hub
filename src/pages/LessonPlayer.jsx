@@ -982,8 +982,8 @@ export default function LessonPlayer() {
           </div>
 
           {/* Slide Display */}
-          <div className="flex-1 flex items-center justify-center relative p-2">
-            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-[90vh] p-12 overflow-auto">
+          <div className="flex-1 flex items-center justify-center relative p-2 pb-0">
+            <div className="bg-white rounded-lg shadow-2xl w-[98%] h-full p-12 overflow-y-auto overflow-x-hidden">
               <h2 className="text-3xl font-bold text-gray-900 mb-6">
                 {currentLesson.slides[currentSlideIndex]?.title}
               </h2>
@@ -993,53 +993,56 @@ export default function LessonPlayer() {
               />
             </div>
 
-            {/* Navigation Arrows */}
+            {/* Navigation Arrows - Left/Right */}
             <button
               onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
               disabled={currentSlideIndex === 0}
-              className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+              className="absolute left-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
             >
-              <ChevronLeft className="w-6 h-6" />
+              <ChevronLeft className="w-8 h-8" />
             </button>
             <button
               onClick={() => setCurrentSlideIndex(Math.min(currentLesson.slides.length - 1, currentSlideIndex + 1))}
               disabled={currentSlideIndex === currentLesson.slides.length - 1}
-              className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white/10 hover:bg-white/20 disabled:opacity-30 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all"
+              className="absolute right-4 top-1/2 -translate-y-1/2 w-16 h-16 bg-white/20 hover:bg-white/30 disabled:opacity-20 disabled:cursor-not-allowed rounded-full flex items-center justify-center text-white transition-all shadow-2xl z-10"
             >
-              <ChevronRight className="w-6 h-6" />
+              <ChevronRight className="w-8 h-8" />
             </button>
           </div>
 
-          {/* Slide Thumbnails */}
-          <div className="bg-gray-900 border-t border-gray-700 p-4">
-            <div className="max-w-7xl mx-auto">
-              <div className="flex items-center gap-3 overflow-x-auto pb-2">
-                <span className="text-xs text-gray-400 uppercase tracking-wide shrink-0">Upcoming Slides</span>
-                {currentLesson.slides.map((slide, idx) => (
-                  <button
-                    key={idx}
-                    onClick={() => setCurrentSlideIndex(idx)}
-                    className={`shrink-0 rounded-lg border-2 transition-all ${
-                      idx === currentSlideIndex
-                        ? 'border-indigo-500 ring-2 ring-indigo-500/50'
-                        : 'border-gray-700 hover:border-gray-500'
-                    }`}
-                  >
-                    <div className="w-32 aspect-video bg-white p-2 rounded-md flex flex-col items-center justify-center">
-                      <span className="text-xs text-gray-500 mb-1">Slide {idx + 1}</span>
-                      <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
-                        {slide.title}
-                      </span>
-                    </div>
-                  </button>
-                ))}
-              </div>
+          {/* Slide Thumbnails - Bottom */}
+          <div className="bg-gray-900 border-t-2 border-gray-700 p-4 shadow-2xl">
+            <div className="max-w-full mx-auto">
+              <ScrollArea className="w-full">
+                <div className="flex items-center gap-3 pb-2">
+                  <span className="text-xs text-gray-300 uppercase tracking-wide shrink-0 font-semibold">Next Slides</span>
+                  {currentLesson.slides.map((slide, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setCurrentSlideIndex(idx)}
+                      className={`shrink-0 rounded-lg border-2 transition-all hover:scale-105 ${
+                        idx === currentSlideIndex
+                          ? 'border-indigo-500 ring-2 ring-indigo-500/50 scale-105'
+                          : 'border-gray-700 hover:border-gray-500'
+                      }`}
+                    >
+                      <div className="w-40 aspect-video bg-white p-3 rounded-md flex flex-col items-center justify-center">
+                        <span className="text-xs text-gray-500 mb-1 font-semibold">Slide {idx + 1}</span>
+                        <span className="text-xs font-medium text-gray-900 line-clamp-2 text-center px-2">
+                          {slide.title}
+                        </span>
+                      </div>
+                    </button>
+                  ))}
+                </div>
+              </ScrollArea>
             </div>
           </div>
 
           {/* Keyboard Navigation Hint */}
-          <div className="absolute bottom-24 left-6 bg-black/70 text-white text-xs px-3 py-2 rounded-lg">
-            Navigation: ← → Space | ESC: Exit
+          <div className="absolute bottom-32 left-6 bg-black/80 text-white text-sm px-4 py-3 rounded-lg shadow-xl">
+            <div className="font-semibold mb-1">Navigation:</div>
+            <div>← → arrows or Space | ESC to Exit</div>
           </div>
         </div>
       )}
