@@ -51,15 +51,15 @@ export default function Dashboard() {
     enabled: !!user?.email,
   });
 
-  const inProgressEnrollments = enrollments.filter(e => !e.is_completed);
-  const completedEnrollments = enrollments.filter(e => e.is_completed);
-
   const getGreeting = () => {
     const hour = new Date().getHours();
     if (hour < 12) return 'Good morning';
     if (hour < 18) return 'Good afternoon';
     return 'Good evening';
   };
+
+  const inProgressEnrollments = enrollments.filter(e => !e.is_completed);
+  const completedEnrollments = enrollments.filter(e => e.is_completed);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
