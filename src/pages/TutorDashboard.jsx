@@ -10,13 +10,14 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, BookOpen, Users, MessageSquare, ClipboardList, 
-  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart
+  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import AICourseAssistant from '@/components/tutor/AICourseAssistant';
+import AwardPointsDialog from '@/components/tutor/AwardPointsDialog';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -26,6 +27,8 @@ export default function TutorDashboard() {
   const [isUnlocked, setIsUnlocked] = useState(() => localStorage.getItem('tutorsUnlocked') === 'true');
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
+  const [showAwardPoints, setShowAwardPoints] = useState(false);
+  const [selectedCourseForPoints, setSelectedCourseForPoints] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -239,6 +242,8 @@ export default function TutorDashboard() {
               deleteCourseMutation={deleteCourseMutation}
               createCourseMutation={createCourseMutation}
               setSelectedCourse={setSelectedCourse}
+              setShowAwardPoints={setShowAwardPoints}
+              setSelectedCourseForPoints={setSelectedCourseForPoints}
             />
           </TabsContent>
 
@@ -270,12 +275,18 @@ export default function TutorDashboard() {
             />
           </TabsContent>
         </Tabs>
+        
+        <AwardPointsDialog
+          open={showAwardPoints}
+          onOpenChange={setShowAwardPoints}
+          courseId={selectedCourseForPoints}
+        />
       </div>
     </div>
   );
 }
 
-function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse }) {
+function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse, setShowAwardPoints, setSelectedCourseForPoints }) {
   const [editingCourse, setEditingCourse] = useState(null);
 
   return (
@@ -401,6 +412,13 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
                   </div>
                 </div>
                 <div className="flex gap-2">
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setSelectedCourseForPoints(course.id);
+                    setShowAwardPoints(true);
+                  }}>
+                    <Award className="w-4 h-4 text-indigo-600 mr-1" />
+                    Award
+                  </Button>
                   <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
                     <Button variant="outline" size="sm">
                       <Edit className="w-4 h-4 mr-2" />
