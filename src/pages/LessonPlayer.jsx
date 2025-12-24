@@ -510,10 +510,11 @@ export default function LessonPlayer() {
                       )}
                     </div>
                     {isCompleted && (
-                      <div className="ml-4">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                      <div className="ml-4 text-right">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
                           <CheckCircle className="w-6 h-6 text-emerald-600" />
                         </div>
+                        <p className="text-sm font-medium text-emerald-600">Thank you for completing the lesson</p>
                       </div>
                     )}
                   </div>
