@@ -23,6 +23,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [participants, setParticipants] = useState([]);
   const [error, setError] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
+  const [breakoutRooms, setBreakoutRooms] = useState([]);
+  const [currentBreakoutRoom, setCurrentBreakoutRoom] = useState(null);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -63,34 +65,48 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const initializeMedia = async () => {
     try {
       console.log('Requesting media access...');
-      const stream = await navigator.mediaDevices.getUserMedia({
-        video: { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
-          facingMode: 'user'
-        },
-        audio: {
+      
+      // Check if devices are available
+      const devices = await navigator.mediaDevices.enumerateDevices();
+      const hasVideo = devices.some(d => d.kind === 'videoinput');
+      const hasAudio = devices.some(d => d.kind === 'audioinput');
+      
+      console.log('Available devices:', { hasVideo, hasAudio });
+      
+      const constraints = {
+        audio: hasAudio ? {
           echoCancellation: true,
           noiseSuppression: true,
           autoGainControl: true
-        }
-      });
+        } : false,
+        video: hasVideo ? { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        } : false
+      };
       
-      console.log('Media access granted', stream);
+      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      
+      console.log('Media stream obtained:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
       setLocalStream(stream);
       
-      // Ensure video element is ready
-      setTimeout(() => {
-        if (localVideoRef.current && stream) {
-          localVideoRef.current.srcObject = stream;
-          localVideoRef.current.play().catch(err => {
-            console.error('Error playing video:', err);
-          });
+      // Wait for ref and set stream
+      await new Promise(resolve => setTimeout(resolve, 100));
+      
+      if (localVideoRef.current && stream) {
+        localVideoRef.current.srcObject = stream;
+        try {
+          await localVideoRef.current.play();
+          console.log('Video playing successfully');
+        } catch (playErr) {
+          console.error('Error playing video:', playErr);
         }
-      }, 100);
+      }
     } catch (error) {
       console.error('Error accessing media devices:', error);
-      alert(`Camera/Microphone Error: ${error.message}\n\nPlease:\n1. Allow camera and microphone access\n2. Make sure no other app is using them\n3. Refresh and try again`);
+      setError(`Camera/Microphone Error: ${error.message}\n\nPlease allow access and refresh`);
+      throw error;
     }
   };
 

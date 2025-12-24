@@ -12,7 +12,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, roomId, sessionId, offer, answer, candidate, userId } = await req.json();
+    const body = await req.json();
+    const { action, roomId, sessionId, offer, answer, candidate, userId, message } = body;
 
     // Verify user has access to this session
     const sessions = await base44.asServiceRole.entities.VideoSession.filter({ id: sessionId });
@@ -72,7 +73,9 @@ Deno.serve(async (req) => {
         });
 
       case 'send-message':
-        const { message } = await req.json();
+        if (!message) {
+          return Response.json({ error: 'Message required' }, { status: 400 });
+        }
         const msg = {
           id: Date.now(),
           sender: user.full_name,
