@@ -28,6 +28,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [currentBreakoutRoom, setCurrentBreakoutRoom] = useState(null);
   const [isRecording, setIsRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
+  const [showBreakoutManager, setShowBreakoutManager] = useState(false);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -425,6 +426,11 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             <h2 className="font-semibold text-sm">{session.title}</h2>
             <p className="text-xs text-gray-400">{course?.title}</p>
           </div>
+          {currentBreakoutRoom && (
+            <Badge className="bg-purple-600 text-white">
+              📍 Room: {currentBreakoutRoom}
+            </Badge>
+          )}
         </div>
         
         <div className="flex items-center gap-2">
@@ -434,14 +440,14 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
         <div className="flex items-center gap-2">
           {isTutor && (
-            <BreakoutRoomManager
-              participants={participants}
-              onCreateRooms={(rooms) => {
-                setBreakoutRooms(rooms);
-                alert(`Created ${rooms.length} breakout rooms!`);
-              }}
-              onAssign={() => {}}
-            />
+            <Button
+              onClick={() => setShowBreakoutManager(true)}
+              size="sm"
+              className="bg-purple-600 hover:bg-purple-700"
+            >
+              <Users className="w-3 h-3 mr-1" />
+              Breakout Rooms
+            </Button>
           )}
           <Button
             onClick={onEndSession}
@@ -678,26 +684,67 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             </div>
 
             <div className="flex-1 overflow-y-auto p-4 space-y-2">
-              {participants.map((participant) => (
-                <div key={participant.userId} className="flex items-center gap-3 p-2 bg-gray-700 rounded-lg">
-                  <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
-                    <span className="text-white text-sm font-medium">
-                      {participant.name?.charAt(0) || 'U'}
-                    </span>
+              {participants.map((participant) => {
+                const participantRoom = participant.breakoutRoom || currentBreakoutRoom;
+                return (
+                  <div key={participant.userId} className="flex items-center gap-3 p-2 bg-gray-700 rounded-lg">
+                    <div className="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center">
+                      <span className="text-white text-sm font-medium">
+                        {participant.name?.charAt(0) || 'U'}
+                      </span>
+                    </div>
+                    <div className="flex-1">
+                      <p className="text-white text-sm font-medium">{participant.name}</p>
+                      <p className="text-gray-400 text-xs">{participant.email}</p>
+                      {participantRoom && (
+                        <Badge className="bg-purple-600 text-xs mt-1">📍 {participantRoom}</Badge>
+                      )}
+                    </div>
+                    {participant.email === session.tutor_email && (
+                      <Badge className="bg-blue-600 text-xs">Host</Badge>
+                    )}
                   </div>
-                  <div className="flex-1">
-                    <p className="text-white text-sm font-medium">{participant.name}</p>
-                    <p className="text-gray-400 text-xs">{participant.email}</p>
-                  </div>
-                  {participant.email === session.tutor_email && (
-                    <Badge className="bg-blue-600 text-xs">Host</Badge>
-                  )}
-                </div>
-              ))}
+                );
+              })}
             </div>
           </div>
         )}
       </div>
+
+      {/* Breakout Room Manager Dialog */}
+      {showBreakoutManager && (
+        <BreakoutRoomManager
+          participants={participants}
+          currentRooms={breakoutRooms}
+          isTutor={isTutor}
+          currentUserRoom={currentBreakoutRoom}
+          onCreateRooms={(rooms) => {
+            setBreakoutRooms(rooms);
+          }}
+          onAssignParticipant={(participantEmail, roomName) => {
+            // Update participant's room assignment
+            setParticipants(prev => prev.map(p => 
+              p.email === participantEmail ? { ...p, breakoutRoom: roomName } : p
+            ));
+          }}
+          onJoinRoom={(roomName) => {
+            setCurrentBreakoutRoom(roomName);
+          }}
+          onLeaveRoom={() => {
+            setCurrentBreakoutRoom(null);
+          }}
+          onCloseRoom={(roomName) => {
+            setBreakoutRooms(prev => prev.filter(r => r.name !== roomName));
+            setParticipants(prev => prev.map(p => 
+              p.breakoutRoom === roomName ? { ...p, breakoutRoom: null } : p
+            ));
+            if (currentBreakoutRoom === roomName) {
+              setCurrentBreakoutRoom(null);
+            }
+          }}
+          onClose={() => setShowBreakoutManager(false)}
+        />
+      )}
     </div>
   );
 }
