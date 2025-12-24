@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Progress } from '@/components/ui/progress';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Badge } from '@/components/ui/badge';
 import { 
   ArrowLeft, Users, TrendingUp, Award, Brain, Clock, 
   CheckCircle, XCircle, BarChart3, Download, MessageSquare
