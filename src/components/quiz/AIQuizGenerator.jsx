@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -14,6 +14,8 @@ export default function AIQuizGenerator({ courses }) {
   const [subtopic, setSubtopic] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
   const [courseId, setCourseId] = useState('');
+  const [lessonId, setLessonId] = useState('');
+  const [lessons, setLessons] = useState([]);
   const [numQuestions, setNumQuestions] = useState(10);
   const [difficulty, setDifficulty] = useState('medium');
   const [timePerQuestion, setTimePerQuestion] = useState(60);
@@ -25,6 +27,19 @@ export default function AIQuizGenerator({ courses }) {
   const [generatedQuiz, setGeneratedQuiz] = useState(null);
 
   const queryClient = useQueryClient();
+
+  // Load lessons when course is selected
+  useEffect(() => {
+    const loadLessons = async () => {
+      if (courseId) {
+        const courseLessons = await base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
+        setLessons(courseLessons);
+      } else {
+        setLessons([]);
+      }
+    };
+    loadLessons();
+  }, [courseId]);
 
   const saveQuizMutation = useMutation({
     mutationFn: (data) => base44.entities.Quiz.create({
@@ -146,6 +161,7 @@ Return JSON:
     saveQuizMutation.mutate({
       ...generatedQuiz,
       course_id: courseId,
+      lesson_id: lessonId || null,
       topic,
       subtopic,
       difficulty,
@@ -192,7 +208,10 @@ Return JSON:
             <Label>Publish Quiz To Course *</Label>
             <select
               value={courseId}
-              onChange={(e) => setCourseId(e.target.value)}
+              onChange={(e) => {
+                setCourseId(e.target.value);
+                setLessonId('');
+              }}
               className="w-full h-10 px-3 rounded-md border border-gray-300"
               required
             >
@@ -202,6 +221,22 @@ Return JSON:
               ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">Quiz will be visible to students enrolled in this course</p>
+          </div>
+
+          <div>
+            <Label>Link to Lesson (Optional)</Label>
+            <select
+              value={lessonId}
+              onChange={(e) => setLessonId(e.target.value)}
+              className="w-full h-10 px-3 rounded-md border border-gray-300"
+              disabled={!courseId}
+            >
+              <option value="">No specific lesson</option>
+              {lessons.map(l => (
+                <option key={l.id} value={l.id}>{l.title}</option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Quiz will appear at the end of this lesson</p>
           </div>
 
           <div>

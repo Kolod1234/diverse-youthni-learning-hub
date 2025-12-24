@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -36,7 +36,22 @@ export default function QuizBuilder({ courses }) {
     ]
   });
 
+  const [lessons, setLessons] = useState([]);
+
   const queryClient = useQueryClient();
+
+  // Load lessons when course is selected
+  useEffect(() => {
+    const loadLessons = async () => {
+      if (quizData.course_id) {
+        const courseLessons = await base44.entities.Lesson.filter({ course_id: quizData.course_id }, 'order', 100);
+        setLessons(courseLessons);
+      } else {
+        setLessons([]);
+      }
+    };
+    loadLessons();
+  }, [quizData.course_id]);
 
   const createQuizMutation = useMutation({
     mutationFn: (data) => {
@@ -164,7 +179,7 @@ export default function QuizBuilder({ courses }) {
             <Label>Publish Quiz To Course *</Label>
             <select
               value={quizData.course_id}
-              onChange={(e) => setQuizData({ ...quizData, course_id: e.target.value })}
+              onChange={(e) => setQuizData({ ...quizData, course_id: e.target.value, lesson_id: '' })}
               className="w-full h-10 px-3 rounded-md border border-gray-300"
               required
             >
@@ -174,6 +189,21 @@ export default function QuizBuilder({ courses }) {
               ))}
             </select>
             <p className="text-xs text-gray-500 mt-1">Students enrolled in this course will see and take this quiz</p>
+          </div>
+          <div>
+            <Label>Link to Lesson (Optional)</Label>
+            <select
+              value={quizData.lesson_id}
+              onChange={(e) => setQuizData({ ...quizData, lesson_id: e.target.value })}
+              className="w-full h-10 px-3 rounded-md border border-gray-300"
+              disabled={!quizData.course_id}
+            >
+              <option value="">No specific lesson</option>
+              {lessons.map(l => (
+                <option key={l.id} value={l.id}>{l.title}</option>
+              ))}
+            </select>
+            <p className="text-xs text-gray-500 mt-1">Quiz will appear at the end of this lesson</p>
           </div>
           <div>
             <Label>Difficulty Level</Label>
