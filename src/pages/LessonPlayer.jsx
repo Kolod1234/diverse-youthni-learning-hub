@@ -440,32 +440,32 @@ export default function LessonPlayer() {
                         Complete Lesson
                       </Button>
                     )}
-                    
+
                     {lessonQuizzes.length > 0 && (
                       <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`}>
                         <Button 
-                          variant="outline"
-                          className="w-full h-14 text-lg border-2 border-violet-500 text-violet-600 hover:bg-violet-50"
+                          className="w-full h-14 text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
                         >
                           <Brain className="w-5 h-5 mr-2" />
-                          Take Quiz ({lessonQuizzes[0].questions?.length} questions)
+                          Start Quiz ({lessonQuizzes[0].questions?.length} questions)
                         </Button>
                       </Link>
                     )}
-                    
+
                     {nextLesson ? (
                       <Button 
                         onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
-                        className="w-full h-14 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600"
+                        variant="outline"
+                        className="w-full h-14 text-lg"
                       >
                         Next Lesson
                         <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
                     ) : (
                       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-                        <Button className="w-full h-14 text-lg bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600">
+                        <Button variant="outline" className="w-full h-14 text-lg">
                           <Trophy className="w-5 h-5 mr-2" />
-                          Course Complete!
+                          Back to Course
                         </Button>
                       </Link>
                     )}
