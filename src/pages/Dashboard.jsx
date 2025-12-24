@@ -13,6 +13,7 @@ import AchievementBadge from '@/components/dashboard/AchievementBadge';
 import CourseProgressWidget from '@/components/dashboard/CourseProgressWidget';
 import PointsDisplay from '@/components/gamification/PointsDisplay';
 import Leaderboard from '@/components/gamification/Leaderboard';
+import StreakTracker from '@/components/gamification/StreakTracker';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -199,6 +200,12 @@ export default function Dashboard() {
 
               {/* Sidebar */}
               <div className="space-y-6">
+                {/* Streak Tracker */}
+                <StreakTracker 
+                  streakDays={userProgress?.streak_days || 0}
+                  lastActivityDate={userProgress?.last_activity_date}
+                />
+
                 {/* Quick Progress Widget */}
                 <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />
 
