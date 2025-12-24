@@ -49,8 +49,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   const initializeMedia = async () => {
     try {
+      console.log('Requesting media access...');
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { width: 1280, height: 720 },
+        video: { 
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+          facingMode: 'user'
+        },
         audio: {
           echoCancellation: true,
           noiseSuppression: true,
@@ -58,13 +63,21 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         }
       });
       
+      console.log('Media access granted', stream);
       setLocalStream(stream);
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-      }
+      
+      // Ensure video element is ready
+      setTimeout(() => {
+        if (localVideoRef.current && stream) {
+          localVideoRef.current.srcObject = stream;
+          localVideoRef.current.play().catch(err => {
+            console.error('Error playing video:', err);
+          });
+        }
+      }, 100);
     } catch (error) {
       console.error('Error accessing media devices:', error);
-      alert('Please allow camera and microphone access to join the session');
+      alert(`Camera/Microphone Error: ${error.message}\n\nPlease:\n1. Allow camera and microphone access\n2. Make sure no other app is using them\n3. Refresh and try again`);
     }
   };
 
@@ -282,7 +295,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
               autoPlay
               muted
               playsInline
-              className="w-full h-full object-cover mirror"
+              className="w-full h-full object-cover"
+              style={{ transform: 'scaleX(-1)' }}
             />
             {isVideoOff && (
               <div className="absolute inset-0 bg-gray-700 flex items-center justify-center">
