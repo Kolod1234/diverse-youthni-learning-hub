@@ -77,35 +77,35 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   const initializeMedia = async () => {
     try {
-      console.log('Requesting HD media access...');
+      console.log('Requesting media access...');
       
-      // Request permissions first
+      // Simpler constraints for better compatibility
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: {
-          echoCancellation: true,
-          noiseSuppression: true,
-          autoGainControl: true,
-          sampleRate: 48000
-        },
-        video: { 
-          width: { min: 640, ideal: 1280, max: 1920 },
-          height: { min: 480, ideal: 720, max: 1080 },
-          frameRate: { ideal: 30 },
+        audio: true,
+        video: {
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
           facingMode: 'user'
         }
       });
       
-      console.log('HD Media stream obtained:', {
-        tracks: stream.getTracks().map(t => ({
-          kind: t.kind,
-          enabled: t.enabled,
-          settings: t.getSettings()
-        }))
-      });
+      console.log('Media stream obtained:', stream.getTracks().map(t => t.kind));
+      
+      // Immediately attach to video element
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = stream;
+        localVideoRef.current.muted = true;
+        try {
+          await localVideoRef.current.play();
+          console.log('✅ Video playing');
+        } catch (playError) {
+          console.log('Autoplay blocked, will retry');
+        }
+      }
       
       setLocalStream(stream);
     } catch (error) {
-      console.error('Error accessing HD media devices:', error);
+      console.error('Error accessing media devices:', error);
       setError(`Camera/Microphone Error: ${error.message}\n\nPlease:\n1. Allow camera/mic access\n2. Close other apps using camera\n3. Refresh the page`);
       throw error;
     }
