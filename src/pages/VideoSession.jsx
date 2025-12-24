@@ -45,7 +45,7 @@ export default function VideoSession() {
       const courses = await base44.entities.Course.filter({ id: session.course_id });
       return courses[0];
     },
-    enabled: !!session?.course_id,
+    enabled: !!session?.course_id && session.course_id !== 'null',
   });
 
   const updateSessionMutation = useMutation({
