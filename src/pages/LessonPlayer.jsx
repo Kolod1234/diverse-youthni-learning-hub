@@ -1,3 +1,4 @@
+
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -84,12 +85,15 @@ export default function LessonPlayer() {
   });
 
   // Filter quizzes that match this lesson by ID, section, or title
-  const lessonQuizzes = allQuizzes.filter(quiz => {
-    if (quiz.lesson_id === currentLesson?.id) return true;
-    if (quiz.topic === currentLesson?.section) return true;
-    if (quiz.topic === currentLesson?.title) return true;
-    return false;
-  });
+  const lessonQuizzes = React.useMemo(() => {
+    if (!currentLesson) return [];
+    return allQuizzes.filter(quiz => {
+      if (quiz.lesson_id === currentLesson.id) return true;
+      if (quiz.topic === currentLesson.section) return true;
+      if (quiz.topic === currentLesson.title) return true;
+      return false;
+    });
+  }, [allQuizzes, currentLesson]);
   
   // Create slides from lesson content
   const slides = currentLesson?.slides || [];
