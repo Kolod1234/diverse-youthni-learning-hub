@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, Bell, ClipboardList, BarChart3
+  Settings, LogOut, Menu, User, Bell, ClipboardList, BarChart3, MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
