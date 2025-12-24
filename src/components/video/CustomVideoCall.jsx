@@ -112,6 +112,12 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   };
 
   const joinRoom = async () => {
+    if (!roomId || !session.id) {
+      console.warn('Skipping join: roomId or sessionId is missing');
+      setError('Invalid session configuration. Please refresh and try again.');
+      return;
+    }
+
     try {
       const response = await base44.functions.invoke('videoSignaling', {
         action: 'join',
@@ -119,13 +125,18 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         sessionId: session.id,
         userId
       });
-      
+
       if (response.data.participants) {
         setParticipants(response.data.participants);
       }
 
       // Poll for new participants and messages
       const interval = setInterval(async () => {
+        if (!roomId || !session.id) {
+          console.warn('Skipping poll: roomId or sessionId is missing');
+          return;
+        }
+
         try {
           const [participantsRes, messagesRes] = await Promise.all([
             base44.functions.invoke('videoSignaling', {
@@ -335,6 +346,10 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   const handleSendMessage = async () => {
     if (!newMessage.trim()) return;
+    if (!roomId || !session.id) {
+      console.warn('Cannot send message: roomId or sessionId is missing');
+      return;
+    }
 
     try {
       const response = await base44.functions.invoke('videoSignaling', {
