@@ -812,6 +812,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             <div className="p-4 border-t border-gray-700">
               <div className="flex gap-2">
                 <input
+                  id="chat-message"
+                  name="message"
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}

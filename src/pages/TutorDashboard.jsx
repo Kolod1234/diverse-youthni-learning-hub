@@ -868,8 +868,10 @@ function CourseFormFields({ formData, setFormData }) {
         <h4 className="font-medium text-gray-900 mb-4">Basic Information</h4>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label>Course Title *</Label>
+            <Label htmlFor="course-title">Course Title *</Label>
             <Input 
+              id="course-title"
+              name="title"
               value={formData.title || ''} 
               onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               placeholder="Complete Web Development Course" 
@@ -879,8 +881,10 @@ function CourseFormFields({ formData, setFormData }) {
         </div>
         
         <div className="mt-4">
-          <Label>Course Description *</Label>
+          <Label htmlFor="course-description">Course Description *</Label>
           <Textarea 
+            id="course-description"
+            name="description"
             value={formData.description || ''} 
             onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
             rows={4}
@@ -893,8 +897,10 @@ function CourseFormFields({ formData, setFormData }) {
         <h4 className="font-medium text-gray-900 mb-4">Course Details</h4>
         <div className="grid sm:grid-cols-2 gap-4">
           <div>
-            <Label>Category *</Label>
+            <Label htmlFor="course-category">Category *</Label>
             <select 
+              id="course-category"
+              name="category"
               value={formData.category || ''} 
               onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
               className="w-full h-10 px-3 rounded-md border border-gray-300"
@@ -910,8 +916,10 @@ function CourseFormFields({ formData, setFormData }) {
             </select>
           </div>
           <div>
-            <Label>Difficulty Level</Label>
+            <Label htmlFor="course-level">Difficulty Level</Label>
             <select 
+              id="course-level"
+              name="level"
               value={formData.level || 'beginner'} 
               onChange={(e) => setFormData({ ...formData, level: e.target.value })} 
               className="w-full h-10 px-3 rounded-md border border-gray-300"
@@ -922,8 +930,10 @@ function CourseFormFields({ formData, setFormData }) {
             </select>
           </div>
           <div>
-            <Label>Price (USD)</Label>
+            <Label htmlFor="course-price">Price (USD)</Label>
             <Input 
+              id="course-price"
+              name="price"
               type="number" 
               value={formData.price || ''} 
               onChange={(e) => setFormData({ ...formData, price: e.target.value })}
@@ -931,8 +941,10 @@ function CourseFormFields({ formData, setFormData }) {
             />
           </div>
           <div>
-            <Label>Estimated Duration (hours)</Label>
+            <Label htmlFor="course-duration">Estimated Duration (hours)</Label>
             <Input 
+              id="course-duration"
+              name="duration_hours"
               type="number" 
               value={formData.duration_hours || ''} 
               onChange={(e) => setFormData({ ...formData, duration_hours: e.target.value })}
@@ -942,8 +954,10 @@ function CourseFormFields({ formData, setFormData }) {
         </div>
 
         <div className="mt-4">
-          <Label>Course Thumbnail URL (optional)</Label>
+          <Label htmlFor="course-thumbnail">Course Thumbnail URL (optional)</Label>
           <Input 
+            id="course-thumbnail"
+            name="thumbnail"
             value={formData.thumbnail || ''} 
             onChange={(e) => setFormData({ ...formData, thumbnail: e.target.value })}
             placeholder="https://images.unsplash.com/..." 
