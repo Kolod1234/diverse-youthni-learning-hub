@@ -216,18 +216,19 @@ export default function QuizList({ quizzes, courses }) {
                                        onChange={(e) => setSelectedCourseId(e.target.value)}
                                        className="h-9 px-3 rounded-md border border-gray-300"
                                      >
-                                       <option value="">Select lesson topic</option>
+                                       <option value="">Select topic from any course</option>
                                        {allLessons
-                                         .filter(l => l.course_id === quiz.course_id && l.section)
+                                         .filter(l => l.section)
                                          .reduce((acc, lesson) => {
                                            if (!acc.find(item => item.section === lesson.section)) {
-                                             acc.push({ section: lesson.section });
+                                             const course = courses.find(c => c.id === lesson.course_id);
+                                             acc.push({ section: lesson.section, courseName: course?.title });
                                            }
                                            return acc;
                                          }, [])
                                          .map((item, idx) => (
                                            <option key={idx} value={item.section}>
-                                             {item.section}
+                                             {item.section} {item.courseName ? `(${item.courseName})` : ''}
                                            </option>
                                          ))}
                                      </select>
