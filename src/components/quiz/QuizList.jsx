@@ -1,11 +1,11 @@
-import React, { useState } from 'react';
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useMutation, useQueryClient, useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle, FolderOpen, Tag } from 'lucide-react';
+import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle, FolderOpen, Tag, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -14,8 +14,13 @@ export default function QuizList({ quizzes, courses }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('all');
   const [editingTopicId, setEditingTopicId] = useState(null);
-  const [topicValue, setTopicValue] = useState('');
+  const [selectedCourseId, setSelectedCourseId] = useState('');
   const queryClient = useQueryClient();
+
+  const { data: allLessons = [] } = useQuery({
+    queryKey: ['all-lessons'],
+    queryFn: () => base44.entities.Lesson.list('order', 1000),
+  });
 
   const deleteQuizMutation = useMutation({
     mutationFn: (id) => base44.entities.Quiz.delete(id),
@@ -205,40 +210,63 @@ export default function QuizList({ quizzes, courses }) {
                                     </Button>
                                   </Link>
                                   {editingTopicId === quiz.id ? (
-                                    <>
-                                      <Input
-                                        value={topicValue}
-                                        onChange={(e) => setTopicValue(e.target.value)}
-                                        placeholder="Enter topic"
-                                        className="h-9 w-48"
-                                        autoFocus
-                                      />
-                                      <Button
-                                        size="sm"
-                                        onClick={() => updateTopicMutation.mutate({ id: quiz.id, topic: topicValue })}
-                                      >
-                                        Save
-                                      </Button>
-                                      <Button
-                                        size="sm"
-                                        variant="outline"
-                                        onClick={() => setEditingTopicId(null)}
-                                      >
-                                        Cancel
-                                      </Button>
-                                    </>
+                                   <>
+                                     <select
+                                       value={selectedCourseId}
+                                       onChange={(e) => setSelectedCourseId(e.target.value)}
+                                       className="h-9 px-3 rounded-md border border-gray-300"
+                                     >
+                                       <option value="">Select lesson topic</option>
+                                       {allLessons
+                                         .filter(l => l.course_id === quiz.course_id && l.section)
+                                         .reduce((acc, lesson) => {
+                                           if (!acc.find(item => item.section === lesson.section)) {
+                                             acc.push({ section: lesson.section });
+                                           }
+                                           return acc;
+                                         }, [])
+                                         .map((item, idx) => (
+                                           <option key={idx} value={item.section}>
+                                             {item.section}
+                                           </option>
+                                         ))}
+                                     </select>
+                                     <Button
+                                       size="sm"
+                                       onClick={() => {
+                                         if (selectedCourseId) {
+                                           updateTopicMutation.mutate({ id: quiz.id, topic: selectedCourseId });
+                                         } else {
+                                           toast.error('Please select a topic');
+                                         }
+                                       }}
+                                       disabled={!selectedCourseId}
+                                     >
+                                       Link
+                                     </Button>
+                                     <Button
+                                       size="sm"
+                                       variant="outline"
+                                       onClick={() => {
+                                         setEditingTopicId(null);
+                                         setSelectedCourseId('');
+                                       }}
+                                     >
+                                       Cancel
+                                     </Button>
+                                   </>
                                   ) : (
-                                    <Button
-                                      variant="outline"
-                                      size="sm"
-                                      onClick={() => {
-                                        setEditingTopicId(quiz.id);
-                                        setTopicValue(quiz.topic || '');
-                                      }}
-                                    >
-                                      <Tag className="w-4 h-4 mr-1" />
-                                      {quiz.topic ? 'Topic' : 'Add Topic'}
-                                    </Button>
+                                   <Button
+                                     variant="outline"
+                                     size="sm"
+                                     onClick={() => {
+                                       setEditingTopicId(quiz.id);
+                                       setSelectedCourseId(quiz.topic || '');
+                                     }}
+                                   >
+                                     <LinkIcon className="w-4 h-4 mr-1" />
+                                     {quiz.topic ? 'Change' : 'Link Topic'}
+                                   </Button>
                                   )}
                                   <Button
                                     variant="outline"
