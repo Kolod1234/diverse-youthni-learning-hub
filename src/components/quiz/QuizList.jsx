@@ -5,7 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Input } from '@/components/ui/input';
-import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle, FolderOpen } from 'lucide-react';
+import { Edit, Trash2, Eye, Clock, Award, CheckCircle, XCircle, FolderOpen, Tag } from 'lucide-react';
 import { toast } from 'sonner';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -13,6 +13,8 @@ import { createPageUrl } from '@/utils';
 export default function QuizList({ quizzes, courses }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('all');
+  const [editingTopicId, setEditingTopicId] = useState(null);
+  const [topicValue, setTopicValue] = useState('');
   const queryClient = useQueryClient();
 
   const deleteQuizMutation = useMutation({
@@ -29,6 +31,15 @@ export default function QuizList({ quizzes, courses }) {
     onSuccess: () => {
       queryClient.invalidateQueries(['quizzes']);
       toast.success('Quiz updated');
+    },
+  });
+
+  const updateTopicMutation = useMutation({
+    mutationFn: ({ id, topic }) => base44.entities.Quiz.update(id, { topic }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['quizzes']);
+      toast.success('Topic updated');
+      setEditingTopicId(null);
     },
   });
 
@@ -159,32 +170,72 @@ export default function QuizList({ quizzes, courses }) {
                                   )}
                                   
                                   <div className="flex gap-1 flex-wrap">
-                                    <Badge className={difficultyColors[quiz.difficulty] || difficultyColors.medium} variant="secondary">
-                                      {quiz.difficulty || 'medium'}
-                                    </Badge>
-                                    <Badge variant="secondary">
-                                      <Award className="w-3 h-3 mr-1" />
-                                      {totalMarks} marks
-                                    </Badge>
-                                    {quiz.time_limit_minutes && (
-                                      <Badge variant="secondary">
-                                        <Clock className="w-3 h-3 mr-1" />
-                                        {quiz.time_limit_minutes} min
-                                      </Badge>
-                                    )}
-                                    {questionTypes.multiple_choice > 0 && (
-                                      <Badge variant="outline">MC: {questionTypes.multiple_choice}</Badge>
-                                    )}
-                                    {questionTypes.short_answer > 0 && (
-                                      <Badge variant="outline">SA: {questionTypes.short_answer}</Badge>
-                                    )}
-                                    {questionTypes.long_answer > 0 && (
-                                      <Badge variant="outline">LA: {questionTypes.long_answer}</Badge>
-                                    )}
-                                    {questionTypes.image_based > 0 && (
-                                      <Badge variant="outline">IMG: {questionTypes.image_based}</Badge>
-                                    )}
+                                   <Badge className={difficultyColors[quiz.difficulty] || difficultyColors.medium} variant="secondary">
+                                     {quiz.difficulty || 'medium'}
+                                   </Badge>
+                                   <Badge variant="secondary">
+                                     <Award className="w-3 h-3 mr-1" />
+                                     {totalMarks} marks
+                                   </Badge>
+                                   {quiz.time_limit_minutes && (
+                                     <Badge variant="secondary">
+                                       <Clock className="w-3 h-3 mr-1" />
+                                       {quiz.time_limit_minutes} min
+                                     </Badge>
+                                   )}
+                                   {questionTypes.multiple_choice > 0 && (
+                                     <Badge variant="outline">MC: {questionTypes.multiple_choice}</Badge>
+                                   )}
+                                   {questionTypes.short_answer > 0 && (
+                                     <Badge variant="outline">SA: {questionTypes.short_answer}</Badge>
+                                   )}
+                                   {questionTypes.long_answer > 0 && (
+                                     <Badge variant="outline">LA: {questionTypes.long_answer}</Badge>
+                                   )}
+                                   {questionTypes.image_based > 0 && (
+                                     <Badge variant="outline">IMG: {questionTypes.image_based}</Badge>
+                                   )}
                                   </div>
+
+                                  {editingTopicId === quiz.id ? (
+                                   <div className="mt-2 flex gap-2">
+                                     <Input
+                                       value={topicValue}
+                                       onChange={(e) => setTopicValue(e.target.value)}
+                                       placeholder="Enter topic (e.g., Cells and Cell Structure)"
+                                       className="h-8 text-sm"
+                                       autoFocus
+                                     />
+                                     <Button
+                                       size="sm"
+                                       onClick={() => updateTopicMutation.mutate({ id: quiz.id, topic: topicValue })}
+                                       className="h-8"
+                                     >
+                                       Save
+                                     </Button>
+                                     <Button
+                                       size="sm"
+                                       variant="outline"
+                                       onClick={() => setEditingTopicId(null)}
+                                       className="h-8"
+                                     >
+                                       Cancel
+                                     </Button>
+                                   </div>
+                                  ) : (
+                                   <Button
+                                     variant="ghost"
+                                     size="sm"
+                                     onClick={() => {
+                                       setEditingTopicId(quiz.id);
+                                       setTopicValue(quiz.topic || '');
+                                     }}
+                                     className="mt-2 h-8 text-xs"
+                                   >
+                                     <Tag className="w-3 h-3 mr-1" />
+                                     {quiz.topic ? 'Edit Topic' : 'Add Topic'}
+                                   </Button>
+                                  )}
                                 </div>
 
                                 <div className="flex gap-2">
