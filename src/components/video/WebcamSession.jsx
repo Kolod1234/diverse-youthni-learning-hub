@@ -117,6 +117,9 @@ export default function WebcamSession() {
           autoPlay
           playsInline
           muted
+          onLoadedMetadata={() => {
+            videoRef.current?.play().catch(e => console.error("Final play error:", e));
+          }}
           style={{ transform: 'scaleX(-1)' }}
           className={`w-full h-full object-cover ${!isCameraOn ? 'hidden' : 'block'}`}
         />
