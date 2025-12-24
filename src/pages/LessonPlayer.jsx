@@ -129,6 +129,7 @@ export default function LessonPlayer() {
     const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
     const newProgress = Math.round((newCompletedLessons.length / lessons.length) * 100);
     const isNowComplete = newCompletedLessons.length === lessons.length;
+    const today = new Date().toISOString().split('T')[0];
     
     updateEnrollmentMutation.mutate({
       enrollmentId: enrollment.id,
@@ -137,11 +138,36 @@ export default function LessonPlayer() {
         progress_percent: newProgress,
         current_lesson_id: nextLesson?.id || currentLesson.id,
         is_completed: isNowComplete,
-        ...(isNowComplete && { completed_date: new Date().toISOString().split('T')[0] }),
+        ...(isNowComplete && { completed_date: today }),
       }
     });
 
     await awardPoints(10);
+
+    // Check for course completion achievement
+    if (isNowComplete) {
+      const allEnrollments = await base44.entities.Enrollment.filter({ created_by: user?.email, is_completed: true });
+      
+      if (allEnrollments.length === 1) {
+        await base44.entities.Achievement.create({
+          type: 'badge',
+          name: 'Course Champion',
+          description: 'Complete your first course',
+          icon: 'course_complete',
+          course_id: courseId,
+          earned_date: today,
+        });
+      } else if (allEnrollments.length === 5) {
+        await base44.entities.Achievement.create({
+          type: 'badge',
+          name: 'Knowledge Seeker',
+          description: 'Complete 5 courses',
+          icon: 'five_courses',
+          earned_date: today,
+        });
+      }
+    }
+    
     setShowRatingDialog(true);
   };
 

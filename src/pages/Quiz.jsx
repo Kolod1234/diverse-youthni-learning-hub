@@ -140,9 +140,22 @@ export default function Quiz() {
         spread: 70,
         origin: { y: 0.6 }
       });
-      
-      // Award points
-      await awardPoints(20);
+
+      // Award points - extra for perfect score
+      const bonusPoints = score === 100 ? 30 : 20;
+      await awardPoints(bonusPoints);
+
+      // Perfect score achievement
+      if (score === 100) {
+        const today = new Date().toISOString().split('T')[0];
+        await base44.entities.Achievement.create({
+          type: 'badge',
+          name: 'Perfect Score',
+          description: 'Get 100% on a quiz',
+          icon: 'perfect_quiz',
+          earned_date: today,
+        });
+      }
     }
 
     setShowResults(true);
