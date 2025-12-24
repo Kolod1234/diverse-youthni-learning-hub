@@ -18,6 +18,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import AICourseAssistant from '@/components/tutor/AICourseAssistant';
 import AwardPointsDialog from '@/components/tutor/AwardPointsDialog';
+import MessageStudentsDialog from '@/components/tutor/MessageStudentsDialog';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -29,6 +30,8 @@ export default function TutorDashboard() {
   const [error, setError] = useState('');
   const [showAwardPoints, setShowAwardPoints] = useState(false);
   const [selectedCourseForPoints, setSelectedCourseForPoints] = useState(null);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [selectedCourseForMessage, setSelectedCourseForMessage] = useState(null);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -244,6 +247,8 @@ export default function TutorDashboard() {
               setSelectedCourse={setSelectedCourse}
               setShowAwardPoints={setShowAwardPoints}
               setSelectedCourseForPoints={setSelectedCourseForPoints}
+              setShowMessageDialog={setShowMessageDialog}
+              setSelectedCourseForMessage={setSelectedCourseForMessage}
             />
           </TabsContent>
 
@@ -281,12 +286,19 @@ export default function TutorDashboard() {
           onOpenChange={setShowAwardPoints}
           courseId={selectedCourseForPoints}
         />
+
+        <MessageStudentsDialog
+          open={showMessageDialog}
+          onOpenChange={setShowMessageDialog}
+          courseId={selectedCourseForMessage}
+          courseName={courses.find(c => c.id === selectedCourseForMessage)?.title}
+        />
       </div>
     </div>
   );
 }
 
-function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse, setShowAwardPoints, setSelectedCourseForPoints }) {
+function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse, setShowAwardPoints, setSelectedCourseForPoints, setShowMessageDialog, setSelectedCourseForMessage }) {
   const [editingCourse, setEditingCourse] = useState(null);
 
   return (
@@ -411,12 +423,25 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2">
+                <div className="flex gap-2 flex-wrap">
+                  <Link to={createPageUrl('CourseAnalytics') + `?courseId=${course.id}`}>
+                    <Button variant="outline" size="sm">
+                      <BarChart className="w-4 h-4 mr-1" />
+                      Analytics
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setSelectedCourseForMessage(course.id);
+                    setShowMessageDialog(true);
+                  }}>
+                    <MessageSquare className="w-4 h-4 mr-1" />
+                    Message
+                  </Button>
                   <Button variant="outline" size="sm" onClick={() => {
                     setSelectedCourseForPoints(course.id);
                     setShowAwardPoints(true);
                   }}>
-                    <Award className="w-4 h-4 text-indigo-600 mr-1" />
+                    <Award className="w-4 h-4 mr-1" />
                     Award
                   </Button>
                   <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>

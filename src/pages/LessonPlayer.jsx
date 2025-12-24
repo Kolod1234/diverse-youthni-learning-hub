@@ -144,7 +144,7 @@ export default function LessonPlayer() {
 
     await awardPoints(10);
 
-    // Check for course completion achievement
+    // Check for course completion achievement and generate certificate
     if (isNowComplete) {
       const allEnrollments = await base44.entities.Enrollment.filter({ created_by: user?.email, is_completed: true });
       
@@ -166,6 +166,29 @@ export default function LessonPlayer() {
           earned_date: today,
         });
       }
+
+      // Auto-generate certificate
+      const certificateNumber = `CERT-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
+      await base44.entities.Certificate.create({
+        course_id: courseId,
+        enrollment_id: enrollment.id,
+        certificate_number: certificateNumber,
+        issue_date: today,
+        student_name: user?.full_name,
+        course_title: course?.title,
+        instructor_name: course?.instructor,
+        final_score: newProgress,
+      });
+
+      // Certificate achievement
+      await base44.entities.Achievement.create({
+        type: 'certificate',
+        name: course?.title + ' Certificate',
+        description: 'Successfully completed ' + course?.title,
+        icon: 'certificate',
+        course_id: courseId,
+        earned_date: today,
+      });
     }
     
     setShowRatingDialog(true);
