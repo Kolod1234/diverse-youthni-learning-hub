@@ -224,20 +224,44 @@ export default function QuizList({ quizzes, courses }) {
                                        onChange={(e) => setSelectedCourseId(e.target.value)}
                                        className="h-9 px-3 rounded-md border border-gray-300"
                                      >
-                                       <option value="">Select GCSE topic</option>
+                                       <option value="">Select GCSE topic/subtopic</option>
                                        {gcseLessons
                                          .filter(l => l.section)
                                          .reduce((acc, lesson) => {
-                                           if (!acc.find(item => item.section === lesson.section)) {
-                                             const course = courses.find(c => c.id === lesson.course_id);
-                                             acc.push({ section: lesson.section, courseName: course?.title });
+                                           const course = courses.find(c => c.id === lesson.course_id);
+
+                                           // Add unit/section (topic)
+                                           if (!acc.find(item => item.value === lesson.section && item.type === 'section')) {
+                                             acc.push({ 
+                                               value: lesson.section, 
+                                               label: lesson.section, 
+                                               courseName: course?.title,
+                                               type: 'section'
+                                             });
                                            }
+
+                                           // Add lesson title (subtopic)
+                                           if (lesson.title) {
+                                             acc.push({ 
+                                               value: lesson.title, 
+                                               label: `  → ${lesson.title}`, 
+                                               courseName: course?.title,
+                                               type: 'lesson',
+                                               section: lesson.section
+                                             });
+                                           }
+
                                            return acc;
                                          }, [])
-                                         .sort((a, b) => a.section.localeCompare(b.section))
+                                         .sort((a, b) => {
+                                           if (a.section !== b.section) {
+                                             return (a.section || a.value).localeCompare(b.section || b.value);
+                                           }
+                                           return a.type === 'section' ? -1 : b.type === 'section' ? 1 : a.value.localeCompare(b.value);
+                                         })
                                          .map((item, idx) => (
-                                           <option key={idx} value={item.section}>
-                                             {item.section} {item.courseName ? `(${item.courseName})` : ''}
+                                           <option key={idx} value={item.value}>
+                                             {item.label} {item.courseName ? `(${item.courseName})` : ''}
                                            </option>
                                          ))}
                                      </select>
