@@ -311,18 +311,38 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
     try {
       console.log('Starting screen share...');
+      
+      // Enhanced display media options for window/app selection with system audio
       const stream = await navigator.mediaDevices.getDisplayMedia({
         video: { 
           cursor: 'always',
-          displaySurface: 'monitor'
+          displaySurface: ['window', 'monitor', 'browser'], // Allow selection of window, entire screen, or browser tab
+          width: { ideal: 1920 },
+          height: { ideal: 1080 },
+          frameRate: { ideal: 30 }
         },
         audio: {
           echoCancellation: true,
-          noiseSuppression: true
-        }
+          noiseSuppression: true,
+          autoGainControl: true,
+          suppressLocalAudioPlayback: false // Allow capturing system audio
+        },
+        preferCurrentTab: false, // Don't default to current tab
+        selfBrowserSurface: 'exclude', // Exclude current tab from selection
+        systemAudio: 'include', // Request system audio (Chrome 105+)
+        surfaceSwitching: 'include', // Allow switching between sources
+        monitorTypeSurfaces: 'include' // Include all monitor types
       });
 
       console.log('Screen share stream obtained');
+      console.log('Video tracks:', stream.getVideoTracks().length);
+      console.log('Audio tracks:', stream.getAudioTracks().length);
+      
+      // Log what was shared
+      const videoTrack = stream.getVideoTracks()[0];
+      const settings = videoTrack.getSettings();
+      console.log('Sharing:', settings.displaySurface); // Will show 'window', 'monitor', or 'browser'
+      
       setScreenStream(stream);
       setIsScreenSharing(true);
       
@@ -340,10 +360,21 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         setScreenStream(null);
         setIsScreenSharing(false);
       };
+      
+      // Notify if system audio is included
+      if (stream.getAudioTracks().length > 0) {
+        console.log('✅ System audio is being shared');
+      } else {
+        console.log('ℹ️ No system audio available (may not be supported by browser)');
+      }
     } catch (error) {
       console.error('Error sharing screen:', error);
       if (error.name === 'NotAllowedError') {
         alert('Screen sharing denied. Please try again and allow access.');
+      } else if (error.name === 'NotSupportedError') {
+        alert('Screen sharing with system audio is not supported in this browser. Try using Chrome or Edge.');
+      } else {
+        alert('Failed to start screen sharing: ' + error.message);
       }
     }
   };
