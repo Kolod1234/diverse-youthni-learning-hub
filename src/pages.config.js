@@ -23,6 +23,7 @@ import TutorDashboard from './pages/TutorDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import CourseAnalytics from './pages/CourseAnalytics';
+import MessageCenter from './pages/MessageCenter';
 import __Layout from './Layout.jsx';
 
 
@@ -52,6 +53,7 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "CourseAnalytics": CourseAnalytics,
+    "MessageCenter": MessageCenter,
 }
 
 export const pagesConfig = {

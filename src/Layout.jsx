@@ -72,6 +72,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    { name: 'Messages', href: createPageUrl('MessageCenter'), icon: MessageSquare },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Achievements', href: createPageUrl('Achievements'), icon: Award },
     { name: 'Learning Paths', href: createPageUrl('LearningPaths'), icon: Award },

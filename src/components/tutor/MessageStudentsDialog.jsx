@@ -15,6 +15,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { MessageSquare, Send, Users } from 'lucide-react';
 import { toast } from 'sonner';
+import AIMessageAssistant from './AIMessageAssistant';
 
 export default function MessageStudentsDialog({ open, onOpenChange, courseId, courseName }) {
   const [message, setMessage] = useState('');
@@ -116,6 +117,12 @@ export default function MessageStudentsDialog({ open, onOpenChange, courseId, co
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="flex-1 flex flex-col space-y-4">
+          <AIMessageAssistant
+            onInsertText={(text) => setMessage(text)}
+            courseName={courseName}
+            courseId={courseId}
+          />
+
           <div>
             <Label htmlFor="message">Message</Label>
             <Textarea
