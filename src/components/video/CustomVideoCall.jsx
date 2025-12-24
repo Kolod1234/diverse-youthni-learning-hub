@@ -21,6 +21,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [participants, setParticipants] = useState([]);
+  const [error, setError] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -39,8 +41,19 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   // Initialize media
   useEffect(() => {
-    initializeMedia();
-    joinRoom();
+    const initialize = async () => {
+      try {
+        await initializeMedia();
+        await joinRoom();
+        setIsLoading(false);
+      } catch (err) {
+        console.error('Initialization error:', err);
+        setError('Failed to initialize video session. Please refresh and try again.');
+        setIsLoading(false);
+      }
+    };
+    
+    initialize();
 
     return () => {
       cleanup();
@@ -96,32 +109,37 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
       // Poll for new participants and messages
       const interval = setInterval(async () => {
-        const [participantsRes, messagesRes] = await Promise.all([
-          base44.functions.invoke('videoSignaling', {
-            action: 'get-participants',
-            roomId,
-            sessionId: session.id,
-            userId
-          }),
-          base44.functions.invoke('videoSignaling', {
-            action: 'get-messages',
-            roomId,
-            sessionId: session.id,
-            userId
-          })
-        ]);
+        try {
+          const [participantsRes, messagesRes] = await Promise.all([
+            base44.functions.invoke('videoSignaling', {
+              action: 'get-participants',
+              roomId,
+              sessionId: session.id,
+              userId
+            }),
+            base44.functions.invoke('videoSignaling', {
+              action: 'get-messages',
+              roomId,
+              sessionId: session.id,
+              userId
+            })
+          ]);
 
-        if (participantsRes.data.participants) {
-          setParticipants(participantsRes.data.participants);
-        }
-        if (messagesRes.data.messages) {
-          setChatMessages(messagesRes.data.messages);
+          if (participantsRes.data.participants) {
+            setParticipants(participantsRes.data.participants);
+          }
+          if (messagesRes.data.messages) {
+            setChatMessages(messagesRes.data.messages);
+          }
+        } catch (err) {
+          console.error('Error polling updates:', err);
         }
       }, 2000);
 
       return () => clearInterval(interval);
     } catch (error) {
       console.error('Error joining room:', error);
+      throw error;
     }
   };
 
@@ -216,6 +234,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       setNewMessage('');
     } catch (error) {
       console.error('Error sending message:', error);
+      // Still clear input to prevent confusion
+      setNewMessage('');
     }
   };
 
@@ -231,6 +251,42 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     document.body.appendChild(reactionEl);
     setTimeout(() => reactionEl.remove(), 2000);
   };
+
+  // Show error state
+  if (error) {
+    return (
+      <div className="fixed inset-0 bg-gray-900 flex items-center justify-center p-4">
+        <Card className="p-8 max-w-md text-center">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <Video className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-xl font-bold text-gray-900 mb-2">Connection Error</h2>
+          <p className="text-gray-600 mb-6">{error}</p>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={() => window.location.reload()} className="bg-blue-600 hover:bg-blue-700">
+              Retry
+            </Button>
+            <Button onClick={onEndSession} variant="outline">
+              Exit Session
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
+
+  // Show loading state
+  if (isLoading) {
+    return (
+      <div className="fixed inset-0 bg-gray-900 flex items-center justify-center">
+        <div className="text-center">
+          <div className="w-16 h-16 border-4 border-blue-500 border-t-transparent rounded-full animate-spin mx-auto mb-4"></div>
+          <p className="text-white text-lg">Connecting to session...</p>
+          <p className="text-gray-400 text-sm mt-2">Please allow camera and microphone access</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="fixed inset-0 bg-gray-900 flex flex-col">

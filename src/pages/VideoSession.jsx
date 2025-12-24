@@ -29,13 +29,14 @@ export default function VideoSession() {
     loadUser();
   }, []);
 
-  const { data: session } = useQuery({
+  const { data: session, isLoading: loadingSession, error: sessionError } = useQuery({
     queryKey: ['video-session', sessionId],
     queryFn: async () => {
       const sessions = await base44.entities.VideoSession.filter({ id: sessionId });
       return sessions[0];
     },
     enabled: !!sessionId,
+    retry: 2,
   });
 
   const { data: course } = useQuery({
@@ -84,12 +85,28 @@ export default function VideoSession() {
     setInSession(false);
   };
 
-  if (!session) {
+  if (loadingSession) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
         <Card className="p-8 text-center">
+          <div className="animate-spin w-12 h-12 border-4 border-indigo-600 border-t-transparent rounded-full mx-auto mb-4"></div>
+          <p className="text-gray-500">Loading session...</p>
+        </Card>
+      </div>
+    );
+  }
+
+  if (sessionError || !session) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <Card className="p-8 text-center max-w-md">
           <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Session not found</h2>
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">
+            {sessionError ? 'Error Loading Session' : 'Session Not Found'}
+          </h2>
+          <p className="text-gray-600 mb-6">
+            {sessionError ? 'There was an error loading the session. Please try again.' : 'This session may have been removed or doesn\'t exist.'}
+          </p>
           <Link to={createPageUrl('Dashboard')}>
             <Button>Back to Dashboard</Button>
           </Link>
