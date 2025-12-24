@@ -76,16 +76,27 @@ export default function Achievements() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
-        >
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Your Achievements</h1>
-          <p className="text-gray-500">Track your learning milestones and unlock badges</p>
-        </motion.div>
+      {/* Hero Banner */}
+      <div className="relative h-64 mb-8 overflow-hidden">
+        <img 
+          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/565ae72b8_image.png"
+          alt="Diverse Youth NI Learning Hub"
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+            >
+              <h1 className="text-4xl font-bold text-white mb-2">Your Achievements</h1>
+              <p className="text-white/90 text-lg">Track your learning milestones and unlock badges</p>
+            </motion.div>
+          </div>
+        </div>
+      </div>
+
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
 
         {/* Overall Progress */}
         <motion.div
@@ -93,7 +104,7 @@ export default function Achievements() {
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.1 }}
         >
-          <Card className="p-6 mb-8 bg-gradient-to-br from-indigo-50 to-purple-50 border-indigo-200">
+          <Card className="p-6 mb-8 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50 border-orange-200">
             <div className="flex items-center justify-between mb-4">
               <div>
                 <h2 className="text-2xl font-bold text-gray-900">
@@ -102,7 +113,7 @@ export default function Achievements() {
                 <p className="text-sm text-gray-600">Keep learning to unlock more!</p>
               </div>
               <div className="text-right">
-                <div className="text-3xl font-bold text-indigo-600">{userProgress?.points || 0}</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">{userProgress?.points || 0}</div>
                 <div className="text-sm text-gray-600">Total Points</div>
               </div>
             </div>
@@ -125,8 +136,8 @@ export default function Achievements() {
               >
                 <Card className="p-4">
                   <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-indigo-600" />
+                    <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg flex items-center justify-center">
+                      <Icon className="w-5 h-5 text-orange-600" />
                     </div>
                     <div className="flex-1">
                       <p className="text-sm font-medium text-gray-900">{milestone.name}</p>
@@ -145,13 +156,13 @@ export default function Achievements() {
         {/* Achievements Grid */}
         <Tabs defaultValue="all" className="w-full">
           <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-            <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
               All ({totalCount})
             </TabsTrigger>
-            <TabsTrigger value="earned" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="earned" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
               Earned ({earnedCount})
             </TabsTrigger>
-            <TabsTrigger value="locked" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="locked" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
               Locked ({totalCount - earnedCount})
             </TabsTrigger>
           </TabsList>
@@ -197,7 +208,7 @@ function AchievementCard({ achievement, index }) {
     >
       <Card className={`p-6 text-center transition-all ${
         isEarned 
-          ? 'bg-white border-2 border-indigo-200 hover:shadow-xl hover:scale-105' 
+          ? 'bg-white border-2 border-orange-200 hover:shadow-xl hover:scale-105' 
           : 'bg-gray-50 border-gray-200 opacity-60'
       }`}>
         <div className="mb-4">
