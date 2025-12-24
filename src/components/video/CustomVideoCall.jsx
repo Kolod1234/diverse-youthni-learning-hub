@@ -8,6 +8,7 @@ import {
   MessageSquare, Users, LogOut, MoreVertical, Send,
   Maximize, Settings, Phone
 } from 'lucide-react';
+import BreakoutRoomManager from './BreakoutRoomManager';
 
 export default function CustomVideoCall({ session, course, user, onEndSession }) {
   const [localStream, setLocalStream] = useState(null);
@@ -210,25 +211,41 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     }
 
     try {
+      console.log('Starting screen share...');
       const stream = await navigator.mediaDevices.getDisplayMedia({
-        video: { cursor: 'always' },
-        audio: false
+        video: { 
+          cursor: 'always',
+          displaySurface: 'monitor'
+        },
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true
+        }
       });
 
+      console.log('Screen share stream obtained');
       setScreenStream(stream);
       setIsScreenSharing(true);
       
-      if (screenVideoRef.current) {
-        screenVideoRef.current.srcObject = stream;
-      }
+      // Set stream with delay
+      setTimeout(() => {
+        if (screenVideoRef.current && stream) {
+          screenVideoRef.current.srcObject = stream;
+          screenVideoRef.current.play().catch(err => console.error('Screen play error:', err));
+        }
+      }, 100);
 
       // Auto stop when user stops sharing
       stream.getVideoTracks()[0].onended = () => {
+        console.log('Screen share ended');
         setScreenStream(null);
         setIsScreenSharing(false);
       };
     } catch (error) {
       console.error('Error sharing screen:', error);
+      if (error.name === 'NotAllowedError') {
+        alert('Screen sharing denied. Please try again and allow access.');
+      }
     }
   };
 
@@ -305,7 +322,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   }
 
   return (
-    <div className="fixed inset-0 bg-gray-900 flex flex-col">
+    <div className="fixed inset-0 bg-gray-900 flex flex-col z-50">
       <style>{`
         @keyframes float-up {
           0% { transform: translateY(0) scale(1); opacity: 1; }
@@ -314,7 +331,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       `}</style>
 
       {/* Top Bar */}
-      <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between border-b border-gray-700">
+      <div className="bg-gray-800 text-white px-4 py-2 flex items-center justify-between border-b border-gray-700 relative z-50">
         <div className="flex items-center gap-3">
           <div className="w-8 h-8 bg-blue-500 rounded flex items-center justify-center">
             <Video className="w-4 h-4" />
@@ -330,18 +347,30 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           <span className="text-xs text-gray-400">{participants.length} participants</span>
         </div>
 
-        <Button
-          onClick={onEndSession}
-          size="sm"
-          className="bg-red-600 hover:bg-red-700"
-        >
-          <LogOut className="w-3 h-3 mr-1" />
-          End
-        </Button>
+        <div className="flex items-center gap-2">
+          {isTutor && (
+            <BreakoutRoomManager
+              participants={participants}
+              onCreateRooms={(rooms) => {
+                setBreakoutRooms(rooms);
+                alert(`Created ${rooms.length} breakout rooms!`);
+              }}
+              onAssign={() => {}}
+            />
+          )}
+          <Button
+            onClick={onEndSession}
+            size="sm"
+            className="bg-red-600 hover:bg-red-700 relative z-50"
+          >
+            <LogOut className="w-3 h-3 mr-1" />
+            End
+          </Button>
+        </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex overflow-hidden">
+      <div className="flex-1 flex overflow-hidden relative z-10">
         {/* Video Area */}
         <div className="flex-1 relative bg-black">
           {/* Screen Share View */}
@@ -412,7 +441,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           )}
 
           {/* Control Bar */}
-          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+          <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 z-40">
             <div className="max-w-4xl mx-auto flex items-center justify-between">
               {/* Left Controls */}
               <div className="flex items-center gap-2">
