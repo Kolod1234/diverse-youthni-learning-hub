@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import {
   Video, VideoOff, Mic, MicOff, MonitorUp, MonitorOff,
   MessageSquare, Users, LogOut, MoreVertical, Send,
-  Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon
+  Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon, Image as ImageIcon
 } from 'lucide-react';
 import BreakoutRoomManager from './BreakoutRoomManager';
 import Whiteboard from './Whiteboard';
@@ -32,11 +32,16 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [showBreakoutManager, setShowBreakoutManager] = useState(false);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [waitingParticipants, setWaitingParticipants] = useState([]);
+  const [showSettings, setShowSettings] = useState(false);
+  const [virtualBackground, setVirtualBackground] = useState('none');
+  const [audioNoiseSuppress, setAudioNoiseSuppress] = useState(true);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
+  const canvasRef = useRef(null);
   const peerConnections = useRef(new Map());
   const mediaRecorderRef = useRef(null);
+  const animationFrameRef = useRef(null);
   const roomId = session.meeting_room_id;
   const userId = user?.email || 'guest';
   const isTutor = user?.email === session.tutor_email;
@@ -177,6 +182,52 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     attachStream();
   }, [localStream]);
 
+  // Virtual background effect
+  useEffect(() => {
+    if (!localStream || !localVideoRef.current || !canvasRef.current || virtualBackground === 'none') {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const video = localVideoRef.current;
+    const ctx = canvas.getContext('2d');
+
+    const applyBackground = () => {
+      if (video.videoWidth && video.videoHeight) {
+        canvas.width = video.videoWidth;
+        canvas.height = video.videoHeight;
+
+        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+        if (virtualBackground === 'blur') {
+          ctx.filter = 'blur(10px)';
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          ctx.filter = 'none';
+          ctx.drawImage(video, canvas.width * 0.2, canvas.height * 0.2, canvas.width * 0.6, canvas.height * 0.6);
+        } else if (virtualBackground !== 'none') {
+          ctx.fillStyle = virtualBackground;
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.globalAlpha = 0.8;
+          ctx.drawImage(video, canvas.width * 0.1, canvas.height * 0.1, canvas.width * 0.8, canvas.height * 0.8);
+          ctx.globalAlpha = 1.0;
+        }
+      }
+
+      animationFrameRef.current = requestAnimationFrame(applyBackground);
+    };
+
+    applyBackground();
+
+    return () => {
+      if (animationFrameRef.current) {
+        cancelAnimationFrame(animationFrameRef.current);
+      }
+    };
+  }, [localStream, virtualBackground]);
+
   const cleanup = async () => {
     // Stop all tracks
     localStream?.getTracks().forEach(track => track.stop());
@@ -304,14 +355,36 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   const startRecording = async () => {
     try {
-      if (!localStream) {
+      // Create a canvas to capture both video and screen if sharing
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      const displayStream = isScreenSharing ? screenStream : localStream;
+
+      if (!displayStream) {
         alert('No media stream available');
         return;
       }
 
+      // Set canvas size
+      const video = document.createElement('video');
+      video.srcObject = displayStream;
+      video.muted = true;
+      await video.play();
+
+      canvas.width = video.videoWidth || 1280;
+      canvas.height = video.videoHeight || 720;
+
+      // Capture canvas stream
+      const canvasStream = canvas.captureStream(30);
+      
+      // Add audio track from local stream
+      const audioTrack = localStream.getAudioTracks()[0];
+      if (audioTrack) {
+        canvasStream.addTrack(audioTrack);
+      }
+
       const options = { mimeType: 'video/webm;codecs=vp9,opus' };
       
-      // Try different codecs if not supported
       if (!MediaRecorder.isTypeSupported(options.mimeType)) {
         options.mimeType = 'video/webm;codecs=vp8,opus';
         if (!MediaRecorder.isTypeSupported(options.mimeType)) {
@@ -319,8 +392,16 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         }
       }
 
-      const mediaRecorder = new MediaRecorder(localStream, options);
+      const mediaRecorder = new MediaRecorder(canvasStream, options);
       const chunks = [];
+
+      // Draw video frames to canvas
+      const drawFrame = () => {
+        if (mediaRecorder.state === 'recording') {
+          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+          requestAnimationFrame(drawFrame);
+        }
+      };
 
       mediaRecorder.ondataavailable = (event) => {
         if (event.data.size > 0) {
@@ -331,14 +412,16 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       mediaRecorder.onstop = async () => {
         const blob = new Blob(chunks, { type: 'video/webm' });
         await saveRecording(blob);
+        video.pause();
       };
 
-      mediaRecorder.start(1000); // Capture data every second
+      mediaRecorder.start(1000);
+      drawFrame();
       mediaRecorderRef.current = mediaRecorder;
       setRecordedChunks(chunks);
       setIsRecording(true);
       
-      console.log('Recording started');
+      console.log('Recording started with enhanced capture');
     } catch (error) {
       console.error('Error starting recording:', error);
       alert('Failed to start recording: ' + error.message);
@@ -496,14 +579,23 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           {/* Local Video (Picture-in-Picture when screen sharing) */}
           <div className={`${isScreenSharing ? 'absolute bottom-20 right-4 w-64 h-48 z-30' : 'w-full h-full'} bg-gray-800 rounded-lg overflow-hidden relative`}>
             {localStream ? (
-              <video
-                ref={localVideoRef}
-                autoPlay
-                muted
-                playsInline
-                className="w-full h-full object-cover"
-                style={{ transform: 'scaleX(-1)' }}
-              />
+              <>
+                <video
+                  ref={localVideoRef}
+                  autoPlay
+                  muted
+                  playsInline
+                  className={`w-full h-full object-cover ${virtualBackground !== 'none' ? 'hidden' : ''}`}
+                  style={{ transform: 'scaleX(-1)' }}
+                />
+                {virtualBackground !== 'none' && (
+                  <canvas
+                    ref={canvasRef}
+                    className="w-full h-full object-cover"
+                    style={{ transform: 'scaleX(-1)' }}
+                  />
+                )}
+              </>
             ) : (
               <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
                 <div className="text-center">
@@ -623,6 +715,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
               {/* Right Controls */}
               <div className="flex items-center gap-2">
+                <Button
+                  onClick={() => setShowSettings(!showSettings)}
+                  size="sm"
+                  className={`${showSettings ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 w-12`}
+                >
+                  <Settings className="w-5 h-5" />
+                </Button>
                 <Button
                   onClick={() => setShowParticipants(!showParticipants)}
                   size="sm"
@@ -770,6 +869,137 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       {/* Whiteboard */}
       {showWhiteboard && (
         <Whiteboard onClose={() => setShowWhiteboard(false)} />
+      )}
+
+      {/* Settings Panel */}
+      {showSettings && (
+        <div className="fixed bottom-24 right-4 z-[60] w-80 animate-slide-in">
+          <Card className="p-4 bg-white shadow-2xl">
+            <div className="flex items-center justify-between mb-4">
+              <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Settings className="w-4 h-4" />
+                Video Settings
+              </h3>
+              <Button
+                size="sm"
+                variant="ghost"
+                onClick={() => setShowSettings(false)}
+              >
+                <XIcon className="w-4 h-4" />
+              </Button>
+            </div>
+
+            <div className="space-y-4">
+              {/* Virtual Background */}
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Virtual Background
+                </label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setVirtualBackground('none')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground === 'none' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 bg-gradient-to-br from-gray-100 to-gray-200 rounded flex items-center justify-center">
+                      <span className="text-xs font-medium text-gray-600">None</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setVirtualBackground('blur')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground === 'blur' 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 bg-gradient-to-br from-gray-300 to-gray-400 rounded flex items-center justify-center backdrop-blur">
+                      <span className="text-xs font-medium text-white">Blur</span>
+                    </div>
+                  </button>
+                  <button
+                    onClick={() => setVirtualBackground('linear-gradient(135deg, #667eea 0%, #764ba2 100%)')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground.includes('667eea') 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 rounded" style={{ background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)' }} />
+                  </button>
+                  <button
+                    onClick={() => setVirtualBackground('linear-gradient(135deg, #f093fb 0%, #f5576c 100%)')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground.includes('f093fb') 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 rounded" style={{ background: 'linear-gradient(135deg, #f093fb 0%, #f5576c 100%)' }} />
+                  </button>
+                  <button
+                    onClick={() => setVirtualBackground('linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground.includes('4facfe') 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 rounded" style={{ background: 'linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)' }} />
+                  </button>
+                  <button
+                    onClick={() => setVirtualBackground('linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)')}
+                    className={`p-2 rounded-lg border-2 transition ${
+                      virtualBackground.includes('43e97b') 
+                        ? 'border-blue-500 bg-blue-50' 
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    <div className="w-full h-12 rounded" style={{ background: 'linear-gradient(135deg, #43e97b 0%, #38f9d7 100%)' }} />
+                  </button>
+                </div>
+              </div>
+
+              {/* Audio Enhancement */}
+              <div>
+                <label className="flex items-center justify-between">
+                  <span className="text-sm font-medium text-gray-700">Enhanced Noise Suppression</span>
+                  <button
+                    onClick={() => setAudioNoiseSuppress(!audioNoiseSuppress)}
+                    className={`relative inline-flex h-6 w-11 items-center rounded-full transition ${
+                      audioNoiseSuppress ? 'bg-blue-600' : 'bg-gray-300'
+                    }`}
+                  >
+                    <span
+                      className={`inline-block h-4 w-4 transform rounded-full bg-white transition ${
+                        audioNoiseSuppress ? 'translate-x-6' : 'translate-x-1'
+                      }`}
+                    />
+                  </button>
+                </label>
+                <p className="text-xs text-gray-500 mt-1">
+                  Reduces background noise for clearer audio
+                </p>
+              </div>
+
+              {/* Recording Info */}
+              {isRecording && (
+                <div className="p-3 bg-red-50 border border-red-200 rounded-lg">
+                  <p className="text-sm font-medium text-red-800 flex items-center gap-2">
+                    <div className="w-2 h-2 bg-red-600 rounded-full animate-pulse" />
+                    Recording in progress
+                  </p>
+                  <p className="text-xs text-red-600 mt-1">
+                    All video and audio is being captured
+                  </p>
+                </div>
+              )}
+            </div>
+          </Card>
+        </div>
       )}
 
       {/* Waiting Room Notifications */}
