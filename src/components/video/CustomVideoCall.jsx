@@ -26,10 +26,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [isLoading, setIsLoading] = useState(true);
   const [breakoutRooms, setBreakoutRooms] = useState([]);
   const [currentBreakoutRoom, setCurrentBreakoutRoom] = useState(null);
+  const [isRecording, setIsRecording] = useState(false);
+  const [recordedChunks, setRecordedChunks] = useState([]);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
   const peerConnections = useRef(new Map());
+  const mediaRecorderRef = useRef(null);
   const roomId = session.meeting_room_id;
   const userId = user?.email || 'guest';
   const isTutor = user?.email === session.tutor_email;
@@ -65,48 +68,51 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
   const initializeMedia = async () => {
     try {
-      console.log('Requesting media access...');
+      console.log('Requesting HD media access...');
       
-      // Check if devices are available
-      const devices = await navigator.mediaDevices.enumerateDevices();
-      const hasVideo = devices.some(d => d.kind === 'videoinput');
-      const hasAudio = devices.some(d => d.kind === 'audioinput');
-      
-      console.log('Available devices:', { hasVideo, hasAudio });
-      
-      const constraints = {
-        audio: hasAudio ? {
+      // Request permissions first
+      const stream = await navigator.mediaDevices.getUserMedia({
+        audio: {
           echoCancellation: true,
           noiseSuppression: true,
-          autoGainControl: true
-        } : false,
-        video: hasVideo ? { 
-          width: { ideal: 1280 },
-          height: { ideal: 720 },
+          autoGainControl: true,
+          sampleRate: 48000
+        },
+        video: { 
+          width: { min: 640, ideal: 1920, max: 1920 },
+          height: { min: 480, ideal: 1080, max: 1080 },
+          frameRate: { ideal: 30 },
           facingMode: 'user'
-        } : false
-      };
+        }
+      });
       
-      const stream = await navigator.mediaDevices.getUserMedia(constraints);
+      console.log('HD Media stream obtained:', {
+        tracks: stream.getTracks().map(t => ({
+          kind: t.kind,
+          enabled: t.enabled,
+          settings: t.getSettings()
+        }))
+      });
       
-      console.log('Media stream obtained:', stream.getTracks().map(t => ({ kind: t.kind, enabled: t.enabled })));
       setLocalStream(stream);
       
-      // Wait for ref and set stream
-      await new Promise(resolve => setTimeout(resolve, 100));
-      
-      if (localVideoRef.current && stream) {
+      // Set video source immediately
+      if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
-        try {
-          await localVideoRef.current.play();
-          console.log('Video playing successfully');
-        } catch (playErr) {
-          console.error('Error playing video:', playErr);
+        localVideoRef.current.muted = true;
+        localVideoRef.current.autoplay = true;
+        localVideoRef.current.playsInline = true;
+        
+        // Force play
+        const playPromise = localVideoRef.current.play();
+        if (playPromise !== undefined) {
+          await playPromise;
+          console.log('HD Video playing successfully');
         }
       }
     } catch (error) {
-      console.error('Error accessing media devices:', error);
-      setError(`Camera/Microphone Error: ${error.message}\n\nPlease allow access and refresh`);
+      console.error('Error accessing HD media devices:', error);
+      setError(`Camera/Microphone Error: ${error.message}\n\nPlease:\n1. Allow camera/mic access\n2. Close other apps using camera\n3. Refresh the page`);
       throw error;
     }
   };
@@ -283,6 +289,78 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     `;
     document.body.appendChild(reactionEl);
     setTimeout(() => reactionEl.remove(), 2000);
+  };
+
+  const startRecording = async () => {
+    try {
+      if (!localStream) {
+        alert('No media stream available');
+        return;
+      }
+
+      const options = { mimeType: 'video/webm;codecs=vp9,opus' };
+      
+      // Try different codecs if not supported
+      if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+        options.mimeType = 'video/webm;codecs=vp8,opus';
+        if (!MediaRecorder.isTypeSupported(options.mimeType)) {
+          options.mimeType = 'video/webm';
+        }
+      }
+
+      const mediaRecorder = new MediaRecorder(localStream, options);
+      const chunks = [];
+
+      mediaRecorder.ondataavailable = (event) => {
+        if (event.data.size > 0) {
+          chunks.push(event.data);
+        }
+      };
+
+      mediaRecorder.onstop = async () => {
+        const blob = new Blob(chunks, { type: 'video/webm' });
+        await saveRecording(blob);
+      };
+
+      mediaRecorder.start(1000); // Capture data every second
+      mediaRecorderRef.current = mediaRecorder;
+      setRecordedChunks(chunks);
+      setIsRecording(true);
+      
+      console.log('Recording started');
+    } catch (error) {
+      console.error('Error starting recording:', error);
+      alert('Failed to start recording: ' + error.message);
+    }
+  };
+
+  const stopRecording = () => {
+    if (mediaRecorderRef.current && isRecording) {
+      mediaRecorderRef.current.stop();
+      setIsRecording(false);
+      console.log('Recording stopped');
+    }
+  };
+
+  const saveRecording = async (blob) => {
+    try {
+      // Convert blob to file
+      const file = new File([blob], `recording-${Date.now()}.webm`, { type: 'video/webm' });
+      
+      // Upload to storage
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      // Update session with recording URL
+      await base44.entities.VideoSession.update(session.id, {
+        recording_url: file_url,
+        is_recorded: true
+      });
+      
+      alert('Recording saved successfully!');
+    } catch (error) {
+      console.error('Error saving recording:', error);
+      alert('Failed to save recording: ' + error.message);
+    }
   };
 
   // Show error state
@@ -464,14 +542,24 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
               {/* Center Controls */}
               <div className="flex items-center gap-2">
                 {isTutor && (
-                  <Button
-                    onClick={startScreenShare}
-                    size="sm"
-                    className={`${isScreenSharing ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 px-4`}
-                  >
-                    {isScreenSharing ? <MonitorOff className="w-5 h-5 mr-2" /> : <MonitorUp className="w-5 h-5 mr-2" />}
-                    {isScreenSharing ? 'Stop' : 'Share'}
-                  </Button>
+                  <>
+                    <Button
+                      onClick={startScreenShare}
+                      size="sm"
+                      className={`${isScreenSharing ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 px-4`}
+                    >
+                      {isScreenSharing ? <MonitorOff className="w-5 h-5 mr-2" /> : <MonitorUp className="w-5 h-5 mr-2" />}
+                      {isScreenSharing ? 'Stop' : 'Share'}
+                    </Button>
+                    <Button
+                      onClick={isRecording ? stopRecording : startRecording}
+                      size="sm"
+                      className={`${isRecording ? 'bg-red-600 animate-pulse' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 px-4`}
+                    >
+                      <div className={`w-3 h-3 rounded-full mr-2 ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
+                      {isRecording ? 'Recording...' : 'Record'}
+                    </Button>
+                  </>
                 )}
                 
                 {/* Reactions */}
