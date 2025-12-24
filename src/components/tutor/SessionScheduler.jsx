@@ -17,9 +17,13 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
     scheduled_date: '',
     scheduled_time: '',
     duration_minutes: 60,
-    invited_students: []
+    invited_students: [],
+    is_recurring: false,
+    recurrence_pattern: 'weekly',
+    recurrence_end_date: ''
   });
   const [selectAll, setSelectAll] = useState(false);
+  const [syncToCalendar, setSyncToCalendar] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -41,7 +45,23 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
   });
 
   const createSessionMutation = useMutation({
-    mutationFn: (sessionData) => base44.entities.VideoSession.create(sessionData),
+    mutationFn: async (sessionData) => {
+      const session = await base44.entities.VideoSession.create(sessionData);
+      
+      // Sync to Google Calendar if enabled
+      if (syncToCalendar) {
+        try {
+          await base44.functions.invoke('syncSessionToCalendar', {
+            sessionId: session.id,
+            action: 'create'
+          });
+        } catch (error) {
+          console.error('Calendar sync failed:', error);
+        }
+      }
+      
+      return session;
+    },
     onSuccess: () => {
       onSuccess();
     },
@@ -52,7 +72,7 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
     return student;
   }).filter(Boolean);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     
     if (!formData.course_id || !formData.title || !formData.scheduled_date || !formData.scheduled_time) {
@@ -65,7 +85,12 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
       return;
     }
 
-    const sessionData = {
+    if (formData.is_recurring && !formData.recurrence_end_date) {
+      alert('Please specify when recurring sessions should end');
+      return;
+    }
+
+    const baseSessionData = {
       ...formData,
       tutor_email: user?.email,
       tutor_name: user?.full_name,
@@ -73,7 +98,20 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
       status: 'scheduled'
     };
 
-    createSessionMutation.mutate(sessionData);
+    if (formData.is_recurring) {
+      // Create recurring sessions
+      try {
+        await base44.functions.invoke('createRecurringSessions', {
+          sessionData: baseSessionData,
+          syncToCalendar
+        });
+        onSuccess();
+      } catch (error) {
+        alert('Failed to create recurring sessions: ' + error.message);
+      }
+    } else {
+      createSessionMutation.mutate(baseSessionData);
+    }
   };
 
   const toggleStudent = (email) => {
@@ -187,6 +225,69 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
               min="15"
               max="180"
             />
+          </div>
+
+          {/* Recurring Options */}
+          <div className="border-t pt-4">
+            <label className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                checked={formData.is_recurring}
+                onChange={(e) => setFormData({ ...formData, is_recurring: e.target.checked })}
+                className="w-4 h-4 text-purple-600 rounded"
+              />
+              <span className="text-sm font-medium text-gray-700">Make this a recurring session</span>
+            </label>
+
+            {formData.is_recurring && (
+              <div className="ml-6 space-y-4">
+                <div className="grid md:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Repeat
+                    </label>
+                    <select
+                      value={formData.recurrence_pattern}
+                      onChange={(e) => setFormData({ ...formData, recurrence_pattern: e.target.value })}
+                      className="w-full px-4 py-2 border rounded-lg"
+                    >
+                      <option value="daily">Daily</option>
+                      <option value="weekly">Weekly</option>
+                      <option value="biweekly">Every 2 Weeks</option>
+                      <option value="monthly">Monthly</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      End Date <span className="text-red-500">*</span>
+                    </label>
+                    <Input
+                      type="date"
+                      value={formData.recurrence_end_date}
+                      onChange={(e) => setFormData({ ...formData, recurrence_end_date: e.target.value })}
+                      min={formData.scheduled_date}
+                      required
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Calendar Sync */}
+          <div className="border-t pt-4">
+            <label className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                checked={syncToCalendar}
+                onChange={(e) => setSyncToCalendar(e.target.checked)}
+                className="w-4 h-4 text-purple-600 rounded"
+              />
+              <span className="text-sm font-medium text-gray-700">Sync to Google Calendar</span>
+            </label>
+            <p className="text-xs text-gray-500 mt-1 ml-6">
+              Automatically add sessions to your Google Calendar and send invites to participants
+            </p>
           </div>
 
           {/* Student Selection */}
