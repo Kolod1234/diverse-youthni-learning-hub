@@ -517,9 +517,9 @@ export default function LessonPlayer() {
                       </div>
                     )}
                   </div>
-                  
+
                   <div 
-                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-6"
+                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: currentSlide.content }}
                   />
 
