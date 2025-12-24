@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { BookOpen, Clock, Award, ArrowRight, Sparkles } from 'lucide-react';
+import { BookOpen, Clock, Award, ArrowRight, Sparkles, Video, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
@@ -54,6 +54,15 @@ export default function Dashboard() {
     },
     enabled: !!user?.email,
     staleTime: 2 * 60 * 1000,
+  });
+
+  const { data: upcomingSessions = [] } = useQuery({
+    queryKey: ['upcoming-sessions', user?.email],
+    queryFn: async () => {
+      const allSessions = await base44.entities.VideoSession.filter({ status: 'scheduled' }, 'scheduled_date', 20);
+      return allSessions.filter(s => s.invited_students?.includes(user?.email) || s.tutor_email === user?.email);
+    },
+    enabled: !!user?.email,
   });
 
   const getGreeting = () => {
@@ -205,6 +214,29 @@ export default function Dashboard() {
                   streakDays={userProgress?.streak_days || 0}
                   lastActivityDate={userProgress?.last_activity_date}
                 />
+
+                {/* Upcoming Sessions */}
+                {upcomingSessions.length > 0 && (
+                  <Card className="p-4">
+                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                      <Video className="w-5 h-5 text-purple-600" />
+                      Upcoming Live Sessions
+                    </h3>
+                    <div className="space-y-2">
+                      {upcomingSessions.slice(0, 3).map(session => (
+                        <Link key={session.id} to={createPageUrl('VideoSession') + `?id=${session.id}`}>
+                          <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200 hover:border-purple-300 transition-all">
+                            <p className="font-medium text-gray-900 text-sm">{session.title}</p>
+                            <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
+                              <Calendar className="w-3 h-3" />
+                              {new Date(session.scheduled_date).toLocaleDateString()} at {session.scheduled_time}
+                            </div>
+                          </div>
+                        </Link>
+                      ))}
+                    </div>
+                  </Card>
+                )}
 
                 {/* Quick Progress Widget */}
                 <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />

@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, BookOpen, Users, MessageSquare, ClipboardList, 
-  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award
+  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award, Video, Calendar, Clock
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -33,6 +33,12 @@ export default function TutorDashboard() {
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [selectedCourseForMessage, setSelectedCourseForMessage] = useState(null);
   const queryClient = useQueryClient();
+
+  const { data: videoSessions = [] } = useQuery({
+    queryKey: ['video-sessions', user?.email],
+    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 50),
+    enabled: !!user?.email,
+  });
 
   useEffect(() => {
     const loadUser = async () => {
@@ -215,6 +221,10 @@ export default function TutorDashboard() {
               <BookOpen className="w-4 h-4 mr-2" />
               Courses
             </TabsTrigger>
+            <TabsTrigger value="sessions" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+              <Video className="w-4 h-4 mr-2" />
+              Live Sessions
+            </TabsTrigger>
             <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
               <Users className="w-4 h-4 mr-2" />
               Students
@@ -250,6 +260,10 @@ export default function TutorDashboard() {
               setShowMessageDialog={setShowMessageDialog}
               setSelectedCourseForMessage={setSelectedCourseForMessage}
             />
+          </TabsContent>
+
+          <TabsContent value="sessions">
+            <LiveSessionsTab videoSessions={videoSessions} courses={courses} />
           </TabsContent>
 
           <TabsContent value="students">
