@@ -418,29 +418,37 @@ export default function LessonPlayer() {
             >
               <Card className="p-6 md:p-8 shadow-2xl">
                 {/* Slide Content */}
-                <div className="mb-8">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
-                          {currentLesson.section || 'Lesson'}
-                        </span>
-                      </div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                        {currentSlide.title}
-                      </h1>
-                    </div>
-                    {isCompleted && (
-                      <div className="ml-4">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                          <CheckCircle className="w-6 h-6 text-emerald-600" />
-                        </div>
-                      </div>
-                    )}
-                  </div>
+                                <div className="mb-8">
+                                  <div className="flex items-start justify-between mb-4">
+                                    <div className="flex-1">
+                                      <div className="flex items-center gap-2 mb-3">
+                                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                                          <Zap className="w-5 h-5 text-white" />
+                                        </div>
+                                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+                                          {currentLesson.section || 'Lesson'}
+                                        </span>
+                                      </div>
+                                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                                        {currentSlide.title}
+                                      </h1>
+                                      {lessonQuizzes.length > 0 && (
+                                        <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`}>
+                                          <Button variant="outline" size="sm" className="mt-2">
+                                            <Brain className="w-4 h-4 mr-2" />
+                                            Quiz Available ({lessonQuizzes[0].questions?.length} questions)
+                                          </Button>
+                                        </Link>
+                                      )}
+                                    </div>
+                                    {isCompleted && (
+                                      <div className="ml-4">
+                                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                                        </div>
+                                      </div>
+                                    )}
+                                  </div>
                   
                   <div 
                     className="prose prose-lg max-w-none text-gray-700 leading-relaxed"

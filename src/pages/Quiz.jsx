@@ -25,6 +25,8 @@ export default function Quiz() {
   const [startTime, setStartTime] = useState(null);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [questionStates, setQuestionStates] = useState({});
   const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -108,6 +110,22 @@ export default function Quiz() {
       ...prev,
       [questionIndex]: answerIndex
     }));
+    
+    // Show immediate feedback
+    const isCorrect = quiz.questions[questionIndex].correct_answer === answerIndex;
+    setQuestionStates(prev => ({
+      ...prev,
+      [questionIndex]: { answered: true, correct: isCorrect }
+    }));
+    setShowFeedback(true);
+    
+    // Auto-advance after 1.5 seconds on correct answer
+    if (isCorrect && questionIndex < quiz.questions.length - 1) {
+      setTimeout(() => {
+        setShowFeedback(false);
+        setCurrentQuestion(prev => prev + 1);
+      }, 1500);
+    }
   };
 
   const handleSubmitQuiz = async () => {
@@ -230,6 +248,8 @@ export default function Quiz() {
     setShowResults(false);
     setTimeLeft(quiz?.time_limit_minutes ? quiz.time_limit_minutes * 60 : null);
     setStartTime(Date.now());
+    setShowFeedback(false);
+    setQuestionStates({});
   };
 
   const formatTime = (seconds) => {
@@ -442,32 +462,78 @@ export default function Quiz() {
 
             {/* Question */}
             <div className="mb-8">
-              <h2 className="text-xl font-semibold text-gray-900 mb-6">
-                {question.question}
-              </h2>
+              <div className="flex items-start justify-between mb-6">
+                <h2 className="text-xl font-semibold text-gray-900 flex-1">
+                  {question.question}
+                </h2>
+                {question.marks && (
+                  <Badge className="bg-amber-100 text-amber-700 px-3 py-1 rounded-full text-sm ml-4">
+                    {question.marks} {question.marks === 1 ? 'mark' : 'marks'}
+                  </Badge>
+                )}
+              </div>
+
+              {question.image_url && (
+                <img 
+                  src={question.image_url} 
+                  alt="Question diagram"
+                  className="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md"
+                />
+              )}
 
               <RadioGroup
                 value={answers[currentQuestion]?.toString()}
                 onValueChange={(value) => handleAnswerSelect(currentQuestion, parseInt(value))}
+                disabled={showFeedback}
               >
                 <div className="space-y-3">
-                  {question.options.map((option, idx) => (
-                    <div
-                      key={idx}
-                      className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                        answers[currentQuestion] === idx
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
-                    >
-                      <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
-                      <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">
-                        {option}
-                      </Label>
-                    </div>
-                  ))}
+                  {question.options.map((option, idx) => {
+                    const isSelected = answers[currentQuestion] === idx;
+                    const isCorrect = question.correct_answer === idx;
+                    const showResult = showFeedback && isSelected;
+                    
+                    return (
+                      <motion.div
+                        key={idx}
+                        initial={{ opacity: 0, x: -20 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ delay: idx * 0.1 }}
+                        className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                          showResult && isCorrect
+                            ? 'border-emerald-500 bg-emerald-50'
+                            : showResult && !isCorrect
+                            ? 'border-red-500 bg-red-50'
+                            : isSelected
+                            ? 'border-indigo-500 bg-indigo-50'
+                            : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}
+                      >
+                        <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
+                        <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">
+                          {option}
+                        </Label>
+                        {showResult && isCorrect && (
+                          <CheckCircle className="w-5 h-5 text-emerald-600 ml-2" />
+                        )}
+                        {showResult && !isCorrect && (
+                          <XCircle className="w-5 h-5 text-red-600 ml-2" />
+                        )}
+                      </motion.div>
+                    );
+                  })}
                 </div>
               </RadioGroup>
+
+              {showFeedback && question.explanation && (
+                <motion.div
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg"
+                >
+                  <p className="text-sm font-medium text-blue-900 mb-1">💡 Explanation:</p>
+                  <p className="text-sm text-blue-800">{question.explanation}</p>
+                </motion.div>
+              )}
             </div>
 
             {/* Navigation */}
@@ -493,7 +559,10 @@ export default function Quiz() {
                 </Button>
               ) : (
                 <Button
-                  onClick={() => setCurrentQuestion(prev => prev + 1)}
+                  onClick={() => {
+                    setShowFeedback(false);
+                    setCurrentQuestion(prev => prev + 1);
+                  }}
                   disabled={!hasAnswered}
                   className="bg-indigo-600 hover:bg-indigo-700 gap-2"
                 >
@@ -504,6 +573,40 @@ export default function Quiz() {
             </div>
           </Card>
         </motion.div>
+
+        {/* Progress Tracker */}
+        <Card className="p-6 bg-gray-50 border-0 mb-4">
+          <div className="flex items-center justify-between mb-3">
+            <h3 className="font-semibold text-gray-900">Progress</h3>
+            <span className="text-sm text-gray-500">
+              {Object.keys(questionStates).filter(k => questionStates[k].correct).length} correct
+            </span>
+          </div>
+          <div className="flex gap-2 flex-wrap">
+            {quiz.questions.map((_, idx) => (
+              <button
+                key={idx}
+                onClick={() => {
+                  setCurrentQuestion(idx);
+                  setShowFeedback(false);
+                }}
+                className={`w-10 h-10 rounded-lg font-medium text-sm transition-all ${
+                  idx === currentQuestion
+                    ? 'bg-indigo-600 text-white ring-2 ring-indigo-300'
+                    : questionStates[idx]?.correct
+                    ? 'bg-emerald-100 text-emerald-700'
+                    : questionStates[idx]?.answered
+                    ? 'bg-red-100 text-red-700'
+                    : answers[idx] !== undefined
+                    ? 'bg-gray-300 text-gray-700'
+                    : 'bg-gray-100 text-gray-400'
+                }`}
+              >
+                {idx + 1}
+              </button>
+            ))}
+          </div>
+        </Card>
 
         {/* Quiz Info */}
         <Card className="p-6 bg-gray-50 border-0">

@@ -23,10 +23,10 @@ import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
+import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -56,10 +56,10 @@ export const PAGES = {
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
+    "TutorSessionsDashboard": TutorSessionsDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "TutorSessionsDashboard": TutorSessionsDashboard,
 }
 
 export const pagesConfig = {
