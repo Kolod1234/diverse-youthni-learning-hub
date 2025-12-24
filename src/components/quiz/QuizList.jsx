@@ -22,6 +22,14 @@ export default function QuizList({ quizzes, courses }) {
     queryFn: () => base44.entities.Lesson.list('order', 1000),
   });
 
+  // Filter to only show GCSE course topics
+  const gcseCourseIds = courses.filter(c => 
+    c.title?.includes('GCSE') || 
+    ['mathematics', 'english', 'biology', 'chemistry', 'physics', 'history', 'geography'].includes(c.category)
+  ).map(c => c.id);
+
+  const gcseLessons = allLessons.filter(l => gcseCourseIds.includes(l.course_id));
+
   const deleteQuizMutation = useMutation({
     mutationFn: (id) => base44.entities.Quiz.delete(id),
     onSuccess: () => {
@@ -216,8 +224,8 @@ export default function QuizList({ quizzes, courses }) {
                                        onChange={(e) => setSelectedCourseId(e.target.value)}
                                        className="h-9 px-3 rounded-md border border-gray-300"
                                      >
-                                       <option value="">Select topic from any course</option>
-                                       {allLessons
+                                       <option value="">Select GCSE topic</option>
+                                       {gcseLessons
                                          .filter(l => l.section)
                                          .reduce((acc, lesson) => {
                                            if (!acc.find(item => item.section === lesson.section)) {
@@ -226,6 +234,7 @@ export default function QuizList({ quizzes, courses }) {
                                            }
                                            return acc;
                                          }, [])
+                                         .sort((a, b) => a.section.localeCompare(b.section))
                                          .map((item, idx) => (
                                            <option key={idx} value={item.section}>
                                              {item.section} {item.courseName ? `(${item.courseName})` : ''}
