@@ -280,6 +280,32 @@ export default function VideoSession() {
                 ⏰ Session starts at {session.scheduled_time} on {sessionDateTime && format(sessionDateTime, 'MMM d, yyyy')}
               </p>
             )}
+
+            {/* Recording Player */}
+            {session.recording_url && session.status === 'completed' && (
+              <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <Video className="w-5 h-5 text-purple-600" />
+                  Session Recording Available
+                </h3>
+                <video 
+                  controls 
+                  className="w-full rounded-lg border-2 border-white shadow-lg"
+                  src={session.recording_url}
+                >
+                  Your browser does not support video playback.
+                </video>
+                <div className="flex gap-3 mt-4">
+                  <a 
+                    href={session.recording_url} 
+                    download 
+                    className="flex-1 text-center px-4 py-2 bg-purple-600 text-white rounded-lg hover:bg-purple-700 transition"
+                  >
+                    Download Recording
+                  </a>
+                </div>
+              </div>
+            )}
           </div>
         </Card>
       </div>
