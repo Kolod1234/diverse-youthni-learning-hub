@@ -77,31 +77,18 @@ export default function LessonPlayer() {
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
 
-  const { data: lessonQuizzes = [] } = useQuery({
-    queryKey: ['lesson-quizzes', courseId, lessonId, currentLesson?.section],
-    queryFn: async () => {
-      // Try to find quizzes by lesson_id first
-      const byLesson = await base44.entities.Quiz.filter({ 
-        course_id: courseId, 
-        lesson_id: lessonId, 
-        is_published: true 
-      });
-      
-      if (byLesson.length > 0) return byLesson;
-      
-      // If no quizzes by lesson_id, try by topic matching the lesson section
-      if (currentLesson?.section) {
-        const byTopic = await base44.entities.Quiz.filter({ 
-          course_id: courseId, 
-          topic: currentLesson.section, 
-          is_published: true 
-        });
-        return byTopic;
-      }
-      
-      return [];
-    },
-    enabled: !!courseId && !!lessonId && !!currentLesson,
+  const { data: allQuizzes = [] } = useQuery({
+    queryKey: ['course-quizzes', courseId],
+    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, is_published: true }),
+    enabled: !!courseId,
+  });
+
+  // Filter quizzes that match this lesson by ID, section, or title
+  const lessonQuizzes = allQuizzes.filter(quiz => {
+    if (quiz.lesson_id === currentLesson?.id) return true;
+    if (quiz.topic === currentLesson?.section) return true;
+    if (quiz.topic === currentLesson?.title) return true;
+    return false;
   });
   
   // Create slides from lesson content
