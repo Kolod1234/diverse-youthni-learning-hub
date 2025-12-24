@@ -531,12 +531,16 @@ function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }
         <h2 className="text-xl font-semibold mb-4">Students</h2>
         <div className="flex gap-3">
           <Input 
+            id="student-search"
+            name="search"
             placeholder="Search students..." 
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="max-w-xs"
           />
           <select 
+            id="course-filter"
+            name="course"
             className="px-3 py-2 border rounded-lg"
             value={selectedCourse?.id || ''}
             onChange={(e) => setSelectedCourse(courses.find(c => c.id === e.target.value) || null)}
