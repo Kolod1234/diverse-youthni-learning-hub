@@ -14,7 +14,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import { motion } from 'framer-motion';
@@ -166,7 +166,120 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Desktop Navigation */}
             <nav className="hidden md:flex items-center gap-1">
-              <NavLinks />
+              <Link to={createPageUrl('Home')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                location.pathname === createPageUrl('Home') || location.pathname === '/'
+                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}>
+                <Home className="w-5 h-5" />
+                <span>Home</span>
+              </Link>
+              <Link to={createPageUrl('Explore')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                location.pathname.includes('Explore')
+                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}>
+                <Compass className="w-5 h-5" />
+                <span>Explore</span>
+              </Link>
+              <Link to={createPageUrl('Dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                location.pathname.includes('Dashboard')
+                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
+                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+              }`}>
+                <BookOpen className="w-5 h-5" />
+                <span>My Learning</span>
+              </Link>
+
+              {/* More Menu */}
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="ghost" className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                    <MoreVertical className="w-5 h-5" />
+                    <span>More</span>
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="w-56">
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer">
+                      <GraduationCap className="w-4 h-4 mr-2" />
+                      Tutors
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Messages
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('Analytics')} className="flex items-center cursor-pointer">
+                      <BarChart3 className="w-4 h-4 mr-2" />
+                      Analytics
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('Achievements')} className="flex items-center cursor-pointer">
+                      <Award className="w-4 h-4 mr-2" />
+                      Achievements
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('LearningPaths')} className="flex items-center cursor-pointer">
+                      <Award className="w-4 h-4 mr-2" />
+                      Learning Paths
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('Programs')} className="flex items-center cursor-pointer">
+                      <ClipboardList className="w-4 h-4 mr-2" />
+                      Programmes
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  {(user?.is_tutor || user?.role === 'admin') && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer">
+                          <ClipboardList className="w-4 h-4 mr-2" />
+                          Templates
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer">
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Data to Slides
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer">
+                          <Award className="w-4 h-4 mr-2" />
+                          Quiz Generator
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer">
+                          <User className="w-4 h-4 mr-2" />
+                          Tutor Setup
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer">
+                          <Settings className="w-4 h-4 mr-2" />
+                          Tutor Dashboard
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
+                  {user?.role === 'admin' && (
+                    <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Admin Panel
+                    </DropdownMenuItem>
+                  )}
+                </DropdownMenuContent>
+              </DropdownMenu>
             </nav>
 
             {/* Right Side */}
