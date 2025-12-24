@@ -64,7 +64,7 @@ export default function Quiz() {
       const courses = await base44.entities.Course.filter({ id: quiz.course_id });
       return courses[0];
     },
-    enabled: !!quiz?.course_id,
+    enabled: !!quiz?.course_id && quiz.course_id !== 'null',
   });
 
   useEffect(() => {
