@@ -60,6 +60,16 @@ export default function SessionScheduler({ courses, onClose, onSuccess }) {
         }
       }
       
+      // Schedule automatic reminders (24 hours and 1 hour before)
+      try {
+        await base44.functions.invoke('scheduleSessionReminders', {
+          sessionId: session.id,
+          reminderTimings: [24 * 60, 60] // 24 hours and 1 hour in minutes
+        });
+      } catch (error) {
+        console.error('Failed to schedule reminders:', error);
+      }
+      
       return session;
     },
     onSuccess: () => {

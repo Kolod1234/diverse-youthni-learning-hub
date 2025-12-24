@@ -14,8 +14,9 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, Bell, ClipboardList, BarChart3, MessageSquare
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare
 } from 'lucide-react';
+import NotificationBell from '@/components/notifications/NotificationBell';
 import { motion } from 'framer-motion';
 
 export default function Layout({ children, currentPageName }) {
@@ -171,9 +172,7 @@ export default function Layout({ children, currentPageName }) {
             {/* Right Side */}
             <div className="flex items-center gap-3">
               {/* Notifications */}
-              <Button variant="ghost" size="icon" className="hidden sm:flex text-gray-600">
-                <Bell className="w-5 h-5" />
-              </Button>
+              <NotificationBell />
 
               {/* User Menu */}
               <DropdownMenu>
