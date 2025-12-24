@@ -14,7 +14,7 @@ export default function QuizList({ quizzes, courses }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedTopic, setSelectedTopic] = useState('all');
   const [editingTopicId, setEditingTopicId] = useState(null);
-  const [selectedCourseId, setSelectedCourseId] = useState('');
+  const [selectedLessonId, setSelectedLessonId] = useState('');
   const queryClient = useQueryClient();
 
   const { data: allLessons = [] } = useQuery({
@@ -48,11 +48,19 @@ export default function QuizList({ quizzes, courses }) {
   });
 
   const updateTopicMutation = useMutation({
-    mutationFn: ({ id, topic }) => base44.entities.Quiz.update(id, { topic }),
+    mutationFn: ({ id, lessonId, topic }) => {
+      const lesson = allLessons.find(l => l.id === lessonId);
+      return base44.entities.Quiz.update(id, { 
+        lesson_id: lessonId,
+        topic: lesson?.section || topic,
+        subtopic: lesson?.title || ''
+      });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['quizzes']);
-      toast.success('Topic updated');
+      toast.success('Quiz linked to lesson');
       setEditingTopicId(null);
+      setSelectedLessonId('');
     },
   });
 
@@ -218,89 +226,66 @@ export default function QuizList({ quizzes, courses }) {
                                     </Button>
                                   </Link>
                                   {editingTopicId === quiz.id ? (
-                                   <>
-                                     <select
-                                       value={selectedCourseId}
-                                       onChange={(e) => setSelectedCourseId(e.target.value)}
-                                       className="h-9 px-3 rounded-md border border-gray-300"
-                                     >
-                                       <option value="">Select GCSE topic/subtopic</option>
-                                       {gcseLessons
-                                         .filter(l => l.section)
-                                         .reduce((acc, lesson) => {
-                                           const course = courses.find(c => c.id === lesson.course_id);
-
-                                           // Add unit/section (topic)
-                                           if (!acc.find(item => item.value === lesson.section && item.type === 'section')) {
-                                             acc.push({ 
-                                               value: lesson.section, 
-                                               label: lesson.section, 
-                                               courseName: course?.title,
-                                               type: 'section'
-                                             });
-                                           }
-
-                                           // Add lesson title (subtopic)
-                                           if (lesson.title) {
-                                             acc.push({ 
-                                               value: lesson.title, 
-                                               label: `  → ${lesson.title}`, 
-                                               courseName: course?.title,
-                                               type: 'lesson',
-                                               section: lesson.section
-                                             });
-                                           }
-
-                                           return acc;
-                                         }, [])
-                                         .sort((a, b) => {
-                                           if (a.section !== b.section) {
-                                             return (a.section || a.value).localeCompare(b.section || b.value);
-                                           }
-                                           return a.type === 'section' ? -1 : b.type === 'section' ? 1 : a.value.localeCompare(b.value);
-                                         })
-                                         .map((item, idx) => (
-                                           <option key={idx} value={item.value}>
-                                             {item.label} {item.courseName ? `(${item.courseName})` : ''}
-                                           </option>
-                                         ))}
-                                     </select>
-                                     <Button
-                                       size="sm"
-                                       onClick={() => {
-                                         if (selectedCourseId) {
-                                           updateTopicMutation.mutate({ id: quiz.id, topic: selectedCourseId });
-                                         } else {
-                                           toast.error('Please select a topic');
-                                         }
-                                       }}
-                                       disabled={!selectedCourseId}
-                                     >
-                                       Link
-                                     </Button>
-                                     <Button
-                                       size="sm"
-                                       variant="outline"
-                                       onClick={() => {
-                                         setEditingTopicId(null);
-                                         setSelectedCourseId('');
-                                       }}
-                                     >
-                                       Cancel
-                                     </Button>
-                                   </>
+                                  <>
+                                    <select
+                                      value={selectedLessonId}
+                                      onChange={(e) => setSelectedLessonId(e.target.value)}
+                                      className="h-9 px-3 rounded-md border border-gray-300"
+                                    >
+                                      <option value="">Select a lesson</option>
+                                      {gcseLessons
+                                        .filter(l => l.section && l.title)
+                                        .sort((a, b) => {
+                                          if (a.section !== b.section) {
+                                            return a.section.localeCompare(b.section);
+                                          }
+                                          return a.order - b.order;
+                                        })
+                                        .map((lesson) => {
+                                          const course = courses.find(c => c.id === lesson.course_id);
+                                          return (
+                                            <option key={lesson.id} value={lesson.id}>
+                                              {lesson.section} → {lesson.title} ({course?.title})
+                                            </option>
+                                          );
+                                        })}
+                                    </select>
+                                    <Button
+                                      size="sm"
+                                      onClick={() => {
+                                        if (selectedLessonId) {
+                                          updateTopicMutation.mutate({ id: quiz.id, lessonId: selectedLessonId });
+                                        } else {
+                                          toast.error('Please select a lesson');
+                                        }
+                                      }}
+                                      disabled={!selectedLessonId}
+                                    >
+                                      Link
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => {
+                                        setEditingTopicId(null);
+                                        setSelectedLessonId('');
+                                      }}
+                                    >
+                                      Cancel
+                                    </Button>
+                                  </>
                                   ) : (
-                                   <Button
-                                     variant="outline"
-                                     size="sm"
-                                     onClick={() => {
-                                       setEditingTopicId(quiz.id);
-                                       setSelectedCourseId(quiz.topic || '');
-                                     }}
-                                   >
-                                     <LinkIcon className="w-4 h-4 mr-1" />
-                                     {quiz.topic ? 'Change' : 'Link Topic'}
-                                   </Button>
+                                  <Button
+                                    variant="outline"
+                                    size="sm"
+                                    onClick={() => {
+                                      setEditingTopicId(quiz.id);
+                                      setSelectedLessonId(quiz.lesson_id || '');
+                                    }}
+                                  >
+                                    <LinkIcon className="w-4 h-4 mr-1" />
+                                    {quiz.lesson_id ? 'Change Lesson' : 'Link to Lesson'}
+                                  </Button>
                                   )}
                                   <Button
                                     variant="outline"
