@@ -622,7 +622,10 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                   playsInline
                   className={`w-full h-full object-cover ${virtualBackground !== 'none' ? 'hidden' : ''}`}
                   style={{ transform: 'scaleX(-1)' }}
-                  onLoadedMetadata={() => console.log('✅ Video metadata loaded')}
+                  onLoadedMetadata={() => {
+                    console.log('✅ Video metadata loaded');
+                    localVideoRef.current?.play().catch(e => console.error("Video play error:", e));
+                  }}
                   onCanPlay={() => console.log('✅ Video can play')}
                   onPlay={() => console.log('✅ Video is playing')}
                 />
