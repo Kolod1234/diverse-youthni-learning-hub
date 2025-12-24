@@ -739,6 +739,114 @@ function AnalyticsTab({ courses, enrollments }) {
   );
 }
 
+function LiveSessionsTab({ videoSessions, courses }) {
+  const upcomingSessions = videoSessions.filter(s => s.status === 'scheduled');
+  const completedSessions = videoSessions.filter(s => s.status === 'completed');
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <h2 className="text-xl font-semibold text-gray-900">Live Video Sessions</h2>
+        <Link to={createPageUrl('ScheduleSession')}>
+          <Button className="bg-purple-600 hover:bg-purple-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Schedule Session
+          </Button>
+        </Link>
+      </div>
+
+      {upcomingSessions.length > 0 && (
+        <div>
+          <h3 className="font-medium text-gray-900 mb-3">Upcoming Sessions</h3>
+          <div className="space-y-3">
+            {upcomingSessions.map(session => {
+              const course = courses.find(c => c.id === session.course_id);
+              return (
+                <Card key={session.id} className="p-4">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-br from-purple-500 to-indigo-600 rounded-lg flex items-center justify-center">
+                        <Video className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <h4 className="font-semibold text-gray-900">{session.title}</h4>
+                        <p className="text-sm text-gray-600 mb-2">{course?.title}</p>
+                        <div className="flex items-center gap-4 text-sm text-gray-500">
+                          <span className="flex items-center gap-1">
+                            <Calendar className="w-3 h-3" />
+                            {new Date(session.scheduled_date).toLocaleDateString()}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Clock className="w-3 h-3" />
+                            {session.scheduled_time}
+                          </span>
+                          <span className="flex items-center gap-1">
+                            <Users className="w-3 h-3" />
+                            {session.invited_students?.length || 0} students
+                          </span>
+                        </div>
+                      </div>
+                    </div>
+                    <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
+                      <Button className="bg-purple-600 hover:bg-purple-700">
+                        Start Session
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {completedSessions.length > 0 && (
+        <div>
+          <h3 className="font-medium text-gray-900 mb-3">Past Sessions</h3>
+          <div className="space-y-3">
+            {completedSessions.slice(0, 5).map(session => {
+              const course = courses.find(c => c.id === session.course_id);
+              return (
+                <Card key={session.id} className="p-4 bg-gray-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="w-12 h-12 bg-gray-300 rounded-lg flex items-center justify-center">
+                        <Video className="w-6 h-6 text-gray-600" />
+                      </div>
+                      <div>
+                        <h4 className="font-medium text-gray-900">{session.title}</h4>
+                        <p className="text-sm text-gray-600">{course?.title}</p>
+                        <p className="text-xs text-gray-500 mt-1">
+                          {new Date(session.scheduled_date).toLocaleDateString()} at {session.scheduled_time}
+                        </p>
+                      </div>
+                    </div>
+                    <Badge variant="secondary">Completed</Badge>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {videoSessions.length === 0 && (
+        <Card className="p-12 text-center">
+          <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No sessions scheduled</h3>
+          <p className="text-gray-500 mb-6">Schedule your first live tutoring session</p>
+          <Link to={createPageUrl('ScheduleSession')}>
+            <Button className="bg-purple-600 hover:bg-purple-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Schedule Session
+            </Button>
+          </Link>
+        </Card>
+      )}
+    </div>
+  );
+}
+
 function CourseFormFields({ formData, setFormData }) {
   return (
     <div className="space-y-6">

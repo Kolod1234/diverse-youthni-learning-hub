@@ -24,6 +24,8 @@ import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import CourseAnalytics from './pages/CourseAnalytics';
 import MessageCenter from './pages/MessageCenter';
+import ScheduleSession from './pages/ScheduleSession';
+import VideoSession from './pages/VideoSession';
 import __Layout from './Layout.jsx';
 
 
@@ -54,6 +56,8 @@ export const PAGES = {
     "Tutors": Tutors,
     "CourseAnalytics": CourseAnalytics,
     "MessageCenter": MessageCenter,
+    "ScheduleSession": ScheduleSession,
+    "VideoSession": VideoSession,
 }
 
 export const pagesConfig = {
