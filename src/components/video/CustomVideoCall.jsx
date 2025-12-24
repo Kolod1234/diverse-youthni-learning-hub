@@ -130,7 +130,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         setParticipants(response.data.participants);
       }
 
-      // Poll for new participants and messages
+      // Poll for new participants and messages (every 5 seconds to avoid rate limiting)
       const interval = setInterval(async () => {
         if (!roomId || !session.id) {
           console.warn('Skipping poll: roomId or sessionId is missing');
@@ -160,9 +160,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             setChatMessages(messagesRes.data.messages);
           }
         } catch (err) {
-          console.error('Error polling updates:', err);
+          if (err.status === 429) {
+            console.warn('Rate limited, skipping this poll cycle');
+          } else {
+            console.error('Error polling updates:', err);
+          }
         }
-      }, 2000);
+      }, 5000);
 
       return () => clearInterval(interval);
     } catch (error) {
