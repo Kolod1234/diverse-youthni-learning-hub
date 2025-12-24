@@ -148,24 +148,73 @@ export default function LessonPlayer() {
   const awardPoints = async (points) => {
     try {
       const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
+      const today = new Date().toISOString().split('T')[0];
       
       if (progressList.length > 0) {
         const progress = progressList[0];
         const newPoints = (progress.points || 0) + points;
         const newLevel = Math.floor(newPoints / 100) + 1;
         
+        // Calculate streak
+        let newStreak = progress.streak_days || 0;
+        const lastActivity = progress.last_activity_date;
+        
+        if (lastActivity) {
+          const lastDate = new Date(lastActivity);
+          const todayDate = new Date(today);
+          const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
+          
+          if (diffDays === 1) {
+            newStreak += 1;
+          } else if (diffDays > 1) {
+            newStreak = 1;
+          }
+        } else {
+          newStreak = 1;
+        }
+        
         await base44.entities.UserProgress.update(progress.id, {
           points: newPoints,
           level: newLevel,
           total_lessons_completed: (progress.total_lessons_completed || 0) + 1,
-          last_activity_date: new Date().toISOString().split('T')[0]
+          last_activity_date: today,
+          streak_days: newStreak,
         });
+
+        // Check for streak achievements
+        if (newStreak === 7) {
+          await base44.entities.Achievement.create({
+            type: 'badge',
+            name: 'Week Warrior',
+            description: '7-day learning streak',
+            icon: 'week_streak',
+            earned_date: today,
+          });
+        } else if (newStreak === 30) {
+          await base44.entities.Achievement.create({
+            type: 'badge',
+            name: 'Dedicated Scholar',
+            description: '30-day learning streak',
+            icon: 'month_streak',
+            earned_date: today,
+          });
+        }
       } else {
         await base44.entities.UserProgress.create({
           points,
           level: 1,
           total_lessons_completed: 1,
-          last_activity_date: new Date().toISOString().split('T')[0]
+          last_activity_date: today,
+          streak_days: 1,
+        });
+
+        // First lesson achievement
+        await base44.entities.Achievement.create({
+          type: 'badge',
+          name: 'First Steps',
+          description: 'Complete your first lesson',
+          icon: 'first_lesson',
+          earned_date: today,
         });
       }
       
