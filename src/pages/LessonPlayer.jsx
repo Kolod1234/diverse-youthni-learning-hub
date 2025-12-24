@@ -62,6 +62,21 @@ export default function LessonPlayer() {
     enabled: !!courseId && !!user?.email,
   });
 
+  // Mutations
+  const updateEnrollmentMutation = useMutation({
+    mutationFn: ({ enrollmentId, data }) => base44.entities.Enrollment.update(enrollmentId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['enrollment', courseId]);
+    },
+  });
+
+  // Derived state
+  const enrollment = enrollments[0];
+  const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
+  const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
+  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
+  const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
+
   const { data: lessonQuizzes = [] } = useQuery({
     queryKey: ['lesson-quizzes', courseId, lessonId, currentLesson?.section],
     queryFn: async () => {
@@ -88,21 +103,6 @@ export default function LessonPlayer() {
     },
     enabled: !!courseId && !!lessonId && !!currentLesson,
   });
-
-  // Mutations
-  const updateEnrollmentMutation = useMutation({
-    mutationFn: ({ enrollmentId, data }) => base44.entities.Enrollment.update(enrollmentId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['enrollment', courseId]);
-    },
-  });
-
-  // Derived state
-  const enrollment = enrollments[0];
-  const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
-  const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
-  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
-  const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
   
   // Create slides from lesson content
   const slides = currentLesson?.slides || [];
