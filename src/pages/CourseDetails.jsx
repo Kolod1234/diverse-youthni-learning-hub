@@ -168,10 +168,17 @@ export default function CourseDetails() {
       <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <Link to={createPageUrl('Explore')} className="inline-flex items-center text-indigo-100 hover:text-white mb-6 transition-colors">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back to Courses
-          </Link>
+          <nav className="flex items-center gap-2 text-sm text-indigo-100 mb-6">
+            <Link to={createPageUrl('Dashboard')} className="hover:text-white transition-colors">
+              Dashboard
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <Link to={createPageUrl('Explore')} className="hover:text-white transition-colors">
+              Courses
+            </Link>
+            <ChevronRight className="w-4 h-4" />
+            <span className="text-white font-medium">{course.title}</span>
+          </nav>
           
           <div className="grid lg:grid-cols-3 gap-8 items-start">
             <div className="lg:col-span-2">
