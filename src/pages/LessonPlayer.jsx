@@ -637,6 +637,8 @@ export default function LessonPlayer() {
             >
               <ArrowRight className="w-6 h-6" />
             </Button>
+          </div>
+
           {/* Q&A Section */}
           {showQA && (
             <motion.div
