@@ -165,14 +165,30 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     const attachStream = async () => {
       if (localStream && localVideoRef.current) {
         try {
-          localVideoRef.current.srcObject = localStream;
+          // Make sure video element is ready
+          if (localVideoRef.current.srcObject !== localStream) {
+            localVideoRef.current.srcObject = localStream;
+          }
           localVideoRef.current.muted = true;
           localVideoRef.current.autoplay = true;
           localVideoRef.current.playsInline = true;
           
-          // Force play
-          await localVideoRef.current.play();
-          console.log('Video attached and playing');
+          // Force play with error handling
+          try {
+            await localVideoRef.current.play();
+            console.log('✅ Video attached and playing');
+          } catch (playError) {
+            console.error('Play error:', playError);
+            // Try again after a short delay
+            setTimeout(async () => {
+              try {
+                await localVideoRef.current.play();
+                console.log('✅ Video playing after retry');
+              } catch (retryError) {
+                console.error('Retry play error:', retryError);
+              }
+            }, 500);
+          }
         } catch (err) {
           console.error('Error attaching video:', err);
         }
@@ -587,6 +603,9 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                   playsInline
                   className={`w-full h-full object-cover ${virtualBackground !== 'none' ? 'hidden' : ''}`}
                   style={{ transform: 'scaleX(-1)' }}
+                  onLoadedMetadata={() => console.log('✅ Video metadata loaded')}
+                  onCanPlay={() => console.log('✅ Video can play')}
+                  onPlay={() => console.log('✅ Video is playing')}
                 />
                 {virtualBackground !== 'none' && (
                   <canvas
@@ -604,8 +623,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                 </div>
               </div>
             )}
-            {isVideoOff && (
-              <div className="absolute inset-0 bg-gray-700 flex items-center justify-center">
+            {isVideoOff && localStream && (
+              <div className="absolute inset-0 bg-gray-700 flex items-center justify-center z-10">
                 <div className="text-center">
                   <div className="w-20 h-20 bg-gray-600 rounded-full flex items-center justify-center mx-auto mb-2">
                     <span className="text-white text-2xl font-bold">
@@ -616,7 +635,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                 </div>
               </div>
             )}
-            <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs">
+            <div className="absolute bottom-2 left-2 bg-black/60 text-white px-2 py-1 rounded text-xs z-20">
               You {isMuted && '(muted)'}
             </div>
           </div>
