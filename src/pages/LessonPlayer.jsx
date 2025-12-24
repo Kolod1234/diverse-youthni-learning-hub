@@ -8,12 +8,15 @@ import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { 
   ChevronLeft, ChevronRight, CheckCircle, X, Trophy, Star, Brain, Zap,
-  MessageCircle, ArrowRight, ArrowLeft, Home
+  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import EmbeddedQuiz from '@/components/quiz/EmbeddedQuiz';
+import InlineQuiz from '@/components/lesson/InlineQuiz';
+import CodePlayground from '@/components/lesson/CodePlayground';
+import LessonQA from '@/components/lesson/LessonQA';
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -29,6 +32,8 @@ export default function LessonPlayer() {
   const [direction, setDirection] = useState(0);
   const [showQuiz, setShowQuiz] = useState(false);
   const [selectedQuiz, setSelectedQuiz] = useState(null);
+  const [showQA, setShowQA] = useState(false);
+  const [bookmarked, setBookmarked] = useState(false);
 
   // Load user
   useEffect(() => {
@@ -86,6 +91,26 @@ export default function LessonPlayer() {
     enabled: !!courseId,
   });
 
+  const { data: bookmarks = [] } = useQuery({
+    queryKey: ['bookmarks', lessonId, user?.email],
+    queryFn: () => base44.entities.LessonBookmark.filter({ lesson_id: lessonId, created_by: user?.email }),
+    enabled: !!lessonId && !!user?.email,
+  });
+
+  const bookmarkMutation = useMutation({
+    mutationFn: (data) => base44.entities.LessonBookmark.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['bookmarks', lessonId]);
+    },
+  });
+
+  const deleteBookmarkMutation = useMutation({
+    mutationFn: (id) => base44.entities.LessonBookmark.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['bookmarks', lessonId]);
+    },
+  });
+
   // Filter quizzes that match this lesson by ID, section, or title
   const lessonQuizzes = React.useMemo(() => {
     if (!currentLesson) return [];
@@ -101,6 +126,12 @@ export default function LessonPlayer() {
   const slides = currentLesson?.slides || [];
   const totalSlides = slides.length;
   const progressPercent = totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0;
+
+  // Check if current slide is bookmarked
+  React.useEffect(() => {
+    const isBookmarked = bookmarks.some(b => b.slide_index === currentSlideIndex);
+    setBookmarked(isBookmarked);
+  }, [bookmarks, currentSlideIndex]);
 
   // Touch handlers for mobile swipe
   const [touchStart, setTouchStart] = useState(0);
@@ -145,6 +176,18 @@ export default function LessonPlayer() {
   const handleCloseQuiz = () => {
     setShowQuiz(false);
     setSelectedQuiz(null);
+  };
+
+  const handleToggleBookmark = () => {
+    const existingBookmark = bookmarks.find(b => b.slide_index === currentSlideIndex);
+    if (existingBookmark) {
+      deleteBookmarkMutation.mutate(existingBookmark.id);
+    } else {
+      bookmarkMutation.mutate({
+        lesson_id: lessonId,
+        slide_index: currentSlideIndex,
+      });
+    }
   };
 
   const markComplete = async () => {
@@ -390,9 +433,27 @@ export default function LessonPlayer() {
               </Button>
             </Link>
             
-            <div className="flex items-center gap-2 text-white">
-              <Trophy className="w-4 h-4" />
-              <span className="text-sm font-semibold">{enrollment?.progress_percent || 0}%</span>
+            <div className="flex items-center gap-3">
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={handleToggleBookmark}
+                className={`text-white hover:bg-white/20 ${bookmarked ? 'bg-white/20' : ''}`}
+              >
+                <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-white' : ''}`} />
+              </Button>
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={() => setShowQA(!showQA)}
+                className="text-white hover:bg-white/20"
+              >
+                <MessageSquare className="w-5 h-5" />
+              </Button>
+              <div className="flex items-center gap-2 text-white">
+                <Trophy className="w-4 h-4" />
+                <span className="text-sm font-semibold">{enrollment?.progress_percent || 0}%</span>
+              </div>
             </div>
           </div>
           
@@ -458,9 +519,29 @@ export default function LessonPlayer() {
                   </div>
                   
                   <div 
-                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed mb-6"
                     dangerouslySetInnerHTML={{ __html: currentSlide.content }}
                   />
+
+                  {/* Interactive Elements */}
+                  {currentSlide.inlineQuiz && (
+                    <div className="mt-6">
+                      <InlineQuiz 
+                        quiz={currentSlide.inlineQuiz}
+                        onComplete={(isCorrect) => console.log('Quiz completed:', isCorrect)}
+                      />
+                    </div>
+                  )}
+
+                  {currentSlide.codePlayground && (
+                    <div className="mt-6">
+                      <CodePlayground
+                        initialCode={currentSlide.codePlayground.code || ''}
+                        language={currentSlide.codePlayground.language || 'javascript'}
+                        onRun={(code) => console.log('Code executed:', code)}
+                      />
+                    </div>
+                  )}
                 </div>
 
                 {/* Actions */}
