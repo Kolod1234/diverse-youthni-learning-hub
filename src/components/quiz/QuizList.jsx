@@ -196,54 +196,50 @@ export default function QuizList({ quizzes, courses }) {
                                      <Badge variant="outline">IMG: {questionTypes.image_based}</Badge>
                                    )}
                                   </div>
-
-                                  {editingTopicId === quiz.id ? (
-                                   <div className="mt-2 flex gap-2">
-                                     <Input
-                                       value={topicValue}
-                                       onChange={(e) => setTopicValue(e.target.value)}
-                                       placeholder="Enter topic (e.g., Cells and Cell Structure)"
-                                       className="h-8 text-sm"
-                                       autoFocus
-                                     />
-                                     <Button
-                                       size="sm"
-                                       onClick={() => updateTopicMutation.mutate({ id: quiz.id, topic: topicValue })}
-                                       className="h-8"
-                                     >
-                                       Save
-                                     </Button>
-                                     <Button
-                                       size="sm"
-                                       variant="outline"
-                                       onClick={() => setEditingTopicId(null)}
-                                       className="h-8"
-                                     >
-                                       Cancel
-                                     </Button>
-                                   </div>
-                                  ) : (
-                                   <Button
-                                     variant="ghost"
-                                     size="sm"
-                                     onClick={() => {
-                                       setEditingTopicId(quiz.id);
-                                       setTopicValue(quiz.topic || '');
-                                     }}
-                                     className="mt-2 h-8 text-xs"
-                                   >
-                                     <Tag className="w-3 h-3 mr-1" />
-                                     {quiz.topic ? 'Edit Topic' : 'Add Topic'}
-                                   </Button>
-                                  )}
                                 </div>
 
-                                <div className="flex gap-2">
+                                <div className="flex gap-2 flex-wrap">
                                   <Link to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}>
                                     <Button variant="outline" size="sm">
                                       <Eye className="w-4 h-4" />
                                     </Button>
                                   </Link>
+                                  {editingTopicId === quiz.id ? (
+                                    <>
+                                      <Input
+                                        value={topicValue}
+                                        onChange={(e) => setTopicValue(e.target.value)}
+                                        placeholder="Enter topic"
+                                        className="h-9 w-48"
+                                        autoFocus
+                                      />
+                                      <Button
+                                        size="sm"
+                                        onClick={() => updateTopicMutation.mutate({ id: quiz.id, topic: topicValue })}
+                                      >
+                                        Save
+                                      </Button>
+                                      <Button
+                                        size="sm"
+                                        variant="outline"
+                                        onClick={() => setEditingTopicId(null)}
+                                      >
+                                        Cancel
+                                      </Button>
+                                    </>
+                                  ) : (
+                                    <Button
+                                      variant="outline"
+                                      size="sm"
+                                      onClick={() => {
+                                        setEditingTopicId(quiz.id);
+                                        setTopicValue(quiz.topic || '');
+                                      }}
+                                    >
+                                      <Tag className="w-4 h-4 mr-1" />
+                                      {quiz.topic ? 'Topic' : 'Add Topic'}
+                                    </Button>
+                                  )}
                                   <Button
                                     variant="outline"
                                     size="sm"
