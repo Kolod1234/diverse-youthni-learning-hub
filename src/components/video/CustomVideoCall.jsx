@@ -6,9 +6,10 @@ import { Card } from '@/components/ui/card';
 import {
   Video, VideoOff, Mic, MicOff, MonitorUp, MonitorOff,
   MessageSquare, Users, LogOut, MoreVertical, Send,
-  Maximize, Settings, Phone
+  Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon
 } from 'lucide-react';
 import BreakoutRoomManager from './BreakoutRoomManager';
+import Whiteboard from './Whiteboard';
 
 export default function CustomVideoCall({ session, course, user, onEndSession }) {
   const [localStream, setLocalStream] = useState(null);
@@ -29,6 +30,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [isRecording, setIsRecording] = useState(false);
   const [recordedChunks, setRecordedChunks] = useState([]);
   const [showBreakoutManager, setShowBreakoutManager] = useState(false);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [waitingParticipants, setWaitingParticipants] = useState([]);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -436,6 +439,16 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         <div className="flex items-center gap-2">
           <Badge className="bg-red-500 text-white animate-pulse">🔴 LIVE</Badge>
           <span className="text-xs text-gray-400">{participants.length} participants</span>
+          {isTutor && waitingParticipants.length > 0 && (
+            <Button
+              size="sm"
+              className="bg-amber-500 hover:bg-amber-600 animate-pulse"
+              onClick={() => {/* Handle waiting list */}}
+            >
+              <Bell className="w-3 h-3 mr-1" />
+              {waitingParticipants.length} Waiting
+            </Button>
+          )}
         </div>
 
         <div className="flex items-center gap-2">
@@ -580,6 +593,14 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                     >
                       <div className={`w-3 h-3 rounded-full mr-2 ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
                       {isRecording ? 'Recording...' : 'Record'}
+                    </Button>
+                    <Button
+                      onClick={() => setShowWhiteboard(true)}
+                      size="sm"
+                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
+                    >
+                      <Pencil className="w-5 h-5 mr-2" />
+                      Whiteboard
                     </Button>
                   </>
                 )}
@@ -744,6 +765,52 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           }}
           onClose={() => setShowBreakoutManager(false)}
         />
+      )}
+
+      {/* Whiteboard */}
+      {showWhiteboard && (
+        <Whiteboard onClose={() => setShowWhiteboard(false)} />
+      )}
+
+      {/* Waiting Room Notifications */}
+      {isTutor && waitingParticipants.length > 0 && (
+        <div className="fixed top-20 right-4 z-[60] space-y-2">
+          {waitingParticipants.map(participant => (
+            <Card key={participant.email} className="p-4 bg-white shadow-lg border-l-4 border-amber-500 animate-slide-in">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-amber-100 rounded-full flex items-center justify-center">
+                  <Bell className="w-5 h-5 text-amber-600" />
+                </div>
+                <div className="flex-1">
+                  <p className="font-medium text-gray-900">{participant.name}</p>
+                  <p className="text-xs text-gray-500">wants to join the session</p>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    size="sm"
+                    onClick={() => {
+                      setWaitingParticipants(prev => prev.filter(p => p.email !== participant.email));
+                      setParticipants(prev => [...prev, { ...participant, approved: true }]);
+                    }}
+                    className="bg-green-600 hover:bg-green-700 h-8 w-8 p-0"
+                  >
+                    <Check className="w-4 h-4" />
+                  </Button>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setWaitingParticipants(prev => prev.filter(p => p.email !== participant.email));
+                    }}
+                    className="h-8 w-8 p-0"
+                  >
+                    <XIcon className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          ))}
+        </div>
       )}
     </div>
   );
