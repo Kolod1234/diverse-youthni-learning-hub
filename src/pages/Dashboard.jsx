@@ -7,6 +7,7 @@ import { Button } from '@/components/ui/button';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { BookOpen, Clock, Award, ArrowRight, Sparkles, Video, Calendar } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Card } from '@/components/ui/card';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
