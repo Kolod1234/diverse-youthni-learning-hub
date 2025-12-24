@@ -63,9 +63,30 @@ export default function LessonPlayer() {
   });
 
   const { data: lessonQuizzes = [] } = useQuery({
-    queryKey: ['lesson-quizzes', courseId, lessonId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, lesson_id: lessonId, is_published: true }),
-    enabled: !!courseId && !!lessonId,
+    queryKey: ['lesson-quizzes', courseId, lessonId, currentLesson?.section],
+    queryFn: async () => {
+      // Try to find quizzes by lesson_id first
+      const byLesson = await base44.entities.Quiz.filter({ 
+        course_id: courseId, 
+        lesson_id: lessonId, 
+        is_published: true 
+      });
+      
+      if (byLesson.length > 0) return byLesson;
+      
+      // If no quizzes by lesson_id, try by topic matching the lesson section
+      if (currentLesson?.section) {
+        const byTopic = await base44.entities.Quiz.filter({ 
+          course_id: courseId, 
+          topic: currentLesson.section, 
+          is_published: true 
+        });
+        return byTopic;
+      }
+      
+      return [];
+    },
+    enabled: !!courseId && !!lessonId && !!currentLesson,
   });
 
   // Mutations
@@ -430,14 +451,22 @@ export default function LessonPlayer() {
                 {/* Actions */}
                 {isLastSlide ? (
                   <div className="space-y-3">
-                    {!isCompleted && (
+                    <Button 
+                      onClick={markComplete}
+                      disabled={updateEnrollmentMutation.isPending || isCompleted}
+                      className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg disabled:opacity-50"
+                    >
+                      <CheckCircle className="w-5 h-5 mr-2" />
+                      {isCompleted ? 'Lesson Completed ✓' : 'Complete Lesson'}
+                    </Button>
+
+                    {nextLesson && (
                       <Button 
-                        onClick={markComplete}
-                        disabled={updateEnrollmentMutation.isPending}
-                        className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg"
+                        onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
+                        className="w-full h-14 text-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg"
                       >
-                        <CheckCircle className="w-5 h-5 mr-2" />
-                        Complete Lesson
+                        Next Lesson
+                        <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
                     )}
 
@@ -447,21 +476,12 @@ export default function LessonPlayer() {
                           className="w-full h-14 text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
                         >
                           <Brain className="w-5 h-5 mr-2" />
-                          Start Quiz ({lessonQuizzes[0].questions?.length} questions)
+                          Take Quiz ({lessonQuizzes[0].questions?.length} questions)
                         </Button>
                       </Link>
                     )}
 
-                    {nextLesson ? (
-                      <Button 
-                        onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
-                        variant="outline"
-                        className="w-full h-14 text-lg"
-                      >
-                        Next Lesson
-                        <ArrowRight className="w-5 h-5 ml-2" />
-                      </Button>
-                    ) : (
+                    {!nextLesson && (
                       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
                         <Button variant="outline" className="w-full h-14 text-lg">
                           <Trophy className="w-5 h-5 mr-2" />
