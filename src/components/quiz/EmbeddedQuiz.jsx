@@ -1,0 +1,393 @@
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Progress } from '@/components/ui/progress';
+import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
+import { Label } from '@/components/ui/label';
+import { 
+  Clock, CheckCircle, XCircle, Trophy, 
+  ArrowLeft, ArrowRight, RefreshCw, Target, X
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import PointsAnimation from '@/components/gamification/PointsAnimation';
+import confetti from 'canvas-confetti';
+
+export default function EmbeddedQuiz({ quiz, user, onClose }) {
+  const [currentQuestion, setCurrentQuestion] = useState(0);
+  const [answers, setAnswers] = useState({});
+  const [showResults, setShowResults] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(null);
+  const [startTime, setStartTime] = useState(null);
+  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+  const [pointsEarned, setPointsEarned] = useState(0);
+  const [showFeedback, setShowFeedback] = useState(false);
+  const [questionStates, setQuestionStates] = useState({});
+  const queryClient = useQueryClient();
+
+  const { data: attempts = [] } = useQuery({
+    queryKey: ['quiz-attempts', quiz.id, user?.email],
+    queryFn: () => base44.entities.QuizAttempt.filter({ 
+      quiz_id: quiz.id, 
+      created_by: user?.email 
+    }, '-created_date', 10),
+    enabled: !!quiz.id && !!user?.email,
+  });
+
+  useEffect(() => {
+    if (quiz?.time_limit_minutes && !showResults && startTime === null) {
+      setTimeLeft(quiz.time_limit_minutes * 60);
+      setStartTime(Date.now());
+    }
+  }, [quiz, showResults, startTime]);
+
+  useEffect(() => {
+    if (timeLeft !== null && timeLeft > 0 && !showResults) {
+      const timer = setInterval(() => {
+        setTimeLeft(prev => {
+          if (prev <= 1) {
+            handleSubmitQuiz();
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+      return () => clearInterval(timer);
+    }
+  }, [timeLeft, showResults]);
+
+  const submitAttemptMutation = useMutation({
+    mutationFn: (attemptData) => base44.entities.QuizAttempt.create(attemptData),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['quiz-attempts', quiz.id]);
+    },
+  });
+
+  const handleAnswerSelect = (questionIndex, answerIndex) => {
+    setAnswers(prev => ({
+      ...prev,
+      [questionIndex]: answerIndex
+    }));
+    
+    const isCorrect = quiz.questions[questionIndex].correct_answer === answerIndex;
+    setQuestionStates(prev => ({
+      ...prev,
+      [questionIndex]: { answered: true, correct: isCorrect }
+    }));
+    setShowFeedback(true);
+    
+    if (isCorrect && questionIndex < quiz.questions.length - 1) {
+      setTimeout(() => {
+        setShowFeedback(false);
+        setCurrentQuestion(prev => prev + 1);
+      }, 1500);
+    }
+  };
+
+  const handleSubmitQuiz = async () => {
+    if (!quiz) return;
+
+    const timeTaken = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
+    const answersArray = quiz.questions.map((q, idx) => ({
+      question_index: idx,
+      selected_answer: answers[idx] ?? -1,
+      is_correct: answers[idx] === q.correct_answer
+    }));
+
+    const correctCount = answersArray.filter(a => a.is_correct).length;
+    const score = (correctCount / quiz.questions.length) * 100;
+    const passed = score >= (quiz.passing_score || 70);
+
+    submitAttemptMutation.mutate({
+      quiz_id: quiz.id,
+      course_id: quiz.course_id,
+      score: Math.round(score),
+      passed,
+      answers: answersArray,
+      time_taken_seconds: timeTaken,
+      attempt_number: attempts.length + 1,
+    });
+
+    if (passed) {
+      confetti({
+        particleCount: 100,
+        spread: 70,
+        origin: { y: 0.6 }
+      });
+
+      const bonusPoints = score === 100 ? 30 : 20;
+      await awardPoints(bonusPoints);
+
+      if (score === 100) {
+        const today = new Date().toISOString().split('T')[0];
+        await base44.entities.Achievement.create({
+          type: 'badge',
+          name: 'Perfect Score',
+          description: 'Get 100% on a quiz',
+          icon: 'perfect_quiz',
+          earned_date: today,
+        });
+      }
+    }
+
+    setShowResults(true);
+  };
+
+  const awardPoints = async (points) => {
+    try {
+      const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
+      const today = new Date().toISOString().split('T')[0];
+      
+      if (progressList.length > 0) {
+        const progress = progressList[0];
+        const newPoints = (progress.points || 0) + points;
+        const newLevel = Math.floor(newPoints / 100) + 1;
+        
+        await base44.entities.UserProgress.update(progress.id, {
+          points: newPoints,
+          level: newLevel,
+          total_quizzes_completed: (progress.total_quizzes_completed || 0) + 1,
+          last_activity_date: today,
+        });
+
+        if (progress.total_quizzes_completed === 0) {
+          await base44.entities.Achievement.create({
+            type: 'badge',
+            name: 'Quiz Master',
+            description: 'Pass your first quiz',
+            icon: 'first_quiz',
+            earned_date: today,
+          });
+        }
+      } else {
+        await base44.entities.UserProgress.create({
+          points: points,
+          level: 1,
+          total_quizzes_completed: 1,
+          last_activity_date: today,
+        });
+      }
+      
+      setPointsEarned(points);
+      setShowPointsAnimation(true);
+    } catch (error) {
+      console.error('Failed to award points:', error);
+    }
+  };
+
+  const handleRetake = () => {
+    setCurrentQuestion(0);
+    setAnswers({});
+    setShowResults(false);
+    setTimeLeft(quiz?.time_limit_minutes ? quiz.time_limit_minutes * 60 : null);
+    setStartTime(Date.now());
+    setShowFeedback(false);
+    setQuestionStates({});
+  };
+
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  if (showResults) {
+    const lastAttempt = attempts[0];
+    const correctCount = lastAttempt?.answers?.filter(a => a.is_correct).length || 0;
+    const totalQuestions = quiz.questions.length;
+    const score = lastAttempt?.score || 0;
+    const passed = lastAttempt?.passed || false;
+
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col p-4">
+        <div className="flex justify-end mb-4">
+          <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
+            <X className="w-5 h-5" />
+          </Button>
+        </div>
+        <div className="flex-1 flex items-center justify-center">
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="w-full max-w-2xl">
+            <Card className="overflow-hidden border-0 shadow-2xl">
+              <div className={`p-8 text-center ${passed ? 'bg-gradient-to-br from-emerald-500 to-teal-600' : 'bg-gradient-to-br from-orange-500 to-red-600'} text-white`}>
+                <motion.div initial={{ scale: 0 }} animate={{ scale: 1 }} transition={{ delay: 0.2, type: 'spring' }}>
+                  {passed ? <Trophy className="w-20 h-20 mx-auto mb-4" /> : <Target className="w-20 h-20 mx-auto mb-4" />}
+                </motion.div>
+                <h1 className="text-3xl font-bold mb-2">
+                  {passed ? 'Congratulations! 🎉' : 'Keep Practicing! 💪'}
+                </h1>
+                <p className="text-white/90 text-lg">
+                  {passed ? `You passed with ${score}%!` : `You scored ${score}%. Need ${quiz.passing_score}% to pass.`}
+                </p>
+              </div>
+
+              <div className="p-8">
+                <div className="grid grid-cols-3 gap-4 mb-8">
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-gray-900 mb-1">{score}%</div>
+                    <div className="text-sm text-gray-500">Your Score</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-emerald-600 mb-1">{correctCount}/{totalQuestions}</div>
+                    <div className="text-sm text-gray-500">Correct</div>
+                  </div>
+                  <div className="text-center">
+                    <div className="text-3xl font-bold text-indigo-600 mb-1">{attempts.length}</div>
+                    <div className="text-sm text-gray-500">Attempts</div>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-8 max-h-96 overflow-y-auto">
+                  <h3 className="font-semibold text-gray-900 text-lg">Review Your Answers</h3>
+                  {quiz.questions.map((question, idx) => {
+                    const userAnswer = lastAttempt?.answers?.find(a => a.question_index === idx);
+                    const isCorrect = userAnswer?.is_correct;
+                    const selectedAnswer = userAnswer?.selected_answer;
+
+                    return (
+                      <Card key={idx} className={`p-4 border-2 ${isCorrect ? 'border-emerald-200 bg-emerald-50/30' : 'border-red-200 bg-red-50/30'}`}>
+                        <div className="flex items-start gap-3">
+                          {isCorrect ? <CheckCircle className="w-5 h-5 text-emerald-600 shrink-0 mt-0.5" /> : <XCircle className="w-5 h-5 text-red-600 shrink-0 mt-0.5" />}
+                          <div className="flex-1">
+                            <p className="font-medium text-gray-900 mb-2">Question {idx + 1}: {question.question}</p>
+                            <div className="space-y-2">
+                              {question.options.map((option, optIdx) => (
+                                <div key={optIdx} className={`p-2 rounded-lg text-sm ${
+                                  optIdx === question.correct_answer ? 'bg-emerald-100 text-emerald-800 font-medium' :
+                                  selectedAnswer === optIdx && !isCorrect ? 'bg-red-100 text-red-800' : 'bg-white text-gray-600'
+                                }`}>
+                                  {optIdx === question.correct_answer && '✓ '}
+                                  {selectedAnswer === optIdx && optIdx !== question.correct_answer && '✗ '}
+                                  {option}
+                                </div>
+                              ))}
+                            </div>
+                            {question.explanation && (
+                              <div className="mt-3 p-3 bg-blue-50 rounded-lg">
+                                <p className="text-sm text-blue-900"><strong>Explanation:</strong> {question.explanation}</p>
+                              </div>
+                            )}
+                          </div>
+                        </div>
+                      </Card>
+                    );
+                  })}
+                </div>
+
+                <div className="flex flex-wrap gap-3 justify-center">
+                  <Button onClick={handleRetake} variant="outline" className="gap-2">
+                    <RefreshCw className="w-4 h-4" />
+                    Retake Quiz
+                  </Button>
+                  <Button onClick={onClose} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                    Continue Learning
+                    <ArrowRight className="w-4 h-4" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          </motion.div>
+        </div>
+        {showPointsAnimation && <PointsAnimation points={pointsEarned} onComplete={() => setShowPointsAnimation(false)} />}
+      </div>
+    );
+  }
+
+  const question = quiz.questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / quiz.questions.length) * 100;
+  const isLastQuestion = currentQuestion === quiz.questions.length - 1;
+  const hasAnswered = answers[currentQuestion] !== undefined;
+
+  return (
+    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col p-4">
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-white text-xl font-bold">{quiz.title}</h2>
+        <Button variant="ghost" size="icon" onClick={onClose} className="text-white hover:bg-white/20">
+          <X className="w-5 h-5" />
+        </Button>
+      </div>
+
+      {timeLeft !== null && (
+        <div className={`mb-4 flex items-center justify-center gap-2 px-4 py-2 rounded-lg self-center ${
+          timeLeft < 60 ? 'bg-red-50 text-red-600' : 'bg-white/20 text-white'
+        }`}>
+          <Clock className="w-5 h-5" />
+          <span className="font-semibold">{formatTime(timeLeft)}</span>
+        </div>
+      )}
+
+      <div className="flex-1 flex items-center justify-center">
+        <motion.div key={currentQuestion} initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} className="w-full max-w-2xl">
+          <Card className="p-6 md:p-8 shadow-2xl">
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-4">
+                <span className="text-sm font-semibold text-indigo-600">Question {currentQuestion + 1} of {quiz.questions.length}</span>
+                <Progress value={progress} className="flex-1 h-2 mx-4" />
+              </div>
+            </div>
+
+            <div className="mb-8">
+              <h2 className="text-xl font-semibold text-gray-900 mb-6">{question.question}</h2>
+
+              {question.image_url && (
+                <img src={question.image_url} alt="Question" className="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md" />
+              )}
+
+              <RadioGroup value={answers[currentQuestion]?.toString()} onValueChange={(value) => handleAnswerSelect(currentQuestion, parseInt(value))} disabled={showFeedback}>
+                <div className="space-y-3">
+                  {question.options.map((option, idx) => {
+                    const isSelected = answers[currentQuestion] === idx;
+                    const isCorrect = question.correct_answer === idx;
+                    const showResult = showFeedback && isSelected;
+                    
+                    return (
+                      <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}
+                        className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                          showResult && isCorrect ? 'border-emerald-500 bg-emerald-50' :
+                          showResult && !isCorrect ? 'border-red-500 bg-red-50' :
+                          isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300 bg-white'
+                        }`}>
+                        <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
+                        <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">{option}</Label>
+                        {showResult && isCorrect && <CheckCircle className="w-5 h-5 text-emerald-600 ml-2" />}
+                        {showResult && !isCorrect && <XCircle className="w-5 h-5 text-red-600 ml-2" />}
+                      </motion.div>
+                    );
+                  })}
+                </div>
+              </RadioGroup>
+
+              {showFeedback && question.explanation && (
+                <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-sm font-medium text-blue-900 mb-1">💡 Explanation:</p>
+                  <p className="text-sm text-blue-800">{question.explanation}</p>
+                </motion.div>
+              )}
+            </div>
+
+            <div className="flex items-center justify-between">
+              <Button variant="outline" onClick={() => setCurrentQuestion(prev => prev - 1)} disabled={currentQuestion === 0} className="gap-2">
+                <ArrowLeft className="w-4 h-4" />
+                Previous
+              </Button>
+
+              {isLastQuestion ? (
+                <Button onClick={handleSubmitQuiz} disabled={Object.keys(answers).length !== quiz.questions.length} className="bg-emerald-600 hover:bg-emerald-700 gap-2">
+                  Submit Quiz
+                  <CheckCircle className="w-4 h-4" />
+                </Button>
+              ) : (
+                <Button onClick={() => { setShowFeedback(false); setCurrentQuestion(prev => prev + 1); }} disabled={!hasAnswered} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+                  Next
+                  <ArrowRight className="w-4 h-4" />
+                </Button>
+              )}
+            </div>
+          </Card>
+        </motion.div>
+      </div>
+
+      {showPointsAnimation && <PointsAnimation points={pointsEarned} onComplete={() => setShowPointsAnimation(false)} />}
+    </div>
+  );
+}

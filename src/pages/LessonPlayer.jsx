@@ -1,4 +1,3 @@
-
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -14,6 +13,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
+import EmbeddedQuiz from '@/components/quiz/EmbeddedQuiz';
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -27,6 +27,8 @@ export default function LessonPlayer() {
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [pointsEarned, setPointsEarned] = useState(0);
   const [direction, setDirection] = useState(0);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [selectedQuiz, setSelectedQuiz] = useState(null);
 
   // Load user
   useEffect(() => {
@@ -133,6 +135,16 @@ export default function LessonPlayer() {
       setDirection(-1);
       setCurrentSlideIndex(prev => prev - 1);
     }
+  };
+
+  const handleTakeQuiz = (quiz) => {
+    setSelectedQuiz(quiz);
+    setShowQuiz(true);
+  };
+
+  const handleCloseQuiz = () => {
+    setShowQuiz(false);
+    setSelectedQuiz(null);
   };
 
   const markComplete = async () => {
@@ -297,6 +309,7 @@ export default function LessonPlayer() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyPress = (e) => {
+      if (showQuiz) return;
       if (e.key === 'ArrowRight' || e.key === ' ') {
         e.preventDefault();
         nextSlide();
@@ -308,7 +321,12 @@ export default function LessonPlayer() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentSlideIndex, totalSlides]);
+  }, [currentSlideIndex, totalSlides, showQuiz]);
+
+  // Show quiz if active
+  if (showQuiz && selectedQuiz) {
+    return <EmbeddedQuiz quiz={selectedQuiz} user={user} onClose={handleCloseQuiz} />;
+  }
 
   // Loading
   if (lessonsLoading) {
@@ -409,37 +427,35 @@ export default function LessonPlayer() {
             >
               <Card className="p-6 md:p-8 shadow-2xl">
                 {/* Slide Content */}
-                                <div className="mb-8">
-                                  <div className="flex items-start justify-between mb-4">
-                                    <div className="flex-1">
-                                      <div className="flex items-center gap-2 mb-3">
-                                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                                          <Zap className="w-5 h-5 text-white" />
-                                        </div>
-                                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
-                                          {currentLesson.section || 'Lesson'}
-                                        </span>
-                                      </div>
-                                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
-                                        {currentSlide.title}
-                                      </h1>
-                                      {lessonQuizzes.length > 0 && (
-                                        <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`}>
-                                          <Button variant="outline" size="sm" className="mt-2">
-                                            <Brain className="w-4 h-4 mr-2" />
-                                            Quiz Available ({lessonQuizzes[0].questions?.length} questions)
-                                          </Button>
-                                        </Link>
-                                      )}
-                                    </div>
-                                    {isCompleted && (
-                                      <div className="ml-4">
-                                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
-                                          <CheckCircle className="w-6 h-6 text-emerald-600" />
-                                        </div>
-                                      </div>
-                                    )}
-                                  </div>
+                <div className="mb-8">
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <Zap className="w-5 h-5 text-white" />
+                        </div>
+                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+                          {currentLesson.section || 'Lesson'}
+                        </span>
+                      </div>
+                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                        {currentSlide.title}
+                      </h1>
+                      {lessonQuizzes.length > 0 && (
+                        <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
+                          <Brain className="w-4 h-4 mr-2" />
+                          Quiz Available ({lessonQuizzes[0].questions?.length} questions)
+                        </Button>
+                      )}
+                    </div>
+                    {isCompleted && (
+                      <div className="ml-4">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center">
+                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        </div>
+                      </div>
+                    )}
+                  </div>
                   
                   <div 
                     className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
@@ -470,14 +486,13 @@ export default function LessonPlayer() {
                     )}
 
                     {lessonQuizzes.length > 0 && (
-                      <Link to={createPageUrl('Quiz') + `?id=${lessonQuizzes[0].id}`}>
-                        <Button 
-                          className="w-full h-14 text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
-                        >
-                          <Brain className="w-5 h-5 mr-2" />
-                          Take Quiz ({lessonQuizzes[0].questions?.length} questions)
-                        </Button>
-                      </Link>
+                      <Button 
+                        onClick={() => handleTakeQuiz(lessonQuizzes[0])}
+                        className="w-full h-14 text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
+                      >
+                        <Brain className="w-5 h-5 mr-2" />
+                        Take Quiz ({lessonQuizzes[0].questions?.length} questions)
+                      </Button>
                     )}
 
                     {!nextLesson && (
