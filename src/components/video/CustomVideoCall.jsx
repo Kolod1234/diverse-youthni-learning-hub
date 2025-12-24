@@ -79,8 +79,8 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           sampleRate: 48000
         },
         video: { 
-          width: { min: 640, ideal: 1920, max: 1920 },
-          height: { min: 480, ideal: 1080, max: 1080 },
+          width: { min: 640, ideal: 1280, max: 1920 },
+          height: { min: 480, ideal: 720, max: 1080 },
           frameRate: { ideal: 30 },
           facingMode: 'user'
         }
@@ -95,21 +95,6 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       });
       
       setLocalStream(stream);
-      
-      // Set video source immediately
-      if (localVideoRef.current) {
-        localVideoRef.current.srcObject = stream;
-        localVideoRef.current.muted = true;
-        localVideoRef.current.autoplay = true;
-        localVideoRef.current.playsInline = true;
-        
-        // Force play
-        const playPromise = localVideoRef.current.play();
-        if (playPromise !== undefined) {
-          await playPromise;
-          console.log('HD Video playing successfully');
-        }
-      }
     } catch (error) {
       console.error('Error accessing HD media devices:', error);
       setError(`Camera/Microphone Error: ${error.message}\n\nPlease:\n1. Allow camera/mic access\n2. Close other apps using camera\n3. Refresh the page`);
@@ -165,6 +150,28 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       throw error;
     }
   };
+
+  // Effect to attach local stream to video element when it's available
+  useEffect(() => {
+    const attachStream = async () => {
+      if (localStream && localVideoRef.current) {
+        try {
+          localVideoRef.current.srcObject = localStream;
+          localVideoRef.current.muted = true;
+          localVideoRef.current.autoplay = true;
+          localVideoRef.current.playsInline = true;
+          
+          // Force play
+          await localVideoRef.current.play();
+          console.log('Video attached and playing');
+        } catch (err) {
+          console.error('Error attaching video:', err);
+        }
+      }
+    };
+
+    attachStream();
+  }, [localStream]);
 
   const cleanup = async () => {
     // Stop all tracks
@@ -468,15 +475,24 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           )}
 
           {/* Local Video (Picture-in-Picture when screen sharing) */}
-          <div className={`${isScreenSharing ? 'absolute bottom-20 right-4 w-64 h-48' : 'w-full h-full'} bg-gray-800 rounded-lg overflow-hidden`}>
-            <video
-              ref={localVideoRef}
-              autoPlay
-              muted
-              playsInline
-              className="w-full h-full object-cover"
-              style={{ transform: 'scaleX(-1)' }}
-            />
+          <div className={`${isScreenSharing ? 'absolute bottom-20 right-4 w-64 h-48 z-30' : 'w-full h-full'} bg-gray-800 rounded-lg overflow-hidden relative`}>
+            {localStream ? (
+              <video
+                ref={localVideoRef}
+                autoPlay
+                muted
+                playsInline
+                className="w-full h-full object-cover"
+                style={{ transform: 'scaleX(-1)' }}
+              />
+            ) : (
+              <div className="absolute inset-0 flex items-center justify-center bg-gray-900">
+                <div className="text-center">
+                  <div className="animate-spin w-12 h-12 border-4 border-white border-t-transparent rounded-full mx-auto mb-4"></div>
+                  <p className="text-white">Starting camera...</p>
+                </div>
+              </div>
+            )}
             {isVideoOff && (
               <div className="absolute inset-0 bg-gray-700 flex items-center justify-center">
                 <div className="text-center">
