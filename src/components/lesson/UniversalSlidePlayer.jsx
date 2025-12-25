@@ -1,8 +1,48 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl, fileType }) {
+  const [processedContent, setProcessedContent] = useState(content);
+
+  // Convert images to base64 for better compatibility
+  useEffect(() => {
+    if (!content) return;
+
+    const convertImagesToBase64 = async () => {
+      const tempDiv = document.createElement('div');
+      tempDiv.innerHTML = content;
+      const images = tempDiv.querySelectorAll('img');
+
+      const promises = Array.from(images).map(async (img) => {
+        const src = img.getAttribute('src');
+        if (!src || src.startsWith('data:')) return; // Skip if already base64
+
+        try {
+          const response = await fetch(src);
+          const blob = await response.blob();
+          const reader = new FileReader();
+          
+          return new Promise((resolve) => {
+            reader.onloadend = () => {
+              img.setAttribute('src', reader.result);
+              resolve();
+            };
+            reader.onerror = () => resolve(); // Continue on error
+            reader.readAsDataURL(blob);
+          });
+        } catch (error) {
+          console.warn('Failed to convert image:', src);
+        }
+      });
+
+      await Promise.all(promises);
+      setProcessedContent(tempDiv.innerHTML);
+    };
+
+    convertImagesToBase64();
+  }, [content]);
+
   // Handle Google Slides iframe embed with zoom
   if (googleSlidesUrl) {
     const presentationId = googleSlidesUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -61,7 +101,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
   }
 
   // Handle HTML content with zoom support
-  if (content) {
+  if (processedContent) {
     return (
       <div className="w-full rounded-lg overflow-hidden">
         <style dangerouslySetInnerHTML={{ __html: `
@@ -172,7 +212,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
           <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
             <div 
               className="slide-content-wrapper"
-              dangerouslySetInnerHTML={{ __html: content }}
+              dangerouslySetInnerHTML={{ __html: processedContent }}
             />
           </TransformComponent>
         </TransformWrapper>
