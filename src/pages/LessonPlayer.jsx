@@ -368,6 +368,7 @@ export default function LessonPlayer() {
     let touchEndY = 0;
 
     const handleTouchStart = (e) => {
+      // Only capture if not scrolling vertically
       touchStartX = e.touches[0].clientX;
       touchStartY = e.touches[0].clientY;
     };
@@ -375,6 +376,15 @@ export default function LessonPlayer() {
     const handleTouchMove = (e) => {
       touchEndX = e.touches[0].clientX;
       touchEndY = e.touches[0].clientY;
+
+      // Allow vertical scrolling by not preventing default
+      const deltaX = Math.abs(touchEndX - touchStartX);
+      const deltaY = Math.abs(touchEndY - touchStartY);
+
+      // Only prevent default if horizontal swipe is clearly intended
+      if (deltaX > deltaY && deltaX > 20) {
+        e.preventDefault();
+      }
     };
 
     const handleTouchEnd = () => {
@@ -395,7 +405,7 @@ export default function LessonPlayer() {
     const slideArea = document.querySelector('.slide-swipe-area');
     if (slideArea) {
       slideArea.addEventListener('touchstart', handleTouchStart, { passive: true });
-      slideArea.addEventListener('touchmove', handleTouchMove, { passive: true });
+      slideArea.addEventListener('touchmove', handleTouchMove, { passive: false });
       slideArea.addEventListener('touchend', handleTouchEnd);
 
       return () => {
@@ -543,8 +553,8 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 overflow-hidden">
-        <div className="w-full h-full slide-swipe-area">
+      <div className="flex-1 flex flex-col overflow-hidden">
+        <div className="flex-1 overflow-y-auto slide-swipe-area">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
@@ -569,7 +579,7 @@ export default function LessonPlayer() {
                 }
               }}
             >
-              <Card className="h-full p-4 sm:p-6 shadow-xl bg-white border-0 flex flex-col overflow-y-auto">
+              <Card className="min-h-full p-4 sm:p-6 shadow-xl bg-white border-0 flex flex-col">
                 {/* Learning Objectives - Show on first slide */}
                 {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <motion.div 
