@@ -32,6 +32,7 @@ export default function TutorCourseManager() {
   const [exportingLesson, setExportingLesson] = useState(null);
   const [importingSlides, setImportingSlides] = useState(false);
   const [importUrl, setImportUrl] = useState('');
+  const [selectedCourseForImport, setSelectedCourseForImport] = useState(courseId);
   const [selectedLessonForImport, setSelectedLessonForImport] = useState('new');
   const queryClient = useQueryClient();
 
@@ -65,6 +66,20 @@ export default function TutorCourseManager() {
     queryKey: ['lessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
     enabled: !!courseId,
+  });
+
+  const { data: allCourses = [] } = useQuery({
+    queryKey: ['all-tutor-courses'],
+    queryFn: async () => {
+      const user = await base44.auth.me();
+      return base44.entities.Course.filter({ created_by: user.email, is_deleted: { $ne: true } }, '-created_date', 100);
+    },
+  });
+
+  const { data: importCourseLessons = [] } = useQuery({
+    queryKey: ['import-lessons', selectedCourseForImport],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: selectedCourseForImport }, 'order', 100),
+    enabled: !!selectedCourseForImport,
   });
 
   const createLessonMutation = useMutation({
@@ -172,15 +187,18 @@ export default function TutorCourseManager() {
 
       if (response.data.success) {
         if (selectedLessonForImport === 'new') {
-          // Create new lesson
-          setLessonForm({
+          // Create new lesson in selected course
+          await createLessonMutation.mutateAsync({
+            course_id: selectedCourseForImport,
             title: response.data.title,
             slides: response.data.slides,
+            order: importCourseLessons.length + 1,
+            duration_minutes: 15,
           });
-          setShowCreate(true);
+          toast.success(`New lesson created in selected course!`);
         } else {
           // Update existing lesson
-          const lesson = lessons.find(l => l.id === selectedLessonForImport);
+          const lesson = importCourseLessons.find(l => l.id === selectedLessonForImport);
           await updateLessonMutation.mutateAsync({
             id: selectedLessonForImport,
             data: {
@@ -263,22 +281,43 @@ export default function TutorCourseManager() {
             </div>
           </div>
 
-          <div className="mb-3">
-            <Label className="text-sm font-medium mb-2 block">Import destination</Label>
-            <select
-              value={selectedLessonForImport}
-              onChange={(e) => setSelectedLessonForImport(e.target.value)}
-              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
-            >
-              <option value="new">Create new lesson</option>
-              <optgroup label="Update existing lesson">
-                {lessons.map(lesson => (
-                  <option key={lesson.id} value={lesson.id}>
-                    {lesson.title}
+          <div className="grid grid-cols-2 gap-3 mb-3">
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Select Course</Label>
+              <select
+                value={selectedCourseForImport}
+                onChange={(e) => {
+                  setSelectedCourseForImport(e.target.value);
+                  setSelectedLessonForImport('new');
+                }}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                {allCourses.map(course => (
+                  <option key={course.id} value={course.id}>
+                    {course.title}
                   </option>
                 ))}
-              </optgroup>
-            </select>
+              </select>
+            </div>
+            <div>
+              <Label className="text-sm font-medium mb-2 block">Import destination</Label>
+              <select
+                value={selectedLessonForImport}
+                onChange={(e) => setSelectedLessonForImport(e.target.value)}
+                className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              >
+                <option value="new">Create new lesson</option>
+                {importCourseLessons.length > 0 && (
+                  <optgroup label="Update existing lesson">
+                    {importCourseLessons.map(lesson => (
+                      <option key={lesson.id} value={lesson.id}>
+                        {lesson.title}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
+              </select>
+            </div>
           </div>
 
           <div className="flex gap-2">
