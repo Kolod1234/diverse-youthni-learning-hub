@@ -14,6 +14,8 @@ import Highlight from '@tiptap/extension-highlight';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
+import Dropcursor from '@tiptap/extension-dropcursor';
+import Gapcursor from '@tiptap/extension-gapcursor';
 import { Node } from '@tiptap/core';
 import { Extension } from '@tiptap/core';
 import { Label } from '@/components/ui/label';
@@ -345,6 +347,7 @@ const Card = Node.create({
   name: 'card',
   group: 'block',
   content: 'block+',
+  draggable: true,
   
   addAttributes() {
     return {
@@ -381,7 +384,8 @@ const Card = Node.create({
       'div',
       {
         'data-card': type,
-        style: `${styles[type] || styles.definition} margin: 16px 0;`,
+        'data-drag-handle': '',
+        style: `${styles[type] || styles.definition} margin: 16px 0; cursor: move; position: relative;`,
       },
       0,
     ];
@@ -402,6 +406,7 @@ const Poll = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -474,6 +479,7 @@ const Quiz = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -556,6 +562,7 @@ const InteractiveImage = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -628,6 +635,7 @@ const QASection = Node.create({
   group: 'block',
   content: 'block+',
   selectable: true,
+  draggable: true,
 
   parseHTML() {
     return [{ tag: 'div[data-qa-section]' }];
@@ -685,6 +693,7 @@ const DragDropExercise = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -764,6 +773,7 @@ const FillInBlanks = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -840,6 +850,7 @@ const TimedQuestion = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -1026,6 +1037,7 @@ const BranchingScenario = Node.create({
   group: 'block',
   atom: true,
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -1108,6 +1120,7 @@ const CardGrid = Node.create({
   group: 'block',
   content: 'card+',
   selectable: true,
+  draggable: true,
 
   addAttributes() {
     return {
@@ -1198,6 +1211,12 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           levels: [1, 2, 3, 4, 5, 6]
         }
       }),
+      Dropcursor.configure({
+        color: '#6366F1',
+        width: 4,
+        class: 'drop-cursor',
+      }),
+      Gapcursor,
       Image.configure({
         inline: false,
         allowBase64: true,
