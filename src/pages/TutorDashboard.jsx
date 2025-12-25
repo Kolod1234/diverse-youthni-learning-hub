@@ -19,6 +19,7 @@ import { createPageUrl } from '@/utils';
 import AICourseAssistant from '@/components/tutor/AICourseAssistant';
 import AwardPointsDialog from '@/components/tutor/AwardPointsDialog';
 import MessageStudentsDialog from '@/components/tutor/MessageStudentsDialog';
+import TutorOnboardingFlow from '@/components/onboarding/TutorOnboardingFlow';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -32,6 +33,7 @@ export default function TutorDashboard() {
   const [selectedCourseForPoints, setSelectedCourseForPoints] = useState(null);
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [selectedCourseForMessage, setSelectedCourseForMessage] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: videoSessions = [] } = useQuery({
@@ -39,6 +41,22 @@ export default function TutorDashboard() {
     queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 50),
     enabled: !!user?.email,
   });
+
+  const { data: onboardingStatus } = useQuery({
+    queryKey: ['tutor-onboarding', user?.email],
+    queryFn: async () => {
+      const status = await base44.entities.TutorOnboarding.filter({ tutor_email: user?.email });
+      return status[0];
+    },
+    enabled: !!user?.email,
+  });
+
+  useEffect(() => {
+    if (user?.email && onboardingStatus === undefined) return;
+    if (!onboardingStatus && user?.is_tutor) {
+      setShowOnboarding(true);
+    }
+  }, [onboardingStatus, user]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -311,6 +329,14 @@ export default function TutorDashboard() {
           courseId={selectedCourseForMessage}
           courseName={courses.find(c => c.id === selectedCourseForMessage)?.title}
         />
+
+        {showOnboarding && (
+          <TutorOnboardingFlow
+            user={user}
+            onComplete={() => setShowOnboarding(false)}
+            onSkip={() => setShowOnboarding(false)}
+          />
+        )}
       </div>
     </div>
   );
