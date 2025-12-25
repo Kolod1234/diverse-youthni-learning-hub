@@ -17,6 +17,7 @@ import EmbeddedQuiz from '@/components/quiz/EmbeddedQuiz';
 import InlineQuiz from '@/components/lesson/InlineQuiz';
 import CodePlayground from '@/components/lesson/CodePlayground';
 import LessonQA from '@/components/lesson/LessonQA';
+import GoogleSlidePlayer from '@/components/lesson/GoogleSlidePlayer';
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -537,14 +538,7 @@ export default function LessonPlayer() {
                     )}
                   </div>
 
-                  <div 
-                    className="w-full"
-                    dangerouslySetInnerHTML={{ __html: currentSlide.content }}
-                    style={{ 
-                      lineHeight: 'normal',
-                      isolation: 'isolate'
-                    }}
-                  />
+                  <GoogleSlidePlayer content={currentSlide.content} />
 
                   {/* Interactive Elements */}
                   {currentSlide.inlineQuiz && (
