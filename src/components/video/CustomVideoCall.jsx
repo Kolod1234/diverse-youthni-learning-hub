@@ -21,7 +21,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [remoteStreams, setRemoteStreams] = useState(new Map());
   const [screenStream, setScreenStream] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const [showParticipants, setShowParticipants] = useState(false);
@@ -100,13 +100,20 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       
       console.log('Media stream obtained:', stream.getTracks().map(t => t.kind));
       
+      // Disable video by default
+      const videoTrack = stream.getVideoTracks()[0];
+      if (videoTrack) {
+        videoTrack.enabled = false;
+        console.log('Video track disabled by default');
+      }
+      
       // Immediately attach to video element
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
         localVideoRef.current.muted = true;
         try {
           await localVideoRef.current.play();
-          console.log('✅ Video playing');
+          console.log('✅ Video element ready (camera off)');
         } catch (playError) {
           console.log('Autoplay blocked, will retry');
         }
