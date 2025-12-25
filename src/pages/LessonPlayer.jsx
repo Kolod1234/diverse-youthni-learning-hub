@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { 
   ChevronLeft, ChevronRight, CheckCircle, X, Trophy, Star, Brain, Zap,
-  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare, Award
+  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare, Award, Eye
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
