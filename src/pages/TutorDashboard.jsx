@@ -42,11 +42,15 @@ export default function TutorDashboard() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
-      
-      if (!userData.is_tutor && userData.role !== 'admin') {
-        window.location.href = '/';
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+        
+        if (!userData.is_tutor && userData.role !== 'admin') {
+          window.location.href = createPageUrl('Home');
+        }
+      } catch (error) {
+        console.error('Failed to load user:', error);
       }
     };
     loadUser();

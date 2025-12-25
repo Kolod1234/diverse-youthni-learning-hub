@@ -1,6 +1,7 @@
 import Achievements from './pages/Achievements';
 import AdminDashboard from './pages/AdminDashboard';
 import Analytics from './pages/Analytics';
+import BookSession from './pages/BookSession';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
@@ -27,7 +28,6 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import BookSession from './pages/BookSession';
 import __Layout from './Layout.jsx';
 
 
@@ -35,6 +35,7 @@ export const PAGES = {
     "Achievements": Achievements,
     "AdminDashboard": AdminDashboard,
     "Analytics": Analytics,
+    "BookSession": BookSession,
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
@@ -61,7 +62,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "BookSession": BookSession,
 }
 
 export const pagesConfig = {
