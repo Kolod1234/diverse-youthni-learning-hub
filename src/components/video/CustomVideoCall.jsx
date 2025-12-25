@@ -233,33 +233,69 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
 
     const canvas = canvasRef.current;
     const video = localVideoRef.current;
-    const ctx = canvas.getContext('2d');
+    const ctx = canvas.getContext('2d', { willReadFrequently: true });
 
-    const applyBackground = () => {
-      if (video.videoWidth && video.videoHeight) {
-        canvas.width = video.videoWidth;
-        canvas.height = video.videoHeight;
-
-        ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-        if (virtualBackground === 'blur') {
-          ctx.filter = 'blur(10px)';
-          ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-          ctx.filter = 'none';
-          ctx.drawImage(video, canvas.width * 0.2, canvas.height * 0.2, canvas.width * 0.6, canvas.height * 0.6);
-        } else if (virtualBackground !== 'none') {
-          ctx.fillStyle = virtualBackground;
-          ctx.fillRect(0, 0, canvas.width, canvas.height);
-          ctx.globalAlpha = 0.8;
-          ctx.drawImage(video, canvas.width * 0.1, canvas.height * 0.1, canvas.width * 0.8, canvas.height * 0.8);
-          ctx.globalAlpha = 1.0;
-        }
+    // Wait for video to be ready
+    const startProcessing = () => {
+      if (!video.videoWidth || !video.videoHeight) {
+        setTimeout(startProcessing, 100);
+        return;
       }
 
-      animationFrameRef.current = requestAnimationFrame(applyBackground);
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+
+      const applyBackground = () => {
+        if (!video.paused && !video.ended && video.readyState >= 2) {
+          // Clear canvas
+          ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+          if (virtualBackground === 'blur') {
+            // Apply blur effect
+            ctx.filter = 'blur(15px)';
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.filter = 'none';
+            // Draw sharp center
+            const centerX = canvas.width * 0.15;
+            const centerY = canvas.height * 0.15;
+            const centerW = canvas.width * 0.7;
+            const centerH = canvas.height * 0.7;
+            ctx.drawImage(video, centerX, centerY, centerW, centerH, centerX, centerY, centerW, centerH);
+          } else if (virtualBackground !== 'none') {
+            // Apply colored background
+            ctx.save();
+            // Fill background color
+            if (virtualBackground.includes('gradient')) {
+              const gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+              const colors = virtualBackground.match(/#[0-9a-f]{6}/gi) || [];
+              if (colors.length >= 2) {
+                gradient.addColorStop(0, colors[0]);
+                gradient.addColorStop(1, colors[1]);
+                ctx.fillStyle = gradient;
+              } else {
+                ctx.fillStyle = virtualBackground;
+              }
+            } else {
+              ctx.fillStyle = virtualBackground;
+            }
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw video with transparency/overlay
+            ctx.globalAlpha = 0.9;
+            const margin = canvas.width * 0.1;
+            ctx.drawImage(video, margin, margin, canvas.width - margin * 2, canvas.height - margin * 2);
+            ctx.globalAlpha = 1.0;
+            ctx.restore();
+          }
+        }
+
+        animationFrameRef.current = requestAnimationFrame(applyBackground);
+      };
+
+      applyBackground();
     };
 
-    applyBackground();
+    startProcessing();
 
     return () => {
       if (animationFrameRef.current) {
