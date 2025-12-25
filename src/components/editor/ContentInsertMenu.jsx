@@ -90,6 +90,35 @@ const ELECTRICAL_SYMBOLS = [
   { name: 'Cell', html: '<div class="inline-block p-2 border-2 border-gray-800 rounded">| Cell</div>' },
 ];
 
+const BASIC_SHAPES = [
+  { name: 'Square', html: '<span class="inline-block w-12 h-12 border-2 border-gray-800 mx-1"></span>' },
+  { name: 'Rectangle', html: '<span class="inline-block w-16 h-10 border-2 border-gray-800 mx-1"></span>' },
+  { name: 'Circle', html: '<span class="inline-block w-12 h-12 border-2 border-gray-800 rounded-full mx-1"></span>' },
+  { name: 'Oval', html: '<span class="inline-block w-16 h-10 border-2 border-gray-800 rounded-full mx-1"></span>' },
+  { name: 'Triangle', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-left: 24px solid transparent; border-right: 24px solid transparent; border-bottom: 40px solid #000;"></span>' },
+  { name: 'Triangle (Inverted)', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-left: 24px solid transparent; border-right: 24px solid transparent; border-top: 40px solid #000;"></span>' },
+  { name: 'Diamond', html: '<span class="inline-block w-10 h-10 border-2 border-gray-800 mx-1" style="transform: rotate(45deg);"></span>' },
+  { name: 'Pentagon', html: '<span class="inline-block w-12 h-12 mx-1" style="clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%); background: #000;"></span>' },
+  { name: 'Hexagon', html: '<span class="inline-block w-12 h-12 mx-1" style="clip-path: polygon(25% 0%, 75% 0%, 100% 50%, 75% 100%, 25% 100%, 0% 50%); background: #000;"></span>' },
+  { name: 'Star', html: '<span class="inline-block w-12 h-12 mx-1" style="clip-path: polygon(50% 0%, 61% 35%, 98% 35%, 68% 57%, 79% 91%, 50% 70%, 21% 91%, 32% 57%, 2% 35%, 39% 35%); background: #000;"></span>' },
+  { name: 'Heart', html: '<span class="inline-block text-red-500 text-3xl mx-1">♥</span>' },
+  { name: 'Arrow Right', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-left: 24px solid #000;"></span>' },
+  { name: 'Arrow Left', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-top: 12px solid transparent; border-bottom: 12px solid transparent; border-right: 24px solid #000;"></span>' },
+  { name: 'Arrow Up', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-bottom: 24px solid #000;"></span>' },
+  { name: 'Arrow Down', html: '<span class="inline-block mx-1" style="width: 0; height: 0; border-left: 12px solid transparent; border-right: 12px solid transparent; border-top: 24px solid #000;"></span>' },
+  { name: 'Cross/Plus', html: '<span class="inline-block text-3xl font-bold mx-1">+</span>' },
+  { name: 'Parallelogram', html: '<span class="inline-block w-16 h-10 border-2 border-gray-800 mx-1" style="transform: skew(-20deg);"></span>' },
+  { name: 'Trapezoid', html: '<span class="inline-block mx-1" style="width: 60px; height: 40px; clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); background: #000;"></span>' },
+  { name: 'Crescent', html: '<span class="inline-block text-3xl mx-1">☾</span>' },
+  { name: 'Cloud', html: '<span class="inline-block text-3xl mx-1">☁</span>' },
+  { name: 'Lightning', html: '<span class="inline-block text-3xl mx-1">⚡</span>' },
+  { name: 'Flower', html: '<span class="inline-block text-3xl mx-1">✿</span>' },
+  { name: 'Smiley', html: '<span class="inline-block text-3xl mx-1">☺</span>' },
+  { name: 'Music Note', html: '<span class="inline-block text-3xl mx-1">♪</span>' },
+  { name: 'Checkmark', html: '<span class="inline-block text-green-600 text-3xl font-bold mx-1">✓</span>' },
+  { name: 'X Mark', html: '<span class="inline-block text-red-600 text-3xl font-bold mx-1">✗</span>' },
+];
+
 const SHAPES_3D = [
   { name: 'Cube', html: '<div class="inline-block p-4 m-2 bg-gradient-to-br from-blue-400 to-blue-600 text-white font-bold shadow-lg" style="transform: perspective(500px) rotateY(-15deg);">Cube</div>' },
   { name: 'Sphere', html: '<div class="inline-block w-20 h-20 m-2 rounded-full bg-gradient-to-br from-purple-400 to-purple-600 shadow-lg"></div>' },
@@ -189,6 +218,21 @@ export default function ContentInsertMenu({ onInsert, position = "bottom" }) {
             {ELECTRICAL_SYMBOLS.map((symbol) => (
               <DropdownMenuItem key={symbol.name} onClick={() => onInsert(symbol.html)}>
                 {symbol.name}
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuSubContent>
+        </DropdownMenuSub>
+
+        {/* Basic Shapes */}
+        <DropdownMenuSub>
+          <DropdownMenuSubTrigger>
+            <Square className="w-4 h-4 mr-2" />
+            Basic Shapes
+          </DropdownMenuSubTrigger>
+          <DropdownMenuSubContent className="max-h-96 overflow-y-auto w-56">
+            {BASIC_SHAPES.map((shape) => (
+              <DropdownMenuItem key={shape.name} onClick={() => onInsert(shape.html)}>
+                {shape.name}
               </DropdownMenuItem>
             ))}
           </DropdownMenuSubContent>
