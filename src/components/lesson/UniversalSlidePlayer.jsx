@@ -1,4 +1,6 @@
 import React from 'react';
+import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
+import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl, fileType }) {
   // Handle Google Slides iframe embed
@@ -20,33 +22,31 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
     }
   }
 
-  // Handle Microsoft Office files (PowerPoint, Word)
-  if (fileUrl && (fileType === 'pptx' || fileType === 'docx' || fileType === 'pdf')) {
+  // Handle file-based content (PowerPoint, Word, PDF)
+  if (fileUrl) {
     return (
-      <div className="w-full">
-        <div className="relative w-full bg-gray-100 rounded-lg overflow-hidden" style={{ paddingTop: '75%' }}>
-          <iframe
-            src={`https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`}
-            className="absolute top-0 left-0 w-full h-full border-0"
-            allowFullScreen
-            loading="lazy"
-          />
-        </div>
-      </div>
-    );
-  }
-
-  // Handle PDF files
-  if (fileUrl && fileType === 'pdf') {
-    return (
-      <div className="w-full">
-        <div className="relative w-full bg-gray-100 rounded-lg overflow-hidden" style={{ paddingTop: '141%' }}>
-          <iframe
-            src={fileUrl}
-            className="absolute top-0 left-0 w-full h-full border-0"
-            loading="lazy"
-          />
-        </div>
+      <div className="w-full rounded-lg overflow-hidden bg-white shadow-sm" style={{ height: '70vh', minHeight: '500px' }}>
+        <TransformWrapper
+          initialScale={1}
+          minScale={0.5}
+          maxScale={3}
+          centerOnInit
+        >
+          <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
+            <DocViewer
+              documents={[{ uri: fileUrl }]}
+              pluginRenderers={DocViewerRenderers}
+              style={{ height: "100%" }}
+              config={{
+                header: {
+                  disableHeader: false,
+                  disableFileName: false,
+                  retainURLParams: false
+                }
+              }}
+            />
+          </TransformComponent>
+        </TransformWrapper>
       </div>
     );
   }
