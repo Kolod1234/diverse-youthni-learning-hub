@@ -452,31 +452,31 @@ export default function LessonPlayer() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col">
+    <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex flex-col">
       {/* Top Bar */}
-      <div className="bg-white/10 backdrop-blur-md">
-        <div className="max-w-4xl mx-auto px-4 py-3">
-          <div className="flex items-center justify-between mb-2">
+      <div className="bg-white border-b border-gray-200 shadow-sm">
+        <div className="max-w-6xl mx-auto px-3 sm:px-6 py-3 sm:py-4">
+          <div className="flex items-center justify-between mb-3">
             <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-              <Button variant="ghost" size="sm" className="text-white hover:bg-white/20">
+              <Button variant="ghost" size="sm" className="hover:bg-gray-100">
                 <X className="w-5 h-5" />
               </Button>
             </Link>
             
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-2 sm:gap-3">
               {(currentLesson?.google_slides_url || currentLesson?.slides?.length > 0) && (
-                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/30">
-                  <Eye className="w-4 h-4 text-white" />
+                <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200">
+                  <Eye className="w-4 h-4 text-gray-600" />
                   <select
                     value={viewMode}
                     onChange={(e) => setViewMode(e.target.value)}
-                    className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer"
+                    className="bg-transparent text-gray-700 text-xs sm:text-sm font-medium border-none outline-none cursor-pointer"
                   >
                     {currentLesson?.slides?.length > 0 && (
-                      <option value="slides" className="text-gray-900 bg-white">📄 Slide View</option>
+                      <option value="slides">📄 Slides</option>
                     )}
                     {currentLesson?.google_slides_url && (
-                      <option value="googleslides" className="text-gray-900 bg-white">📊 Google Slides</option>
+                      <option value="googleslides">📊 Google</option>
                     )}
                   </select>
                 </div>
@@ -485,37 +485,37 @@ export default function LessonPlayer() {
                 variant="ghost"
                 size="sm"
                 onClick={handleToggleBookmark}
-                className={`text-white hover:bg-white/20 ${bookmarked ? 'bg-white/20' : ''}`}
+                className={`hover:bg-gray-100 ${bookmarked ? 'bg-blue-50 text-blue-600' : 'text-gray-600'}`}
               >
-                <Bookmark className={`w-5 h-5 ${bookmarked ? 'fill-white' : ''}`} />
+                <Bookmark className={`w-4 sm:w-5 h-4 sm:h-5 ${bookmarked ? 'fill-current' : ''}`} />
               </Button>
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={() => setShowQA(!showQA)}
-                className="text-white hover:bg-white/20"
+                className="hover:bg-gray-100 text-gray-600"
               >
-                <MessageSquare className="w-5 h-5" />
+                <MessageSquare className="w-4 sm:w-5 h-4 sm:h-5" />
               </Button>
-              <div className="flex items-center gap-2 text-white">
-                <Trophy className="w-4 h-4" />
-                <span className="text-sm font-semibold">{enrollment?.progress_percent || 0}%</span>
+              <div className="hidden sm:flex items-center gap-2 bg-gradient-to-r from-indigo-50 to-blue-50 px-3 py-1.5 rounded-lg border border-indigo-200">
+                <Trophy className="w-4 h-4 text-indigo-600" />
+                <span className="text-sm font-semibold text-indigo-700">{enrollment?.progress_percent || 0}%</span>
               </div>
             </div>
           </div>
           
-          <div className="flex items-center gap-2">
-            <Progress value={progressPercent} className="flex-1 h-2 bg-white/20" />
-            <span className="text-xs text-white font-medium">
-              {currentSlideIndex + 1}/{totalSlides}
+          <div className="flex items-center gap-3">
+            <Progress value={progressPercent} className="flex-1 h-2 bg-gray-200" />
+            <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[60px] text-right">
+              {currentSlideIndex + 1} / {totalSlides}
             </span>
           </div>
         </div>
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-2 sm:p-4 lg:p-8 overflow-hidden">
-        <div className="w-full max-w-5xl">
+      <div className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 overflow-hidden">
+        <div className="w-full max-w-6xl">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
@@ -533,53 +533,72 @@ export default function LessonPlayer() {
               onTouchEnd={handleTouchEnd}
               className="touch-pan-y select-none"
             >
-              <Card className="p-4 sm:p-6 md:p-10 lg:p-12 shadow-2xl overflow-hidden">
+              <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white overflow-hidden border-0">
                 {/* Learning Objectives - Show on first slide */}
                 {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
-                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
-                    <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
-                      <Award className="w-5 h-5" />
+                  <motion.div 
+                    initial={{ opacity: 0, y: -10 }}
+                    animate={{ opacity: 1, y: 0 }}
+                    className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 sm:p-6 mb-6 sm:mb-8 rounded-r-xl"
+                  >
+                    <h3 className="font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-base sm:text-lg">
+                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                        <Award className="w-5 h-5 text-white" />
+                      </div>
                       Learning Objectives
                     </h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-2 sm:space-y-3">
                       {currentLesson.learning_objectives.map((objective, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-blue-800 text-sm">
-                          <span className="text-blue-500 mt-0.5 font-bold">✓</span>
-                          <span>{objective}</span>
-                        </li>
+                        <motion.li 
+                          key={idx}
+                          initial={{ opacity: 0, x: -10 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: idx * 0.1 }}
+                          className="flex items-start gap-3 text-blue-900 text-sm sm:text-base"
+                        >
+                          <span className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
+                            {idx + 1}
+                          </span>
+                          <span className="flex-1">{objective}</span>
+                        </motion.li>
                       ))}
                     </ul>
-                  </div>
+                  </motion.div>
                 )}
 
                 {/* Slide Content */}
-                <div className="mb-8">
-                  <div className="flex items-start justify-between mb-4">
+                <div className="mb-6 sm:mb-8">
+                  <div className="flex items-start justify-between mb-4 sm:mb-6">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-white" />
+                      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                          <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
                         </div>
-                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
-                          {currentLesson.section || 'Lesson'}
-                        </span>
+                        <div>
+                          <span className="text-xs sm:text-sm font-bold text-indigo-600 uppercase tracking-wider block">
+                            {currentLesson.section || 'Lesson'}
+                          </span>
+                          <span className="text-xs text-gray-500">Slide {currentSlideIndex + 1} of {totalSlides}</span>
+                        </div>
                       </div>
-                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 break-words">
+                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 break-words leading-tight">
                         {currentSlide.title}
                       </h1>
                       {lessonQuizzes.length > 0 && (
-                        <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
+                        <Button variant="outline" size="sm" className="mt-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
                           <Brain className="w-4 h-4 mr-2" />
-                          Quiz Available ({lessonQuizzes[0].questions?.length} questions)
+                          <span className="hidden sm:inline">Quiz Available</span>
+                          <span className="sm:hidden">Quiz</span>
+                          <span className="ml-1">({lessonQuizzes[0].questions?.length})</span>
                         </Button>
                       )}
                     </div>
                     {isCompleted && (
                       <div className="ml-4 text-right hidden sm:block">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        <div className="w-12 h-12 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
+                          <CheckCircle className="w-7 h-7 text-emerald-600" />
                         </div>
-                        <p className="text-sm font-medium text-emerald-600">Completed</p>
+                        <p className="text-sm font-semibold text-emerald-600">Completed</p>
                       </div>
                     )}
                   </div>
@@ -614,60 +633,60 @@ export default function LessonPlayer() {
 
                 {/* Actions */}
                 {isLastSlide ? (
-                  <div className="space-y-3">
+                  <div className="space-y-3 sm:space-y-4">
                     <Button 
                       onClick={markComplete}
                       disabled={updateEnrollmentMutation.isPending || isCompleted}
-                      className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg disabled:opacity-50"
+                      className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 rounded-xl"
                     >
-                      <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                      <CheckCircle className="w-5 h-5 mr-2" />
                       {isCompleted ? 'Lesson Completed ✓' : 'Complete Lesson'}
                     </Button>
 
                     {nextLesson && (
                       <Button 
                         onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
-                        className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg"
+                        className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all rounded-xl"
                       >
                         Next Lesson
-                        <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
+                        <ArrowRight className="w-5 h-5 ml-2" />
                       </Button>
                     )}
 
                     {lessonQuizzes.length > 0 && (
                       <Button 
                         onClick={() => handleTakeQuiz(lessonQuizzes[0])}
-                        className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
+                        className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all rounded-xl"
                       >
-                        <Brain className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
-                        Take Quiz ({lessonQuizzes[0].questions?.length} questions)
+                        <Brain className="w-5 h-5 mr-2" />
+                        Take Quiz ({lessonQuizzes[0].questions?.length})
                       </Button>
                     )}
 
                     {!nextLesson && (
                       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-                        <Button variant="outline" className="w-full h-12 sm:h-14 text-base sm:text-lg">
-                          <Trophy className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
+                        <Button variant="outline" className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold border-2 hover:bg-gray-50 rounded-xl">
+                          <Trophy className="w-5 h-5 mr-2" />
                           Back to Course
                         </Button>
                       </Link>
                     )}
-                    </div>
-                    ) : (
-                    <Button 
+                  </div>
+                ) : (
+                  <Button 
                     onClick={nextSlide}
-                    className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
-                    >
+                    className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all rounded-xl"
+                  >
                     Continue
-                    <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
-                    </Button>
+                    <ArrowRight className="w-5 h-5 ml-2" />
+                  </Button>
                 )}
               </Card>
             </motion.div>
           </AnimatePresence>
 
           {/* Navigation Dots */}
-          <div className="flex items-center justify-center gap-2 mt-6">
+          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
             {slides.map((_, idx) => (
               <button
                 key={idx}
@@ -677,33 +696,33 @@ export default function LessonPlayer() {
                 }}
                 className={`transition-all ${
                   idx === currentSlideIndex
-                    ? 'w-8 h-2 bg-white'
-                    : 'w-2 h-2 bg-white/40 hover:bg-white/60'
+                    ? 'w-8 h-2 bg-indigo-600'
+                    : 'w-2 h-2 bg-gray-300 hover:bg-gray-400'
                 } rounded-full`}
               />
             ))}
           </div>
 
           {/* Arrow Buttons */}
-          <div className="flex items-center justify-between mt-6 px-4">
+          <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4">
             <Button
               onClick={prevSlide}
               disabled={currentSlideIndex === 0}
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="text-white hover:bg-white/20 disabled:opacity-30 w-12 h-12"
+              className="hover:bg-gray-50 disabled:opacity-30 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 shadow-sm"
             >
-              <ArrowLeft className="w-6 h-6" />
+              <ArrowLeft className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
             
             <Button
               onClick={nextSlide}
               disabled={currentSlideIndex === totalSlides - 1}
-              variant="ghost"
+              variant="outline"
               size="icon"
-              className="text-white hover:bg-white/20 disabled:opacity-30 w-12 h-12"
+              className="hover:bg-gray-50 disabled:opacity-30 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 shadow-sm"
             >
-              <ArrowRight className="w-6 h-6" />
+              <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
             </Button>
           </div>
 
