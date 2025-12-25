@@ -415,6 +415,25 @@ export default function LessonPlayer() {
   const currentSlide = slides[currentSlideIndex];
   const isLastSlide = currentSlideIndex === totalSlides - 1;
 
+  // Safety check for currentSlide
+  if (!currentSlide && !lessonsLoading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-8 text-center">
+          <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-bold text-gray-900 mb-2">No Content Available</h2>
+          <p className="text-gray-600 mb-6">This lesson doesn't have slides yet.</p>
+          <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
+              <Home className="w-4 h-4 mr-2" />
+              Back to Course
+            </Button>
+          </Link>
+        </Card>
+      </div>
+    );
+  }
+
   const slideVariants = {
     enter: (direction) => ({
       x: direction > 0 ? 1000 : -1000,
