@@ -1,9 +1,45 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
+import { toPng, toJpeg } from 'html-to-image';
+import { Button } from '@/components/ui/button';
+import { Download, Image as ImageIcon } from 'lucide-react';
 
 export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl, fileType }) {
   const [processedContent, setProcessedContent] = useState(content);
+  const [isExporting, setIsExporting] = useState(false);
+  const slideRef = useRef(null);
+
+  // Export slide as image
+  const exportAsImage = async (format = 'png') => {
+    if (!slideRef.current) return;
+    
+    setIsExporting(true);
+    try {
+      const dataUrl = format === 'png' 
+        ? await toPng(slideRef.current, { 
+            quality: 1.0,
+            pixelRatio: 2,
+            cacheBust: true,
+            backgroundColor: '#ffffff'
+          })
+        : await toJpeg(slideRef.current, { 
+            quality: 0.95,
+            pixelRatio: 2,
+            cacheBust: true,
+            backgroundColor: '#ffffff'
+          });
+      
+      const link = document.createElement('a');
+      link.download = `slide-${Date.now()}.${format}`;
+      link.href = dataUrl;
+      link.click();
+    } catch (error) {
+      console.error('Failed to export slide:', error);
+    } finally {
+      setIsExporting(false);
+    }
+  };
 
   // Convert images to base64 for better compatibility
   useEffect(() => {
@@ -104,6 +140,28 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
   if (processedContent) {
     return (
       <div className="w-full rounded-lg overflow-hidden">
+        <div className="flex justify-end gap-2 mb-3">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportAsImage('png')}
+            disabled={isExporting}
+            className="flex items-center gap-2"
+          >
+            <ImageIcon className="w-4 h-4" />
+            {isExporting ? 'Exporting...' : 'Export PNG'}
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => exportAsImage('jpeg')}
+            disabled={isExporting}
+            className="flex items-center gap-2"
+          >
+            <Download className="w-4 h-4" />
+            {isExporting ? 'Exporting...' : 'Export JPG'}
+          </Button>
+        </div>
         <style dangerouslySetInnerHTML={{ __html: `
           .slide-content-wrapper {
             width: 100%;
@@ -211,6 +269,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
         >
           <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
             <div 
+              ref={slideRef}
               className="slide-content-wrapper"
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />

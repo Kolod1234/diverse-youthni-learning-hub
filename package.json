@@ -97,7 +97,8 @@
     "@tiptap/extension-gapcursor": "^2.1.13",
     "@cyntler/react-doc-viewer": "^1.16.2",
     "react-zoom-pan-pinch": "^3.4.4",
-    "dom-to-image-more": "^3.0.0"
+    "dom-to-image-more": "^3.0.0",
+    "html-to-image": "^1.11.11"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
