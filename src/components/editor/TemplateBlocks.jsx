@@ -675,7 +675,7 @@ export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }
                       onClick={() => {
                         if (isColumnBlock && onConvertToColumns) {
                           const cols = block.name.includes('Two') ? 2 : block.name.includes('Three') ? 3 : 4;
-                          onConvertToColumns(cols, block.html);
+                          onConvertToColumns(cols);
                           onClose();
                         } else {
                           onInsert(block.html);
