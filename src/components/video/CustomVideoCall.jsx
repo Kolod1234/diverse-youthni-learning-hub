@@ -343,7 +343,27 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     }
   };
 
-  const toggleVideo = () => {
+  // Ensure video plays when stream or video state changes
+  useEffect(() => {
+    const ensureVideoPlaying = async () => {
+      if (localStream && localVideoRef.current && !isVideoOff) {
+        const videoTracks = localStream.getVideoTracks();
+        if (videoTracks.length > 0 && videoTracks[0].enabled) {
+          try {
+            if (localVideoRef.current.paused) {
+              await localVideoRef.current.play();
+            }
+          } catch (err) {
+            console.error('Error ensuring video plays:', err);
+          }
+        }
+      }
+    };
+    
+    ensureVideoPlaying();
+  }, [localStream, isVideoOff]);
+
+  const toggleVideo = async () => {
     if (!localStream) {
       console.warn('No local stream available');
       return;
@@ -354,7 +374,19 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       const videoTrack = videoTracks[0];
       videoTrack.enabled = !videoTrack.enabled;
       setIsVideoOff(!videoTrack.enabled);
-      console.log('Video toggled:', videoTrack.enabled ? 'ON' : 'OFF');
+      
+      // Force video element to restart when turning camera back on
+      if (videoTrack.enabled && localVideoRef.current) {
+        try {
+          localVideoRef.current.srcObject = localStream;
+          await localVideoRef.current.play();
+          console.log('Video toggled ON and restarted');
+        } catch (err) {
+          console.error('Error restarting video:', err);
+        }
+      } else {
+        console.log('Video toggled OFF');
+      }
     } else {
       console.error('No video track found');
     }
