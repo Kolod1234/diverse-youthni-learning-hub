@@ -152,6 +152,16 @@ Deno.serve(async (req) => {
         const slideWidth = presentation.pageSize?.width?.magnitude || 720;
         const slideHeight = presentation.pageSize?.height?.magnitude || 405;
 
+        // Get slide background
+        let slideBackground = 'white';
+        if (slide.slideProperties?.pageBackgroundFill?.solidFill?.color?.rgbColor) {
+          const bg = slide.slideProperties.pageBackgroundFill.solidFill.color.rgbColor;
+          const r = Math.round((bg.red || 0) * 255);
+          const g = Math.round((bg.green || 0) * 255);
+          const b = Math.round((bg.blue || 0) * 255);
+          slideBackground = `rgb(${r},${g},${b})`;
+        }
+
         // Extract all elements with positioning
         if (slide.pageElements) {
           for (let i = 0; i < slide.pageElements.length; i++) {
@@ -213,20 +223,28 @@ Deno.serve(async (req) => {
                   title = text.replace(/<[^>]*>/g, '').trim();
                 }
                 
-                // Get background color if any
-                let bgStyle = '';
+                // Get text box styling
+                let boxStyle = '';
                 if (element.shape.shapeProperties?.shapeBackgroundFill?.solidFill) {
                   const bgColor = element.shape.shapeProperties.shapeBackgroundFill.solidFill.color?.rgbColor;
                   if (bgColor) {
                     const r = Math.round((bgColor.red || 0) * 255);
                     const g = Math.round((bgColor.green || 0) * 255);
                     const b = Math.round((bgColor.blue || 0) * 255);
-                    bgStyle = `background-color: rgb(${r},${g},${b}); padding: 10px;`;
+                    boxStyle += `background-color: rgb(${r},${g},${b}); `;
                   }
                 }
                 
+                // Get text alignment
+                const alignment = element.shape.text?.textElements?.[0]?.paragraphMarker?.style?.alignment;
+                if (alignment === 'CENTER') boxStyle += 'text-align: center; ';
+                else if (alignment === 'END') boxStyle += 'text-align: right; ';
+                else boxStyle += 'text-align: left; ';
+                
+                boxStyle += 'display: flex; align-items: center; overflow-wrap: break-word; word-wrap: break-word;';
+                
                 elements.push(`
-                  <div style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; ${bgStyle}">
+                  <div style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; ${boxStyle}">
                     ${text}
                   </div>
                 `);
@@ -294,7 +312,7 @@ Deno.serve(async (req) => {
 
         // Create positioned content container
         const content = `
-          <div style="position: relative; width: 100%; padding-top: ${(slideHeight/slideWidth)*100}%; background: white; overflow: hidden;">
+          <div style="position: relative; width: 100%; padding-top: ${(slideHeight/slideWidth)*100}%; background: ${slideBackground}; overflow: hidden;">
             <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
               ${elements.join('\n')}
             </div>
