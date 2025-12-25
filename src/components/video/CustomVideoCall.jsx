@@ -801,8 +801,6 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                   <FileText className="w-5 h-5 mr-2" />
                   Notes
                 </Button>
-              </>
-            )}
                 
                 {/* Reactions */}
                 <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2">
