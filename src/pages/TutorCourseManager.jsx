@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain, LayoutTemplate } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain, LayoutTemplate, Award } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
@@ -321,8 +321,14 @@ export default function TutorCourseManager() {
                                               {lesson.slides.length} slides
                                             </Badge>
                                           )}
-                                        </div>
-                                        <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
+                                          {lesson.learning_objectives?.length > 0 && (
+                                            <Badge variant="secondary" className="text-xs bg-blue-100 text-blue-700">
+                                              <Award className="w-3 h-3 mr-1" />
+                                              {lesson.learning_objectives.length} objectives
+                                            </Badge>
+                                          )}
+                                          </div>
+                                          <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
                                         <Button 
@@ -596,6 +602,58 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
         <p className="text-xs text-gray-500 mt-3">
           Upload PDFs, slides, code files, worksheets, or any other materials students need
         </p>
+      </div>
+
+      {/* Learning Objectives */}
+      <div className="bg-white rounded-lg border border-gray-200 p-4">
+        <h3 className="font-semibold text-gray-900 mb-4">Learning Objectives (CCEA)</h3>
+        <p className="text-sm text-gray-600 mb-3">What will students learn in this lesson?</p>
+
+        <div className="space-y-2">
+          {(formData.learning_objectives || []).map((objective, idx) => (
+            <div key={idx} className="flex items-start gap-2">
+              <input
+                type="text"
+                value={objective}
+                onChange={(e) => {
+                  const newObjectives = [...(formData.learning_objectives || [])];
+                  newObjectives[idx] = e.target.value;
+                  setFormData({ ...formData, learning_objectives: newObjectives });
+                }}
+                placeholder="e.g., Describe the structure and function of cells"
+                className="flex-1 px-3 py-2 border border-gray-300 rounded-lg text-sm"
+              />
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  const newObjectives = (formData.learning_objectives || []).filter((_, i) => i !== idx);
+                  setFormData({ ...formData, learning_objectives: newObjectives });
+                }}
+                className="h-10"
+              >
+                <X className="w-4 h-4" />
+              </Button>
+            </div>
+          ))}
+
+          <Button
+            type="button"
+            variant="outline"
+            size="sm"
+            onClick={() => {
+              setFormData({
+                ...formData,
+                learning_objectives: [...(formData.learning_objectives || []), '']
+              });
+            }}
+            className="w-full"
+          >
+            <Plus className="w-4 h-4 mr-2" />
+            Add Learning Objective
+          </Button>
+        </div>
       </div>
 
       {/* Options */}
