@@ -148,9 +148,10 @@ Deno.serve(async (req) => {
         let title = 'Untitled Slide';
         let content = '';
 
-        // Extract text from slide elements
+        // Extract text and images from slide elements
         if (slide.pageElements) {
           for (const element of slide.pageElements) {
+            // Extract text from shapes
             if (element.shape && element.shape.text) {
               const text = element.shape.text.textElements
                 .map((te) => te.textRun?.content || '')
@@ -162,6 +163,14 @@ Deno.serve(async (req) => {
               } else if (text.trim()) {
                 content += `<p>${text.trim()}</p>`;
               }
+            }
+            
+            // Extract images
+            if (element.image && element.image.contentUrl) {
+              const imageUrl = element.image.contentUrl;
+              const width = element.size?.width?.magnitude || 400;
+              const height = element.size?.height?.magnitude || 300;
+              content += `<img src="${imageUrl}" alt="Slide image" style="max-width: 100%; height: auto;" />`;
             }
           }
         }
