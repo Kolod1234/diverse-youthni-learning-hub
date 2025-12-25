@@ -14,35 +14,60 @@ export default function GoogleSlidePlayer({ content }) {
     );
   }
 
-  // Google Slides content - render in proper container
+  // Google Slides content - render in proper container with fixed layout
   return (
-    <div className="w-full mx-auto" style={{ maxWidth: '100%' }}>
+    <div className="w-full mx-auto overflow-hidden" style={{ maxWidth: '100%' }}>
+      <style dangerouslySetInnerHTML={{ __html: `
+        .google-slide-container {
+          width: 100% !important;
+          height: auto !important;
+          max-width: 100% !important;
+          overflow-x: hidden !important;
+          overflow-y: auto !important;
+          isolation: isolate;
+        }
+        
+        .google-slide-container > div {
+          width: 100% !important;
+          max-width: 100% !important;
+        }
+        
+        .google-slide-container * {
+          box-sizing: border-box !important;
+        }
+        
+        .google-slide-container img {
+          max-width: 100% !important;
+          height: auto !important;
+          object-fit: contain !important;
+        }
+        
+        .google-slide-container div[style*="position: absolute"] {
+          overflow: visible !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+        
+        .google-slide-container h1,
+        .google-slide-container h2,
+        .google-slide-container h3 {
+          line-height: 1.4 !important;
+          margin-bottom: 0.5rem !important;
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+        
+        .google-slide-container p,
+        .google-slide-container span,
+        .google-slide-container div {
+          word-wrap: break-word !important;
+          overflow-wrap: break-word !important;
+        }
+      `}} />
       <div 
         className="google-slide-container"
         dangerouslySetInnerHTML={{ __html: content }}
-        style={{
-          width: '100%',
-          fontSize: '16px',
-          lineHeight: '1.4',
-        }}
       />
-      <style jsx>{`
-        .google-slide-container {
-          isolation: isolate;
-        }
-        .google-slide-container * {
-          box-sizing: border-box;
-        }
-        .google-slide-container img {
-          max-width: 100%;
-          height: auto;
-        }
-        .google-slide-container div[style*="position: absolute"] {
-          display: flex;
-          align-items: flex-start;
-          overflow: visible;
-        }
-      `}</style>
     </div>
   );
 }
