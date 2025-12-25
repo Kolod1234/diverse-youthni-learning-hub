@@ -144,26 +144,7 @@ export default function LessonPlayer() {
     setBookmarked(isBookmarked);
   }, [bookmarks, currentSlideIndex]);
 
-  // Touch handlers for mobile swipe
-  const [touchStart, setTouchStart] = useState(0);
-  const [touchEnd, setTouchEnd] = useState(0);
 
-  const handleTouchStart = (e) => {
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const handleTouchEnd = () => {
-    if (touchStart - touchEnd > 75) {
-      nextSlide();
-    }
-    if (touchStart - touchEnd < -75) {
-      prevSlide();
-    }
-  };
 
   const nextSlide = () => {
     if (currentSlideIndex < totalSlides - 1) {
@@ -527,11 +508,7 @@ export default function LessonPlayer() {
               transition={{
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 }
-              }}
-              onTouchStart={handleTouchStart}
-              onTouchMove={handleTouchMove}
-              onTouchEnd={handleTouchEnd}
-              className="touch-pan-y select-none"
+              }
             >
               <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white overflow-hidden border-0">
                 {/* Learning Objectives - Show on first slide */}
