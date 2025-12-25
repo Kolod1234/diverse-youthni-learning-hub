@@ -538,7 +538,10 @@ export default function LessonPlayer() {
                     )}
                   </div>
 
-                  <GoogleSlidePlayer content={currentSlide.content} />
+                  <GoogleSlidePlayer 
+                    content={currentSlide.content}
+                    googleSlidesUrl={currentLesson?.google_slides_url}
+                  />
 
                   {/* Interactive Elements */}
                   {currentSlide.inlineQuiz && (

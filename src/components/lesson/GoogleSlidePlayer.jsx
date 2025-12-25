@@ -1,6 +1,22 @@
 import React from 'react';
 
-export default function GoogleSlidePlayer({ content }) {
+export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
+  // If Google Slides URL is provided, use iframe embed
+  if (googleSlidesUrl) {
+    const presentationId = googleSlidesUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+    if (presentationId) {
+      return (
+        <div className="relative w-full overflow-hidden rounded-lg shadow-lg" style={{ paddingTop: '56.25%' }}>
+          <iframe 
+            src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
+            className="absolute top-0 left-0 w-full h-full border-0"
+            allowFullScreen
+          />
+        </div>
+      );
+    }
+  }
+
   // Check if this is Google Slides content (has the positioned container structure)
   const isGoogleSlideContent = content?.includes('position: relative') && content?.includes('padding-top:');
   

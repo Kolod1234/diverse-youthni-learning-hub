@@ -749,34 +749,71 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
       <div className="bg-white rounded-lg border border-gray-200 p-4">
         <div className="flex items-center justify-between mb-4">
           <h3 className="font-semibold text-gray-900">Written Lesson Content (Slides)</h3>
-          {formData.slides?.length > 0 && (
-            <Button
-              onClick={onSave}
-              disabled={isSaving}
-              size="sm"
-              className="bg-indigo-600"
+          <div className="flex items-center gap-2">
+            <select
+              value={formData.content_type || 'richtext'}
+              onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}
+              className="px-3 py-1.5 text-sm border rounded-lg"
             >
-              {isSaving ? (
-                <>
-                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                  Saving...
-                </>
-              ) : (
-                <>
-                  <Save className="w-4 h-4 mr-2" />
-                  Save Lesson
-                </>
-              )}
-            </Button>
-          )}
+              <option value="richtext">Rich Text Editor</option>
+              <option value="googleslides">Google Slides</option>
+            </select>
+            {formData.slides?.length > 0 && formData.content_type === 'richtext' && (
+              <Button
+                onClick={onSave}
+                disabled={isSaving}
+                size="sm"
+                className="bg-indigo-600"
+              >
+                {isSaving ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Saving...
+                  </>
+                ) : (
+                  <>
+                    <Save className="w-4 h-4 mr-2" />
+                    Save Lesson
+                  </>
+                )}
+              </Button>
+            )}
+          </div>
         </div>
-        <SlideEditor
-          slides={formData.slides || []}
-          onChange={(slides) => setFormData({ ...formData, slides })}
-        />
-        <p className="text-xs text-gray-500 mt-3">
-          Create multi-page written lessons like Open University. Perfect for mixing videos with detailed text content!
-        </p>
+
+        {formData.content_type === 'googleslides' ? (
+          <div className="space-y-3">
+            <div>
+              <Label>Google Slides Presentation URL</Label>
+              <Input
+                placeholder="https://docs.google.com/presentation/d/..."
+                value={formData.google_slides_url || ''}
+                onChange={(e) => setFormData({ ...formData, google_slides_url: e.target.value })}
+                className="mb-2"
+              />
+            </div>
+            {formData.google_slides_url && (
+              <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                <p className="text-sm text-green-800">
+                  ✓ Google Slides URL configured. Students will see the presentation embedded in the lesson player.
+                </p>
+              </div>
+            )}
+            <p className="text-xs text-gray-500">
+              Students will see your Google Slides presentation embedded directly in the lesson player with perfect layout preservation.
+            </p>
+          </div>
+        ) : (
+          <>
+            <SlideEditor
+              slides={formData.slides || []}
+              onChange={(slides) => setFormData({ ...formData, slides })}
+            />
+            <p className="text-xs text-gray-500 mt-3">
+              Create multi-page written lessons like Open University. Perfect for mixing videos with detailed text content!
+            </p>
+          </>
+        )}
       </div>
 
       {/* Supplementary Materials */}
