@@ -37,15 +37,6 @@ export default function LessonPlayer() {
   const [bookmarked, setBookmarked] = useState(false);
   const [viewMode, setViewMode] = useState('slides'); // 'slides' or 'googleslides'
 
-  // Auto-detect view mode based on content
-  useEffect(() => {
-    if (currentLesson?.content_type === 'googleslides' && currentLesson?.google_slides_url) {
-      setViewMode('googleslides');
-    } else {
-      setViewMode('slides');
-    }
-  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url]);
-
   // Load user
   useEffect(() => {
     const loadUser = async () => {
@@ -95,6 +86,15 @@ export default function LessonPlayer() {
   const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
   const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
   const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
+
+  // Auto-detect view mode based on content
+  useEffect(() => {
+    if (currentLesson?.content_type === 'googleslides' && currentLesson?.google_slides_url) {
+      setViewMode('googleslides');
+    } else {
+      setViewMode('slides');
+    }
+  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url]);
 
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['course-quizzes', courseId],
