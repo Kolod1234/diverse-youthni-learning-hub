@@ -8,11 +8,12 @@ import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   LayoutTemplate, Plus, Search, Trash2, Eye, Copy, 
-  Filter, Star, FileText, Award, ClipboardList
+  Filter, Star, FileText, Award, ClipboardList, Sparkles
 } from 'lucide-react';
 import { toast } from 'sonner';
 import TemplateCreator from '@/components/templates/TemplateCreator';
 import TemplatePreview from '@/components/templates/TemplatePreview';
+import AITemplateGenerator from '@/components/templates/AITemplateGenerator';
 
 const CATEGORY_CONFIG = {
   lesson: { icon: FileText, color: 'bg-blue-100 text-blue-700', label: 'Lesson' },
@@ -26,6 +27,7 @@ export default function Templates() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [showCreator, setShowCreator] = useState(false);
+  const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [previewTemplate, setPreviewTemplate] = useState(null);
   const queryClient = useQueryClient();
 
@@ -105,13 +107,22 @@ export default function Templates() {
             </h1>
             <p className="text-gray-500 mt-2">Save and reuse your best content layouts</p>
           </div>
-          <Button 
-            onClick={() => setShowCreator(true)}
-            className="bg-indigo-600 hover:bg-indigo-700"
-          >
-            <Plus className="w-4 h-4 mr-2" />
-            Create Template
-          </Button>
+          <div className="flex gap-2">
+            <Button 
+              onClick={() => setShowAIGenerator(true)}
+              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700"
+            >
+              <Sparkles className="w-4 h-4 mr-2" />
+              AI Generate
+            </Button>
+            <Button 
+              onClick={() => setShowCreator(true)}
+              className="bg-indigo-600 hover:bg-indigo-700"
+            >
+              <Plus className="w-4 h-4 mr-2" />
+              Create Template
+            </Button>
+          </div>
         </div>
 
         {/* Filters */}
@@ -284,6 +295,17 @@ export default function Templates() {
           onUse={() => {
             handleUseTemplate(previewTemplate);
             setPreviewTemplate(null);
+          }}
+        />
+      )}
+
+      {/* AI Template Generator */}
+      {showAIGenerator && (
+        <AITemplateGenerator
+          onClose={() => setShowAIGenerator(false)}
+          onTemplateGenerated={() => {
+            queryClient.invalidateQueries(['templates']);
+            setShowAIGenerator(false);
           }}
         />
       )}
