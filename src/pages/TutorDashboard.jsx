@@ -10,7 +10,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { 
   Plus, BookOpen, Users, MessageSquare, ClipboardList, 
-  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award, Video, Calendar, Clock
+  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award, Video, Calendar, Clock, PlayCircle
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -758,8 +758,26 @@ function AnalyticsTab({ courses, enrollments }) {
 }
 
 function LiveSessionsTab({ videoSessions, courses }) {
+  const queryClient = useQueryClient();
   const upcomingSessions = videoSessions.filter(s => s.status === 'scheduled');
-  const completedSessions = videoSessions.filter(s => s.status === 'completed');
+  const liveSessions = videoSessions.filter(s => s.status === 'live');
+  const completedSessions = videoSessions.filter(s => s.status === 'completed' || s.status === 'cancelled');
+
+  const deleteSessionMutation = useMutation({
+    mutationFn: (sessionId) => base44.entities.VideoSession.delete(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['video-sessions']);
+      toast.success('Session deleted');
+    },
+  });
+
+  const resumeSessionMutation = useMutation({
+    mutationFn: (sessionId) => base44.entities.VideoSession.update(sessionId, { status: 'live' }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['video-sessions']);
+      toast.success('Session resumed');
+    },
+  });
 
   return (
     <div className="space-y-6">
@@ -818,6 +836,44 @@ function LiveSessionsTab({ videoSessions, courses }) {
         </div>
       )}
 
+      {liveSessions.length > 0 && (
+        <div>
+          <h3 className="font-medium text-gray-900 mb-3">Live Sessions</h3>
+          <div className="space-y-3">
+            {liveSessions.map(session => {
+              const course = courses.find(c => c.id === session.course_id);
+              return (
+                <Card key={session.id} className="p-4 border-2 border-red-200 bg-red-50">
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-start gap-3 flex-1">
+                      <div className="w-12 h-12 bg-gradient-to-br from-red-500 to-orange-600 rounded-lg flex items-center justify-center animate-pulse">
+                        <Video className="w-6 h-6 text-white" />
+                      </div>
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2">
+                          <h4 className="font-semibold text-gray-900">{session.title}</h4>
+                          <Badge className="bg-red-500 text-white">🔴 LIVE</Badge>
+                        </div>
+                        <p className="text-sm text-gray-600 mb-1">{course?.title}</p>
+                        <p className="text-xs text-gray-500">
+                          {new Date(session.scheduled_date).toLocaleDateString()} at {session.scheduled_time}
+                        </p>
+                      </div>
+                    </div>
+                    <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
+                      <Button className="bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700">
+                        <PlayCircle className="w-4 h-4 mr-2" />
+                        Resume Session
+                      </Button>
+                    </Link>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {completedSessions.length > 0 && (
         <div>
           <h3 className="font-medium text-gray-900 mb-3">Past Sessions</h3>
@@ -839,7 +895,32 @@ function LiveSessionsTab({ videoSessions, courses }) {
                         </p>
                       </div>
                     </div>
-                    <Badge variant="secondary">Completed</Badge>
+                    <div className="flex items-center gap-2">
+                      <Badge variant="secondary">{session.status === 'cancelled' ? 'Cancelled' : 'Completed'}</Badge>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          resumeSessionMutation.mutate(session.id);
+                        }}
+                        disabled={resumeSessionMutation.isPending}
+                      >
+                        <PlayCircle className="w-4 h-4 mr-1" />
+                        Resume
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Delete this session? This cannot be undone.')) {
+                            deleteSessionMutation.mutate(session.id);
+                          }
+                        }}
+                        disabled={deleteSessionMutation.isPending}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               );
