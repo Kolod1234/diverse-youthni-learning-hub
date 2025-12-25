@@ -1606,6 +1606,82 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             border-color: #4f46e5;
             transform: scale(1.05);
           }
+
+          /* Drag and Drop Styles */
+          .rich-text-editor-wrapper .ProseMirror .ProseMirror-gapcursor {
+            pointer-events: none;
+            position: relative;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror .ProseMirror-gapcursor:after {
+            content: "";
+            display: block;
+            position: absolute;
+            top: -2px;
+            width: 20px;
+            border-top: 2px solid #6366F1;
+            animation: ProseMirror-cursor-blink 1.1s steps(2, start) infinite;
+          }
+
+          @keyframes ProseMirror-cursor-blink {
+            to { visibility: hidden; }
+          }
+
+          .rich-text-editor-wrapper .ProseMirror-dropcursor {
+            position: absolute;
+            pointer-events: none;
+            border-left: 4px solid #6366F1;
+            margin-left: -2px;
+            height: 1.2em;
+            animation: dropcursor-blink 0.8s ease-in-out infinite;
+          }
+
+          @keyframes dropcursor-blink {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.3; }
+          }
+
+          .rich-text-editor-wrapper .ProseMirror [draggable="true"] {
+            cursor: move;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror [draggable="true"]:hover {
+            outline: 2px solid #6366F1;
+            outline-offset: 2px;
+            border-radius: 8px;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror [data-drag-handle]:before {
+            content: "⋮⋮";
+            position: absolute;
+            left: -20px;
+            top: 50%;
+            transform: translateY(-50%);
+            font-size: 18px;
+            color: #9CA3AF;
+            opacity: 0;
+            transition: opacity 0.2s;
+            cursor: move;
+            line-height: 1;
+            letter-spacing: -2px;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror [data-drag-handle]:hover:before {
+            opacity: 1;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror .dragging {
+            opacity: 0.5;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror p {
+            position: relative;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror p:hover {
+            background: rgba(99, 102, 241, 0.03);
+            border-radius: 4px;
+          }
         `}
       </style>
       
