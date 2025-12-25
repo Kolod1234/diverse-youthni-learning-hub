@@ -327,22 +327,36 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   };
 
   const toggleMute = () => {
-    if (localStream) {
-      const audioTrack = localStream.getAudioTracks()[0];
-      if (audioTrack) {
-        audioTrack.enabled = !audioTrack.enabled;
-        setIsMuted(!audioTrack.enabled);
-      }
+    if (!localStream) {
+      console.warn('No local stream available');
+      return;
+    }
+    
+    const audioTracks = localStream.getAudioTracks();
+    if (audioTracks.length > 0) {
+      const audioTrack = audioTracks[0];
+      audioTrack.enabled = !audioTrack.enabled;
+      setIsMuted(!audioTrack.enabled);
+      console.log('Audio toggled:', audioTrack.enabled ? 'ON' : 'OFF');
+    } else {
+      console.error('No audio track found');
     }
   };
 
   const toggleVideo = () => {
-    if (localStream) {
-      const videoTrack = localStream.getVideoTracks()[0];
-      if (videoTrack) {
-        videoTrack.enabled = !videoTrack.enabled;
-        setIsVideoOff(!videoTrack.enabled);
-      }
+    if (!localStream) {
+      console.warn('No local stream available');
+      return;
+    }
+    
+    const videoTracks = localStream.getVideoTracks();
+    if (videoTracks.length > 0) {
+      const videoTrack = videoTracks[0];
+      videoTrack.enabled = !videoTrack.enabled;
+      setIsVideoOff(!videoTrack.enabled);
+      console.log('Video toggled:', videoTrack.enabled ? 'ON' : 'OFF');
+    } else {
+      console.error('No video track found');
     }
   };
 
