@@ -1310,6 +1310,31 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           handleImageReplace(node, nodePos);
         }
       },
+      handlePaste: (view, event, slice) => {
+        const items = Array.from(event.clipboardData?.items || []);
+        const imageItem = items.find(item => item.type.indexOf('image') === 0);
+
+        if (imageItem) {
+          event.preventDefault();
+          const file = imageItem.getAsFile();
+          if (file) {
+            handleImagePaste(file);
+          }
+          return true;
+        }
+        return false;
+      },
+      handleDrop: (view, event, slice, moved) => {
+        if (!moved && event.dataTransfer && event.dataTransfer.files && event.dataTransfer.files[0]) {
+          const file = event.dataTransfer.files[0];
+          if (file.type.indexOf('image') === 0) {
+            event.preventDefault();
+            handleImagePaste(file);
+            return true;
+          }
+        }
+        return false;
+      },
     },
   }, []);
 
@@ -1373,6 +1398,25 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     input.click();
   }, [editor]);
 
+  const handleImagePaste = useCallback(async (file) => {
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please paste an image file');
+      return;
+    }
+    
+    const loadingToast = toast.loading('Uploading pasted image...');
+    
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      editor?.chain().focus().setImage({ src: file_url }).run();
+      toast.dismiss(loadingToast);
+      toast.success('Image pasted!');
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error('Failed to upload image');
+    }
+  }, [editor]);
+
   const addLink = useCallback(() => {
     const url = window.prompt('Enter URL:');
     if (url) {
@@ -1410,6 +1454,33 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       editor.commands.setContent(value);
     }
   }, [value, editor]);
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    if (!editor) return;
+
+    const handleKeyDown = (e) => {
+      // Ctrl/Cmd + Z for undo
+      if ((e.ctrlKey || e.metaKey) && e.key === 'z' && !e.shiftKey) {
+        e.preventDefault();
+        editor.chain().focus().undo().run();
+      }
+      // Ctrl/Cmd + Shift + Z or Ctrl/Cmd + Y for redo
+      if (((e.ctrlKey || e.metaKey) && e.shiftKey && e.key === 'z') || 
+          ((e.ctrlKey || e.metaKey) && e.key === 'y')) {
+        e.preventDefault();
+        editor.chain().focus().redo().run();
+      }
+      // Delete or Backspace on selected nodes
+      if ((e.key === 'Delete' || e.key === 'Backspace') && editor.state.selection.node) {
+        e.preventDefault();
+        editor.chain().focus().deleteSelection().run();
+      }
+    };
+
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  }, [editor]);
 
   // Close dropdowns when clicking outside
   useEffect(() => {
@@ -1681,6 +1752,17 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           .rich-text-editor-wrapper .ProseMirror p:hover {
             background: rgba(99, 102, 241, 0.03);
             border-radius: 4px;
+          }
+
+          /* Selection and deletion styles */
+          .rich-text-editor-wrapper .ProseMirror .ProseMirror-selectednode {
+            outline: 3px solid #6366F1;
+            outline-offset: 2px;
+            border-radius: 8px;
+          }
+
+          .rich-text-editor-wrapper .ProseMirror img.ProseMirror-selectednode {
+            box-shadow: 0 0 0 3px #6366F1;
           }
         `}
       </style>
