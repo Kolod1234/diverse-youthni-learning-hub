@@ -24,6 +24,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [isVideoOff, setIsVideoOff] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showChat, setShowChat] = useState(true);
+  const chatEndRef = useRef(null);
   const [showParticipants, setShowParticipants] = useState(false);
   const [chatMessages, setChatMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
@@ -369,6 +370,11 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     
     ensureVideoPlaying();
   }, [localStream, isVideoOff]);
+
+  // Auto-scroll chat to bottom when new messages arrive
+  useEffect(() => {
+    chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [chatMessages]);
 
   const toggleVideo = async () => {
     if (!localStream) {
@@ -963,15 +969,18 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                   No messages yet. Start the conversation!
                 </p>
               ) : (
-                chatMessages.map(msg => (
-                  <div key={msg.id} className="bg-gray-700 rounded-lg p-3">
-                    <div className="flex items-center justify-between mb-1">
-                      <span className="text-white font-medium text-sm">{msg.sender}</span>
-                      <span className="text-gray-400 text-xs">{msg.timestamp}</span>
+                <>
+                  {chatMessages.map(msg => (
+                    <div key={msg.id} className="bg-gray-700 rounded-lg p-3">
+                      <div className="flex items-center justify-between mb-1">
+                        <span className="text-white font-medium text-sm">{msg.sender}</span>
+                        <span className="text-gray-400 text-xs">{msg.timestamp}</span>
+                      </div>
+                      <p className="text-gray-200 text-sm break-words">{msg.message}</p>
                     </div>
-                    <p className="text-gray-200 text-sm">{msg.message}</p>
-                  </div>
-                ))
+                  ))}
+                  <div ref={chatEndRef} />
+                </>
               )}
             </div>
 
