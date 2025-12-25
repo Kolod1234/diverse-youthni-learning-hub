@@ -8,7 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain, LayoutTemplate, Award } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, X, ArrowLeft, GripVertical, Upload, Video, Eye, Loader2, FileText, FileSliders, Brain, LayoutTemplate, Award, Share2, Download } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
@@ -29,6 +29,9 @@ export default function TutorCourseManager() {
   const [analyzingLesson, setAnalyzingLesson] = useState(null);
   const [showAIGenerator, setShowAIGenerator] = useState(false);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [exportingLesson, setExportingLesson] = useState(null);
+  const [importingSlides, setImportingSlides] = useState(false);
+  const [importUrl, setImportUrl] = useState('');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -125,6 +128,66 @@ export default function TutorCourseManager() {
     bulkUpdateMutation.mutate(updates);
   };
 
+  const handleExportToSlides = async (lesson) => {
+    if (!lesson.slides || lesson.slides.length === 0) {
+      toast.error('No slides to export');
+      return;
+    }
+
+    setExportingLesson(lesson.id);
+    try {
+      const response = await base44.functions.invoke('googleSlidesIntegration', {
+        action: 'export',
+        lessonId: lesson.id,
+      });
+
+      if (response.data.success) {
+        toast.success('Exported to Google Slides!');
+        window.open(response.data.url, '_blank');
+      } else {
+        toast.error('Failed to export: ' + response.data.error);
+      }
+    } catch (error) {
+      toast.error('Export failed: ' + error.message);
+    } finally {
+      setExportingLesson(null);
+    }
+  };
+
+  const handleImportFromSlides = async () => {
+    const presentationId = importUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+    
+    if (!presentationId) {
+      toast.error('Invalid Google Slides URL');
+      return;
+    }
+
+    setImportingSlides(true);
+    try {
+      const response = await base44.functions.invoke('googleSlidesIntegration', {
+        action: 'import',
+        presentationId,
+      });
+
+      if (response.data.success) {
+        setLessonForm({
+          ...lessonForm,
+          title: response.data.title,
+          slides: response.data.slides,
+        });
+        setShowCreate(true);
+        setImportUrl('');
+        toast.success('Slides imported successfully!');
+      } else {
+        toast.error('Import failed: ' + response.data.error);
+      }
+    } catch (error) {
+      toast.error('Import failed: ' + error.message);
+    } finally {
+      setImportingSlides(false);
+    }
+  };
+
   const sections = lessons.reduce((acc, lesson) => {
     const section = lesson.section || 'Uncategorized';
     if (!acc[section]) acc[section] = [];
@@ -173,6 +236,44 @@ export default function TutorCourseManager() {
             </Button>
           </div>
         </div>
+
+        {/* Import from Google Slides */}
+        <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
+              <Download className="w-5 h-5 text-white" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900">Import from Google Slides</h3>
+              <p className="text-sm text-gray-600">Paste a Google Slides presentation link</p>
+            </div>
+          </div>
+          <div className="flex gap-2 mt-3">
+            <Input
+              placeholder="https://docs.google.com/presentation/d/..."
+              value={importUrl}
+              onChange={(e) => setImportUrl(e.target.value)}
+              className="flex-1"
+            />
+            <Button
+              onClick={handleImportFromSlides}
+              disabled={!importUrl || importingSlides}
+              className="bg-blue-600 hover:bg-blue-700"
+            >
+              {importingSlides ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Importing...
+                </>
+              ) : (
+                <>
+                  <Download className="w-4 h-4 mr-2" />
+                  Import
+                </>
+              )}
+            </Button>
+          </div>
+        </Card>
 
           {showCreate && (
             <Card className="p-6 mb-6 bg-indigo-50 border-indigo-200">
@@ -331,6 +432,20 @@ export default function TutorCourseManager() {
                                           <p className="text-sm text-gray-500">{lesson.duration_minutes || 10} minutes</p>
                                       </div>
                                       <div className="flex gap-2">
+                                        <Button 
+                                          variant="outline" 
+                                          size="sm" 
+                                          onClick={() => handleExportToSlides(lesson)}
+                                          disabled={exportingLesson === lesson.id || !lesson.slides?.length}
+                                          className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+                                          title="Export to Google Slides"
+                                        >
+                                          {exportingLesson === lesson.id ? (
+                                            <Loader2 className="w-4 h-4 animate-spin" />
+                                          ) : (
+                                            <Share2 className="w-4 h-4" />
+                                          )}
+                                        </Button>
                                         <Button 
                                           variant="outline" 
                                           size="sm" 
