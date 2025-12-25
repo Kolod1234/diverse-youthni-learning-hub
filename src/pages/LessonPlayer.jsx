@@ -437,14 +437,17 @@ export default function LessonPlayer() {
             
             <div className="flex items-center gap-3">
               {currentLesson?.google_slides_url && (
-                <select
-                  value={viewMode}
-                  onChange={(e) => setViewMode(e.target.value)}
-                  className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-white border border-white/20 hover:bg-white/20"
-                >
-                  <option value="slides" className="text-gray-900">Slide View</option>
-                  <option value="googleslides" className="text-gray-900">Google Slides</option>
-                </select>
+                <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/30">
+                  <Eye className="w-4 h-4 text-white" />
+                  <select
+                    value={viewMode}
+                    onChange={(e) => setViewMode(e.target.value)}
+                    className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer"
+                  >
+                    <option value="slides" className="text-gray-900 bg-white">📄 Slide View</option>
+                    <option value="googleslides" className="text-gray-900 bg-white">📊 Google Slides</option>
+                  </select>
+                </div>
               )}
               <Button
                 variant="ghost"
