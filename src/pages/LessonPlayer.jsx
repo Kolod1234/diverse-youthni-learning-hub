@@ -514,7 +514,7 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 lg:p-8 overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-2 sm:p-4 lg:p-8 overflow-hidden">
         <div className="w-full max-w-5xl">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
@@ -533,7 +533,7 @@ export default function LessonPlayer() {
               onTouchEnd={handleTouchEnd}
               className="touch-pan-y select-none"
             >
-              <Card className="p-6 md:p-10 lg:p-12 shadow-2xl">
+              <Card className="p-4 sm:p-6 md:p-10 lg:p-12 shadow-2xl overflow-hidden">
                 {/* Learning Objectives - Show on first slide */}
                 {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
@@ -572,7 +572,7 @@ export default function LessonPlayer() {
                               {currentLesson.section || 'Lesson'}
                             </span>
                           </div>
-                          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 break-words">
                             {currentSlide.title}
                           </h1>
                           {lessonQuizzes.length > 0 && (
@@ -626,49 +626,49 @@ export default function LessonPlayer() {
                     <Button 
                       onClick={markComplete}
                       disabled={updateEnrollmentMutation.isPending || isCompleted}
-                      className="w-full h-14 text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg disabled:opacity-50"
+                      className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg disabled:opacity-50"
                     >
-                      <CheckCircle className="w-5 h-5 mr-2" />
+                      <CheckCircle className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                       {isCompleted ? 'Lesson Completed ✓' : 'Complete Lesson'}
                     </Button>
 
                     {nextLesson && (
                       <Button 
                         onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
-                        className="w-full h-14 text-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg"
+                        className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg"
                       >
                         Next Lesson
-                        <ArrowRight className="w-5 h-5 ml-2" />
+                        <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
                       </Button>
                     )}
 
                     {lessonQuizzes.length > 0 && (
                       <Button 
                         onClick={() => handleTakeQuiz(lessonQuizzes[0])}
-                        className="w-full h-14 text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
+                        className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg"
                       >
-                        <Brain className="w-5 h-5 mr-2" />
+                        <Brain className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                         Take Quiz ({lessonQuizzes[0].questions?.length} questions)
                       </Button>
                     )}
 
                     {!nextLesson && (
                       <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
-                        <Button variant="outline" className="w-full h-14 text-lg">
-                          <Trophy className="w-5 h-5 mr-2" />
+                        <Button variant="outline" className="w-full h-12 sm:h-14 text-base sm:text-lg">
+                          <Trophy className="w-4 sm:w-5 h-4 sm:h-5 mr-2" />
                           Back to Course
                         </Button>
                       </Link>
                     )}
-                  </div>
-                ) : (
-                  <Button 
+                    </div>
+                    ) : (
+                    <Button 
                     onClick={nextSlide}
-                    className="w-full h-14 text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
-                  >
+                    className="w-full h-12 sm:h-14 text-base sm:text-lg bg-gradient-to-r from-indigo-500 to-purple-500 hover:from-indigo-600 hover:to-purple-600 shadow-lg"
+                    >
                     Continue
-                    <ArrowRight className="w-5 h-5 ml-2" />
-                  </Button>
+                    <ArrowRight className="w-4 sm:w-5 h-4 sm:h-5 ml-2" />
+                    </Button>
                 )}
               </Card>
             </motion.div>

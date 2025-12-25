@@ -291,30 +291,36 @@ export default function TutorDashboard() {
         </div>
 
         <Tabs defaultValue="courses" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6 overflow-x-auto flex-nowrap">
+            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <BookOpen className="w-4 h-4 mr-2" />
-              Courses
+              <span className="hidden sm:inline">Courses</span>
+              <span className="sm:hidden">Courses</span>
             </TabsTrigger>
-            <TabsTrigger value="sessions" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="sessions" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <Video className="w-4 h-4 mr-2" />
-              Live Sessions
+              <span className="hidden sm:inline">Live Sessions</span>
+              <span className="sm:hidden">Live</span>
             </TabsTrigger>
-            <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <Users className="w-4 h-4 mr-2" />
-              Students
+              <span className="hidden sm:inline">Students</span>
+              <span className="sm:hidden">Students</span>
             </TabsTrigger>
-            <TabsTrigger value="assignments" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="assignments" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <ClipboardList className="w-4 h-4 mr-2" />
-              Assignments
+              <span className="hidden sm:inline">Assignments</span>
+              <span className="sm:hidden">Tasks</span>
             </TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="messages" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <MessageSquare className="w-4 h-4 mr-2" />
-              Messages
+              <span className="hidden sm:inline">Messages</span>
+              <span className="sm:hidden">Chat</span>
             </TabsTrigger>
-            <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
+            <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
               <BarChart className="w-4 h-4 mr-2" />
-              Analytics
+              <span className="hidden sm:inline">Analytics</span>
+              <span className="sm:hidden">Stats</span>
             </TabsTrigger>
           </TabsList>
 
@@ -520,44 +526,62 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
                     </div>
                   </div>
                 </div>
-                <div className="flex gap-2 flex-wrap">
-                  <Link to={createPageUrl('CourseAnalytics') + `?courseId=${course.id}`}>
-                    <Button variant="outline" size="sm">
-                      <BarChart className="w-4 h-4 mr-1" />
-                      Analytics
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setSelectedCourseForMessage(course.id);
-                    setShowMessageDialog(true);
-                  }}>
-                    <MessageSquare className="w-4 h-4 mr-1" />
-                    Message
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setSelectedCourseForPoints(course.id);
-                    setShowAwardPoints(true);
-                  }}>
-                    <Award className="w-4 h-4 mr-1" />
-                    Award
-                  </Button>
-                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-4 h-4 mr-2" />
-                      Manage
-                    </Button>
-                  </Link>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    setEditingCourse(course);
-                    setCourseForm(course);
-                  }}>
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button variant="outline" size="sm" onClick={() => {
-                    if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id);
-                  }}>
-                    <Trash2 className="w-4 h-4 text-red-600" />
-                  </Button>
+                <div className="flex gap-2 flex-wrap justify-end">
+                 <Link to={createPageUrl('CourseAnalytics') + `?courseId=${course.id}`}>
+                   <Button variant="outline" size="sm" className="hidden sm:flex">
+                     <BarChart className="w-4 h-4 mr-1" />
+                     Analytics
+                   </Button>
+                   <Button variant="outline" size="sm" className="sm:hidden">
+                     <BarChart className="w-4 h-4" />
+                   </Button>
+                 </Link>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   setSelectedCourseForMessage(course.id);
+                   setShowMessageDialog(true);
+                 }} className="hidden sm:flex">
+                   <MessageSquare className="w-4 h-4 mr-1" />
+                   Message
+                 </Button>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   setSelectedCourseForMessage(course.id);
+                   setShowMessageDialog(true);
+                 }} className="sm:hidden">
+                   <MessageSquare className="w-4 h-4" />
+                 </Button>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   setSelectedCourseForPoints(course.id);
+                   setShowAwardPoints(true);
+                 }} className="hidden sm:flex">
+                   <Award className="w-4 h-4 mr-1" />
+                   Award
+                 </Button>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   setSelectedCourseForPoints(course.id);
+                   setShowAwardPoints(true);
+                 }} className="sm:hidden">
+                   <Award className="w-4 h-4" />
+                 </Button>
+                 <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
+                   <Button variant="outline" size="sm" className="hidden sm:flex">
+                     <Edit className="w-4 h-4 mr-2" />
+                     Manage
+                   </Button>
+                   <Button variant="outline" size="sm" className="sm:hidden">
+                     <Edit className="w-4 h-4" />
+                   </Button>
+                 </Link>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   setEditingCourse(course);
+                   setCourseForm(course);
+                 }} className="sm:hidden">
+                   <Edit className="w-4 h-4" />
+                 </Button>
+                 <Button variant="outline" size="sm" onClick={() => {
+                   if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id);
+                 }} className="sm:hidden">
+                   <Trash2 className="w-4 h-4 text-red-600" />
+                 </Button>
                 </div>
               </div>
             )}
