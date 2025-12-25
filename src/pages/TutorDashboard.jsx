@@ -76,7 +76,7 @@ export default function TutorDashboard() {
 
   const { data: courses = [], isLoading: loadingCourses } = useQuery({
     queryKey: ['tutor-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
+    queryFn: () => base44.entities.Course.filter({ created_by: user?.email, is_deleted: { $ne: true } }, '-created_date', 100),
     enabled: !!user?.email,
     staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
