@@ -7,13 +7,14 @@ import {
   Video, VideoOff, Mic, MicOff, MonitorUp, MonitorOff,
   MessageSquare, Users, LogOut, MoreVertical, Send,
   Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon, Image as ImageIcon,
-  BarChart3, FileText, HelpCircle
+  BarChart3, FileText, HelpCircle, Subtitles
 } from 'lucide-react';
 import BreakoutRoomManager from './BreakoutRoomManager';
 import Whiteboard from './Whiteboard';
 import LivePolling from './LivePolling';
 import QAPanel from './QAPanel';
 import CollaborativeNotes from './CollaborativeNotes';
+import LiveTranscription from './LiveTranscription';
 
 export default function CustomVideoCall({ session, course, user, onEndSession }) {
   const [localStream, setLocalStream] = useState(null);
@@ -42,6 +43,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [showLivePolling, setShowLivePolling] = useState(false);
   const [showQAPanel, setShowQAPanel] = useState(false);
   const [showCollabNotes, setShowCollabNotes] = useState(false);
+  const [showTranscription, setShowTranscription] = useState(false);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -801,6 +803,14 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                   <FileText className="w-5 h-5 mr-2" />
                   Notes
                 </Button>
+                <Button
+                  onClick={() => setShowTranscription(true)}
+                  size="sm"
+                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
+                >
+                  <Subtitles className="w-5 h-5 mr-2" />
+                  Transcript
+                </Button>
                 
                 {/* Reactions */}
                 <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2">
@@ -1003,6 +1013,15 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
           sessionId={session.id} 
           user={user}
           onClose={() => setShowCollabNotes(false)} 
+        />
+      )}
+
+      {/* Live Transcription */}
+      {showTranscription && (
+        <LiveTranscription 
+          sessionId={session.id} 
+          user={user}
+          onClose={() => setShowTranscription(false)} 
         />
       )}
 

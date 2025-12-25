@@ -10,7 +10,10 @@ const getSessionData = (sessionId) => {
       messages: [],
       polls: [],
       questions: [],
-      notes: { content: '', editors: [], updated_at: null }
+      notes: { content: '', editors: [], updated_at: null },
+      transcript: [],
+      keyPoints: [],
+      summary: null
     });
   }
   return sessionData.get(sessionId);
@@ -187,6 +190,33 @@ Deno.serve(async (req) => {
         );
         
         return Response.json({ editors: data.notes.editors });
+      }
+
+      // Transcription actions
+      case 'add-transcript': {
+        data.transcript.push(body.entry);
+        return Response.json({ success: true });
+      }
+
+      case 'get-transcript': {
+        return Response.json({ 
+          transcript: data.transcript,
+          keyPoints: data.keyPoints 
+        });
+      }
+
+      case 'add-keypoint': {
+        data.keyPoints.push(body.keyPoint);
+        return Response.json({ success: true });
+      }
+
+      case 'save-summary': {
+        data.summary = body.summary;
+        return Response.json({ success: true });
+      }
+
+      case 'get-summary': {
+        return Response.json({ summary: data.summary });
       }
 
       default:
