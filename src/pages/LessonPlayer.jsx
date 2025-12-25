@@ -37,6 +37,15 @@ export default function LessonPlayer() {
   const [bookmarked, setBookmarked] = useState(false);
   const [viewMode, setViewMode] = useState('slides'); // 'slides' or 'googleslides'
 
+  // Auto-detect view mode based on content
+  useEffect(() => {
+    if (currentLesson?.content_type === 'googleslides' && currentLesson?.google_slides_url) {
+      setViewMode('googleslides');
+    } else {
+      setViewMode('slides');
+    }
+  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url]);
+
   // Load user
   useEffect(() => {
     const loadUser = async () => {
@@ -436,7 +445,7 @@ export default function LessonPlayer() {
             </Link>
             
             <div className="flex items-center gap-3">
-              {currentLesson?.google_slides_url && (
+              {(currentLesson?.google_slides_url || currentLesson?.slides?.length > 0) && (
                 <div className="flex items-center gap-2 bg-white/20 backdrop-blur-sm rounded-lg px-3 py-2 border border-white/30">
                   <Eye className="w-4 h-4 text-white" />
                   <select
@@ -444,8 +453,12 @@ export default function LessonPlayer() {
                     onChange={(e) => setViewMode(e.target.value)}
                     className="bg-transparent text-white text-sm font-medium border-none outline-none cursor-pointer"
                   >
-                    <option value="slides" className="text-gray-900 bg-white">📄 Slide View</option>
-                    <option value="googleslides" className="text-gray-900 bg-white">📊 Google Slides</option>
+                    {currentLesson?.slides?.length > 0 && (
+                      <option value="slides" className="text-gray-900 bg-white">📄 Slide View</option>
+                    )}
+                    {currentLesson?.google_slides_url && (
+                      <option value="googleslides" className="text-gray-900 bg-white">📊 Google Slides</option>
+                    )}
                   </select>
                 </div>
               )}
