@@ -467,8 +467,8 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-4 overflow-hidden">
-        <div className="w-full max-w-2xl">
+      <div className="flex-1 flex items-center justify-center p-4 lg:p-8 overflow-hidden">
+        <div className="w-full max-w-5xl">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
@@ -486,7 +486,7 @@ export default function LessonPlayer() {
               onTouchEnd={handleTouchEnd}
               className="touch-pan-y select-none"
             >
-              <Card className="p-6 md:p-8 shadow-2xl">
+              <Card className="p-6 md:p-10 lg:p-12 shadow-2xl">
                 {/* Slide Content */}
                 <div className="mb-8">
                   <div className="flex items-start justify-between mb-4">
@@ -499,7 +499,7 @@ export default function LessonPlayer() {
                           {currentLesson.section || 'Lesson'}
                         </span>
                       </div>
-                      <h1 className="text-2xl md:text-3xl font-bold text-gray-900 mb-2">
+                      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
                         {currentSlide.title}
                       </h1>
                       {lessonQuizzes.length > 0 && (
@@ -520,7 +520,7 @@ export default function LessonPlayer() {
                   </div>
 
                   <div 
-                    className="prose prose-lg max-w-none text-gray-700 leading-relaxed"
+                    className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-700 leading-relaxed"
                     dangerouslySetInnerHTML={{ __html: currentSlide.content }}
                   />
 
