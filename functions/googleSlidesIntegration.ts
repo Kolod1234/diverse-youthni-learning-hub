@@ -143,37 +143,162 @@ Deno.serve(async (req) => {
         return Response.json({ error: 'Failed to fetch presentation', details: presentation }, { status: 500 });
       }
 
-      // Convert slides to lesson format
+      // Convert slides to lesson format with exact positioning
       const lessonSlides = presentation.slides.map((slide, index) => {
         let title = 'Untitled Slide';
-        let content = '';
+        const elements = [];
 
-        // Extract text and images from slide elements
+        // Get slide dimensions (default Google Slides dimensions)
+        const slideWidth = presentation.pageSize?.width?.magnitude || 720;
+        const slideHeight = presentation.pageSize?.height?.magnitude || 405;
+
+        // Extract all elements with positioning
         if (slide.pageElements) {
-          for (const element of slide.pageElements) {
+          for (let i = 0; i < slide.pageElements.length; i++) {
+            const element = slide.pageElements[i];
+            
+            // Get positioning info
+            const transform = element.transform || {};
+            const size = element.size || {};
+            const x = transform.translateX || 0;
+            const y = transform.translateY || 0;
+            const width = size.width?.magnitude || 100;
+            const height = size.height?.magnitude || 100;
+            
+            // Convert EMU to percentage for responsive layout
+            const leftPercent = (x / slideWidth) * 100;
+            const topPercent = (y / slideHeight) * 100;
+            const widthPercent = (width / slideWidth) * 100;
+            const heightPercent = (height / slideHeight) * 100;
+
             // Extract text from shapes
             if (element.shape && element.shape.text) {
-              const text = element.shape.text.textElements
-                .map((te) => te.textRun?.content || '')
-                .join('');
+              const textElements = element.shape.text.textElements || [];
+              let text = '';
+              let styles = '';
               
-              // First text block is usually the title
-              if (title === 'Untitled Slide' && text.trim()) {
-                title = text.trim();
-              } else if (text.trim()) {
-                content += `<p>${text.trim()}</p>`;
+              for (const te of textElements) {
+                if (te.textRun) {
+                  const content = te.textRun.content || '';
+                  const style = te.textRun.style || {};
+                  
+                  let styledText = content;
+                  if (style.bold) styledText = `<strong>${styledText}</strong>`;
+                  if (style.italic) styledText = `<em>${styledText}</em>`;
+                  if (style.underline) styledText = `<u>${styledText}</u>`;
+                  
+                  if (style.fontSize?.magnitude) {
+                    const fontSize = (style.fontSize.magnitude / slideHeight) * 100;
+                    styledText = `<span style="font-size: ${fontSize}vh;">${styledText}</span>`;
+                  }
+                  
+                  if (style.foregroundColor) {
+                    const color = style.foregroundColor.opaqueColor?.rgbColor;
+                    if (color) {
+                      const r = Math.round((color.red || 0) * 255);
+                      const g = Math.round((color.green || 0) * 255);
+                      const b = Math.round((color.blue || 0) * 255);
+                      styledText = `<span style="color: rgb(${r},${g},${b});">${styledText}</span>`;
+                    }
+                  }
+                  
+                  text += styledText;
+                }
+              }
+              
+              if (text.trim()) {
+                // First text element is usually the title
+                if (i === 0 && title === 'Untitled Slide') {
+                  title = text.replace(/<[^>]*>/g, '').trim();
+                }
+                
+                // Get background color if any
+                let bgStyle = '';
+                if (element.shape.shapeProperties?.shapeBackgroundFill?.solidFill) {
+                  const bgColor = element.shape.shapeProperties.shapeBackgroundFill.solidFill.color?.rgbColor;
+                  if (bgColor) {
+                    const r = Math.round((bgColor.red || 0) * 255);
+                    const g = Math.round((bgColor.green || 0) * 255);
+                    const b = Math.round((bgColor.blue || 0) * 255);
+                    bgStyle = `background-color: rgb(${r},${g},${b}); padding: 10px;`;
+                  }
+                }
+                
+                elements.push(`
+                  <div style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; ${bgStyle}">
+                    ${text}
+                  </div>
+                `);
               }
             }
             
             // Extract images
             if (element.image && element.image.contentUrl) {
               const imageUrl = element.image.contentUrl;
-              const width = element.size?.width?.magnitude || 400;
-              const height = element.size?.height?.magnitude || 300;
-              content += `<img src="${imageUrl}" alt="Slide image" style="max-width: 100%; height: auto;" />`;
+              elements.push(`
+                <img src="${imageUrl}" alt="Slide image" style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; object-fit: contain;" />
+              `);
+            }
+            
+            // Extract tables
+            if (element.table) {
+              const table = element.table;
+              let tableHtml = '<table style="width: 100%; border-collapse: collapse;">';
+              
+              if (table.tableRows) {
+                for (const row of table.tableRows) {
+                  tableHtml += '<tr>';
+                  if (row.tableCells) {
+                    for (const cell of row.tableCells) {
+                      let cellText = '';
+                      if (cell.text?.textElements) {
+                        cellText = cell.text.textElements
+                          .map(te => te.textRun?.content || '')
+                          .join('');
+                      }
+                      tableHtml += `<td style="border: 1px solid #ddd; padding: 8px;">${cellText}</td>`;
+                    }
+                  }
+                  tableHtml += '</tr>';
+                }
+              }
+              
+              tableHtml += '</table>';
+              elements.push(`
+                <div style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%;">
+                  ${tableHtml}
+                </div>
+              `);
+            }
+            
+            // Extract charts/graphs
+            if (element.sheetsChart) {
+              const chartId = element.sheetsChart.chartId;
+              const spreadsheetId = element.sheetsChart.spreadsheetId;
+              // Chart image is available via contentUrl if present
+              if (element.sheetsChart.contentUrl) {
+                elements.push(`
+                  <img src="${element.sheetsChart.contentUrl}" alt="Chart" style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; object-fit: contain;" />
+                `);
+              } else {
+                elements.push(`
+                  <div style="position: absolute; left: ${leftPercent}%; top: ${topPercent}%; width: ${widthPercent}%; height: ${heightPercent}%; border: 2px dashed #ccc; display: flex; align-items: center; justify-content: center; background: #f9f9f9;">
+                    <p>📊 Chart from Google Sheets</p>
+                  </div>
+                `);
+              }
             }
           }
         }
+
+        // Create positioned content container
+        const content = `
+          <div style="position: relative; width: 100%; padding-top: ${(slideHeight/slideWidth)*100}%; background: white; overflow: hidden;">
+            <div style="position: absolute; top: 0; left: 0; width: 100%; height: 100%;">
+              ${elements.join('\n')}
+            </div>
+          </div>
+        `;
 
         return {
           title: title || `Slide ${index + 1}`,
