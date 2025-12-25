@@ -34,6 +34,8 @@ export default function TutorDashboard() {
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [selectedCourseForMessage, setSelectedCourseForMessage] = useState(null);
   const [showOnboarding, setShowOnboarding] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [newName, setNewName] = useState('');
   const queryClient = useQueryClient();
 
   const { data: videoSessions = [] } = useQuery({
@@ -205,7 +207,58 @@ export default function TutorDashboard() {
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Tutor Dashboard</h1>
+          <div className="flex items-center gap-3 mb-2">
+            {editingName ? (
+              <div className="flex items-center gap-2">
+                <Input
+                  value={newName}
+                  onChange={(e) => setNewName(e.target.value)}
+                  placeholder="Your name"
+                  className="text-3xl font-bold h-12"
+                  autoFocus
+                />
+                <Button
+                  onClick={async () => {
+                    if (newName.trim()) {
+                      await base44.auth.updateMe({ full_name: newName.trim() });
+                      setUser({ ...user, full_name: newName.trim() });
+                      setEditingName(false);
+                      toast.success('Name updated!');
+                    }
+                  }}
+                  size="sm"
+                  className="bg-green-600 hover:bg-green-700"
+                >
+                  <Save className="w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={() => {
+                    setEditingName(false);
+                    setNewName('');
+                  }}
+                  size="sm"
+                  variant="outline"
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ) : (
+              <>
+                <h1 className="text-3xl font-bold text-gray-900">Tutor Dashboard</h1>
+                <Button
+                  onClick={() => {
+                    setNewName(user?.full_name || '');
+                    setEditingName(true);
+                  }}
+                  size="sm"
+                  variant="ghost"
+                  className="h-8 w-8 p-0"
+                >
+                  <Edit className="w-4 h-4" />
+                </Button>
+              </>
+            )}
+          </div>
           <p className="text-gray-500">Manage your courses and students</p>
         </div>
 
