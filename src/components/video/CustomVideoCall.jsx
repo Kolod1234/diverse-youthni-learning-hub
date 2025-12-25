@@ -6,10 +6,14 @@ import { Card } from '@/components/ui/card';
 import {
   Video, VideoOff, Mic, MicOff, MonitorUp, MonitorOff,
   MessageSquare, Users, LogOut, MoreVertical, Send,
-  Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon, Image as ImageIcon
+  Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon, Image as ImageIcon,
+  BarChart3, FileText, HelpCircle
 } from 'lucide-react';
 import BreakoutRoomManager from './BreakoutRoomManager';
 import Whiteboard from './Whiteboard';
+import LivePolling from './LivePolling';
+import QAPanel from './QAPanel';
+import CollaborativeNotes from './CollaborativeNotes';
 
 export default function CustomVideoCall({ session, course, user, onEndSession }) {
   const [localStream, setLocalStream] = useState(null);
@@ -35,6 +39,9 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [showSettings, setShowSettings] = useState(false);
   const [virtualBackground, setVirtualBackground] = useState('none');
   const [audioNoiseSuppress, setAudioNoiseSuppress] = useState(true);
+  const [showLivePolling, setShowLivePolling] = useState(false);
+  const [showQAPanel, setShowQAPanel] = useState(false);
+  const [showCollabNotes, setShowCollabNotes] = useState(false);
 
   const localVideoRef = useRef(null);
   const screenVideoRef = useRef(null);
@@ -766,8 +773,36 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                       <Pencil className="w-5 h-5 mr-2" />
                       Whiteboard
                     </Button>
+                    <Button
+                      onClick={() => setShowLivePolling(true)}
+                      size="sm"
+                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
+                    >
+                      <BarChart3 className="w-5 h-5 mr-2" />
+                      Poll
+                    </Button>
                   </>
                 )}
+                
+                {/* Interactive Tools */}
+                <Button
+                  onClick={() => setShowQAPanel(true)}
+                  size="sm"
+                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
+                >
+                  <HelpCircle className="w-5 h-5 mr-2" />
+                  Q&A
+                </Button>
+                <Button
+                  onClick={() => setShowCollabNotes(true)}
+                  size="sm"
+                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
+                >
+                  <FileText className="w-5 h-5 mr-2" />
+                  Notes
+                </Button>
+              </>
+            )}
                 
                 {/* Reactions */}
                 <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2">
@@ -943,6 +978,34 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       {/* Whiteboard */}
       {showWhiteboard && (
         <Whiteboard onClose={() => setShowWhiteboard(false)} />
+      )}
+
+      {/* Live Polling */}
+      {showLivePolling && (
+        <LivePolling 
+          sessionId={session.id} 
+          isTutor={isTutor} 
+          onClose={() => setShowLivePolling(false)} 
+        />
+      )}
+
+      {/* Q&A Panel */}
+      {showQAPanel && (
+        <QAPanel 
+          sessionId={session.id} 
+          user={user}
+          isTutor={isTutor} 
+          onClose={() => setShowQAPanel(false)} 
+        />
+      )}
+
+      {/* Collaborative Notes */}
+      {showCollabNotes && (
+        <CollaborativeNotes 
+          sessionId={session.id} 
+          user={user}
+          onClose={() => setShowCollabNotes(false)} 
+        />
       )}
 
       {/* Settings Panel */}
