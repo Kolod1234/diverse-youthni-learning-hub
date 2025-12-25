@@ -17,7 +17,7 @@ import EmbeddedQuiz from '@/components/quiz/EmbeddedQuiz';
 import InlineQuiz from '@/components/lesson/InlineQuiz';
 import CodePlayground from '@/components/lesson/CodePlayground';
 import LessonQA from '@/components/lesson/LessonQA';
-import GoogleSlidePlayer from '@/components/lesson/GoogleSlidePlayer';
+import UniversalSlidePlayer from '@/components/lesson/UniversalSlidePlayer';
 
 export default function LessonPlayer() {
   const queryClient = useQueryClient();
@@ -554,50 +554,42 @@ export default function LessonPlayer() {
 
                 {/* Slide Content */}
                 <div className="mb-8">
-                  {viewMode === 'googleslides' && currentLesson?.google_slides_url ? (
-                    <div className="mb-4">
-                      <GoogleSlidePlayer 
-                        googleSlidesUrl={currentLesson.google_slides_url}
-                      />
-                    </div>
-                  ) : (
-                    <>
-                      <div className="flex items-start justify-between mb-4">
-                        <div className="flex-1">
-                          <div className="flex items-center gap-2 mb-3">
-                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                              <Zap className="w-5 h-5 text-white" />
-                            </div>
-                            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
-                              {currentLesson.section || 'Lesson'}
-                            </span>
-                          </div>
-                          <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 break-words">
-                            {currentSlide.title}
-                          </h1>
-                          {lessonQuizzes.length > 0 && (
-                            <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
-                              <Brain className="w-4 h-4 mr-2" />
-                              Quiz Available ({lessonQuizzes[0].questions?.length} questions)
-                            </Button>
-                          )}
+                  <div className="flex items-start justify-between mb-4">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-3">
+                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                          <Zap className="w-5 h-5 text-white" />
                         </div>
-                        {isCompleted && (
-                          <div className="ml-4 text-right">
-                            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                              <CheckCircle className="w-6 h-6 text-emerald-600" />
-                            </div>
-                            <p className="text-sm font-medium text-emerald-600">Thank you for completing the lesson</p>
-                          </div>
-                        )}
+                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+                          {currentLesson.section || 'Lesson'}
+                        </span>
                       </div>
+                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2 break-words">
+                        {currentSlide.title}
+                      </h1>
+                      {lessonQuizzes.length > 0 && (
+                        <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
+                          <Brain className="w-4 h-4 mr-2" />
+                          Quiz Available ({lessonQuizzes[0].questions?.length} questions)
+                        </Button>
+                      )}
+                    </div>
+                    {isCompleted && (
+                      <div className="ml-4 text-right hidden sm:block">
+                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                        </div>
+                        <p className="text-sm font-medium text-emerald-600">Completed</p>
+                      </div>
+                    )}
+                  </div>
 
-                      <GoogleSlidePlayer 
-                        content={currentSlide.content}
-                        googleSlidesUrl={viewMode === 'slides' ? null : currentLesson?.google_slides_url}
-                      />
-                    </>
-                  )}
+                  <UniversalSlidePlayer 
+                    content={currentSlide.content}
+                    googleSlidesUrl={viewMode === 'googleslides' ? currentLesson?.google_slides_url : null}
+                    fileUrl={currentSlide.file_url}
+                    fileType={currentSlide.file_type}
+                  />
 
                   {/* Interactive Elements */}
                   {currentSlide.inlineQuiz && (
