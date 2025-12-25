@@ -9,6 +9,13 @@ import {
   Maximize, Settings, Phone, Pencil, Bell, Check, X as XIcon, Image as ImageIcon,
   BarChart3, FileText, HelpCircle, Subtitles
 } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import BreakoutRoomManager from './BreakoutRoomManager';
 import Whiteboard from './Whiteboard';
 import LivePolling from './LivePolling';
@@ -147,10 +154,9 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         setParticipants(response.data.participants);
       }
 
-      // Poll for new participants and messages (every 5 seconds to avoid rate limiting)
+      // Poll for new participants and messages (every 10 seconds)
       const interval = setInterval(async () => {
         if (!roomId || !session.id) {
-          console.warn('Skipping poll: roomId or sessionId is missing');
           return;
         }
 
@@ -177,13 +183,9 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             setChatMessages(messagesRes.data.messages);
           }
         } catch (err) {
-          if (err.status === 429) {
-            console.warn('Rate limited, skipping this poll cycle');
-          } else {
-            console.error('Error polling updates:', err);
-          }
+          console.error('Error polling updates:', err);
         }
-      }, 5000);
+      }, 10000);
 
       return () => clearInterval(interval);
     } catch (error) {
@@ -849,78 +851,87 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
                     <Button
                       onClick={startScreenShare}
                       size="sm"
-                      className={`${isScreenSharing ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 px-4`}
+                      className={`${isScreenSharing ? 'bg-blue-600' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 w-12`}
                     >
-                      {isScreenSharing ? <MonitorOff className="w-5 h-5 mr-2" /> : <MonitorUp className="w-5 h-5 mr-2" />}
-                      {isScreenSharing ? 'Stop' : 'Share'}
+                      {isScreenSharing ? <MonitorOff className="w-5 h-5" /> : <MonitorUp className="w-5 h-5" />}
                     </Button>
                     <Button
                       onClick={isRecording ? stopRecording : startRecording}
                       size="sm"
-                      className={`${isRecording ? 'bg-red-600 animate-pulse' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 px-4`}
+                      className={`${isRecording ? 'bg-red-600 animate-pulse' : 'bg-gray-700'} hover:bg-gray-600 rounded-full h-12 w-12`}
                     >
-                      <div className={`w-3 h-3 rounded-full mr-2 ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
-                      {isRecording ? 'Recording...' : 'Record'}
-                    </Button>
-                    <Button
-                      onClick={() => setShowWhiteboard(true)}
-                      size="sm"
-                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
-                    >
-                      <Pencil className="w-5 h-5 mr-2" />
-                      Whiteboard
-                    </Button>
-                    <Button
-                      onClick={() => setShowLivePolling(true)}
-                      size="sm"
-                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
-                    >
-                      <BarChart3 className="w-5 h-5 mr-2" />
-                      Poll
+                      <div className={`w-3 h-3 rounded-full ${isRecording ? 'bg-white' : 'bg-red-500'}`} />
                     </Button>
                   </>
                 )}
-                
-                {/* Interactive Tools */}
-                <Button
-                  onClick={() => setShowQAPanel(true)}
-                  size="sm"
-                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
-                >
-                  <HelpCircle className="w-5 h-5 mr-2" />
-                  Q&A
-                </Button>
-                <Button
-                  onClick={() => setShowCollabNotes(true)}
-                  size="sm"
-                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
-                >
-                  <FileText className="w-5 h-5 mr-2" />
-                  Notes
-                </Button>
-                <Button
-                  onClick={() => setShowTranscription(true)}
-                  size="sm"
-                  className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 px-4"
-                >
-                  <Subtitles className="w-5 h-5 mr-2" />
-                  Transcript
-                </Button>
-                
-                {/* Reactions */}
-                <div className="flex items-center gap-1 bg-gray-800 rounded-full px-2">
-                  {['👍', '❤️', '👏', '✋', '😂'].map(emoji => (
+
+                {/* Tools Dropdown */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
                     <Button
-                      key={emoji}
                       size="sm"
-                      variant="ghost"
-                      className="h-10 w-10 rounded-full hover:bg-gray-700"
-                      onClick={() => handleReaction(emoji)}
+                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 w-12"
                     >
-                      {emoji}
+                      <MoreVertical className="w-5 h-5" />
                     </Button>
-                  ))}
-                </div>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center" className="w-48">
+                    {isTutor && (
+                      <>
+                        <DropdownMenuItem onClick={() => setShowWhiteboard(true)} className="cursor-pointer">
+                          <Pencil className="w-4 h-4 mr-2" />
+                          Whiteboard
+                        </DropdownMenuItem>
+                        <DropdownMenuItem onClick={() => setShowLivePolling(true)} className="cursor-pointer">
+                          <BarChart3 className="w-4 h-4 mr-2" />
+                          Create Poll
+                        </DropdownMenuItem>
+                        <DropdownMenuSeparator />
+                      </>
+                    )}
+                    <DropdownMenuItem onClick={() => setShowQAPanel(true)} className="cursor-pointer">
+                      <HelpCircle className="w-4 h-4 mr-2" />
+                      Q&A Panel
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowCollabNotes(true)} className="cursor-pointer">
+                      <FileText className="w-4 h-4 mr-2" />
+                      Notes
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => setShowTranscription(true)} className="cursor-pointer">
+                      <Subtitles className="w-4 h-4 mr-2" />
+                      Transcript
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+
+                {/* Reactions */}
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <Button
+                      size="sm"
+                      className="bg-gray-700 hover:bg-gray-600 rounded-full h-12 w-12"
+                    >
+                      👍
+                    </Button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="center">
+                    <div className="grid grid-cols-5 gap-1 p-2">
+                      {['👍', '❤️', '👏', '✋', '😂', '🎉', '🔥', '✨', '💯', '🙌'].map(emoji => (
+                        <Button
+                          key={emoji}
+                          size="sm"
+                          variant="ghost"
+                          className="h-10 w-10 text-2xl hover:bg-gray-100"
+                          onClick={() => {
+                            handleReaction(emoji);
+                          }}
+                        >
+                          {emoji}
+                        </Button>
+                      ))}
+                    </div>
+                  </DropdownMenuContent>
+                </DropdownMenu>
               </div>
 
               {/* Right Controls */}
