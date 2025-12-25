@@ -538,9 +538,12 @@ export default function LessonPlayer() {
                   </div>
 
                   <div 
-                    className="w-full overflow-hidden"
+                    className="w-full"
                     dangerouslySetInnerHTML={{ __html: currentSlide.content }}
-                    style={{ lineHeight: 'normal' }}
+                    style={{ 
+                      lineHeight: 'normal',
+                      isolation: 'isolate'
+                    }}
                   />
 
                   {/* Interactive Elements */}
