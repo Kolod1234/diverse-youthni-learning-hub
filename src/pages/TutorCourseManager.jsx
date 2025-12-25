@@ -21,6 +21,7 @@ import TemplateSelector from '@/components/templates/TemplateSelector';
 import ContentInsertMenu from '@/components/editor/ContentInsertMenu';
 
 export default function TutorCourseManager() {
+  const [user, setUser] = useState(null);
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('courseId');
   const [editingLesson, setEditingLesson] = useState(null);
@@ -35,6 +36,18 @@ export default function TutorCourseManager() {
   const [selectedCourseForImport, setSelectedCourseForImport] = useState(courseId);
   const [selectedLessonForImport, setSelectedLessonForImport] = useState('new');
   const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      if (!userData.is_tutor && userData.role !== 'admin') {
+        window.location.href = createPageUrl('Home');
+        return;
+      }
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   useEffect(() => {
     const pendingTemplate = localStorage.getItem('pendingTemplate');
