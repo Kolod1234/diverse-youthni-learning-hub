@@ -30,7 +30,7 @@ export default function AdminDashboard() {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       if (userData.role !== 'admin') {
-        window.location.href = '/';
+        window.location.href = createPageUrl('Home');
         return;
       }
       setUser(userData);
