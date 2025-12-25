@@ -8,7 +8,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { 
   Video, Users, Calendar, Clock, ArrowLeft, 
-  CheckCircle, XCircle
+  CheckCircle, XCircle, Trash2, PlayCircle
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CustomVideoCall from '@/components/video/CustomVideoCall';
@@ -55,6 +55,14 @@ export default function VideoSession() {
     },
   });
 
+  const deleteSessionMutation = useMutation({
+    mutationFn: (sessionId) => base44.entities.VideoSession.delete(sessionId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['video-session']);
+      window.location.href = createPageUrl('Dashboard');
+    },
+  });
+
   const isTutor = user?.email === session?.tutor_email;
   const isInvited = session?.invited_students?.includes(user?.email);
   const canJoin = isTutor || isInvited;
@@ -83,6 +91,18 @@ export default function VideoSession() {
       });
     }
     setInSession(false);
+  };
+
+  const handleResumeSession = () => {
+    if (session.status === 'live' || (isTutor && session.status === 'scheduled')) {
+      setInSession(true);
+    }
+  };
+
+  const handleDeleteSession = () => {
+    if (confirm('Are you sure you want to delete this session? This action cannot be undone.')) {
+      deleteSessionMutation.mutate(session.id);
+    }
   };
 
   if (loadingSession) {
@@ -246,6 +266,14 @@ export default function VideoSession() {
                   <XCircle className="w-8 h-8 text-red-500 mx-auto mb-2" />
                   <p className="text-red-600 font-medium">This session has been cancelled</p>
                 </div>
+              ) : session.status === 'live' ? (
+                <Button
+                  onClick={handleResumeSession}
+                  className="flex-1 h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                >
+                  <PlayCircle className="w-5 h-5 mr-2" />
+                  Resume Session
+                </Button>
               ) : (
                 <Button
                   onClick={handleStartSession}
@@ -271,6 +299,18 @@ export default function VideoSession() {
                   className="h-14"
                 >
                   Cancel Session
+                </Button>
+              )}
+
+              {isTutor && (session.status === 'completed' || session.status === 'cancelled') && (
+                <Button
+                  variant="destructive"
+                  onClick={handleDeleteSession}
+                  disabled={deleteSessionMutation.isPending}
+                  className="h-14"
+                >
+                  <Trash2 className="w-4 h-4 mr-2" />
+                  {deleteSessionMutation.isPending ? 'Deleting...' : 'Delete Session'}
                 </Button>
               )}
             </div>
