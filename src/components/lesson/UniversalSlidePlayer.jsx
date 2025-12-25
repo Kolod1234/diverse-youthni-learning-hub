@@ -3,20 +3,29 @@ import DocViewer, { DocViewerRenderers } from "@cyntler/react-doc-viewer";
 import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 
 export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl, fileType }) {
-  // Handle Google Slides iframe embed
+  // Handle Google Slides iframe embed with zoom
   if (googleSlidesUrl) {
     const presentationId = googleSlidesUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
     if (presentationId) {
       return (
-        <div className="w-full">
-          <div className="relative w-full bg-gray-900 rounded-lg overflow-hidden" style={{ paddingTop: '56.25%' }}>
-            <iframe 
-              src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
-              className="absolute top-0 left-0 w-full h-full border-0"
-              allowFullScreen
-              loading="lazy"
-            />
-          </div>
+        <div className="w-full rounded-lg overflow-hidden" style={{ height: '70vh', minHeight: '500px' }}>
+          <TransformWrapper
+            initialScale={1}
+            minScale={0.5}
+            maxScale={3}
+            centerOnInit
+          >
+            <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
+              <div style={{ width: '100%', height: '70vh', minHeight: '500px', backgroundColor: '#1f2937' }}>
+                <iframe 
+                  src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
+                  className="w-full h-full border-0"
+                  allowFullScreen
+                  loading="lazy"
+                />
+              </div>
+            </TransformComponent>
+          </TransformWrapper>
         </div>
       );
     }
@@ -51,10 +60,10 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
     );
   }
 
-  // Handle HTML content with smart responsive rendering
+  // Handle HTML content with zoom support
   if (content) {
     return (
-      <div className="w-full">
+      <div className="w-full rounded-lg overflow-hidden">
         <style dangerouslySetInnerHTML={{ __html: `
           .slide-content-wrapper {
             width: 100%;
@@ -154,10 +163,19 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             }
           }
         `}} />
-        <div 
-          className="slide-content-wrapper"
-          dangerouslySetInnerHTML={{ __html: content }}
-        />
+        <TransformWrapper
+          initialScale={1}
+          minScale={0.5}
+          maxScale={3}
+          centerOnInit
+        >
+          <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
+            <div 
+              className="slide-content-wrapper"
+              dangerouslySetInnerHTML={{ __html: content }}
+            />
+          </TransformComponent>
+        </TransformWrapper>
       </div>
     );
   }
