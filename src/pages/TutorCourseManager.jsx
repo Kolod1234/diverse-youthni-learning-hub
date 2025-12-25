@@ -32,6 +32,7 @@ export default function TutorCourseManager() {
   const [exportingLesson, setExportingLesson] = useState(null);
   const [importingSlides, setImportingSlides] = useState(false);
   const [importUrl, setImportUrl] = useState('');
+  const [selectedLessonForImport, setSelectedLessonForImport] = useState('new');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -170,14 +171,27 @@ export default function TutorCourseManager() {
       });
 
       if (response.data.success) {
-        setLessonForm({
-          ...lessonForm,
-          title: response.data.title,
-          slides: response.data.slides,
-        });
-        setShowCreate(true);
+        if (selectedLessonForImport === 'new') {
+          // Create new lesson
+          setLessonForm({
+            title: response.data.title,
+            slides: response.data.slides,
+          });
+          setShowCreate(true);
+        } else {
+          // Update existing lesson
+          const lesson = lessons.find(l => l.id === selectedLessonForImport);
+          await updateLessonMutation.mutateAsync({
+            id: selectedLessonForImport,
+            data: {
+              ...lesson,
+              slides: response.data.slides,
+            }
+          });
+          toast.success(`Slides imported to "${lesson?.title}"!`);
+        }
         setImportUrl('');
-        toast.success('Slides imported successfully!');
+        setSelectedLessonForImport('new');
       } else {
         toast.error('Import failed: ' + response.data.error);
       }
@@ -239,7 +253,7 @@ export default function TutorCourseManager() {
 
         {/* Import from Google Slides */}
         <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-3 mb-3">
             <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
               <Download className="w-5 h-5 text-white" />
             </div>
@@ -248,7 +262,26 @@ export default function TutorCourseManager() {
               <p className="text-sm text-gray-600">Paste a Google Slides presentation link</p>
             </div>
           </div>
-          <div className="flex gap-2 mt-3">
+
+          <div className="mb-3">
+            <Label className="text-sm font-medium mb-2 block">Import destination</Label>
+            <select
+              value={selectedLessonForImport}
+              onChange={(e) => setSelectedLessonForImport(e.target.value)}
+              className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm"
+            >
+              <option value="new">Create new lesson</option>
+              <optgroup label="Update existing lesson">
+                {lessons.map(lesson => (
+                  <option key={lesson.id} value={lesson.id}>
+                    {lesson.title}
+                  </option>
+                ))}
+              </optgroup>
+            </select>
+          </div>
+
+          <div className="flex gap-2">
             <Input
               placeholder="https://docs.google.com/presentation/d/..."
               value={importUrl}
