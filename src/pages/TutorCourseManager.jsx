@@ -18,6 +18,7 @@ import SlideEditor from '@/components/editor/SlideEditor';
 import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
 import AdvancedAISlideGenerator from '@/components/tutor/AdvancedAISlideGenerator';
 import TemplateSelector from '@/components/templates/TemplateSelector';
+import ContentInsertMenu from '@/components/editor/ContentInsertMenu';
 
 export default function TutorCourseManager() {
   const urlParams = new URLSearchParams(window.location.search);
@@ -467,7 +468,15 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
 
       {/* Rich Text Description */}
       <div className="bg-white rounded-lg border border-gray-200 p-4">
-        <h3 className="font-semibold text-gray-900 mb-4">Lesson Content</h3>
+        <div className="flex items-center justify-between mb-4">
+          <h3 className="font-semibold text-gray-900">Lesson Content</h3>
+          <ContentInsertMenu 
+            onInsert={(html) => {
+              const currentContent = formData.description || '';
+              setFormData({ ...formData, description: currentContent + html });
+            }}
+          />
+        </div>
         <RichTextEditor
           label="Detailed Description"
           value={formData.description || ''}
@@ -475,7 +484,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
           placeholder="Write a comprehensive description with formatting, equations, symbols, and more..."
         />
         <p className="text-xs text-gray-500 mt-2">
-          Use the toolbar to add formatting, mathematical equations, chemical formulas, superscripts, subscripts, and more
+          Use the Insert Content button to add charts, math symbols, equations, electrical symbols, 3D shapes, and more
         </p>
       </div>
 
