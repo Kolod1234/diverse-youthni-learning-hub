@@ -12,8 +12,11 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
-  Upload, Eye, Edit, Search, Send, UserCog
+  Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
+  TrendingUp, Key, Database, Lock, Plus
 } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 
@@ -60,6 +63,26 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
   });
 
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['all-lessons'],
+    queryFn: () => base44.entities.Lesson.list('-created_date', 1000),
+  });
+
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['all-quizzes'],
+    queryFn: () => base44.entities.Quiz.list('-created_date', 500),
+  });
+
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['all-sessions'],
+    queryFn: () => base44.entities.VideoSession.list('-created_date', 500),
+  });
+
+  const { data: templates = [] } = useQuery({
+    queryKey: ['all-templates'],
+    queryFn: () => base44.entities.Template.list('-created_date', 500),
+  });
+
   if (!user || user.role !== 'admin') {
     return null;
   }
@@ -89,8 +112,12 @@ export default function AdminDashboard() {
           {[
             { label: 'Total Users', value: allUsers.length, icon: Users, color: 'bg-blue-50 text-blue-600' },
             { label: 'Total Courses', value: courses.length, icon: BookOpen, color: 'bg-purple-50 text-purple-600' },
-            { label: 'Reviews', value: reviews.length, icon: Award, color: 'bg-emerald-50 text-emerald-600' },
-            { label: 'Messages', value: messages.length, icon: MessageSquare, color: 'bg-orange-50 text-orange-600' },
+            { label: 'Total Lessons', value: lessons.length, icon: FileText, color: 'bg-emerald-50 text-emerald-600' },
+            { label: 'Total Quizzes', value: quizzes.length, icon: Brain, color: 'bg-orange-50 text-orange-600' },
+            { label: 'Enrollments', value: enrollments.length, icon: TrendingUp, color: 'bg-pink-50 text-pink-600' },
+            { label: 'Live Sessions', value: sessions.length, icon: Video, color: 'bg-indigo-50 text-indigo-600' },
+            { label: 'Templates', value: templates.length, icon: Database, color: 'bg-teal-50 text-teal-600' },
+            { label: 'Reviews', value: reviews.length, icon: Award, color: 'bg-amber-50 text-amber-600' },
           ].map((stat, idx) => {
             const Icon = stat.icon;
             return (
@@ -147,6 +174,30 @@ export default function AdminDashboard() {
               <FileText className="w-4 h-4 mr-2" />
               Blog
             </TabsTrigger>
+            <TabsTrigger value="lessons" className="rounded-lg">
+              <FileText className="w-4 h-4 mr-2" />
+              Lessons
+            </TabsTrigger>
+            <TabsTrigger value="quizzes" className="rounded-lg">
+              <Brain className="w-4 h-4 mr-2" />
+              Quizzes
+            </TabsTrigger>
+            <TabsTrigger value="sessions" className="rounded-lg">
+              <Video className="w-4 h-4 mr-2" />
+              Sessions
+            </TabsTrigger>
+            <TabsTrigger value="enrollments" className="rounded-lg">
+              <TrendingUp className="w-4 h-4 mr-2" />
+              Enrollments
+            </TabsTrigger>
+            <TabsTrigger value="templates" className="rounded-lg">
+              <Database className="w-4 h-4 mr-2" />
+              Templates
+            </TabsTrigger>
+            <TabsTrigger value="passwords" className="rounded-lg">
+              <Key className="w-4 h-4 mr-2" />
+              Passwords
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -179,6 +230,30 @@ export default function AdminDashboard() {
 
           <TabsContent value="blog">
             <BlogManagement />
+          </TabsContent>
+
+          <TabsContent value="lessons">
+            <LessonsManagement lessons={lessons} courses={courses} />
+          </TabsContent>
+
+          <TabsContent value="quizzes">
+            <QuizzesManagement quizzes={quizzes} courses={courses} />
+          </TabsContent>
+
+          <TabsContent value="sessions">
+            <SessionsManagement sessions={sessions} courses={courses} />
+          </TabsContent>
+
+          <TabsContent value="enrollments">
+            <EnrollmentsManagement enrollments={enrollments} courses={courses} users={allUsers} />
+          </TabsContent>
+
+          <TabsContent value="templates">
+            <TemplatesManagement templates={templates} />
+          </TabsContent>
+
+          <TabsContent value="passwords">
+            <PasswordManagement users={allUsers} />
           </TabsContent>
         </Tabs>
       </div>
@@ -877,6 +952,432 @@ function BlogManagement() {
                   <Trash2 className="w-4 h-4 text-red-600" />
                 </Button>
               </div>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+// Lessons Management Component
+function LessonsManagement({ lessons, courses }) {
+  const queryClient = useQueryClient();
+
+  const deleteLessonMutation = useMutation({
+    mutationFn: (id) => base44.entities.Lesson.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      toast.success('Lesson deleted successfully');
+    },
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Lessons Management</h2>
+        <Badge>{lessons.length} lessons</Badge>
+      </div>
+
+      <div className="space-y-3">
+        {lessons.map((lesson) => {
+          const course = courses.find(c => c.id === lesson.course_id);
+          return (
+            <Card key={lesson.id} className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{lesson.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{lesson.description}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="outline">{course?.title || 'Unknown Course'}</Badge>
+                    <Badge variant="outline">{lesson.section}</Badge>
+                    <Badge variant="outline">{lesson.duration_minutes} min</Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${lesson.course_id}`}>
+                    <Button variant="outline" size="sm">
+                      <Edit className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+// Quizzes Management Component
+function QuizzesManagement({ quizzes, courses }) {
+  const queryClient = useQueryClient();
+
+  const deleteQuizMutation = useMutation({
+    mutationFn: (id) => base44.entities.Quiz.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-quizzes']);
+      toast.success('Quiz deleted successfully');
+    },
+  });
+
+  const togglePublishMutation = useMutation({
+    mutationFn: ({ id, is_published }) => base44.entities.Quiz.update(id, { is_published }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-quizzes']);
+      toast.success('Quiz updated');
+    },
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Quizzes Management</h2>
+        <Badge>{quizzes.length} quizzes</Badge>
+      </div>
+
+      <div className="space-y-3">
+        {quizzes.map((quiz) => {
+          const course = courses.find(c => c.id === quiz.course_id);
+          return (
+            <Card key={quiz.id} className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{quiz.description}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="outline">{course?.title || 'Unknown Course'}</Badge>
+                    <Badge variant="outline">{quiz.questions?.length || 0} questions</Badge>
+                    <Badge variant="outline" className="capitalize">{quiz.difficulty}</Badge>
+                    {quiz.is_published ? (
+                      <Badge className="bg-green-100 text-green-700">Published</Badge>
+                    ) : (
+                      <Badge variant="outline">Draft</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => togglePublishMutation.mutate({ id: quiz.id, is_published: !quiz.is_published })}
+                  >
+                    {quiz.is_published ? 'Unpublish' : 'Publish'}
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Delete this quiz?')) deleteQuizMutation.mutate(quiz.id);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+// Sessions Management Component
+function SessionsManagement({ sessions, courses }) {
+  const queryClient = useQueryClient();
+
+  const deleteSessionMutation = useMutation({
+    mutationFn: (id) => base44.entities.VideoSession.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-sessions']);
+      toast.success('Session deleted successfully');
+    },
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Live Sessions Management</h2>
+        <Badge>{sessions.length} sessions</Badge>
+      </div>
+
+      <div className="space-y-3">
+        {sessions.map((session) => {
+          const course = courses.find(c => c.id === session.course_id);
+          return (
+            <Card key={session.id} className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900">{session.title}</h3>
+                  <p className="text-sm text-gray-600 mt-1">{session.description}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="outline">{course?.title || 'Unknown Course'}</Badge>
+                    <Badge variant="outline">{session.scheduled_date}</Badge>
+                    <Badge variant="outline">{session.scheduled_time}</Badge>
+                    <Badge className={`capitalize ${
+                      session.status === 'live' ? 'bg-red-100 text-red-700' :
+                      session.status === 'completed' ? 'bg-green-100 text-green-700' :
+                      'bg-blue-100 text-blue-700'
+                    }`}>
+                      {session.status}
+                    </Badge>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('VideoSession') + `?sessionId=${session.id}`}>
+                    <Button variant="outline" size="sm">
+                      <Eye className="w-4 h-4" />
+                    </Button>
+                  </Link>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Delete this session?')) deleteSessionMutation.mutate(session.id);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+// Enrollments Management Component
+function EnrollmentsManagement({ enrollments, courses, users }) {
+  const queryClient = useQueryClient();
+
+  const deleteEnrollmentMutation = useMutation({
+    mutationFn: (id) => base44.entities.Enrollment.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-enrollments']);
+      toast.success('Enrollment removed successfully');
+    },
+  });
+
+  const updateEnrollmentMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Enrollment.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-enrollments']);
+      toast.success('Enrollment updated');
+    },
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Enrollments Management</h2>
+        <Badge>{enrollments.length} enrollments</Badge>
+      </div>
+
+      <div className="space-y-3">
+        {enrollments.map((enrollment) => {
+          const course = courses.find(c => c.id === enrollment.course_id);
+          const student = users.find(u => u.email === enrollment.created_by);
+          return (
+            <Card key={enrollment.id} className="p-4">
+              <div className="flex justify-between items-start">
+                <div className="flex-1">
+                  <p className="font-semibold text-gray-900">{student?.full_name || 'Unknown Student'}</p>
+                  <p className="text-sm text-gray-600">{course?.title || 'Unknown Course'}</p>
+                  <div className="flex gap-2 mt-2">
+                    <Badge variant="outline">Progress: {enrollment.progress_percent}%</Badge>
+                    <Badge variant="outline">{enrollment.completed_lessons?.length || 0} lessons completed</Badge>
+                    {enrollment.is_completed && (
+                      <Badge className="bg-green-100 text-green-700">Completed</Badge>
+                    )}
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Reset progress?')) {
+                        updateEnrollmentMutation.mutate({
+                          id: enrollment.id,
+                          data: { progress_percent: 0, completed_lessons: [], is_completed: false }
+                        });
+                      }
+                    }}
+                  >
+                    Reset
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => {
+                      if (confirm('Delete this enrollment?')) deleteEnrollmentMutation.mutate(enrollment.id);
+                    }}
+                  >
+                    <Trash2 className="w-4 h-4 text-red-600" />
+                  </Button>
+                </div>
+              </div>
+            </Card>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+// Templates Management Component
+function TemplatesManagement({ templates }) {
+  const queryClient = useQueryClient();
+
+  const deleteTemplateMutation = useMutation({
+    mutationFn: (id) => base44.entities.Template.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-templates']);
+      toast.success('Template deleted successfully');
+    },
+  });
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold">Templates Management</h2>
+        <div className="flex gap-3">
+          <Badge>{templates.length} templates</Badge>
+          <Link to={createPageUrl('Templates')}>
+            <Button size="sm">
+              <Plus className="w-4 h-4 mr-2" />
+              Create Template
+            </Button>
+          </Link>
+        </div>
+      </div>
+
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        {templates.map((template) => (
+          <Card key={template.id} className="p-4">
+            <div className="flex justify-between items-start">
+              <div className="flex-1">
+                <h3 className="font-semibold text-gray-900">{template.name}</h3>
+                <p className="text-sm text-gray-600 mt-1 line-clamp-2">{template.description}</p>
+                <div className="flex gap-2 mt-2">
+                  <Badge variant="outline" className="capitalize">{template.category}</Badge>
+                  <Badge variant="outline">By: {template.created_by}</Badge>
+                  <Badge variant="outline">{template.usage_count || 0} uses</Badge>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (confirm('Delete this template?')) deleteTemplateMutation.mutate(template.id);
+                }}
+              >
+                <Trash2 className="w-4 h-4 text-red-600" />
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </Card>
+  );
+}
+
+// Password Management Component
+function PasswordManagement({ users }) {
+  const queryClient = useQueryClient();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+
+  const changePasswordMutation = useMutation({
+    mutationFn: ({ userId, password }) => base44.entities.User.update(userId, { password }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-users']);
+      toast.success('Password updated successfully');
+      setSelectedUser(null);
+      setNewPassword('');
+    },
+  });
+
+  const handleChangePassword = () => {
+    if (!selectedUser || !newPassword.trim()) {
+      toast.error('Please select user and enter password');
+      return;
+    }
+    if (confirm(`Change password for ${selectedUser.full_name}?`)) {
+      changePasswordMutation.mutate({ userId: selectedUser.id, password: newPassword });
+    }
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Password Management</h2>
+        <p className="text-gray-500">Reset user passwords as admin</p>
+      </div>
+
+      {selectedUser && (
+        <Card className="p-4 mb-6 bg-yellow-50 border-yellow-200">
+          <div className="flex justify-between items-start mb-3">
+            <div>
+              <p className="font-medium">Changing password for: {selectedUser.full_name}</p>
+              <p className="text-sm text-gray-600">{selectedUser.email}</p>
+            </div>
+            <Button variant="ghost" size="sm" onClick={() => setSelectedUser(null)}>
+              <Trash2 className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="flex gap-3">
+            <Input
+              type="password"
+              value={newPassword}
+              onChange={(e) => setNewPassword(e.target.value)}
+              placeholder="Enter new password..."
+            />
+            <Button onClick={handleChangePassword}>
+              <Lock className="w-4 h-4 mr-2" />
+              Update
+            </Button>
+          </div>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {users.map((user) => (
+          <Card key={user.id} className="p-4">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <Avatar className="w-10 h-10">
+                  <AvatarImage src={user.avatar} />
+                  <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                    {user.full_name?.charAt(0) || 'U'}
+                  </AvatarFallback>
+                </Avatar>
+                <div>
+                  <p className="font-medium text-gray-900">{user.full_name || 'User'}</p>
+                  <p className="text-sm text-gray-500">{user.email}</p>
+                </div>
+              </div>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => setSelectedUser(user)}
+              >
+                <Key className="w-4 h-4 mr-2" />
+                Change Password
+              </Button>
             </div>
           </Card>
         ))}
