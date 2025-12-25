@@ -8,7 +8,7 @@ import { Progress } from '@/components/ui/progress';
 import { Card } from '@/components/ui/card';
 import { 
   ChevronLeft, ChevronRight, CheckCircle, X, Trophy, Star, Brain, Zap,
-  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare
+  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare, Award
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
@@ -487,6 +487,24 @@ export default function LessonPlayer() {
               className="touch-pan-y select-none"
             >
               <Card className="p-6 md:p-10 lg:p-12 shadow-2xl">
+                {/* Learning Objectives - Show on first slide */}
+                {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
+                  <div className="bg-blue-50 border-l-4 border-blue-500 p-4 mb-6 rounded-r-lg">
+                    <h3 className="font-semibold text-blue-900 mb-3 flex items-center gap-2">
+                      <Award className="w-5 h-5" />
+                      Learning Objectives
+                    </h3>
+                    <ul className="space-y-2">
+                      {currentLesson.learning_objectives.map((objective, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-blue-800 text-sm">
+                          <span className="text-blue-500 mt-0.5 font-bold">✓</span>
+                          <span>{objective}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+
                 {/* Slide Content */}
                 <div className="mb-8">
                   <div className="flex items-start justify-between mb-4">
