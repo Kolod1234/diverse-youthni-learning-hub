@@ -495,7 +495,7 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 overflow-hidden">
+      <div className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 overflow-y-auto">
         <div className="w-full max-w-6xl">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
@@ -510,7 +510,7 @@ export default function LessonPlayer() {
                 opacity: { duration: 0.2 }
               }}
             >
-              <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white overflow-hidden border-0">
+              <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white border-0">
                 {/* Learning Objectives - Show on first slide */}
                 {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <motion.div 
