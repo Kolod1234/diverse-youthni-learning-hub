@@ -495,8 +495,8 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex items-center justify-center p-3 sm:p-6 lg:p-8 overflow-y-auto">
-        <div className="w-full max-w-6xl">
+      <div className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
+        <div className="w-full max-w-6xl mx-auto">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
