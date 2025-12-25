@@ -1159,11 +1159,24 @@ Format as a simple bulleted list.`,
               const columnsContent = Array(cols).fill('').map(() => []);
               elements.forEach((el, idx) => {
                 const columnIndex = idx % cols;
+                // Ensure images are responsive within columns
+                if (el.tagName === 'IMG') {
+                  el.style.width = '100%';
+                  el.style.height = 'auto';
+                  el.style.maxWidth = '100%';
+                }
+                // Check for images inside divs
+                const images = el.querySelectorAll('img');
+                images.forEach(img => {
+                  img.style.width = '100%';
+                  img.style.height = 'auto';
+                  img.style.maxWidth = '100%';
+                });
                 columnsContent[columnIndex].push(el.outerHTML);
               });
               
-              // Build column HTML
-              let columnHtml = '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr>';
+              // Build column HTML with explicit equal widths
+              let columnHtml = '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse; table-layout: fixed;"><tr>';
               
               const colWidth = (100 / cols).toFixed(2);
               const padding = cols === 2 ? '15px' : cols === 3 ? '10px' : '8px';
