@@ -508,7 +508,7 @@ export default function LessonPlayer() {
               transition={{
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 }
-              }
+              }}
             >
               <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white overflow-hidden border-0">
                 {/* Learning Objectives - Show on first slide */}
