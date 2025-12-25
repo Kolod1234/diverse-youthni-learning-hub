@@ -335,8 +335,8 @@ export default function Layout({ children, currentPageName }) {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-72">
-                  <div className="flex flex-col gap-4 mt-8">
+                <SheetContent side="right" className="w-72 overflow-y-auto">
+                  <div className="flex flex-col gap-4 mt-8 pb-8">
                     <NavLinks mobile onItemClick={() => {}} />
                   </div>
                 </SheetContent>
