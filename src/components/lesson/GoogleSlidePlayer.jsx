@@ -56,6 +56,22 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
           max-width: 100% !important;
           height: auto !important;
           object-fit: contain !important;
+          display: block !important;
+          position: relative !important;
+        }
+
+        @media (max-width: 768px) {
+          .google-slide-container img {
+            width: 100% !important;
+            max-width: none !important;
+            margin: 0 auto !important;
+          }
+
+          .google-slide-container div[style*="position: absolute"] img {
+            position: static !important;
+            width: 100% !important;
+            height: auto !important;
+          }
         }
         
         .google-slide-container div[style*="position: absolute"] {
