@@ -19,14 +19,67 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
 
   // Check if this is Google Slides content (has the positioned container structure)
   const isGoogleSlideContent = content?.includes('position: relative') && content?.includes('padding-top:');
-  
+
   if (!isGoogleSlideContent) {
-    // Regular content - render normally
+    // Regular content - render normally with mobile-optimized images
     return (
-      <div 
-        className="prose prose-base md:prose-lg max-w-none text-gray-700"
-        dangerouslySetInnerHTML={{ __html: content }}
-      />
+      <div className="w-full">
+        <style dangerouslySetInnerHTML={{ __html: `
+          .mobile-responsive-content {
+            width: 100%;
+            max-width: 100%;
+            overflow-x: hidden;
+          }
+
+          .mobile-responsive-content img {
+            max-width: 100% !important;
+            height: auto !important;
+            display: block !important;
+            margin: 0 auto !important;
+            border-radius: 8px;
+          }
+
+          .mobile-responsive-content table {
+            width: 100% !important;
+            max-width: 100% !important;
+            overflow-x: auto !important;
+            display: block !important;
+          }
+
+          .mobile-responsive-content iframe,
+          .mobile-responsive-content video {
+            max-width: 100% !important;
+            height: auto !important;
+            aspect-ratio: 16/9;
+          }
+
+          @media (max-width: 768px) {
+            .mobile-responsive-content {
+              font-size: 14px;
+            }
+
+            .mobile-responsive-content h1 {
+              font-size: 1.5rem !important;
+            }
+
+            .mobile-responsive-content h2 {
+              font-size: 1.25rem !important;
+            }
+
+            .mobile-responsive-content h3 {
+              font-size: 1.1rem !important;
+            }
+
+            .mobile-responsive-content img {
+              width: 100% !important;
+            }
+          }
+        `}} />
+        <div 
+          className="mobile-responsive-content prose prose-base md:prose-lg max-w-none text-gray-700"
+          dangerouslySetInnerHTML={{ __html: content }}
+        />
+      </div>
     );
   }
 
@@ -41,45 +94,45 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
           overflow-x: hidden !important;
           overflow-y: auto !important;
           isolation: isolate;
+          position: relative;
         }
-        
+
         .google-slide-container > div {
           width: 100% !important;
           max-width: 100% !important;
+          position: relative !important;
         }
-        
+
         .google-slide-container * {
           box-sizing: border-box !important;
         }
-        
+
         .google-slide-container img {
           max-width: 100% !important;
           height: auto !important;
           object-fit: contain !important;
           display: block !important;
-          position: relative !important;
+          margin: 0 auto !important;
+          border-radius: 8px;
         }
 
-        @media (max-width: 768px) {
-          .google-slide-container img {
-            width: 100% !important;
-            max-width: none !important;
-            margin: 0 auto !important;
-          }
-
-          .google-slide-container div[style*="position: absolute"] img {
-            position: static !important;
-            width: 100% !important;
-            height: auto !important;
-          }
-        }
-        
         .google-slide-container div[style*="position: absolute"] {
+          position: relative !important;
+          width: 100% !important;
+          height: auto !important;
           overflow: visible !important;
           word-wrap: break-word !important;
           overflow-wrap: break-word !important;
+          margin-bottom: 1rem;
         }
-        
+
+        .google-slide-container div[style*="position: absolute"] img {
+          position: static !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          height: auto !important;
+        }
+
         .google-slide-container h1,
         .google-slide-container h2,
         .google-slide-container h3 {
@@ -88,12 +141,42 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
           word-wrap: break-word !important;
           overflow-wrap: break-word !important;
         }
-        
+
         .google-slide-container p,
         .google-slide-container span,
         .google-slide-container div {
           word-wrap: break-word !important;
           overflow-wrap: break-word !important;
+        }
+
+        .google-slide-container table {
+          width: 100% !important;
+          max-width: 100% !important;
+          overflow-x: auto !important;
+          display: block !important;
+        }
+
+        @media (max-width: 768px) {
+          .google-slide-container {
+            font-size: 14px;
+          }
+
+          .google-slide-container img {
+            width: 100% !important;
+            max-width: 100% !important;
+          }
+
+          .google-slide-container h1 {
+            font-size: 1.5rem !important;
+          }
+
+          .google-slide-container h2 {
+            font-size: 1.25rem !important;
+          }
+
+          .google-slide-container h3 {
+            font-size: 1.1rem !important;
+          }
         }
       `}} />
       <div 
