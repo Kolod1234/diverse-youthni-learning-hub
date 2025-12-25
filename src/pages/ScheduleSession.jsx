@@ -10,8 +10,10 @@ import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Checkbox } from '@/components/ui/checkbox';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { ArrowLeft, Video, Calendar, Clock, Users, Plus } from 'lucide-react';
+import { ArrowLeft, Video, Calendar, Clock, Users, Plus, Repeat, RefreshCw } from 'lucide-react';
 import { toast } from 'sonner';
+import { Switch } from '@/components/ui/switch';
+import AvailabilityManager from '@/components/tutor/AvailabilityManager';
 
 export default function ScheduleSession() {
   const [user, setUser] = useState(null);
@@ -23,8 +25,13 @@ export default function ScheduleSession() {
     scheduled_time: '',
     duration_minutes: 60,
     invited_students: [],
+    is_recurring: false,
+    recurrence_pattern: 'weekly',
+    recurrence_end_date: '',
   });
   const [selectAll, setSelectAll] = useState(false);
+  const [syncToCalendar, setSyncToCalendar] = useState(true);
+  const [showAvailability, setShowAvailability] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -57,7 +64,33 @@ export default function ScheduleSession() {
     .filter(Boolean);
 
   const createSessionMutation = useMutation({
-    mutationFn: (sessionData) => base44.entities.VideoSession.create(sessionData),
+    mutationFn: async (sessionData) => {
+      const session = await base44.entities.VideoSession.create(sessionData);
+      
+      // Sync to Google Calendar
+      if (syncToCalendar) {
+        try {
+          await base44.functions.invoke('syncSessionToCalendar', {
+            sessionId: session.id,
+            action: 'create'
+          });
+        } catch (error) {
+          console.error('Calendar sync failed:', error);
+        }
+      }
+      
+      // Schedule reminders
+      try {
+        await base44.functions.invoke('scheduleSessionReminders', {
+          sessionId: session.id,
+          reminderTimings: [24 * 60, 60]
+        });
+      } catch (error) {
+        console.error('Failed to schedule reminders:', error);
+      }
+      
+      return session;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['video-sessions']);
       toast.success('Session scheduled successfully!');
@@ -69,6 +102,9 @@ export default function ScheduleSession() {
         scheduled_time: '',
         duration_minutes: 60,
         invited_students: [],
+        is_recurring: false,
+        recurrence_pattern: 'weekly',
+        recurrence_end_date: '',
       });
       setSelectAll(false);
     },
@@ -94,22 +130,54 @@ export default function ScheduleSession() {
     }));
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.course_id || !formData.title || !formData.scheduled_date || !formData.scheduled_time) {
       toast.error('Please fill in all required fields');
       return;
     }
 
-    const meetingRoomId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    if (formData.is_recurring && !formData.recurrence_end_date) {
+      toast.error('Please specify end date for recurring sessions');
+      return;
+    }
 
-    createSessionMutation.mutate({
+    const meetingRoomId = `session-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+    const baseSessionData = {
       ...formData,
       tutor_email: user?.email,
       tutor_name: user?.full_name,
       meeting_room_id: meetingRoomId,
       status: 'scheduled',
-    });
+    };
+
+    if (formData.is_recurring) {
+      try {
+        await base44.functions.invoke('createRecurringSessions', {
+          sessionData: baseSessionData,
+          syncToCalendar
+        });
+        queryClient.invalidateQueries(['video-sessions']);
+        toast.success('Recurring sessions created!');
+        setFormData({
+          course_id: '',
+          title: '',
+          description: '',
+          scheduled_date: '',
+          scheduled_time: '',
+          duration_minutes: 60,
+          invited_students: [],
+          is_recurring: false,
+          recurrence_pattern: 'weekly',
+          recurrence_end_date: '',
+        });
+        setSelectAll(false);
+      } catch (error) {
+        toast.error('Failed to create recurring sessions');
+      }
+    } else {
+      createSessionMutation.mutate(baseSessionData);
+    }
   };
 
   return (
@@ -131,6 +199,22 @@ export default function ScheduleSession() {
           </h1>
           <p className="text-gray-500">Set up a live video tutoring session for your students</p>
         </div>
+
+        <div className="flex gap-3 mb-6">
+          <Button
+            variant={showAvailability ? 'default' : 'outline'}
+            onClick={() => setShowAvailability(!showAvailability)}
+          >
+            <Clock className="w-4 h-4 mr-2" />
+            {showAvailability ? 'Hide' : 'Manage'} Availability
+          </Button>
+        </div>
+
+        {showAvailability && (
+          <div className="mb-6">
+            <AvailabilityManager tutorEmail={user?.email} />
+          </div>
+        )}
 
         <Card className="p-6">
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -212,6 +296,75 @@ export default function ScheduleSession() {
                     <SelectItem value="120">2 hours</SelectItem>
                   </SelectContent>
                 </Select>
+              </div>
+            </div>
+
+            {/* Recurring Sessions */}
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center gap-2">
+                  <Repeat className="w-5 h-5 text-purple-600" />
+                  <Label htmlFor="recurring">Recurring Session</Label>
+                </div>
+                <Switch
+                  id="recurring"
+                  checked={formData.is_recurring}
+                  onCheckedChange={(checked) => setFormData({ ...formData, is_recurring: checked })}
+                />
+              </div>
+
+              {formData.is_recurring && (
+                <div className="ml-7 space-y-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
+                  <div className="grid sm:grid-cols-2 gap-4">
+                    <div>
+                      <Label htmlFor="pattern">Repeat</Label>
+                      <Select
+                        value={formData.recurrence_pattern}
+                        onValueChange={(value) => setFormData({ ...formData, recurrence_pattern: value })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="daily">Daily</SelectItem>
+                          <SelectItem value="weekly">Weekly</SelectItem>
+                          <SelectItem value="biweekly">Every 2 Weeks</SelectItem>
+                          <SelectItem value="monthly">Monthly</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                    <div>
+                      <Label htmlFor="end-date">End Date *</Label>
+                      <Input
+                        id="end-date"
+                        type="date"
+                        value={formData.recurrence_end_date}
+                        onChange={(e) => setFormData({ ...formData, recurrence_end_date: e.target.value })}
+                        min={formData.scheduled_date}
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Calendar Sync */}
+            <div className="border-t pt-4">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  <RefreshCw className="w-5 h-5 text-blue-600" />
+                  <div>
+                    <Label htmlFor="calendar-sync">Sync to Google Calendar</Label>
+                    <p className="text-xs text-gray-500 mt-1">
+                      Automatically add to calendar and send invites
+                    </p>
+                  </div>
+                </div>
+                <Switch
+                  id="calendar-sync"
+                  checked={syncToCalendar}
+                  onCheckedChange={setSyncToCalendar}
+                />
               </div>
             </div>
 
