@@ -543,8 +543,8 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
-        <div className="w-full max-w-6xl mx-auto slide-swipe-area">
+      <div className="flex-1 overflow-hidden">
+        <div className="w-full h-full slide-swipe-area">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
@@ -569,7 +569,7 @@ export default function LessonPlayer() {
                 }
               }}
             >
-              <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white border-0">
+              <Card className="h-full p-4 sm:p-6 shadow-xl bg-white border-0 flex flex-col overflow-y-auto">
                 {/* Learning Objectives - Show on first slide */}
                 {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <motion.div 
@@ -603,7 +603,7 @@ export default function LessonPlayer() {
                 )}
 
                 {/* Slide Content */}
-                <div className="mb-6 sm:mb-8">
+                <div className="flex-1 mb-6 sm:mb-8 overflow-y-auto">
                   <div className="flex items-start justify-between mb-4 sm:mb-6">
                     <div className="flex-1">
                       <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
