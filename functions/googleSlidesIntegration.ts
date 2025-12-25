@@ -188,8 +188,9 @@ Deno.serve(async (req) => {
                   if (style.underline) styledText = `<u>${styledText}</u>`;
                   
                   if (style.fontSize?.magnitude) {
-                    const fontSize = (style.fontSize.magnitude / slideHeight) * 100;
-                    styledText = `<span style="font-size: ${fontSize}vh;">${styledText}</span>`;
+                    // Font size in points - convert to pixels for better display
+                    const fontSizePx = style.fontSize.magnitude * 1.33; // Convert points to pixels
+                    styledText = `<span style="font-size: ${fontSizePx}px;">${styledText}</span>`;
                   }
                   
                   if (style.foregroundColor) {
