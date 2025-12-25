@@ -35,6 +35,7 @@ export default function LessonPlayer() {
   const [selectedQuiz, setSelectedQuiz] = useState(null);
   const [showQA, setShowQA] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
+  const [viewMode, setViewMode] = useState('slides'); // 'slides' or 'googleslides'
 
   // Load user
   useEffect(() => {
@@ -435,6 +436,16 @@ export default function LessonPlayer() {
             </Link>
             
             <div className="flex items-center gap-3">
+              {currentLesson?.google_slides_url && (
+                <select
+                  value={viewMode}
+                  onChange={(e) => setViewMode(e.target.value)}
+                  className="px-3 py-1.5 text-sm rounded-lg bg-white/10 text-white border border-white/20 hover:bg-white/20"
+                >
+                  <option value="slides" className="text-gray-900">Slide View</option>
+                  <option value="googleslides" className="text-gray-900">Google Slides</option>
+                </select>
+              )}
               <Button
                 variant="ghost"
                 size="sm"
@@ -508,40 +519,50 @@ export default function LessonPlayer() {
 
                 {/* Slide Content */}
                 <div className="mb-8">
-                  <div className="flex items-start justify-between mb-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-3">
-                        <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
-                          <Zap className="w-5 h-5 text-white" />
-                        </div>
-                        <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
-                          {currentLesson.section || 'Lesson'}
-                        </span>
-                      </div>
-                      <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
-                        {currentSlide.title}
-                      </h1>
-                      {lessonQuizzes.length > 0 && (
-                        <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
-                          <Brain className="w-4 h-4 mr-2" />
-                          Quiz Available ({lessonQuizzes[0].questions?.length} questions)
-                        </Button>
-                      )}
+                  {viewMode === 'googleslides' && currentLesson?.google_slides_url ? (
+                    <div className="mb-4">
+                      <GoogleSlidePlayer 
+                        googleSlidesUrl={currentLesson.google_slides_url}
+                      />
                     </div>
-                    {isCompleted && (
-                      <div className="ml-4 text-right">
-                        <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
-                          <CheckCircle className="w-6 h-6 text-emerald-600" />
+                  ) : (
+                    <>
+                      <div className="flex items-start justify-between mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-center gap-2 mb-3">
+                            <div className="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-full flex items-center justify-center">
+                              <Zap className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-sm font-semibold text-indigo-600 uppercase tracking-wide">
+                              {currentLesson.section || 'Lesson'}
+                            </span>
+                          </div>
+                          <h1 className="text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-2">
+                            {currentSlide.title}
+                          </h1>
+                          {lessonQuizzes.length > 0 && (
+                            <Button variant="outline" size="sm" className="mt-2" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
+                              <Brain className="w-4 h-4 mr-2" />
+                              Quiz Available ({lessonQuizzes[0].questions?.length} questions)
+                            </Button>
+                          )}
                         </div>
-                        <p className="text-sm font-medium text-emerald-600">Thank you for completing the lesson</p>
+                        {isCompleted && (
+                          <div className="ml-4 text-right">
+                            <div className="w-10 h-10 bg-emerald-100 rounded-full flex items-center justify-center mx-auto mb-2">
+                              <CheckCircle className="w-6 h-6 text-emerald-600" />
+                            </div>
+                            <p className="text-sm font-medium text-emerald-600">Thank you for completing the lesson</p>
+                          </div>
+                        )}
                       </div>
-                    )}
-                  </div>
 
-                  <GoogleSlidePlayer 
-                    content={currentSlide.content}
-                    googleSlidesUrl={currentLesson?.google_slides_url}
-                  />
+                      <GoogleSlidePlayer 
+                        content={currentSlide.content}
+                        googleSlidesUrl={viewMode === 'slides' ? null : currentLesson?.google_slides_url}
+                      />
+                    </>
+                  )}
 
                   {/* Interactive Elements */}
                   {currentSlide.inlineQuiz && (
