@@ -538,8 +538,9 @@ export default function LessonPlayer() {
                   </div>
 
                   <div 
-                    className="prose prose-base md:prose-lg lg:prose-xl max-w-none text-gray-700 leading-relaxed"
+                    className="w-full overflow-hidden"
                     dangerouslySetInnerHTML={{ __html: currentSlide.content }}
+                    style={{ lineHeight: 'normal' }}
                   />
 
                   {/* Interactive Elements */}
