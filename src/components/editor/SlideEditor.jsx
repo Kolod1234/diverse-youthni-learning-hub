@@ -1150,19 +1150,38 @@ Format as a simple bulleted list.`,
             onConvertToColumns={(cols) => {
               const currentContent = currentSlideData?.content || '';
               
-              // Create column structure based on number of columns
-              let columnHtml = '';
+              // Parse content into chunks (images, paragraphs, headings, etc.)
+              const parser = new DOMParser();
+              const doc = parser.parseFromString(currentContent, 'text/html');
+              const elements = Array.from(doc.body.children);
               
-              if (cols === 2) {
-                columnHtml = `<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 15px; border-right: 2px solid #E5E7EB;">${currentContent}</td><td style="width: 50%; vertical-align: top; padding-left: 15px;"><p style="color: #4B5563; font-size: 14px;">Click to add content in second column</p></td></tr></table></div>`;
-              } else if (cols === 3) {
-                columnHtml = `<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 33.33%; vertical-align: top; padding: 0 10px;">${currentContent}</td><td style="width: 33.33%; vertical-align: top; padding: 0 10px; border-left: 2px solid #E5E7EB; border-right: 2px solid #E5E7EB;"><p style="color: #4B5563; font-size: 14px;">Column 2</p></td><td style="width: 33.33%; vertical-align: top; padding: 0 10px;"><p style="color: #4B5563; font-size: 14px;">Column 3</p></td></tr></table></div>`;
-              } else if (cols === 4) {
-                columnHtml = `<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 25%; vertical-align: top; padding: 0 8px;">${currentContent}</td><td style="width: 25%; vertical-align: top; padding: 0 8px; border-left: 2px solid #E5E7EB;"><p style="color: #4B5563; font-size: 14px;">Column 2</p></td><td style="width: 25%; vertical-align: top; padding: 0 8px; border-left: 2px solid #E5E7EB;"><p style="color: #4B5563; font-size: 14px;">Column 3</p></td><td style="width: 25%; vertical-align: top; padding: 0 8px; border-left: 2px solid #E5E7EB;"><p style="color: #4B5563; font-size: 14px;">Column 4</p></td></tr></table></div>`;
-              }
+              // Distribute elements across columns
+              const columnsContent = Array(cols).fill('').map(() => []);
+              elements.forEach((el, idx) => {
+                const columnIndex = idx % cols;
+                columnsContent[columnIndex].push(el.outerHTML);
+              });
+              
+              // Build column HTML
+              let columnHtml = '<div style="margin: 20px 0;"><table style="width: 100%; border-collapse: collapse;"><tr>';
+              
+              const colWidth = (100 / cols).toFixed(2);
+              const padding = cols === 2 ? '15px' : cols === 3 ? '10px' : '8px';
+              
+              columnsContent.forEach((content, idx) => {
+                const borderStyle = idx < cols - 1 ? ' border-right: 2px solid #E5E7EB;' : '';
+                const paddingRight = idx < cols - 1 ? ` padding-right: ${padding};` : '';
+                const paddingLeft = idx > 0 ? ` padding-left: ${padding};` : '';
+                
+                columnHtml += `<td style="width: ${colWidth}%; vertical-align: top;${paddingRight}${paddingLeft}${borderStyle}">`;
+                columnHtml += content.length > 0 ? content.join('') : '<p style="color: #9CA3AF; font-size: 14px;">Add content here</p>';
+                columnHtml += '</td>';
+              });
+              
+              columnHtml += '</tr></table></div>';
               
               updateSlide(currentSlide, 'content', columnHtml);
-              toast.success(`Slide converted to ${cols} columns!`);
+              toast.success(`Content organized into ${cols} columns!`);
             }}
             onClose={() => setShowTemplateBlocks(false)}
           />
