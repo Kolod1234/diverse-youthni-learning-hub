@@ -1159,20 +1159,24 @@ Format as a simple bulleted list.`,
               const columnsContent = Array(cols).fill('').map(() => []);
               elements.forEach((el, idx) => {
                 const columnIndex = idx % cols;
-                // Ensure images are responsive within columns
+                // Ensure images are responsive within columns and add resize control
                 if (el.tagName === 'IMG') {
-                  el.style.width = '100%';
-                  el.style.height = 'auto';
-                  el.style.maxWidth = '100%';
+                  const imgSrc = el.src;
+                  const wrappedImg = `<div style="position: relative; margin: 10px 0;"><div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" /></div>`;
+                  columnsContent[columnIndex].push(wrappedImg);
+                } else {
+                  // Check for images inside divs
+                  const images = el.querySelectorAll('img');
+                  images.forEach(img => {
+                    const imgSrc = img.src;
+                    const wrappedImg = document.createElement('div');
+                    wrappedImg.style.position = 'relative';
+                    wrappedImg.style.margin = '10px 0';
+                    wrappedImg.innerHTML = `<div style="position: absolute; top: -30px; right: 0; background: white; padding: 4px 8px; border-radius: 6px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); display: flex; align-items: center; gap: 6px; z-index: 10;"><span style="font-size: 11px; color: #6B7280; font-weight: 600;">Size:</span><input type="range" min="30" max="100" value="100" oninput="this.nextElementSibling.textContent = this.value + '%'; const img = this.closest('div').nextElementSibling; img.style.width = this.value + '%';" style="width: 80px; height: 4px; cursor: pointer;" /><span style="font-size: 11px; color: #1F2937; font-weight: 600; min-width: 35px;">100%</span></div><img src="${imgSrc}" style="width: 100%; height: auto; max-width: 100%; display: block; border-radius: 8px;" />`;
+                    img.parentNode.replaceChild(wrappedImg, img);
+                  });
+                  columnsContent[columnIndex].push(el.outerHTML);
                 }
-                // Check for images inside divs
-                const images = el.querySelectorAll('img');
-                images.forEach(img => {
-                  img.style.width = '100%';
-                  img.style.height = 'auto';
-                  img.style.maxWidth = '100%';
-                });
-                columnsContent[columnIndex].push(el.outerHTML);
               });
               
               // Build column HTML with explicit equal widths
