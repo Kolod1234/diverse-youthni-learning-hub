@@ -356,7 +356,55 @@ export default function LessonPlayer() {
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [currentSlideIndex, totalSlides, showQuiz]);
+    }, [currentSlideIndex, totalSlides, showQuiz]);
+
+    // Touch swipe handling
+    useEffect(() => {
+    if (showQuiz) return;
+
+    let touchStartX = 0;
+    let touchStartY = 0;
+    let touchEndX = 0;
+    let touchEndY = 0;
+
+    const handleTouchStart = (e) => {
+      touchStartX = e.touches[0].clientX;
+      touchStartY = e.touches[0].clientY;
+    };
+
+    const handleTouchMove = (e) => {
+      touchEndX = e.touches[0].clientX;
+      touchEndY = e.touches[0].clientY;
+    };
+
+    const handleTouchEnd = () => {
+      const deltaX = touchEndX - touchStartX;
+      const deltaY = touchEndY - touchStartY;
+      const minSwipeDistance = 50;
+
+      // Only trigger if horizontal swipe is dominant
+      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
+        if (deltaX > 0) {
+          prevSlide();
+        } else {
+          nextSlide();
+        }
+      }
+    };
+
+    const slideArea = document.querySelector('.slide-swipe-area');
+    if (slideArea) {
+      slideArea.addEventListener('touchstart', handleTouchStart, { passive: true });
+      slideArea.addEventListener('touchmove', handleTouchMove, { passive: true });
+      slideArea.addEventListener('touchend', handleTouchEnd);
+
+      return () => {
+        slideArea.removeEventListener('touchstart', handleTouchStart);
+        slideArea.removeEventListener('touchmove', handleTouchMove);
+        slideArea.removeEventListener('touchend', handleTouchEnd);
+      };
+    }
+    }, [currentSlideIndex, totalSlides, showQuiz]);
 
   // Show quiz if active
   if (showQuiz && selectedQuiz) {
@@ -496,7 +544,7 @@ export default function LessonPlayer() {
 
       {/* Main Content */}
       <div className="flex-1 p-3 sm:p-6 lg:p-8 overflow-y-auto">
-        <div className="w-full max-w-6xl mx-auto">
+        <div className="w-full max-w-6xl mx-auto slide-swipe-area">
           <AnimatePresence initial={false} custom={direction} mode="wait">
             <motion.div
               key={currentSlideIndex}
@@ -508,6 +556,17 @@ export default function LessonPlayer() {
               transition={{
                 x: { type: "spring", stiffness: 300, damping: 30 },
                 opacity: { duration: 0.2 }
+              }}
+              drag="x"
+              dragConstraints={{ left: 0, right: 0 }}
+              dragElastic={0.2}
+              onDragEnd={(e, { offset, velocity }) => {
+                const swipe = Math.abs(offset.x) * velocity.x;
+                if (swipe < -10000) {
+                  nextSlide();
+                } else if (swipe > 10000) {
+                  prevSlide();
+                }
               }}
             >
               <Card className="p-4 sm:p-8 md:p-10 lg:p-12 shadow-xl bg-white border-0">
