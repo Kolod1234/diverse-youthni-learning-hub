@@ -582,7 +582,7 @@ const TEMPLATE_BLOCKS = {
   }
 };
 
-export default function TemplateBlocks({ onInsert, onClose }) {
+export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }) {
   const [searchTerm, setSearchTerm] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('callouts');
 
@@ -662,13 +662,25 @@ export default function TemplateBlocks({ onInsert, onClose }) {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {filteredBlocks.map((block, index) => {
                   const Icon = block.icon;
+                  const isColumnBlock = selectedCategory === 'columns' && (
+                    block.name.includes('Two Columns') || 
+                    block.name.includes('Three Columns') ||
+                    block.name.includes('Four Columns')
+                  );
+                  
                   return (
                     <Card
                       key={index}
                       className="p-4 cursor-pointer hover:shadow-lg transition-all border-2 hover:border-indigo-300 group"
                       onClick={() => {
-                        onInsert(block.html);
-                        onClose();
+                        if (isColumnBlock && onConvertToColumns) {
+                          const cols = block.name.includes('Two') ? 2 : block.name.includes('Three') ? 3 : 4;
+                          onConvertToColumns(cols, block.html);
+                          onClose();
+                        } else {
+                          onInsert(block.html);
+                          onClose();
+                        }
                       }}
                     >
                       <div className="flex items-center gap-3 mb-3">

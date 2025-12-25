@@ -1147,6 +1147,10 @@ Format as a simple bulleted list.`,
               const currentContent = currentSlideData?.content || '';
               updateSlide(currentSlide, 'content', currentContent + html);
             }}
+            onConvertToColumns={(cols, html) => {
+              updateSlide(currentSlide, 'content', html);
+              toast.success(`Slide converted to ${cols} columns!`);
+            }}
             onClose={() => setShowTemplateBlocks(false)}
           />
         )}
