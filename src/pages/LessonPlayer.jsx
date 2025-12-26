@@ -561,10 +561,10 @@ export default function LessonPlayer() {
       </div>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden h-full">
         {viewMode === 'googleslides' ? (
           /* Full-screen Google Slides view */
-          <div className="flex-1 w-full h-full flex flex-col">
+          <div className="flex-1 w-full flex flex-col h-full">
             {/* Learning Objectives for Google Slides */}
             {currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-3 sm:p-4">
@@ -600,7 +600,7 @@ export default function LessonPlayer() {
             <div className="bg-white border-b border-gray-200 px-4 py-2 text-center">
               <p className="text-xs text-gray-600">Swipe left/right or use arrows within the presentation to navigate slides</p>
             </div>
-            <div className="flex-1 overflow-y-auto">
+            <div className="flex-1 h-full">
               <UniversalSlidePlayer 
                 googleSlidesUrl={currentLesson?.google_slides_url}
               />
