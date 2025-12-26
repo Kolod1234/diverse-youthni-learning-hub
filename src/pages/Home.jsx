@@ -105,136 +105,117 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-white">
-      {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-        {/* Animated background elements */}
-        <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-3xl" />
+      {/* Search Bar - Sticky at top */}
+      <section className="sticky top-16 z-40 bg-[#003366] shadow-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center gap-4">
+            <SearchBar 
+              value={searchQuery} 
+              onChange={setSearchQuery}
+              sortBy={sortBy}
+              onSortChange={setSortBy}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* Promotional Hero Banner */}
+      <section className="relative overflow-hidden bg-gradient-to-r from-[#d32f2f] to-[#c62828]">
+        <div className="absolute inset-0 opacity-20">
+          <div className="absolute inset-0" style={{
+            backgroundImage: `repeating-linear-gradient(
+              45deg,
+              transparent,
+              transparent 10px,
+              rgba(255,255,255,.05) 10px,
+              rgba(255,255,255,.05) 20px
+            )`
+          }} />
         </div>
         
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
-          <div className="text-center">
-            <motion.div
-              initial={{ opacity: 0, y: 30 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.8 }}
-              className="max-w-4xl mx-auto"
-            >
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ duration: 0.5, delay: 0.2 }}
-                className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8 border border-white/30"
-              >
-                <Sparkles className="w-4 h-4 text-white" />
-                <span>Transform Your Future with Quality Education</span>
-              </motion.div>
-              
-              <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white drop-shadow-lg">
-                Diverse Youth NI
-                <span className="block mt-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                  Learning Hub
-                </span>
-              </h1>
-              
-              <p className="text-xl sm:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-                Empowering young minds through innovative education. 
-                <span className="block mt-2 text-white/90">Join our thriving community today.</span>
-              </p>
-              
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.6, delay: 0.4 }}
-              >
-                <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
-                    Start Learning Now
-                    <ArrowRight className="w-6 h-6 ml-2" />
-                  </Button>
-                </Link>
-              </motion.div>
-            </motion.div>
-          </div>
-          
-          {/* Enhanced Stats */}
-          <motion.div 
-            initial={{ opacity: 0, y: 50 }}
+        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <motion.div
+            initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.6 }}
-            className="grid grid-cols-2 md:grid-cols-3 gap-8 mt-24 max-w-4xl mx-auto"
+            transition={{ duration: 0.8 }}
+            className="text-center"
           >
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.7 }}
-              className="text-center"
-            >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-cyan-500 to-blue-600 mb-4 shadow-2xl shadow-cyan-500/50">
-                <Users className="w-7 h-7 text-white drop-shadow-lg" />
-              </div>
-              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
-                {totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0'}
-              </div>
-              <div className="text-slate-300 text-base font-medium">Active Learners</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.8 }}
-              className="text-center"
-            >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-violet-500 to-fuchsia-600 mb-4 shadow-2xl shadow-violet-500/50">
-                <BookOpen className="w-7 h-7 text-white drop-shadow-lg" />
-              </div>
-              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
-                {courses.length > 0 ? courses.length : '0'}
-              </div>
-              <div className="text-slate-300 text-base font-medium">Expert Courses</div>
-            </motion.div>
-
-            <motion.div
-              initial={{ opacity: 0, scale: 0.8 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.5, delay: 0.9 }}
-              className="text-center"
-            >
-              <div className="inline-flex items-center justify-center w-14 h-14 rounded-2xl bg-gradient-to-br from-amber-500 to-orange-600 mb-4 shadow-2xl shadow-amber-500/50">
-                <Star className="w-7 h-7 text-white drop-shadow-lg" />
-              </div>
-              <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
-                {averageRating || '4.5'}
-              </div>
-              <div className="text-slate-300 text-base font-medium">Average Rating</div>
-            </motion.div>
+            <div className="inline-block bg-yellow-400 text-[#d32f2f] px-8 py-3 rounded-full text-2xl md:text-3xl font-black mb-6 shadow-2xl transform -rotate-2 animate-pulse">
+              ONLINE LEARNING
+            </div>
+            
+            <div className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1">
+              <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight">
+                Afterschool Hours
+              </h1>
+            </div>
+            
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
+              Our biggest opportunity ever!
+            </h2>
+            
+            <div className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl">
+              <p className="text-5xl md:text-7xl font-black text-[#d32f2f]">
+                FREE ACCESS
+                <span className="block text-3xl md:text-4xl mt-2">ALL COURSES</span>
+              </p>
+            </div>
+            
+            <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8">
+              Limited Time - Don't Miss Out!
+            </p>
+            
+            <Link to={createPageUrl('Explore')}>
+              <Button size="lg" className="bg-yellow-400 text-[#d32f2f] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
+                GET IT NOW!
+                <ArrowRight className="w-8 h-8 ml-3" />
+              </Button>
+            </Link>
           </motion.div>
         </div>
-        
-        {/* Modern wave decoration */}
-        <div className="absolute bottom-0 left-0 right-0">
-          <svg className="w-full h-24 sm:h-32" viewBox="0 0 1440 120" fill="none" preserveAspectRatio="none">
-            <path d="M0,64L48,69.3C96,75,192,85,288,80C384,75,480,53,576,48C672,43,768,53,864,58.7C960,64,1056,64,1152,58.7C1248,53,1344,43,1392,37.3L1440,32L1440,120L1392,120C1344,120,1248,120,1152,120C1056,120,960,120,864,120C768,120,672,120,576,120C480,120,384,120,288,120C192,120,96,120,48,120L0,120Z" fill="white"/>
-          </svg>
+      </section>
+
+      {/* Snap Finance Style Promo Banner */}
+      <section className="bg-[#003366] py-16 md:py-20">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid md:grid-cols-2 gap-12 items-center">
+            <motion.div
+              initial={{ opacity: 0, x: -30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+            >
+              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+                Leadership Programmes
+                <span className="block text-white/90">available here.</span>
+              </h2>
+              <Link to={createPageUrl('Programs')}>
+                <Button size="lg" className="bg-[#e91e63] hover:bg-[#c2185b] text-white text-lg px-10 py-7 h-auto font-bold rounded-full shadow-xl hover:scale-105 transition-all">
+                  FIND OUT MORE
+                  <ArrowRight className="w-6 h-6 ml-3" />
+                </Button>
+              </Link>
+            </motion.div>
+            <motion.div
+              initial={{ opacity: 0, x: 30 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              viewport={{ once: true }}
+              className="relative"
+            >
+              <img
+                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
+                alt="Student learning"
+                className="rounded-2xl shadow-2xl"
+              />
+              <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-full shadow-2xl">
+                <Award className="w-16 h-16 text-[#003366]" />
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
 
       {/* Partners & Funders */}
       <PartnersSection />
-
-      {/* Search Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="max-w-4xl mx-auto">
-          <SearchBar 
-            value={searchQuery} 
-            onChange={setSearchQuery}
-            sortBy={sortBy}
-            onSortChange={setSortBy}
-          />
-        </div>
-      </section>
 
       {/* Image Carousel */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
@@ -371,67 +352,97 @@ export default function Home() {
         </section>
       )}
 
-      {/* Browse by Category */}
+      {/* Explore Online Courses - LeanDirect Style */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
+          className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-emerald-100 to-teal-100 text-emerald-700 text-sm font-semibold mb-4 border border-emerald-200">
-            Explore Learning Paths
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">Browse by Category</h2>
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-            Discover courses tailored to your interests and accelerate your learning journey
-          </p>
+          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+            Explore Our Online Courses
+          </h2>
         </motion.div>
         
-        <div className="mb-8">
-          <CategoryFilter selected={category} onSelect={setCategory} />
-        </div>
-        
         {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {[...Array(8)].map((_, i) => (
-              <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {[...Array(6)].map((_, i) => (
+              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-lg animate-pulse">
                 <div className="aspect-video bg-gray-200" />
-                <div className="p-5 space-y-3">
-                  <div className="h-4 bg-gray-200 rounded w-1/3" />
-                  <div className="h-5 bg-gray-200 rounded" />
+                <div className="p-6 space-y-3">
+                  <div className="h-6 bg-gray-200 rounded" />
                   <div className="h-4 bg-gray-200 rounded w-2/3" />
+                  <div className="h-12 bg-gray-200 rounded" />
                 </div>
               </div>
             ))}
           </div>
         ) : sortedCourses.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-            {sortedCourses.slice(0, 8).map((course, index) => (
-              <CourseCard key={course.id} course={course} index={index} />
+          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {sortedCourses.slice(0, 6).map((course, index) => (
+              <motion.div
+                key={course.id}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: index * 0.1 }}
+                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
+              >
+                <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
+                  {course.thumbnail ? (
+                    <img
+                      src={course.thumbnail}
+                      alt={course.title}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <BookOpen className="w-20 h-20 text-white/50" />
+                    </div>
+                  )}
+                  {course.category && (
+                    <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold uppercase">
+                      {course.category}
+                    </div>
+                  )}
+                </div>
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#003366] transition-colors">
+                    {course.title}
+                  </h3>
+                  <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
+                    {course.description}
+                  </p>
+                  <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
+                    <Button className="w-full bg-[#003366] hover:bg-[#002244] text-white font-bold py-6 rounded-lg text-base">
+                      LEARN MORE
+                    </Button>
+                  </Link>
+                </div>
+              </motion.div>
             ))}
           </div>
         ) : (
           <div className="text-center py-16">
-            <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
             <h3 className="text-xl font-semibold text-gray-900 mb-2">No courses found</h3>
-            <p className="text-gray-500">Try adjusting your search or filter criteria</p>
+            <p className="text-gray-500">Check back soon for new courses</p>
           </div>
         )}
         
-        {sortedCourses.length > 8 && (
+        {sortedCourses.length > 6 && (
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
             viewport={{ once: true }}
             className="text-center mt-12"
           >
             <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-purple-500/40 transition-all hover:scale-105">
+              <Button size="lg" className="bg-[#003366] hover:bg-[#002244] text-white px-12 py-7 h-auto text-lg font-bold rounded-full shadow-xl hover:scale-105 transition-all">
                 View All Courses
-                <ArrowRight className="w-5 h-5 ml-2" />
+                <ArrowRight className="w-6 h-6 ml-3" />
               </Button>
             </Link>
           </motion.div>
