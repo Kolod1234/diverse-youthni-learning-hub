@@ -564,10 +564,44 @@ export default function LessonPlayer() {
       <div className="flex-1 flex flex-col overflow-hidden">
         {viewMode === 'googleslides' ? (
           /* Full-screen Google Slides view */
-          <div className="flex-1 w-full h-full">
-            <UniversalSlidePlayer 
-              googleSlidesUrl={currentLesson?.google_slides_url}
-            />
+          <div className="flex-1 w-full h-full flex flex-col">
+            {/* Learning Objectives for Google Slides */}
+            {currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
+              <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-3 sm:p-4">
+                <button
+                  onClick={() => setShowObjectives(!showObjectives)}
+                  className="w-full flex items-center justify-between hover:opacity-70 transition-opacity"
+                >
+                  <h3 className="font-bold text-blue-900 flex items-center gap-2 text-sm sm:text-base">
+                    <div className="w-6 h-6 sm:w-8 sm:h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                      <Award className="w-4 h-4 sm:w-5 sm:h-5 text-white" />
+                    </div>
+                    Learning Objectives
+                  </h3>
+                  <ChevronRight className={`w-5 h-5 text-blue-900 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+                </button>
+                {showObjectives && (
+                  <ul className="space-y-2 mt-3">
+                    {currentLesson.learning_objectives.map((objective, idx) => (
+                      <li 
+                        key={idx}
+                        className="flex items-start gap-2 text-blue-900 text-xs sm:text-sm"
+                      >
+                        <span className="w-4 h-4 sm:w-5 sm:h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
+                          {idx + 1}
+                        </span>
+                        <span className="flex-1">{objective}</span>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+            <div className="flex-1 overflow-hidden">
+              <UniversalSlidePlayer 
+                googleSlidesUrl={currentLesson?.google_slides_url}
+              />
+            </div>
           </div>
         ) : (
           <div className="flex-1 overflow-y-auto slide-swipe-area">
