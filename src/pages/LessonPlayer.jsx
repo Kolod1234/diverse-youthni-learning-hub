@@ -564,7 +564,7 @@ export default function LessonPlayer() {
       <div className="flex-1 flex flex-col overflow-hidden h-full">
         {viewMode === 'googleslides' ? (
           /* Full-screen Google Slides view */
-          <div className="flex-1 w-full flex flex-col h-full">
+          <div className="flex-1 w-full flex flex-col">
             {/* Learning Objectives for Google Slides */}
             {currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
               <div className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-3 sm:p-4">
@@ -601,10 +601,51 @@ export default function LessonPlayer() {
               <p className="text-sm font-medium text-blue-900">👆 Tap the arrows at the bottom of the presentation to navigate</p>
               <p className="text-xs text-blue-700 mt-1">Use the navigation controls inside the presentation viewer</p>
             </div>
-            <div className="flex-1" style={{ height: '100%', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
+            <div className="flex-1" style={{ height: '70vh', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
               <UniversalSlidePlayer 
                 googleSlidesUrl={currentLesson?.google_slides_url}
               />
+            </div>
+
+            {/* Action Buttons for Google Slides */}
+            <div className="bg-white border-t border-gray-200 p-4 space-y-3">
+              <Button 
+                onClick={markComplete}
+                disabled={updateEnrollmentMutation.isPending || isCompleted}
+                className="w-full h-12 text-base font-semibold bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-600 hover:to-teal-600 shadow-lg hover:shadow-xl transition-all disabled:opacity-50 rounded-xl"
+              >
+                <CheckCircle className="w-5 h-5 mr-2" />
+                {isCompleted ? 'Lesson Completed ✓' : 'Complete Lesson'}
+              </Button>
+
+              {nextLesson && (
+                <Button 
+                  onClick={() => window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-blue-500 to-indigo-500 hover:from-blue-600 hover:to-indigo-600 shadow-lg hover:shadow-xl transition-all rounded-xl"
+                >
+                  Next Lesson
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              )}
+
+              {lessonQuizzes.length > 0 && (
+                <Button 
+                  onClick={() => handleTakeQuiz(lessonQuizzes[0])}
+                  className="w-full h-12 text-base font-semibold bg-gradient-to-r from-violet-500 to-purple-500 hover:from-violet-600 hover:to-purple-600 shadow-lg hover:shadow-xl transition-all rounded-xl"
+                >
+                  <Brain className="w-5 h-5 mr-2" />
+                  Take Quiz ({lessonQuizzes[0].questions?.length})
+                </Button>
+              )}
+
+              {!nextLesson && (
+                <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
+                  <Button variant="outline" className="w-full h-12 text-base font-semibold border-2 hover:bg-gray-50 rounded-xl">
+                    <Trophy className="w-5 h-5 mr-2" />
+                    Back to Course
+                  </Button>
+                </Link>
+              )}
             </div>
           </div>
         ) : (
