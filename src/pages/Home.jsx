@@ -418,6 +418,9 @@ export default function Home() {
         )}
       </section>
 
+      {/* Partners & Funders */}
+      <PartnersSection />
+
       {/* CTA Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600 py-24">
         <div className="absolute inset-0">
@@ -466,5 +469,89 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+function PartnersSection() {
+  const { data: logos = [] } = useQuery({
+    queryKey: ['partner-logos'],
+    queryFn: () => base44.entities.PartnerLogo.list('order', 100),
+  });
+
+  const partners = logos.filter(l => l.type === 'partner');
+  const funders = logos.filter(l => l.type === 'funder');
+
+  if (logos.length === 0) return null;
+
+  return (
+    <section className="py-16 bg-gray-50">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {funders.length > 0 && (
+          <div className="mb-12">
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">Our Funders</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+              {funders.map((logo) => (
+                <motion.div
+                  key={logo.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="flex items-center justify-center"
+                >
+                  {logo.website_url ? (
+                    <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
+                      <img
+                        src={logo.logo_url}
+                        alt={logo.name}
+                        className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                      />
+                    </a>
+                  ) : (
+                    <img
+                      src={logo.logo_url}
+                      alt={logo.name}
+                      className="h-16 w-auto object-contain opacity-70"
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {partners.length > 0 && (
+          <div>
+            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">Our Partners</h2>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+              {partners.map((logo) => (
+                <motion.div
+                  key={logo.id}
+                  initial={{ opacity: 0, scale: 0.9 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  className="flex items-center justify-center"
+                >
+                  {logo.website_url ? (
+                    <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
+                      <img
+                        src={logo.logo_url}
+                        alt={logo.name}
+                        className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                      />
+                    </a>
+                  ) : (
+                    <img
+                      src={logo.logo_url}
+                      alt={logo.name}
+                      className="h-16 w-auto object-contain opacity-70"
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
+      </div>
+    </section>
   );
 }
