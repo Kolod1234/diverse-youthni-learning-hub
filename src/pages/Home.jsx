@@ -418,8 +418,105 @@ export default function Home() {
         )}
       </section>
 
-      {/* Partners & Funders */}
-      <PartnersSection />
+      {/* Why Choose Us Section */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              Why learners love our platform
+            </h2>
+            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+              Experience the future of education with our innovative features
+            </p>
+          </div>
+          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+            {[
+              {
+                icon: Brain,
+                title: 'AI-Powered Learning',
+                description: 'Personalized course recommendations and intelligent quiz generation',
+                color: 'from-blue-500 to-indigo-600'
+              },
+              {
+                icon: Video,
+                title: 'Live Sessions',
+                description: 'Interactive video sessions with expert tutors and real-time collaboration',
+                color: 'from-purple-500 to-pink-600'
+              },
+              {
+                icon: Target,
+                title: 'Gamified Experience',
+                description: 'Earn points, unlock achievements, and track your progress',
+                color: 'from-orange-500 to-red-600'
+              },
+              {
+                icon: Users,
+                title: 'Community-Driven',
+                description: 'Learn together with peers, share knowledge, and grow as a community',
+                color: 'from-emerald-500 to-teal-600'
+              }
+            ].map((feature, idx) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-gray-100"
+                >
+                  <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl mb-4 shadow-md`}>
+                    <Icon className="w-7 h-7 text-white" />
+                  </div>
+                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+                </motion.div>
+              );
+            })}
+          </div>
+        </div>
+      </section>
+
+      {/* Testimonials Section */}
+      <section className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              What our learners say
+            </h2>
+            <p className="text-lg text-gray-600">Real stories from real students</p>
+          </div>
+          <div className="grid md:grid-cols-3 gap-8">
+            {topReviews.slice(0, 3).map((review, idx) => (
+              <motion.div
+                key={idx}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                viewport={{ once: true }}
+                transition={{ delay: idx * 0.1 }}
+                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+              >
+                <div className="flex items-center gap-1 mb-4">
+                  {[...Array(5)].map((_, i) => (
+                    <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                  ))}
+                </div>
+                <p className="text-gray-700 mb-6 leading-relaxed italic">"{review.comment}"</p>
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
+                    {review.user_name?.charAt(0) || 'U'}
+                  </div>
+                  <div>
+                    <p className="font-semibold text-gray-900">{review.user_name}</p>
+                    <p className="text-sm text-gray-500">Verified Student</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
 
       {/* CTA Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600 py-24">
