@@ -29,6 +29,8 @@ export default function LessonPlayer() {
   const [notes, setNotes] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
   const playerRef = useRef(null);
+  const touchStartX = useRef(0);
+  const touchEndX = useRef(0);
 
   // Fetch course lessons for navigation
   const { data: courseLessons = [], isLoading: lessonLoading } = useQuery({
@@ -100,6 +102,30 @@ export default function LessonPlayer() {
   const handlePrevLesson = () => {
     if (prevLesson) {
       navigate(`/LessonPlayer?lesson=${prevLesson.id}&course=${courseId}`);
+    }
+  };
+
+  // Swipe gesture handlers
+  const handleTouchStart = (e) => {
+    touchStartX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchMove = (e) => {
+    touchEndX.current = e.touches[0].clientX;
+  };
+
+  const handleTouchEnd = () => {
+    const swipeDistance = touchStartX.current - touchEndX.current;
+    const minSwipeDistance = 50;
+
+    if (Math.abs(swipeDistance) > minSwipeDistance) {
+      if (swipeDistance > 0) {
+        // Swiped left - go to next lesson
+        handleNextLesson();
+      } else {
+        // Swiped right - go to previous lesson
+        handlePrevLesson();
+      }
     }
   };
 
@@ -247,7 +273,12 @@ export default function LessonPlayer() {
         </AnimatePresence>
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden bg-slate-950">
+        <main 
+          className="flex-1 flex flex-col overflow-hidden bg-slate-950"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
           {/* Content Area */}
           <div className="flex-1 overflow-auto p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
