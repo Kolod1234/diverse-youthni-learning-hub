@@ -141,12 +141,12 @@ export default function Home() {
             className="text-center"
           >
             <div className="inline-block bg-yellow-400 text-[#d32f2f] px-8 py-3 rounded-full text-2xl md:text-3xl font-black mb-6 shadow-2xl transform -rotate-2 animate-pulse">
-              3 DAYS ONLY!
+              ONLINE LEARNING
             </div>
             
             <div className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1">
               <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight">
-                Special Offer!
+                Afterschool Hours
               </h1>
             </div>
             
