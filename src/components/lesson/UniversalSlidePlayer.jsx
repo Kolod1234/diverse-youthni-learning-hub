@@ -179,12 +179,20 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
           }
           
           .slide-content-wrapper img {
-            width: 100% !important;
+            max-width: 100% !important;
+            width: auto !important;
             height: auto !important;
             display: block !important;
             margin: 1rem auto !important;
             border-radius: 8px;
             object-fit: contain;
+            min-width: 300px !important;
+          }
+
+          @media (min-width: 768px) {
+            .slide-content-wrapper img {
+              min-width: 500px !important;
+            }
           }
           
           .slide-content-wrapper table {
