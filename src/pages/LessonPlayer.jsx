@@ -135,10 +135,11 @@ export default function LessonPlayer() {
     });
   }, [allQuizzes, currentLesson]);
   
-  // Create slides from lesson content
+  // Create slides from lesson content or handle document mode
   const slides = currentLesson?.slides || [];
-  const totalSlides = slides.length;
-  const progressPercent = totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0;
+  const isDocumentMode = currentLesson?.content_type === 'document' && currentLesson?.file_url;
+  const totalSlides = isDocumentMode ? 1 : slides.length;
+  const progressPercent = isDocumentMode ? 100 : (totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0);
 
   // Check if current slide is bookmarked
   React.useEffect(() => {
@@ -435,13 +436,13 @@ export default function LessonPlayer() {
     );
   }
 
-  if (!currentLesson || !slides.length) {
+  if (!currentLesson || (!slides.length && !isDocumentMode)) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
         <Card className="max-w-md w-full p-8 text-center">
           <Zap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h2 className="text-xl font-bold text-gray-900 mb-2">No Content Available</h2>
-          <p className="text-gray-600 mb-6">This lesson doesn't have slides yet.</p>
+          <p className="text-gray-600 mb-6">This lesson doesn't have content yet.</p>
           <Link to={createPageUrl('CourseDetails') + `?id=${courseId}`}>
             <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
               <Home className="w-4 h-4 mr-2" />
@@ -453,7 +454,7 @@ export default function LessonPlayer() {
     );
   }
 
-  const currentSlide = slides[currentSlideIndex];
+  const currentSlide = isDocumentMode ? { title: currentLesson.title } : slides[currentSlideIndex];
   const isLastSlide = currentSlideIndex === totalSlides - 1;
 
   // Safety check for currentSlide
@@ -503,9 +504,9 @@ export default function LessonPlayer() {
                 <X className="w-5 h-5" />
               </Button>
             </Link>
-            
+
             <div className="flex items-center gap-2 sm:gap-3">
-              {(currentLesson?.google_slides_url || currentLesson?.slides?.length > 0 || currentLesson?.file_url) && (
+              {!isDocumentMode && (currentLesson?.google_slides_url || currentLesson?.slides?.length > 0) && (
                 <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200">
                   <Eye className="w-4 h-4 text-gray-600" />
                   <select
@@ -518,9 +519,6 @@ export default function LessonPlayer() {
                     )}
                     {currentLesson?.google_slides_url && (
                       <option value="googleslides">📊 Google</option>
-                    )}
-                    {currentLesson?.file_url && (
-                      <option value="document">📎 Document</option>
                     )}
                   </select>
                 </div>
@@ -548,12 +546,14 @@ export default function LessonPlayer() {
             </div>
           </div>
           
-          <div className="flex items-center gap-3">
-            <Progress value={progressPercent} className="flex-1 h-2 bg-gray-200" />
-            <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[60px] text-right">
-              {currentSlideIndex + 1} / {totalSlides}
-            </span>
-          </div>
+          {!isDocumentMode && (
+            <div className="flex items-center gap-3">
+              <Progress value={progressPercent} className="flex-1 h-2 bg-gray-200" />
+              <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[60px] text-right">
+                {currentSlideIndex + 1} / {totalSlides}
+              </span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -619,22 +619,23 @@ export default function LessonPlayer() {
 
                 {/* Slide Content */}
                 <div className="flex-1 mb-6 sm:mb-8 overflow-y-auto">
-                  <div className="flex items-start justify-between mb-4 sm:mb-6">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
-                        <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
-                          <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                  {!isDocumentMode && (
+                    <div className="flex items-start justify-between mb-4 sm:mb-6">
+                      <div className="flex-1">
+                        <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
+                          <div className="w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-br from-indigo-500 to-purple-500 rounded-xl flex items-center justify-center shadow-lg">
+                            <Zap className="w-5 h-5 sm:w-6 sm:h-6 text-white" />
+                          </div>
+                          <div>
+                            <span className="text-xs sm:text-sm font-bold text-indigo-600 uppercase tracking-wider block">
+                              {currentLesson.section || 'Lesson'}
+                            </span>
+                            <span className="text-xs text-gray-500">Slide {currentSlideIndex + 1} of {totalSlides}</span>
+                          </div>
                         </div>
-                        <div>
-                          <span className="text-xs sm:text-sm font-bold text-indigo-600 uppercase tracking-wider block">
-                            {currentLesson.section || 'Lesson'}
-                          </span>
-                          <span className="text-xs text-gray-500">Slide {currentSlideIndex + 1} of {totalSlides}</span>
-                        </div>
-                      </div>
-                      <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 break-words leading-tight">
-                        {currentSlide.title}
-                      </h1>
+                        <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold text-gray-900 mb-3 sm:mb-4 break-words leading-tight">
+                          {currentSlide.title}
+                        </h1>
                       {lessonQuizzes.length > 0 && (
                         <Button variant="outline" size="sm" className="mt-2 border-indigo-200 text-indigo-700 hover:bg-indigo-50" onClick={() => handleTakeQuiz(lessonQuizzes[0])}>
                           <Brain className="w-4 h-4 mr-2" />
@@ -643,18 +644,24 @@ export default function LessonPlayer() {
                           <span className="ml-1">({lessonQuizzes[0].questions?.length})</span>
                         </Button>
                       )}
-                    </div>
-                    {isCompleted && (
+                      </div>
+                      {isCompleted && (
                       <div className="ml-4 text-right hidden sm:block">
                         <div className="w-12 h-12 bg-gradient-to-br from-emerald-50 to-emerald-100 rounded-xl flex items-center justify-center mx-auto mb-2 shadow-sm">
                           <CheckCircle className="w-7 h-7 text-emerald-600" />
                         </div>
                         <p className="text-sm font-semibold text-emerald-600">Completed</p>
                       </div>
-                    )}
-                  </div>
+                      )}
+                      </div>
+                      )}
 
-                  {viewMode === 'document' && currentLesson?.file_url ? (
+                      {isDocumentMode ? (
+                      <UniversalSlidePlayer 
+                      fileUrl={currentLesson.file_url}
+                      fileType={currentLesson.file_type}
+                      />
+                      ) : viewMode === 'document' && currentLesson?.file_url ? (
                     <UniversalSlidePlayer 
                       fileUrl={currentLesson.file_url}
                       fileType={currentLesson.file_type}
@@ -669,7 +676,7 @@ export default function LessonPlayer() {
                   )}
 
                   {/* Interactive Elements */}
-                  {currentSlide.inlineQuiz && (
+                  {!isDocumentMode && currentSlide.inlineQuiz && (
                     <div className="mt-6">
                       <InlineQuiz 
                         quiz={currentSlide.inlineQuiz}
@@ -678,7 +685,7 @@ export default function LessonPlayer() {
                     </div>
                   )}
 
-                  {currentSlide.codePlayground && (
+                  {!isDocumentMode && currentSlide.codePlayground && (
                     <div className="mt-6">
                       <CodePlayground
                         initialCode={currentSlide.codePlayground.code || ''}
@@ -687,7 +694,7 @@ export default function LessonPlayer() {
                       />
                     </div>
                   )}
-                </div>
+                  </div>
 
                 {/* Actions */}
                 {isLastSlide ? (
@@ -744,8 +751,9 @@ export default function LessonPlayer() {
           </AnimatePresence>
 
           {/* Navigation Dots */}
-          <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
-            {slides.map((_, idx) => (
+          {!isDocumentMode && (
+            <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
+              {slides.map((_, idx) => (
               <button
                 key={idx}
                 onClick={() => {
@@ -759,10 +767,12 @@ export default function LessonPlayer() {
                 } rounded-full`}
               />
             ))}
-          </div>
+            </div>
+            )}
 
-          {/* Arrow Buttons */}
-          <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4">
+            {/* Arrow Buttons */}
+            {!isDocumentMode && (
+            <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4">
             <Button
               onClick={prevSlide}
               disabled={currentSlideIndex === 0}
@@ -781,8 +791,9 @@ export default function LessonPlayer() {
               className="hover:bg-gray-50 disabled:opacity-30 w-10 h-10 sm:w-12 sm:h-12 rounded-xl border-2 shadow-sm"
             >
               <ArrowRight className="w-5 h-5 sm:w-6 sm:h-6" />
-            </Button>
-          </div>
+              </Button>
+              </div>
+              )}
 
           {/* Q&A Section */}
           {showQA && (
