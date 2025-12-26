@@ -3,12 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
 import { Textarea } from '@/components/ui/textarea';
-import UniversalSlidePlayer from '@/components/lesson/UniversalSlidePlayer';
 import {
-  ChevronLeft, ChevronRight, BookOpen, FileText, X, Menu,
-  CheckCircle, Circle, Star, Download, Maximize, Minimize, Target
+  ChevronLeft, ChevronRight, X, Users, Play, Maximize, Minimize, Camera,
+  CheckCircle, Circle, BookOpen, Download, Target, FileText
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -22,13 +20,15 @@ export default function LessonPlayer() {
   const courseId = params.get('course');
 
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [showNotes, setShowNotes] = useState(false);
-  const [showResources, setShowResources] = useState(false);
   const [showSidebar, setShowSidebar] = useState(true);
   const [showObjectives, setShowObjectives] = useState(true);
   const [notes, setNotes] = useState('');
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  
   const playerRef = useRef(null);
+  const videoRef = useRef(null);
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
@@ -93,6 +93,23 @@ export default function LessonPlayer() {
     }
   };
 
+  // Camera handling
+  const handleCamera = async () => {
+    try {
+      if (!isCameraOn) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+        setIsCameraOn(true);
+      } else {
+        const stream = videoRef.current.srcObject;
+        stream.getTracks().forEach(track => track.stop());
+        setIsCameraOn(false);
+      }
+    } catch (err) {
+      toast.error("Camera access failed. Please check permissions.");
+    }
+  };
+
   // Navigation
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
@@ -126,10 +143,8 @@ export default function LessonPlayer() {
 
     if (Math.abs(swipeDistance) > minSwipeDistance) {
       if (swipeDistance > 0) {
-        // Swiped left - go to next lesson
         handleNextLesson();
       } else {
-        // Swiped right - go to previous lesson
         handlePrevLesson();
       }
     }
@@ -162,60 +177,74 @@ export default function LessonPlayer() {
     );
   }
 
-  const slides = lesson.slides || [];
-  const currentSlide = slides[currentSlideIndex];
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
+  const slides = lesson.slides || [];
+
+  // Get embed URL for Google Slides
+  const getSlideEmbedUrl = () => {
+    if (lesson.google_slides_url) {
+      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (presentationId) {
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`;
+      }
+    }
+    return null;
+  };
+
+  const slideEmbedUrl = getSlideEmbedUrl();
 
   return (
-    <div ref={playerRef} className="fixed inset-0 bg-slate-950 text-white overflow-hidden flex flex-col">
+    <div ref={playerRef} className="fixed inset-0 flex flex-col bg-slate-950 text-white overflow-hidden">
       {/* Header */}
-      <header className="h-14 md:h-16 bg-slate-900 border-b border-slate-800 flex items-center justify-between px-3 md:px-6 flex-none z-20">
-        <div className="flex items-center gap-2 md:gap-4 flex-1 min-w-0">
+      <header className="h-14 flex items-center justify-between px-4 bg-slate-900 border-b border-slate-800 flex-none z-10">
+        <div className="flex items-center gap-3 overflow-hidden flex-1 min-w-0">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => navigate(-1)}
-            className="text-slate-400 hover:text-white p-1 md:p-2"
+            className="text-slate-400 hover:text-white p-1"
           >
-            <X className="w-4 h-4 md:w-5 md:h-5" />
+            <X className="w-5 h-5" />
           </Button>
-          <h1 className="text-xs md:text-base font-semibold truncate">{lesson.title}</h1>
+          <h1 className="text-sm font-medium truncate">{lesson.title}</h1>
+          {isCompleted && (
+            <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+          )}
         </div>
-
+        
         <div className="flex items-center gap-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={() => setShowSidebar(!showSidebar)}
-            className="lg:hidden text-slate-400 hover:text-white p-2"
+            className="text-slate-400 hover:text-white lg:hidden"
           >
-            <Menu className="w-4 h-4" />
+            <Users className="w-5 h-5" />
           </Button>
-
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleFullscreen}
-            className="hidden md:flex text-slate-400 hover:text-white p-2"
+            className="text-slate-400 hover:text-white hidden md:flex"
           >
-            {isFullscreen ? <Minimize className="w-4 h-4" /> : <Maximize className="w-4 h-4" />}
+            {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
           </Button>
-
           {!isCompleted && (
             <Button
               size="sm"
               onClick={() => markCompleteMutation.mutate()}
-              className="bg-green-600 hover:bg-green-700 text-xs md:text-sm px-2 md:px-4 h-8 md:h-9"
+              className="bg-green-600 hover:bg-green-700"
             >
-              <CheckCircle className="w-3 h-3 md:w-4 md:h-4 mr-1" />
-              <span className="hidden sm:inline">Complete</span>
+              <CheckCircle className="w-4 h-4 mr-1" />
+              Complete
             </Button>
           )}
         </div>
       </header>
 
+      {/* Main Layout */}
       <div className="flex flex-1 overflow-hidden relative">
-        {/* Sidebar - Responsive */}
+        {/* Sidebar - Course Navigation */}
         <AnimatePresence>
           {showSidebar && (
             <motion.aside
@@ -223,9 +252,9 @@ export default function LessonPlayer() {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25 }}
-              className="absolute lg:relative z-10 w-72 md:w-80 lg:w-72 xl:w-80 bg-slate-900 border-r border-slate-800 flex flex-col h-full shadow-xl lg:shadow-none"
+              className="absolute lg:relative z-10 w-72 bg-slate-900/95 backdrop-blur-sm border-r border-slate-800 flex flex-col h-full shadow-xl lg:shadow-none"
             >
-              <div className="p-3 md:p-4 border-b border-slate-800 flex items-center justify-between">
+              <div className="p-4 border-b border-slate-800 flex items-center justify-between">
                 <h3 className="font-semibold text-sm">Course Content</h3>
                 <Button
                   variant="ghost"
@@ -237,7 +266,7 @@ export default function LessonPlayer() {
                 </Button>
               </div>
 
-              <div className="flex-1 overflow-y-auto p-3 md:p-4 space-y-2">
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {sortedLessons.map((l, idx) => {
                   const completed = enrollment?.completed_lessons?.includes(l.id);
                   const isCurrent = l.id === lessonId;
@@ -245,7 +274,10 @@ export default function LessonPlayer() {
                   return (
                     <button
                       key={l.id}
-                      onClick={() => navigate(`/LessonPlayer?lesson=${l.id}&course=${courseId}`)}
+                      onClick={() => {
+                        navigate(`/LessonPlayer?lesson=${l.id}&course=${courseId}`);
+                        setShowSidebar(false);
+                      }}
                       className={`w-full text-left p-3 rounded-lg transition-all text-sm ${
                         isCurrent
                           ? 'bg-orange-600 text-white'
@@ -274,192 +306,164 @@ export default function LessonPlayer() {
                   );
                 })}
               </div>
+
+              {/* Webcam Preview */}
+              <div className="p-2 bg-black border-t border-slate-800 relative aspect-video">
+                <video 
+                  ref={videoRef} 
+                  autoPlay 
+                  playsInline 
+                  muted 
+                  className={`w-full h-full object-cover rounded ${!isCameraOn && 'hidden'}`} 
+                />
+                {!isCameraOn && (
+                  <div className="absolute inset-0 flex items-center justify-center text-slate-600 bg-slate-900 rounded">
+                    <Camera size={32} />
+                  </div>
+                )}
+              </div>
             </motion.aside>
           )}
         </AnimatePresence>
 
-        {/* Main Content */}
+        {/* Main Content Area */}
         <main 
-          className="flex-1 flex flex-col overflow-hidden bg-slate-950"
+          className="flex-1 flex flex-col relative bg-slate-950 overflow-hidden"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
         >
-          {/* Content Area */}
-          <div className="flex-1 overflow-auto p-4 md:p-6">
-            <div className="max-w-7xl mx-auto">
+          {!showQuiz ? (
+            <div className="flex-1 flex flex-col p-4">
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-                <Card className="mb-6 bg-gradient-to-r from-blue-900 to-indigo-900 border-blue-700">
+                <div className="mb-4">
                   <button
                     onClick={() => setShowObjectives(!showObjectives)}
-                    className="w-full p-4 md:p-6 flex items-center justify-between text-left"
+                    className="w-full bg-gradient-to-r from-blue-900 to-indigo-900 border border-blue-700 rounded-xl p-4 flex items-center justify-between text-left"
                   >
                     <div className="flex items-center gap-3">
                       <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
                         <Target className="w-5 h-5 text-blue-300" />
                       </div>
                       <div>
-                        <h3 className="font-semibold text-white text-base md:text-lg">Learning Objectives</h3>
-                        <p className="text-xs text-blue-200">What you'll learn in this lesson</p>
+                        <h3 className="font-semibold text-white">Learning Objectives</h3>
+                        <p className="text-xs text-blue-200">What you'll learn</p>
                       </div>
                     </div>
                     <ChevronRight className={`w-5 h-5 text-blue-300 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
                   </button>
+                  
                   <AnimatePresence>
                     {showObjectives && (
                       <motion.div
                         initial={{ height: 0, opacity: 0 }}
                         animate={{ height: 'auto', opacity: 1 }}
                         exit={{ height: 0, opacity: 0 }}
-                        transition={{ duration: 0.2 }}
-                        className="overflow-hidden"
+                        className="overflow-hidden bg-slate-900 rounded-b-xl border-x border-b border-blue-700/50 p-4"
                       >
-                        <div className="px-4 md:px-6 pb-4 md:pb-6 space-y-3">
+                        <div className="space-y-2">
                           {lesson.learning_objectives.map((objective, idx) => (
                             <div key={idx} className="flex items-start gap-3">
-                              <CheckCircle className="w-5 h-5 text-green-400 shrink-0 mt-0.5" />
-                              <p className="text-blue-50 text-sm md:text-base">{objective}</p>
+                              <CheckCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                              <p className="text-blue-50 text-sm">{objective}</p>
                             </div>
                           ))}
                         </div>
                       </motion.div>
                     )}
                   </AnimatePresence>
-                </Card>
-              )}
-
-              {/* Render based on content type */}
-              {lesson.google_slides_url ? (
-                <UniversalSlidePlayer googleSlidesUrl={lesson.google_slides_url} />
-              ) : lesson.file_url ? (
-                <UniversalSlidePlayer
-                  fileUrl={lesson.file_url}
-                  fileType={lesson.file_type}
-                />
-              ) : lesson.slides && lesson.slides.length > 0 ? (
-                <div className="space-y-6">
-                  <UniversalSlidePlayer content={currentSlide?.content} />
-
-                  {/* Slide Navigation */}
-                  {slides.length > 1 && (
-                    <div className="flex items-center justify-between gap-4 bg-slate-900 p-3 rounded-xl">
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                        disabled={currentSlideIndex === 0}
-                        className="text-xs text-white border-slate-700 hover:bg-slate-800"
-                      >
-                        <ChevronLeft className="w-4 h-4 mr-1" />
-                        Previous
-                      </Button>
-
-                      <span className="text-xs text-slate-400">
-                        Slide {currentSlideIndex + 1} of {slides.length}
-                      </span>
-
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        onClick={() =>
-                          setCurrentSlideIndex(Math.min(slides.length - 1, currentSlideIndex + 1))
-                        }
-                        disabled={currentSlideIndex === slides.length - 1}
-                        className="text-xs text-white border-slate-700 hover:bg-slate-800"
-                      >
-                        Next
-                        <ChevronRight className="w-4 h-4 ml-1" />
-                      </Button>
-                    </div>
-                  )}
                 </div>
-              ) : (
-                <Card className="p-8 bg-slate-900 border-slate-800 text-center">
-                  <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-white mb-2">No content available</h3>
-                  <p className="text-slate-400">This lesson doesn't have any content yet.</p>
-                </Card>
               )}
 
-              {/* Resources Section */}
-              {lesson.resources && lesson.resources.length > 0 && (
-                <Card className="mt-6 bg-slate-900 border-slate-800 p-4 md:p-6">
-                  <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm md:text-base">
-                    <Download className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
-                    Resources
-                  </h3>
-                  <div className="space-y-2">
-                    {lesson.resources.map((resource, idx) => (
-                      <a
-                        key={idx}
-                        href={resource.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="flex items-center gap-3 p-3 bg-slate-800 hover:bg-slate-700 rounded-lg transition-colors text-sm"
-                      >
-                        <FileText className="w-4 h-4 text-slate-400" />
-                        <span className="flex-1 truncate">{resource.name}</span>
-                        <Download className="w-4 h-4 text-slate-400" />
-                      </a>
-                    ))}
+              {/* Slide Display */}
+              <div className="flex-1 w-full relative bg-white rounded-xl overflow-hidden shadow-2xl">
+                {slideEmbedUrl ? (
+                  <iframe 
+                    src={slideEmbedUrl} 
+                    className="absolute top-0 left-0 w-full h-full border-0"
+                    allowFullScreen
+                    title="Lesson Slides"
+                  />
+                ) : lesson.file_url ? (
+                  <iframe 
+                    src={lesson.file_url} 
+                    className="absolute top-0 left-0 w-full h-full border-0"
+                    title="Lesson Content"
+                  />
+                ) : slides.length > 0 ? (
+                  <div className="absolute inset-0 p-8 overflow-auto bg-slate-900">
+                    <div 
+                      className="prose prose-invert max-w-none"
+                      dangerouslySetInnerHTML={{ __html: slides[currentSlideIndex]?.content }}
+                    />
                   </div>
-                </Card>
-              )}
-
-              {/* Notes Section */}
-              <Card className="mt-6 bg-slate-900 border-slate-800 p-4 md:p-6">
-                <h3 className="font-semibold mb-4 flex items-center gap-2 text-sm md:text-base">
-                  <BookOpen className="w-4 h-4 md:w-5 md:h-5 text-orange-500" />
-                  My Notes
-                </h3>
-                <Textarea
-                  value={notes}
-                  onChange={(e) => setNotes(e.target.value)}
-                  placeholder="Take notes during the lesson..."
-                  className="min-h-[120px] bg-slate-800 border-slate-700 text-white text-sm"
-                />
-              </Card>
-            </div>
-          </div>
-
-          {/* Bottom Navigation */}
-          <div className="border-t border-slate-800 bg-slate-900 p-3 md:p-4 flex-none">
-            <div className="max-w-7xl mx-auto flex items-center justify-between gap-4">
-              <Button
-                variant="outline"
-                onClick={handlePrevLesson}
-                disabled={!prevLesson}
-                className="text-xs md:text-sm text-white bg-slate-800 border-slate-700 hover:bg-slate-700 disabled:opacity-50"
-                size="sm"
-              >
-                <ChevronLeft className="w-4 h-4 mr-1" />
-                <span className="hidden sm:inline">Previous</span>
-              </Button>
-
-              <div className="text-center flex-1 min-w-0">
-                <div className="text-xs text-slate-400">
-                  Lesson {currentLessonIndex + 1} of {sortedLessons.length}
-                </div>
-                {isCompleted && (
-                  <div className="flex items-center justify-center gap-1 text-xs text-green-400 mt-1">
-                    <CheckCircle className="w-3 h-3" />
-                    Completed
+                ) : (
+                  <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-400">
+                    <div className="text-center">
+                      <FileText className="w-16 h-16 mx-auto mb-4" />
+                      <p>No content available</p>
+                    </div>
                   </div>
                 )}
               </div>
 
-              <Button
-                onClick={handleNextLesson}
-                disabled={!nextLesson}
-                className="bg-orange-600 hover:bg-orange-700 text-white text-xs md:text-sm disabled:opacity-50"
-                size="sm"
-              >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight className="w-4 h-4 ml-1" />
-              </Button>
+              {/* Bottom Controls */}
+              <div className="h-16 flex items-center justify-between px-2 flex-none mt-4">
+                <button 
+                  onClick={handleCamera} 
+                  className="text-xs text-slate-400 hover:text-white flex items-center gap-2"
+                >
+                  <Camera size={16} /> {isCameraOn ? 'Stop Camera' : 'Start Camera'}
+                </button>
+                
+                <div className="flex items-center gap-3">
+                  <Button
+                    variant="outline"
+                    onClick={handlePrevLesson}
+                    disabled={!prevLesson}
+                    className="text-white bg-slate-800 border-slate-700 hover:bg-slate-700"
+                    size="sm"
+                  >
+                    <ChevronLeft className="w-4 h-4 mr-1" />
+                    Previous
+                  </Button>
+
+                  <span className="text-xs text-slate-400">
+                    {currentLessonIndex + 1} / {sortedLessons.length}
+                  </span>
+
+                  <Button
+                    onClick={handleNextLesson}
+                    disabled={!nextLesson}
+                    className="bg-orange-600 hover:bg-orange-700"
+                    size="sm"
+                  >
+                    Next
+                    <ChevronRight className="w-4 h-4 ml-1" />
+                  </Button>
+                </div>
+              </div>
             </div>
-          </div>
+          ) : (
+            <div className="flex-1 flex items-center justify-center p-6">
+              <div className="bg-slate-900 border border-slate-800 p-10 rounded-3xl max-w-lg w-full text-center">
+                <h2 className="text-2xl font-bold mb-4">Ready for the Quiz?</h2>
+                <p className="text-slate-400 mb-8">Test your understanding of this lesson.</p>
+                <div className="flex flex-col gap-3">
+                  <Button className="bg-blue-600 hover:bg-blue-700 py-6 text-lg">
+                    Start Quiz
+                  </Button>
+                  <button 
+                    onClick={() => setShowQuiz(false)} 
+                    className="text-slate-500 hover:text-white text-sm"
+                  >
+                    Review Content Again
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
         </main>
       </div>
     </div>
