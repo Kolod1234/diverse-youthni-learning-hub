@@ -84,13 +84,20 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
     const presentationId = googleSlidesUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
     if (presentationId) {
       return (
-        <div className="w-full h-full">
+        <div className="w-full h-full" style={{ touchAction: 'auto' }}>
           <iframe 
-            src={`https://docs.google.com/presentation/d/${presentationId}/preview?rm=minimal`}
+            src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
             className="w-full h-full border-0"
-            style={{ width: '100%', height: '100%', minHeight: '100%' }}
+            style={{ 
+              width: '100%', 
+              height: '100%', 
+              minHeight: '100%',
+              touchAction: 'auto',
+              pointerEvents: 'auto'
+            }}
             allowFullScreen
             loading="lazy"
+            allow="touch"
           />
         </div>
       );

@@ -597,8 +597,9 @@ export default function LessonPlayer() {
                 )}
               </div>
             )}
-            <div className="bg-white border-b border-gray-200 px-4 py-2 text-center">
-              <p className="text-xs text-gray-600">Swipe left/right or use arrows within the presentation to navigate slides</p>
+            <div className="bg-blue-50 border-b border-blue-200 px-4 py-3 text-center">
+              <p className="text-sm font-medium text-blue-900">👆 Tap the arrows at the bottom of the presentation to navigate</p>
+              <p className="text-xs text-blue-700 mt-1">Use the navigation controls inside the presentation viewer</p>
             </div>
             <div className="flex-1 h-full">
               <UniversalSlidePlayer 
