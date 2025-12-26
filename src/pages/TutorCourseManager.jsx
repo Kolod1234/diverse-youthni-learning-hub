@@ -633,16 +633,17 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      
+
       // Determine file type
       let fileType = 'pdf';
       if (file.type.includes('presentation')) fileType = 'pptx';
       else if (file.type.includes('word')) fileType = 'docx';
-      
+
       setFormData({ 
         ...formData, 
         file_url,
-        file_type: fileType
+        file_type: fileType,
+        content_type: 'document'
       });
       toast.success('Document uploaded successfully!');
     } catch (error) {
