@@ -25,6 +25,7 @@ export default function LessonPlayerClassic() {
 
   const [showSidebar, setShowSidebar] = useState(true);
   const [showObjectives, setShowObjectives] = useState(true);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -107,8 +108,6 @@ export default function LessonPlayerClassic() {
   }
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
-
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
 
   const getSlideEmbedUrl = () => {
     if (lesson.google_slides_url) {
