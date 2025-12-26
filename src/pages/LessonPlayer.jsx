@@ -548,7 +548,7 @@ export default function LessonPlayer() {
             </div>
           </div>
           
-          {!isDocumentMode && (
+          {!isDocumentMode && viewMode !== 'googleslides' && (
             <div className="flex items-center gap-3">
               <Progress value={progressPercent} className="flex-1 h-2 bg-gray-200" />
               <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[60px] text-right">
@@ -621,7 +621,7 @@ export default function LessonPlayer() {
 
                 {/* Slide Content */}
                 <div className="flex-1 mb-6 sm:mb-8 overflow-y-auto">
-                  {!isDocumentMode && (
+                  {!isDocumentMode && viewMode !== 'googleslides' && (
                     <div className="flex items-start justify-between mb-4 sm:mb-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -663,7 +663,11 @@ export default function LessonPlayer() {
                       fileUrl={currentLesson.file_url}
                       fileType={currentLesson.file_type}
                       />
-                      ) : viewMode === 'document' && currentLesson?.file_url ? (
+                      ) : viewMode === 'googleslides' ? (
+                    <UniversalSlidePlayer 
+                      googleSlidesUrl={currentLesson?.google_slides_url}
+                    />
+                  ) : viewMode === 'document' && currentLesson?.file_url ? (
                     <UniversalSlidePlayer 
                       fileUrl={currentLesson.file_url}
                       fileType={currentLesson.file_type}
@@ -671,7 +675,6 @@ export default function LessonPlayer() {
                   ) : (
                     <UniversalSlidePlayer 
                       content={currentSlide?.content}
-                      googleSlidesUrl={viewMode === 'googleslides' ? currentLesson?.google_slides_url : null}
                       fileUrl={currentSlide?.file_url}
                       fileType={currentSlide?.file_type}
                     />
@@ -753,7 +756,7 @@ export default function LessonPlayer() {
           </AnimatePresence>
 
           {/* Navigation Dots */}
-          {!isDocumentMode && (
+          {!isDocumentMode && viewMode !== 'googleslides' && (
             <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
               {slides.map((_, idx) => (
               <button
@@ -773,7 +776,7 @@ export default function LessonPlayer() {
             )}
 
             {/* Arrow Buttons */}
-            {!isDocumentMode && (
+            {!isDocumentMode && viewMode !== 'googleslides' && (
             <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4">
             <Button
               onClick={prevSlide}
