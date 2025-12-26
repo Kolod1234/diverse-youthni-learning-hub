@@ -760,7 +760,7 @@ export default function LessonPlayer() {
           </AnimatePresence>
 
           {/* Navigation Dots */}
-          {!isDocumentMode && viewMode !== 'googleslides' && (
+          {!isDocumentMode && (
             <div className="flex items-center justify-center gap-2 mt-6 sm:mt-8">
               {slides.map((_, idx) => (
               <button
@@ -806,21 +806,21 @@ export default function LessonPlayer() {
 
               {/* Q&A Section */}
               {showQA && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              className="mt-6"
-            >
-              <LessonQA
-                lessonId={lessonId}
-                courseId={courseId}
-                user={user}
-                currentSlideIndex={currentSlideIndex}
-              />
-            </motion.div>
-          )}
-        </div>
-      </div>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6"
+                >
+                  <LessonQA
+                    lessonId={lessonId}
+                    courseId={courseId}
+                    user={user}
+                    currentSlideIndex={currentSlideIndex}
+                  />
+                </motion.div>
+              )}
+              </div>
+              )}
 
       {/* Dialogs */}
       {course && currentLesson && (
