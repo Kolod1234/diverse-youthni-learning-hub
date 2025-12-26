@@ -4,9 +4,15 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home, BookOpen
+  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout
 } from 'lucide-react';
 import { toast } from 'sonner';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -208,10 +214,29 @@ export default function LessonPlayerPowerPoint() {
           
           {/* Toolbar */}
           <div className="h-16 bg-white border-b border-gray-200 flex items-center px-5 gap-4">
-            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => navigate(-1)}>
+            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => navigate(`/CourseDetails?id=${courseId}`)}>
               <Home size={20} className="text-gray-600" />
-              <span className="text-[11px] mt-1">Home</span>
+              <span className="text-[11px] mt-1">Exit</span>
             </div>
+            <div className="w-[1px] h-10 bg-gray-200" />
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]">
+                  <Layout size={20} className="text-gray-600" />
+                  <span className="text-[11px] mt-1">Style</span>
+                </div>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
+                  <Presentation className="w-4 h-4 mr-2" />
+                  PowerPoint (Current)
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
+                  <Layout className="w-4 h-4 mr-2" />
+                  Classic Style
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
             <div className="w-[1px] h-10 bg-gray-200" />
             <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={togglePresentation}>
               <Presentation size={20} className="text-gray-600" />

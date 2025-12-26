@@ -20,9 +20,12 @@ export default function LessonPlayer() {
     loadUser();
   }, []);
 
-  // Check if user has a preference saved
+  // Auto-redirect to default player if user has no preference yet
   useEffect(() => {
-    if (user?.player_preference) {
+    if (user && !user.player_preference) {
+      // Default to Classic for first-time users
+      navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`);
+    } else if (user?.player_preference) {
       handlePlayerSelect(user.player_preference);
     }
   }, [user]);

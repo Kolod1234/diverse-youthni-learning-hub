@@ -4,10 +4,16 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-  BookOpen, Menu, Maximize2
+  BookOpen, Menu, Maximize2, Layout, Presentation
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
@@ -123,7 +129,7 @@ export default function LessonPlayerClassic() {
       {/* Header */}
       <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
         <div className="flex items-center gap-4">
-          <button onClick={() => navigate(-1)} className="p-2 hover:bg-gray-100 rounded-lg">
+          <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg">
             <X className="w-5 h-5" />
           </button>
           <div>
@@ -138,6 +144,26 @@ export default function LessonPlayerClassic() {
           >
             <Menu className="w-5 h-5" />
           </button>
+          
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <Button variant="outline" size="sm">
+                <Layout className="w-4 h-4 mr-2" />
+                Player Style
+              </Button>
+            </DropdownMenuTrigger>
+            <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
+                <Layout className="w-4 h-4 mr-2" />
+                Classic Style (Current)
+              </DropdownMenuItem>
+              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
+                <Presentation className="w-4 h-4 mr-2" />
+                PowerPoint Style
+              </DropdownMenuItem>
+            </DropdownMenuContent>
+          </DropdownMenu>
+
           {!isCompleted && (
             <Button 
               onClick={() => markCompleteMutation.mutate()}
