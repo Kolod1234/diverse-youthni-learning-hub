@@ -601,7 +601,7 @@ export default function LessonPlayer() {
               <p className="text-sm font-medium text-blue-900">👆 Tap the arrows at the bottom of the presentation to navigate</p>
               <p className="text-xs text-blue-700 mt-1">Use the navigation controls inside the presentation viewer</p>
             </div>
-            <div className="flex-1 h-full">
+            <div className="flex-1" style={{ height: '100%', overflow: 'auto', WebkitOverflowScrolling: 'touch' }}>
               <UniversalSlidePlayer 
                 googleSlidesUrl={currentLesson?.google_slides_url}
               />
