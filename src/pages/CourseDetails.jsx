@@ -269,7 +269,8 @@ export default function CourseDetails() {
                     <Button 
                       className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl"
                       onClick={() => {
-                        const targetLessonId = enrollment.current_lesson_id || lessons[0]?.id;
+                        const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
+                        const targetLessonId = enrollment.current_lesson_id || sortedLessons[0]?.id;
                         if (targetLessonId) {
                           navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${targetLessonId}`);
                         }
