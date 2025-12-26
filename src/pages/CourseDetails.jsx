@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
@@ -27,6 +27,7 @@ const levelColors = {
 export default function CourseDetails() {
   const [user, setUser] = useState(null);
   const queryClient = useQueryClient();
+  const navigate = useNavigate();
   
   const urlParams = new URLSearchParams(window.location.search);
   const courseId = urlParams.get('id');
@@ -270,7 +271,7 @@ export default function CourseDetails() {
                       onClick={() => {
                         const targetLessonId = enrollment.current_lesson_id || lessons[0]?.id;
                         if (targetLessonId) {
-                          window.location.href = createPageUrl('LessonPlayer') + `?course=${courseId}&lesson=${targetLessonId}`;
+                          navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${targetLessonId}`);
                         }
                       }}
                     >
@@ -367,7 +368,7 @@ export default function CourseDetails() {
                                  key={lesson.id}
                                  onClick={() => {
                                    if (canAccess) {
-                                     window.location.href = createPageUrl('LessonPlayer') + `?course=${courseId}&lesson=${lesson.id}`;
+                                     navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${lesson.id}`);
                                    }
                                  }}
                                  className={`px-6 py-3 ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
