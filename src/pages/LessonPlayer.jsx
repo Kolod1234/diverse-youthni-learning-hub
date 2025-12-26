@@ -110,12 +110,28 @@ export default function LessonPlayer() {
     }
   };
 
-  if (lessonLoading || !lesson) {
+  if (lessonLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100">
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950">
         <div className="text-center">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-slate-600">Loading lesson...</p>
+          <p className="text-white">Loading lesson...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!lesson) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950">
+        <div className="text-center text-white">
+          <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
+          <p className="text-slate-400 mb-4">Lesson ID: {lessonId || 'None'}</p>
+          <p className="text-slate-400 mb-4">Course ID: {courseId || 'None'}</p>
+          <Button onClick={() => navigate(-1)} variant="outline" className="text-white border-slate-700">
+            Go Back
+          </Button>
         </div>
       </div>
     );
@@ -284,18 +300,14 @@ export default function LessonPlayer() {
               )}
 
               {/* Render based on content type */}
-              {lesson.google_slides_url && (
+              {lesson.google_slides_url ? (
                 <UniversalSlidePlayer googleSlidesUrl={lesson.google_slides_url} />
-              )}
-
-              {lesson.file_url && (
+              ) : lesson.file_url ? (
                 <UniversalSlidePlayer
                   fileUrl={lesson.file_url}
                   fileType={lesson.file_type}
                 />
-              )}
-
-              {lesson.slides && lesson.slides.length > 0 && !lesson.google_slides_url && !lesson.file_url && (
+              ) : lesson.slides && lesson.slides.length > 0 ? (
                 <div className="space-y-6">
                   <UniversalSlidePlayer content={currentSlide?.content} />
 
@@ -307,7 +319,7 @@ export default function LessonPlayer() {
                         size="sm"
                         onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                         disabled={currentSlideIndex === 0}
-                        className="text-xs"
+                        className="text-xs text-white border-slate-700 hover:bg-slate-800"
                       >
                         <ChevronLeft className="w-4 h-4 mr-1" />
                         Previous
@@ -324,7 +336,7 @@ export default function LessonPlayer() {
                           setCurrentSlideIndex(Math.min(slides.length - 1, currentSlideIndex + 1))
                         }
                         disabled={currentSlideIndex === slides.length - 1}
-                        className="text-xs"
+                        className="text-xs text-white border-slate-700 hover:bg-slate-800"
                       >
                         Next
                         <ChevronRight className="w-4 h-4 ml-1" />
@@ -332,6 +344,12 @@ export default function LessonPlayer() {
                     </div>
                   )}
                 </div>
+              ) : (
+                <Card className="p-8 bg-slate-900 border-slate-800 text-center">
+                  <FileText className="w-16 h-16 text-slate-600 mx-auto mb-4" />
+                  <h3 className="text-lg font-semibold text-white mb-2">No content available</h3>
+                  <p className="text-slate-400">This lesson doesn't have any content yet.</p>
+                </Card>
               )}
 
               {/* Resources Section */}
