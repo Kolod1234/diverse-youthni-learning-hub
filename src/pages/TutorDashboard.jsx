@@ -611,7 +611,7 @@ function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }
   const suspendMutation = useMutation({
     mutationFn: ({ email, suspend, reason }) => {
       const student = students.find(s => s.email === email);
-      return base44.entities.User.update(student.id, { 
+      return base44.asServiceRole.entities.User.update(student.id, { 
         is_suspended: suspend,
         suspended_reason: reason 
       });
