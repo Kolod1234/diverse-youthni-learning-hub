@@ -613,6 +613,8 @@ export default function TutorCourseManager() {
 }
 
 function DocumentUploadSection({ formData, setFormData, uploading, setUploading }) {
+  const [converting, setConverting] = useState(false);
+
   const handleDocumentUpload = async (e) => {
     const file = e.target.files?.[0];
     if (!file) return;
@@ -639,13 +641,56 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
       if (file.type.includes('presentation')) fileType = 'pptx';
       else if (file.type.includes('word')) fileType = 'docx';
 
-      setFormData({ 
-        ...formData, 
-        file_url,
-        file_type: fileType,
-        content_type: 'document'
-      });
-      toast.success('Document uploaded successfully!');
+      // If it's a PDF, offer to convert to slides
+      if (fileType === 'pdf') {
+        setFormData({ 
+          ...formData, 
+          file_url,
+          file_type: fileType,
+          content_type: 'document',
+          pdf_conversion_pending: true
+        });
+        toast.success('PDF uploaded! Converting to slides...');
+
+        // Convert PDF to slides
+        setConverting(true);
+        try {
+          const response = await base44.functions.invoke('convertPdfToSlides', { file_url });
+          if (response.data.success) {
+            setFormData({ 
+              ...formData, 
+              slides: response.data.slides,
+              content_type: 'richtext',
+              file_url: null,
+              file_type: null,
+              pdf_conversion_pending: false
+            });
+            toast.success(`PDF converted to ${response.data.total_pages} slides!`);
+          } else {
+            throw new Error(response.data.error);
+          }
+        } catch (conversionError) {
+          console.error('PDF conversion failed:', conversionError);
+          toast.error('Failed to convert PDF to slides. Using document viewer instead.');
+          setFormData({ 
+            ...formData, 
+            file_url,
+            file_type: fileType,
+            content_type: 'document',
+            pdf_conversion_pending: false
+          });
+        } finally {
+          setConverting(false);
+        }
+      } else {
+        setFormData({ 
+          ...formData, 
+          file_url,
+          file_type: fileType,
+          content_type: 'document'
+        });
+        toast.success('Document uploaded successfully!');
+      }
     } catch (error) {
       toast.error('Failed to upload document');
     } finally {
@@ -688,7 +733,19 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
         </label>
       </div>
 
-      {formData.file_url && (
+      {converting && (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <Loader2 className="w-5 h-5 text-blue-600 animate-spin" />
+            <div className="flex-1">
+              <p className="text-sm font-medium text-blue-900">Converting PDF to slides...</p>
+              <p className="text-xs text-blue-700">This may take a moment</p>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {formData.file_url && !converting && (
         <div className="bg-green-50 border border-green-200 rounded-lg p-4">
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
@@ -706,6 +763,20 @@ function DocumentUploadSection({ formData, setFormData, uploading, setUploading 
             >
               <X className="w-4 h-4" />
             </Button>
+          </div>
+        </div>
+      )}
+
+      {formData.slides && formData.slides.length > 0 && formData.slides[0]?.page_number && (
+        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+              <FileSliders className="w-5 h-5 text-purple-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-purple-900">PDF converted to {formData.slides.length} slides!</p>
+              <p className="text-xs text-purple-700">Each page is now a navigable slide</p>
+            </div>
           </div>
         </div>
       )}
