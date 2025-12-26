@@ -31,13 +31,19 @@ export default function LessonRatingDialog({
 
   const submitRatingMutation = useMutation({
     mutationFn: async (data) => {
+      // Get current user info
+      const user = await base44.auth.me();
+
       // Save lesson rating
       await base44.entities.Review.create({
         course_id: course.id,
         lesson_id: lesson.id,
         rating: data.lessonRating,
         comment: data.lessonComment,
-        rating_type: 'lesson'
+        rating_type: 'lesson',
+        user_name: user.full_name,
+        user_avatar: user.avatar,
+        is_verified_purchase: true
       });
 
       // Save tutor rating
@@ -61,7 +67,8 @@ export default function LessonRatingDialog({
     onSuccess: () => {
       queryClient.invalidateQueries(['reviews']);
       queryClient.invalidateQueries(['course']);
-      toast.success('Thank you for your feedback!');
+      queryClient.invalidateQueries(['all-reviews']);
+      toast.success('✨ Thank you! Your review has been submitted and may be featured on our homepage!');
       onComplete();
       onOpenChange(false);
     },
@@ -69,7 +76,12 @@ export default function LessonRatingDialog({
 
   const handleSubmit = () => {
     if (lessonRating === 0 || tutorRating === 0) {
-      toast.error('Please provide ratings for both lesson and tutor');
+      toast.error('Please provide ratings for both lesson and instructor');
+      return;
+    }
+
+    if (!lessonComment.trim() || lessonComment.trim().length < 30) {
+      toast.error('Please write a detailed review (at least 30 characters) about your experience');
       return;
     }
 
@@ -115,9 +127,9 @@ export default function LessonRatingDialog({
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
-          <DialogTitle className="text-2xl">How was this lesson?</DialogTitle>
+          <DialogTitle className="text-2xl">Share Your Experience</DialogTitle>
           <DialogDescription>
-            Your feedback helps us improve the learning experience
+            Your review helps other learners make informed decisions. Tell us about your experience!
           </DialogDescription>
         </DialogHeader>
 
@@ -125,7 +137,7 @@ export default function LessonRatingDialog({
           {/* Lesson Rating */}
           <div className="space-y-3">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-1">Rate this Lesson</h3>
+              <h3 className="font-semibold text-gray-900 mb-1">How would you rate this lesson?</h3>
               <p className="text-sm text-gray-500">{lesson?.title}</p>
             </div>
             <StarRating
@@ -134,19 +146,25 @@ export default function LessonRatingDialog({
               hovered={hoveredLessonStar}
               setHovered={setHoveredLessonStar}
             />
-            <Textarea
-              placeholder="What did you think about this lesson? (Optional)"
-              value={lessonComment}
-              onChange={(e) => setLessonComment(e.target.value)}
-              className="resize-none"
-              rows={2}
-            />
+            <div>
+              <Textarea
+                placeholder="Share your experience with this lesson... What did you learn? How was the content? (Required - min 30 characters)"
+                value={lessonComment}
+                onChange={(e) => setLessonComment(e.target.value)}
+                className="resize-none"
+                rows={3}
+                required
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                ✨ Your review will be featured on our homepage to help other learners!
+              </p>
+            </div>
           </div>
 
           {/* Tutor Rating */}
           <div className="space-y-3 pt-4 border-t">
             <div>
-              <h3 className="font-semibold text-gray-900 mb-1">Rate the Tutor</h3>
+              <h3 className="font-semibold text-gray-900 mb-1">How would you rate the instructor?</h3>
               <p className="text-sm text-gray-500">{course?.instructor}</p>
             </div>
             <StarRating
