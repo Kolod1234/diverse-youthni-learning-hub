@@ -249,7 +249,7 @@ export default function LessonPlayer() {
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden bg-slate-950">
           {/* Content Area */}
-          <div className="flex-1 overflow-auto p-2 sm:p-4 md:p-6 lg:p-8">
+          <div className="flex-1 overflow-auto p-4 md:p-6">
             <div className="max-w-7xl mx-auto">
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
@@ -393,7 +393,7 @@ export default function LessonPlayer() {
                 variant="outline"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                className="text-xs md:text-sm text-white border-slate-700 hover:bg-slate-800 hover:text-white disabled:opacity-50"
+                className="text-xs md:text-sm text-white bg-slate-800 border-slate-700 hover:bg-slate-700 disabled:opacity-50"
                 size="sm"
               >
                 <ChevronLeft className="w-4 h-4 mr-1" />

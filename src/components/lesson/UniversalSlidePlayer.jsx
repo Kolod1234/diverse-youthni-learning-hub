@@ -148,7 +148,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             size="sm"
             onClick={() => exportAsImage('png')}
             disabled={isExporting}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-white bg-slate-800 border-slate-700 hover:bg-slate-700"
           >
             <ImageIcon className="w-4 h-4" />
             {isExporting ? 'Exporting...' : 'Export PNG'}
@@ -158,7 +158,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             size="sm"
             onClick={() => exportAsImage('jpeg')}
             disabled={isExporting}
-            className="flex items-center gap-2"
+            className="flex items-center gap-2 text-white bg-slate-800 border-slate-700 hover:bg-slate-700"
           >
             <Download className="w-4 h-4" />
             {isExporting ? 'Exporting...' : 'Export JPG'}
@@ -169,9 +169,9 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             width: 100%;
             max-width: 100%;
             overflow: hidden;
-            background: white;
+            background: #1e293b;
             border-radius: 12px;
-            padding: 1.5rem;
+            padding: 2rem;
           }
           
           .slide-content-wrapper * {
@@ -221,9 +221,10 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
           .slide-content-wrapper table td,
           .slide-content-wrapper table th {
             padding: 1rem;
-            border: 1px solid #e5e7eb;
+            border: 1px solid #475569;
             word-wrap: break-word;
             vertical-align: top;
+            color: #cbd5e1;
           }
 
           .slide-content-wrapper table td:has(img) {
@@ -249,7 +250,7 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             margin-bottom: 0.5rem;
             line-height: 1.4;
             word-wrap: break-word;
-            color: #111827;
+            color: #f1f5f9;
           }
           
           .slide-content-wrapper h1 { font-size: 2rem; font-weight: 700; }
@@ -259,17 +260,19 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
           .slide-content-wrapper p {
             margin: 0.75rem 0;
             line-height: 1.6;
-            color: #374151;
+            color: #cbd5e1;
           }
           
           .slide-content-wrapper ul,
           .slide-content-wrapper ol {
             margin: 0.75rem 0;
             padding-left: 1.5rem;
+            color: #cbd5e1;
           }
           
           .slide-content-wrapper li {
             margin: 0.5rem 0;
+            color: #cbd5e1;
           }
           
           .slide-content-wrapper div[style*="position: absolute"],
