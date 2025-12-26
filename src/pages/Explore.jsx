@@ -86,9 +86,7 @@ export default function Explore() {
   const sortedCourses = [...filteredCourses].sort((a, b) => {
     switch (sortBy) {
       case 'rating': return (b.rating || 0) - (a.rating || 0);
-      case 'newest': return new Date(b.created_date) - new Date(a.created_date);
-      case 'price_low': return (a.price || 0) - (b.price || 0);
-      case 'price_high': return (b.price || 0) - (a.price || 0);
+      case 'teachers': return (a.instructor || '').localeCompare(b.instructor || '');
       default: return (b.enrolled_count || 0) - (a.enrolled_count || 0);
     }
   });

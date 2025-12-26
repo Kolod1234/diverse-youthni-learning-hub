@@ -41,14 +41,8 @@ export default function SearchBar({ value, onChange, sortBy, onSortChange }) {
           <DropdownMenuItem onClick={() => onSortChange('rating')}>
             Highest Rated
           </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onSortChange('newest')}>
-            Newest
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onSortChange('price_low')}>
-            Price: Low to High
-          </DropdownMenuItem>
-          <DropdownMenuItem onClick={() => onSortChange('price_high')}>
-            Price: High to Low
+          <DropdownMenuItem onClick={() => onSortChange('teachers')}>
+            By Teachers
           </DropdownMenuItem>
         </DropdownMenuContent>
       </DropdownMenu>
