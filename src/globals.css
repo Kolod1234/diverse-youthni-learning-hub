@@ -33,13 +33,13 @@ body {
 
 /* Professional Slide Player Styles */
 .professional-slide-stage {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  flex: 1;
+  overflow-y: auto !important;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  display: block;
   background-color: #000;
-  overflow: hidden;
+  width: 100%;
 }
 
 .professional-slide-stage iframe {
@@ -47,4 +47,9 @@ body {
   height: 100% !important;
   border: none;
   aspect-ratio: 16 / 9;
+}
+
+.slide-content-wrapper {
+  min-height: 100%;
+  height: auto;
 }
