@@ -260,10 +260,10 @@ export default function LessonPlayer() {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25 }}
-              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex-col flex-none flex shadow-xl lg:shadow-none"
+              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex flex-col shadow-xl lg:shadow-none overflow-hidden"
               style={{ height: 'calc(100vh - 64px)' }}
             >
-              <div className="p-5 border-b border-slate-800 flex items-center justify-between">
+              <div className="p-5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
                 <div className="flex items-center gap-2 text-slate-400">
                   <BookOpen size={16} />
                   <span className="text-xs font-bold uppercase tracking-wider">Course Content</span>
@@ -275,8 +275,8 @@ export default function LessonPlayer() {
                   <X size={16} />
                 </button>
               </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-2">
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
                 {sortedLessons.map((l, idx) => {
                   const completed = enrollment?.completed_lessons?.includes(l.id);
                   const isCurrent = l.id === lessonId;
@@ -313,7 +313,7 @@ export default function LessonPlayer() {
               </div>
 
               {/* WEBCAM PREVIEW */}
-              <div className="p-4 bg-slate-900/80 border-t border-slate-800">
+              <div className="p-4 bg-slate-900/80 border-t border-slate-800 flex-shrink-0">
                 <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
                   <video 
                     ref={videoRef} 
