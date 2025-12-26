@@ -140,21 +140,21 @@ export default function Home() {
             transition={{ duration: 0.8 }}
             className="text-center"
           >
-            <div className="inline-block bg-yellow-400 text-[#d32f2f] px-8 py-3 rounded-full text-2xl md:text-3xl font-black mb-6 shadow-2xl transform -rotate-2 animate-pulse">
+            <div className="inline-block bg-yellow-400 text-[#d32f2f] px-8 py-3 rounded-full text-2xl md:text-3xl font-black mb-6 shadow-2xl transform -rotate-2 hover:rotate-0 hover:scale-110 transition-all duration-300 cursor-pointer">
               ONLINE LEARNING
             </div>
             
-            <div className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1">
+            <div className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1 hover:rotate-0 hover:scale-105 transition-all duration-300 cursor-pointer">
               <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight">
                 Afterschool Hours
               </h1>
             </div>
             
-            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
+            <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4 hover:scale-110 transition-all duration-300 cursor-pointer inline-block">
               Online Quizzes
             </h2>
             
-            <div className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl">
+            <div className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl hover:scale-110 hover:shadow-3xl transition-all duration-300 cursor-pointer">
               <p className="text-5xl md:text-7xl font-black text-[#d32f2f]">
                 FREE ACCESS
                 <span className="block text-3xl md:text-4xl mt-2">ALL COURSES</span>
