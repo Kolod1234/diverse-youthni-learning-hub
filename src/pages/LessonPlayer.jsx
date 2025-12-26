@@ -597,6 +597,9 @@ export default function LessonPlayer() {
                 )}
               </div>
             )}
+            <div className="bg-white border-b border-gray-200 px-4 py-2 text-center">
+              <p className="text-xs text-gray-600">Swipe left/right or use arrows within the presentation to navigate slides</p>
+            </div>
             <div className="flex-1 overflow-y-auto">
               <UniversalSlidePlayer 
                 googleSlidesUrl={currentLesson?.google_slides_url}
