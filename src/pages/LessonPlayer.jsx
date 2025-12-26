@@ -133,12 +133,30 @@ export default function LessonPlayer() {
     );
   }
 
-  if (!lesson) {
+  if (!lesson && !lessonLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
         <div className="text-center text-white">
           <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4" />
           <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
+          <p className="text-sm text-slate-400 mb-4">Lesson ID: {lessonId || 'Missing'}</p>
+          <p className="text-sm text-slate-400 mb-4">Course ID: {courseId || 'Missing'}</p>
+          {courseLessons.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm text-slate-400 mb-3">Available lessons in this course:</p>
+              <button 
+                onClick={() => {
+                  const firstLesson = courseLessons.sort((a, b) => a.order - b.order)[0];
+                  if (firstLesson) {
+                    navigate(`/LessonPlayer?lesson=${firstLesson.id}&course=${courseId}`);
+                  }
+                }}
+                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg"
+              >
+                Start First Lesson
+              </button>
+            </div>
+          )}
           <button 
             onClick={() => navigate(-1)} 
             className="mt-4 px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg"
