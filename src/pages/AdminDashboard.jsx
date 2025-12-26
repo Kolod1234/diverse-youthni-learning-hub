@@ -1100,87 +1100,282 @@ function ThemeSettings() {
 
 // Blog Management Component
 function BlogManagement() {
-  const [blogTitle, setBlogTitle] = useState('');
-  const [blogContent, setBlogContent] = useState('');
-  const [blogs, setBlogs] = useState([]);
+  const queryClient = useQueryClient();
+  const [user, setUser] = useState(null);
+  const [showForm, setShowForm] = useState(false);
+  const [editingPost, setEditingPost] = useState(null);
+  const [formData, setFormData] = useState({
+    title: '',
+    excerpt: '',
+    content: '',
+    category: 'news',
+    featured_image: '',
+    is_published: true
+  });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
-  const publishBlog = () => {
-    if (!blogTitle.trim() || !blogContent.trim()) {
-      toast.error('Please fill in all fields');
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
+
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blog-posts'],
+    queryFn: () => base44.entities.BlogPost.list('-published_date', 100),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.BlogPost.create({
+      ...data,
+      author_name: user?.full_name || 'Admin',
+      author_avatar: user?.avatar,
+      published_date: new Date().toISOString()
+    }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['blog-posts']);
+      setShowForm(false);
+      setFormData({ title: '', excerpt: '', content: '', category: 'news', featured_image: '', is_published: true });
+      toast.success('Blog post published!');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.BlogPost.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['blog-posts']);
+      setEditingPost(null);
+      setShowForm(false);
+      setFormData({ title: '', excerpt: '', content: '', category: 'news', featured_image: '', is_published: true });
+      toast.success('Blog post updated!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.BlogPost.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['blog-posts']);
+      toast.success('Blog post deleted!');
+    },
+  });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, featured_image: file_url });
+      toast.success('Image uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!formData.title || !formData.content) {
+      toast.error('Title and content are required');
       return;
     }
 
-    const newBlog = {
-      id: Date.now(),
-      title: blogTitle,
-      content: blogContent,
-      date: new Date().toISOString(),
-      author: 'Admin'
-    };
-
-    setBlogs([newBlog, ...blogs]);
-    setBlogTitle('');
-    setBlogContent('');
-    toast.success('Blog published successfully');
-  };
-
-  const deleteBlog = (id) => {
-    setBlogs(blogs.filter(b => b.id !== id));
-    toast.success('Blog deleted');
+    if (editingPost) {
+      updateMutation.mutate({ id: editingPost.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
   };
 
   return (
     <Card className="p-6">
-      <h2 className="text-xl font-semibold mb-6">Blog Management</h2>
-      
-      <div className="space-y-4 mb-6">
+      <div className="flex items-center justify-between mb-6">
         <div>
-          <Label>Blog Title</Label>
-          <Input
-            value={blogTitle}
-            onChange={(e) => setBlogTitle(e.target.value)}
-            placeholder="Enter blog title..."
-          />
+          <h2 className="text-xl font-semibold">Blog Management</h2>
+          <p className="text-sm text-gray-500 mt-1">Create and manage blog posts</p>
         </div>
-        
-        <div>
-          <Label>Blog Content</Label>
-          <Textarea
-            value={blogContent}
-            onChange={(e) => setBlogContent(e.target.value)}
-            placeholder="Write your blog content..."
-            rows={8}
-          />
-        </div>
-
-        <Button onClick={publishBlog} className="w-full">
-          <FileText className="w-4 h-4 mr-2" />
-          Publish Blog
+        <Button onClick={() => setShowForm(true)} className="bg-indigo-600">
+          <Plus className="w-4 h-4 mr-2" />
+          New Post
         </Button>
       </div>
 
-      <div className="space-y-3">
-        <h3 className="font-semibold">Published Blogs</h3>
-        {blogs.map((blog) => (
-          <Card key={blog.id} className="p-4">
-            <div className="flex justify-between">
-              <div className="flex-1">
-                <h4 className="font-semibold text-gray-900 mb-2">{blog.title}</h4>
-                <p className="text-sm text-gray-600 line-clamp-2 mb-2">{blog.content}</p>
-                <p className="text-xs text-gray-500">{new Date(blog.date).toLocaleDateString()}</p>
+      {(showForm || editingPost) && (
+        <Card className="p-4 mb-6 bg-indigo-50 border-indigo-200">
+          <div className="space-y-4">
+            <div>
+              <Label>Title *</Label>
+              <Input
+                value={formData.title}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+                placeholder="Blog post title"
+              />
+            </div>
+
+            <div>
+              <Label>Excerpt</Label>
+              <Textarea
+                value={formData.excerpt}
+                onChange={(e) => setFormData({ ...formData, excerpt: e.target.value })}
+                placeholder="Short summary..."
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <Label>Content *</Label>
+              <Textarea
+                value={formData.content}
+                onChange={(e) => setFormData({ ...formData, content: e.target.value })}
+                placeholder="Write your blog content..."
+                rows={8}
+              />
+            </div>
+
+            <div>
+              <Label>Category</Label>
+              <select
+                value={formData.category}
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="news">News</option>
+                <option value="tutorial">Tutorial</option>
+                <option value="announcement">Announcement</option>
+                <option value="update">Update</option>
+              </select>
+            </div>
+
+            <div>
+              <Label>Featured Image</Label>
+              <div className="space-y-2">
+                <Input
+                  value={formData.featured_image}
+                  onChange={(e) => setFormData({ ...formData, featured_image: e.target.value })}
+                  placeholder="https://example.com/image.jpg"
+                />
+                <div className="flex items-center gap-2">
+                  <div className="h-px bg-gray-300 flex-1" />
+                  <span className="text-xs text-gray-500">OR</span>
+                  <div className="h-px bg-gray-300 flex-1" />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                  className="hidden"
+                  id="blog-image-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('blog-image-upload').click()}
+                  disabled={uploadingImage}
+                  className="w-full"
+                >
+                  {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                </Button>
               </div>
-              <div className="flex gap-2">
-                <Button variant="outline" size="sm">
-                  <Edit className="w-4 h-4" />
-                </Button>
-                <Button variant="outline" size="sm" onClick={() => deleteBlog(blog.id)}>
-                  <Trash2 className="w-4 h-4 text-red-600" />
-                </Button>
+              {formData.featured_image && (
+                <img src={formData.featured_image} alt="Preview" className="mt-2 h-32 w-full object-cover rounded border" />
+              )}
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="is_published"
+                checked={formData.is_published}
+                onChange={(e) => setFormData({ ...formData, is_published: e.target.checked })}
+                className="rounded"
+              />
+              <Label htmlFor="is_published">Publish immediately</Label>
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
+                {editingPost ? 'Update' : 'Publish'}
+              </Button>
+              <Button variant="outline" onClick={() => {
+                setShowForm(false);
+                setEditingPost(null);
+                setFormData({ title: '', excerpt: '', content: '', category: 'news', featured_image: '', is_published: true });
+              }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className="space-y-3">
+        {blogPosts.map((post) => (
+          <Card key={post.id} className="p-4">
+            <div className="flex gap-4">
+              {post.featured_image && (
+                <img src={post.featured_image} alt={post.title} className="w-24 h-24 object-cover rounded" />
+              )}
+              <div className="flex-1">
+                <div className="flex items-start justify-between">
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{post.title}</h3>
+                    <p className="text-sm text-gray-600 mt-1 line-clamp-2">{post.excerpt || post.content}</p>
+                    <div className="flex gap-2 mt-2">
+                      <Badge variant="outline" className="capitalize">{post.category}</Badge>
+                      <Badge variant={post.is_published ? 'default' : 'outline'}>
+                        {post.is_published ? 'Published' : 'Draft'}
+                      </Badge>
+                      <span className="text-xs text-gray-500">
+                        {new Date(post.published_date).toLocaleDateString()}
+                      </span>
+                    </div>
+                  </div>
+                  <div className="flex gap-2">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        setEditingPost(post);
+                        setFormData({
+                          title: post.title,
+                          excerpt: post.excerpt || '',
+                          content: post.content,
+                          category: post.category,
+                          featured_image: post.featured_image || '',
+                          is_published: post.is_published
+                        });
+                        setShowForm(true);
+                      }}
+                    >
+                      <Edit className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm('Delete this post?')) deleteMutation.mutate(post.id);
+                      }}
+                    >
+                      <Trash2 className="w-3 h-3 text-red-600" />
+                    </Button>
+                  </div>
+                </div>
               </div>
             </div>
           </Card>
         ))}
       </div>
+
+      {blogPosts.length === 0 && !showForm && (
+        <div className="text-center py-12 text-gray-500">
+          <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>No blog posts yet</p>
+        </div>
+      )}
     </Card>
   );
 }
