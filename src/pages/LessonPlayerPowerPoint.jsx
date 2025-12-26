@@ -20,6 +20,7 @@ export default function LessonPlayerPowerPoint() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPresenting, setIsPresenting] = useState(false);
   const [showObjectives, setShowObjectives] = useState(true);
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   
   const playerRef = useRef(null);
 
@@ -160,6 +161,25 @@ export default function LessonPlayerPowerPoint() {
   };
 
   const slideUrl = getSlideEmbedUrl();
+  const hasSlides = lesson.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+
+  // Navigate slides with arrow keys
+  useEffect(() => {
+    if (!hasSlides) return;
+    const handleSlideNav = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+      }
+    };
+    window.addEventListener('keydown', handleSlideNav);
+    return () => window.removeEventListener('keydown', handleSlideNav);
+  }, [hasSlides, sortedSlides.length]);
 
   return (
     <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
@@ -299,15 +319,34 @@ export default function LessonPlayerPowerPoint() {
               ? 'w-full h-full aspect-auto m-0 shadow-none' 
               : 'w-full max-w-[960px] aspect-video mb-10 rounded-lg'
           }`}>
-            <div className="flex-1 w-full bg-black overflow-hidden relative professional-slide-stage">
-              {slideUrl ? (
-                <iframe 
-                  src={slideUrl} 
-                  className="w-full h-full border-0"
-                  style={{ width: '100%', height: '100%' }}
-                  allowFullScreen
-                  title="Educational Slides"
-                />
+            <div className="flex-1 w-full overflow-hidden relative professional-slide-stage">
+              {hasSlides ? (
+                <div className="w-full h-full bg-white p-12 overflow-y-auto">
+                  <div className="max-w-4xl mx-auto">
+                    <h2 className="text-3xl font-bold text-gray-900 mb-6">
+                      {sortedSlides[currentSlideIndex]?.title}
+                    </h2>
+                    <div 
+                      className="prose prose-lg max-w-none"
+                      dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
+                    />
+                  </div>
+                  {!isPresenting && (
+                    <div className="absolute bottom-4 right-4 bg-gray-900/80 text-white px-3 py-1 rounded-full text-sm">
+                      {currentSlideIndex + 1} / {sortedSlides.length}
+                    </div>
+                  )}
+                </div>
+              ) : slideUrl ? (
+                <div className="w-full h-full bg-black">
+                  <iframe 
+                    src={slideUrl} 
+                    className="w-full h-full border-0"
+                    style={{ width: '100%', height: '100%' }}
+                    allowFullScreen
+                    title="Educational Slides"
+                  />
+                </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
                   <div className="text-center">
@@ -333,6 +372,28 @@ export default function LessonPlayerPowerPoint() {
           </div>
           <div className="flex items-center gap-5">
             <div className="flex gap-3">
+              {hasSlides ? (
+                <>
+                  <button 
+                    onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} 
+                    disabled={currentSlideIndex === 0} 
+                    className="p-1 hover:bg-gray-100 rounded disabled:opacity-30"
+                  >
+                    <ChevronLeft size={16} />
+                  </button>
+                  <span className="px-2 text-xs flex items-center">
+                    Slide {currentSlideIndex + 1}/{sortedSlides.length}
+                  </span>
+                  <button 
+                    onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} 
+                    disabled={currentSlideIndex === sortedSlides.length - 1} 
+                    className="p-1 hover:bg-gray-100 rounded disabled:opacity-30"
+                  >
+                    <ChevronRight size={16} />
+                  </button>
+                  <div className="w-[1px] h-4 bg-gray-200 mx-2" />
+                </>
+              ) : null}
               <button onClick={handlePrevLesson} disabled={!prevLesson} className="p-1 hover:bg-gray-100 rounded disabled:opacity-30">
                 <ChevronLeft size={16} />
               </button>

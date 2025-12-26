@@ -102,6 +102,8 @@ export default function LessonPlayerClassic() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
+  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
   const getSlideEmbedUrl = () => {
     if (lesson.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -113,6 +115,8 @@ export default function LessonPlayerClassic() {
   };
 
   const slideUrl = getSlideEmbedUrl();
+  const hasSlides = lesson.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   return (
     <div className="h-screen flex flex-col bg-slate-50">
@@ -222,23 +226,54 @@ export default function LessonPlayerClassic() {
 
             {/* Slide Content */}
             <div className="max-w-5xl mx-auto">
-              <div className="bg-white rounded-xl shadow-lg overflow-hidden aspect-video">
-                {slideUrl ? (
+              {hasSlides ? (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                  <div className="p-8 min-h-[500px]">
+                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                      {sortedSlides[currentSlideIndex]?.title}
+                    </h2>
+                    <div 
+                      className="prose prose-lg max-w-none"
+                      dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
+                    />
+                  </div>
+                  <div className="bg-gray-50 px-8 py-4 flex items-center justify-between border-t">
+                    <button
+                      onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+                      disabled={currentSlideIndex === 0}
+                      className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronLeft className="w-5 h-5" />
+                    </button>
+                    <span className="text-sm text-gray-600">
+                      Slide {currentSlideIndex + 1} of {sortedSlides.length}
+                    </span>
+                    <button
+                      onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
+                      disabled={currentSlideIndex === sortedSlides.length - 1}
+                      className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                    >
+                      <ChevronRight className="w-5 h-5" />
+                    </button>
+                  </div>
+                </div>
+              ) : slideUrl ? (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden aspect-video">
                   <iframe 
                     src={slideUrl} 
                     className="w-full h-full"
                     allowFullScreen
                     title="Lesson Content"
                   />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center bg-gray-100">
-                    <div className="text-center text-gray-400">
-                      <BookOpen className="w-16 h-16 mx-auto mb-4" />
-                      <p>No content available</p>
-                    </div>
+                </div>
+              ) : (
+                <div className="bg-white rounded-xl shadow-lg overflow-hidden aspect-video flex items-center justify-center">
+                  <div className="text-center text-gray-400">
+                    <BookOpen className="w-16 h-16 mx-auto mb-4" />
+                    <p>No content available</p>
                   </div>
-                )}
-              </div>
+                </div>
+              )}
             </div>
           </div>
 
