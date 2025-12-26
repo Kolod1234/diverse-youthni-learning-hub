@@ -32,15 +32,21 @@ export default function LessonPlayer() {
   const touchStartX = useRef(0);
   const touchEndX = useRef(0);
 
-  // Fetch course lessons for navigation
-  const { data: courseLessons = [], isLoading: lessonLoading } = useQuery({
+  // Fetch all course lessons for navigation
+  const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['courseLessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }),
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
     enabled: !!courseId
   });
 
-  // Find current lesson from course lessons
-  const lesson = courseLessons.find(l => l.id === lessonId);
+  // Fetch current lesson directly by ID
+  const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: () => base44.entities.Lesson.filter({ id: lessonId }),
+    enabled: !!lessonId
+  });
+
+  const lesson = currentLessonArray[0];
 
   // Fetch enrollment for progress
   const { data: enrollment } = useQuery({
@@ -129,7 +135,7 @@ export default function LessonPlayer() {
     }
   };
 
-  if (lessonLoading) {
+  if (lessonLoading || lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 to-slate-950">
         <div className="text-center">
