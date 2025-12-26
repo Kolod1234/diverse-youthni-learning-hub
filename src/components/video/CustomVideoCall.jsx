@@ -28,7 +28,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [remoteStreams, setRemoteStreams] = useState(new Map());
   const [screenStream, setScreenStream] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(false);
+  const [isVideoOff, setIsVideoOff] = useState(true);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const chatEndRef = useRef(null);
@@ -112,11 +112,11 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       
       console.log('Media stream obtained:', stream.getTracks().map(t => t.kind));
       
-      // Video starts enabled by default
+      // Video starts DISABLED by default (camera off)
       const videoTrack = stream.getVideoTracks()[0];
       if (videoTrack) {
-        videoTrack.enabled = true;
-        console.log('✅ Video track enabled');
+        videoTrack.enabled = false;
+        console.log('✅ Video track disabled (camera off by default)');
       }
       
       // Immediately attach to video element
@@ -128,14 +128,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
         
         try {
           await localVideoRef.current.play();
-          console.log('✅ Video element playing');
+          console.log('✅ Video element ready (camera off)');
         } catch (playError) {
           console.log('Autoplay blocked, will retry on user interaction');
-          // Try again after a brief delay
           setTimeout(async () => {
             try {
               await localVideoRef.current.play();
-              console.log('✅ Video playing after retry');
+              console.log('✅ Video ready after retry');
             } catch (e) {
               console.error('Video play retry failed:', e);
             }

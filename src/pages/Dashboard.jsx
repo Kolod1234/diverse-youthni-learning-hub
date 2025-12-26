@@ -15,6 +15,7 @@ import CourseProgressWidget from '@/components/dashboard/CourseProgressWidget';
 import PointsDisplay from '@/components/gamification/PointsDisplay';
 import Leaderboard from '@/components/gamification/Leaderboard';
 import StreakTracker from '@/components/gamification/StreakTracker';
+import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -216,28 +217,8 @@ export default function Dashboard() {
                   lastActivityDate={userProgress?.last_activity_date}
                 />
 
-                {/* Upcoming Sessions */}
-                {upcomingSessions.length > 0 && (
-                  <Card className="p-4">
-                    <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                      <Video className="w-5 h-5 text-purple-600" />
-                      Upcoming Live Sessions
-                    </h3>
-                    <div className="space-y-2">
-                      {upcomingSessions.slice(0, 3).map(session => (
-                        <Link key={session.id} to={createPageUrl('VideoSession') + `?id=${session.id}`}>
-                          <div className="p-3 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200 hover:border-purple-300 transition-all">
-                            <p className="font-medium text-gray-900 text-sm">{session.title}</p>
-                            <div className="flex items-center gap-2 text-xs text-gray-600 mt-1">
-                              <Calendar className="w-3 h-3" />
-                              {new Date(session.scheduled_date).toLocaleDateString()} at {session.scheduled_time}
-                            </div>
-                          </div>
-                        </Link>
-                      ))}
-                    </div>
-                  </Card>
-                )}
+                {/* Upcoming Sessions Widget */}
+                <UpcomingSessionsWidget user={user} />
 
                 {/* Quick Progress Widget */}
                 <CourseProgressWidget enrollments={inProgressEnrollments} courses={courses} />

@@ -9,6 +9,7 @@ import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
 import SearchBar from '@/components/courses/SearchBar';
+import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 
@@ -16,8 +17,21 @@ export default function Home() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  const [user, setUser] = useState(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.log('User not logged in');
+      }
+    };
+    loadUser();
+  }, []);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
@@ -367,6 +381,13 @@ export default function Home() {
           </div>
         </motion.div>
       </section>
+
+      {/* Upcoming Sessions Banner */}
+      {user && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <UpcomingSessionsWidget user={user} />
+        </section>
+      )}
 
       {/* Featured Courses */}
       {featuredCourses.length > 0 && (
