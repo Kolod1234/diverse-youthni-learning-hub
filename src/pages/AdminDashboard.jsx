@@ -13,7 +13,7 @@ import {
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
   Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
-  TrendingUp, Key, Database, Lock, Plus, EyeOff
+  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -1741,6 +1741,295 @@ function TemplatesManagement({ templates }) {
 }
 
 // Password Management Component
+function AttendanceManagement({ attendanceRecords, users }) {
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterDate, setFilterDate] = useState('');
+  const [filterStatus, setFilterStatus] = useState('all');
+  const [showForm, setShowForm] = useState(false);
+  const [formData, setFormData] = useState({
+    student_email: '',
+    date: new Date().toISOString().split('T')[0],
+    status: 'present',
+    notes: ''
+  });
+
+  const createMutation = useMutation({
+    mutationFn: async (data) => {
+      const student = users.find(u => u.email === data.student_email);
+      return base44.entities.Attendance.create({
+        ...data,
+        student_name: student?.full_name || data.student_email
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['attendance']);
+      setShowForm(false);
+      setFormData({ student_email: '', date: new Date().toISOString().split('T')[0], status: 'present', notes: '' });
+      toast.success('Attendance recorded!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Attendance.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['attendance']);
+      toast.success('Deleted!');
+    },
+  });
+
+  const downloadMonthlyReport = (month) => {
+    const monthRecords = attendanceRecords.filter(r => r.date?.startsWith(month));
+    const csv = [
+      ['Date', 'Student Name', 'Email', 'Status', 'Notes'],
+      ...monthRecords.map(r => [r.date, r.student_name, r.student_email, r.status, r.notes || ''])
+    ].map(row => row.join(',')).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `attendance-report-${month}.csv`;
+    a.click();
+  };
+
+  const downloadStudentStats = () => {
+    const studentStats = {};
+    attendanceRecords.forEach(record => {
+      if (!studentStats[record.student_email]) {
+        studentStats[record.student_email] = {
+          name: record.student_name,
+          email: record.student_email,
+          present: 0,
+          absent: 0,
+          late: 0,
+          excused: 0,
+          total: 0
+        };
+      }
+      studentStats[record.student_email][record.status]++;
+      studentStats[record.student_email].total++;
+    });
+
+    const csv = [
+      ['Student Name', 'Email', 'Total Days', 'Present', 'Absent', 'Late', 'Excused', 'Attendance Rate'],
+      ...Object.values(studentStats).map(s => [
+        s.name,
+        s.email,
+        s.total,
+        s.present,
+        s.absent,
+        s.late,
+        s.excused,
+        `${((s.present / s.total) * 100).toFixed(1)}%`
+      ])
+    ].map(row => row.join(',')).join('\n');
+    
+    const blob = new Blob([csv], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `student-attendance-stats.csv`;
+    a.click();
+  };
+
+  const filteredRecords = attendanceRecords.filter(record => {
+    const matchesSearch = !searchQuery || 
+      record.student_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      record.student_email?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesDate = !filterDate || record.date === filterDate;
+    const matchesStatus = filterStatus === 'all' || record.status === filterStatus;
+    return matchesSearch && matchesDate && matchesStatus;
+  });
+
+  const months = [...new Set(attendanceRecords.map(r => r.date?.substring(0, 7)))].filter(Boolean).sort().reverse();
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Attendance Management</h2>
+          <p className="text-gray-600">Track and manage student attendance</p>
+        </div>
+        <div className="flex gap-2">
+          <Button onClick={downloadStudentStats} variant="outline">
+            <Download className="w-4 h-4 mr-2" />
+            Download Stats
+          </Button>
+          <Button onClick={() => setShowForm(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Record Attendance
+          </Button>
+        </div>
+      </div>
+
+      <Card className="p-4">
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <Input
+              placeholder="Search students..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <Input
+            type="date"
+            value={filterDate}
+            onChange={(e) => setFilterDate(e.target.value)}
+            className="w-40"
+          />
+          <select
+            value={filterStatus}
+            onChange={(e) => setFilterStatus(e.target.value)}
+            className="px-3 py-2 border rounded-lg"
+          >
+            <option value="all">All Status</option>
+            <option value="present">Present</option>
+            <option value="absent">Absent</option>
+            <option value="late">Late</option>
+            <option value="excused">Excused</option>
+          </select>
+        </div>
+      </Card>
+
+      {months.length > 0 && (
+        <Card className="p-4">
+          <h3 className="font-semibold mb-3">Download Monthly Reports</h3>
+          <div className="flex gap-2 flex-wrap">
+            {months.map(month => (
+              <Button
+                key={month}
+                variant="outline"
+                size="sm"
+                onClick={() => downloadMonthlyReport(month)}
+              >
+                <Download className="w-3 h-3 mr-2" />
+                {new Date(month + '-01').toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+              </Button>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      <div className="bg-white rounded-xl border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Date</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Student</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Notes</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {filteredRecords.map((record) => (
+                <tr key={record.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3 text-sm">{record.date}</td>
+                  <td className="px-4 py-3">
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">{record.student_name}</p>
+                      <p className="text-xs text-gray-500">{record.student_email}</p>
+                    </div>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge className={
+                      record.status === 'present' ? 'bg-green-100 text-green-700' :
+                      record.status === 'absent' ? 'bg-red-100 text-red-700' :
+                      record.status === 'late' ? 'bg-yellow-100 text-yellow-700' :
+                      'bg-blue-100 text-blue-700'
+                    }>
+                      {record.status}
+                    </Badge>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{record.notes || '-'}</td>
+                  <td className="px-4 py-3 text-right">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        if (confirm('Delete this record?')) deleteMutation.mutate(record.id);
+                      }}
+                    >
+                      <Trash2 className="w-4 h-4 text-red-600" />
+                    </Button>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {showForm && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowForm(false)}>
+          <Card className="w-full max-w-md p-6 m-4" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4">Record Attendance</h3>
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Student</label>
+                <select
+                  value={formData.student_email}
+                  onChange={(e) => setFormData({ ...formData, student_email: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select student</option>
+                  {users.map(u => (
+                    <option key={u.email} value={u.email}>{u.full_name} ({u.email})</option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Date</label>
+                <Input
+                  type="date"
+                  value={formData.date}
+                  onChange={(e) => setFormData({ ...formData, date: e.target.value })}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Status</label>
+                <select
+                  value={formData.status}
+                  onChange={(e) => setFormData({ ...formData, status: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="present">Present</option>
+                  <option value="absent">Absent</option>
+                  <option value="late">Late</option>
+                  <option value="excused">Excused</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-2">Notes (optional)</label>
+                <textarea
+                  value={formData.notes}
+                  onChange={(e) => setFormData({ ...formData, notes: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                  rows={3}
+                />
+              </div>
+              <div className="flex gap-2">
+                <Button onClick={() => setShowForm(false)} variant="outline" className="flex-1">
+                  Cancel
+                </Button>
+                <Button 
+                  onClick={() => createMutation.mutate(formData)}
+                  disabled={!formData.student_email}
+                  className="flex-1"
+                >
+                  Record
+                </Button>
+              </div>
+            </div>
+          </Card>
+        </div>
+      )}
+    </div>
+  );
+}
+
 function PasswordManagement({ users }) {
   const queryClient = useQueryClient();
   const [selectedUser, setSelectedUser] = useState(null);
