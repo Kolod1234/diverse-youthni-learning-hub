@@ -21,25 +21,32 @@ export default function LessonPlayerClassic() {
   const queryClient = useQueryClient();
   const params = new URLSearchParams(location.search);
   const lessonId = params.get('lesson');
-  const courseId = params.get('course');
+  const urlCourseId = params.get('course');
 
   const [showSidebar, setShowSidebar] = useState(true);
   const [showObjectives, setShowObjectives] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+
+  // First fetch the lesson to get its course_id
+  const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: async () => {
+      const lessons = await base44.entities.Lesson.filter({ id: lessonId });
+      return lessons;
+    },
+    enabled: !!lessonId
+  });
+
+  const lesson = currentLessonArray[0];
+  
+  // Use course_id from lesson if URL doesn't have it
+  const courseId = urlCourseId || lesson?.course_id;
 
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
     enabled: !!courseId
   });
-
-  const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
-    queryKey: ['lesson', lessonId],
-    queryFn: () => base44.entities.Lesson.filter({ id: lessonId }),
-    enabled: !!lessonId
-  });
-
-  const lesson = currentLessonArray[0];
 
   const { data: enrollment } = useQuery({
     queryKey: ['enrollment', courseId],
