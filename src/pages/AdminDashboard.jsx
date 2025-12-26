@@ -198,6 +198,10 @@ export default function AdminDashboard() {
               <Key className="w-4 h-4 mr-2" />
               Passwords
             </TabsTrigger>
+            <TabsTrigger value="partners" className="rounded-lg">
+              <Users className="w-4 h-4 mr-2" />
+              Partners
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -255,9 +259,222 @@ export default function AdminDashboard() {
           <TabsContent value="passwords">
             <PasswordManagement users={allUsers} />
           </TabsContent>
+
+          <TabsContent value="partners">
+            <PartnersManagement />
+          </TabsContent>
         </Tabs>
       </div>
     </div>
+  );
+}
+
+function PartnersManagement() {
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [editingLogo, setEditingLogo] = useState(null);
+  const [formData, setFormData] = useState({ name: '', logo_url: '', website_url: '', type: 'partner' });
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  const { data: logos = [] } = useQuery({
+    queryKey: ['partner-logos'],
+    queryFn: () => base44.entities.PartnerLogo.list('order', 100),
+  });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.PartnerLogo.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partner-logos']);
+      setShowForm(false);
+      setFormData({ name: '', logo_url: '', website_url: '', type: 'partner' });
+      toast.success('Logo added!');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.PartnerLogo.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partner-logos']);
+      setEditingLogo(null);
+      setFormData({ name: '', logo_url: '', website_url: '', type: 'partner' });
+      toast.success('Logo updated!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.PartnerLogo.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partner-logos']);
+      toast.success('Logo deleted!');
+    },
+  });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, logo_url: file_url });
+      toast.success('Image uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!formData.name || !formData.logo_url) {
+      toast.error('Name and logo are required');
+      return;
+    }
+
+    if (editingLogo) {
+      updateMutation.mutate({ id: editingLogo.id, data: { ...formData, order: editingLogo.order } });
+    } else {
+      createMutation.mutate({ ...formData, order: logos.length });
+    }
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="flex items-center justify-between mb-6">
+        <div>
+          <h2 className="text-xl font-semibold">Partners & Funders</h2>
+          <p className="text-sm text-gray-500 mt-1">Manage logos displayed on the homepage</p>
+        </div>
+        <Button onClick={() => setShowForm(true)} className="bg-indigo-600">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Logo
+        </Button>
+      </div>
+
+      {(showForm || editingLogo) && (
+        <Card className="p-4 mb-6 bg-indigo-50 border-indigo-200">
+          <div className="space-y-4">
+            <div>
+              <Label>Organization Name *</Label>
+              <Input
+                value={formData.name}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                placeholder="Company Name"
+              />
+            </div>
+
+            <div>
+              <Label>Type</Label>
+              <select
+                value={formData.type}
+                onChange={(e) => setFormData({ ...formData, type: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="partner">Partner</option>
+                <option value="funder">Funder</option>
+              </select>
+            </div>
+
+            <div>
+              <Label>Logo Image *</Label>
+              <div className="space-y-2">
+                <Input
+                  value={formData.logo_url}
+                  onChange={(e) => setFormData({ ...formData, logo_url: e.target.value })}
+                  placeholder="https://example.com/logo.png"
+                />
+                <div className="flex items-center gap-2">
+                  <div className="h-px bg-gray-300 flex-1" />
+                  <span className="text-xs text-gray-500">OR</span>
+                  <div className="h-px bg-gray-300 flex-1" />
+                </div>
+                <input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleImageUpload}
+                  disabled={uploadingImage}
+                  className="hidden"
+                  id="logo-upload"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => document.getElementById('logo-upload').click()}
+                  disabled={uploadingImage}
+                  className="w-full"
+                >
+                  {uploadingImage ? 'Uploading...' : 'Upload Image'}
+                </Button>
+              </div>
+              {formData.logo_url && (
+                <img src={formData.logo_url} alt="Preview" className="mt-2 h-16 object-contain border rounded" />
+              )}
+            </div>
+
+            <div>
+              <Label>Website URL (optional)</Label>
+              <Input
+                value={formData.website_url}
+                onChange={(e) => setFormData({ ...formData, website_url: e.target.value })}
+                placeholder="https://example.com"
+              />
+            </div>
+
+            <div className="flex gap-2">
+              <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
+                {editingLogo ? 'Update' : 'Add'}
+              </Button>
+              <Button variant="outline" onClick={() => {
+                setShowForm(false);
+                setEditingLogo(null);
+                setFormData({ name: '', logo_url: '', website_url: '', type: 'partner' });
+              }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        {logos.map((logo) => (
+          <Card key={logo.id} className="p-4">
+            <div className="aspect-video flex items-center justify-center mb-3 bg-gray-50 rounded">
+              <img src={logo.logo_url} alt={logo.name} className="max-h-full max-w-full object-contain" />
+            </div>
+            <h3 className="font-medium text-sm text-gray-900 mb-1">{logo.name}</h3>
+            <Badge variant="secondary" className="text-xs mb-3">{logo.type}</Badge>
+            <div className="flex gap-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  setEditingLogo(logo);
+                  setFormData(logo);
+                }}
+              >
+                <Edit className="w-3 h-3" />
+              </Button>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => {
+                  if (confirm('Delete this logo?')) deleteMutation.mutate(logo.id);
+                }}
+              >
+                <Trash2 className="w-3 h-3 text-red-600" />
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+
+      {logos.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <p>No logos added yet</p>
+        </div>
+      )}
+    </Card>
   );
 }
 
