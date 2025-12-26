@@ -270,7 +270,7 @@ export default function CourseDetails() {
                       onClick={() => {
                         const targetLessonId = enrollment.current_lesson_id || lessons[0]?.id;
                         if (targetLessonId) {
-                          window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${targetLessonId}`;
+                          window.location.href = createPageUrl('LessonPlayer') + `?course=${courseId}&lesson=${targetLessonId}`;
                         }
                       }}
                     >
@@ -367,7 +367,7 @@ export default function CourseDetails() {
                                  key={lesson.id}
                                  onClick={() => {
                                    if (canAccess) {
-                                     window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${lesson.id}`;
+                                     window.location.href = createPageUrl('LessonPlayer') + `?course=${courseId}&lesson=${lesson.id}`;
                                    }
                                  }}
                                  className={`px-6 py-3 ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
