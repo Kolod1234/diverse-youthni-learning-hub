@@ -10,7 +10,9 @@ import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
+import Home from './pages/Home';
 import LearningPaths from './pages/LearningPaths';
+import LessonPlayer from './pages/LessonPlayer';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
 import Profile from './pages/Profile';
@@ -26,8 +28,6 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import Home from './pages/Home';
-import LessonPlayer from './pages/LessonPlayer';
 import __Layout from './Layout.jsx';
 
 
@@ -44,7 +44,9 @@ export const PAGES = {
     "DataPresentation": DataPresentation,
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
+    "Home": Home,
     "LearningPaths": LearningPaths,
+    "LessonPlayer": LessonPlayer,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
     "Profile": Profile,
@@ -60,8 +62,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "Home": Home,
-    "LessonPlayer": LessonPlayer,
 }
 
 export const pagesConfig = {
