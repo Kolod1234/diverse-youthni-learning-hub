@@ -125,6 +125,17 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPresenting]);
+
+  const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
+
   if (lessonLoading || lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
