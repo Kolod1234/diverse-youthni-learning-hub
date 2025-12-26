@@ -162,12 +162,12 @@ export default function Home() {
             </div>
             
             <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8">
-              Limited Time - Don't Miss Out!
+              Access them at the comfort of your home
             </p>
             
             <Link to={createPageUrl('Explore')}>
               <Button size="lg" className="bg-yellow-400 text-[#d32f2f] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
-                GET IT NOW!
+                BROWSE COURSES
                 <ArrowRight className="w-8 h-8 ml-3" />
               </Button>
             </Link>
