@@ -17,6 +17,7 @@ export default function Home() {
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
+  const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
@@ -217,12 +218,39 @@ export default function Home() {
               viewport={{ once: true }}
               className="relative"
             >
-              <img
-                src="https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80"
-                alt="Student learning"
-                className="rounded-2xl shadow-2xl"
-              />
-              <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-full shadow-2xl">
+              <div className="overflow-hidden rounded-2xl shadow-2xl" ref={leadershipEmblaRef}>
+                <div className="flex">
+                  {[
+                    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
+                    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
+                    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80',
+                    'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80'
+                  ].map((imgSrc, idx) => (
+                    <div key={idx} className="flex-[0_0_100%] min-w-0">
+                      <div className="relative aspect-[4/3]">
+                        <img
+                          src={imgSrc}
+                          alt={`Leadership programme ${idx + 1}`}
+                          className="w-full h-full object-cover"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <button
+                onClick={() => leadershipEmblaApi?.scrollPrev()}
+                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 z-10"
+              >
+                <ChevronLeft className="w-5 h-5 text-gray-800" />
+              </button>
+              <button
+                onClick={() => leadershipEmblaApi?.scrollNext()}
+                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 z-10"
+              >
+                <ChevronRight className="w-5 h-5 text-gray-800" />
+              </button>
+              <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-full shadow-2xl z-10">
                 <Award className="w-16 h-16 text-[#003366]" />
               </div>
             </motion.div>
