@@ -93,10 +93,12 @@ export default function LessonPlayer() {
       setViewMode('googleslides');
     } else if (currentLesson?.content_type === 'document' && currentLesson?.file_url) {
       setViewMode('document');
+    } else if (currentLesson?.slides && currentLesson.slides.length > 0) {
+      setViewMode('slides');
     } else {
       setViewMode('slides');
     }
-  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url, currentLesson?.file_url]);
+  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url, currentLesson?.file_url, currentLesson?.slides]);
 
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['course-quizzes', courseId],
@@ -137,9 +139,9 @@ export default function LessonPlayer() {
   
   // Create slides from lesson content or handle document mode
   const slides = currentLesson?.slides || [];
-  const isDocumentMode = currentLesson?.content_type === 'document' && currentLesson?.file_url;
-  const totalSlides = isDocumentMode ? 1 : slides.length;
-  const progressPercent = isDocumentMode ? 100 : (totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0);
+  const isDocumentMode = currentLesson?.content_type === 'document' && currentLesson?.file_url && !slides.length;
+  const totalSlides = slides.length > 0 ? slides.length : (isDocumentMode ? 1 : 0);
+  const progressPercent = totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0;
 
   // Check if current slide is bookmarked
   React.useEffect(() => {
@@ -436,7 +438,7 @@ export default function LessonPlayer() {
     );
   }
 
-  if (!currentLesson || (!slides.length && !isDocumentMode)) {
+  if (!currentLesson || totalSlides === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
         <Card className="max-w-md w-full p-8 text-center">
