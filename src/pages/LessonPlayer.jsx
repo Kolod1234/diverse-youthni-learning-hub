@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home
+  CheckCircle, Target, Maximize, Minimize, Home, BookOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 
