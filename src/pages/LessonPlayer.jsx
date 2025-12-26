@@ -586,9 +586,9 @@ export default function LessonPlayer() {
                 }
               }}
             >
-              <Card className="min-h-full p-4 sm:p-6 shadow-xl bg-white border-0 flex flex-col">
+              <Card className={`min-h-full shadow-xl bg-white border-0 flex flex-col ${viewMode === 'googleslides' ? 'p-0' : 'p-4 sm:p-6'}`}>
                 {/* Learning Objectives - Show on first slide */}
-                {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
+                {currentSlideIndex === 0 && viewMode !== 'googleslides' && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -620,7 +620,7 @@ export default function LessonPlayer() {
                 )}
 
                 {/* Slide Content */}
-                <div className="flex-1 mb-6 sm:mb-8 overflow-y-auto">
+                <div className={`flex-1 overflow-y-auto ${viewMode === 'googleslides' ? 'mb-0' : 'mb-6 sm:mb-8'}`}>
                   {!isDocumentMode && viewMode !== 'googleslides' && (
                     <div className="flex items-start justify-between mb-4 sm:mb-6">
                       <div className="flex-1">
