@@ -151,7 +151,7 @@ export default function Home() {
             </div>
             
             <h2 className="text-3xl md:text-5xl font-extrabold text-white mb-4">
-              Our biggest opportunity ever!
+              Online Quizzes
             </h2>
             
             <div className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl">
