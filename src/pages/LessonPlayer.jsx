@@ -61,7 +61,6 @@ export default function LessonPlayer() {
       if (!completedLessons.includes(lessonId)) {
         await base44.entities.Enrollment.update(enrollment.id, {
           completed_lessons: [...completedLessons, lessonId],
-          current_lesson_id: lessonId,
           progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
         });
       }
@@ -71,33 +70,6 @@ export default function LessonPlayer() {
       toast.success('Lesson marked as complete!');
     }
   });
-
-  // Continue Learning handler
-  const handleContinueLearning = async () => {
-    try {
-      // Mark current lesson complete and update progress
-      if (enrollment && !enrollment.completed_lessons?.includes(lessonId)) {
-        const completedLessons = enrollment.completed_lessons || [];
-        await base44.entities.Enrollment.update(enrollment.id, {
-          completed_lessons: [...completedLessons, lessonId],
-          current_lesson_id: nextLesson?.id || lessonId,
-          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
-        });
-        queryClient.invalidateQueries(['enrollment', courseId]);
-      }
-
-      // Navigate to next lesson or show quiz
-      if (nextLesson) {
-        navigate(`/LessonPlayer?lesson=${nextLesson.id}&course=${courseId}`);
-      } else {
-        setShowQuiz(true);
-        toast.success('Course section complete! Time for a quiz.');
-      }
-    } catch (err) {
-      console.error("Failed to progress lesson:", err);
-      toast.error("Failed to save progress");
-    }
-  };
 
   // Fullscreen handling
   useEffect(() => {
@@ -240,6 +212,14 @@ export default function LessonPlayer() {
           >
             <Users size={20} />
           </button>
+          {!isCompleted && (
+            <button 
+              onClick={() => markCompleteMutation.mutate()}
+              className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+            >
+              <CheckCircle size={14} /> Complete
+            </button>
+          )}
           <button 
             onClick={toggleFullscreen} 
             className="p-2 hover:bg-slate-700 rounded-lg transition-colors hidden md:block"
@@ -251,7 +231,7 @@ export default function LessonPlayer() {
 
       {/* MAIN CONTENT AREA */}
       <div className="flex flex-1 overflow-hidden">
-
+        
         {/* LEFT PANEL: Course Navigation */}
         <AnimatePresence>
           {showSidebar && (
@@ -260,10 +240,9 @@ export default function LessonPlayer() {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25 }}
-              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex flex-col shadow-xl lg:shadow-none overflow-hidden"
-              style={{ height: 'calc(100vh - 64px)' }}
+              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex-col flex-none h-full flex shadow-xl lg:shadow-none"
             >
-              <div className="p-5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
+              <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-slate-400">
                   <BookOpen size={16} />
                   <span className="text-xs font-bold uppercase tracking-wider">Course Content</span>
@@ -275,8 +254,8 @@ export default function LessonPlayer() {
                   <X size={16} />
                 </button>
               </div>
-
-              <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
+              
+              <div className="flex-1 overflow-y-auto p-4 space-y-2">
                 {sortedLessons.map((l, idx) => {
                   const completed = enrollment?.completed_lessons?.includes(l.id);
                   const isCurrent = l.id === lessonId;
@@ -313,7 +292,7 @@ export default function LessonPlayer() {
               </div>
 
               {/* WEBCAM PREVIEW */}
-              <div className="p-4 bg-slate-900/80 border-t border-slate-800 flex-shrink-0">
+              <div className="p-4 bg-slate-900/80 border-t border-slate-800">
                 <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
                   <video 
                     ref={videoRef} 
@@ -421,23 +400,22 @@ export default function LessonPlayer() {
                     >
                       <ChevronLeft size={20}/>
                     </button>
-                    {!isCompleted && (
-                      <button 
-                        onClick={() => markCompleteMutation.mutate()}
-                        className="px-4 py-3 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-bold transition-colors flex items-center gap-1"
-                      >
-                        <CheckCircle size={14} /> Mark Complete
-                      </button>
-                    )}
+                    <button 
+                      onClick={handleNextLesson}
+                      disabled={!nextLesson}
+                      className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronRight size={20}/>
+                    </button>
                   </div>
                   <span className="text-xs text-slate-400 hidden sm:block">
                     {currentLessonIndex + 1} / {sortedLessons.length}
                   </span>
                   <button 
-                    onClick={handleContinueLearning}
+                    onClick={() => setShowQuiz(true)}
                     className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-tighter flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
                   >
-                    {nextLesson ? 'Continue' : 'Take Quiz'} <ChevronRight size={18} />
+                    Take Quiz <Play size={18} fill="currentColor" />
                   </button>
                 </div>
               </motion.div>
