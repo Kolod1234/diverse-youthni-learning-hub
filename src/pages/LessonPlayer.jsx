@@ -43,52 +43,12 @@ export default function LessonPlayer() {
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") setIsPresentationMode(false);
-      if (e.key === "ArrowRight" || e.key === " ") navigateSlide(1);
-      if (e.key === "ArrowLeft") navigateSlide(-1);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIdx, slides.length]);
-
-  const toolbarContent = {
-    home: [
-      { icon: RotateCcw, label: 'Reset', action: () => window.location.reload() },
-      { icon: Plus, label: 'New Slide', action: addSlide },
-      { icon: Table, label: 'Layout', action: cycleLayout },
-      { divider: true },
-      { icon: Monitor, label: 'Present', action: togglePresentation },
-      { icon: UserPlus, label: 'Share Live', action: shareLive }
-    ],
-    insert: [
-      { icon: Type, label: 'Text Box', action: addTextBox },
-      { icon: ImageIcon, label: 'Pictures', action: addPicture },
-      { icon: Shapes, label: 'Shapes', action: addShape },
-      { icon: PieChart, label: 'Chart', action: addChart }
-    ],
-    transitions: [
-      { icon: Wand2, label: 'Fade', action: () => showToast('Fade applied') },
-      { icon: ArrowUp, label: 'Push', action: () => showToast('Push applied') },
-      { icon: Eraser, label: 'Wipe', action: () => showToast('Wipe applied') }
-    ],
-    animations: [
-      { icon: Star, label: 'Appear', action: () => showToast('Appear animation added') },
-      { icon: Circle, label: 'Fade', action: () => showToast('Fade animation added') },
-      { icon: Plane, label: 'Fly In', action: () => showToast('Fly In animation added') }
-    ],
-    slideshow: [
-      { icon: Play, label: 'From Start', action: () => { setCurrentIdx(0); togglePresentation(); } },
-      { icon: FastForward, label: 'From Current', action: togglePresentation },
-      { divider: true },
-      { icon: Radio, label: 'Present Online', action: () => showToast('Live Presentation Started') }
-    ],
-    file: [
-      { icon: Save, label: 'Save', action: () => showToast('Saving...') },
-      { icon: FileDown, label: 'Export PDF', action: () => showToast('Exporting as PDF...') },
-      { icon: Printer, label: 'Print', action: () => showToast('Printing...') }
-    ]
+  const showToast = (message) => {
+    const toast = document.createElement('div');
+    toast.className = 'fixed bottom-20 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-[2000] text-sm';
+    toast.textContent = message;
+    document.body.appendChild(toast);
+    setTimeout(() => toast.remove(), 2500);
   };
 
   const navigateSlide = (dir) => {
@@ -186,13 +146,52 @@ export default function LessonPlayer() {
     showToast(`Live Session Started! ID: ${sessionID}`);
   };
 
-  const showToast = (message) => {
-    // Simple toast implementation - could be replaced with a proper toast library
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-20 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-[2000] text-sm';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === "Escape") setIsPresentationMode(false);
+      if (e.key === "ArrowRight" || e.key === " ") navigateSlide(1);
+      if (e.key === "ArrowLeft") navigateSlide(-1);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [currentIdx, slides.length]);
+
+  const toolbarContent = {
+    home: [
+      { icon: RotateCcw, label: 'Reset', action: () => window.location.reload() },
+      { icon: Plus, label: 'New Slide', action: addSlide },
+      { icon: Table, label: 'Layout', action: cycleLayout },
+      { divider: true },
+      { icon: Monitor, label: 'Present', action: togglePresentation },
+      { icon: UserPlus, label: 'Share Live', action: shareLive }
+    ],
+    insert: [
+      { icon: Type, label: 'Text Box', action: addTextBox },
+      { icon: ImageIcon, label: 'Pictures', action: addPicture },
+      { icon: Shapes, label: 'Shapes', action: addShape },
+      { icon: PieChart, label: 'Chart', action: addChart }
+    ],
+    transitions: [
+      { icon: Wand2, label: 'Fade', action: () => showToast('Fade applied') },
+      { icon: ArrowUp, label: 'Push', action: () => showToast('Push applied') },
+      { icon: Eraser, label: 'Wipe', action: () => showToast('Wipe applied') }
+    ],
+    animations: [
+      { icon: Star, label: 'Appear', action: () => showToast('Appear animation added') },
+      { icon: Circle, label: 'Fade', action: () => showToast('Fade animation added') },
+      { icon: Plane, label: 'Fly In', action: () => showToast('Fly In animation added') }
+    ],
+    slideshow: [
+      { icon: Play, label: 'From Start', action: () => { setCurrentIdx(0); togglePresentation(); } },
+      { icon: FastForward, label: 'From Current', action: togglePresentation },
+      { divider: true },
+      { icon: Radio, label: 'Present Online', action: () => showToast('Live Presentation Started') }
+    ],
+    file: [
+      { icon: Save, label: 'Save', action: () => showToast('Saving...') },
+      { icon: FileDown, label: 'Export PDF', action: () => showToast('Exporting as PDF...') },
+      { icon: Printer, label: 'Print', action: () => showToast('Printing...') }
+    ]
   };
 
   const renderSlideContent = (slide) => {
