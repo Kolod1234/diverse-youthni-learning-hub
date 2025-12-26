@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
@@ -37,6 +37,12 @@ export default function Home() {
   const { data: allReviews = [] } = useQuery({
     queryKey: ['all-reviews'],
     queryFn: () => base44.entities.Review.list('-created_date', 1000),
+  });
+
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blog-posts'],
+    queryFn: () => base44.entities.BlogPost.filter({ is_published: true }, '-published_date', 3),
+    initialData: [],
   });
 
   // Calculate actual ratings and enrollments for each course
@@ -94,12 +100,12 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-white">
       {/* Hero Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
         {/* Animated background elements */}
         <div className="absolute inset-0">
-          <div className="absolute top-20 left-10 w-72 h-72 bg-yellow-300/40 rounded-full blur-3xl animate-pulse" />
-          <div className="absolute bottom-20 right-10 w-96 h-96 bg-pink-400/40 rounded-full blur-3xl animate-pulse delay-1000" />
-          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-cyan-300/25 rounded-full blur-3xl" />
+          <div className="absolute top-20 left-10 w-72 h-72 bg-blue-500/20 rounded-full blur-3xl animate-pulse" />
+          <div className="absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-pulse delay-1000" />
+          <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-indigo-500/15 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-24 lg:py-40">
@@ -122,12 +128,12 @@ export default function Home() {
               
               <h1 className="text-5xl sm:text-6xl lg:text-7xl font-extrabold leading-tight mb-8 text-white drop-shadow-lg">
                 Diverse Youth NI
-                <span className="block mt-3 bg-gradient-to-r from-yellow-200 via-amber-200 to-white bg-clip-text text-transparent">
+                <span className="block mt-3 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                   Learning Hub
                 </span>
               </h1>
               
-              <p className="text-xl sm:text-2xl text-orange-50 mb-10 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl sm:text-2xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
                 Empowering young minds through innovative education. 
                 <span className="block mt-2 text-white/90">Join our thriving community today.</span>
               </p>
@@ -138,7 +144,7 @@ export default function Home() {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-white/50 hover:shadow-orange-400/70 transition-all duration-300">
+                  <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
                     Start Learning Now
                     <ArrowRight className="w-6 h-6 ml-2" />
                   </Button>
@@ -166,7 +172,7 @@ export default function Home() {
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {totalStudents > 0 ? `${totalStudents.toLocaleString()}+` : '0'}
               </div>
-              <div className="text-orange-100 text-base font-medium">Active Learners</div>
+              <div className="text-slate-300 text-base font-medium">Active Learners</div>
             </motion.div>
 
             <motion.div
@@ -181,7 +187,7 @@ export default function Home() {
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {courses.length > 0 ? courses.length : '0'}
               </div>
-              <div className="text-orange-100 text-base font-medium">Expert Courses</div>
+              <div className="text-slate-300 text-base font-medium">Expert Courses</div>
             </motion.div>
 
             <motion.div
@@ -196,7 +202,7 @@ export default function Home() {
               <div className="text-4xl sm:text-5xl font-extrabold mb-2 text-white">
                 {averageRating || '4.5'}
               </div>
-              <div className="text-orange-100 text-base font-medium">Average Rating</div>
+              <div className="text-slate-300 text-base font-medium">Average Rating</div>
             </motion.div>
           </motion.div>
         </div>
@@ -344,7 +350,7 @@ export default function Home() {
                 <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
-                <Button className="bg-gradient-to-r from-orange-600 to-rose-600 hover:from-orange-700 hover:to-rose-700 text-white rounded-full shadow-lg shadow-orange-500/50 hover:shadow-xl hover:shadow-rose-500/50 transition-all">
+                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -417,7 +423,7 @@ export default function Home() {
             className="text-center mt-12"
           >
             <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-gradient-to-r from-orange-600 via-rose-600 to-pink-600 hover:from-orange-700 hover:via-rose-700 hover:to-pink-700 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl shadow-orange-500/50 hover:shadow-2xl hover:shadow-pink-500/50 transition-all hover:scale-105">
+              <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-10 h-14 text-base font-semibold shadow-xl shadow-blue-500/30 hover:shadow-2xl hover:shadow-purple-500/40 transition-all hover:scale-105">
                 View All Courses
                 <ArrowRight className="w-5 h-5 ml-2" />
               </Button>
@@ -486,9 +492,79 @@ export default function Home() {
         </div>
       </section>
 
+      {/* Blog Section */}
+      {blogPosts.length > 0 && (
+        <section className="py-20 bg-slate-900">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
+                Latest Insights
+              </span>
+              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+                From Our Blog
+              </h2>
+              <p className="text-lg text-slate-400">Stay updated with the latest news and tips</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {blogPosts.map((post, idx) => (
+                <motion.div
+                  key={post.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1 }}
+                  className="group bg-slate-800 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-slate-700 hover:border-blue-500/50"
+                >
+                  {post.featured_image && (
+                    <div className="aspect-video overflow-hidden">
+                      <img
+                        src={post.featured_image}
+                        alt={post.title}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      />
+                    </div>
+                  )}
+                  <div className="p-6">
+                    <div className="flex items-center gap-3 mb-4">
+                      <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-semibold rounded-full capitalize">
+                        {post.category}
+                      </span>
+                      {post.read_time_minutes && (
+                        <span className="flex items-center gap-1 text-slate-400 text-xs">
+                          <Clock className="w-3 h-3" />
+                          {post.read_time_minutes} min read
+                        </span>
+                      )}
+                    </div>
+                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
+                      {post.title}
+                    </h3>
+                    <p className="text-slate-400 mb-4 line-clamp-2">{post.excerpt}</p>
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-2">
+                        {post.author_avatar && (
+                          <img src={post.author_avatar} alt={post.author_name} className="w-8 h-8 rounded-full" />
+                        )}
+                        <div>
+                          <p className="text-sm font-medium text-white">{post.author_name}</p>
+                          {post.published_date && (
+                            <p className="text-xs text-slate-500">{new Date(post.published_date).toLocaleDateString()}</p>
+                          )}
+                        </div>
+                      </div>
+                      <ArrowRight className="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition-transform" />
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
       {/* Testimonials Section */}
       {topReviews.length > 0 && (
-        <section className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
+        <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
@@ -529,10 +605,10 @@ export default function Home() {
       )}
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600 py-24">
+      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-24">
         <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-yellow-300/40 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-cyan-300/40 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
+          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
@@ -549,24 +625,24 @@ export default function Home() {
             
             <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
               Ready to Transform
-              <span className="block mt-2 bg-gradient-to-r from-yellow-200 via-amber-200 to-white bg-clip-text text-transparent">
+              <span className="block mt-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
                 Your Future?
               </span>
             </h2>
             
-            <p className="text-xl text-orange-50 mb-10 max-w-3xl mx-auto leading-relaxed">
+            <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
               Start your learning journey today and unlock endless possibilities with our expert-led courses
             </p>
             
             <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
               <Link to={createPageUrl('Dashboard')}>
-                <Button size="lg" className="bg-white text-orange-600 hover:bg-yellow-50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-white/50 hover:shadow-orange-400/70 transition-all duration-300">
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
                   Get Started for Free
                   <ArrowRight className="w-6 h-6 ml-2" />
                 </Button>
               </Link>
               <Link to={createPageUrl('Explore')}>
-                <Button size="lg" variant="outline" className="border-2 border-white bg-white/5 text-white hover:bg-white/20 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
+                <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
                   Browse Courses
                   <TrendingUp className="w-5 h-5 ml-2" />
                 </Button>
