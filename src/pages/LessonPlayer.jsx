@@ -96,7 +96,9 @@ export default function LessonPlayer() {
         if (videoRef.current) videoRef.current.srcObject = stream;
         setIsCameraOn(true);
       } else {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        if (videoRef.current?.srcObject) {
+          videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        }
         setIsCameraOn(false);
       }
     } catch (err) {
@@ -172,16 +174,16 @@ export default function LessonPlayer() {
 
   // Get embed URL for Google Slides
   const getSlideEmbedUrl = () => {
-    if (lesson.google_slides_url) {
+    if (lesson?.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (presentationId) {
         return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`;
       }
     }
-    return lesson.file_url || null;
+    return lesson?.file_url || null;
   };
 
-  const slideUrl = getSlideEmbedUrl();
+  const slideUrl = lesson ? getSlideEmbedUrl() : null;
 
   return (
     <div ref={playerRef} className="fixed inset-0 flex flex-col bg-[#0f172a] text-white font-sans overflow-hidden">
