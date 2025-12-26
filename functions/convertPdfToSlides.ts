@@ -15,48 +15,51 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'file_url is required' }, { status: 400 });
     }
 
-    // Fetch the PDF file
-    const pdfResponse = await fetch(file_url);
-    if (!pdfResponse.ok) {
-      return Response.json({ error: 'Failed to fetch PDF' }, { status: 400 });
-    }
+    // Use AI to convert PDF to slides with proper rendering
+    const prompt = `I have a PDF document at this URL: ${file_url}
+    
+Please analyze this PDF and convert each page into HTML slide content. For each page:
+1. Extract the text content
+2. Identify any images, diagrams, or visual elements
+3. Preserve formatting and layout
+4. Return structured HTML that represents the page content
 
-    const pdfBuffer = await pdfResponse.arrayBuffer();
+Return a JSON array where each object has:
+- title: A descriptive title for the slide (based on page content)
+- content: Full HTML representation of the page with proper styling
+- order: Page number (0-indexed)`;
 
-    // Use pdf-lib to load and process the PDF
-    const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
-    const pdfDoc = await PDFDocument.load(pdfBuffer);
-    const pageCount = pdfDoc.getPageCount();
+    const response = await base44.integrations.Core.InvokeLLM({
+      prompt,
+      add_context_from_internet: false,
+      file_urls: [file_url],
+      response_json_schema: {
+        type: "object",
+        properties: {
+          slides: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                title: { type: "string" },
+                content: { type: "string" },
+                order: { type: "number" }
+              }
+            }
+          },
+          total_pages: { type: "number" }
+        }
+      }
+    });
 
-    // Generate images for each page using pdf2pic approach
-    // Since we're in Deno, we'll use a different approach - convert via canvas
-    const slides = [];
-
-    // For each page, we'll create a data URL representation
-    for (let i = 0; i < pageCount; i++) {
-      // Extract single page
-      const singlePageDoc = await PDFDocument.create();
-      const [copiedPage] = await singlePageDoc.copyPages(pdfDoc, [i]);
-      singlePageDoc.addPage(copiedPage);
-      
-      const pdfBytes = await singlePageDoc.save();
-      const base64 = btoa(String.fromCharCode(...new Uint8Array(pdfBytes)));
-      const pageUrl = `data:application/pdf;base64,${base64}`;
-
-      slides.push({
-        title: `Slide ${i + 1}`,
-        content: `<div style="width: 100%; height: 600px; display: flex; align-items: center; justify-content: center; background: #f3f4f6;">
-          <iframe src="${pageUrl}" style="width: 100%; height: 100%; border: none;" />
-        </div>`,
-        order: i,
-        page_number: i + 1
-      });
+    if (!response.slides || response.slides.length === 0) {
+      throw new Error('No slides generated from PDF');
     }
 
     return Response.json({
       success: true,
-      slides,
-      total_pages: pageCount
+      slides: response.slides,
+      total_pages: response.total_pages || response.slides.length
     });
 
   } catch (error) {
