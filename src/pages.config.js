@@ -28,6 +28,8 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
+import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
+import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import __Layout from './Layout.jsx';
 
 
@@ -62,6 +64,8 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
+    "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
+    "LessonPlayerClassic": LessonPlayerClassic,
 }
 
 export const pagesConfig = {
