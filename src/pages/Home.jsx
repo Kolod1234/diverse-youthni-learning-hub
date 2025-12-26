@@ -349,11 +349,11 @@ export default function Home() {
             </div>
 
             <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
-              Join Our Leadership Employment Programmes
+              Join Our Leadership Empowerment Programmes
             </h2>
 
             <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-              Develop essential leadership skills, gain real-world experience, and unlock your potential through our structured mentorship and employment programmes.
+              Develop essential leadership skills, gain real-world experience, and unlock your potential through our structured mentorship and empowerment programmes.
             </p>
 
             <div className="flex flex-wrap gap-4">
