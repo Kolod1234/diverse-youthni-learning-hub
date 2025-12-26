@@ -73,9 +73,15 @@ export default function Home() {
 
   const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
   
+  // Get real user reviews with detailed comments
   const topReviews = allReviews
-    .filter(r => r.comment && r.comment.length > 20)
-    .sort((a, b) => b.rating - a.rating)
+    .filter(r => 
+      r.comment && 
+      r.comment.trim().length >= 30 && 
+      r.rating >= 4 &&
+      (r.rating_type === 'lesson' || r.rating_type === 'course' || !r.rating_type)
+    )
+    .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
     .slice(0, 6);
 
   const filteredCourses = coursesWithActualData.filter(course => {
@@ -567,10 +573,15 @@ export default function Home() {
         <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
+              <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+                Student Success Stories
+              </span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 What our learners say
               </h2>
-              <p className="text-lg text-gray-600">Real stories from real students</p>
+              <p className="text-lg text-gray-600">
+                Real experiences shared by students who completed our courses
+              </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
               {topReviews.slice(0, 3).map((review, idx) => (
@@ -587,15 +598,20 @@ export default function Home() {
                     <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 leading-relaxed italic">"{review.comment}"</p>
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-gradient-to-br from-orange-400 to-pink-500 rounded-full flex items-center justify-center text-white font-bold">
-                    {review.user_name?.charAt(0) || 'U'}
+                <p className="text-gray-700 mb-6 leading-relaxed">"{review.comment}"</p>
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
+                      {review.user_name?.charAt(0) || 'U'}
+                    </div>
+                    <div>
+                      <p className="font-semibold text-gray-900">{review.user_name}</p>
+                      <p className="text-sm text-gray-500">
+                        {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
+                      </p>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-semibold text-gray-900">{review.user_name}</p>
-                    <p className="text-sm text-gray-500">Verified Student</p>
-                  </div>
+                  <CheckCircle className="w-5 h-5 text-green-500" />
                 </div>
               </motion.div>
               ))}
