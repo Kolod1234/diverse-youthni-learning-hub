@@ -10,12 +10,13 @@ import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
 import SearchBar from '@/components/courses/SearchBar';
 import useEmblaCarousel from 'embla-carousel-react';
+import Autoplay from 'embla-carousel-autoplay';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
-  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true });
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],

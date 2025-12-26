@@ -1,436 +1,470 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  FileText, Home, Plus, Table, Monitor, UserPlus, Type, Image as ImageIcon, 
-  Shapes, PieChart, Wand2, ArrowUp, Eraser, Star, Circle, Plane, Play, 
-  FastForward, Radio, Save, FileDown, Printer, ChevronLeft, ChevronRight,
-  X, RotateCcw, Grid3x3, BookOpen, Check
+  Users, Camera, Maximize, Minimize, ChevronLeft, ChevronRight, Play, Layout,
+  X, CheckCircle, BookOpen, Target, FileText
 } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function LessonPlayer() {
-  const [currentIdx, setCurrentIdx] = useState(0);
-  const [activeTab, setActiveTab] = useState('home');
-  const [isPresentationMode, setIsPresentationMode] = useState(false);
-  const [slides, setSlides] = useState([
-    {
-      id: 1,
-      title: "Resilience & Discovery",
-      subtitle: "Unit 4: Microscopy and the Unseen World",
-      footer: "Diverse Youth NI - Early Intervention Support",
-      layout: 'title',
-      elements: []
-    },
-    {
-      id: 2,
-      title: "Our Wellbeing Journey",
-      content: "Our organization is rooted in our community, responding to the needs of marginalized young people. This unit focuses on building internal strength.",
-      features: [
-        { label: "Early Intervention", desc: "Identifying challenges early helps resilience." },
-        { label: "Youth at the Centre", desc: "Work planned around your views." }
-      ],
-      layout: 'content',
-      elements: []
-    },
-    {
-      id: 3,
-      title: "The Science of Observation",
-      content: "Just as we use tools to see a cell, we use skills to navigate challenges like family breakdown or hidden homelessness.",
-      list: ["Magnification: Bigger picture", "Resolution: Clarity in chaos", "Contrast: Hope vs difficulty"],
-      layout: 'two-col',
-      elements: []
-    }
-  ]);
-
+  const location = useLocation();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const params = new URLSearchParams(location.search);
+  const lessonId = params.get('lesson');
+  const courseId = params.get('course');
 
-  const showToast = (message) => {
-    const toast = document.createElement('div');
-    toast.className = 'fixed bottom-20 right-6 bg-gray-800 text-white px-6 py-3 rounded-lg shadow-xl z-[2000] text-sm';
-    toast.textContent = message;
-    document.body.appendChild(toast);
-    setTimeout(() => toast.remove(), 2500);
-  };
+  // State Management
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showQuiz, setShowQuiz] = useState(false);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [showObjectives, setShowObjectives] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(true);
+  
+  const playerRef = useRef(null);
+  const videoRef = useRef(null);
 
-  const navigateSlide = (dir) => {
-    const next = currentIdx + dir;
-    if (next >= 0 && next < slides.length) setCurrentIdx(next);
-  };
+  // Fetch all course lessons for navigation
+  const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
+    queryKey: ['courseLessons', courseId],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
+    enabled: !!courseId
+  });
 
-  const addSlide = () => {
-    const newId = slides.length + 1;
-    setSlides([...slides, {
-      id: newId,
-      title: `New Slide ${newId}`,
-      content: "Add content here...",
-      layout: 'content',
-      features: [{ label: "New Support", desc: "Build impact." }],
-      elements: []
-    }]);
-    setCurrentIdx(slides.length);
-    showToast("New slide added");
-  };
+  // Fetch current lesson directly by ID
+  const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
+    queryKey: ['lesson', lessonId],
+    queryFn: () => base44.entities.Lesson.filter({ id: lessonId }),
+    enabled: !!lessonId
+  });
 
-  const cycleLayout = () => {
-    const layouts = ['title', 'content', 'two-col'];
-    const currentLayout = slides[currentIdx].layout;
-    const currentLayoutIdx = layouts.indexOf(currentLayout);
-    const newLayout = layouts[(currentLayoutIdx + 1) % layouts.length];
-    
-    const updatedSlides = [...slides];
-    updatedSlides[currentIdx] = { ...updatedSlides[currentIdx], layout: newLayout };
-    setSlides(updatedSlides);
-    showToast(`Switched to ${newLayout} layout`);
-  };
+  const lesson = currentLessonArray[0];
 
-  const addTextBox = () => {
-    const updatedSlides = [...slides];
-    updatedSlides[currentIdx].elements.push({
-      type: 'text',
-      content: 'Double click to edit',
-      x: 100,
-      y: 100
-    });
-    setSlides(updatedSlides);
-    showToast("Text Box inserted");
-  };
+  // Fetch enrollment for progress
+  const { data: enrollment } = useQuery({
+    queryKey: ['enrollment', courseId],
+    queryFn: async () => {
+      const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
+      return enrollments[0];
+    },
+    enabled: !!courseId
+  });
 
-  const addPicture = () => {
-    const url = prompt("Enter Image URL:", "https://images.unsplash.com/photo-1532619675605-1ede6c2ed2b0?w=400");
-    if (url) {
-      const updatedSlides = [...slides];
-      updatedSlides[currentIdx].elements.push({
-        type: 'image',
-        url: url,
-        x: 150,
-        y: 150
-      });
-      setSlides(updatedSlides);
-      showToast("Picture inserted");
+  // Mark lesson complete mutation
+  const markCompleteMutation = useMutation({
+    mutationFn: async () => {
+      if (!enrollment) return;
+      const completedLessons = enrollment.completed_lessons || [];
+      if (!completedLessons.includes(lessonId)) {
+        await base44.entities.Enrollment.update(enrollment.id, {
+          completed_lessons: [...completedLessons, lessonId],
+          current_lesson_id: lessonId,
+          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['enrollment', courseId]);
+      toast.success('Lesson marked as complete!');
+    }
+  });
+
+  // Continue Learning handler
+  const handleContinueLearning = async () => {
+    try {
+      // Mark current lesson complete and update progress
+      if (enrollment && !enrollment.completed_lessons?.includes(lessonId)) {
+        const completedLessons = enrollment.completed_lessons || [];
+        await base44.entities.Enrollment.update(enrollment.id, {
+          completed_lessons: [...completedLessons, lessonId],
+          current_lesson_id: nextLesson?.id || lessonId,
+          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
+        });
+        queryClient.invalidateQueries(['enrollment', courseId]);
+      }
+
+      // Navigate to next lesson or show quiz
+      if (nextLesson) {
+        navigate(`/LessonPlayer?lesson=${nextLesson.id}&course=${courseId}`);
+      } else {
+        setShowQuiz(true);
+        toast.success('Course section complete! Time for a quiz.');
+      }
+    } catch (err) {
+      console.error("Failed to progress lesson:", err);
+      toast.error("Failed to save progress");
     }
   };
 
-  const addShape = () => {
-    const shapes = ['square', 'circle', 'heart'];
-    const choice = prompt("Enter shape (square, circle, heart):", "heart");
-    if (shapes.includes(choice)) {
-      const updatedSlides = [...slides];
-      updatedSlides[currentIdx].elements.push({
-        type: 'shape',
-        shape: choice,
-        x: 200,
-        y: 200
-      });
-      setSlides(updatedSlides);
-      showToast("Shape inserted");
-    }
-  };
-
-  const addChart = () => {
-    const updatedSlides = [...slides];
-    updatedSlides[currentIdx].elements.push({
-      type: 'chart',
-      x: 250,
-      y: 250
-    });
-    setSlides(updatedSlides);
-    showToast("Chart inserted");
-  };
-
-  const togglePresentation = () => {
-    setIsPresentationMode(!isPresentationMode);
-    showToast(isPresentationMode ? "Presentation Mode: OFF" : "Presentation Mode: ON (Press ESC to exit)");
-  };
-
-  const shareLive = () => {
-    const sessionID = Math.random().toString(36).substring(7).toUpperCase();
-    showToast(`Live Session Started! ID: ${sessionID}`);
-  };
-
+  // Fullscreen handling
   useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === "Escape") setIsPresentationMode(false);
-      if (e.key === "ArrowRight" || e.key === " ") navigateSlide(1);
-      if (e.key === "ArrowLeft") navigateSlide(-1);
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
     };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [currentIdx, slides.length]);
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+  }, []);
 
-  const toolbarContent = {
-    home: [
-      { icon: RotateCcw, label: 'Reset', action: () => window.location.reload() },
-      { icon: Plus, label: 'New Slide', action: addSlide },
-      { icon: Table, label: 'Layout', action: cycleLayout },
-      { divider: true },
-      { icon: Monitor, label: 'Present', action: togglePresentation },
-      { icon: UserPlus, label: 'Share Live', action: shareLive }
-    ],
-    insert: [
-      { icon: Type, label: 'Text Box', action: addTextBox },
-      { icon: ImageIcon, label: 'Pictures', action: addPicture },
-      { icon: Shapes, label: 'Shapes', action: addShape },
-      { icon: PieChart, label: 'Chart', action: addChart }
-    ],
-    transitions: [
-      { icon: Wand2, label: 'Fade', action: () => showToast('Fade applied') },
-      { icon: ArrowUp, label: 'Push', action: () => showToast('Push applied') },
-      { icon: Eraser, label: 'Wipe', action: () => showToast('Wipe applied') }
-    ],
-    animations: [
-      { icon: Star, label: 'Appear', action: () => showToast('Appear animation added') },
-      { icon: Circle, label: 'Fade', action: () => showToast('Fade animation added') },
-      { icon: Plane, label: 'Fly In', action: () => showToast('Fly In animation added') }
-    ],
-    slideshow: [
-      { icon: Play, label: 'From Start', action: () => { setCurrentIdx(0); togglePresentation(); } },
-      { icon: FastForward, label: 'From Current', action: togglePresentation },
-      { divider: true },
-      { icon: Radio, label: 'Present Online', action: () => showToast('Live Presentation Started') }
-    ],
-    file: [
-      { icon: Save, label: 'Save', action: () => showToast('Saving...') },
-      { icon: FileDown, label: 'Export PDF', action: () => showToast('Exporting as PDF...') },
-      { icon: Printer, label: 'Print', action: () => showToast('Printing...') }
-    ]
-  };
-
-  const renderSlideContent = (slide) => {
-    if (slide.layout === 'title') {
-      return (
-        <div className="flex flex-col justify-center items-center h-full text-center">
-          <h1 className="text-5xl font-bold text-[#d24726] mb-4">{slide.title}</h1>
-          {slide.subtitle && <p className="text-2xl text-gray-600 mt-2">{slide.subtitle}</p>}
-          {slide.footer && <div className="mt-12 font-semibold text-blue-600">{slide.footer}</div>}
-        </div>
-      );
-    }
-
-    if (slide.layout === 'content') {
-      return (
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-[#d24726] w-fit">
-            {slide.title}
-          </div>
-          <div className="text-lg leading-relaxed text-gray-800">
-            <p className="mb-6">{slide.content}</p>
-            <div className="grid grid-cols-2 gap-6">
-              {(slide.features || []).map((f, i) => (
-                <div key={i} className="bg-gray-50 rounded-lg p-5 border-l-4 border-[#d24726]">
-                  <strong className="text-lg">{f.label}</strong>
-                  <p className="text-sm mt-2 text-gray-600">{f.desc}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      );
-    }
-
-    if (slide.layout === 'two-col') {
-      return (
-        <div className="flex flex-col">
-          <div className="text-4xl font-bold text-gray-800 mb-6 pb-3 border-b-2 border-[#d24726] w-fit">
-            {slide.title}
-          </div>
-          <div className="grid grid-cols-2 gap-8">
-            <div>
-              <p className="text-lg mb-4">{slide.content}</p>
-              <ul className="list-disc list-inside space-y-2 text-gray-700">
-                {(slide.list || []).map((item, i) => (
-                  <li key={i}>{item}</li>
-                ))}
-              </ul>
-            </div>
-            <div className="bg-gray-100 rounded-lg h-52 flex flex-col items-center justify-center text-gray-400 border border-dashed border-gray-300">
-              <ImageIcon size={40} className="mb-2" />
-              <span>Visual Support</span>
-            </div>
-          </div>
-        </div>
-      );
+  const toggleFullscreen = () => {
+    if (!document.fullscreenElement) {
+      playerRef.current?.requestFullscreen();
+    } else {
+      document.exitFullscreen();
     }
   };
 
-  const renderInsertedElements = (elements) => {
-    return elements.map((el, i) => {
-      const style = { top: `${el.y}px`, left: `${el.x}px` };
+  // Camera handling
+  const toggleCamera = async () => {
+    try {
+      if (!isCameraOn) {
+        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+        if (videoRef.current) videoRef.current.srcObject = stream;
+        setIsCameraOn(true);
+      } else {
+        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
+        setIsCameraOn(false);
+      }
+    } catch (err) {
+      toast.error("Camera access required for live sessions.");
+    }
+  };
 
-      if (el.type === 'text') {
-        return (
-          <div
-            key={i}
-            className="absolute z-10 cursor-move border border-dashed border-transparent hover:border-blue-400 p-1 min-w-[100px]"
-            style={style}
-            contentEditable
-            suppressContentEditableWarning
+  // Navigation
+  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
+  const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
+  const nextLesson = sortedLessons[currentLessonIndex + 1];
+  const prevLesson = sortedLessons[currentLessonIndex - 1];
+
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      navigate(`/LessonPlayer?lesson=${nextLesson.id}&course=${courseId}`);
+    }
+  };
+
+  const handlePrevLesson = () => {
+    if (prevLesson) {
+      navigate(`/LessonPlayer?lesson=${prevLesson.id}&course=${courseId}`);
+    }
+  };
+
+  if (lessonLoading || lessonsLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
+          <p className="text-white">Loading lesson...</p>
+        </div>
+      </div>
+    );
+  }
+
+  if (!lesson && !lessonLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
+        <div className="text-center text-white">
+          <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
+          <p className="text-sm text-slate-400 mb-4">Lesson ID: {lessonId || 'Missing'}</p>
+          <p className="text-sm text-slate-400 mb-4">Course ID: {courseId || 'Missing'}</p>
+          {courseLessons.length > 0 && (
+            <div className="mt-6">
+              <p className="text-sm text-slate-400 mb-3">Available lessons in this course:</p>
+              <button 
+                onClick={() => {
+                  const firstLesson = courseLessons.sort((a, b) => a.order - b.order)[0];
+                  if (firstLesson) {
+                    navigate(`/LessonPlayer?lesson=${firstLesson.id}&course=${courseId}`);
+                  }
+                }}
+                className="px-6 py-2 bg-orange-600 hover:bg-orange-700 rounded-lg"
+              >
+                Start First Lesson
+              </button>
+            </div>
+          )}
+          <button 
+            onClick={() => navigate(-1)} 
+            className="mt-4 px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg"
           >
-            {el.content}
-          </div>
-        );
-      }
+            Go Back
+          </button>
+        </div>
+      </div>
+    );
+  }
 
-      if (el.type === 'image') {
-        return (
-          <div key={i} className="absolute z-10 cursor-move" style={{ ...style, width: '150px', height: '100px' }}>
-            <img src={el.url} alt="" className="w-full h-full object-cover rounded border border-gray-300" />
-          </div>
-        );
-      }
+  const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
-      if (el.type === 'shape') {
-        const shapeClass = el.shape === 'circle' ? 'rounded-full' : el.shape === 'heart' ? 'heart-shape' : '';
-        return (
-          <div
-            key={i}
-            className={`absolute z-10 cursor-move bg-red-500 ${shapeClass}`}
-            style={{ ...style, width: '100px', height: '100px' }}
-          />
-        );
+  // Get embed URL for Google Slides
+  const getSlideEmbedUrl = () => {
+    if (lesson.google_slides_url) {
+      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (presentationId) {
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`;
       }
-
-      if (el.type === 'chart') {
-        return (
-          <div key={i} className="absolute z-10 cursor-move bg-white border border-gray-300 p-2 flex items-end gap-1" style={{ ...style, width: '150px', height: '100px' }}>
-            <div className="flex-1 bg-blue-500 h-[40%]" />
-            <div className="flex-1 bg-red-500 h-[70%]" />
-            <div className="flex-1 bg-green-500 h-[50%]" />
-          </div>
-        );
-      }
-
-      return null;
-    });
+    }
+    return lesson.file_url || null;
   };
 
-  const currentSlide = slides[currentIdx];
+  const slideUrl = getSlideEmbedUrl();
 
   return (
-    <div className={`flex flex-col h-screen overflow-hidden ${isPresentationMode ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
-      {/* Exit Presentation Button */}
-      {isPresentationMode && (
-        <button
-          onClick={togglePresentation}
-          className="fixed top-5 right-5 bg-white/20 text-white border border-white/40 px-4 py-2 rounded z-[3000] hover:bg-white/30 transition-colors"
-        >
-          <X className="inline w-4 h-4 mr-1" /> Exit Presentation
-        </button>
-      )}
-
-      {/* Ribbon Area */}
-      {!isPresentationMode && (
-        <div className="flex-none z-[100] bg-[#f3f2f1] border-b border-gray-200">
-          {/* Top Bar */}
-          <div className="h-8 bg-[#d24726] text-white px-3 flex items-center justify-between text-xs">
-            <div className="flex items-center gap-3">
-              <FileText size={14} />
-              <span>Diverse Youth NI — Unit 4: Resilience & Science — Saved</span>
-            </div>
-            <span>Youth Tutor</span>
-          </div>
-
-          {/* Tabs */}
-          <div className="flex gap-1 px-2 bg-[#f3f2f1]">
-            {['file', 'home', 'insert', 'transitions', 'animations', 'slideshow'].map((tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 text-sm capitalize ${
-                  activeTab === tab
-                    ? 'border-b-2 border-[#d24726] font-semibold text-[#d24726]'
-                    : 'hover:bg-gray-100'
-                }`}
-              >
-                {tab === 'slideshow' ? 'Slide Show' : tab}
-              </button>
-            ))}
-          </div>
-
-          {/* Toolbar */}
-          <div className="h-24 bg-white flex items-center px-5 gap-5 overflow-x-auto border-b border-gray-200">
-            {toolbarContent[activeTab]?.map((tool, i) =>
-              tool.divider ? (
-                <div key={i} className="w-px h-12 bg-gray-200 mx-2" />
-              ) : (
-                <button
-                  key={i}
-                  onClick={tool.action}
-                  className="flex flex-col items-center gap-1 p-2 rounded hover:bg-gray-100 transition-colors min-w-[60px]"
-                >
-                  <tool.icon size={20} className="text-gray-600" />
-                  <span className="text-[11px] text-gray-600 whitespace-nowrap">{tool.label}</span>
-                </button>
-              )
-            )}
-          </div>
-        </div>
-      )}
-
-      {/* Workspace */}
-      <div className="flex flex-1 overflow-hidden">
-        {/* Filmstrip Sidebar */}
-        {!isPresentationMode && (
-          <aside className="w-52 bg-white border-r border-gray-200 overflow-y-auto p-3 flex flex-col gap-3 hidden lg:flex">
-            {slides.map((slide, i) => (
-              <div
-                key={slide.id}
-                onClick={() => setCurrentIdx(i)}
-                className={`relative w-full aspect-video bg-white border rounded cursor-pointer transition-all ${
-                  i === currentIdx ? 'border-2 border-[#d24726] bg-orange-50' : 'border-gray-300 hover:border-[#d24726]'
-                }`}
-              >
-                <span className="absolute -left-3 top-0 text-[10px] text-gray-500">{i + 1}</span>
-                <div className="flex-1 bg-gray-100 rounded flex items-center justify-center text-[8px] text-gray-400 p-1 h-full">
-                  {slide.title.substring(0, 15)}...
-                </div>
-              </div>
-            ))}
-          </aside>
-        )}
-
-        {/* Stage */}
-        <main className={`flex-1 overflow-auto flex flex-col items-center ${isPresentationMode ? 'bg-black justify-center p-0' : 'bg-[#edebe9] p-10'}`}>
-          <div
-            className={`bg-white relative flex flex-col ${
-              isPresentationMode
-                ? 'w-screen h-screen max-w-none max-h-none m-0 shadow-none rounded-none'
-                : 'w-full max-w-5xl aspect-video shadow-xl rounded p-10 mb-10'
-            }`}
+    <div ref={playerRef} className="fixed inset-0 flex flex-col bg-[#0f172a] text-white font-sans overflow-hidden">
+      
+      {/* HEADER SECTION */}
+      <header className="h-16 flex items-center justify-between px-6 bg-[#1e293b] border-b border-slate-700 z-50">
+        <div className="flex items-center gap-4 flex-1 min-w-0">
+          <button
+            onClick={() => navigate(-1)}
+            className="p-1 hover:bg-slate-700 rounded-lg transition-colors"
           >
-            {renderSlideContent(currentSlide)}
-            {renderInsertedElements(currentSlide.elements)}
+            <X size={20} />
+          </button>
+          <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/50">
+            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
+            <span className="text-[10px] font-bold text-red-500 tracking-widest uppercase">Live Session</span>
           </div>
+          <h1 className="text-sm font-semibold hidden sm:block truncate">{lesson.title}</h1>
+          {isCompleted && (
+            <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
+          )}
+        </div>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setShowSidebar(!showSidebar)}
+            className="lg:hidden p-2 hover:bg-slate-700 rounded-lg transition-colors"
+          >
+            <Users size={20} />
+          </button>
+          <button 
+            onClick={toggleFullscreen} 
+            className="p-2 hover:bg-slate-700 rounded-lg transition-colors hidden md:block"
+          >
+            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+          </button>
+        </div>
+      </header>
+
+      {/* MAIN CONTENT AREA */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* LEFT PANEL: Course Navigation */}
+        <AnimatePresence>
+          {showSidebar && (
+            <motion.aside
+              initial={{ x: -300 }}
+              animate={{ x: 0 }}
+              exit={{ x: -300 }}
+              transition={{ type: 'spring', damping: 25 }}
+              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex flex-col shadow-xl lg:shadow-none overflow-hidden"
+              style={{ height: 'calc(100vh - 64px)' }}
+            >
+              <div className="p-5 border-b border-slate-800 flex items-center justify-between flex-shrink-0">
+                <div className="flex items-center gap-2 text-slate-400">
+                  <BookOpen size={16} />
+                  <span className="text-xs font-bold uppercase tracking-wider">Course Content</span>
+                </div>
+                <button
+                  onClick={() => setShowSidebar(false)}
+                  className="lg:hidden p-1 hover:bg-slate-700 rounded"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="flex-1 overflow-y-auto p-4 space-y-2 min-h-0">
+                {sortedLessons.map((l, idx) => {
+                  const completed = enrollment?.completed_lessons?.includes(l.id);
+                  const isCurrent = l.id === lessonId;
+
+                  return (
+                    <button
+                      key={l.id}
+                      onClick={() => {
+                        navigate(`/LessonPlayer?lesson=${l.id}&course=${courseId}`);
+                        setShowSidebar(false);
+                      }}
+                      className={`w-full text-left p-3 rounded-lg transition-all text-sm ${
+                        isCurrent
+                          ? 'bg-orange-600 text-white'
+                          : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700'
+                      }`}
+                    >
+                      <div className="flex items-start gap-3">
+                        <div className="flex-none mt-0.5">
+                          {completed ? (
+                            <CheckCircle className="w-4 h-4 text-green-400" />
+                          ) : (
+                            <div className="w-4 h-4 rounded-full border-2 border-slate-500" />
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-slate-400 mb-1">Lesson {idx + 1}</div>
+                          <div className="font-medium truncate">{l.title}</div>
+                        </div>
+                      </div>
+                    </button>
+                  );
+                })}
+              </div>
+
+              {/* WEBCAM PREVIEW */}
+              <div className="p-4 bg-slate-900/80 border-t border-slate-800 flex-shrink-0">
+                <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
+                  <video 
+                    ref={videoRef} 
+                    autoPlay 
+                    playsInline 
+                    muted 
+                    className={`w-full h-full object-cover ${!isCameraOn && 'hidden'}`} 
+                  />
+                  {!isCameraOn && (
+                    <div className="absolute inset-0 flex items-center justify-center text-slate-700">
+                      <Layout size={40} />
+                    </div>
+                  )}
+                </div>
+                <button 
+                  onClick={toggleCamera} 
+                  className="w-full mt-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase text-slate-400 hover:text-white transition-colors"
+                >
+                  <Camera size={14} /> {isCameraOn ? 'Close Camera' : 'Open Camera'}
+                </button>
+              </div>
+            </motion.aside>
+          )}
+        </AnimatePresence>
+
+        {/* CENTER STAGE: Slide Viewer */}
+        <main className="flex-1 flex flex-col relative bg-[#020617] overflow-hidden">
+          <AnimatePresence mode="wait">
+            {!showQuiz ? (
+              <motion.div 
+                key="slides"
+                initial={{ opacity: 0, x: 20 }}
+                animate={{ opacity: 1, x: 0 }}
+                exit={{ opacity: 0, x: -20 }}
+                className="flex-1 flex flex-col p-4 sm:p-8"
+              >
+                {/* Learning Objectives */}
+                {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                  <div className="mb-4">
+                    <button
+                      onClick={() => setShowObjectives(!showObjectives)}
+                      className="w-full bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border border-blue-700/50 rounded-xl p-4 flex items-center justify-between text-left hover:from-blue-900/70 hover:to-indigo-900/70 transition-all"
+                    >
+                      <div className="flex items-center gap-3">
+                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
+                          <Target className="w-5 h-5 text-blue-300" />
+                        </div>
+                        <div>
+                          <h3 className="font-semibold text-white">Learning Objectives</h3>
+                          <p className="text-xs text-blue-200">What you'll learn</p>
+                        </div>
+                      </div>
+                      <ChevronRight className={`w-5 h-5 text-blue-300 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+                    </button>
+                    
+                    <AnimatePresence>
+                      {showObjectives && (
+                        <motion.div
+                          initial={{ height: 0, opacity: 0 }}
+                          animate={{ height: 'auto', opacity: 1 }}
+                          exit={{ height: 0, opacity: 0 }}
+                          className="overflow-hidden bg-slate-900/50 rounded-b-xl border-x border-b border-blue-700/30 p-4"
+                        >
+                          <div className="space-y-2">
+                            {lesson.learning_objectives.map((objective, idx) => (
+                              <div key={idx} className="flex items-start gap-3">
+                                <CheckCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
+                                <p className="text-blue-50 text-sm">{objective}</p>
+                              </div>
+                            ))}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </div>
+                )}
+
+                {/* Responsive Slide Frame */}
+                <div className="flex-1 w-full bg-black overflow-hidden relative professional-slide-stage">
+                  {slideUrl ? (
+                    <iframe 
+                      src={slideUrl} 
+                      className="w-full h-full border-0"
+                      style={{ width: '100%', height: '100%', aspectRatio: '16/9' }}
+                      allowFullScreen
+                      title="Educational Slides"
+                    />
+                  ) : (
+                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-400">
+                      <div className="text-center">
+                        <FileText className="w-16 h-16 mx-auto mb-4" />
+                        <p>No content available</p>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* BOTTOM CONTROLS */}
+                <div className="h-20 flex items-center justify-between mt-4">
+                  <div className="flex gap-2">
+                    <button 
+                      onClick={handlePrevLesson}
+                      disabled={!prevLesson}
+                      className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
+                    >
+                      <ChevronLeft size={20}/>
+                    </button>
+                    {!isCompleted && (
+                      <button 
+                        onClick={() => markCompleteMutation.mutate()}
+                        className="px-4 py-3 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-bold transition-colors flex items-center gap-1"
+                      >
+                        <CheckCircle size={14} /> Mark Complete
+                      </button>
+                    )}
+                  </div>
+                  <span className="text-xs text-slate-400 hidden sm:block">
+                    {currentLessonIndex + 1} / {sortedLessons.length}
+                  </span>
+                  <button 
+                    onClick={handleContinueLearning}
+                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-tighter flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
+                  >
+                    {nextLesson ? 'Continue' : 'Take Quiz'} <ChevronRight size={18} />
+                  </button>
+                </div>
+              </motion.div>
+            ) : (
+              <motion.div 
+                key="quiz"
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="flex-1 flex items-center justify-center p-6"
+              >
+                <div className="bg-[#1e293b] p-12 rounded-[2rem] border border-slate-700 max-w-xl w-full text-center shadow-2xl">
+                  <h2 className="text-3xl font-black mb-4">Quiz Time!</h2>
+                  <p className="text-slate-400 mb-8 font-medium">Test what you've learned from the session.</p>
+                  <button className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-lg mb-4 transition-colors">
+                    Start Quiz
+                  </button>
+                  <button 
+                    onClick={() => setShowQuiz(false)} 
+                    className="text-slate-500 text-sm hover:underline"
+                  >
+                    Return to Lessons
+                  </button>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
         </main>
-      </div>
-
-      {/* Status Bar */}
-      {!isPresentationMode && (
-        <footer className="h-8 bg-white border-t border-gray-200 flex items-center justify-between px-4 text-xs text-gray-600">
-          <div className="flex items-center gap-5">
-            <span>Slide {currentIdx + 1} of {slides.length}</span>
-            <span>English (United Kingdom)</span>
-            <span className="text-[#d24726] font-bold flex items-center gap-1">
-              <Check size={14} /> Accessibility: Good
-            </span>
-          </div>
-          <div className="flex items-center gap-5">
-            <div className="flex items-center gap-2 cursor-pointer">
-              <Grid3x3 size={14} />
-              <BookOpen size={14} />
-              <Monitor size={14} onClick={togglePresentation} />
-            </div>
-            <span>100%</span>
-          </div>
-        </footer>
-      )}
-
-      {/* Mobile Navigation */}
-      <div className="lg:hidden fixed bottom-12 left-1/2 -translate-x-1/2 flex gap-3 bg-black/80 px-5 py-3 rounded-full z-[1000]">
-        <button onClick={() => navigateSlide(-1)} className="text-white">
-          <ChevronLeft size={20} />
-        </button>
-        <button onClick={() => navigateSlide(1)} className="text-white">
-          <ChevronRight size={20} />
-        </button>
       </div>
     </div>
   );
