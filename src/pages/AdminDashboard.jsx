@@ -160,7 +160,11 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="carousel" className="rounded-lg">
               <ImageIcon className="w-4 h-4 mr-2" />
-              Carousel
+              Main Carousel
+            </TabsTrigger>
+            <TabsTrigger value="leadership-carousel" className="rounded-lg">
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Leadership Carousel
             </TabsTrigger>
             <TabsTrigger value="certificates" className="rounded-lg">
               <Award className="w-4 h-4 mr-2" />
@@ -866,19 +870,19 @@ function MessagesMonitor({ messages, users }) {
 }
 
 // Carousel Manager Component
-function CarouselManager() {
+function CarouselManager({ carouselType = 'main', title = 'Carousel Images' }) {
   const queryClient = useQueryClient();
   const [imageUrl, setImageUrl] = useState('');
 
   const { data: carouselImages = [] } = useQuery({
-    queryKey: ['carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.list('order', 100),
+    queryKey: ['carousel-images', carouselType],
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: carouselType }, 'order', 100),
   });
 
   const createImageMutation = useMutation({
-    mutationFn: (data) => base44.entities.CarouselImage.create(data),
+    mutationFn: (data) => base44.entities.CarouselImage.create({ ...data, carousel_type: carouselType }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['carousel-images']);
+      queryClient.invalidateQueries(['carousel-images', carouselType]);
       toast.success('Image added to carousel');
     },
   });
@@ -886,7 +890,7 @@ function CarouselManager() {
   const deleteImageMutation = useMutation({
     mutationFn: (id) => base44.entities.CarouselImage.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['carousel-images']);
+      queryClient.invalidateQueries(['carousel-images', carouselType]);
       toast.success('Image removed from carousel');
     },
   });
@@ -928,7 +932,7 @@ function CarouselManager() {
 
   return (
     <Card className="p-6">
-      <h2 className="text-xl font-semibold mb-6">Carousel Image Management</h2>
+      <h2 className="text-xl font-semibold mb-6">{title}</h2>
       
       <div className="space-y-4 mb-6">
         <div>
