@@ -96,17 +96,6 @@ export default function LessonPlayerPowerPoint() {
     toast(!isPresenting ? "Presentation Mode: ON (ESC to exit)" : "Presentation Mode: OFF");
   };
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
-      if (e.key === 'ArrowRight' || e.key === ' ') handleNextLesson();
-      if (e.key === 'ArrowLeft') handlePrevLesson();
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting]);
-
   // Navigation
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
@@ -133,8 +122,6 @@ export default function LessonPlayerPowerPoint() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPresenting]);
-
-  const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
   if (lessonLoading || lessonsLoading) {
     return (
@@ -163,8 +150,6 @@ export default function LessonPlayerPowerPoint() {
       </div>
     );
   }
-
-  const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
   // Get embed URL for Google Slides
   const getSlideEmbedUrl = () => {
