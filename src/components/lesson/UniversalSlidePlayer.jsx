@@ -84,24 +84,14 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
     const presentationId = googleSlidesUrl.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
     if (presentationId) {
       return (
-        <div className="w-full rounded-lg overflow-hidden" style={{ height: '70vh', minHeight: '500px' }}>
-          <TransformWrapper
-            initialScale={1}
-            minScale={0.5}
-            maxScale={3}
-            centerOnInit
-          >
-            <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
-              <div style={{ width: '100%', height: '70vh', minHeight: '500px', backgroundColor: '#1f2937' }}>
-                <iframe 
-                  src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
-                  className="w-full h-full border-0"
-                  allowFullScreen
-                  loading="lazy"
-                />
-              </div>
-            </TransformComponent>
-          </TransformWrapper>
+        <div className="w-full h-full rounded-lg overflow-hidden" style={{ minHeight: '600px' }}>
+          <iframe 
+            src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
+            className="w-full h-full border-0"
+            style={{ minHeight: '600px', height: '100%' }}
+            allowFullScreen
+            loading="lazy"
+          />
         </div>
       );
     }
