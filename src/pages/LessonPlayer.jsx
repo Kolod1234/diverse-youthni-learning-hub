@@ -91,10 +91,12 @@ export default function LessonPlayer() {
   useEffect(() => {
     if (currentLesson?.content_type === 'googleslides' && currentLesson?.google_slides_url) {
       setViewMode('googleslides');
+    } else if (currentLesson?.content_type === 'document' && currentLesson?.file_url) {
+      setViewMode('document');
     } else {
       setViewMode('slides');
     }
-  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url]);
+  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url, currentLesson?.file_url]);
 
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['course-quizzes', courseId],
@@ -503,7 +505,7 @@ export default function LessonPlayer() {
             </Link>
             
             <div className="flex items-center gap-2 sm:gap-3">
-              {(currentLesson?.google_slides_url || currentLesson?.slides?.length > 0) && (
+              {(currentLesson?.google_slides_url || currentLesson?.slides?.length > 0 || currentLesson?.file_url) && (
                 <div className="flex items-center gap-2 bg-gray-50 rounded-lg px-2 sm:px-3 py-1.5 sm:py-2 border border-gray-200">
                   <Eye className="w-4 h-4 text-gray-600" />
                   <select
@@ -516,6 +518,9 @@ export default function LessonPlayer() {
                     )}
                     {currentLesson?.google_slides_url && (
                       <option value="googleslides">📊 Google</option>
+                    )}
+                    {currentLesson?.file_url && (
+                      <option value="document">📎 Document</option>
                     )}
                   </select>
                 </div>
@@ -649,12 +654,19 @@ export default function LessonPlayer() {
                     )}
                   </div>
 
-                  <UniversalSlidePlayer 
-                    content={currentSlide.content}
-                    googleSlidesUrl={viewMode === 'googleslides' ? currentLesson?.google_slides_url : null}
-                    fileUrl={currentSlide.file_url}
-                    fileType={currentSlide.file_type}
-                  />
+                  {viewMode === 'document' && currentLesson?.file_url ? (
+                    <UniversalSlidePlayer 
+                      fileUrl={currentLesson.file_url}
+                      fileType={currentLesson.file_type}
+                    />
+                  ) : (
+                    <UniversalSlidePlayer 
+                      content={currentSlide?.content}
+                      googleSlidesUrl={viewMode === 'googleslides' ? currentLesson?.google_slides_url : null}
+                      fileUrl={currentSlide?.file_url}
+                      fileType={currentSlide?.file_type}
+                    />
+                  )}
 
                   {/* Interactive Elements */}
                   {currentSlide.inlineQuiz && (
