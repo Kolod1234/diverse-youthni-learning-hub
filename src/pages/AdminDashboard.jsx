@@ -83,6 +83,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.Template.list('-created_date', 500),
   });
 
+  const { data: attendanceRecords = [] } = useQuery({
+    queryKey: ['attendance'],
+    queryFn: () => base44.entities.Attendance.list('-date', 1000),
+  });
+
   if (!user || user.role !== 'admin') {
     return null;
   }
@@ -206,6 +211,10 @@ export default function AdminDashboard() {
               <Users className="w-4 h-4 mr-2" />
               Partners
             </TabsTrigger>
+            <TabsTrigger value="attendance" className="rounded-lg">
+              <UserCheck className="w-4 h-4 mr-2" />
+              Attendance
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -270,6 +279,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="partners">
             <PartnersManagement />
+          </TabsContent>
+
+          <TabsContent value="attendance">
+            <AttendanceManagement attendanceRecords={attendanceRecords} users={allUsers} />
           </TabsContent>
         </Tabs>
       </div>
