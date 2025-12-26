@@ -13,7 +13,7 @@ import {
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
   Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
-  TrendingUp, Key, Database, Lock, Plus
+  TrendingUp, Key, Database, Lock, Plus, EyeOff
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -290,9 +290,10 @@ function PartnersManagement() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.PartnerLogo.create(data),
+    mutationFn: (data) => base44.entities.PartnerLogo.create({ ...data, is_active: true, order: logos.length }),
     onSuccess: () => {
       queryClient.invalidateQueries(['partner-logos']);
+      queryClient.invalidateQueries(['funder-logos']);
       setShowForm(false);
       setFormData({ name: '', logo_url: '', website_url: '', type: 'partner' });
       toast.success('Logo added!');
@@ -303,6 +304,7 @@ function PartnersManagement() {
     mutationFn: ({ id, data }) => base44.entities.PartnerLogo.update(id, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['partner-logos']);
+      queryClient.invalidateQueries(['funder-logos']);
       setEditingLogo(null);
       setFormData({ name: '', logo_url: '', website_url: '', type: 'partner' });
       toast.success('Logo updated!');
@@ -313,7 +315,17 @@ function PartnersManagement() {
     mutationFn: (id) => base44.entities.PartnerLogo.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries(['partner-logos']);
+      queryClient.invalidateQueries(['funder-logos']);
       toast.success('Logo deleted!');
+    },
+  });
+
+  const toggleActiveMutation = useMutation({
+    mutationFn: ({ id, is_active }) => base44.entities.PartnerLogo.update(id, { is_active }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['partner-logos']);
+      queryClient.invalidateQueries(['funder-logos']);
+      toast.success('Visibility updated!');
     },
   });
 
@@ -446,13 +458,26 @@ function PartnersManagement() {
 
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
         {logos.map((logo) => (
-          <Card key={logo.id} className="p-4">
+          <Card key={logo.id} className={`p-4 ${!logo.is_active ? 'opacity-50' : ''}`}>
             <div className="aspect-video flex items-center justify-center mb-3 bg-gray-50 rounded">
               <img src={logo.logo_url} alt={logo.name} className="max-h-full max-w-full object-contain" />
             </div>
             <h3 className="font-medium text-sm text-gray-900 mb-1">{logo.name}</h3>
-            <Badge variant="secondary" className="text-xs mb-3">{logo.type}</Badge>
-            <div className="flex gap-2">
+            <div className="flex gap-1 mb-3">
+              <Badge variant="secondary" className="text-xs capitalize">{logo.type}</Badge>
+              <Badge variant={logo.is_active ? 'default' : 'outline'} className="text-xs">
+                {logo.is_active ? 'Visible' : 'Hidden'}
+              </Badge>
+            </div>
+            <div className="flex gap-2 flex-wrap">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => toggleActiveMutation.mutate({ id: logo.id, is_active: !logo.is_active })}
+                className="flex-1"
+              >
+                {logo.is_active ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+              </Button>
               <Button
                 variant="outline"
                 size="sm"

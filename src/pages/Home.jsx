@@ -66,6 +66,12 @@ export default function Home() {
     initialData: [],
   });
 
+  const { data: funderLogos = [] } = useQuery({
+    queryKey: ['funder-logos'],
+    queryFn: () => base44.entities.PartnerLogo.filter({ type: 'funder', is_active: true }, 'order', 50),
+    initialData: [],
+  });
+
   // Calculate actual ratings and enrollments for each course
   const coursesWithActualData = courses.map(course => {
     const courseReviews = allReviews.filter(r => 
@@ -95,11 +101,13 @@ export default function Home() {
   const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
   
   // Get real user reviews with detailed comments
-  const topReviews = allReviews
+  // Get real user reviews only
+  const realReviews = allReviews
     .filter(r => 
       r.comment && 
-      r.comment.trim().length >= 30 && 
+      r.comment.trim().length >= 20 && 
       r.rating >= 4 &&
+      r.user_name &&
       (r.rating_type === 'lesson' || r.rating_type === 'course' || !r.rating_type)
     )
     .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
@@ -278,7 +286,53 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Partners & Funders */}
+      {/* Funders Section */}
+      {funderLogos.length > 0 && (
+        <section className="py-16 bg-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">Proudly Supported By</h2>
+              <p className="text-gray-600">Our funders who make this possible</p>
+            </div>
+            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+              {funderLogos.map((logo, idx) => (
+                <motion.div
+                  key={logo.id}
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  whileInView={{ opacity: 1, scale: 1 }}
+                  viewport={{ once: true }}
+                  transition={{ delay: idx * 0.1, duration: 0.5 }}
+                  whileHover={{ scale: 1.1, y: -5 }}
+                  className="flex items-center justify-center"
+                >
+                  {logo.website_url ? (
+                    <a 
+                      href={logo.website_url} 
+                      target="_blank" 
+                      rel="noopener noreferrer" 
+                      className="block grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                    >
+                      <img
+                        src={logo.logo_url}
+                        alt={logo.name}
+                        className="h-20 w-auto object-contain"
+                      />
+                    </a>
+                  ) : (
+                    <img
+                      src={logo.logo_url}
+                      alt={logo.name}
+                      className="h-20 w-auto object-contain opacity-70"
+                    />
+                  )}
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
+
+      {/* Partners Section */}
       <PartnersSection />
 
       {/* Image Carousel */}
@@ -650,23 +704,23 @@ export default function Home() {
         </section>
       )}
 
-      {/* Testimonials Section */}
-      {topReviews.length > 0 && (
+      {/* Real User Reviews Section */}
+      {realReviews.length > 0 && (
         <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
               <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
-                Student Success Stories
+                Real Student Reviews
               </span>
               <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
                 What our learners say
               </h2>
               <p className="text-lg text-gray-600">
-                Real experiences shared by students who completed our courses
+                Authentic feedback from students currently learning with us
               </p>
             </div>
             <div className="grid md:grid-cols-3 gap-8">
-              {topReviews.slice(0, 3).map((review, idx) => (
+              {realReviews.slice(0, 3).map((review, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -756,82 +810,47 @@ export default function Home() {
 function PartnersSection() {
   const { data: logos = [] } = useQuery({
     queryKey: ['partner-logos'],
-    queryFn: () => base44.entities.PartnerLogo.list('order', 100),
+    queryFn: () => base44.entities.PartnerLogo.filter({ type: 'partner', is_active: true }, 'order', 100),
   });
-
-  const partners = logos.filter(l => l.type === 'partner');
-  const funders = logos.filter(l => l.type === 'funder');
 
   if (logos.length === 0) return null;
 
   return (
     <section className="py-16 bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {funders.length > 0 && (
-          <div className="mb-12">
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">Our Funders</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
-              {funders.map((logo) => (
-                <motion.div
-                  key={logo.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="flex items-center justify-center"
-                >
-                  {logo.website_url ? (
-                    <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
-                      <img
-                        src={logo.logo_url}
-                        alt={logo.name}
-                        className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
-                      />
-                    </a>
-                  ) : (
-                    <img
-                      src={logo.logo_url}
-                      alt={logo.name}
-                      className="h-16 w-auto object-contain opacity-70"
-                    />
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
-
-        {partners.length > 0 && (
-          <div>
-            <h2 className="text-2xl font-bold text-center text-gray-900 mb-8">Our Partners</h2>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
-              {partners.map((logo) => (
-                <motion.div
-                  key={logo.id}
-                  initial={{ opacity: 0, scale: 0.9 }}
-                  whileInView={{ opacity: 1, scale: 1 }}
-                  viewport={{ once: true }}
-                  className="flex items-center justify-center"
-                >
-                  {logo.website_url ? (
-                    <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
-                      <img
-                        src={logo.logo_url}
-                        alt={logo.name}
-                        className="h-16 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
-                      />
-                    </a>
-                  ) : (
-                    <img
-                      src={logo.logo_url}
-                      alt={logo.name}
-                      className="h-16 w-auto object-contain opacity-70"
-                    />
-                  )}
-                </motion.div>
-              ))}
-            </div>
-          </div>
-        )}
+        <div className="text-center mb-12">
+          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Partners</h2>
+          <p className="text-gray-600">Working together to empower youth</p>
+        </div>
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+          {logos.map((logo, idx) => (
+            <motion.div
+              key={logo.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1, duration: 0.5 }}
+              whileHover={{ scale: 1.1, rotate: 2 }}
+              className="flex items-center justify-center"
+            >
+              {logo.website_url ? (
+                <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
+                  <img
+                    src={logo.logo_url}
+                    alt={logo.name}
+                    className="h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                  />
+                </a>
+              ) : (
+                <img
+                  src={logo.logo_url}
+                  alt={logo.name}
+                  className="h-20 w-auto object-contain opacity-70"
+                />
+              )}
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
