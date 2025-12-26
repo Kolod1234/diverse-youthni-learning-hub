@@ -151,6 +151,8 @@ export default function LessonPlayerPowerPoint() {
     );
   }
 
+  const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
+
   // Get embed URL for Google Slides
   const getSlideEmbedUrl = () => {
     if (lesson.google_slides_url) {
