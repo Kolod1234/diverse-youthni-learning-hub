@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button } from '@/components/ui/button';
-import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList } from 'lucide-react';
+import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import CategoryFilter from '@/components/courses/CategoryFilter';
@@ -66,6 +66,11 @@ export default function Home() {
     : null;
 
   const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
+  
+  const topReviews = allReviews
+    .filter(r => r.comment && r.comment.length > 20)
+    .sort((a, b) => b.rating - a.rating)
+    .slice(0, 6);
 
   const filteredCourses = coursesWithActualData.filter(course => {
     const matchesCategory = category === 'all' || course.category === category;
@@ -203,6 +208,9 @@ export default function Home() {
           </svg>
         </div>
       </section>
+
+      {/* Partners & Funders */}
+      <PartnersSection />
 
       {/* Search Section */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -479,16 +487,17 @@ export default function Home() {
       </section>
 
       {/* Testimonials Section */}
-      <section className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              What our learners say
-            </h2>
-            <p className="text-lg text-gray-600">Real stories from real students</p>
-          </div>
-          <div className="grid md:grid-cols-3 gap-8">
-            {topReviews.slice(0, 3).map((review, idx) => (
+      {topReviews.length > 0 && (
+        <section className="py-20 bg-gradient-to-br from-orange-50 to-pink-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div className="text-center mb-16">
+              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+                What our learners say
+              </h2>
+              <p className="text-lg text-gray-600">Real stories from real students</p>
+            </div>
+            <div className="grid md:grid-cols-3 gap-8">
+              {topReviews.slice(0, 3).map((review, idx) => (
               <motion.div
                 key={idx}
                 initial={{ opacity: 0, y: 20 }}
@@ -513,10 +522,11 @@ export default function Home() {
                   </div>
                 </div>
               </motion.div>
-            ))}
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       {/* CTA Section */}
       <section className="relative overflow-hidden bg-gradient-to-br from-orange-600 via-rose-600 to-fuchsia-600 py-24">
