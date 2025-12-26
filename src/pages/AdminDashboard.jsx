@@ -483,7 +483,7 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
   const queryClient = useQueryClient();
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
+    mutationFn: ({ userId, data }) => base44.asServiceRole.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User updated successfully');
@@ -491,7 +491,7 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
   });
 
   const deleteUserMutation = useMutation({
-    mutationFn: (userId) => base44.entities.User.delete(userId),
+    mutationFn: (userId) => base44.asServiceRole.entities.User.delete(userId),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User removed successfully');
@@ -1519,7 +1519,7 @@ function PasswordManagement({ users }) {
   const [newPassword, setNewPassword] = useState('');
 
   const changePasswordMutation = useMutation({
-    mutationFn: ({ userId, password }) => base44.entities.User.update(userId, { password }),
+    mutationFn: ({ userId, password }) => base44.asServiceRole.entities.User.update(userId, { password }),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('Password updated successfully');
