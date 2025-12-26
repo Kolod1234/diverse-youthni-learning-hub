@@ -561,34 +561,42 @@ export default function LessonPlayer() {
 
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
-        <div className="flex-1 overflow-y-auto slide-swipe-area">
-          <AnimatePresence initial={false} custom={direction} mode="wait">
-            <motion.div
-              key={currentSlideIndex}
-              custom={direction}
-              variants={slideVariants}
-              initial="enter"
-              animate="center"
-              exit="exit"
-              transition={{
-                x: { type: "spring", stiffness: 300, damping: 30 },
-                opacity: { duration: 0.2 }
-              }}
-              drag="x"
-              dragConstraints={{ left: 0, right: 0 }}
-              dragElastic={0.2}
-              onDragEnd={(e, { offset, velocity }) => {
-                const swipe = Math.abs(offset.x) * velocity.x;
-                if (swipe < -10000) {
-                  nextSlide();
-                } else if (swipe > 10000) {
-                  prevSlide();
-                }
-              }}
-            >
-              <Card className={`min-h-full shadow-xl bg-white border-0 flex flex-col ${viewMode === 'googleslides' ? 'p-0' : 'p-4 sm:p-6'}`}>
-                {/* Learning Objectives - Show on first slide */}
-                {currentSlideIndex === 0 && viewMode !== 'googleslides' && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
+        {viewMode === 'googleslides' ? (
+          /* Full-screen Google Slides view */
+          <div className="flex-1 w-full h-full">
+            <UniversalSlidePlayer 
+              googleSlidesUrl={currentLesson?.google_slides_url}
+            />
+          </div>
+        ) : (
+          <div className="flex-1 overflow-y-auto slide-swipe-area">
+            <AnimatePresence initial={false} custom={direction} mode="wait">
+              <motion.div
+                key={currentSlideIndex}
+                custom={direction}
+                variants={slideVariants}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 300, damping: 30 },
+                  opacity: { duration: 0.2 }
+                }}
+                drag="x"
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.2}
+                onDragEnd={(e, { offset, velocity }) => {
+                  const swipe = Math.abs(offset.x) * velocity.x;
+                  if (swipe < -10000) {
+                    nextSlide();
+                  } else if (swipe > 10000) {
+                    prevSlide();
+                  }
+                }}
+              >
+                <Card className="min-h-full shadow-xl bg-white border-0 flex flex-col p-4 sm:p-6">
+                  {/* Learning Objectives - Show on first slide */}
+                  {currentSlideIndex === 0 && currentLesson?.learning_objectives && currentLesson.learning_objectives.length > 0 && (
                   <motion.div 
                     initial={{ opacity: 0, y: -10 }}
                     animate={{ opacity: 1, y: 0 }}
@@ -620,8 +628,8 @@ export default function LessonPlayer() {
                 )}
 
                 {/* Slide Content */}
-                <div className={`flex-1 overflow-y-auto ${viewMode === 'googleslides' ? 'mb-0' : 'mb-6 sm:mb-8'}`}>
-                  {!isDocumentMode && viewMode !== 'googleslides' && (
+                <div className="flex-1 overflow-y-auto mb-6 sm:mb-8">
+                  {!isDocumentMode && (
                     <div className="flex items-start justify-between mb-4 sm:mb-6">
                       <div className="flex-1">
                         <div className="flex items-center gap-2 sm:gap-3 mb-3 sm:mb-4">
@@ -659,15 +667,11 @@ export default function LessonPlayer() {
                       )}
 
                       {isDocumentMode ? (
-                      <UniversalSlidePlayer 
-                      fileUrl={currentLesson.file_url}
-                      fileType={currentLesson.file_type}
-                      />
-                      ) : viewMode === 'googleslides' ? (
-                    <UniversalSlidePlayer 
-                      googleSlidesUrl={currentLesson?.google_slides_url}
-                    />
-                  ) : viewMode === 'document' && currentLesson?.file_url ? (
+                        <UniversalSlidePlayer 
+                          fileUrl={currentLesson.file_url}
+                          fileType={currentLesson.file_type}
+                        />
+                      ) : viewMode === 'document' && currentLesson?.file_url ? (
                     <UniversalSlidePlayer 
                       fileUrl={currentLesson.file_url}
                       fileType={currentLesson.file_type}
@@ -776,7 +780,7 @@ export default function LessonPlayer() {
             )}
 
             {/* Arrow Buttons */}
-            {!isDocumentMode && viewMode !== 'googleslides' && (
+            {!isDocumentMode && (
             <div className="flex items-center justify-between mt-6 sm:mt-8 px-2 sm:px-4">
             <Button
               onClick={prevSlide}
@@ -800,8 +804,8 @@ export default function LessonPlayer() {
               </div>
               )}
 
-          {/* Q&A Section */}
-          {showQA && (
+              {/* Q&A Section */}
+              {showQA && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
