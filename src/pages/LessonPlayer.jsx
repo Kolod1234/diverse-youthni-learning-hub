@@ -2,10 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { motion, AnimatePresence } from 'framer-motion';
 import { 
-  Users, Camera, Maximize, Minimize, ChevronLeft, ChevronRight, Play, Layout,
-  X, CheckCircle, BookOpen, Target, FileText
+  FileText, Presentation, ChevronLeft, ChevronRight, X, 
+  CheckCircle, Target, Maximize, Minimize, Home
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -19,13 +18,10 @@ export default function LessonPlayer() {
 
   // State Management
   const [isFullscreen, setIsFullscreen] = useState(false);
-  const [showQuiz, setShowQuiz] = useState(false);
-  const [isCameraOn, setIsCameraOn] = useState(false);
+  const [isPresenting, setIsPresenting] = useState(false);
   const [showObjectives, setShowObjectives] = useState(true);
-  const [showSidebar, setShowSidebar] = useState(true);
   
   const playerRef = useRef(null);
-  const videoRef = useRef(null);
 
   // Fetch all course lessons for navigation
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
@@ -71,7 +67,7 @@ export default function LessonPlayer() {
     }
   });
 
-  // Fullscreen handling
+  // Fullscreen and Presentation handling
   useEffect(() => {
     const handleFullscreenChange = () => {
       setIsFullscreen(!!document.fullscreenElement);
@@ -88,21 +84,21 @@ export default function LessonPlayer() {
     }
   };
 
-  // Camera handling
-  const toggleCamera = async () => {
-    try {
-      if (!isCameraOn) {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-        if (videoRef.current) videoRef.current.srcObject = stream;
-        setIsCameraOn(true);
-      } else {
-        videoRef.current.srcObject.getTracks().forEach(track => track.stop());
-        setIsCameraOn(false);
-      }
-    } catch (err) {
-      toast.error("Camera access required for live sessions.");
-    }
+  const togglePresentation = () => {
+    setIsPresenting(!isPresenting);
+    toast(!isPresenting ? "Presentation Mode: ON (ESC to exit)" : "Presentation Mode: OFF");
   };
+
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
+      if (e.key === 'ArrowRight' || e.key === ' ') handleNextLesson();
+      if (e.key === 'ArrowLeft') handlePrevLesson();
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPresenting]);
 
   // Navigation
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
@@ -184,266 +180,206 @@ export default function LessonPlayer() {
   const slideUrl = getSlideEmbedUrl();
 
   return (
-    <div ref={playerRef} className="fixed inset-0 flex flex-col bg-[#0f172a] text-white font-sans overflow-hidden">
+    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
       
-      {/* HEADER SECTION */}
-      <header className="h-16 flex items-center justify-between px-6 bg-[#1e293b] border-b border-slate-700 z-50">
-        <div className="flex items-center gap-4 flex-1 min-w-0">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-1 hover:bg-slate-700 rounded-lg transition-colors"
-          >
-            <X size={20} />
-          </button>
-          <div className="flex items-center gap-2 bg-red-500/10 px-3 py-1 rounded-full border border-red-500/50">
-            <div className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-            <span className="text-[10px] font-bold text-red-500 tracking-widest uppercase">Live Session</span>
-          </div>
-          <h1 className="text-sm font-semibold hidden sm:block truncate">{lesson.title}</h1>
-          {isCompleted && (
-            <CheckCircle className="w-4 h-4 text-green-400 shrink-0" />
-          )}
-        </div>
-
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => setShowSidebar(!showSidebar)}
-            className="lg:hidden p-2 hover:bg-slate-700 rounded-lg transition-colors"
-          >
-            <Users size={20} />
-          </button>
-          {!isCompleted && (
-            <button 
-              onClick={() => markCompleteMutation.mutate()}
-              className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
+      {/* RIBBON HEADER (Hidden in Presentation) */}
+      {!isPresenting && (
+        <div className="flex-none z-50">
+          {/* Top Bar */}
+          <div className="bg-[#FF8C00] text-white h-10 flex items-center justify-between px-4 text-sm">
+            <div className="flex items-center gap-3">
+              <Presentation size={16} />
+              <span className="font-semibold">{lesson?.title || 'Loading...'}</span>
+              {isCompleted && (
+                <span className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded text-xs">
+                  <CheckCircle size={12} /> Completed
+                </span>
+              )}
+            </div>
+            <button
+              onClick={() => navigate(-1)}
+              className="hover:bg-white/10 px-3 py-1 rounded transition-colors text-xs"
             >
-              <CheckCircle size={14} /> Complete
+              Exit Lesson
             </button>
-          )}
-          <button 
-            onClick={toggleFullscreen} 
-            className="p-2 hover:bg-slate-700 rounded-lg transition-colors hidden md:block"
-          >
-            {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
-          </button>
-        </div>
-      </header>
-
-      {/* MAIN CONTENT AREA */}
-      <div className="flex flex-1 overflow-hidden">
-        
-        {/* LEFT PANEL: Course Navigation */}
-        <AnimatePresence>
-          {showSidebar && (
-            <motion.aside
-              initial={{ x: -300 }}
-              animate={{ x: 0 }}
-              exit={{ x: -300 }}
-              transition={{ type: 'spring', damping: 25 }}
-              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex-col flex-none h-full flex shadow-xl lg:shadow-none"
-            >
-              <div className="p-5 border-b border-slate-800 flex items-center justify-between">
-                <div className="flex items-center gap-2 text-slate-400">
-                  <BookOpen size={16} />
-                  <span className="text-xs font-bold uppercase tracking-wider">Course Content</span>
-                </div>
-                <button
-                  onClick={() => setShowSidebar(false)}
-                  className="lg:hidden p-1 hover:bg-slate-700 rounded"
-                >
-                  <X size={16} />
-                </button>
+          </div>
+          
+          {/* Toolbar */}
+          <div className="h-16 bg-white border-b border-gray-200 flex items-center px-5 gap-4">
+            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => navigate(-1)}>
+              <Home size={20} className="text-gray-600" />
+              <span className="text-[11px] mt-1">Home</span>
+            </div>
+            <div className="w-[1px] h-10 bg-gray-200" />
+            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={togglePresentation}>
+              <Presentation size={20} className="text-gray-600" />
+              <span className="text-[11px] mt-1">Present</span>
+            </div>
+            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize size={20} className="text-gray-600" /> : <Maximize size={20} className="text-gray-600" />}
+              <span className="text-[11px] mt-1">Fullscreen</span>
+            </div>
+            <div className="w-[1px] h-10 bg-gray-200" />
+            {!isCompleted && (
+              <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => markCompleteMutation.mutate()}>
+                <CheckCircle size={20} className="text-green-600" />
+                <span className="text-[11px] mt-1">Complete</span>
               </div>
-              
-              <div className="flex-1 overflow-y-auto p-4 space-y-2">
-                {sortedLessons.map((l, idx) => {
-                  const completed = enrollment?.completed_lessons?.includes(l.id);
-                  const isCurrent = l.id === lessonId;
-
-                  return (
-                    <button
-                      key={l.id}
-                      onClick={() => {
-                        navigate(`/LessonPlayer?lesson=${l.id}&course=${courseId}`);
-                        setShowSidebar(false);
-                      }}
-                      className={`w-full text-left p-3 rounded-lg transition-all text-sm ${
-                        isCurrent
-                          ? 'bg-orange-600 text-white'
-                          : 'bg-slate-800/50 text-slate-300 hover:bg-slate-700'
-                      }`}
-                    >
-                      <div className="flex items-start gap-3">
-                        <div className="flex-none mt-0.5">
-                          {completed ? (
-                            <CheckCircle className="w-4 h-4 text-green-400" />
-                          ) : (
-                            <div className="w-4 h-4 rounded-full border-2 border-slate-500" />
-                          )}
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs text-slate-400 mb-1">Lesson {idx + 1}</div>
-                          <div className="font-medium truncate">{l.title}</div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-
-              {/* WEBCAM PREVIEW */}
-              <div className="p-4 bg-slate-900/80 border-t border-slate-800">
-                <div className="relative aspect-video bg-black rounded-xl overflow-hidden shadow-inner">
-                  <video 
-                    ref={videoRef} 
-                    autoPlay 
-                    playsInline 
-                    muted 
-                    className={`w-full h-full object-cover ${!isCameraOn && 'hidden'}`} 
-                  />
-                  {!isCameraOn && (
-                    <div className="absolute inset-0 flex items-center justify-center text-slate-700">
-                      <Layout size={40} />
-                    </div>
-                  )}
-                </div>
-                <button 
-                  onClick={toggleCamera} 
-                  className="w-full mt-3 flex items-center justify-center gap-2 text-[10px] font-bold uppercase text-slate-400 hover:text-white transition-colors"
-                >
-                  <Camera size={14} /> {isCameraOn ? 'Close Camera' : 'Open Camera'}
-                </button>
-              </div>
-            </motion.aside>
-          )}
-        </AnimatePresence>
-
-        {/* CENTER STAGE: Slide Viewer */}
-        <main className="flex-1 flex flex-col relative bg-[#020617] overflow-hidden">
-          <AnimatePresence mode="wait">
-            {!showQuiz ? (
-              <motion.div 
-                key="slides"
-                initial={{ opacity: 0, x: 20 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -20 }}
-                className="flex-1 flex flex-col p-4 sm:p-8"
-              >
-                {/* Learning Objectives */}
-                {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-                  <div className="mb-4">
-                    <button
-                      onClick={() => setShowObjectives(!showObjectives)}
-                      className="w-full bg-gradient-to-r from-blue-900/50 to-indigo-900/50 border border-blue-700/50 rounded-xl p-4 flex items-center justify-between text-left hover:from-blue-900/70 hover:to-indigo-900/70 transition-all"
-                    >
-                      <div className="flex items-center gap-3">
-                        <div className="w-10 h-10 bg-blue-500/20 rounded-lg flex items-center justify-center">
-                          <Target className="w-5 h-5 text-blue-300" />
-                        </div>
-                        <div>
-                          <h3 className="font-semibold text-white">Learning Objectives</h3>
-                          <p className="text-xs text-blue-200">What you'll learn</p>
-                        </div>
-                      </div>
-                      <ChevronRight className={`w-5 h-5 text-blue-300 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
-                    </button>
-                    
-                    <AnimatePresence>
-                      {showObjectives && (
-                        <motion.div
-                          initial={{ height: 0, opacity: 0 }}
-                          animate={{ height: 'auto', opacity: 1 }}
-                          exit={{ height: 0, opacity: 0 }}
-                          className="overflow-hidden bg-slate-900/50 rounded-b-xl border-x border-b border-blue-700/30 p-4"
-                        >
-                          <div className="space-y-2">
-                            {lesson.learning_objectives.map((objective, idx) => (
-                              <div key={idx} className="flex items-start gap-3">
-                                <CheckCircle className="w-4 h-4 text-green-400 shrink-0 mt-0.5" />
-                                <p className="text-blue-50 text-sm">{objective}</p>
-                              </div>
-                            ))}
-                          </div>
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
-                  </div>
-                )}
-
-                {/* Responsive Slide Frame */}
-                <div className="flex-1 w-full bg-black overflow-hidden relative professional-slide-stage">
-                  {slideUrl ? (
-                    <iframe 
-                      src={slideUrl} 
-                      className="w-full h-full border-0"
-                      style={{ width: '100%', height: '100%', aspectRatio: '16/9' }}
-                      allowFullScreen
-                      title="Educational Slides"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center bg-slate-900 text-slate-400">
-                      <div className="text-center">
-                        <FileText className="w-16 h-16 mx-auto mb-4" />
-                        <p>No content available</p>
-                      </div>
-                    </div>
-                  )}
-                </div>
-
-                {/* BOTTOM CONTROLS */}
-                <div className="h-20 flex items-center justify-between mt-4">
-                  <div className="flex gap-2">
-                    <button 
-                      onClick={handlePrevLesson}
-                      disabled={!prevLesson}
-                      className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronLeft size={20}/>
-                    </button>
-                    <button 
-                      onClick={handleNextLesson}
-                      disabled={!nextLesson}
-                      className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronRight size={20}/>
-                    </button>
-                  </div>
-                  <span className="text-xs text-slate-400 hidden sm:block">
-                    {currentLessonIndex + 1} / {sortedLessons.length}
-                  </span>
-                  <button 
-                    onClick={() => setShowQuiz(true)}
-                    className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-tighter flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
-                  >
-                    Take Quiz <Play size={18} fill="currentColor" />
-                  </button>
-                </div>
-              </motion.div>
-            ) : (
-              <motion.div 
-                key="quiz"
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                className="flex-1 flex items-center justify-center p-6"
-              >
-                <div className="bg-[#1e293b] p-12 rounded-[2rem] border border-slate-700 max-w-xl w-full text-center shadow-2xl">
-                  <h2 className="text-3xl font-black mb-4">Quiz Time!</h2>
-                  <p className="text-slate-400 mb-8 font-medium">Test what you've learned from the session.</p>
-                  <button className="w-full bg-blue-600 hover:bg-blue-500 py-4 rounded-2xl font-bold text-lg mb-4 transition-colors">
-                    Start Quiz
-                  </button>
-                  <button 
-                    onClick={() => setShowQuiz(false)} 
-                    className="text-slate-500 text-sm hover:underline"
-                  >
-                    Return to Lessons
-                  </button>
-                </div>
-              </motion.div>
             )}
-          </AnimatePresence>
+          </div>
+        </div>
+      )}
+
+      {/* Exit Presentation Button */}
+      {isPresenting && (
+        <button 
+          onClick={togglePresentation}
+          className="fixed top-5 right-5 z-[100] bg-white/10 hover:bg-white/20 text-white border border-white/30 px-4 py-2 rounded flex items-center gap-2 text-sm backdrop-blur-sm"
+        >
+          <X size={16} /> Exit Presentation
+        </button>
+      )}
+
+      {/* WORKSPACE */}
+      <div className="flex flex-1 overflow-hidden relative">
+        
+        {/* Filmstrip (Hidden in Presentation) */}
+        {!isPresenting && (
+          <aside className="w-52 border-r border-gray-200 bg-white overflow-y-auto flex flex-col p-3 gap-3">
+            {sortedLessons.map((l, idx) => {
+              const completed = enrollment?.completed_lessons?.includes(l.id);
+              const isCurrent = l.id === lessonId;
+              
+              return (
+                <div 
+                  key={l.id}
+                  onClick={() => navigate(`/LessonPlayer?lesson=${l.id}&course=${courseId}`)}
+                  className={`relative aspect-video border rounded transition-all cursor-pointer p-1 ${
+                    isCurrent 
+                      ? 'border-[#FF8C00] border-2 bg-orange-50' 
+                      : 'border-gray-300 hover:border-[#FF8C00]'
+                  }`}
+                >
+                  <span className="absolute -left-4 top-0 text-[10px] text-gray-400">{idx + 1}</span>
+                  {completed && (
+                    <CheckCircle className="absolute top-1 right-1 w-4 h-4 text-green-500 bg-white rounded-full" />
+                  )}
+                  <div className="w-full h-full bg-gray-100 flex items-center justify-center text-[8px] text-center p-2 text-gray-600 font-bold uppercase tracking-tighter">
+                    {l.title}
+                  </div>
+                </div>
+              );
+            })}
+          </aside>
+        )}
+
+        {/* Stage */}
+        <main className={`flex-1 flex flex-col items-center overflow-auto ${
+          isPresenting ? 'p-0 bg-black justify-center' : 'bg-[#edebe9] p-10'
+        }`}>
+          {/* Learning Objectives (Not in Presentation Mode) */}
+          {!isPresenting && lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+            <div className="w-full max-w-[960px] mb-4">
+              <button
+                onClick={() => setShowObjectives(!showObjectives)}
+                className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-4 flex items-center justify-between text-left hover:from-blue-700 hover:to-indigo-700 transition-all shadow-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <Target className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Learning Objectives</h3>
+                    <p className="text-xs opacity-90">What you'll learn</p>
+                  </div>
+                </div>
+                <ChevronRight className={`w-5 h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+              </button>
+              
+              {showObjectives && (
+                <div className="bg-white rounded-b-xl border border-t-0 border-gray-200 p-4 shadow-lg">
+                  <div className="space-y-2">
+                    {lesson.learning_objectives.map((objective, idx) => (
+                      <div key={idx} className="flex items-start gap-3">
+                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
+                        <p className="text-gray-700 text-sm">{objective}</p>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+
+          {/* Slide Display */}
+          <div className={`bg-white shadow-2xl relative flex flex-col transition-all duration-500 flex-none ${
+            isPresenting 
+              ? 'w-full h-full aspect-auto m-0 shadow-none' 
+              : 'w-full max-w-[960px] aspect-video mb-10 rounded-lg'
+          }`}>
+            <div className="flex-1 w-full bg-black overflow-hidden relative professional-slide-stage">
+              {slideUrl ? (
+                <iframe 
+                  src={slideUrl} 
+                  className="w-full h-full border-0"
+                  style={{ width: '100%', height: '100%' }}
+                  allowFullScreen
+                  title="Educational Slides"
+                />
+              ) : (
+                <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
+                  <div className="text-center">
+                    <FileText className="w-16 h-16 mx-auto mb-4" />
+                    <p>No content available</p>
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
         </main>
       </div>
+
+      {/* STATUS BAR (Hidden in Presentation) */}
+      {!isPresenting && (
+        <footer className="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-4 text-xs text-gray-600 flex-none">
+          <div className="flex items-center gap-5">
+            <span>Lesson {currentLessonIndex + 1} of {sortedLessons.length}</span>
+            <span className="flex items-center gap-1 text-[#FF8C00] font-semibold">
+              <CheckCircle size={12} /> 
+              {enrollment?.completed_lessons?.length || 0} completed
+            </span>
+          </div>
+          <div className="flex items-center gap-5">
+            <div className="flex gap-3">
+              <button onClick={handlePrevLesson} disabled={!prevLesson} className="p-1 hover:bg-gray-100 rounded disabled:opacity-30">
+                <ChevronLeft size={16} />
+              </button>
+              <button onClick={handleNextLesson} disabled={!nextLesson} className="p-1 hover:bg-gray-100 rounded disabled:opacity-30">
+                <ChevronRight size={16} />
+              </button>
+            </div>
+            <button onClick={togglePresentation} className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded">
+              <Presentation size={14} />
+              <span>Present</span>
+            </button>
+            <button onClick={toggleFullscreen} className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded">
+              {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+            </button>
+          </div>
+        </footer>
+      )}
+
+      {/* Mobile Navigation (Only in Presentation Mode) */}
+      {isPresenting && (
+        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-50 md:hidden">
+          <button onClick={handlePrevLesson} disabled={!prevLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
+            <ChevronLeft />
+          </button>
+          <button onClick={handleNextLesson} disabled={!nextLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
+            <ChevronRight />
+          </button>
+        </div>
+      )}
     </div>
   );
 }
