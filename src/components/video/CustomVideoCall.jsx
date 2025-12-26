@@ -28,7 +28,7 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
   const [remoteStreams, setRemoteStreams] = useState(new Map());
   const [screenStream, setScreenStream] = useState(null);
   const [isMuted, setIsMuted] = useState(false);
-  const [isVideoOff, setIsVideoOff] = useState(true);
+  const [isVideoOff, setIsVideoOff] = useState(false);
   const [isScreenSharing, setIsScreenSharing] = useState(false);
   const [showChat, setShowChat] = useState(true);
   const chatEndRef = useRef(null);
@@ -96,9 +96,13 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
     try {
       console.log('Requesting media access...');
       
-      // Simpler constraints for better compatibility
+      // Request media with video and audio
       const stream = await navigator.mediaDevices.getUserMedia({
-        audio: true,
+        audio: {
+          echoCancellation: true,
+          noiseSuppression: true,
+          autoGainControl: true
+        },
         video: {
           width: { ideal: 1280 },
           height: { ideal: 720 },
@@ -108,22 +112,34 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
       
       console.log('Media stream obtained:', stream.getTracks().map(t => t.kind));
       
-      // Disable video by default
+      // Video starts enabled by default
       const videoTrack = stream.getVideoTracks()[0];
       if (videoTrack) {
-        videoTrack.enabled = false;
-        console.log('Video track disabled by default');
+        videoTrack.enabled = true;
+        console.log('✅ Video track enabled');
       }
       
       // Immediately attach to video element
       if (localVideoRef.current) {
         localVideoRef.current.srcObject = stream;
         localVideoRef.current.muted = true;
+        localVideoRef.current.autoplay = true;
+        localVideoRef.current.playsInline = true;
+        
         try {
           await localVideoRef.current.play();
-          console.log('✅ Video element ready (camera off)');
+          console.log('✅ Video element playing');
         } catch (playError) {
-          console.log('Autoplay blocked, will retry');
+          console.log('Autoplay blocked, will retry on user interaction');
+          // Try again after a brief delay
+          setTimeout(async () => {
+            try {
+              await localVideoRef.current.play();
+              console.log('✅ Video playing after retry');
+            } catch (e) {
+              console.error('Video play retry failed:', e);
+            }
+          }, 300);
         }
       }
       
