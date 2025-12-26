@@ -821,8 +821,9 @@ export default function LessonPlayer() {
               )}
               </div>
               )}
+              </div>
 
-      {/* Dialogs */}
+              {/* Dialogs */}
       {course && currentLesson && (
         <LessonRatingDialog
           open={showRatingDialog}
