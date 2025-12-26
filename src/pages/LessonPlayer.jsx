@@ -61,6 +61,7 @@ export default function LessonPlayer() {
       if (!completedLessons.includes(lessonId)) {
         await base44.entities.Enrollment.update(enrollment.id, {
           completed_lessons: [...completedLessons, lessonId],
+          current_lesson_id: lessonId,
           progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
         });
       }
@@ -70,6 +71,33 @@ export default function LessonPlayer() {
       toast.success('Lesson marked as complete!');
     }
   });
+
+  // Continue Learning handler
+  const handleContinueLearning = async () => {
+    try {
+      // Mark current lesson complete and update progress
+      if (enrollment && !enrollment.completed_lessons?.includes(lessonId)) {
+        const completedLessons = enrollment.completed_lessons || [];
+        await base44.entities.Enrollment.update(enrollment.id, {
+          completed_lessons: [...completedLessons, lessonId],
+          current_lesson_id: nextLesson?.id || lessonId,
+          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
+        });
+        queryClient.invalidateQueries(['enrollment', courseId]);
+      }
+
+      // Navigate to next lesson or show quiz
+      if (nextLesson) {
+        navigate(`/LessonPlayer?lesson=${nextLesson.id}&course=${courseId}`);
+      } else {
+        setShowQuiz(true);
+        toast.success('Course section complete! Time for a quiz.');
+      }
+    } catch (err) {
+      console.error("Failed to progress lesson:", err);
+      toast.error("Failed to save progress");
+    }
+  };
 
   // Fullscreen handling
   useEffect(() => {
@@ -212,14 +240,6 @@ export default function LessonPlayer() {
           >
             <Users size={20} />
           </button>
-          {!isCompleted && (
-            <button 
-              onClick={() => markCompleteMutation.mutate()}
-              className="bg-green-600 hover:bg-green-500 px-4 py-1.5 rounded-lg text-xs font-bold transition-colors flex items-center gap-1"
-            >
-              <CheckCircle size={14} /> Complete
-            </button>
-          )}
           <button 
             onClick={toggleFullscreen} 
             className="p-2 hover:bg-slate-700 rounded-lg transition-colors hidden md:block"
@@ -400,22 +420,23 @@ export default function LessonPlayer() {
                     >
                       <ChevronLeft size={20}/>
                     </button>
-                    <button 
-                      onClick={handleNextLesson}
-                      disabled={!nextLesson}
-                      className="p-3 bg-slate-800 rounded-xl hover:bg-slate-700 disabled:opacity-30 disabled:cursor-not-allowed transition-colors"
-                    >
-                      <ChevronRight size={20}/>
-                    </button>
+                    {!isCompleted && (
+                      <button 
+                        onClick={() => markCompleteMutation.mutate()}
+                        className="px-4 py-3 bg-green-600 hover:bg-green-500 rounded-xl text-xs font-bold transition-colors flex items-center gap-1"
+                      >
+                        <CheckCircle size={14} /> Mark Complete
+                      </button>
+                    )}
                   </div>
                   <span className="text-xs text-slate-400 hidden sm:block">
                     {currentLessonIndex + 1} / {sortedLessons.length}
                   </span>
                   <button 
-                    onClick={() => setShowQuiz(true)}
+                    onClick={handleContinueLearning}
                     className="bg-emerald-500 hover:bg-emerald-400 text-slate-950 px-6 sm:px-8 py-3 rounded-2xl font-black text-sm uppercase tracking-tighter flex items-center gap-2 shadow-lg shadow-emerald-500/20 transition-all"
                   >
-                    Take Quiz <Play size={18} fill="currentColor" />
+                    {nextLesson ? 'Continue' : 'Take Quiz'} <ChevronRight size={18} />
                   </button>
                 </div>
               </motion.div>
