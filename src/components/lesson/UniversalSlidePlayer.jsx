@@ -182,16 +182,31 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             max-width: 100% !important;
             width: auto !important;
             height: auto !important;
-            display: block !important;
-            margin: 1rem auto !important;
+            display: inline-block !important;
+            margin: 0.5rem !important;
             border-radius: 8px;
             object-fit: contain;
-            min-width: 300px !important;
+            min-width: 200px !important;
+            vertical-align: middle;
+          }
+
+          .slide-content-wrapper table img {
+            min-width: 150px !important;
+            max-width: 400px !important;
+          }
+
+          .slide-content-wrapper > div > img {
+            min-width: 250px !important;
           }
 
           @media (min-width: 768px) {
             .slide-content-wrapper img {
-              min-width: 500px !important;
+              min-width: 300px !important;
+            }
+
+            .slide-content-wrapper table img {
+              min-width: 200px !important;
+              max-width: 500px !important;
             }
           }
           
@@ -199,14 +214,21 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
             width: 100% !important;
             border-collapse: collapse;
             overflow-x: auto;
-            display: block;
+            display: table;
+            table-layout: auto;
           }
-          
+
           .slide-content-wrapper table td,
           .slide-content-wrapper table th {
-            padding: 0.5rem;
+            padding: 1rem;
             border: 1px solid #e5e7eb;
             word-wrap: break-word;
+            vertical-align: top;
+          }
+
+          .slide-content-wrapper table td:has(img) {
+            width: 40%;
+            text-align: center;
           }
           
           .slide-content-wrapper iframe,
