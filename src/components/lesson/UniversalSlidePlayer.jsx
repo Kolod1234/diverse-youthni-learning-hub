@@ -110,28 +110,33 @@ export default function UniversalSlidePlayer({ content, googleSlidesUrl, fileUrl
   // Handle file-based content (PowerPoint, Word, PDF)
   if (fileUrl) {
     return (
-      <div className="w-full rounded-lg overflow-hidden bg-white shadow-sm" style={{ height: '70vh', minHeight: '500px' }}>
-        <TransformWrapper
-          initialScale={1}
-          minScale={0.5}
-          maxScale={3}
-          centerOnInit
-        >
-          <TransformComponent wrapperStyle={{ width: "100%", height: "100%" }}>
-            <DocViewer
-              documents={[{ uri: fileUrl }]}
-              pluginRenderers={DocViewerRenderers}
-              style={{ height: "100%" }}
-              config={{
-                header: {
-                  disableHeader: false,
-                  disableFileName: false,
-                  retainURLParams: false
-                }
-              }}
-            />
-          </TransformComponent>
-        </TransformWrapper>
+      <div className="w-full rounded-lg overflow-hidden bg-gray-50" style={{ height: '75vh', minHeight: '600px' }}>
+        <DocViewer
+          documents={[{ uri: fileUrl, fileType: fileType }]}
+          pluginRenderers={DocViewerRenderers}
+          style={{ height: "100%", width: "100%" }}
+          config={{
+            header: {
+              disableHeader: false,
+              disableFileName: true,
+              retainURLParams: false
+            },
+            pdfZoom: {
+              defaultZoom: 1.1,
+              zoomJump: 0.2,
+            },
+            pdfVerticalScrollByDefault: true,
+          }}
+          theme={{
+            primary: "#3b82f6",
+            secondary: "#f3f4f6",
+            tertiary: "#e5e7eb",
+            textPrimary: "#111827",
+            textSecondary: "#6b7280",
+            textTertiary: "#9ca3af",
+            disableThemeScrollbar: false,
+          }}
+        />
       </div>
     );
   }
