@@ -195,14 +195,16 @@ export default function CourseDetails() {
                 <p className="text-lg text-indigo-100 mb-6">{course.description}</p>
                 
                 <div className="flex flex-wrap items-center gap-6 text-indigo-100 mb-6">
-                  <div className="flex items-center gap-2">
-                    <img
-                      src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor || 'Instructor')}&background=6366f1&color=fff`}
-                      alt={course.instructor}
-                      className="w-10 h-10 rounded-full border-2 border-white/30"
-                    />
-                    <span>{course.instructor || 'Expert Instructor'}</span>
-                  </div>
+                  {course.instructor && (
+                    <div className="flex items-center gap-2">
+                      <img
+                        src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff`}
+                        alt={course.instructor}
+                        className="w-10 h-10 rounded-full border-2 border-white/30"
+                      />
+                      <span>{course.instructor}</span>
+                    </div>
+                  )}
                   {actualCourseRating && (
                     <div className="flex items-center gap-1">
                       <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
@@ -437,20 +439,7 @@ export default function CourseDetails() {
                     </div>
                   )}
                   
-                  <div className="mb-6">
-                    <h4 className="font-semibold text-gray-900 mb-3">What You'll Learn</h4>
-                    <ul className="grid sm:grid-cols-2 gap-3">
-                      {['Master core concepts and fundamentals',
-                        'Build real-world projects',
-                        'Learn best practices',
-                        'Get hands-on experience'].map((item, i) => (
-                        <li key={i} className="flex items-start gap-2">
-                          <CheckCircle className="w-5 h-5 text-emerald-500 shrink-0 mt-0.5" />
-                          <span className="text-gray-600">{item}</span>
-                        </li>
-                      ))}
-                    </ul>
-                  </div>
+
 
                   {quizzes.length > 0 && (
                     <div>
@@ -584,34 +573,37 @@ export default function CourseDetails() {
             )}
 
             {/* Instructor Card */}
-            <Card className="p-6 border-0 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-4">Your Instructor</h3>
-              <div className="flex items-center gap-4 mb-4">
-                <img
-                  src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor || 'Instructor')}&background=6366f1&color=fff&size=80`}
-                  alt={course.instructor}
-                  className="w-16 h-16 rounded-full"
-                />
+            {course.instructor && (
+              <Card className="p-6 border-0 shadow-sm">
+                <h3 className="font-semibold text-gray-900 mb-4">Your Instructor</h3>
+                <div className="flex items-center gap-4 mb-4">
+                  <img
+                    src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff&size=80`}
+                    alt={course.instructor}
+                    className="w-16 h-16 rounded-full"
+                  />
                 <div>
-                  <h4 className="font-semibold text-gray-900">{course.instructor || 'Expert Instructor'}</h4>
-                  <p className="text-sm text-gray-500">Professional Instructor</p>
+                  <h4 className="font-semibold text-gray-900">{course.instructor}</h4>
                 </div>
-              </div>
-              <div className="flex items-center gap-6 text-sm text-gray-600">
-                {instructorRating && (
-                  <span className="flex items-center gap-1">
-                    <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                    {instructorRating} Rating
-                  </span>
+                </div>
+                {(instructorRating || instructorStudents > 0) && (
+                <div className="flex items-center gap-6 text-sm text-gray-600">
+                  {instructorRating && (
+                    <span className="flex items-center gap-1">
+                      <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
+                      {instructorRating} Rating
+                    </span>
+                  )}
+                  {instructorStudents > 0 && (
+                    <span className="flex items-center gap-1">
+                      <Users className="w-4 h-4" />
+                      {instructorStudents.toLocaleString()} Students
+                    </span>
+                  )}
+                </div>
                 )}
-                {instructorStudents > 0 && (
-                  <span className="flex items-center gap-1">
-                    <Users className="w-4 h-4" />
-                    {instructorStudents.toLocaleString()} Students
-                  </span>
+                </Card>
                 )}
-              </div>
-            </Card>
 
             {/* Course Stats */}
             <Card className="p-6 border-0 shadow-sm">
