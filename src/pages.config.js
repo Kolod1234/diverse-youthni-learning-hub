@@ -12,7 +12,6 @@ import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
 import LearningPaths from './pages/LearningPaths';
-import LessonPlayer from './pages/LessonPlayer';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
 import Profile from './pages/Profile';
@@ -46,7 +45,6 @@ export const PAGES = {
     "GradeAssignments": GradeAssignments,
     "Home": Home,
     "LearningPaths": LearningPaths,
-    "LessonPlayer": LessonPlayer,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
     "Profile": Profile,
