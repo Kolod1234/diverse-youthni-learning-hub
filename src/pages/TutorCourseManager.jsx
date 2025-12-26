@@ -612,6 +612,114 @@ export default function TutorCourseManager() {
   );
 }
 
+function DocumentUploadSection({ formData, setFormData, uploading, setUploading }) {
+  const handleDocumentUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const allowedTypes = [
+      'application/pdf',
+      'application/vnd.ms-powerpoint',
+      'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+      'application/msword',
+      'application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error('Please upload PDF, PowerPoint, or Word documents only');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      // Determine file type
+      let fileType = 'pdf';
+      if (file.type.includes('presentation')) fileType = 'pptx';
+      else if (file.type.includes('word')) fileType = 'docx';
+      
+      setFormData({ 
+        ...formData, 
+        file_url,
+        file_type: fileType
+      });
+      toast.success('Document uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload document');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  return (
+    <div className="space-y-4">
+      <div>
+        <input
+          type="file"
+          accept=".pdf,.ppt,.pptx,.doc,.docx"
+          onChange={handleDocumentUpload}
+          disabled={uploading}
+          className="hidden"
+          id="document-upload"
+        />
+        <label htmlFor="document-upload">
+          <Button 
+            type="button" 
+            variant="outline" 
+            className="w-full h-32 border-2 border-dashed hover:border-indigo-400 hover:bg-indigo-50"
+            disabled={uploading}
+            onClick={() => document.getElementById('document-upload').click()}
+          >
+            {uploading ? (
+              <div className="text-center">
+                <Loader2 className="w-8 h-8 mx-auto mb-2 animate-spin text-indigo-600" />
+                <p className="text-sm font-medium">Uploading...</p>
+              </div>
+            ) : (
+              <div className="text-center">
+                <Upload className="w-8 h-8 mx-auto mb-2 text-gray-400" />
+                <p className="text-sm font-medium text-gray-700">Upload PowerPoint, PDF, or Word</p>
+                <p className="text-xs text-gray-500 mt-1">Click to browse or drag and drop</p>
+              </div>
+            )}
+          </Button>
+        </label>
+      </div>
+
+      {formData.file_url && (
+        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+              <FileText className="w-5 h-5 text-green-600" />
+            </div>
+            <div className="flex-1">
+              <p className="text-sm font-medium text-green-900">Document uploaded successfully!</p>
+              <p className="text-xs text-green-700">Type: {formData.file_type?.toUpperCase()}</p>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setFormData({ ...formData, file_url: null, file_type: null })}
+              className="text-red-600 hover:text-red-700 hover:bg-red-50"
+            >
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+      )}
+
+      <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+        <p className="text-xs text-blue-800">
+          <strong>Supported formats:</strong> PowerPoint (.ppt, .pptx), PDF (.pdf), Word (.doc, .docx)
+          <br />
+          Your document will be displayed with full formatting in the lesson player with zoom and navigation controls.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving }) {
   const [uploading, setUploading] = useState(false);
 
@@ -770,6 +878,7 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
             >
               <option value="richtext">Rich Text Editor</option>
               <option value="googleslides">Google Slides</option>
+              <option value="document">Document Upload (PPT, PDF, Word)</option>
             </select>
             {formData.slides?.length > 0 && formData.content_type === 'richtext' && (
               <Button
@@ -816,6 +925,8 @@ function LessonFormFields({ formData, setFormData, courseId, onSave, isSaving })
               Students will see your Google Slides presentation embedded directly in the lesson player with perfect layout preservation.
             </p>
           </div>
+        ) : formData.content_type === 'document' ? (
+          <DocumentUploadSection formData={formData} setFormData={setFormData} uploading={uploading} setUploading={setUploading} />
         ) : (
           <>
             <SlideEditor
