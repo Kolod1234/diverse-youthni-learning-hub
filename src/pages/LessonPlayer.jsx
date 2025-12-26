@@ -1,444 +1,120 @@
-import React, { useEffect, useState } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
-import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Progress } from '@/components/ui/progress';
-import { Card } from '@/components/ui/card';
-import { 
-  ChevronLeft, ChevronRight, CheckCircle, X, Trophy, Star, Brain, Zap,
-  MessageCircle, ArrowRight, ArrowLeft, Home, Bookmark, MessageSquare, Award, Eye
-} from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
-import LessonRatingDialog from '@/components/rating/LessonRatingDialog';
-import PointsAnimation from '@/components/gamification/PointsAnimation';
-import EmbeddedQuiz from '@/components/quiz/EmbeddedQuiz';
-import InlineQuiz from '@/components/lesson/InlineQuiz';
-import CodePlayground from '@/components/lesson/CodePlayground';
-import LessonQA from '@/components/lesson/LessonQA';
-import UniversalSlidePlayer from '@/components/lesson/UniversalSlidePlayer';
+import React, { useState, useEffect, useRef } from 'react';
+import { Users, Camera, Maximize, Minimize, X, Play } from 'lucide-react';
 
-export default function LessonPlayer() {
-  const queryClient = useQueryClient();
-  const urlParams = new URLSearchParams(window.location.search);
-  const courseId = urlParams.get('courseId');
-  const lessonId = urlParams.get('lessonId');
-
-  const [user, setUser] = useState(null);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
-  const [showRatingDialog, setShowRatingDialog] = useState(false);
-  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
-  const [pointsEarned, setPointsEarned] = useState(0);
-  const [direction, setDirection] = useState(0);
+export default function LessonPlayer({ children, onlineUsers = [] }) {
+  // 1. ALL HOOKS AT THE TOP (Prevents the "more hooks than previous render" error)
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showQuiz, setShowQuiz] = useState(false);
-  const [selectedQuiz, setSelectedQuiz] = useState(null);
-  const [showQA, setShowQA] = useState(false);
-  const [bookmarked, setBookmarked] = useState(false);
-  const [viewMode, setViewMode] = useState('slides'); // 'slides' or 'googleslides'
-  const [showObjectives, setShowObjectives] = useState(true);
+  const [isCameraOn, setIsCameraOn] = useState(false);
+  const videoRef = useRef(null);
+  const playerRef = useRef(null);
 
-  // Load user
+  // Sync fullscreen state with browser events
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to load user:', error);
-      }
-    };
-    loadUser();
+    const handleFsChange = () => setIsFullscreen(!!document.fullscreenElement);
+    document.addEventListener('fullscreenchange', handleFsChange);
+    return () => document.removeEventListener('fullscreenchange', handleFsChange);
   }, []);
 
-  // Fetch data
-  const { data: course } = useQuery({
-    queryKey: ['course', courseId],
-    queryFn: async () => {
-      const courses = await base44.entities.Course.filter({ id: courseId });
-      return courses[0];
-    },
-    enabled: !!courseId,
-  });
-
-  const { data: lessons = [], isLoading: lessonsLoading } = useQuery({
-    queryKey: ['lessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
-    enabled: !!courseId,
-  });
-
-  const { data: enrollments = [] } = useQuery({
-    queryKey: ['enrollment', courseId, user?.email],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
-    enabled: !!courseId && !!user?.email,
-  });
-
-  // Mutations
-  const updateEnrollmentMutation = useMutation({
-    mutationFn: ({ enrollmentId, data }) => base44.entities.Enrollment.update(enrollmentId, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['enrollment', courseId]);
-    },
-  });
-
-  // Derived state
-  const enrollment = enrollments[0];
-  const currentLesson = lessons.find(l => l.id === lessonId) || lessons[0];
-  const currentIndex = lessons.findIndex(l => l.id === currentLesson?.id);
-  const nextLesson = currentIndex < lessons.length - 1 ? lessons[currentIndex + 1] : null;
-  const isCompleted = enrollment?.completed_lessons?.includes(currentLesson?.id);
-
-  // Auto-detect view mode based on content
-  useEffect(() => {
-    if (currentLesson?.content_type === 'googleslides' && currentLesson?.google_slides_url) {
-      setViewMode('googleslides');
-    } else if (currentLesson?.content_type === 'document' && currentLesson?.file_url) {
-      setViewMode('document');
-    } else if (currentLesson?.slides && currentLesson.slides.length > 0) {
-      setViewMode('slides');
+  // 2. LOGIC FUNCTIONS
+  const toggleFullScreen = () => {
+    if (!document.fullscreenElement) {
+      playerRef.current?.requestFullscreen();
     } else {
-      setViewMode('slides');
-    }
-  }, [currentLesson?.id, currentLesson?.content_type, currentLesson?.google_slides_url, currentLesson?.file_url, currentLesson?.slides]);
-
-  const { data: allQuizzes = [] } = useQuery({
-    queryKey: ['course-quizzes', courseId],
-    queryFn: () => base44.entities.Quiz.filter({ course_id: courseId, is_published: true }),
-    enabled: !!courseId,
-  });
-
-  const { data: bookmarks = [] } = useQuery({
-    queryKey: ['bookmarks', lessonId, user?.email],
-    queryFn: () => base44.entities.LessonBookmark.filter({ lesson_id: lessonId, created_by: user?.email }),
-    enabled: !!lessonId && !!user?.email,
-  });
-
-  const bookmarkMutation = useMutation({
-    mutationFn: (data) => base44.entities.LessonBookmark.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['bookmarks', lessonId]);
-    },
-  });
-
-  const deleteBookmarkMutation = useMutation({
-    mutationFn: (id) => base44.entities.LessonBookmark.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['bookmarks', lessonId]);
-    },
-  });
-
-  // Filter quizzes that match this lesson by ID, section, or title
-  const lessonQuizzes = React.useMemo(() => {
-    if (!currentLesson) return [];
-    return allQuizzes.filter(quiz => {
-      if (quiz.lesson_id === currentLesson.id) return true;
-      if (quiz.topic === currentLesson.section) return true;
-      if (quiz.topic === currentLesson.title) return true;
-      return false;
-    });
-  }, [allQuizzes, currentLesson]);
-  
-  // Create slides from lesson content or handle document mode
-  const slides = currentLesson?.slides || [];
-  const isDocumentMode = currentLesson?.content_type === 'document' && currentLesson?.file_url && !slides.length;
-  const totalSlides = slides.length > 0 ? slides.length : (isDocumentMode ? 1 : 0);
-  const progressPercent = totalSlides > 0 ? ((currentSlideIndex + 1) / totalSlides) * 100 : 0;
-
-  // Check if current slide is bookmarked
-  React.useEffect(() => {
-    const isBookmarked = bookmarks.some(b => b.slide_index === currentSlideIndex);
-    setBookmarked(isBookmarked);
-  }, [bookmarks, currentSlideIndex]);
-
-
-
-  const nextSlide = () => {
-    if (currentSlideIndex < totalSlides - 1) {
-      setDirection(1);
-      setCurrentSlideIndex(prev => prev + 1);
+      document.exitFullscreen();
     }
   };
 
-  const prevSlide = () => {
-    if (currentSlideIndex > 0) {
-      setDirection(-1);
-      setCurrentSlideIndex(prev => prev - 1);
-    }
-  };
-
-  const handleTakeQuiz = (quiz) => {
-    setSelectedQuiz(quiz);
-    setShowQuiz(true);
-  };
-
-  const handleCloseQuiz = () => {
-    setShowQuiz(false);
-    setSelectedQuiz(null);
-  };
-
-  const handleToggleBookmark = () => {
-    const existingBookmark = bookmarks.find(b => b.slide_index === currentSlideIndex);
-    if (existingBookmark) {
-      deleteBookmarkMutation.mutate(existingBookmark.id);
-    } else {
-      bookmarkMutation.mutate({
-        lesson_id: lessonId,
-        slide_index: currentSlideIndex,
-      });
-    }
-  };
-
-  const markComplete = async () => {
-    if (!enrollment?.id || !currentLesson?.id || isCompleted) return;
-    
-    const newCompletedLessons = [...(enrollment.completed_lessons || []), currentLesson.id];
-    const newProgress = Math.round((newCompletedLessons.length / lessons.length) * 100);
-    const isNowComplete = newCompletedLessons.length === lessons.length;
-    const today = new Date().toISOString().split('T')[0];
-    
-    updateEnrollmentMutation.mutate({
-      enrollmentId: enrollment.id,
-      data: {
-        completed_lessons: newCompletedLessons,
-        progress_percent: newProgress,
-        current_lesson_id: nextLesson?.id || currentLesson.id,
-        is_completed: isNowComplete,
-        ...(isNowComplete && { completed_date: today }),
-      }
-    });
-
-    await awardPoints(10);
-
-    // Check for course completion achievement and generate certificate
-    if (isNowComplete) {
-      const allEnrollments = await base44.entities.Enrollment.filter({ created_by: user?.email, is_completed: true });
-      
-      if (allEnrollments.length === 1) {
-        await base44.entities.Achievement.create({
-          type: 'badge',
-          name: 'Course Champion',
-          description: 'Complete your first course',
-          icon: 'course_complete',
-          course_id: courseId,
-          earned_date: today,
-        });
-      } else if (allEnrollments.length === 5) {
-        await base44.entities.Achievement.create({
-          type: 'badge',
-          name: 'Knowledge Seeker',
-          description: 'Complete 5 courses',
-          icon: 'five_courses',
-          earned_date: today,
-        });
-      }
-
-      // Auto-generate certificate
-      const certificateNumber = `CERT-${Date.now()}-${Math.random().toString(36).substr(2, 9).toUpperCase()}`;
-      await base44.entities.Certificate.create({
-        course_id: courseId,
-        enrollment_id: enrollment.id,
-        certificate_number: certificateNumber,
-        issue_date: today,
-        student_name: user?.full_name,
-        course_title: course?.title,
-        instructor_name: course?.instructor,
-        final_score: newProgress,
-      });
-
-      // Certificate achievement
-      await base44.entities.Achievement.create({
-        type: 'certificate',
-        name: course?.title + ' Certificate',
-        description: 'Successfully completed ' + course?.title,
-        icon: 'certificate',
-        course_id: courseId,
-        earned_date: today,
-      });
-    }
-    
-    setShowRatingDialog(true);
-  };
-
-  const awardPoints = async (points) => {
+  const startCamera = async () => {
     try {
-      const progressList = await base44.entities.UserProgress.filter({ created_by: user?.email });
-      const today = new Date().toISOString().split('T')[0];
-      
-      if (progressList.length > 0) {
-        const progress = progressList[0];
-        const newPoints = (progress.points || 0) + points;
-        const newLevel = Math.floor(newPoints / 100) + 1;
-        
-        // Calculate streak
-        let newStreak = progress.streak_days || 0;
-        const lastActivity = progress.last_activity_date;
-        
-        if (lastActivity) {
-          const lastDate = new Date(lastActivity);
-          const todayDate = new Date(today);
-          const diffDays = Math.floor((todayDate - lastDate) / (1000 * 60 * 60 * 24));
-          
-          if (diffDays === 1) {
-            newStreak += 1;
-          } else if (diffDays > 1) {
-            newStreak = 1;
-          }
-        } else {
-          newStreak = 1;
-        }
-        
-        await base44.entities.UserProgress.update(progress.id, {
-          points: newPoints,
-          level: newLevel,
-          total_lessons_completed: (progress.total_lessons_completed || 0) + 1,
-          last_activity_date: today,
-          streak_days: newStreak,
-        });
-
-        // Check for streak achievements
-        if (newStreak === 7) {
-          await base44.entities.Achievement.create({
-            type: 'badge',
-            name: 'Week Warrior',
-            description: '7-day learning streak',
-            icon: 'week_streak',
-            earned_date: today,
-          });
-        } else if (newStreak === 30) {
-          await base44.entities.Achievement.create({
-            type: 'badge',
-            name: 'Dedicated Scholar',
-            description: '30-day learning streak',
-            icon: 'month_streak',
-            earned_date: today,
-          });
-        }
-      } else {
-        await base44.entities.UserProgress.create({
-          points,
-          level: 1,
-          total_lessons_completed: 1,
-          last_activity_date: today,
-          streak_days: 1,
-        });
-
-        // First lesson achievement
-        await base44.entities.Achievement.create({
-          type: 'badge',
-          name: 'First Steps',
-          description: 'Complete your first lesson',
-          icon: 'first_lesson',
-          earned_date: today,
-        });
-      }
-      
-      setPointsEarned(points);
-      setShowPointsAnimation(true);
-    } catch (error) {
-      console.error('Failed to award points:', error);
+      const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
+      if (videoRef.current) videoRef.current.srcObject = stream;
+      setIsCameraOn(true);
+    } catch (err) {
+      alert("Camera access denied. Please check permissions.");
     }
   };
 
-  const handleRatingComplete = () => {
-    if (nextLesson) {
-      window.location.href = createPageUrl('LessonPlayer') + `?courseId=${courseId}&lessonId=${nextLesson.id}`;
-    } else {
-      window.location.href = createPageUrl('CourseDetails') + `?id=${courseId}`;
-    }
-  };
+  // 3. RENDER LOGIC
+  return (
+    <div ref={playerRef} className="fixed inset-0 flex flex-col bg-slate-950 text-white overflow-hidden">
 
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyPress = (e) => {
-      if (showQuiz) return;
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        nextSlide();
-      } else if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        prevSlide();
-      }
-    };
-
-    window.addEventListener('keydown', handleKeyPress);
-    return () => window.removeEventListener('keydown', handleKeyPress);
-    }, [currentSlideIndex, totalSlides, showQuiz]);
-
-    // Touch swipe handling
-    useEffect(() => {
-    if (showQuiz) return;
-
-    let touchStartX = 0;
-    let touchStartY = 0;
-    let touchEndX = 0;
-    let touchEndY = 0;
-
-    const handleTouchStart = (e) => {
-      // Only capture if not scrolling vertically
-      touchStartX = e.touches[0].clientX;
-      touchStartY = e.touches[0].clientY;
-    };
-
-    const handleTouchMove = (e) => {
-      touchEndX = e.touches[0].clientX;
-      touchEndY = e.touches[0].clientY;
-
-      // Allow vertical scrolling by not preventing default
-      const deltaX = Math.abs(touchEndX - touchStartX);
-      const deltaY = Math.abs(touchEndY - touchStartY);
-
-      // Only prevent default if horizontal swipe is clearly intended
-      if (deltaX > deltaY && deltaX > 20) {
-        e.preventDefault();
-      }
-    };
-
-    const handleTouchEnd = () => {
-      const deltaX = touchEndX - touchStartX;
-      const deltaY = touchEndY - touchStartY;
-      const minSwipeDistance = 50;
-
-      // Only trigger if horizontal swipe is dominant
-      if (Math.abs(deltaX) > Math.abs(deltaY) && Math.abs(deltaX) > minSwipeDistance) {
-        if (deltaX > 0) {
-          prevSlide();
-        } else {
-          nextSlide();
-        }
-      }
-    };
-
-    const slideArea = document.querySelector('.slide-swipe-area');
-    if (slideArea) {
-      slideArea.addEventListener('touchstart', handleTouchStart, { passive: true });
-      slideArea.addEventListener('touchmove', handleTouchMove, { passive: false });
-      slideArea.addEventListener('touchend', handleTouchEnd);
-
-      return () => {
-        slideArea.removeEventListener('touchstart', handleTouchStart);
-        slideArea.removeEventListener('touchmove', handleTouchMove);
-        slideArea.removeEventListener('touchend', handleTouchEnd);
-      };
-    }
-    }, [currentSlideIndex, totalSlides, showQuiz]);
-
-  // Show quiz if active
-  if (showQuiz && selectedQuiz) {
-    return <EmbeddedQuiz quiz={selectedQuiz} user={user} onClose={handleCloseQuiz} />;
-  }
-
-  // Loading
-  if (lessonsLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center">
-        <div className="text-center text-white">
-          <div className="w-16 h-16 border-4 border-white/30 border-t-white rounded-full animate-spin mx-auto mb-4"></div>
-          <p className="text-lg font-medium">Loading your lesson...</p>
+      {/* HEADER: Responsive with Live/Join Buttons */}
+      <header className="h-14 flex items-center justify-between px-4 bg-slate-900 border-b border-slate-800 flex-none">
+        <div className="flex items-center gap-3 overflow-hidden">
+          <span className="bg-red-600 px-2 py-0.5 rounded text-[10px] font-bold animate-pulse">LIVE</span>
+          <h1 className="text-sm font-medium truncate">Cell Structure and Function</h1>
         </div>
-      </div>
-    );
-  }
 
+        <div className="flex items-center gap-2">
+          <button className="hidden sm:flex bg-blue-600 hover:bg-blue-700 px-3 py-1 rounded text-xs">Present</button>
+          <button className="bg-slate-700 hover:bg-slate-600 px-3 py-1 rounded text-xs">Join</button>
+          <button onClick={toggleFullScreen} className="p-1.5 hover:bg-white/10 rounded">
+            {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+          </button>
+        </div>
+      </header>
+
+      {/* MAIN WORKSPACE: Sidebar + Content Area */}
+      <div className="flex flex-1 overflow-hidden">
+
+        {/* LEFT PANEL: Users (Hidden on very small mobile screens if desired) */}
+        <aside className="hidden md:flex w-64 bg-slate-900/50 border-r border-slate-800 flex-col flex-none">
+          <div className="p-4 border-b border-slate-800 flex items-center gap-2">
+            <Users size={16} className="text-blue-400" />
+            <span className="text-xs font-bold uppercase tracking-wider">Online Users</span>
+          </div>
+          <div className="flex-1 overflow-y-auto p-3 space-y-2">
+            {onlineUsers.map((u, i) => (
+              <div key={i} className="flex items-center gap-2 text-sm text-slate-300">
+                <div className="w-2 h-2 rounded-full bg-green-500" /> {u.name}
+              </div>
+            ))}
+          </div>
+          {/* Webcam Preview in Sidebar */}
+          {isCameraOn && (
+            <div className="p-2 border-t border-slate-800">
+              <video ref={videoRef} autoPlay playsInline muted className="rounded-lg bg-black aspect-video w-full object-cover" />
+            </div>
+          )}
+        </aside>
+
+        {/* CONTENT AREA: No Horizontal Overflow */}
+        <main className="flex-1 relative flex flex-col bg-black overflow-hidden justify-center items-center p-4">
+          {!showQuiz ? (
+            <div className="w-full h-full max-w-full max-h-full flex flex-col items-center">
+              {/* Slide Container: Use iFrame or children here */}
+              <div className="flex-1 w-full bg-white rounded-xl shadow-2xl overflow-hidden relative">
+                <div className="p-8 text-slate-900 h-full overflow-y-auto">
+                   {children} 
+                </div>
+              </div>
+
+              {/* Footer Controls */}
+              <div className="w-full mt-4 flex justify-between items-center px-2">
+                <button onClick={startCamera} className="text-xs flex items-center gap-2 text-slate-400 hover:text-white">
+                  <Camera size={16} /> {isCameraOn ? 'Stop Camera' : 'Start Camera'}
+                </button>
+                <button 
+                  onClick={() => setShowQuiz(true)}
+                  className="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-2 rounded-lg font-bold flex items-center gap-2"
+                >
+                  Take Quiz <Play size={16} fill="currentColor" />
+                </button>
+              </div>
+            </div>
+          ) : (
+            <div className="max-w-md w-full bg-slate-900 p-8 rounded-2xl border border-slate-800">
+              <h2 className="text-xl font-bold mb-4">Lesson Quiz</h2>
+              <p className="text-slate-400 mb-6">Test your knowledge of Cell Structures.</p>
+              <button onClick={() => setShowQuiz(false)} className="text-blue-400 text-sm">Back to Slides</button>
+            </div>
+          )}
+        </main>
+      </div>
+    </div>
+  );
+  }
   if (!currentLesson || totalSlides === 0) {
     return (
       <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex items-center justify-center p-4">
