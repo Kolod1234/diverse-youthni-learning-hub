@@ -30,22 +30,15 @@ export default function LessonPlayer() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const playerRef = useRef(null);
 
-  // Fetch lesson data
-  const { data: lesson, isLoading: lessonLoading } = useQuery({
-    queryKey: ['lesson', lessonId],
-    queryFn: async () => {
-      const lessons = await base44.entities.Lesson.filter({ id: lessonId });
-      return lessons[0];
-    },
-    enabled: !!lessonId
-  });
-
   // Fetch course lessons for navigation
-  const { data: courseLessons = [] } = useQuery({
+  const { data: courseLessons = [], isLoading: lessonLoading } = useQuery({
     queryKey: ['courseLessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }),
     enabled: !!courseId
   });
+
+  // Find current lesson from course lessons
+  const lesson = courseLessons.find(l => l.id === lessonId);
 
   // Fetch enrollment for progress
   const { data: enrollment } = useQuery({
