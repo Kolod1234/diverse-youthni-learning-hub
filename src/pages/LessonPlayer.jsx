@@ -371,11 +371,12 @@ export default function LessonPlayer() {
                 )}
 
                 {/* Responsive Slide Frame */}
-                <div className="flex-1 w-full bg-white rounded-2xl shadow-2xl overflow-hidden relative border-4 border-slate-800">
+                <div className="flex-1 w-full bg-black overflow-hidden relative professional-slide-stage">
                   {slideUrl ? (
                     <iframe 
                       src={slideUrl} 
-                      className="absolute inset-0 w-full h-full border-0"
+                      className="w-full h-full border-0"
+                      style={{ width: '100%', height: '100%', aspectRatio: '16/9' }}
                       allowFullScreen
                       title="Educational Slides"
                     />
