@@ -345,7 +345,17 @@ export default function LessonPlayerPowerPoint() {
               : 'w-full max-w-[960px] aspect-video mb-10 rounded-lg'
           }`}>
             <div className="flex-1 w-full overflow-hidden relative professional-slide-stage">
-              {hasSlides ? (
+              {slideUrl ? (
+                <div className="w-full h-full bg-black">
+                  <iframe 
+                    src={slideUrl} 
+                    className="w-full h-full border-0"
+                    style={{ width: '100%', height: '100%' }}
+                    allowFullScreen
+                    title="Educational Slides"
+                  />
+                </div>
+              ) : hasSlides ? (
                 <div className="w-full h-full bg-white p-12 overflow-y-auto">
                   <div className="max-w-4xl mx-auto">
                     <h2 className="text-3xl font-bold text-gray-900 mb-6">
@@ -361,16 +371,6 @@ export default function LessonPlayerPowerPoint() {
                       {currentSlideIndex + 1} / {sortedSlides.length}
                     </div>
                   )}
-                </div>
-              ) : slideUrl ? (
-                <div className="w-full h-full bg-black">
-                  <iframe 
-                    src={slideUrl} 
-                    className="w-full h-full border-0"
-                    style={{ width: '100%', height: '100%' }}
-                    allowFullScreen
-                    title="Educational Slides"
-                  />
                 </div>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
