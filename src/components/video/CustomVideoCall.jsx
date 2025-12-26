@@ -1011,25 +1011,25 @@ export default function CustomVideoCall({ session, course, user, onEndSession })
             </div>
 
             <div className="p-4 border-t border-gray-700">
-              <div className="flex gap-2">
+              <form onSubmit={(e) => { e.preventDefault(); handleSendMessage(); }} className="flex gap-2">
                 <input
-                  id="chat-message"
-                  name="message"
+                  id="chat-message-input"
+                  name="chat-message"
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  onKeyPress={(e) => e.key === 'Enter' && handleSendMessage()}
                   placeholder="Type a message..."
+                  autoComplete="off"
                   className="flex-1 bg-gray-700 text-white rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <Button
-                  onClick={handleSendMessage}
+                  type="submit"
                   size="sm"
                   className="bg-blue-600 hover:bg-blue-700 rounded-lg px-4"
                 >
                   <Send className="w-4 h-4" />
                 </Button>
-              </div>
+              </form>
             </div>
           </div>
         )}
