@@ -36,6 +36,7 @@ export default function LessonPlayer() {
   const [showQA, setShowQA] = useState(false);
   const [bookmarked, setBookmarked] = useState(false);
   const [viewMode, setViewMode] = useState('slides'); // 'slides' or 'googleslides'
+  const [showObjectives, setShowObjectives] = useState(true);
 
   // Load user
   useEffect(() => {
@@ -548,7 +549,7 @@ export default function LessonPlayer() {
             </div>
           </div>
           
-          {!isDocumentMode && viewMode !== 'googleslides' && (
+{!isDocumentMode && (
             <div className="flex items-center gap-3">
               <Progress value={progressPercent} className="flex-1 h-2 bg-gray-200" />
               <span className="text-xs sm:text-sm text-gray-600 font-medium min-w-[60px] text-right">
@@ -602,28 +603,36 @@ export default function LessonPlayer() {
                     animate={{ opacity: 1, y: 0 }}
                     className="bg-gradient-to-r from-blue-50 to-indigo-50 border-l-4 border-blue-500 p-4 sm:p-6 mb-6 sm:mb-8 rounded-r-xl"
                   >
-                    <h3 className="font-bold text-blue-900 mb-3 sm:mb-4 flex items-center gap-2 text-base sm:text-lg">
-                      <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
-                        <Award className="w-5 h-5 text-white" />
-                      </div>
-                      Learning Objectives
-                    </h3>
-                    <ul className="space-y-2 sm:space-y-3">
-                      {currentLesson.learning_objectives.map((objective, idx) => (
-                        <motion.li 
-                          key={idx}
-                          initial={{ opacity: 0, x: -10 }}
-                          animate={{ opacity: 1, x: 0 }}
-                          transition={{ delay: idx * 0.1 }}
-                          className="flex items-start gap-3 text-blue-900 text-sm sm:text-base"
-                        >
-                          <span className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
-                            {idx + 1}
-                          </span>
-                          <span className="flex-1">{objective}</span>
-                        </motion.li>
-                      ))}
-                    </ul>
+                    <button
+                      onClick={() => setShowObjectives(!showObjectives)}
+                      className="w-full flex items-center justify-between mb-3 sm:mb-4 hover:opacity-70 transition-opacity"
+                    >
+                      <h3 className="font-bold text-blue-900 flex items-center gap-2 text-base sm:text-lg">
+                        <div className="w-8 h-8 bg-blue-500 rounded-lg flex items-center justify-center">
+                          <Award className="w-5 h-5 text-white" />
+                        </div>
+                        Learning Objectives
+                      </h3>
+                      <ChevronRight className={`w-5 h-5 text-blue-900 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+                    </button>
+                    {showObjectives && (
+                      <ul className="space-y-2 sm:space-y-3">
+                        {currentLesson.learning_objectives.map((objective, idx) => (
+                          <motion.li 
+                            key={idx}
+                            initial={{ opacity: 0, x: -10 }}
+                            animate={{ opacity: 1, x: 0 }}
+                            transition={{ delay: idx * 0.1 }}
+                            className="flex items-start gap-3 text-blue-900 text-sm sm:text-base"
+                          >
+                            <span className="w-5 h-5 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0 mt-0.5">
+                              {idx + 1}
+                            </span>
+                            <span className="flex-1">{objective}</span>
+                          </motion.li>
+                        ))}
+                      </ul>
+                    )}
                   </motion.div>
                 )}
 
