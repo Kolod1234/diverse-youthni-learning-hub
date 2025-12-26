@@ -251,7 +251,7 @@ export default function LessonPlayer() {
 
       {/* MAIN CONTENT AREA */}
       <div className="flex flex-1 overflow-hidden">
-        
+
         {/* LEFT PANEL: Course Navigation */}
         <AnimatePresence>
           {showSidebar && (
@@ -260,7 +260,8 @@ export default function LessonPlayer() {
               animate={{ x: 0 }}
               exit={{ x: -300 }}
               transition={{ type: 'spring', damping: 25 }}
-              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex-col flex-none h-full flex shadow-xl lg:shadow-none"
+              className="absolute lg:relative z-10 w-72 bg-[#1e293b]/95 backdrop-blur-sm border-r border-slate-800 flex-col flex-none flex shadow-xl lg:shadow-none"
+              style={{ height: 'calc(100vh - 64px)' }}
             >
               <div className="p-5 border-b border-slate-800 flex items-center justify-between">
                 <div className="flex items-center gap-2 text-slate-400">
