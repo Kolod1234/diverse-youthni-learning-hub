@@ -26,7 +26,13 @@ export default function Home() {
 
   const { data: carouselImages = [] } = useQuery({
     queryKey: ['carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true }, 'order', 20),
+    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'main' }, 'order', 20),
+    initialData: [],
+  });
+
+  const { data: leadershipCarouselImages = [] } = useQuery({
+    queryKey: ['leadership-carousel-images'],
+    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'leadership' }, 'order', 20),
     initialData: [],
   });
 
@@ -220,16 +226,16 @@ export default function Home() {
             >
               <div className="overflow-hidden rounded-2xl shadow-2xl" ref={leadershipEmblaRef}>
                 <div className="flex">
-                  {[
-                    'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80',
-                    'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80',
-                    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80',
-                    'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80'
-                  ].map((imgSrc, idx) => (
-                    <div key={idx} className="flex-[0_0_100%] min-w-0">
+                  {(leadershipCarouselImages.length > 0 ? leadershipCarouselImages : [
+                    { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80' },
+                    { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80' },
+                    { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80' },
+                    { image_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80' }
+                  ]).map((img, idx) => (
+                    <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
                       <div className="relative aspect-[4/3]">
                         <img
-                          src={imgSrc}
+                          src={img.image_url}
                           alt={`Leadership programme ${idx + 1}`}
                           className="w-full h-full object-cover"
                         />

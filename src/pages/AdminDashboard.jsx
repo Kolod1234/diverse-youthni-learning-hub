@@ -221,7 +221,11 @@ export default function AdminDashboard() {
           </TabsContent>
 
           <TabsContent value="carousel">
-            <CarouselManager />
+            <CarouselManager carouselType="main" title="Main Carousel Images" />
+          </TabsContent>
+
+          <TabsContent value="leadership-carousel">
+            <CarouselManager carouselType="leadership" title="Leadership Programme Carousel" />
           </TabsContent>
 
           <TabsContent value="certificates">
