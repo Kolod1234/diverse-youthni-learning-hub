@@ -33,6 +33,16 @@ export default function Home() {
     loadUser();
   }, []);
 
+  const { data: siteContent = [] } = useQuery({
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+  });
+
+  const getContent = (key, defaultValue) => {
+    const item = siteContent.find(c => c.key === key);
+    return item?.value || defaultValue;
+  };
+
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: () => base44.entities.Course.list('-created_date', 100),
@@ -174,45 +184,45 @@ export default function Home() {
               whileHover={{ scale: 1.1, rotate: -5 }}
               transition={{ duration: 0.2 }}
             >
-              ONLINE LEARNING
+              {getContent('hero_online_learning', 'ONLINE LEARNING')}
             </motion.div>
-            
+
             <motion.div 
               className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1"
               whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ duration: 0.2 }}
             >
               <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight">
-                Afterschool Hours
+                {getContent('hero_afterschool_hours', 'Afterschool Hours')}
               </h1>
             </motion.div>
-            
+
             <motion.h2 
               className="text-3xl md:text-5xl font-extrabold text-white mb-4"
               whileHover={{ scale: 1.08, y: -5 }}
               transition={{ duration: 0.2 }}
             >
-              Online Quizzes
+              {getContent('hero_online_quizzes', 'Online Quizzes')}
             </motion.h2>
-            
+
             <motion.div 
               className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl"
               whileHover={{ scale: 1.1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
               transition={{ duration: 0.2 }}
             >
               <p className="text-5xl md:text-7xl font-black text-[#d32f2f]">
-                FREE ACCESS
-                <span className="block text-3xl md:text-4xl mt-2">ALL COURSES</span>
+                {getContent('hero_free_access', 'FREE ACCESS')}
+                <span className="block text-3xl md:text-4xl mt-2">{getContent('hero_all_courses', 'ALL COURSES')}</span>
               </p>
             </motion.div>
-            
+
             <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8">
-              Access them at the comfort of your home
+              {getContent('hero_description', 'Access them at the comfort of your home')}
             </p>
-            
+
             <Link to={createPageUrl('Explore')}>
               <Button size="lg" className="bg-yellow-400 text-[#d32f2f] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
-                BROWSE COURSES
+                {getContent('hero_button', 'BROWSE COURSES')}
                 <ArrowRight className="w-8 h-8 ml-3" />
               </Button>
             </Link>
@@ -230,12 +240,12 @@ export default function Home() {
               viewport={{ once: true }}
             >
               <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
-                Leadership Programmes
-                <span className="block text-white/90">available here.</span>
+                {getContent('leadership_title', 'Leadership Programmes')}
+                <span className="block text-white/90">{getContent('leadership_subtitle', 'available here.')}</span>
               </h2>
               <Link to={createPageUrl('Programs')}>
                 <Button size="lg" className="bg-[#e91e63] hover:bg-[#c2185b] text-white text-lg px-10 py-7 h-auto font-bold rounded-full shadow-xl hover:scale-105 transition-all">
-                  FIND OUT MORE
+                  {getContent('leadership_button', 'FIND OUT MORE')}
                   <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
               </Link>
@@ -291,8 +301,8 @@ export default function Home() {
         <section className="py-16 bg-white">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">Proudly Supported By</h2>
-              <p className="text-gray-600">Our funders who make this possible</p>
+              <h2 className="text-3xl font-bold text-gray-900 mb-4">{getContent('funders_heading', 'Proudly Supported By')}</h2>
+              <p className="text-gray-600">{getContent('funders_description', 'Our funders who make this possible')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {funderLogos.map((logo, idx) => (

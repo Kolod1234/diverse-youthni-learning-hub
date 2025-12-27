@@ -93,6 +93,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.ContactInfo.list('-created_date', 1),
   });
 
+  const { data: siteContent = [] } = useQuery({
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+  });
+
   if (!user || user.role !== 'admin') {
     return null;
   }
@@ -224,6 +229,10 @@ export default function AdminDashboard() {
               <MessageSquare className="w-4 h-4 mr-2" />
               Contact Info
             </TabsTrigger>
+            <TabsTrigger value="content" className="rounded-lg">
+              <FileText className="w-4 h-4 mr-2" />
+              Site Content
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -296,6 +305,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="contact">
             <ContactInfoManagement contactInfo={contactInfo[0]} />
+          </TabsContent>
+
+          <TabsContent value="content">
+            <SiteContentManagement siteContent={siteContent} />
           </TabsContent>
         </Tabs>
       </div>
@@ -2050,6 +2063,225 @@ function AttendanceManagement({ attendanceRecords, users }) {
               </div>
             </div>
           </Card>
+        </div>
+      )}
+    </div>
+  );
+}
+
+function SiteContentManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterSection, setFilterSection] = useState('all');
+  const [showForm, setShowForm] = useState(false);
+  const [editingItem, setEditingItem] = useState(null);
+  const [formData, setFormData] = useState({ key: '', value: '', section: 'general', description: '' });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.SiteContent.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setShowForm(false);
+      setFormData({ key: '', value: '', section: 'general', description: '' });
+      toast.success('Content added!');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.SiteContent.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setEditingItem(null);
+      setFormData({ key: '', value: '', section: 'general', description: '' });
+      toast.success('Content updated!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.SiteContent.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      toast.success('Content deleted!');
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!formData.key || !formData.value) {
+      toast.error('Key and value are required');
+      return;
+    }
+    if (editingItem) {
+      updateMutation.mutate({ id: editingItem.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  const filteredContent = siteContent.filter(item => {
+    const matchesSearch = !searchQuery || 
+      item.key?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.value?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      item.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesSection = filterSection === 'all' || item.section === filterSection;
+    return matchesSearch && matchesSection;
+  });
+
+  const sections = ['all', 'home', 'footer', 'general', 'courses', 'programs', 'contact'];
+
+  return (
+    <div className="space-y-6">
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-gray-900">Site Content Management</h2>
+          <p className="text-gray-600">Manage all text content across the website</p>
+        </div>
+        <Button onClick={() => setShowForm(true)}>
+          <Plus className="w-4 h-4 mr-2" />
+          Add Content
+        </Button>
+      </div>
+
+      <Card className="p-4">
+        <div className="flex gap-4 flex-wrap">
+          <div className="flex-1 min-w-[200px]">
+            <Input
+              placeholder="Search content..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+            />
+          </div>
+          <select
+            value={filterSection}
+            onChange={(e) => setFilterSection(e.target.value)}
+            className="px-3 py-2 border rounded-lg"
+          >
+            {sections.map(section => (
+              <option key={section} value={section}>
+                {section === 'all' ? 'All Sections' : section.charAt(0).toUpperCase() + section.slice(1)}
+              </option>
+            ))}
+          </select>
+        </div>
+      </Card>
+
+      {(showForm || editingItem) && (
+        <Card className="p-6 bg-indigo-50 border-indigo-200">
+          <h3 className="font-semibold mb-4">{editingItem ? 'Edit Content' : 'Add New Content'}</h3>
+          <div className="space-y-4">
+            <div>
+              <Label>Key (Unique Identifier) *</Label>
+              <Input
+                value={formData.key}
+                onChange={(e) => setFormData({ ...formData, key: e.target.value })}
+                placeholder="e.g., hero_title, cta_button_text"
+                disabled={!!editingItem}
+              />
+            </div>
+            <div>
+              <Label>Section</Label>
+              <select
+                value={formData.section}
+                onChange={(e) => setFormData({ ...formData, section: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                {sections.filter(s => s !== 'all').map(section => (
+                  <option key={section} value={section}>
+                    {section.charAt(0).toUpperCase() + section.slice(1)}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Input
+                value={formData.description}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                placeholder="Where does this appear?"
+              />
+            </div>
+            <div>
+              <Label>Content *</Label>
+              <Textarea
+                value={formData.value}
+                onChange={(e) => setFormData({ ...formData, value: e.target.value })}
+                placeholder="Enter the text content..."
+                rows={4}
+              />
+            </div>
+            <div className="flex gap-2">
+              <Button onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>
+                {editingItem ? 'Update' : 'Add'}
+              </Button>
+              <Button variant="outline" onClick={() => {
+                setShowForm(false);
+                setEditingItem(null);
+                setFormData({ key: '', value: '', section: 'general', description: '' });
+              }}>
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </Card>
+      )}
+
+      <div className="bg-white rounded-xl border overflow-hidden">
+        <div className="overflow-x-auto">
+          <table className="w-full">
+            <thead className="bg-gray-50 border-b">
+              <tr>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Key</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Section</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Description</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Content</th>
+                <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
+              </tr>
+            </thead>
+            <tbody className="divide-y">
+              {filteredContent.map((item) => (
+                <tr key={item.id} className="hover:bg-gray-50">
+                  <td className="px-4 py-3">
+                    <code className="text-xs bg-gray-100 px-2 py-1 rounded">{item.key}</code>
+                  </td>
+                  <td className="px-4 py-3">
+                    <Badge variant="outline" className="capitalize">{item.section}</Badge>
+                  </td>
+                  <td className="px-4 py-3 text-sm text-gray-600">{item.description || '-'}</td>
+                  <td className="px-4 py-3 text-sm text-gray-900 max-w-md truncate">{item.value}</td>
+                  <td className="px-4 py-3 text-right">
+                    <div className="flex gap-2 justify-end">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          setEditingItem(item);
+                          setFormData(item);
+                          setShowForm(false);
+                        }}
+                      >
+                        <Edit className="w-4 h-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Delete this content?')) deleteMutation.mutate(item.id);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      </div>
+
+      {filteredContent.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>No content found</p>
         </div>
       )}
     </div>

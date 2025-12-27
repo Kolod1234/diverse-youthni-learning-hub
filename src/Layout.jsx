@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import {
@@ -25,6 +26,16 @@ export default function Layout({ children, currentPageName }) {
   const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
   const location = useLocation();
+
+  const { data: siteContent = [] } = useQuery({
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+  });
+
+  const getContent = (key, defaultValue) => {
+    const item = siteContent.find(c => c.key === key);
+    return item?.value || defaultValue;
+  };
 
   useEffect(() => {
     const loadUser = async () => {
@@ -422,7 +433,7 @@ export default function Layout({ children, currentPageName }) {
           </div>
           
           <div className="border-t border-gray-100 mt-12 pt-8 text-center text-sm text-gray-500">
-            <p>© 2024 LearnHub. All rights reserved.</p>
+            <p>{getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}</p>
           </div>
         </div>
       </footer>
