@@ -236,6 +236,12 @@ export default function Layout({ children, currentPageName }) {
                       Programmes
                     </Link>
                   </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('ContactUs')} className="flex items-center cursor-pointer">
+                      <MessageSquare className="w-4 h-4 mr-2" />
+                      Contact Us
+                    </Link>
+                  </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {(user?.is_tutor || user?.role === 'admin') && (
                     <>
@@ -402,8 +408,7 @@ export default function Layout({ children, currentPageName }) {
             <div>
               <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><span className="text-gray-500">Help Center</span></li>
-                <li><span className="text-gray-500">Contact Us</span></li>
+                <li><Link to={createPageUrl('ContactUs')} className="text-gray-500 hover:text-[#FF8C00]">Contact Us</Link></li>
               </ul>
             </div>
             
