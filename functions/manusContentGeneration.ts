@@ -20,20 +20,23 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
     }
 
-    // Call Manus API for content generation
-    const response = await fetch('https://api.manus.app/v1/chat/completions', {
+    // Call Manus API for content generation using OpenAI-compatible endpoint
+    const response = await fetch('https://api.manus.im/v1/responses', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
+        'API_KEY': apiKey,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: 'gpt-4',
-        messages: [{
+        input: [{
           role: 'user',
-          content: prompt
+          content: [{
+            type: 'input_text',
+            text: prompt
+          }]
         }],
-        response_format: { type: 'json_object' }
+        task_mode: 'agent',
+        agent_profile: 'manus-1.6'
       })
     });
 
@@ -47,12 +50,57 @@ Deno.serve(async (req) => {
     }
 
     const result = await response.json();
-    const content = JSON.parse(result.choices[0].message.content);
     
-    return Response.json({ 
-      slides: content.slides,
-      success: true 
-    });
+    // For Manus API, we need to poll for task completion
+    let taskId = result.id;
+    let taskStatus = result.status;
+    
+    // Poll until task completes (max 60 seconds)
+    let attempts = 0;
+    const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds max
+    
+    while (taskStatus === 'running' && attempts < maxAttempts) {
+      await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
+      
+      const statusResponse = await fetch(`https://api.manus.im/v1/responses/${taskId}`, {
+        headers: { 'API_KEY': apiKey }
+      });
+      
+      const statusData = await statusResponse.json();
+      taskStatus = statusData.status;
+      attempts++;
+      
+      if (taskStatus === 'completed') {
+        // Extract content from the assistant's response
+        const assistantMessages = statusData.output.filter(msg => msg.role === 'assistant');
+        const textContent = assistantMessages
+          .flatMap(msg => msg.content)
+          .filter(c => c.text)
+          .map(c => c.text)
+          .join('\n');
+        
+        // Try to parse as JSON
+        let parsedContent;
+        try {
+          parsedContent = JSON.parse(textContent);
+        } catch {
+          // If not JSON, wrap in slides structure
+          parsedContent = { slides: [{ title: 'Content', content: textContent, order: 1 }] };
+        }
+        
+        return Response.json({ 
+          slides: parsedContent.slides || [],
+          success: true 
+        });
+      }
+    }
+    
+    if (taskStatus !== 'completed') {
+      return Response.json({ 
+        error: 'Task timed out or failed',
+        status: taskStatus 
+      }, { status: 500 });
+    }
 
   } catch (error) {
     console.error('Error generating content:', error);
