@@ -15,133 +15,148 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
-    console.log('Generate button clicked!');
     if (!topic.trim()) {
       toast.error('Please enter a topic');
       return;
     }
 
-    console.log('Starting generation for topic:', topic);
     setGenerating(true);
     try {
-      // Generate presentation structure and content using Manus AI
-      const response = await base44.functions.invoke('manusContentGeneration', {
+      // Start the task
+      const startResponse = await base44.functions.invoke('manusStartTask', {
         prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
 
-      ${details ? `Additional context: ${details}` : ''}
+    ${details ? `Additional context: ${details}` : ''}
 
-      🎨 CANVAS MODE - TEXT & VISUALS SEPARATION:
-      Create slides with SEPARATE text content and visual images:
+    🎨 CANVAS MODE - TEXT & VISUALS SEPARATION:
+    Create slides with SEPARATE text content and visual images:
 
-      **TEXT CONTENT (HTML) - Must include:**
-      1. STUNNING HEADINGS:
-      - <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
+    **TEXT CONTENT (HTML) - Must include:**
+    1. STUNNING HEADINGS:
+    - <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
 
-      2. EXPLANATORY TEXT - Write ALL information as HTML:
-      - Descriptions, definitions, explanations
-      - Step-by-step processes with numbered points
-      - Key facts and statistics
-      - Examples and case studies
-      - Use <p>, <ul>, <ol>, <h3> tags
+    2. EXPLANATORY TEXT - Write ALL information as HTML:
+    - Descriptions, definitions, explanations
+    - Step-by-step processes with numbered points
+    - Key facts and statistics
+    - Examples and case studies
+    - Use <p>, <ul>, <ol>, <h3> tags
 
-      3. STYLED CONTENT BLOCKS:
-      - Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
-      - Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">
-      - Lists with icons and styled bullets
+    3. STYLED CONTENT BLOCKS:
+    - Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
+    - Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">
+    - Lists with icons and styled bullets
 
-      4. TWO-COLUMN LAYOUTS:
-      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-      <div>[Left: explanatory text, definitions, key points]</div>
-      <div>[Right: examples, statistics, case studies - image will be inserted here]</div>
-      </div>
+    4. TWO-COLUMN LAYOUTS:
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+    <div>[Left: explanatory text, definitions, key points]</div>
+    <div>[Right: examples, statistics, case studies - image will be inserted here]</div>
+    </div>
 
-      ${includeImages ? `
-      🖼️ IMAGE REQUIREMENTS - VISUALS WITHOUT TEXT:
+    ${includeImages ? `
+    🖼️ IMAGE REQUIREMENTS - VISUALS WITHOUT TEXT:
 
-      **CRITICAL: Images must be PURE VISUALS with NO TEXT or minimal labels**
-      - Images are decorative illustrations to complement the text
-      - DO NOT put explanations or descriptions in images
-      - Use simple, clean, artistic representations
-      - Avoid text labels, lengthy annotations, or spelling errors
+    **CRITICAL: Images must be PURE VISUALS with NO TEXT or minimal labels**
+    - Images are decorative illustrations to complement the text
+    - DO NOT put explanations or descriptions in images
+    - Use simple, clean, artistic representations
+    - Avoid text labels, lengthy annotations, or spelling errors
 
-      **Image Types & Examples:**
-      - Water Cycle: "Artistic illustration of water cycle showing blue ocean, white clouds, rain droplets, green landscape, and sun - flowing circular arrows connecting stages, vibrant colors, minimalist style, no text labels"
-      - Renewable Energy: "Clean illustration showing wind turbine, solar panel, and water dam in modern flat design style with green and blue color palette, simple icons, no text"
-      - Human Heart: "Medical illustration of anatomical heart showing chambers in different shades of red and blue, simple arrows indicating blood flow, clean professional style, minimal or no labels"
-      - Photosynthesis: "Botanical illustration showing leaf, sunlight rays, water molecules, and oxygen bubbles in natural green tones, simple arrows, artistic style, no text"
+    **Image Types & Examples:**
+    - Water Cycle: "Artistic illustration of water cycle showing blue ocean, white clouds, rain droplets, green landscape, and sun - flowing circular arrows connecting stages, vibrant colors, minimalist style, no text labels"
+    - Renewable Energy: "Clean illustration showing wind turbine, solar panel, and water dam in modern flat design style with green and blue color palette, simple icons, no text"
+    - Human Heart: "Medical illustration of anatomical heart showing chambers in different shades of red and blue, simple arrows indicating blood flow, clean professional style, minimal or no labels"
+    - Photosynthesis: "Botanical illustration showing leaf, sunlight rays, water molecules, and oxygen bubbles in natural green tones, simple arrows, artistic style, no text"
 
-      **Layout:**
-      - Position: "left" (image floats left, text wraps right)
-      - Position: "right" (image floats right, text wraps left)  
-      - Position: "top" (image above text content)
-      - Position: "center" (image between content sections)
+    **Layout:**
+    - Position: "left" (image floats left, text wraps right)
+    - Position: "right" (image floats right, text wraps left)  
+    - Position: "top" (image above text content)
+    - Position: "center" (image between content sections)
 
-      Remember: Text explains, image illustrates. Keep them separate!` : ''}
+    Remember: Text explains, image illustrates. Keep them separate!` : ''}
 
-      📚 CONTENT QUALITY:
-      - Research deeply for ACCURATE, UP-TO-DATE information
-      - Verify facts, statistics, dates, names
-      - Use correct spelling and grammar
-      - Include specific examples, case studies, real data
-      - Add relevant context and explanations
-      - Make it comprehensive yet clear
+    📚 CONTENT QUALITY:
+    - Research deeply for ACCURATE, UP-TO-DATE information
+    - Verify facts, statistics, dates, names
+    - Use correct spelling and grammar
+    - Include specific examples, case studies, real data
+    - Add relevant context and explanations
+    - Make it comprehensive yet clear
 
-      Return JSON with ${slideCount} slides array, each with: title, content (HTML), order, ${includeImages ? 'image_prompt, image_position' : ''}.`,
+    Return JSON with ${slideCount} slides array, each with: title, content (HTML), order, ${includeImages ? 'image_prompt, image_position' : ''}.`,
         slideCount,
         includeImages
       });
 
-      console.log('Full response from Manus:', response);
-      const result = response.data || response;
-      console.log('Result object:', result);
-      let slides = result.slides || [];
-      console.log('Extracted slides:', slides);
+      const startResult = startResponse.data || startResponse;
+      const taskId = startResult.taskId;
 
-      if (!slides || slides.length === 0) {
-        toast.error('No slides generated. Please try again.');
+      if (!taskId) {
+        toast.error('Failed to start generation task');
         return;
       }
 
-      // If images are included, integrate them into content
-      if (includeImages && slides.length > 0) {
-        slides = slides.map(slide => {
-          if (slide.image_url) {
-            const position = slide.image_position?.toLowerCase() || 'top';
-            let contentWithImage = slide.content;
+      toast.success('Generation started! This may take a few minutes...');
 
-            if (position === 'top' || position === 'center') {
-              contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
-                <img src="${slide.image_url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-              </div>${slide.content}`;
-            } else if (position === 'right') {
-              contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
-                <div style="flex: 1;">${slide.content}</div>
-                <div style="flex: 0 0 40%;">
-                  <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                </div>
-              </div>`;
-            } else if (position === 'left') {
-              contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
-                <div style="flex: 0 0 40%;">
-                  <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                </div>
-                <div style="flex: 1;">${slide.content}</div>
-              </div>`;
-            }
+      // Poll for completion
+      let attempts = 0;
+      const maxAttempts = 150; // 150 * 4 seconds = 10 minutes max
 
-            return {
-              ...slide,
-              content: contentWithImage
-            };
+      while (attempts < maxAttempts) {
+        await new Promise(resolve => setTimeout(resolve, 4000)); // Wait 4 seconds between polls
+
+        const statusResponse = await base44.functions.invoke('manusCheckStatus', { taskId });
+        const statusResult = statusResponse.data || statusResponse;
+
+        if (statusResult.status === 'completed' && statusResult.slides) {
+          let slides = statusResult.slides;
+
+          // If images are included, integrate them into content
+          if (includeImages && slides.length > 0) {
+            slides = slides.map(slide => {
+              if (slide.image_url) {
+                const position = slide.image_position?.toLowerCase() || 'top';
+                let contentWithImage = slide.content;
+
+                if (position === 'top' || position === 'center') {
+                  contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
+                    <img src="${slide.image_url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                  </div>${slide.content}`;
+                } else if (position === 'right') {
+                  contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="flex: 1;">${slide.content}</div>
+                    <div style="flex: 0 0 40%;">
+                      <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                    </div>
+                  </div>`;
+                } else if (position === 'left') {
+                  contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                    <div style="flex: 0 0 40%;">
+                      <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                    </div>
+                    <div style="flex: 1;">${slide.content}</div>
+                  </div>`;
+                }
+
+                return {
+                  ...slide,
+                  content: contentWithImage
+                };
+              }
+              return slide;
+            });
           }
-          return slide;
-        });
+
+          onSlidesGenerated(slides);
+          toast.success(`AI presentation generated${includeImages ? ' with images' : ''}!`);
+          return;
+        }
+
+        attempts++;
       }
 
-      console.log('Final slides to send:', slides);
-      console.log('Calling onSlidesGenerated with slides');
-      onSlidesGenerated(slides);
-      toast.success(`AI presentation generated${includeImages ? ' with images' : ''}!`);
+      toast.error('Generation timed out. Please try again.');
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
