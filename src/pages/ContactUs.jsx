@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
@@ -18,6 +19,22 @@ export default function ContactUs() {
   const [submitted, setSubmitted] = useState(false);
   const [sending, setSending] = useState(false);
 
+  const { data: contactInfoList = [] } = useQuery({
+    queryKey: ['contact-info'],
+    queryFn: () => base44.entities.ContactInfo.list('-created_date', 1),
+  });
+
+  const contactInfo = contactInfoList[0] || {
+    email: 'info@diverseyouthni.com',
+    phone: '+44 28 9012 3456',
+    location: 'Belfast, Northern Ireland',
+    office_hours: [
+      { day: 'Monday - Friday', hours: '9:00 AM - 5:00 PM' },
+      { day: 'Saturday', hours: '10:00 AM - 2:00 PM' },
+      { day: 'Sunday', hours: 'Closed' }
+    ]
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -29,7 +46,7 @@ export default function ContactUs() {
     setSending(true);
     try {
       await base44.integrations.Core.SendEmail({
-        to: 'admin@diverseyouthni.com',
+        to: contactInfo.email,
         subject: `Contact Form: ${formData.subject || 'No Subject'}`,
         body: `
 Name: ${formData.name}
@@ -175,8 +192,8 @@ ${formData.message}
                   </div>
                   <div>
                     <p className="font-medium mb-1">Email</p>
-                    <a href="mailto:info@diverseyouthni.com" className="text-indigo-200 hover:text-white transition-colors">
-                      info@diverseyouthni.com
+                    <a href={`mailto:${contactInfo.email}`} className="text-indigo-200 hover:text-white transition-colors">
+                      {contactInfo.email}
                     </a>
                   </div>
                 </div>
@@ -187,8 +204,8 @@ ${formData.message}
                   </div>
                   <div>
                     <p className="font-medium mb-1">Phone</p>
-                    <a href="tel:+442890123456" className="text-indigo-200 hover:text-white transition-colors">
-                      +44 28 9012 3456
+                    <a href={`tel:${contactInfo.phone.replace(/\s/g, '')}`} className="text-indigo-200 hover:text-white transition-colors">
+                      {contactInfo.phone}
                     </a>
                   </div>
                 </div>
@@ -200,7 +217,7 @@ ${formData.message}
                   <div>
                     <p className="font-medium mb-1">Location</p>
                     <p className="text-indigo-200">
-                      Belfast, Northern Ireland
+                      {contactInfo.location}
                     </p>
                   </div>
                 </div>
@@ -210,18 +227,12 @@ ${formData.message}
             <Card className="p-6 border-0 shadow-lg">
               <h3 className="font-semibold text-gray-900 mb-4">Office Hours</h3>
               <div className="space-y-2 text-sm text-gray-600">
-                <div className="flex justify-between">
-                  <span>Monday - Friday</span>
-                  <span className="font-medium text-gray-900">9:00 AM - 5:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Saturday</span>
-                  <span className="font-medium text-gray-900">10:00 AM - 2:00 PM</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Sunday</span>
-                  <span className="font-medium text-gray-900">Closed</span>
-                </div>
+                {contactInfo.office_hours.map((item, index) => (
+                  <div key={index} className="flex justify-between">
+                    <span>{item.day}</span>
+                    <span className="font-medium text-gray-900">{item.hours}</span>
+                  </div>
+                ))}
               </div>
             </Card>
           </motion.div>

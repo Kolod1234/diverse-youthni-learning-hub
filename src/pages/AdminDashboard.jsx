@@ -88,6 +88,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.Attendance.list('-date', 1000),
   });
 
+  const { data: contactInfo = [] } = useQuery({
+    queryKey: ['contact-info'],
+    queryFn: () => base44.entities.ContactInfo.list('-created_date', 1),
+  });
+
   if (!user || user.role !== 'admin') {
     return null;
   }
@@ -215,6 +220,10 @@ export default function AdminDashboard() {
               <UserCheck className="w-4 h-4 mr-2" />
               Attendance
             </TabsTrigger>
+            <TabsTrigger value="contact" className="rounded-lg">
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Contact Info
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -283,6 +292,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="attendance">
             <AttendanceManagement attendanceRecords={attendanceRecords} users={allUsers} />
+          </TabsContent>
+
+          <TabsContent value="contact">
+            <ContactInfoManagement contactInfo={contactInfo[0]} />
           </TabsContent>
         </Tabs>
       </div>
@@ -2040,6 +2053,133 @@ function AttendanceManagement({ attendanceRecords, users }) {
         </div>
       )}
     </div>
+  );
+}
+
+function ContactInfoManagement({ contactInfo }) {
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    email: contactInfo?.email || 'info@diverseyouthni.com',
+    phone: contactInfo?.phone || '+44 28 9012 3456',
+    location: contactInfo?.location || 'Belfast, Northern Ireland',
+    office_hours: contactInfo?.office_hours || [
+      { day: 'Monday - Friday', hours: '9:00 AM - 5:00 PM' },
+      { day: 'Saturday', hours: '10:00 AM - 2:00 PM' },
+      { day: 'Sunday', hours: 'Closed' }
+    ]
+  });
+
+  const saveMutation = useMutation({
+    mutationFn: (data) => {
+      if (contactInfo?.id) {
+        return base44.entities.ContactInfo.update(contactInfo.id, data);
+      } else {
+        return base44.entities.ContactInfo.create(data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['contact-info']);
+      toast.success('Contact info updated!');
+    },
+  });
+
+  const handleSubmit = () => {
+    saveMutation.mutate(formData);
+  };
+
+  const updateOfficeHour = (index, field, value) => {
+    const updated = [...formData.office_hours];
+    updated[index][field] = value;
+    setFormData({ ...formData, office_hours: updated });
+  };
+
+  const addOfficeHour = () => {
+    setFormData({
+      ...formData,
+      office_hours: [...formData.office_hours, { day: '', hours: '' }]
+    });
+  };
+
+  const removeOfficeHour = (index) => {
+    const updated = formData.office_hours.filter((_, i) => i !== index);
+    setFormData({ ...formData, office_hours: updated });
+  };
+
+  return (
+    <Card className="p-6">
+      <h2 className="text-xl font-semibold mb-6">Contact Information</h2>
+      <p className="text-gray-500 mb-6">Manage the contact details shown on the Contact Us page</p>
+      
+      <div className="space-y-6 max-w-2xl">
+        <div>
+          <Label>Email Address</Label>
+          <Input
+            type="email"
+            value={formData.email}
+            onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+            placeholder="info@example.com"
+          />
+        </div>
+
+        <div>
+          <Label>Phone Number</Label>
+          <Input
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            placeholder="+44 28 9012 3456"
+          />
+        </div>
+
+        <div>
+          <Label>Location</Label>
+          <Input
+            value={formData.location}
+            onChange={(e) => setFormData({ ...formData, location: e.target.value })}
+            placeholder="Belfast, Northern Ireland"
+          />
+        </div>
+
+        <div>
+          <div className="flex items-center justify-between mb-3">
+            <Label>Office Hours</Label>
+            <Button type="button" variant="outline" size="sm" onClick={addOfficeHour}>
+              <Plus className="w-4 h-4 mr-2" />
+              Add
+            </Button>
+          </div>
+          <div className="space-y-3">
+            {formData.office_hours.map((item, index) => (
+              <div key={index} className="flex gap-3">
+                <Input
+                  value={item.day}
+                  onChange={(e) => updateOfficeHour(index, 'day', e.target.value)}
+                  placeholder="Monday - Friday"
+                  className="flex-1"
+                />
+                <Input
+                  value={item.hours}
+                  onChange={(e) => updateOfficeHour(index, 'hours', e.target.value)}
+                  placeholder="9:00 AM - 5:00 PM"
+                  className="flex-1"
+                />
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="icon"
+                  onClick={() => removeOfficeHour(index)}
+                >
+                  <Trash2 className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+          </div>
+        </div>
+
+        <Button onClick={handleSubmit} disabled={saveMutation.isPending}>
+          {saveMutation.isPending ? 'Saving...' : 'Save Contact Info'}
+        </Button>
+      </div>
+    </Card>
   );
 }
 
