@@ -23,7 +23,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
     setGenerating(true);
     try {
       // Generate presentation structure and content using Manus AI
-      const result = await base44.functions.invoke('manusContentGeneration', {
+      const response = await base44.functions.invoke('manusContentGeneration', {
         prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
 
       ${details ? `Additional context: ${details}` : ''}
@@ -89,8 +89,10 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         includeImages
       });
 
-      console.log('Manus API result:', result);
-      let slides = result.data?.slides || result.slides || [];
+      console.log('Full response from Manus:', response);
+      const result = response.data || response;
+      console.log('Result object:', result);
+      let slides = result.slides || [];
       console.log('Extracted slides:', slides);
 
       if (!slides || slides.length === 0) {
