@@ -115,23 +115,9 @@ Return ${slideCount} slides with attention-grabbing titles, modern HTML layouts$
         const imagePromises = slides.map(async (slide, index) => {
           if (slide.image_prompt && slide.image_prompt.trim()) {
             try {
-              // Generate high-quality educational image with enhanced prompting
-              const imageResult = await base44.integrations.Core.GenerateImage({
-                prompt: `Professional educational illustration for presentation slide titled "${slide.title}". 
-Topic: ${topic}
-Visual description: ${slide.image_prompt}
-
-Style requirements:
-- Clean, modern, educational design
-- High contrast and clear visual hierarchy  
-- Suitable for learning and teaching
-- Professional color palette
-- Clear labels and text if applicable
-- Infographic or diagram style when appropriate
-- No watermarks or text overlays
-- High quality and visually engaging
-
-Focus: Create a clear, informative visual that enhances understanding and learning.`
+              // Generate high-quality educational image using Puter SDXL
+              const imageResult = await base44.functions.invoke('puterImageGeneration', {
+                prompt: `Professional educational illustration: ${slide.image_prompt}. Clean, modern design, high quality, educational style, suitable for "${slide.title}" slide about ${topic}.`
               });
               
               // Integrate image into content based on position
