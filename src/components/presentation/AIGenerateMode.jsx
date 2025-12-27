@@ -89,7 +89,14 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         includeImages
       });
 
-      let slides = result.slides || [];
+      console.log('Manus API result:', result);
+      let slides = result.data?.slides || result.slides || [];
+      console.log('Extracted slides:', slides);
+
+      if (!slides || slides.length === 0) {
+        toast.error('No slides generated. Please try again.');
+        return;
+      }
 
       // If images are requested, generate them for slides that need them
       if (includeImages && slides.length > 0) {
@@ -144,6 +151,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         slides = await Promise.all(imagePromises);
       }
 
+      console.log('Final slides to send:', slides);
       onSlidesGenerated(slides);
       toast.success(`AI presentation generated${includeImages ? ' with images' : ''}!`);
     } catch (error) {
