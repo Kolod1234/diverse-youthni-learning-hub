@@ -15,11 +15,13 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
+    console.log('Generate button clicked!');
     if (!topic.trim()) {
       toast.error('Please enter a topic');
       return;
     }
 
+    console.log('Starting generation for topic:', topic);
     setGenerating(true);
     try {
       // Generate presentation structure and content using Manus AI
@@ -154,10 +156,12 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       }
 
       console.log('Final slides to send:', slides);
+      console.log('Calling onSlidesGenerated with slides');
       onSlidesGenerated(slides);
       toast.success(`AI presentation generated${includeImages ? ' with images' : ''}!`);
     } catch (error) {
-      toast.error('Failed to generate presentation');
+      console.error('Error generating presentation:', error);
+      toast.error('Failed to generate presentation: ' + error.message);
     } finally {
       setGenerating(false);
     }
