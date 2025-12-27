@@ -23,20 +23,25 @@ Deno.serve(async (req) => {
     // Call Manus API for content generation using OpenAI-compatible endpoint
     const enhancedPrompt = `${prompt}
 
-CRITICAL: You MUST respond with ONLY valid JSON in this EXACT format, no other text:
-{
-  "slides": [
+    ${includeImages ? `
+    IMPORTANT: Generate actual images for the slides using your image generation capabilities.
+    For each slide that needs an image, generate the image and provide the image URL in the response.
+    ` : ''}
+
+    CRITICAL: You MUST respond with ONLY valid JSON in this EXACT format, no other text:
+    {
+    "slides": [
     {
       "title": "Slide Title Here",
       "content": "<h2>HTML content here</h2><p>More content...</p>",
       "order": 1,
-      "image_prompt": "description for image generation",
+      ${includeImages ? '"image_url": "generated image URL or data URI",' : ''}
       "image_position": "top"
     }
-  ]
-}
+    ]
+    }
 
-Do NOT include any explanatory text before or after the JSON. ONLY output the JSON object.`;
+    Do NOT include any explanatory text before or after the JSON. ONLY output the JSON object.`;
 
     const response = await fetch('https://api.manus.im/v1/responses', {
       method: 'POST',

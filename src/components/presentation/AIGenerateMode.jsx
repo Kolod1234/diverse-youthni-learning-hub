@@ -102,57 +102,40 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         return;
       }
 
-      // If images are requested, generate them for slides that need them
+      // If images are included, integrate them into content
       if (includeImages && slides.length > 0) {
-        toast.info(`Generating ${slides.length} educational images...`);
-        
-        const imagePromises = slides.map(async (slide, index) => {
-          if (slide.image_prompt && slide.image_prompt.trim()) {
-            try {
-              // Generate high-quality educational image using Puter SDXL
-              const imageResult = await base44.functions.invoke('puterImageGeneration', {
-                prompt: `Professional educational illustration: ${slide.image_prompt}. Clean, modern design, high quality, educational style, suitable for "${slide.title}" slide about ${topic}.`
-              });
-              
-              // Integrate image into content based on position
-              const position = slide.image_position?.toLowerCase() || 'top';
-              let contentWithImage = slide.content;
-              
-              if (position === 'top' || position === 'center') {
-                contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
-                  <img src="${imageResult.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                </div>${slide.content}`;
-              } else if (position === 'right') {
-                contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
-                  <div style="flex: 1;">${slide.content}</div>
-                  <div style="flex: 0 0 40%;">
-                    <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                  </div>
-                </div>`;
-              } else if (position === 'left') {
-                contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
-                  <div style="flex: 0 0 40%;">
-                    <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                  </div>
-                  <div style="flex: 1;">${slide.content}</div>
-                </div>`;
-              }
-              
-              return {
-                ...slide,
-                content: contentWithImage,
-                image_url: imageResult.url
-              };
-            } catch (error) {
-              console.error(`Failed to generate image for slide ${index + 1}:`, error);
-              toast.error(`Could not generate image for slide ${index + 1}`);
-              return slide;
+        slides = slides.map(slide => {
+          if (slide.image_url) {
+            const position = slide.image_position?.toLowerCase() || 'top';
+            let contentWithImage = slide.content;
+
+            if (position === 'top' || position === 'center') {
+              contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
+                <img src="${slide.image_url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+              </div>${slide.content}`;
+            } else if (position === 'right') {
+              contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="flex: 1;">${slide.content}</div>
+                <div style="flex: 0 0 40%;">
+                  <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                </div>
+              </div>`;
+            } else if (position === 'left') {
+              contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                <div style="flex: 0 0 40%;">
+                  <img src="${slide.image_url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                </div>
+                <div style="flex: 1;">${slide.content}</div>
+              </div>`;
             }
+
+            return {
+              ...slide,
+              content: contentWithImage
+            };
           }
           return slide;
         });
-
-        slides = await Promise.all(imagePromises);
       }
 
       console.log('Final slides to send:', slides);
