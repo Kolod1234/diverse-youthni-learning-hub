@@ -28,50 +28,53 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
 ${details ? `Additional context: ${details}` : ''}
 
-🎨 MODERN SLIDE DESIGN REQUIREMENTS:
-Create BEAUTIFUL, MAGAZINE-QUALITY slides with:
+🎨 CANVAS MODE - TEXT & VISUALS SEPARATION:
+Create slides with SEPARATE text content and visual images:
 
+**TEXT CONTENT (HTML) - Must include:**
 1. STUNNING HEADINGS:
-   - Large, bold, gradient headings: <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
-   - Use different gradient combinations per slide: purple-blue, orange-pink, green-teal, red-orange
+   - <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
 
-2. TWO-COLUMN LAYOUTS (use frequently):
-   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
-     <div>[Left column content with heading, text, lists]</div>
-     <div>[Right column with contrasting info, examples, or will contain image]</div>
+2. EXPLANATORY TEXT - Write ALL information as HTML:
+   - Descriptions, definitions, explanations
+   - Step-by-step processes with numbered points
+   - Key facts and statistics
+   - Examples and case studies
+   - Use <p>, <ul>, <ol>, <h3> tags
+
+3. STYLED CONTENT BLOCKS:
+   - Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
+   - Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">
+   - Lists with icons and styled bullets
+
+4. TWO-COLUMN LAYOUTS:
+   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+     <div>[Left: explanatory text, definitions, key points]</div>
+     <div>[Right: examples, statistics, case studies - image will be inserted here]</div>
    </div>
 
-3. MODERN STYLED BOXES & CARDS:
-   - Key concepts: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
-   - Info cards: <div style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
-   - Highlight boxes: <div style="background: linear-gradient(to right, #fef3c7, #fde68a); border-left: 6px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 16px 0;">
-
-4. VISUAL ELEMENTS:
-   - Numbered circles: <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 50%; font-weight: 700; font-size: 20px; margin-right: 16px;">1</div>
-   - Icon-style badges: <span style="background: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; display: inline-block; margin: 4px;">
-   - Progress bars, arrows, dividers
-
-5. RICH TYPOGRAPHY:
-   - Subheadings: <h3 style="color: #1e293b; font-size: 24px; font-weight: 700; margin-top: 24px; margin-bottom: 12px;">
-   - Body text: <p style="color: #475569; font-size: 16px; line-height: 1.8; margin-bottom: 16px;">
-   - Highlighted terms: <span style="background: linear-gradient(120deg, #fbbf24 0%, #f59e0b 100%); padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #78350f;">
-   - Lists with custom bullets and spacing
-
-6. STATISTICS & DATA:
-   - Large numbers: <div style="font-size: 56px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">85%</div>
-   - Stat cards in grid layout
-
 ${includeImages ? `
-🖼️ IMAGE GENERATION - MANDATORY FOR EVERY SLIDE:
-Generate a SPECIFIC, DETAILED image for each slide:
-- Types: Diagrams, infographics, charts, illustrations, concept maps, timelines, process flows
-- Be EXTREMELY SPECIFIC: colors, elements, labels, arrows, layout, style
-- Examples:
-  * "Modern infographic showing 5 steps of photosynthesis: sunlight (yellow rays), chlorophyll (green molecules), water (blue drops), glucose (orange hexagon), oxygen (gray bubbles). Flowing circular arrows connecting each step. Vibrant colors, clean design, labeled."
-  * "Split-screen comparison: left side renewable energy (wind turbine icon, solar panel icon, water dam icon) in green/blue tones with upward arrows, right side fossil fuels (oil barrel, coal, gas flame) in gray/black with downward arrows. Percentage bars below each."
-  * "Anatomical diagram of human heart with 4 chambers clearly labeled in different colors: right atrium (light blue), right ventricle (dark blue), left atrium (light red), left ventricle (dark red). Blood flow arrows, valves marked."
-  
-Position: top, center, right, left (specify for layout)` : ''}
+🖼️ IMAGE REQUIREMENTS - VISUALS WITHOUT TEXT:
+
+**CRITICAL: Images must be PURE VISUALS with NO TEXT or minimal labels**
+- Images are decorative illustrations to complement the text
+- DO NOT put explanations or descriptions in images
+- Use simple, clean, artistic representations
+- Avoid text labels, lengthy annotations, or spelling errors
+
+**Image Types & Examples:**
+- Water Cycle: "Artistic illustration of water cycle showing blue ocean, white clouds, rain droplets, green landscape, and sun - flowing circular arrows connecting stages, vibrant colors, minimalist style, no text labels"
+- Renewable Energy: "Clean illustration showing wind turbine, solar panel, and water dam in modern flat design style with green and blue color palette, simple icons, no text"
+- Human Heart: "Medical illustration of anatomical heart showing chambers in different shades of red and blue, simple arrows indicating blood flow, clean professional style, minimal or no labels"
+- Photosynthesis: "Botanical illustration showing leaf, sunlight rays, water molecules, and oxygen bubbles in natural green tones, simple arrows, artistic style, no text"
+
+**Layout:**
+- Position: "left" (image floats left, text wraps right)
+- Position: "right" (image floats right, text wraps left)  
+- Position: "top" (image above text content)
+- Position: "center" (image between content sections)
+
+Remember: Text explains, image illustrates. Keep them separate!` : ''}
 
 📚 CONTENT QUALITY:
 - Research deeply using internet context for ACCURATE, UP-TO-DATE information
