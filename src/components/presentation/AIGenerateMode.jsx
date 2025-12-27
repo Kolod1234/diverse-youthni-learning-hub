@@ -22,88 +22,71 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
     setGenerating(true);
     try {
-      // First, generate the presentation structure and content
-      const result = await base44.integrations.Core.InvokeLLM({
+      // Generate presentation structure and content using Manus AI
+      const result = await base44.functions.invoke('manusContentGeneration', {
         prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
 
-${details ? `Additional context: ${details}` : ''}
+      ${details ? `Additional context: ${details}` : ''}
 
-🎨 CANVAS MODE - TEXT & VISUALS SEPARATION:
-Create slides with SEPARATE text content and visual images:
+      🎨 CANVAS MODE - TEXT & VISUALS SEPARATION:
+      Create slides with SEPARATE text content and visual images:
 
-**TEXT CONTENT (HTML) - Must include:**
-1. STUNNING HEADINGS:
-   - <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
+      **TEXT CONTENT (HTML) - Must include:**
+      1. STUNNING HEADINGS:
+      - <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
 
-2. EXPLANATORY TEXT - Write ALL information as HTML:
-   - Descriptions, definitions, explanations
-   - Step-by-step processes with numbered points
-   - Key facts and statistics
-   - Examples and case studies
-   - Use <p>, <ul>, <ol>, <h3> tags
+      2. EXPLANATORY TEXT - Write ALL information as HTML:
+      - Descriptions, definitions, explanations
+      - Step-by-step processes with numbered points
+      - Key facts and statistics
+      - Examples and case studies
+      - Use <p>, <ul>, <ol>, <h3> tags
 
-3. STYLED CONTENT BLOCKS:
-   - Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
-   - Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">
-   - Lists with icons and styled bullets
+      3. STYLED CONTENT BLOCKS:
+      - Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
+      - Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">
+      - Lists with icons and styled bullets
 
-4. TWO-COLUMN LAYOUTS:
-   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-     <div>[Left: explanatory text, definitions, key points]</div>
-     <div>[Right: examples, statistics, case studies - image will be inserted here]</div>
-   </div>
+      4. TWO-COLUMN LAYOUTS:
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
+      <div>[Left: explanatory text, definitions, key points]</div>
+      <div>[Right: examples, statistics, case studies - image will be inserted here]</div>
+      </div>
 
-${includeImages ? `
-🖼️ IMAGE REQUIREMENTS - VISUALS WITHOUT TEXT:
+      ${includeImages ? `
+      🖼️ IMAGE REQUIREMENTS - VISUALS WITHOUT TEXT:
 
-**CRITICAL: Images must be PURE VISUALS with NO TEXT or minimal labels**
-- Images are decorative illustrations to complement the text
-- DO NOT put explanations or descriptions in images
-- Use simple, clean, artistic representations
-- Avoid text labels, lengthy annotations, or spelling errors
+      **CRITICAL: Images must be PURE VISUALS with NO TEXT or minimal labels**
+      - Images are decorative illustrations to complement the text
+      - DO NOT put explanations or descriptions in images
+      - Use simple, clean, artistic representations
+      - Avoid text labels, lengthy annotations, or spelling errors
 
-**Image Types & Examples:**
-- Water Cycle: "Artistic illustration of water cycle showing blue ocean, white clouds, rain droplets, green landscape, and sun - flowing circular arrows connecting stages, vibrant colors, minimalist style, no text labels"
-- Renewable Energy: "Clean illustration showing wind turbine, solar panel, and water dam in modern flat design style with green and blue color palette, simple icons, no text"
-- Human Heart: "Medical illustration of anatomical heart showing chambers in different shades of red and blue, simple arrows indicating blood flow, clean professional style, minimal or no labels"
-- Photosynthesis: "Botanical illustration showing leaf, sunlight rays, water molecules, and oxygen bubbles in natural green tones, simple arrows, artistic style, no text"
+      **Image Types & Examples:**
+      - Water Cycle: "Artistic illustration of water cycle showing blue ocean, white clouds, rain droplets, green landscape, and sun - flowing circular arrows connecting stages, vibrant colors, minimalist style, no text labels"
+      - Renewable Energy: "Clean illustration showing wind turbine, solar panel, and water dam in modern flat design style with green and blue color palette, simple icons, no text"
+      - Human Heart: "Medical illustration of anatomical heart showing chambers in different shades of red and blue, simple arrows indicating blood flow, clean professional style, minimal or no labels"
+      - Photosynthesis: "Botanical illustration showing leaf, sunlight rays, water molecules, and oxygen bubbles in natural green tones, simple arrows, artistic style, no text"
 
-**Layout:**
-- Position: "left" (image floats left, text wraps right)
-- Position: "right" (image floats right, text wraps left)  
-- Position: "top" (image above text content)
-- Position: "center" (image between content sections)
+      **Layout:**
+      - Position: "left" (image floats left, text wraps right)
+      - Position: "right" (image floats right, text wraps left)  
+      - Position: "top" (image above text content)
+      - Position: "center" (image between content sections)
 
-Remember: Text explains, image illustrates. Keep them separate!` : ''}
+      Remember: Text explains, image illustrates. Keep them separate!` : ''}
 
-📚 CONTENT QUALITY:
-- Research deeply using internet context for ACCURATE, UP-TO-DATE information
-- Verify facts, statistics, dates, names
-- Use correct spelling and grammar
-- Include specific examples, case studies, real data
-- Add relevant context and explanations
-- Make it comprehensive yet clear
+      📚 CONTENT QUALITY:
+      - Research deeply for ACCURATE, UP-TO-DATE information
+      - Verify facts, statistics, dates, names
+      - Use correct spelling and grammar
+      - Include specific examples, case studies, real data
+      - Add relevant context and explanations
+      - Make it comprehensive yet clear
 
-Return ${slideCount} slides with attention-grabbing titles, modern HTML layouts${includeImages ? ', and specific image prompts for each slide' : ''}.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            slides: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  title: { type: 'string' },
-                  content: { type: 'string' },
-                  order: { type: 'number' },
-                  image_prompt: { type: 'string' },
-                  image_position: { type: 'string' }
-                }
-              }
-            }
-          }
-        }
+      Return JSON with ${slideCount} slides array, each with: title, content (HTML), order, ${includeImages ? 'image_prompt, image_position' : ''}.`,
+        slideCount,
+        includeImages
       });
 
       let slides = result.slides || [];
