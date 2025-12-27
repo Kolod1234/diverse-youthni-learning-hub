@@ -77,9 +77,9 @@ Deno.serve(async (req) => {
     let taskId = result.id;
     let taskStatus = result.status;
     
-    // Poll until task completes (max 5 minutes)
+    // Poll until task completes (max 30 minutes)
     let attempts = 0;
-    const maxAttempts = 150; // 150 attempts * 2 seconds = 300 seconds (5 minutes)
+    const maxAttempts = 900; // 900 attempts * 2 seconds = 1800 seconds (30 minutes)
 
     while (taskStatus === 'running' && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
