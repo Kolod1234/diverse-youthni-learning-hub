@@ -97,10 +97,8 @@ Return ${slideCount} slides with attention-grabbing titles, modern HTML layouts$
                   title: { type: 'string' },
                   content: { type: 'string' },
                   order: { type: 'number' },
-                  ...(includeImages && {
-                    image_prompt: { type: 'string' },
-                    image_position: { type: 'string' }
-                  })
+                  image_prompt: { type: 'string' },
+                  image_position: { type: 'string' }
                 }
               }
             }
