@@ -34,9 +34,12 @@ Requirements:
 - Include examples, definitions, and key concepts
 - Engaging and visually appealing
 - Appropriate for students/learners
-${includeImages ? `- For each slide, specify if it needs an image/diagram/graph and provide a detailed description for generating it` : ''}
+${includeImages ? `- For EVERY slide, provide a detailed, specific image prompt that describes an educational illustration, diagram, chart, or visual that would enhance learning
+- Image prompts should be very specific: describe colors, composition, style, and educational value
+- Examples: "A labeled diagram showing the water cycle with evaporation, condensation, precipitation, and collection stages in bright colors", "An infographic-style chart comparing renewable vs non-renewable energy sources with icons and percentages", "An illustrated timeline of World War II major events with dates and locations"
+- Specify whether the image should be placed at the top, right, left, or integrated into the content` : ''}
 
-Return ${slideCount} slides with title, rich HTML content${includeImages ? ', and image descriptions where appropriate' : ''}.`,
+Return ${slideCount} slides with title, rich HTML content${includeImages ? ', detailed image prompt for each slide, and preferred image position (top/right/left/center)' : ''}.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: 'object',
@@ -64,24 +67,62 @@ Return ${slideCount} slides with title, rich HTML content${includeImages ? ', an
 
       // If images are requested, generate them for slides that need them
       if (includeImages && slides.length > 0) {
-        toast.info('Generating educational images...');
+        toast.info(`Generating ${slides.length} educational images...`);
         
         const imagePromises = slides.map(async (slide, index) => {
           if (slide.image_prompt && slide.image_prompt.trim()) {
             try {
-              // Generate educational image
+              // Generate high-quality educational image with enhanced prompting
               const imageResult = await base44.integrations.Core.GenerateImage({
-                prompt: `Educational illustration for a presentation slide about "${topic}". ${slide.image_prompt}. 
-Style: Clean, professional, educational, suitable for learning materials. 
-Focus: Clear visuals that support learning and understanding.`
+                prompt: `Professional educational illustration for presentation slide titled "${slide.title}". 
+Topic: ${topic}
+Visual description: ${slide.image_prompt}
+
+Style requirements:
+- Clean, modern, educational design
+- High contrast and clear visual hierarchy  
+- Suitable for learning and teaching
+- Professional color palette
+- Clear labels and text if applicable
+- Infographic or diagram style when appropriate
+- No watermarks or text overlays
+- High quality and visually engaging
+
+Focus: Create a clear, informative visual that enhances understanding and learning.`
               });
+              
+              // Integrate image into content based on position
+              const position = slide.image_position?.toLowerCase() || 'top';
+              let contentWithImage = slide.content;
+              
+              if (position === 'top' || position === 'center') {
+                contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
+                  <img src="${imageResult.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                </div>${slide.content}`;
+              } else if (position === 'right') {
+                contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                  <div style="flex: 1;">${slide.content}</div>
+                  <div style="flex: 0 0 40%;">
+                    <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                  </div>
+                </div>`;
+              } else if (position === 'left') {
+                contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                  <div style="flex: 0 0 40%;">
+                    <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                  </div>
+                  <div style="flex: 1;">${slide.content}</div>
+                </div>`;
+              }
               
               return {
                 ...slide,
+                content: contentWithImage,
                 image_url: imageResult.url
               };
             } catch (error) {
-              console.error(`Failed to generate image for slide ${index + 1}`);
+              console.error(`Failed to generate image for slide ${index + 1}:`, error);
+              toast.error(`Could not generate image for slide ${index + 1}`);
               return slide;
             }
           }
