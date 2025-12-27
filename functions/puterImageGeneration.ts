@@ -15,45 +15,52 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = Deno.env.get('MANUS_API_KEY');
+    const apiKey = Deno.env.get('STABILITY_API_KEY');
     if (!apiKey) {
-      return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
+      return Response.json({ error: 'STABILITY_API_KEY not configured' }, { status: 500 });
     }
 
-    // Call Puter's text-to-image API
-    const response = await fetch('https://api.puter.com/drivers/call', {
+    // Enhance prompt with educational and inclusive values
+    const enhancedPrompt = `${prompt}, diverse representation, respectful, community-focused, educational, professional`;
+
+    // Call Stability AI's SDXL API
+    const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        interface: 'puter-image-generation',
-        driver: 'stability-ai',
-        method: 'generate',
-        args: {
-          prompt: prompt,
-          model: 'stabilityai/stable-diffusion-xl-base-1.0'
-        }
+        text_prompts: [{ text: enhancedPrompt }],
+        cfg_scale: 7,
+        height: 1024,
+        width: 1024,
+        steps: 30,
+        samples: 1
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Puter API error:', errorText);
+      console.error('Stability AI error:', errorText);
       return Response.json({ 
-        error: 'Failed to generate image with Puter API',
+        error: 'Failed to generate image with Stability AI',
         details: errorText 
       }, { status: response.status });
     }
 
     const result = await response.json();
     
-    // Puter returns the image as base64 or URL
-    return Response.json({ 
-      url: result.image_url || result.url || `data:image/png;base64,${result.image}`,
-      success: true 
-    });
+    // Stability AI returns base64 encoded images
+    if (result.artifacts && result.artifacts.length > 0) {
+      const base64Image = result.artifacts[0].base64;
+      return Response.json({ 
+        url: `data:image/png;base64,${base64Image}`,
+        success: true 
+      });
+    }
+
+    return Response.json({ error: 'No image generated' }, { status: 500 });
 
   } catch (error) {
     console.error('Error generating image:', error);
