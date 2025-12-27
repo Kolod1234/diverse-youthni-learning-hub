@@ -30,6 +30,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import LessonPlayerClassic from './pages/LessonPlayerClassic';
+import ContactUs from './pages/ContactUs';
 import __Layout from './Layout.jsx';
 
 
@@ -66,6 +67,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
     "LessonPlayerClassic": LessonPlayerClassic,
+    "ContactUs": ContactUs,
 }
 
 export const pagesConfig = {
