@@ -72,10 +72,10 @@ Do NOT include any explanatory text before or after the JSON. ONLY output the JS
     let taskId = result.id;
     let taskStatus = result.status;
     
-    // Poll until task completes (max 60 seconds)
+    // Poll until task completes (max 120 seconds)
     let attempts = 0;
-    const maxAttempts = 30; // 30 attempts * 2 seconds = 60 seconds max
-    
+    const maxAttempts = 60; // 60 attempts * 2 seconds = 120 seconds max
+
     while (taskStatus === 'running' && attempts < maxAttempts) {
       await new Promise(resolve => setTimeout(resolve, 2000)); // Wait 2 seconds
       
