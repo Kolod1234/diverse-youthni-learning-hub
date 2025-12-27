@@ -101,7 +101,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       // Poll for completion
       let attempts = 0;
-      const maxAttempts = 150; // 150 * 4 seconds = 10 minutes max
+      const maxAttempts = 75; // 75 * 4 seconds = 5 minutes max
 
       while (attempts < maxAttempts) {
         await new Promise(resolve => setTimeout(resolve, 4000)); // Wait 4 seconds between polls
