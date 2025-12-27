@@ -24,34 +24,64 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
     try {
       // First, generate the presentation structure and content
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a comprehensive ${slideCount}-slide presentation about: "${topic}"
+        prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
 
 ${details ? `Additional context: ${details}` : ''}
 
-CRITICAL REQUIREMENTS FOR CONTENT:
-- Use rich HTML with proper structure: <h2>, <h3>, <p>, <ul>, <ol>, <div>
-- Apply inline styles for visual appeal: colors, backgrounds, borders, spacing
-- Use colored boxes/cards for key concepts: <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 16px; margin: 12px 0; border-radius: 8px;">
-- Format definitions with bold headings: <h3 style="color: #1e40af; margin-top: 20px;">Definition</h3>
-- Use bullet points for lists with proper spacing
-- Add colored highlights for important terms: <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
-- Include examples in styled boxes with different background colors
-- Use proper typography: font sizes, weights, line heights
-- Create visual hierarchy with headings, subheadings, and body text
-- Add margin and padding for breathing room
+🎨 MODERN SLIDE DESIGN REQUIREMENTS:
+Create BEAUTIFUL, MAGAZINE-QUALITY slides with:
 
-${includeImages ? `IMAGE GENERATION REQUIREMENTS:
-- For EVERY slide, provide a detailed, specific image prompt for educational visuals
-- Images should be: diagrams, charts, infographics, illustrations, timelines, or concept maps
-- Be VERY specific in prompts: describe exact elements, colors, layout, labels, arrows, connections
-- Examples of good prompts:
-  * "A colorful diagram showing the 4 stages of the water cycle with labeled arrows: blue ocean evaporating into clouds, purple rain falling, green rivers flowing back to ocean, with sun and temperature indicators"
-  * "An infographic-style comparison chart with 2 columns: renewable energy (solar, wind, hydro with green icons) vs fossil fuels (coal, oil, gas with gray icons), showing percentages and CO2 emissions in red"
-  * "An illustrated timeline from 1939-1945 showing 8 major WWII events as milestone markers on a horizontal line, with dates, country flags, and brief descriptions"
-  * "A labeled cross-section diagram of a plant cell showing nucleus, chloroplasts, cell wall, vacuole, mitochondria in vibrant colors with connecting lines and text labels"
-- Specify image position: "top" (above all content), "center" (between content sections), "right" (floating right), "left" (floating left)` : ''}
+1. STUNNING HEADINGS:
+   - Large, bold, gradient headings: <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
+   - Use different gradient combinations per slide: purple-blue, orange-pink, green-teal, red-orange
 
-Return ${slideCount} slides with title, beautifully formatted HTML content${includeImages ? ', detailed specific image prompt, and image position' : ''}.`,
+2. TWO-COLUMN LAYOUTS (use frequently):
+   <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; align-items: start;">
+     <div>[Left column content with heading, text, lists]</div>
+     <div>[Right column with contrasting info, examples, or will contain image]</div>
+   </div>
+
+3. MODERN STYLED BOXES & CARDS:
+   - Key concepts: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">
+   - Info cards: <div style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; padding: 20px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+   - Highlight boxes: <div style="background: linear-gradient(to right, #fef3c7, #fde68a); border-left: 6px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 16px 0;">
+
+4. VISUAL ELEMENTS:
+   - Numbered circles: <div style="display: inline-flex; align-items: center; justify-content: center; width: 48px; height: 48px; background: linear-gradient(135deg, #667eea, #764ba2); color: white; border-radius: 50%; font-weight: 700; font-size: 20px; margin-right: 16px;">1</div>
+   - Icon-style badges: <span style="background: #dbeafe; color: #1e40af; padding: 8px 16px; border-radius: 20px; font-weight: 600; font-size: 14px; display: inline-block; margin: 4px;">
+   - Progress bars, arrows, dividers
+
+5. RICH TYPOGRAPHY:
+   - Subheadings: <h3 style="color: #1e293b; font-size: 24px; font-weight: 700; margin-top: 24px; margin-bottom: 12px;">
+   - Body text: <p style="color: #475569; font-size: 16px; line-height: 1.8; margin-bottom: 16px;">
+   - Highlighted terms: <span style="background: linear-gradient(120deg, #fbbf24 0%, #f59e0b 100%); padding: 3px 8px; border-radius: 6px; font-weight: 600; color: #78350f;">
+   - Lists with custom bullets and spacing
+
+6. STATISTICS & DATA:
+   - Large numbers: <div style="font-size: 56px; font-weight: 800; background: linear-gradient(135deg, #667eea, #764ba2); -webkit-background-clip: text; -webkit-text-fill-color: transparent;">85%</div>
+   - Stat cards in grid layout
+
+${includeImages ? `
+🖼️ IMAGE GENERATION - MANDATORY FOR EVERY SLIDE:
+Generate a SPECIFIC, DETAILED image for each slide:
+- Types: Diagrams, infographics, charts, illustrations, concept maps, timelines, process flows
+- Be EXTREMELY SPECIFIC: colors, elements, labels, arrows, layout, style
+- Examples:
+  * "Modern infographic showing 5 steps of photosynthesis: sunlight (yellow rays), chlorophyll (green molecules), water (blue drops), glucose (orange hexagon), oxygen (gray bubbles). Flowing circular arrows connecting each step. Vibrant colors, clean design, labeled."
+  * "Split-screen comparison: left side renewable energy (wind turbine icon, solar panel icon, water dam icon) in green/blue tones with upward arrows, right side fossil fuels (oil barrel, coal, gas flame) in gray/black with downward arrows. Percentage bars below each."
+  * "Anatomical diagram of human heart with 4 chambers clearly labeled in different colors: right atrium (light blue), right ventricle (dark blue), left atrium (light red), left ventricle (dark red). Blood flow arrows, valves marked."
+  
+Position: top, center, right, left (specify for layout)` : ''}
+
+📚 CONTENT QUALITY:
+- Research deeply using internet context for ACCURATE, UP-TO-DATE information
+- Verify facts, statistics, dates, names
+- Use correct spelling and grammar
+- Include specific examples, case studies, real data
+- Add relevant context and explanations
+- Make it comprehensive yet clear
+
+Return ${slideCount} slides with attention-grabbing titles, modern HTML layouts${includeImages ? ', and specific image prompts for each slide' : ''}.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: 'object',
