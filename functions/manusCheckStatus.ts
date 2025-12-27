@@ -78,6 +78,9 @@ Deno.serve(async (req) => {
         }, { status: 500 });
       }
       
+      // Log what we're getting back for debugging
+      console.log('Parsed slides from Manus:', JSON.stringify(parsedContent.slides, null, 2));
+      
       return Response.json({ 
         status: 'completed',
         slides: parsedContent.slides,

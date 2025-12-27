@@ -111,11 +111,15 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
         if (statusResult.status === 'completed' && statusResult.slides) {
           let slides = statusResult.slides;
+          
+          console.log('Received slides:', slides);
 
           // If images are included, integrate them into content
           if (includeImages && slides.length > 0) {
+            console.log('Processing images for slides...');
             slides = slides.map(slide => {
               if (slide.image_url) {
+                console.log(`Slide "${slide.title}" has image:`, slide.image_url);
                 const position = slide.image_position?.toLowerCase() || 'top';
                 let contentWithImage = slide.content;
 
