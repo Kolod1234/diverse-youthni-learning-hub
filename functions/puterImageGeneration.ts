@@ -15,9 +15,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = Deno.env.get('STABILITY_API_KEY');
+    const apiKey = Deno.env.get('MANUS_API_KEY');
     if (!apiKey) {
-      return Response.json({ error: 'STABILITY_API_KEY not configured' }, { status: 500 });
+      return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
     }
 
     // Enhance prompt with educational and inclusive values
