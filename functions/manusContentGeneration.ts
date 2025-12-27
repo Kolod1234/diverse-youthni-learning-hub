@@ -21,6 +21,23 @@ Deno.serve(async (req) => {
     }
 
     // Call Manus API for content generation using OpenAI-compatible endpoint
+    const enhancedPrompt = `${prompt}
+
+CRITICAL: You MUST respond with ONLY valid JSON in this EXACT format, no other text:
+{
+  "slides": [
+    {
+      "title": "Slide Title Here",
+      "content": "<h2>HTML content here</h2><p>More content...</p>",
+      "order": 1,
+      "image_prompt": "description for image generation",
+      "image_position": "top"
+    }
+  ]
+}
+
+Do NOT include any explanatory text before or after the JSON. ONLY output the JSON object.`;
+
     const response = await fetch('https://api.manus.im/v1/responses', {
       method: 'POST',
       headers: {
@@ -32,7 +49,7 @@ Deno.serve(async (req) => {
           role: 'user',
           content: [{
             type: 'input_text',
-            text: prompt
+            text: enhancedPrompt
           }]
         }],
         task_mode: 'agent',
@@ -79,17 +96,36 @@ Deno.serve(async (req) => {
           .map(c => c.text)
           .join('\n');
         
-        // Try to parse as JSON
+        console.log('Raw Manus response:', textContent);
+        
+        // Try to extract JSON from the response
         let parsedContent;
         try {
+          // Try direct parse first
           parsedContent = JSON.parse(textContent);
         } catch {
-          // If not JSON, wrap in slides structure
-          parsedContent = { slides: [{ title: 'Content', content: textContent, order: 1 }] };
+          // Try to find JSON in the text using regex
+          const jsonMatch = textContent.match(/\{[\s\S]*"slides"[\s\S]*\}/);
+          if (jsonMatch) {
+            try {
+              parsedContent = JSON.parse(jsonMatch[0]);
+            } catch {
+              console.error('Failed to parse extracted JSON');
+              parsedContent = null;
+            }
+          }
+        }
+        
+        if (!parsedContent || !parsedContent.slides) {
+          return Response.json({ 
+            error: 'Invalid response format from Manus API',
+            details: 'Expected JSON with slides array',
+            rawResponse: textContent
+          }, { status: 500 });
         }
         
         return Response.json({ 
-          slides: parsedContent.slides || [],
+          slides: parsedContent.slides,
           success: true 
         });
       }
