@@ -28,18 +28,30 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
 ${details ? `Additional context: ${details}` : ''}
 
-Requirements:
-- Professional educational content
-- Beautiful HTML formatting with colors and styles
-- Include examples, definitions, and key concepts
-- Engaging and visually appealing
-- Appropriate for students/learners
-${includeImages ? `- For EVERY slide, provide a detailed, specific image prompt that describes an educational illustration, diagram, chart, or visual that would enhance learning
-- Image prompts should be very specific: describe colors, composition, style, and educational value
-- Examples: "A labeled diagram showing the water cycle with evaporation, condensation, precipitation, and collection stages in bright colors", "An infographic-style chart comparing renewable vs non-renewable energy sources with icons and percentages", "An illustrated timeline of World War II major events with dates and locations"
-- Specify whether the image should be placed at the top, right, left, or integrated into the content` : ''}
+CRITICAL REQUIREMENTS FOR CONTENT:
+- Use rich HTML with proper structure: <h2>, <h3>, <p>, <ul>, <ol>, <div>
+- Apply inline styles for visual appeal: colors, backgrounds, borders, spacing
+- Use colored boxes/cards for key concepts: <div style="background: #f0f9ff; border-left: 4px solid #3b82f6; padding: 16px; margin: 12px 0; border-radius: 8px;">
+- Format definitions with bold headings: <h3 style="color: #1e40af; margin-top: 20px;">Definition</h3>
+- Use bullet points for lists with proper spacing
+- Add colored highlights for important terms: <span style="background: #fef3c7; padding: 2px 6px; border-radius: 4px; font-weight: 600;">
+- Include examples in styled boxes with different background colors
+- Use proper typography: font sizes, weights, line heights
+- Create visual hierarchy with headings, subheadings, and body text
+- Add margin and padding for breathing room
 
-Return ${slideCount} slides with title, rich HTML content${includeImages ? ', detailed image prompt for each slide, and preferred image position (top/right/left/center)' : ''}.`,
+${includeImages ? `IMAGE GENERATION REQUIREMENTS:
+- For EVERY slide, provide a detailed, specific image prompt for educational visuals
+- Images should be: diagrams, charts, infographics, illustrations, timelines, or concept maps
+- Be VERY specific in prompts: describe exact elements, colors, layout, labels, arrows, connections
+- Examples of good prompts:
+  * "A colorful diagram showing the 4 stages of the water cycle with labeled arrows: blue ocean evaporating into clouds, purple rain falling, green rivers flowing back to ocean, with sun and temperature indicators"
+  * "An infographic-style comparison chart with 2 columns: renewable energy (solar, wind, hydro with green icons) vs fossil fuels (coal, oil, gas with gray icons), showing percentages and CO2 emissions in red"
+  * "An illustrated timeline from 1939-1945 showing 8 major WWII events as milestone markers on a horizontal line, with dates, country flags, and brief descriptions"
+  * "A labeled cross-section diagram of a plant cell showing nucleus, chloroplasts, cell wall, vacuole, mitochondria in vibrant colors with connecting lines and text labels"
+- Specify image position: "top" (above all content), "center" (between content sections), "right" (floating right), "left" (floating left)` : ''}
+
+Return ${slideCount} slides with title, beautifully formatted HTML content${includeImages ? ', detailed specific image prompt, and image position' : ''}.`,
         add_context_from_internet: true,
         response_json_schema: {
           type: 'object',
