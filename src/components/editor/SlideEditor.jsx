@@ -156,7 +156,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [templateIcon, setTemplateIcon] = useState('📄');
   const [showManageTemplates, setShowManageTemplates] = useState(false);
   const [showAIDialog, setShowAIDialog] = useState(false);
-  const [aiAction, setAiAction] = useState('generate'); // 'generate', 'rewrite', 'images'
+  const [aiAction, setAiAction] = useState('generate'); // 'generate', 'rewrite', 'images', 'generate-image'
   const [aiPrompt, setAiPrompt] = useState('');
   const [aiLoading, setAiLoading] = useState(false);
   const [showPresentation, setShowPresentation] = useState(false);
@@ -347,6 +347,37 @@ Return ONLY the improved HTML content.`,
       toast.success('Content rewritten successfully!');
     } catch (error) {
       toast.error('Failed to rewrite content');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleAIGenerateImage = async () => {
+    if (!aiPrompt.trim()) {
+      toast.error('Please describe the image you want to generate');
+      return;
+    }
+
+    setAiLoading(true);
+    try {
+      toast.info('Generating educational image...');
+      
+      const imageResult = await base44.integrations.Core.GenerateImage({
+        prompt: `Educational illustration: ${aiPrompt}. 
+Style: Clean, professional, suitable for educational materials and student learning.
+Purpose: Support understanding of educational concepts through clear visuals.`
+      });
+
+      // Insert the generated image into the current slide
+      const currentContent = currentSlideData?.content || '';
+      const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageResult.url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
+      
+      updateSlide(currentSlide, 'content', currentContent + imageHtml);
+      setShowAIDialog(false);
+      setAiPrompt('');
+      toast.success('AI-generated image added to slide!');
+    } catch (error) {
+      toast.error('Failed to generate image');
     } finally {
       setAiLoading(false);
     }
@@ -738,6 +769,16 @@ Format as a simple bulleted list.`,
                         <ImageIcon className="w-4 h-4 mr-2" />
                         Suggest Images
                       </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          setAiAction('generate-image');
+                          setAiPrompt('');
+                          setShowAIDialog(true);
+                        }}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Generate AI Image
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button
@@ -940,6 +981,7 @@ Format as a simple bulleted list.`,
                     {aiAction === 'generate' && 'Generate slide content from a topic'}
                     {aiAction === 'rewrite' && 'Rewrite and improve slide content'}
                     {aiAction === 'images' && 'Visual suggestions for your slide'}
+                    {aiAction === 'generate-image' && 'Generate custom educational images with AI'}
                   </p>
                 </div>
               </div>
@@ -998,24 +1040,56 @@ Format as a simple bulleted list.`,
                     </p>
                   </div>
                 )}
+
+                {aiAction === 'generate-image' && (
+                  <div>
+                    <Label>Describe the Image</Label>
+                    <Textarea
+                      value={aiPrompt}
+                      onChange={(e) => setAiPrompt(e.target.value)}
+                      placeholder="E.g., 'A labeled diagram showing the parts of a plant cell' or 'A graph comparing renewable vs non-renewable energy sources'"
+                      className="mt-1 h-32"
+                      disabled={aiLoading}
+                    />
+                    <p className="text-xs text-gray-500 mt-2">
+                      Describe the educational image, diagram, graph, or illustration you need
+                    </p>
+                    <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                      <p className="text-xs font-semibold text-purple-900 mb-2">💡 Tips for better results:</p>
+                      <ul className="text-xs text-purple-700 space-y-1">
+                        <li>• Be specific about what should be shown</li>
+                        <li>• Mention if it's a diagram, chart, graph, or illustration</li>
+                        <li>• Include labels or annotations if needed</li>
+                        <li>• Specify educational context (e.g., "for biology students")</li>
+                      </ul>
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="flex gap-3 mt-6">
                 {aiAction !== 'images' && (
                   <Button 
-                    onClick={aiAction === 'generate' ? handleAIGenerate : handleAIRewrite}
+                    onClick={
+                      aiAction === 'generate' ? handleAIGenerate : 
+                      aiAction === 'rewrite' ? handleAIRewrite :
+                      aiAction === 'generate-image' ? handleAIGenerateImage :
+                      null
+                    }
                     className="flex-1 bg-purple-600 hover:bg-purple-700"
-                    disabled={aiLoading || (aiAction === 'generate' && !aiPrompt.trim())}
+                    disabled={aiLoading || ((aiAction === 'generate' || aiAction === 'generate-image') && !aiPrompt.trim())}
                   >
                     {aiLoading ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Processing...
+                        {aiAction === 'generate-image' ? 'Generating Image...' : 'Processing...'}
                       </>
                     ) : (
                       <>
                         <Sparkles className="w-4 h-4 mr-2" />
-                        {aiAction === 'generate' ? 'Generate Slide' : 'Rewrite Content'}
+                        {aiAction === 'generate' ? 'Generate Slide' : 
+                         aiAction === 'rewrite' ? 'Rewrite Content' :
+                         aiAction === 'generate-image' ? 'Generate Image' : 'Process'}
                       </>
                     )}
                   </Button>
