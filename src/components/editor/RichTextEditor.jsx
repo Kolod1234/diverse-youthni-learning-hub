@@ -14,8 +14,6 @@ import Highlight from '@tiptap/extension-highlight';
 import Subscript from '@tiptap/extension-subscript';
 import Superscript from '@tiptap/extension-superscript';
 import Underline from '@tiptap/extension-underline';
-import Dropcursor from '@tiptap/extension-dropcursor';
-import Gapcursor from '@tiptap/extension-gapcursor';
 import { Node } from '@tiptap/core';
 import { Extension } from '@tiptap/core';
 import { Label } from '@/components/ui/label';
@@ -1209,14 +1207,14 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       StarterKit.configure({
         heading: {
           levels: [1, 2, 3, 4, 5, 6]
-        }
+        },
+        dropcursor: {
+          color: '#6366F1',
+          width: 4,
+          class: 'drop-cursor',
+        },
+        gapcursor: true,
       }),
-      Dropcursor.configure({
-        color: '#6366F1',
-        width: 4,
-        class: 'drop-cursor',
-      }),
-      Gapcursor,
       Image.configure({
         inline: false,
         allowBase64: true,
