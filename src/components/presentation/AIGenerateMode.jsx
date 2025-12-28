@@ -12,6 +12,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
+  const [imageStyle, setImageStyle] = useState('illustrative');
+  const [aspectRatio, setAspectRatio] = useState('landscape');
+  const [colorPalette, setColorPalette] = useState('any');
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
@@ -88,7 +91,10 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                     query: slide.image_prompt,
                     slideTitle: slide.title,
                     slideContent: slide.content,
-                    presentationTopic: topic
+                    presentationTopic: topic,
+                    style: imageStyle,
+                    aspectRatio: aspectRatio,
+                    colorPalette: colorPalette
                   });
 
                   if (imageResult?.data?.url) {
@@ -160,20 +166,69 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             />
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
-            <input
-              type="checkbox"
-              id="includeImages"
-              checked={includeImages}
-              onChange={(e) => setIncludeImages(e.target.checked)}
-              className="w-4 h-4 rounded text-purple-600"
-            />
-            <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
-              <span className="font-semibold text-purple-900">Find Educational Images</span>
-              <p className="text-xs text-purple-700 mt-1">
-                Automatically search for high-quality educational images, diagrams, and illustrations from reputable sources
-              </p>
-            </Label>
+          <div className="space-y-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+            <div className="flex items-center gap-3">
+              <input
+                type="checkbox"
+                id="includeImages"
+                checked={includeImages}
+                onChange={(e) => setIncludeImages(e.target.checked)}
+                className="w-4 h-4 rounded text-purple-600"
+              />
+              <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
+                <span className="font-semibold text-purple-900">Find Educational Images</span>
+                <p className="text-xs text-purple-700 mt-1">
+                  Automatically search for high-quality educational images with customizable style and format
+                </p>
+              </Label>
+            </div>
+
+            {includeImages && (
+              <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t border-purple-200">
+                <div>
+                  <Label className="text-xs text-purple-900 mb-1">Style</Label>
+                  <select
+                    value={imageStyle}
+                    onChange={(e) => setImageStyle(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
+                  >
+                    <option value="photographic">Photographic</option>
+                    <option value="illustrative">Illustrative</option>
+                    <option value="diagram">Diagram</option>
+                    <option value="abstract">Abstract</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-purple-900 mb-1">Format</Label>
+                  <select
+                    value={aspectRatio}
+                    onChange={(e) => setAspectRatio(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
+                  >
+                    <option value="landscape">Landscape</option>
+                    <option value="portrait">Portrait</option>
+                    <option value="square">Square</option>
+                  </select>
+                </div>
+
+                <div>
+                  <Label className="text-xs text-purple-900 mb-1">Colors</Label>
+                  <select
+                    value={colorPalette}
+                    onChange={(e) => setColorPalette(e.target.value)}
+                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
+                  >
+                    <option value="any">Any</option>
+                    <option value="vibrant">Vibrant</option>
+                    <option value="muted">Muted</option>
+                    <option value="warm">Warm</option>
+                    <option value="cool">Cool</option>
+                    <option value="neutral">Neutral</option>
+                  </select>
+                </div>
+              </div>
+            )}
           </div>
 
           <Button
