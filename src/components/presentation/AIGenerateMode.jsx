@@ -77,52 +77,51 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       if (!usePerplexity || !response) {
         response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
+          prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
 
-      ${details ? `Additional context: ${details}` : ''}
+${details ? `Additional context: ${details}` : ''}
 
-      For each slide, provide:
-      - A clear title
-      - Well-structured HTML content with paragraphs and lists
-      - ${includeImages ? 'A brief image search query and description' : 'No images'}
+For each slide, provide:
+- A clear title
+- Well-structured HTML content with paragraphs and lists
+- ${includeImages ? 'A brief image search query and description' : 'No images'}
 
-      Use proper HTML formatting:
-      - Headings: <h2>, <h3>
-      - Paragraphs: <p>
-      - Bold: <strong>
-      - Lists: <ul><li>
+Use proper HTML formatting:
+- Headings: <h2>, <h3>
+- Paragraphs: <p>
+- Bold: <strong>
+- Lists: <ul><li>
 
-      ${includeImages ? 'Include image_prompt (search query) and image_description for each slide.' : ''}
+${includeImages ? 'Include image_prompt (search query) and image_description for each slide.' : ''}
 
-      Return ONLY valid JSON.`,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: "object",
-          properties: {
-            slides: {
-              type: "array",
-              items: {
-                type: "object",
-                properties: {
-                  title: { type: "string" },
-                  content: { type: "string" },
-                  order: { type: "number" },
-                  ...(includeImages ? {
-                    image_prompt: { type: "string" },
-                    image_description: { type: "string" }
-                  } : {})
-                },
-                required: ["title", "content", "order"]
+Return ONLY valid JSON.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              slides: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    content: { type: "string" },
+                    order: { type: "number" },
+                    ...(includeImages ? {
+                      image_prompt: { type: "string" },
+                      image_description: { type: "string" }
+                    } : {})
+                  },
+                  required: ["title", "content", "order"]
+                }
               }
-            }
-          },
-          required: ["slides"]
-        }
+            },
+            required: ["slides"]
+          }
         });
-        }
-        }
+      }
 
-        if (!response?.slides) {
+      if (!response?.slides) {
         toast.error('Invalid response from AI');
         return;
       }
