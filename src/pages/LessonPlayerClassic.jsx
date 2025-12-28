@@ -269,21 +269,21 @@ export default function LessonPlayerClassic() {
                       dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
                     />
                   </div>
-                  <div className="bg-gray-50 px-8 py-4 flex items-center justify-between border-t">
+                  <div className="bg-gray-50 px-4 sm:px-8 py-4 flex items-center justify-between border-t">
                     <button
                       onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                       disabled={currentSlideIndex === 0}
-                      className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronLeft className="w-5 h-5" />
                     </button>
-                    <span className="text-sm text-gray-600">
+                    <span className="text-xs sm:text-sm text-gray-600">
                       Slide {currentSlideIndex + 1} of {sortedSlides.length}
                     </span>
                     <button
                       onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
                       disabled={currentSlideIndex === sortedSlides.length - 1}
-                      className="px-4 py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
                     >
                       <ChevronRight className="w-5 h-5" />
                     </button>

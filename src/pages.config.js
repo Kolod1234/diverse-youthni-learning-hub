@@ -2,6 +2,7 @@ import Achievements from './pages/Achievements';
 import AdminDashboard from './pages/AdminDashboard';
 import Analytics from './pages/Analytics';
 import BookSession from './pages/BookSession';
+import ContactUs from './pages/ContactUs';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
@@ -13,6 +14,8 @@ import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
 import LearningPaths from './pages/LearningPaths';
 import LessonPlayer from './pages/LessonPlayer';
+import LessonPlayerClassic from './pages/LessonPlayerClassic';
+import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
 import Profile from './pages/Profile';
@@ -28,9 +31,6 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
-import LessonPlayerClassic from './pages/LessonPlayerClassic';
-import ContactUs from './pages/ContactUs';
 import __Layout from './Layout.jsx';
 
 
@@ -39,6 +39,7 @@ export const PAGES = {
     "AdminDashboard": AdminDashboard,
     "Analytics": Analytics,
     "BookSession": BookSession,
+    "ContactUs": ContactUs,
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
@@ -50,6 +51,8 @@ export const PAGES = {
     "Home": Home,
     "LearningPaths": LearningPaths,
     "LessonPlayer": LessonPlayer,
+    "LessonPlayerClassic": LessonPlayerClassic,
+    "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
     "Profile": Profile,
@@ -65,9 +68,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
-    "LessonPlayerClassic": LessonPlayerClassic,
-    "ContactUs": ContactUs,
 }
 
 export const pagesConfig = {
