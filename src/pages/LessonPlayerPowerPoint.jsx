@@ -122,22 +122,6 @@ export default function LessonPlayerPowerPoint() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
-  // Get embed URL for Google Slides
-  const getSlideEmbedUrl = () => {
-    if (!lesson) return null;
-    if (lesson.google_slides_url) {
-      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (presentationId) {
-        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`;
-      }
-    }
-    return lesson.file_url || null;
-  };
-
-  const slideUrl = getSlideEmbedUrl();
-  const hasSlides = lesson?.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
-
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
@@ -146,23 +130,6 @@ export default function LessonPlayerPowerPoint() {
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
   }, [isPresenting]);
-
-  // Navigate slides with arrow keys
-  useEffect(() => {
-    if (!hasSlides) return;
-    const handleSlideNav = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-      }
-    };
-    window.addEventListener('keydown', handleSlideNav);
-    return () => window.removeEventListener('keydown', handleSlideNav);
-  }, [hasSlides, sortedSlides.length]);
 
   if (lessonLoading || lessonsLoading) {
     return (
