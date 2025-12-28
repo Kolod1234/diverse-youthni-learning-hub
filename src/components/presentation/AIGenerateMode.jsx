@@ -185,21 +185,21 @@ Return JSON:`,
 
                   if (position === 'top' || position === 'center') {
                     contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                      <img src="${imageResult.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                      <img src="${imageResult.data.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
                       <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                     </div>${slide.content}`;
                   } else if (position === 'right') {
                     contentWithImage = `<div style="display: flex; gap: 24px; align-items: flex-start;">
                       <div style="flex: 1;">${slide.content}</div>
                       <div style="flex: 0 0 40%;">
-                        <img src="${imageResult.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                        <img src="${imageResult.data.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
                         <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                       </div>
                     </div>`;
                   } else if (position === 'left') {
                     contentWithImage = `<div style="display: flex; gap: 24px; align-items: flex-start;">
                       <div style="flex: 0 0 40%;">
-                        <img src="${imageResult.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                        <img src="${imageResult.data.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
                         <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                       </div>
                       <div style="flex: 1;">${slide.content}</div>
