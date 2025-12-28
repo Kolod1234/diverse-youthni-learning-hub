@@ -15,6 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [imageStyle, setImageStyle] = useState('illustrative');
   const [aspectRatio, setAspectRatio] = useState('landscape');
   const [colorPalette, setColorPalette] = useState('any');
+  const [usePerplexity, setUsePerplexity] = useState(false);
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
@@ -26,8 +27,56 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
     setGenerating(true);
     try {
       toast.info('Researching and generating slides...');
-      
-      const response = await base44.integrations.Core.InvokeLLM({
+
+      let response;
+
+      if (usePerplexity) {
+        // Use Perplexity for research-based content
+        const researchResult = await base44.functions.invoke('perplexitySearch', {
+          query: `Create a comprehensive ${slideCount}-slide educational presentation about: "${topic}"
+
+    ${details ? `Additional context: ${details}` : ''}
+
+    For each slide, provide:
+    - A clear, engaging title
+    - Well-researched content with specific facts, statistics, and examples
+    - Proper citations and sources where applicable
+    - Educational explanations suitable for students
+
+    Structure the response as JSON with this format:
+    {
+    "slides": [
+    {
+    "title": "Slide title",
+    "content": "Slide content with HTML formatting",
+    "order": 1
+    }
+    ]
+    }
+
+    Use proper HTML tags: <h2>, <h3>, <p>, <strong>, <ul>, <li>
+    ${includeImages ? 'Also include "image_prompt" and "image_description" for each slide.' : ''}`
+        });
+
+        if (researchResult?.data?.content) {
+          try {
+            // Try to parse JSON from the response
+            const jsonMatch = researchResult.data.content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              response = JSON.parse(jsonMatch[0]);
+            } else {
+              throw new Error('No JSON found in response');
+            }
+          } catch (parseError) {
+            console.error('Failed to parse Perplexity response:', parseError);
+            toast.error('Failed to parse AI response, falling back to standard AI');
+            usePerplexity = false;
+          }
+        }
+      }
+
+      if (!usePerplexity || !response) {
+        response = await base44.integrations.Core.InvokeLLM({
         prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
 
       ${details ? `Additional context: ${details}` : ''}
@@ -69,9 +118,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           },
           required: ["slides"]
         }
-      });
+        });
+        }
+        }
 
-      if (!response?.slides) {
+        if (!response?.slides) {
         toast.error('Invalid response from AI');
         return;
       }
@@ -229,7 +280,23 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 </div>
               </div>
             )}
-          </div>
+            </div>
+
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+            <input
+              type="checkbox"
+              id="usePerplexity"
+              checked={usePerplexity}
+              onChange={(e) => setUsePerplexity(e.target.checked)}
+              className="w-4 h-4 rounded text-blue-600"
+            />
+            <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
+              <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
+              <p className="text-xs text-blue-700 mt-1">
+                Enhanced research with real-time web search, citations, and more accurate information
+              </p>
+            </Label>
+            </div>
 
           <Button
             onClick={generateFromTopic}
