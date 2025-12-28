@@ -101,7 +101,10 @@ Deno.serve(async (req) => {
             continue;
           }
           
-          const imageBlob = await imageResponse.blob();
+          const imageArrayBuffer = await imageResponse.arrayBuffer();
+          const imageBlob = new Blob([imageArrayBuffer], { 
+            type: imageResponse.headers.get('content-type') || 'image/png' 
+          });
           
           // Re-upload to Base44 storage
           const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({
