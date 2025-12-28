@@ -81,30 +81,30 @@ ${includeImages ? `
 🖼️ IMAGE GENERATION - CRITICAL REQUIREMENTS:
 
 For EVERY slide, include:
-- "image_prompt": Detailed prompt for PURE VISUAL illustration (NO TEXT ALLOWED)
+- "image_prompt": Detailed prompt for educational illustration
 - "image_description": Clear description of what the image shows (2-3 sentences)
 - "image_position": "top", "center", "left", or "right"
 
-**ABSOLUTELY NO TEXT IN IMAGES:**
-- Do NOT include any words, labels, captions, or text in the image
-- Use visual elements ONLY: colors, shapes, arrows, icons, symbols
-- The slide content will explain everything - image is purely decorative/illustrative
-- If showing a process, use colored arrows and visual flow, NOT text labels
+**TEXT IN IMAGES - SPELLING RULES:**
+⚠️ WARNING: Image generators often misspell text. To avoid spelling errors:
+- If labels are needed, use ONLY simple, common, SHORT words (3-7 letters)
+- Double-check spelling in your prompt: "EVAPORATION" not "EVAPORATON", "PRECIPITATION" not "PREIPITATION"
+- Specify: "with correctly spelled labels" or "accurate text spelling"
+- Keep text minimal - use arrows, colors, numbers instead where possible
+- Better approach: Generate images with minimal text, put detailed explanations in the slide HTML content
 
-**Correct Image Prompts (NO TEXT):**
-✅ "Water cycle illustration showing blue ocean with water droplets rising upward, white fluffy clouds in sky, water droplets falling as rain, green landscape with trees, underground water layers, flowing rivers in blue - all connected by colored directional arrows showing flow, vibrant colors, clean artistic style, absolutely no text or labels"
+**Image Prompt Examples:**
+✅ "Educational water cycle diagram showing blue ocean, water droplets rising (evaporation), white clouds forming (condensation), rain falling (precipitation), green landscape with rivers, underground water flow - with clear correctly-spelled labels for each stage, professional educational illustration style, accurate spelling of all text"
 
-✅ "Sustainable agriculture scene with terraced hillside farming, drip irrigation tubes visible, solar panels on red barn roof, variety of green crops in organized colorful rows, farmers working with tools, aerial perspective view, detailed illustration style, rich natural colors, zero text"
+✅ "Sustainable farm illustration with terraced fields, solar panels, diverse crops, drip irrigation - labeled with short correctly-spelled terms like 'SOLAR', 'CROPS', 'WATER', clean educational style, verify all text spelling"
 
-✅ "Human respiratory system showing lungs in pink/red tones, air pathways in blue, oxygen molecules as small blue circles, blood vessels in red, diaphragm movement with directional arrows, cross-section medical illustration, clean professional style, no labels or text whatsoever"
+✅ "Human heart cross-section showing chambers in red and blue colors, blood flow arrows, simple labels with correct spelling: 'ATRIUM', 'VENTRICLE', 'AORTA', medical illustration style, accurate text"
 
-**WRONG (contains text - DO NOT DO THIS):**
-❌ Any prompt with "labeled", "with text", "showing names", "title", "caption"
-❌ Diagrams with boxes containing explanations
-❌ Infographics with written information
+**BEST PRACTICE:**
+Generate images with VISUAL CUES (colors, arrows, numbers) instead of text labels, then explain everything in the HTML content where spelling is guaranteed correct.
 
 **Image Description Examples:**
-- "image_description": "An artistic rendering of the complete water cycle showing evaporation from oceans, cloud formation, precipitation, surface runoff, and groundwater flow connected by directional arrows in a continuous loop."` : ''}
+- "image_description": "A labeled diagram of the water cycle showing evaporation from oceans, cloud formation, precipitation, surface runoff, and groundwater movement with arrows indicating flow direction."` : ''}
 
 CONTENT STRUCTURE:
 - Start with attention-grabbing gradient heading
