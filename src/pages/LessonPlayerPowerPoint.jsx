@@ -191,24 +191,6 @@ export default function LessonPlayerPowerPoint() {
     return () => window.removeEventListener('keydown', handleSlideNav);
   }, [hasSlides, sortedSlides.length]);
 
-  // Navigation
-  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
-  const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
-  const nextLesson = sortedLessons[currentLessonIndex + 1];
-  const prevLesson = sortedLessons[currentLessonIndex - 1];
-
-  const handleNextLesson = () => {
-    if (nextLesson) {
-      navigate(`/LessonPlayerPowerPoint?lesson=${nextLesson.id}&course=${courseId}`);
-    }
-  };
-
-  const handlePrevLesson = () => {
-    if (prevLesson) {
-      navigate(`/LessonPlayerPowerPoint?lesson=${prevLesson.id}&course=${courseId}`);
-    }
-  };
-
   return (
     <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
       
