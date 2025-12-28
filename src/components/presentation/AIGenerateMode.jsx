@@ -78,19 +78,33 @@ ${details ? `Additional context: ${details}` : ''}
 </div>
 
 ${includeImages ? `
-🖼️ IMAGE GENERATION - DETAILED REQUIREMENTS:
+🖼️ IMAGE GENERATION - CRITICAL REQUIREMENTS:
 
 For EVERY slide, include:
-- "image_prompt": Detailed, specific prompt for educational illustration
-- "image_description": Clear alt text describing what the image shows (2-3 sentences)
+- "image_prompt": Detailed prompt for PURE VISUAL illustration (NO TEXT ALLOWED)
+- "image_description": Clear description of what the image shows (2-3 sentences)
 - "image_position": "top", "center", "left", or "right"
 
-**Image Prompt Examples:**
-- "Professional illustration of sustainable agriculture showing terraced farming with water irrigation systems, solar panels on barn, diverse crops in organized rows, farmers using modern technology tablets, vibrant greens and blues, aerial perspective, detailed educational style"
-- "Detailed diagram of water cycle with labeled stages: ocean evaporation (blue water droplets rising), cloud formation (white fluffy clouds), precipitation (rain falling), river flow (winding blue stream), plant transpiration (green leaves with water vapor), professional educational illustration with arrows showing flow"
+**ABSOLUTELY NO TEXT IN IMAGES:**
+- Do NOT include any words, labels, captions, or text in the image
+- Use visual elements ONLY: colors, shapes, arrows, icons, symbols
+- The slide content will explain everything - image is purely decorative/illustrative
+- If showing a process, use colored arrows and visual flow, NOT text labels
+
+**Correct Image Prompts (NO TEXT):**
+✅ "Water cycle illustration showing blue ocean with water droplets rising upward, white fluffy clouds in sky, water droplets falling as rain, green landscape with trees, underground water layers, flowing rivers in blue - all connected by colored directional arrows showing flow, vibrant colors, clean artistic style, absolutely no text or labels"
+
+✅ "Sustainable agriculture scene with terraced hillside farming, drip irrigation tubes visible, solar panels on red barn roof, variety of green crops in organized colorful rows, farmers working with tools, aerial perspective view, detailed illustration style, rich natural colors, zero text"
+
+✅ "Human respiratory system showing lungs in pink/red tones, air pathways in blue, oxygen molecules as small blue circles, blood vessels in red, diaphragm movement with directional arrows, cross-section medical illustration, clean professional style, no labels or text whatsoever"
+
+**WRONG (contains text - DO NOT DO THIS):**
+❌ Any prompt with "labeled", "with text", "showing names", "title", "caption"
+❌ Diagrams with boxes containing explanations
+❌ Infographics with written information
 
 **Image Description Examples:**
-- "image_description": "An aerial view illustration of a sustainable farm featuring terraced fields with drip irrigation, solar panels, and diverse crop rotation demonstrating modern agricultural practices."` : ''}
+- "image_description": "An artistic rendering of the complete water cycle showing evaporation from oceans, cloud formation, precipitation, surface runoff, and groundwater flow connected by directional arrows in a continuous loop."` : ''}
 
 CONTENT STRUCTURE:
 - Start with attention-grabbing gradient heading
