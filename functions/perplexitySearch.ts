@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { query, model = 'llama-3.1-sonar-small-128k-online' } = await req.json();
+    const { query, model = 'llama-3.1-sonar-small-128k-chat' } = await req.json();
 
     if (!query) {
       return Response.json({ error: 'Query is required' }, { status: 400 });
