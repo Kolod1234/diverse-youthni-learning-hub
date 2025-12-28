@@ -33,37 +33,41 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       if (usePerplexity) {
         // Use Perplexity for research-based content
         const researchResult = await base44.functions.invoke('perplexitySearch', {
-          query: `Create a comprehensive ${slideCount}-slide educational presentation about: "${topic}"
+          query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
+      ${details ? `\nContext: ${details}` : ''}
 
-    ${details ? `Additional context: ${details}` : ''}
+      CRITICAL: Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
+      {
+      "slides": [
+      {
+      "title": "Engaging slide title",
+      "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples with proper context.",
+      "order": 1,
+      "image_prompt": "Specific search query for finding a relevant educational image",
+      "image_description": "Brief description of what the image should show"
+      }
+      ]
+      }
 
-    For each slide, provide:
-    - A clear, engaging title
-    - Well-researched content with specific facts, statistics, and examples
-    - Proper citations and sources where applicable
-    - Educational explanations suitable for students
+      Research requirements:
+      - Use current, accurate information from reliable sources
+      - Include specific facts, statistics, and real examples
+      - Make content educational and engaging for students
+      - Format content with proper HTML for visual hierarchy
 
-    Structure the response as JSON with this format:
-    {
-    "slides": [
-    {
-    "title": "Slide title",
-    "content": "Slide content with HTML formatting",
-    "order": 1
-    }
-    ]
-    }
+      ${includeImages ? 'IMPORTANT: Include "image_prompt" (search query) and "image_description" for EVERY slide.' : ''}
 
-    Use proper HTML tags: <h2>, <h3>, <p>, <strong>, <ul>, <li>
-    ${includeImages ? 'Also include "image_prompt" and "image_description" for each slide.' : ''}`
+      Return ONLY the JSON object, nothing else.`
         });
 
         if (researchResult?.data?.content) {
           try {
             // Try to parse JSON from the response
-            const jsonMatch = researchResult.data.content.match(/\{[\s\S]*\}/);
+            const content = researchResult.data.content.trim();
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
               response = JSON.parse(jsonMatch[0]);
+              toast.success('Research-based content generated with citations!');
             } else {
               throw new Error('No JSON found in response');
             }
