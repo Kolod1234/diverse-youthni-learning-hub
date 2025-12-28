@@ -22,33 +22,61 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
     setGenerating(true);
     try {
+      toast.info('Researching and generating slides...');
+      
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert presentation designer and educator. Create a stunning, modern presentation about: "${topic}"
+        prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
 
 ${details ? `Additional context: ${details}` : ''}
 
-Create ${slideCount} slides with the following structure:
+🎨 TEXT CONTENT (HTML) - Must include:
 
-**SLIDE CONTENT:**
-- Each slide should have a clear title
-- Use rich HTML formatting for content
-- Include styled headings with gradients: <h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">
-- Add styled content blocks and info boxes
-- Use proper lists, paragraphs, and formatting
+1. STUNNING HEADINGS:
+<h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">Your Title</h2>
 
-**CONTENT QUALITY:**
-- Research accurate, up-to-date information
-- Include specific examples and data
-- Verify facts and statistics
-- Use clear explanations
+2. EXPLANATORY TEXT - Write ALL information as rich HTML:
+- Detailed descriptions, definitions, explanations
+- Step-by-step processes with numbered points
+- Key facts and statistics with proper formatting
+- Real-world examples and case studies
+- Use <p>, <ul>, <ol>, <h3>, <strong>, <em> tags
 
-Return a JSON object with this exact structure:
+3. STYLED CONTENT BLOCKS:
+- Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">Important info</div>
+- Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">Additional details</div>
+- Statistics: <div style="background: #fef3c7; border-left: 6px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 16px 0;">📊 Data point</div>
+
+4. TWO-COLUMN LAYOUTS when appropriate:
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0;">
+  <div>[Left column content]</div>
+  <div>[Right column content]</div>
+</div>
+
+📚 CONTENT QUALITY REQUIREMENTS:
+- Research deeply using internet data for ACCURATE, UP-TO-DATE information
+- Verify all facts, statistics, dates, names, and spelling
+- Include specific examples, case studies, real data with sources
+- Add relevant context and comprehensive explanations
+- Use professional language and proper grammar
+- Make content educational, engaging, and comprehensive
+
+${includeImages ? `
+📸 IMAGE GENERATION:
+For each slide that would benefit from a visual, include an "image_prompt" field with a detailed description for generating an educational diagram/illustration. The prompt should describe PURE VISUALS without text:
+- Use phrases like "clean illustration", "diagram showing", "visual representation"
+- Specify colors, style (minimalist, professional, artistic)
+- Mention key visual elements to include
+- Example: "Clean medical illustration of human heart showing chambers in red and blue, arrows indicating blood flow, professional style, no text labels"
+
+Also include "image_position" field: "top", "center", "left", or "right"` : ''}
+
+Return JSON with this exact structure:
 {
   "slides": [
     {
       "title": "Slide Title",
-      "content": "<HTML content here>",
-      "order": 0
+      "content": "<detailed HTML content>",
+      "order": 0${includeImages ? ',\n      "image_prompt": "description for image generation",\n      "image_position": "top"' : ''}
     }
   ]
 }`,
@@ -63,7 +91,11 @@ Return a JSON object with this exact structure:
                 properties: {
                   title: { type: "string" },
                   content: { type: "string" },
-                  order: { type: "number" }
+                  order: { type: "number" },
+                  ...(includeImages ? {
+                    image_prompt: { type: "string" },
+                    image_position: { type: "string" }
+                  } : {})
                 }
               }
             }
@@ -71,39 +103,62 @@ Return a JSON object with this exact structure:
         }
       });
 
-      if (response && response.slides) {
-        // Generate images if requested
-        if (includeImages) {
-          toast.info('Generating images for slides...');
-          const slidesWithImages = await Promise.all(
-            response.slides.map(async (slide, index) => {
+      if (!response?.slides) {
+        toast.error('Invalid response from AI');
+        return;
+      }
+
+      let slides = response.slides;
+
+      // Generate images if requested
+      if (includeImages) {
+        toast.info('Generating educational images and diagrams...');
+        
+        slides = await Promise.all(
+          slides.map(async (slide, index) => {
+            if (slide.image_prompt) {
               try {
                 const imageResult = await base44.integrations.Core.GenerateImage({
-                  prompt: `Educational illustration for "${slide.title}" - simple, clean, professional diagram or visualization without text labels`
+                  prompt: slide.image_prompt
                 });
                 
                 if (imageResult?.url) {
-                  const contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${imageResult.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
-                  </div>${slide.content}`;
-                  
+                  const position = slide.image_position?.toLowerCase() || 'top';
+                  let contentWithImage = slide.content;
+
+                  if (position === 'top' || position === 'center') {
+                    contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
+                      <img src="${imageResult.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                    </div>${slide.content}`;
+                  } else if (position === 'right') {
+                    contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                      <div style="flex: 1;">${slide.content}</div>
+                      <div style="flex: 0 0 40%;">
+                        <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                      </div>
+                    </div>`;
+                  } else if (position === 'left') {
+                    contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                      <div style="flex: 0 0 40%;">
+                        <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                      </div>
+                      <div style="flex: 1;">${slide.content}</div>
+                    </div>`;
+                  }
+
                   return { ...slide, content: contentWithImage };
                 }
               } catch (error) {
-                console.error('Failed to generate image for slide:', error);
+                console.error('Failed to generate image:', error);
               }
-              return slide;
-            })
-          );
-          onSlidesGenerated(slidesWithImages);
-        } else {
-          onSlidesGenerated(response.slides);
-        }
-        
-        toast.success('AI presentation generated!');
-      } else {
-        toast.error('Invalid response format');
+            }
+            return slide;
+          })
+        );
       }
+
+      onSlidesGenerated(slides);
+      toast.success(`Generated ${slideCount} slides${includeImages ? ' with educational images' : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
