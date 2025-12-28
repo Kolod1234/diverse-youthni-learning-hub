@@ -90,31 +90,41 @@ Deno.serve(async (req) => {
       for (const imgContent of imageContents) {
         try {
           const imageUrl = imgContent.source?.url;
-          if (!imageUrl) continue;
+          if (!imageUrl) {
+            console.log('No image URL found in content');
+            continue;
+          }
           
           console.log('Fetching image from:', imageUrl);
           
           // Download the image
           const imageResponse = await fetch(imageUrl);
           if (!imageResponse.ok) {
-            console.error('Failed to fetch image:', imageResponse.status);
+            console.error('Failed to fetch image:', imageResponse.status, await imageResponse.text());
             continue;
           }
           
           const imageArrayBuffer = await imageResponse.arrayBuffer();
-          const imageBlob = new Blob([imageArrayBuffer], { 
-            type: imageResponse.headers.get('content-type') || 'image/png' 
-          });
+          console.log('Image downloaded, size:', imageArrayBuffer.byteLength);
+          
+          // Create a File object (required by UploadFile)
+          const imageFile = new File(
+            [imageArrayBuffer], 
+            `manus-image-${Date.now()}.png`,
+            { type: imageResponse.headers.get('content-type') || 'image/png' }
+          );
+          
+          console.log('Uploading file to Base44...');
           
           // Re-upload to Base44 storage
           const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({
-            file: imageBlob
+            file: imageFile
           });
           
-          console.log('Image uploaded:', uploadResult.file_url);
+          console.log('Image uploaded successfully:', uploadResult.file_url);
           permanentImages.push(uploadResult.file_url);
         } catch (error) {
-          console.error('Error processing image:', error);
+          console.error('Error processing image:', error.message, error.stack);
         }
       }
       
