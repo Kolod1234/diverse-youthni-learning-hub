@@ -25,61 +25,82 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       toast.info('Researching and generating slides...');
       
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an expert presentation designer and educator. Create a stunning, modern, visually-rich ${slideCount}-slide presentation about: "${topic}"
+        prompt: `You are an expert presentation designer and educator. Create a stunning, professional, deeply-researched ${slideCount}-slide presentation about: "${topic}"
 
 ${details ? `Additional context: ${details}` : ''}
 
-🎨 TEXT CONTENT (HTML) - Must include:
+🔍 CRITICAL - DEEP RESEARCH REQUIREMENTS:
+- Use internet search to find CURRENT, ACCURATE, SPECIFIC information
+- Include real statistics with EXACT numbers and sources (e.g., "According to WHO 2024...")
+- Reference actual case studies, recent events, and verified data
+- Use proper names, dates, locations - NO generic placeholders
+- Verify all facts before including them
+- Find expert quotes, research findings, and authoritative sources
 
-1. STUNNING HEADINGS:
-<h2 style="font-size: 36px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 24px;">Your Title</h2>
+🎨 HTML FORMATTING - STRICT REQUIREMENTS:
 
-2. EXPLANATORY TEXT - Write ALL information as rich HTML:
-- Detailed descriptions, definitions, explanations
-- Step-by-step processes with numbered points
-- Key facts and statistics with proper formatting
-- Real-world examples and case studies
-- Use <p>, <ul>, <ol>, <h3>, <strong>, <em> tags
+**NEVER USE MARKDOWN** - Always use proper HTML tags:
+- Bold text: <strong>text</strong> (NOT **text**)
+- Italic: <em>text</em> (NOT *text*)
+- Lists: <ul><li>item</li></ul> (NOT - item)
+- Headings: <h2>, <h3> (NOT ## or ###)
 
-3. STYLED CONTENT BLOCKS:
-- Key points: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 16px; box-shadow: 0 8px 24px rgba(102,126,234,0.3); margin: 20px 0;">Important info</div>
-- Info boxes: <div style="background: #f1f5f9; border-left: 6px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 16px 0;">Additional details</div>
-- Statistics: <div style="background: #fef3c7; border-left: 6px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 16px 0;">📊 Data point</div>
+1. STUNNING GRADIENT HEADINGS (required for each slide):
+<h2 style="font-size: 32px; font-weight: 800; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; margin-bottom: 20px; line-height: 1.3;">Main Title</h2>
 
-4. TWO-COLUMN LAYOUTS when appropriate:
-<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px; margin: 20px 0;">
-  <div>[Left column content]</div>
-  <div>[Right column content]</div>
+2. RICH FORMATTED TEXT with proper HTML:
+<p style="font-size: 18px; line-height: 1.8; color: #334155; margin-bottom: 16px;">
+  <strong>Key term:</strong> Detailed explanation with <em>emphasis</em> where needed.
+</p>
+
+<ul style="list-style: none; padding: 0; margin: 20px 0;">
+  <li style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 17px;">
+    <strong style="color: #667eea;">✓ Point 1:</strong> Detailed information with specific data
+  </li>
+  <li style="padding: 12px 0; border-bottom: 1px solid #e2e8f0; font-size: 17px;">
+    <strong style="color: #667eea;">✓ Point 2:</strong> More specific information
+  </li>
+</ul>
+
+3. STYLED HIGHLIGHT BOXES:
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 24px; border-radius: 12px; margin: 20px 0; box-shadow: 0 4px 12px rgba(102,126,234,0.3);">
+  <h3 style="margin: 0 0 12px 0; font-size: 20px;">Key Insight</h3>
+  <p style="margin: 0; font-size: 16px; line-height: 1.6;">Important information here</p>
 </div>
 
-📚 CONTENT QUALITY REQUIREMENTS:
-- Research deeply using internet data for ACCURATE, UP-TO-DATE information
-- Verify all facts, statistics, dates, names, and spelling
-- Include specific examples, case studies, real data with sources
-- Add relevant context and comprehensive explanations
-- Use professional language and proper grammar
-- Make content educational, engaging, and comprehensive
+<div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 20px; border-radius: 8px; margin: 20px 0;">
+  <p style="margin: 0; color: #1e293b; font-size: 16px;"><strong>💡 Did you know:</strong> Interesting fact with specific data</p>
+</div>
+
+4. DATA & STATISTICS BOXES:
+<div style="background: #fef3c7; border-left: 4px solid #f59e0b; padding: 20px; border-radius: 8px; margin: 20px 0;">
+  <p style="margin: 0; color: #78350f; font-size: 16px;"><strong>📊 Statistics:</strong> Include exact numbers, percentages, dates</p>
+</div>
 
 ${includeImages ? `
-📸 IMAGE GENERATION:
-For each slide that would benefit from a visual, include an "image_prompt" field with a detailed description for generating an educational diagram/illustration. The prompt should describe PURE VISUALS without text:
-- Use phrases like "clean illustration", "diagram showing", "visual representation"
-- Specify colors, style (minimalist, professional, artistic)
-- Mention key visual elements to include
-- Example: "Clean medical illustration of human heart showing chambers in red and blue, arrows indicating blood flow, professional style, no text labels"
+🖼️ IMAGE GENERATION - DETAILED REQUIREMENTS:
 
-Also include "image_position" field: "top", "center", "left", or "right"` : ''}
+For EVERY slide, include:
+- "image_prompt": Detailed, specific prompt for educational illustration
+- "image_description": Clear alt text describing what the image shows (2-3 sentences)
+- "image_position": "top", "center", "left", or "right"
 
-Return JSON with this exact structure:
-{
-  "slides": [
-    {
-      "title": "Slide Title",
-      "content": "<detailed HTML content>",
-      "order": 0${includeImages ? ',\n      "image_prompt": "description for image generation",\n      "image_position": "top"' : ''}
-    }
-  ]
-}`,
+**Image Prompt Examples:**
+- "Professional illustration of sustainable agriculture showing terraced farming with water irrigation systems, solar panels on barn, diverse crops in organized rows, farmers using modern technology tablets, vibrant greens and blues, aerial perspective, detailed educational style"
+- "Detailed diagram of water cycle with labeled stages: ocean evaporation (blue water droplets rising), cloud formation (white fluffy clouds), precipitation (rain falling), river flow (winding blue stream), plant transpiration (green leaves with water vapor), professional educational illustration with arrows showing flow"
+
+**Image Description Examples:**
+- "image_description": "An aerial view illustration of a sustainable farm featuring terraced fields with drip irrigation, solar panels, and diverse crop rotation demonstrating modern agricultural practices."` : ''}
+
+CONTENT STRUCTURE:
+- Start with attention-grabbing gradient heading
+- Use formatted bullet points with proper HTML
+- Include styled highlight boxes for key concepts
+- Add statistics in colored boxes with exact data
+- End with actionable takeaways or conclusions
+- Make every slide visually rich and informative
+
+Return JSON:`,
         add_context_from_internet: true,
         response_json_schema: {
           type: "object",
