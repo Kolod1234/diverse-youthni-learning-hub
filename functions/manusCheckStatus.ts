@@ -100,31 +100,38 @@ Deno.serve(async (req) => {
           // Download the image
           const imageResponse = await fetch(imageUrl);
           if (!imageResponse.ok) {
-            console.error('Failed to fetch image:', imageResponse.status, await imageResponse.text());
+            console.error('Failed to fetch image:', imageResponse.status);
             continue;
           }
           
-          const imageArrayBuffer = await imageResponse.arrayBuffer();
-          console.log('Image downloaded, size:', imageArrayBuffer.byteLength);
+          const imageBlob = await imageResponse.blob();
+          console.log('Image downloaded, size:', imageBlob.size, 'type:', imageBlob.type);
           
-          // Create a File object (required by UploadFile)
-          const imageFile = new File(
-            [imageArrayBuffer], 
-            `manus-image-${Date.now()}.png`,
-            { type: imageResponse.headers.get('content-type') || 'image/png' }
-          );
+          // Create FormData for upload
+          const formData = new FormData();
+          formData.append('file', imageBlob, `manus-image-${Date.now()}.png`);
           
-          console.log('Uploading file to Base44...');
+          console.log('Uploading to Base44 storage...');
           
-          // Re-upload to Base44 storage
-          const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({
-            file: imageFile
+          // Upload using fetch to the Base44 storage endpoint
+          const uploadResponse = await fetch(`${Deno.env.get('BASE44_API_URL') || 'https://api.base44.app'}/v1/storage/upload`, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${Deno.env.get('BASE44_SERVICE_ROLE_KEY')}`,
+            },
+            body: formData
           });
           
-          console.log('Image uploaded successfully:', uploadResult.file_url);
-          permanentImages.push(uploadResult.file_url);
+          if (!uploadResponse.ok) {
+            console.error('Upload failed:', uploadResponse.status, await uploadResponse.text());
+            continue;
+          }
+          
+          const uploadResult = await uploadResponse.json();
+          console.log('Image uploaded successfully:', uploadResult.url);
+          permanentImages.push(uploadResult.url);
         } catch (error) {
-          console.error('Error processing image:', error.message, error.stack);
+          console.error('Error processing image:', error.message);
         }
       }
       
