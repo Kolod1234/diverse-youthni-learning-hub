@@ -78,12 +78,31 @@ Deno.serve(async (req) => {
         }, { status: 500 });
       }
       
-      // Log what we're getting back for debugging
-      console.log('Parsed slides from Manus:', JSON.stringify(parsedContent.slides, null, 2));
+      // Extract images if present in the Manus response
+      const images = statusData.output
+        .flatMap(msg => msg.content || [])
+        .filter(c => c.type === 'image')
+        .map(c => c.source?.url)
+        .filter(Boolean);
+      
+      console.log('Images found in Manus response:', images);
+      
+      // Map images to slides if they exist
+      const slidesWithImages = parsedContent.slides.map((slide, index) => {
+        if (images[index]) {
+          return {
+            ...slide,
+            image_url: images[index]
+          };
+        }
+        return slide;
+      });
+      
+      console.log('Slides with images:', JSON.stringify(slidesWithImages, null, 2));
       
       return Response.json({ 
         status: 'completed',
-        slides: parsedContent.slides,
+        slides: slidesWithImages,
         success: true 
       });
     }
