@@ -176,7 +176,10 @@ Return JSON:`,
             if (slide.image_prompt) {
               try {
                 const imageResult = await base44.functions.invoke('searchImageOnline', {
-                  query: slide.image_prompt
+                  query: slide.image_prompt,
+                  slideTitle: slide.title,
+                  slideContent: slide.content,
+                  presentationTopic: topic
                 });
 
                 if (imageResult?.data?.url) {
