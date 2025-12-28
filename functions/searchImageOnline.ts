@@ -91,56 +91,32 @@ Prioritize sources:
 Return ONLY the direct image URL (must end in .png, .jpg, .jpeg, .svg, or .gif).
 Choose the image that best illustrates the specific topic "${query}" within the presentation context.`;
 
-    // Use LLM to search the web and find image URLs
-    const searchResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: contextPrompt,
-      add_context_from_internet: true
-    });
+    // Use AI to generate the image directly
+    try {
+      const aiImagePrompt = `Educational ${style} ${styleGuide[style] || 'illustration'}: ${query}. 
+Context: ${presentationTopic || query}${slideTitle ? ` - ${slideTitle}` : ''}.
+Style: Professional, clear, suitable for educational presentations.
+Format: ${ratioGuide[aspectRatio] || 'landscape'}.
+Colors: ${colorGuide[colorPalette] || 'balanced color scheme'}.`;
 
-    // Extract URL from response
-    let imageUrl = searchResult;
-    if (typeof searchResult === 'object' && searchResult.url) {
-      imageUrl = searchResult.url;
-    }
-
-    // Validate it's a proper URL
-    if (typeof imageUrl !== 'string' || !imageUrl.startsWith('http')) {
-      // Fallback: Generate AI image if search fails
-      console.log('Image search failed, generating AI fallback image');
-      
-      try {
-        const aiImagePrompt = `Educational ${style} illustration: ${query}. 
-Style: ${styleGuide[style] || 'photographic'}, ${ratioGuide[aspectRatio] || 'landscape format'}.
-Colors: ${colorGuide[colorPalette] || 'any'}.
-Purpose: Educational presentation about ${presentationTopic || query}.
-Clean, professional, suitable for educational materials.`;
-
-        const generatedImage = await base44.asServiceRole.integrations.Core.GenerateImage({
-          prompt: aiImagePrompt
-        });
-
-        if (generatedImage?.url) {
-          return Response.json({ 
-            url: generatedImage.url,
-            source: 'ai_generated',
-            fallback: true
-          });
-        }
-      } catch (genError) {
-        console.error('AI image generation failed:', genError);
-      }
-
-      // Ultimate fallback: return placeholder
-      return Response.json({ 
-        url: `https://via.placeholder.com/800x450/4F46E5/FFFFFF?text=${encodeURIComponent(query)}`,
-        source: 'placeholder',
-        fallback: true
+      const generatedImage = await base44.asServiceRole.integrations.Core.GenerateImage({
+        prompt: aiImagePrompt
       });
+
+      if (generatedImage?.url) {
+        return Response.json({ 
+          url: generatedImage.url,
+          source: 'ai_generated'
+        });
+      }
+    } catch (genError) {
+      console.error('AI image generation failed:', genError);
     }
 
+    // Fallback: return placeholder
     return Response.json({ 
-      url: imageUrl.trim(),
-      source: 'web_search'
+      url: `https://via.placeholder.com/800x450/6366F1/FFFFFF?text=${encodeURIComponent(query.substring(0, 50))}`,
+      source: 'placeholder'
     });
 
   } catch (error) {
