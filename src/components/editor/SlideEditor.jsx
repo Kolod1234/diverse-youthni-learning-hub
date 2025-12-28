@@ -11,6 +11,7 @@ import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
 import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder';
 import TemplateBlocks from '@/components/editor/TemplateBlocks';
+import ImageManager from '@/components/editor/ImageManager';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -162,6 +163,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showPresentation, setShowPresentation] = useState(false);
   const [showAdvancedBuilder, setShowAdvancedBuilder] = useState(false);
   const [showTemplateBlocks, setShowTemplateBlocks] = useState(false);
+  const [showImageManager, setShowImageManager] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -779,6 +781,12 @@ Format as a simple bulleted list.`,
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate AI Image
                       </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => setShowImageManager(true)}
+                      >
+                        <ImageIcon className="w-4 h-4 mr-2" />
+                        Add/Replace Image
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button
@@ -1283,6 +1291,20 @@ Format as a simple bulleted list.`,
           <PresentationMode 
             slides={slides}
             onClose={() => setShowPresentation(false)}
+          />
+        )}
+
+        {/* Image Manager */}
+        {showImageManager && (
+          <ImageManager
+            onImageSelected={(url) => {
+              const currentContent = currentSlideData?.content || '';
+              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Selected image" /></div>`;
+              updateSlide(currentSlide, 'content', currentContent + imageHtml);
+            }}
+            onClose={() => setShowImageManager(false)}
+            slideTitle={currentSlideData?.title}
+            slideContent={currentSlideData?.content}
           />
         )}
         </div>
