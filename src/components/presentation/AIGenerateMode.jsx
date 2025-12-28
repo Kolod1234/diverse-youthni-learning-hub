@@ -166,19 +166,19 @@ Return JSON:`,
 
       let slides = response.slides;
 
-      // Generate images if requested
+      // Search for images if requested
       if (includeImages) {
-        toast.info('Generating educational images and diagrams...');
-        
+        toast.info('Searching for educational images and diagrams...');
+
         slides = await Promise.all(
           slides.map(async (slide) => {
             if (slide.image_prompt) {
               try {
-                const imageResult = await base44.integrations.Core.GenerateImage({
-                  prompt: slide.image_prompt
+                const imageResult = await base44.functions.invoke('searchImageOnline', {
+                  query: slide.image_prompt
                 });
-                
-                if (imageResult?.url) {
+
+                if (imageResult?.data?.url) {
                   const position = slide.image_position?.toLowerCase() || 'top';
                   const imageDescription = slide.image_description || slide.title;
                   let contentWithImage = slide.content;
@@ -218,7 +218,7 @@ Return JSON:`,
       }
 
       onSlidesGenerated(slides);
-      toast.success(`Generated ${slideCount} slides${includeImages ? ' with educational images' : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? ' with web-sourced images' : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
@@ -276,9 +276,9 @@ Return JSON:`,
               className="w-4 h-4 rounded text-purple-600"
             />
             <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
-              <span className="font-semibold text-purple-900">Generate AI Images</span>
+              <span className="font-semibold text-purple-900">Find Educational Images</span>
               <p className="text-xs text-purple-700 mt-1">
-                Automatically create educational diagrams, graphs, and illustrations for your slides
+                Automatically search for high-quality educational images, diagrams, and illustrations from reputable sources
               </p>
             </Label>
           </div>
@@ -309,11 +309,11 @@ Return JSON:`,
           AI Features
         </h4>
         <ul className="text-sm text-purple-700 space-y-1">
-          <li>• Researches topic using internet data</li>
-          <li>• Creates structured, educational content</li>
-          <li>• Formats with professional styling</li>
-          <li>• Includes examples and definitions</li>
-          <li>• Generates custom educational images, diagrams & graphs</li>
+          <li>• Researches topic using internet data with cited sources</li>
+          <li>• Creates structured, educational content with expert quotes</li>
+          <li>• Formats with professional styling and HTML</li>
+          <li>• Includes real statistics, examples, and definitions</li>
+          <li>• Searches for high-quality educational images from reputable sources</li>
           <li>• Integrates visuals seamlessly with content</li>
         </ul>
       </div>
