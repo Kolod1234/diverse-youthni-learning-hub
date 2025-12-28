@@ -79,26 +79,56 @@ Deno.serve(async (req) => {
       }
       
       // Extract images if present in the Manus response
-      const images = statusData.output
+      const imageContents = statusData.output
         .flatMap(msg => msg.content || [])
-        .filter(c => c.type === 'image')
-        .map(c => c.source?.url)
-        .filter(Boolean);
+        .filter(c => c.type === 'image');
       
-      console.log('Images found in Manus response:', images);
+      console.log('Image contents found:', imageContents.length);
       
-      // Map images to slides if they exist
+      // Download and re-upload images to make them permanent
+      const permanentImages = [];
+      for (const imgContent of imageContents) {
+        try {
+          const imageUrl = imgContent.source?.url;
+          if (!imageUrl) continue;
+          
+          console.log('Fetching image from:', imageUrl);
+          
+          // Download the image
+          const imageResponse = await fetch(imageUrl);
+          if (!imageResponse.ok) {
+            console.error('Failed to fetch image:', imageResponse.status);
+            continue;
+          }
+          
+          const imageBlob = await imageResponse.blob();
+          
+          // Re-upload to Base44 storage
+          const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({
+            file: imageBlob
+          });
+          
+          console.log('Image uploaded:', uploadResult.file_url);
+          permanentImages.push(uploadResult.file_url);
+        } catch (error) {
+          console.error('Error processing image:', error);
+        }
+      }
+      
+      console.log('Permanent images:', permanentImages);
+      
+      // Map images to slides
       const slidesWithImages = parsedContent.slides.map((slide, index) => {
-        if (images[index]) {
+        if (permanentImages[index]) {
           return {
             ...slide,
-            image_url: images[index]
+            image_url: permanentImages[index]
           };
         }
         return slide;
       });
       
-      console.log('Slides with images:', JSON.stringify(slidesWithImages, null, 2));
+      console.log('Slides with permanent images:', JSON.stringify(slidesWithImages, null, 2));
       
       return Response.json({ 
         status: 'completed',
