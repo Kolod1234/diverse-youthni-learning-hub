@@ -150,6 +150,7 @@ Return JSON:`,
                   order: { type: "number" },
                   ...(includeImages ? {
                     image_prompt: { type: "string" },
+                    image_description: { type: "string" },
                     image_position: { type: "string" }
                   } : {})
                 }
