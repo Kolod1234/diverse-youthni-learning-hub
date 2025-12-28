@@ -209,7 +209,7 @@ Return JSON:`,
                   return { ...slide, content: contentWithImage };
                 }
               } catch (error) {
-                console.error('Failed to generate image:', error);
+                console.error('Failed to search for image:', error);
               }
             }
             return slide;
