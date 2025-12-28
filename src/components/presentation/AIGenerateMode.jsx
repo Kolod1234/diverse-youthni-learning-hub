@@ -145,23 +145,27 @@ Return JSON:`,
                 
                 if (imageResult?.url) {
                   const position = slide.image_position?.toLowerCase() || 'top';
+                  const imageDescription = slide.image_description || slide.title;
                   let contentWithImage = slide.content;
 
                   if (position === 'top' || position === 'center') {
-                    contentWithImage = `<div style="text-align: center; margin-bottom: 20px;">
-                      <img src="${imageResult.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                    contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                      <img src="${imageResult.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                      <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                     </div>${slide.content}`;
                   } else if (position === 'right') {
-                    contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                    contentWithImage = `<div style="display: flex; gap: 24px; align-items: flex-start;">
                       <div style="flex: 1;">${slide.content}</div>
                       <div style="flex: 0 0 40%;">
-                        <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                        <img src="${imageResult.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                        <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                       </div>
                     </div>`;
                   } else if (position === 'left') {
-                    contentWithImage = `<div style="display: flex; gap: 20px; align-items: flex-start;">
+                    contentWithImage = `<div style="display: flex; gap: 24px; align-items: flex-start;">
                       <div style="flex: 0 0 40%;">
-                        <img src="${imageResult.url}" alt="${slide.title}" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" />
+                        <img src="${imageResult.url}" alt="${imageDescription}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                        <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                       </div>
                       <div style="flex: 1;">${slide.content}</div>
                     </div>`;
