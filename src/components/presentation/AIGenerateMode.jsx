@@ -132,46 +132,50 @@ Return ONLY valid JSON.`,
 
       let slides = response.slides;
 
-      // Search for images if requested
+      // Generate images if requested
       if (includeImages) {
-        toast.info('Searching for educational images and diagrams...');
+        toast.info('Generating educational images with AI...');
 
-        if (includeImages) {
-          slides = await Promise.all(
-            slides.map(async (slide) => {
-              if (slide.image_prompt) {
-                try {
-                  const imageResult = await base44.functions.invoke('searchImageOnline', {
-                    query: slide.image_prompt,
-                    slideTitle: slide.title,
-                    slideContent: slide.content,
-                    presentationTopic: topic,
-                    style: imageStyle,
-                    aspectRatio: aspectRatio,
-                    colorPalette: colorPalette
-                  });
+        slides = await Promise.all(
+          slides.map(async (slide) => {
+            if (slide.image_prompt) {
+              try {
+                const styleMap = {
+                  photographic: 'realistic photograph, high-quality photography',
+                  illustrative: 'educational illustration, clean diagram',
+                  diagram: 'labeled diagram, technical illustration',
+                  abstract: 'abstract visualization, conceptual art'
+                };
 
-                  if (imageResult?.data?.url) {
-                    const imageDescription = slide.image_description || slide.title;
-                    const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                      <img src="${imageResult.data.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                      <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-                    </div>${slide.content}`;
+                const imagePrompt = `Educational ${imageStyle} ${styleMap[imageStyle] || 'illustration'}: ${slide.image_prompt}. 
+Context: ${topic} - ${slide.title}.
+Style: Professional, clear, suitable for educational presentations.
+Purpose: Illustrate the concept for students.`;
 
-                    return { ...slide, content: contentWithImage };
-                  }
-                } catch (error) {
-                  console.error('Failed to search for image:', error);
+                const generatedImage = await base44.integrations.Core.GenerateImage({
+                  prompt: imagePrompt
+                });
+
+                if (generatedImage?.url) {
+                  const imageDescription = slide.image_description || slide.title;
+                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                    <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
+                  </div>${slide.content}`;
+
+                  return { ...slide, content: contentWithImage };
                 }
+              } catch (error) {
+                console.error('Failed to generate image:', error);
               }
-              return slide;
-            })
-          );
-        }
+            }
+            return slide;
+          })
+        );
       }
 
       onSlidesGenerated(slides);
-      toast.success(`Generated ${slideCount} slides${includeImages ? ' with web-sourced images' : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? ' with AI-generated images' : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
