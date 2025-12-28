@@ -29,13 +29,34 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
 ${details ? `Additional context: ${details}` : ''}
 
-🔍 CRITICAL - DEEP RESEARCH REQUIREMENTS:
-- Use internet search to find CURRENT, ACCURATE, SPECIFIC information
-- Include real statistics with EXACT numbers and sources (e.g., "According to WHO 2024...")
-- Reference actual case studies, recent events, and verified data
-- Use proper names, dates, locations - NO generic placeholders
-- Verify all facts before including them
-- Find expert quotes, research findings, and authoritative sources
+🔍 CRITICAL - DEEP RESEARCH & CITATION REQUIREMENTS:
+
+**MANDATORY SOURCE CITATION:**
+- EVERY statistic MUST include source and year (e.g., "According to WHO 2024, 2.3 billion people...")
+- EVERY fact MUST be verifiable with a cited source (e.g., "NASA reports that...", "MIT study shows...")
+- Include direct expert quotes with attribution (e.g., "Dr. Jane Smith, Harvard climatologist, states...")
+- Reference specific research papers, studies, or reports by name
+
+**DEPTH & SPECIFICITY:**
+- Use EXACT numbers, percentages, dates - NO vague terms like "many" or "recent"
+- Include real case studies with specific locations and outcomes
+- Reference actual companies, organizations, or institutions by name
+- Provide concrete examples from recent events (2023-2024 preferred)
+- Include historical context with precise dates and figures
+
+**AUTHORITATIVE SOURCES TO PRIORITIZE:**
+- Academic institutions (universities, research centers)
+- Government agencies and international organizations (WHO, UN, NASA, etc.)
+- Peer-reviewed journals and scientific publications
+- Industry leaders and recognized experts in the field
+- Reputable news organizations for recent developments
+
+**ENGAGEMENT & CREDIBILITY:**
+- Start with compelling, fact-based hooks (e.g., "In 2024, scientists discovered...")
+- Include surprising statistics that capture attention
+- Use expert opinions to add authority
+- Provide real-world implications and applications
+- End with forward-looking insights based on current research
 
 🎨 HTML FORMATTING - STRICT REQUIREMENTS:
 
