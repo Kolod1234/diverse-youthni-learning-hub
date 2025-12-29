@@ -12,10 +12,11 @@ Deno.serve(async (req) => {
         // Fetch all users with service role
         const allUsers = await base44.asServiceRole.entities.User.list('full_name', 1000);
 
-        // Filter based on user role
+        // Filter users based on role and permissions
         const availableUsers = allUsers.filter(u => {
+            // Cannot message yourself
             if (u.email === user.email) return false;
-            
+
             // Admins can message everyone
             if (user.role === 'admin') return true;
             
