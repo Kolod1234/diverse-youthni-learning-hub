@@ -457,6 +457,10 @@ export default function Layout({ children, currentPageName }) {
                           <User className="w-5 h-5" />
                           <span>Manage Coordinators</span>
                         </Link>
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <MessageSquare className="w-5 h-5" />
+                          <span>Manage RSS Feed</span>
+                        </Link>
                       </>
                     )}
                   </div>
