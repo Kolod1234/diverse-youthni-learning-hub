@@ -144,10 +144,11 @@ export default function CourseDetails() {
             <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
             <div className="h-4 bg-gray-200 rounded w-1/2" />
           </div>
-        </div>
-      </div>
-    );
-  }
+          </div>
+          </div>
+          </CoursePasswordProtection>
+          );
+          }
 
   if (!course) {
     return (
