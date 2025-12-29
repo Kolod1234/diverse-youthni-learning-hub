@@ -12,6 +12,7 @@ import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
 import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder';
 import TemplateBlocks from '@/components/editor/TemplateBlocks';
 import ImageManager from '@/components/editor/ImageManager';
+import ImageTextOverlay from '@/components/editor/ImageTextOverlay';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -164,6 +165,8 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showAdvancedBuilder, setShowAdvancedBuilder] = useState(false);
   const [showTemplateBlocks, setShowTemplateBlocks] = useState(false);
   const [showImageManager, setShowImageManager] = useState(false);
+  const [showImageOverlay, setShowImageOverlay] = useState(false);
+  const [overlayImageUrl, setOverlayImageUrl] = useState('');
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -787,6 +790,22 @@ Format as a simple bulleted list.`,
                         <ImageIcon className="w-4 h-4 mr-2" />
                         Add/Replace Image
                       </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          // Extract first image from current slide
+                          const content = currentSlideData?.content || '';
+                          const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
+                          if (imgMatch) {
+                            setOverlayImageUrl(imgMatch[1]);
+                            setShowImageOverlay(true);
+                          } else {
+                            toast.error('No image found in current slide');
+                          }
+                        }}
+                      >
+                        <Type className="w-4 h-4 mr-2" />
+                        Add Labels to Image
+                      </DropdownMenuItem>
                     </DropdownMenuContent>
                   </DropdownMenu>
                   <Button
@@ -1305,6 +1324,23 @@ Format as a simple bulleted list.`,
             onClose={() => setShowImageManager(false)}
             slideTitle={currentSlideData?.title}
             slideContent={currentSlideData?.content}
+          />
+        )}
+
+        {/* Image Text Overlay */}
+        {showImageOverlay && overlayImageUrl && (
+          <ImageTextOverlay
+            imageUrl={overlayImageUrl}
+            onSave={(html) => {
+              const currentContent = currentSlideData?.content || '';
+              // Remove the original image
+              const contentWithoutImg = currentContent.replace(/<img[^>]+src="[^">]+">/, '');
+              updateSlide(currentSlide, 'content', contentWithoutImg + html);
+            }}
+            onClose={() => {
+              setShowImageOverlay(false);
+              setOverlayImageUrl('');
+            }}
           />
         )}
         </div>
