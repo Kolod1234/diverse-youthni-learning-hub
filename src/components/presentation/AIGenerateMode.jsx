@@ -12,9 +12,6 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [imageStyle, setImageStyle] = useState('illustrative');
-  const [aspectRatio, setAspectRatio] = useState('landscape');
-  const [colorPalette, setColorPalette] = useState('any');
   const [usePerplexity, setUsePerplexity] = useState(false);
   const [generating, setGenerating] = useState(false);
 
@@ -134,23 +131,25 @@ Return ONLY valid JSON.`,
 
       // Generate images if requested
       if (includeImages) {
-        toast.info('Generating educational images with AI...');
+        toast.info('Generating educational diagrams with AI...');
 
         slides = await Promise.all(
           slides.map(async (slide) => {
             if (slide.image_prompt) {
               try {
-                const styleMap = {
-                  photographic: 'realistic photograph, high-quality photography',
-                  illustrative: 'educational illustration, clean diagram',
-                  diagram: 'labeled diagram, technical illustration',
-                  abstract: 'abstract visualization, conceptual art'
-                };
+                const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
 
-                const imagePrompt = `Educational ${imageStyle} ${styleMap[imageStyle] || 'illustration'}: ${slide.image_prompt}. 
-Context: ${topic} - ${slide.title}.
-Style: Professional, clear, suitable for educational presentations.
-Purpose: Illustrate the concept for students.`;
+CRITICAL REQUIREMENTS:
+- Clean, professional educational diagram style
+- If text is needed, ensure PERFECT spelling of all scientific and technical terms
+- Clear labels with correct spelling (double-check terms like "mitosis", "meiosis", "photosynthesis", etc.)
+- Simple, clean design suitable for students
+- No text artifacts or misspellings
+- Professional educational quality
+
+Context: ${topic} - ${slide.title}
+Style: Illustrative diagram, infographic, or educational chart
+Purpose: Help students understand ${slide.image_prompt}`;
 
                 const generatedImage = await base44.integrations.Core.GenerateImage({
                   prompt: imagePrompt
@@ -224,70 +223,21 @@ Purpose: Illustrate the concept for students.`;
             />
           </div>
 
-          <div className="space-y-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
-            <div className="flex items-center gap-3">
-              <input
-                type="checkbox"
-                id="includeImages"
-                checked={includeImages}
-                onChange={(e) => setIncludeImages(e.target.checked)}
-                className="w-4 h-4 rounded text-purple-600"
-              />
-              <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
-                <span className="font-semibold text-purple-900">Find Educational Images</span>
-                <p className="text-xs text-purple-700 mt-1">
-                  Automatically search for high-quality educational images with customizable style and format
-                </p>
-              </Label>
-            </div>
-
-            {includeImages && (
-              <div className="grid grid-cols-3 gap-3 mt-3 pt-3 border-t border-purple-200">
-                <div>
-                  <Label className="text-xs text-purple-900 mb-1">Style</Label>
-                  <select
-                    value={imageStyle}
-                    onChange={(e) => setImageStyle(e.target.value)}
-                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
-                  >
-                    <option value="photographic">Photographic</option>
-                    <option value="illustrative">Illustrative</option>
-                    <option value="diagram">Diagram</option>
-                    <option value="abstract">Abstract</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label className="text-xs text-purple-900 mb-1">Format</Label>
-                  <select
-                    value={aspectRatio}
-                    onChange={(e) => setAspectRatio(e.target.value)}
-                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
-                  >
-                    <option value="landscape">Landscape</option>
-                    <option value="portrait">Portrait</option>
-                    <option value="square">Square</option>
-                  </select>
-                </div>
-
-                <div>
-                  <Label className="text-xs text-purple-900 mb-1">Colors</Label>
-                  <select
-                    value={colorPalette}
-                    onChange={(e) => setColorPalette(e.target.value)}
-                    className="w-full px-2 py-1.5 text-xs rounded border border-purple-200 bg-white"
-                  >
-                    <option value="any">Any</option>
-                    <option value="vibrant">Vibrant</option>
-                    <option value="muted">Muted</option>
-                    <option value="warm">Warm</option>
-                    <option value="cool">Cool</option>
-                    <option value="neutral">Neutral</option>
-                  </select>
-                </div>
-              </div>
-            )}
-            </div>
+          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+            <input
+              type="checkbox"
+              id="includeImages"
+              checked={includeImages}
+              onChange={(e) => setIncludeImages(e.target.checked)}
+              className="w-4 h-4 rounded text-purple-600"
+            />
+            <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
+              <span className="font-semibold text-purple-900">Generate Educational Diagrams</span>
+              <p className="text-xs text-purple-700 mt-1">
+                AI-generated illustrative diagrams and infographics with correct spelling verification
+              </p>
+            </Label>
+          </div>
 
             <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
             <input
