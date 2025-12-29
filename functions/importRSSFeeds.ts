@@ -2,50 +2,65 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const RSS_FEEDS = {
   bbc: 'https://feeds.bbci.co.uk/news/rss.xml',
-  cnn: 'https://rss.cnn.com/rss/edition.rss',
-  ocnni: 'https://www.ocnni.org.uk/feed/',
+  cnn: 'http://rss.cnn.com/rss/edition.rss',
+  ocnni: 'https://ocnni.org.uk/feed/',
   ukhomeoffice: 'https://homeofficemedia.blog.gov.uk/feed/',
   migrantni: 'https://migrantni.org/feed/',
 };
 
+function getTextContent(xmlText, tagName) {
+  const regex = new RegExp(`<${tagName}[^>]*>([\\s\\S]*?)<\/${tagName}>`, 'i');
+  const match = xmlText.match(regex);
+  return match ? match[1].trim() : null;
+}
+
+function extractImageFromDescription(description) {
+  const imgRegex = /<img[^>]+src="([^">]+)"/i;
+  const match = description.match(imgRegex);
+  return match ? match[1] : null;
+}
+
 async function parseRSSFeed(xmlText) {
-  const parser = new DOMParser();
-  const doc = parser.parseFromString(xmlText, 'text/xml');
-  
   const items = [];
-  const itemNodes = doc.querySelectorAll('item');
   
-  itemNodes.forEach((item) => {
-    const title = item.querySelector('title')?.textContent?.trim();
-    const description = item.querySelector('description')?.textContent?.trim()
-      .replace(/<[^>]*>/g, ''); // Strip HTML tags
-    const link = item.querySelector('link')?.textContent?.trim();
-    const pubDate = item.querySelector('pubDate')?.textContent?.trim();
+  // Split by <item> tags
+  const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+  let match;
+  
+  while ((match = itemRegex.exec(xmlText)) !== null) {
+    const itemXml = match[1];
     
-    // Try to get image from various sources
-    let imageUrl = null;
-    const mediaContent = item.querySelector('media\\:content, content');
-    const mediaThumbnail = item.querySelector('media\\:thumbnail, thumbnail');
-    const enclosure = item.querySelector('enclosure[type^="image"]');
+    const title = getTextContent(itemXml, 'title');
+    let description = getTextContent(itemXml, 'description') || '';
+    const link = getTextContent(itemXml, 'link');
+    const pubDate = getTextContent(itemXml, 'pubDate');
     
-    if (mediaContent?.getAttribute('url')) {
-      imageUrl = mediaContent.getAttribute('url');
-    } else if (mediaThumbnail?.getAttribute('url')) {
-      imageUrl = mediaThumbnail.getAttribute('url');
-    } else if (enclosure?.getAttribute('url')) {
-      imageUrl = enclosure.getAttribute('url');
+    // Extract image from description HTML or media tags
+    let imageUrl = extractImageFromDescription(description);
+    if (!imageUrl) {
+      const mediaRegex = /<media:(?:content|thumbnail)[^>]+url="([^"]+)"/i;
+      const mediaMatch = itemXml.match(mediaRegex);
+      if (mediaMatch) imageUrl = mediaMatch[1];
     }
+    if (!imageUrl) {
+      const enclosureRegex = /<enclosure[^>]+url="([^"]+)"[^>]+type="image/i;
+      const enclosureMatch = itemXml.match(enclosureRegex);
+      if (enclosureMatch) imageUrl = enclosureMatch[1];
+    }
+    
+    // Strip HTML tags from description
+    description = description.replace(/<[^>]*>/g, '').trim();
     
     if (title && description) {
       items.push({
-        title,
-        description: description.substring(0, 500), // Limit description length
-        link,
+        title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim(),
+        description: description.substring(0, 500),
+        link: link?.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim(),
         image_url: imageUrl,
         published_date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
       });
     }
-  });
+  }
   
   return items;
 }
