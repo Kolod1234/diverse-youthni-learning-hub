@@ -573,9 +573,9 @@ export default function YouthWorkWorkbook() {
           </Tabs>
         </div>
 
-        {/* Footer */}
-        <div className="mt-8 flex items-center justify-between pb-8">
-          <Button 
+          {/* Footer */}
+          <div className="mt-8 flex items-center justify-between pb-8">
+            <Button 
             variant="outline" 
             onClick={() => setSelectedUnit(Math.max(0, selectedUnit - 1))} 
             disabled={selectedUnit === 0}
