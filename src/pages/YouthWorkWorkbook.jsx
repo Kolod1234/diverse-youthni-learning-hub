@@ -569,7 +569,6 @@ export default function YouthWorkWorkbook() {
                   </Card>
                 </div>
               </TabsContent>
-              </div>
             </Tabs>
           </div>
 
