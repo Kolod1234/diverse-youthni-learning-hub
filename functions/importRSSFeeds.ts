@@ -23,17 +23,19 @@ function extractImageFromDescription(description) {
 async function parseRSSFeed(xmlText) {
   const items = [];
   
-  // Split by <item> tags
-  const itemRegex = /<item>([\s\S]*?)<\/item>/gi;
+  // Try <item> tags first (RSS 2.0)
+  let itemRegex = /<item>([\s\S]*?)<\/item>/gi;
   let match;
+  let foundItems = false;
   
   while ((match = itemRegex.exec(xmlText)) !== null) {
+    foundItems = true;
     const itemXml = match[1];
     
     const title = getTextContent(itemXml, 'title');
-    let description = getTextContent(itemXml, 'description') || '';
-    const link = getTextContent(itemXml, 'link');
-    const pubDate = getTextContent(itemXml, 'pubDate');
+    let description = getTextContent(itemXml, 'description') || getTextContent(itemXml, 'content:encoded') || '';
+    const link = getTextContent(itemXml, 'link') || getTextContent(itemXml, 'guid');
+    const pubDate = getTextContent(itemXml, 'pubDate') || getTextContent(itemXml, 'dc:date');
     
     // Extract image from description HTML or media tags
     let imageUrl = extractImageFromDescription(description);
@@ -49,16 +51,44 @@ async function parseRSSFeed(xmlText) {
     }
     
     // Strip HTML tags from description
-    description = description.replace(/<[^>]*>/g, '').trim();
+    description = description.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
     
-    if (title && description) {
+    if (title && description && link) {
       items.push({
-        title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim(),
+        title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/&[^;]+;/g, ' ').trim(),
         description: description.substring(0, 500),
-        link: link?.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim(),
+        link: link.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').trim(),
         image_url: imageUrl,
         published_date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
       });
+    }
+  }
+  
+  // If no items found, try <entry> tags (Atom)
+  if (!foundItems) {
+    itemRegex = /<entry>([\s\S]*?)<\/entry>/gi;
+    while ((match = itemRegex.exec(xmlText)) !== null) {
+      const itemXml = match[1];
+      
+      const title = getTextContent(itemXml, 'title');
+      let description = getTextContent(itemXml, 'summary') || getTextContent(itemXml, 'content') || '';
+      const linkMatch = itemXml.match(/<link[^>]+href="([^"]+)"/i);
+      const link = linkMatch ? linkMatch[1] : null;
+      const pubDate = getTextContent(itemXml, 'updated') || getTextContent(itemXml, 'published');
+      
+      let imageUrl = extractImageFromDescription(description);
+      
+      description = description.replace(/<[^>]*>/g, '').replace(/&[^;]+;/g, ' ').trim();
+      
+      if (title && description && link) {
+        items.push({
+          title: title.replace(/<!\[CDATA\[(.*?)\]\]>/g, '$1').replace(/&[^;]+;/g, ' ').trim(),
+          description: description.substring(0, 500),
+          link: link,
+          image_url: imageUrl,
+          published_date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+        });
+      }
     }
   }
   
