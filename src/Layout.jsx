@@ -338,6 +338,12 @@ export default function Layout({ children, currentPageName }) {
                           Manage Coordinators
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Manage RSS Feed
+                        </Link>
+                      </DropdownMenuItem>
                     </>
                   )}
                 </DropdownMenuContent>

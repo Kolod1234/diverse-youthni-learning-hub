@@ -40,6 +40,7 @@ import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import CourseParticipants from './pages/CourseParticipants';
+import AdminRSSFeed from './pages/AdminRSSFeed';
 import __Layout from './Layout.jsx';
 
 
@@ -86,6 +87,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "CourseParticipants": CourseParticipants,
+    "AdminRSSFeed": AdminRSSFeed,
 }
 
 export const pagesConfig = {
