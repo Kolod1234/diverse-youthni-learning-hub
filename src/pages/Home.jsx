@@ -22,13 +22,17 @@ export default function Home() {
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
   const [heroEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
   
-  const heroBackgroundImages = [
+  const defaultHeroBackgroundImages = [
     'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80',
     'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920&q=80',
     'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=80',
     'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80',
     'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1920&q=80'
   ];
+  
+  const heroBackgroundImages = heroCarouselImages.length > 0 
+    ? heroCarouselImages.map(img => img.image_url)
+    : defaultHeroBackgroundImages;
 
   useEffect(() => {
     const loadUser = async () => {
@@ -66,6 +70,12 @@ export default function Home() {
   const { data: leadershipCarouselImages = [] } = useQuery({
     queryKey: ['leadership-carousel-images'],
     queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'leadership' }, 'order', 20),
+    initialData: [],
+  });
+
+  const { data: heroCarouselImages = [] } = useQuery({
+    queryKey: ['hero-carousel-images'],
+    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'hero' }, 'order', 20),
     initialData: [],
   });
 
