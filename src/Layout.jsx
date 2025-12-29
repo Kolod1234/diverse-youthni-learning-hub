@@ -66,19 +66,9 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  const tutorNavigation = (user?.is_tutor || user?.role === 'admin') 
-    ? [
-        { name: 'Templates', href: createPageUrl('Templates'), icon: ClipboardList },
-        { name: 'Data to Slides', href: createPageUrl('DataPresentation'), icon: BarChart3 },
-        { name: 'Quiz Generator', href: createPageUrl('QuizGenerator'), icon: Award },
-        { name: 'Tutor Setup', href: createPageUrl('TutorSetup'), icon: User },
-        { name: 'Tutor Dashboard', href: createPageUrl('TutorDashboard'), icon: Settings }
-      ]
-    : [];
-
-  const adminNavigation = user?.role === 'admin'
-    ? [{ name: 'Admin Panel', href: '#admin', icon: Settings, onClick: () => setShowAdminPassword(true) }]
-    : [];
+  // Only show tutor features if user is explicitly a tutor or admin
+  const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
+  const isAdmin = user && user.role === 'admin';
 
   const navigation = [
     { name: 'Home', href: createPageUrl('Home'), icon: Home },
@@ -90,8 +80,6 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Achievements', href: createPageUrl('Achievements'), icon: Award },
     { name: 'Learning Paths', href: createPageUrl('LearningPaths'), icon: Award },
     { name: 'Programmes', href: createPageUrl('Programs'), icon: ClipboardList },
-    ...tutorNavigation,
-    ...adminNavigation,
     { name: 'Profile', href: createPageUrl('Profile'), icon: User },
   ];
 
@@ -255,7 +243,7 @@ export default function Layout({ children, currentPageName }) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
-                  {(user?.is_tutor || user?.role === 'admin') && (
+                  {isTutorOrAdmin && (
                     <>
                       <DropdownMenuItem asChild>
                         <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer">
@@ -290,7 +278,7 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuSeparator />
                     </>
                   )}
-                  {user?.role === 'admin' && (
+                  {isAdmin && (
                     <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer">
                       <Settings className="w-4 h-4 mr-2" />
                       Admin Panel
