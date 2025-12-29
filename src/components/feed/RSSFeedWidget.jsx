@@ -48,6 +48,7 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
   const { data: feedItems = [], isLoading } = useQuery({
     queryKey: ['rss-feed'],
     queryFn: () => base44.entities.RSSFeed.list('-published_date', 100),
+    refetchInterval: 300000, // Auto-refresh every 5 minutes
   });
 
   // Filter to show only recent news (last 3 days) and custom announcements
