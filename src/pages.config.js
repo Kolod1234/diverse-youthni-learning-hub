@@ -26,6 +26,7 @@ import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
 import QuizGenerator from './pages/QuizGenerator';
 import ScheduleSession from './pages/ScheduleSession';
+import Sessions from './pages/Sessions';
 import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
@@ -34,7 +35,6 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import Sessions from './pages/Sessions';
 import __Layout from './Layout.jsx';
 
 
@@ -67,6 +67,7 @@ export const PAGES = {
     "Quiz": Quiz,
     "QuizGenerator": QuizGenerator,
     "ScheduleSession": ScheduleSession,
+    "Sessions": Sessions,
     "StudentAnalytics": StudentAnalytics,
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
@@ -75,7 +76,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "Sessions": Sessions,
 }
 
 export const pagesConfig = {

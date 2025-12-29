@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
+import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import { motion } from 'framer-motion';
 
 export default function Layout({ children, currentPageName }) {
@@ -255,6 +256,14 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuSeparator />
                     </>
                   )}
+                  {user && !user.is_tutor && user.role !== 'admin' && (
+                    <>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <BecomeTutorButton user={user} />
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   {isCoordinator && !isTutorOrAdmin && (
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer">
@@ -377,6 +386,13 @@ export default function Layout({ children, currentPageName }) {
                     {user && !user.is_coordinator && user.role !== 'admin' && (
                       <div className="px-2 py-1">
                         <BecomeCoordinatorButton user={user} />
+                      </div>
+                    )}
+
+                    {/* Become Tutor - Mobile */}
+                    {user && !user.is_tutor && user.role !== 'admin' && (
+                      <div className="px-2 py-1">
+                        <BecomeTutorButton user={user} />
                       </div>
                     )}
 

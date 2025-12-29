@@ -13,7 +13,7 @@ import {
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
   Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
-  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck
+  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck, GraduationCap, X
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -98,6 +98,11 @@ export default function AdminDashboard() {
     queryFn: () => base44.entities.SiteContent.list('key', 1000),
   });
 
+  const { data: tutorRequests = [] } = useQuery({
+    queryKey: ['tutor-requests'],
+    queryFn: () => base44.entities.TutorRequest.filter({ status: 'pending' }, '-created_date', 100),
+  });
+
   if (!user || user.role !== 'admin') {
     return null;
   }
@@ -160,6 +165,13 @@ export default function AdminDashboard() {
             <TabsTrigger value="users" className="rounded-lg">
               <Users className="w-4 h-4 mr-2" />
               Users
+            </TabsTrigger>
+            <TabsTrigger value="tutor-requests" className="rounded-lg">
+              <GraduationCap className="w-4 h-4 mr-2" />
+              Tutor Requests
+              {tutorRequests.length > 0 && (
+                <Badge className="ml-2 bg-orange-500">{tutorRequests.length}</Badge>
+              )}
             </TabsTrigger>
             <TabsTrigger value="courses" className="rounded-lg">
               <BookOpen className="w-4 h-4 mr-2" />
@@ -245,6 +257,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="users">
             <UsersManagement users={allUsers} searchQuery={searchQuery} setSearchQuery={setSearchQuery} />
+          </TabsContent>
+
+          <TabsContent value="tutor-requests">
+            <TutorRequestsManagement />
           </TabsContent>
 
           <TabsContent value="courses">
@@ -2518,6 +2534,196 @@ function PasswordManagement({ users }) {
         ))}
       </div>
     </Card>
+  );
+}
+
+// Tutor Requests Management Component
+function TutorRequestsManagement() {
+  const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
+
+  const { data: tutorRequests = [] } = useQuery({
+    queryKey: ['tutor-requests'],
+    queryFn: () => base44.entities.TutorRequest.list('-created_date', 100),
+  });
+
+  const approveRequestMutation = useMutation({
+    mutationFn: async ({ requestId, userEmail, userName }) => {
+      const users = await base44.asServiceRole.entities.User.filter({ email: userEmail });
+      const targetUser = users[0];
+
+      if (!targetUser) {
+        throw new Error('User not found');
+      }
+
+      await base44.asServiceRole.entities.User.update(targetUser.id, { is_tutor: true });
+      
+      await base44.entities.TutorRequest.update(requestId, { 
+        status: 'approved',
+        processed_by: user.email,
+        processed_date: new Date().toISOString()
+      });
+
+      try {
+        await base44.functions.invoke('sendNotification', {
+          recipient_email: userEmail,
+          title: 'Welcome as a Tutor!',
+          message: `Congratulations ${userName}! Your tutor request has been approved. You can now access the Tutor Dashboard and start creating courses.`,
+          type: 'general',
+          send_email: true,
+        });
+      } catch (err) {
+        console.error('Failed to send welcome email:', err);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-requests']);
+      queryClient.invalidateQueries(['all-users']);
+      toast.success('Tutor approved and welcome email sent!');
+    },
+    onError: (error) => {
+      toast.error(`Failed to approve: ${error.message}`);
+    },
+  });
+
+  const rejectRequestMutation = useMutation({
+    mutationFn: async (requestId) => {
+      await base44.entities.TutorRequest.update(requestId, { 
+        status: 'rejected',
+        processed_by: user.email,
+        processed_date: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-requests']);
+      toast.success('Request rejected');
+    },
+  });
+
+  const pendingRequests = tutorRequests.filter(r => r.status === 'pending');
+  const processedRequests = tutorRequests.filter(r => r.status !== 'pending');
+
+  return (
+    <div className="space-y-6">
+      {pendingRequests.length > 0 && (
+        <Card className="p-6 bg-orange-50 border-orange-200">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <GraduationCap className="w-5 h-5 text-orange-600" />
+            Pending Tutor Requests ({pendingRequests.length})
+          </h2>
+          <div className="space-y-3">
+            {pendingRequests.map(request => (
+              <Card key={request.id} className="p-4 bg-white border-orange-200">
+                <div className="flex items-start justify-between mb-3">
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2 mb-2">
+                      <p className="font-semibold text-gray-900">{request.user_name}</p>
+                      <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                    </div>
+                    <p className="text-sm text-gray-600 mb-1">{request.user_email}</p>
+                    
+                    <div className="mt-3 space-y-2">
+                      <div>
+                        <p className="text-xs font-medium text-gray-500 uppercase mb-1">Reason:</p>
+                        <p className="text-sm text-gray-700 italic">"{request.reason}"</p>
+                      </div>
+                      
+                      {request.qualifications && (
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase mb-1">Qualifications:</p>
+                          <p className="text-sm text-gray-700">{request.qualifications}</p>
+                        </div>
+                      )}
+                      
+                      {request.subjects && request.subjects.length > 0 && (
+                        <div>
+                          <p className="text-xs font-medium text-gray-500 uppercase mb-1">Subjects:</p>
+                          <div className="flex gap-2 flex-wrap">
+                            {request.subjects.map((subject, idx) => (
+                              <Badge key={idx} variant="outline">{subject}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="flex gap-2 mt-4">
+                  <Button 
+                    size="sm"
+                    onClick={() => approveRequestMutation.mutate({ 
+                      requestId: request.id, 
+                      userEmail: request.user_email,
+                      userName: request.user_name
+                    })}
+                    disabled={approveRequestMutation.isPending}
+                    className="bg-green-600 hover:bg-green-700"
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Approve
+                  </Button>
+                  <Button 
+                    size="sm"
+                    variant="outline"
+                    onClick={() => rejectRequestMutation.mutate(request.id)}
+                    disabled={rejectRequestMutation.isPending}
+                    className="text-red-600 hover:text-red-700"
+                  >
+                    <X className="w-4 h-4 mr-2" />
+                    Reject
+                  </Button>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {processedRequests.length > 0 && (
+        <Card className="p-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Processed Requests</h2>
+          <div className="space-y-3">
+            {processedRequests.map(request => (
+              <Card key={request.id} className="p-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <div className="flex items-center gap-2 mb-1">
+                      <p className="font-medium text-gray-900">{request.user_name}</p>
+                      <Badge className={request.status === 'approved' ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'}>
+                        {request.status}
+                      </Badge>
+                    </div>
+                    <p className="text-sm text-gray-600">{request.user_email}</p>
+                    {request.processed_by && (
+                      <p className="text-xs text-gray-500 mt-1">
+                        Processed by {request.processed_by} on {new Date(request.processed_date).toLocaleDateString()}
+                      </p>
+                    )}
+                  </div>
+                </div>
+              </Card>
+            ))}
+          </div>
+        </Card>
+      )}
+
+      {tutorRequests.length === 0 && (
+        <Card className="p-12 text-center">
+          <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-lg font-semibold text-gray-900 mb-2">No Tutor Requests</h3>
+          <p className="text-gray-500">All tutor requests will appear here</p>
+        </Card>
+      )}
+    </div>
   );
 }
 
