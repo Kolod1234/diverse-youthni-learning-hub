@@ -15,6 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [aiProvider, setAiProvider] = useState('standard'); // 'standard', 'perplexity', 'gemini'
   const [useWebImages, setUseWebImages] = useState(true);
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'gemini'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -221,12 +222,28 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          toast.info('Generating educational diagrams with Nano Banana AI...');
+          const generatorName = imageGenerator === 'gemini' ? 'Gemini Imagen' : 'Nano Banana AI';
+          toast.info(`Generating educational diagrams with ${generatorName}...`);
+          
           slides = await Promise.all(
             slides.map(async (slide) => {
               if (slide.image_prompt) {
                 try {
-                  const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
+                  let generatedImage;
+                  
+                  if (imageGenerator === 'gemini') {
+                    // Use Gemini for image generation
+                    const result = await base44.functions.invoke('geminiImageGeneration', {
+                      prompt: slide.image_prompt,
+                      topic: `${topic} - ${slide.title}`
+                    });
+                    
+                    if (result.data?.url) {
+                      generatedImage = { url: result.data.url };
+                    }
+                  } else {
+                    // Use Nano Banana (default)
+                    const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
 
 CRITICAL REQUIREMENTS FOR NANO BANANA:
 - Clean, professional educational diagram style
@@ -241,9 +258,10 @@ Style: Illustrative diagram, infographic, or educational chart
 Purpose: Help students understand ${slide.image_prompt}
 Level: ${levelInstructions[educationLevel]}`;
 
-                  const generatedImage = await base44.integrations.Core.GenerateImage({
-                    prompt: imagePrompt
-                  });
+                    generatedImage = await base44.integrations.Core.GenerateImage({
+                      prompt: imagePrompt
+                    });
+                  }
 
                   if (generatedImage?.url) {
                     const imageDescription = slide.image_description || slide.title;
@@ -362,21 +380,55 @@ Level: ${levelInstructions[educationLevel]}`;
           </div>
 
           {includeImages && (
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-              <input
-                type="checkbox"
-                id="useWebImages"
-                checked={useWebImages}
-                onChange={(e) => setUseWebImages(e.target.checked)}
-                className="w-4 h-4 rounded text-green-600"
-              />
-              <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
-                <span className="font-semibold text-green-900">🌐 Use Web-Sourced Images</span>
-                <p className="text-xs text-green-700 mt-1">
-                  Find real educational images from authoritative sources (unchecked = AI-generated images)
-                </p>
-              </Label>
-            </div>
+            <>
+              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                <input
+                  type="checkbox"
+                  id="useWebImages"
+                  checked={useWebImages}
+                  onChange={(e) => setUseWebImages(e.target.checked)}
+                  className="w-4 h-4 rounded text-green-600"
+                />
+                <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
+                  <span className="font-semibold text-green-900">🌐 Use Web-Sourced Images</span>
+                  <p className="text-xs text-green-700 mt-1">
+                    Find real educational images from authoritative sources (unchecked = AI-generated images)
+                  </p>
+                </Label>
+              </div>
+
+              {!useWebImages && (
+                <div className="space-y-2">
+                  <Label>Image Generator</Label>
+                  <div className="grid grid-cols-2 gap-3">
+                    <button
+                      type="button"
+                      onClick={() => setImageGenerator('nano-banana')}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        imageGenerator === 'nano-banana'
+                          ? 'border-purple-500 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm mb-1">🍌 Nano Banana</div>
+                      <div className="text-xs text-gray-600">Fast diagram generation</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageGenerator('gemini')}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        imageGenerator === 'gemini'
+                          ? 'border-green-500 bg-green-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm mb-1">✨ Gemini Imagen</div>
+                      <div className="text-xs text-gray-600">High-quality diagrams</div>
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
 
           <div className="space-y-2">
