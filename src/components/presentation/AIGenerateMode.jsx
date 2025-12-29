@@ -13,6 +13,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
   const [usePerplexity, setUsePerplexity] = useState(false);
+  const [useWebImages, setUseWebImages] = useState(true);
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
@@ -40,7 +41,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       "title": "Engaging slide title",
       "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples with proper context.",
       "order": 1,
-      "image_url": "Direct URL to relevant educational image from web (Wikimedia Commons, NASA, NIH, .edu, .gov sources)",
+      ${includeImages && useWebImages ? '"image_url": "Direct URL to relevant educational image from web (Wikimedia Commons, NASA, NIH, .edu, .gov sources)",' : includeImages ? '"image_prompt": "Specific search query for finding a relevant educational image",' : ''}
       "image_description": "Brief description of what the image shows"
       }
       ]
@@ -52,7 +53,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       - Make content educational and engaging for students
       - Format content with proper HTML for visual hierarchy
 
-      ${includeImages ? 'IMPORTANT: Use your web search to find REAL image URLs from authoritative sources (Wikimedia Commons, NASA, educational institutions, government sites). Include direct "image_url" (full https:// URL ending in .jpg, .png, .svg) and "image_description" for EVERY slide. Prioritize images with correct labels and professional quality.' : ''}
+      ${includeImages && useWebImages ? 'IMPORTANT: Use your web search to find REAL image URLs from authoritative sources (Wikimedia Commons, NASA, educational institutions, government sites). Include direct "image_url" (full https:// URL ending in .jpg, .png, .svg) and "image_description" for EVERY slide. Prioritize images with correct labels and professional quality.' : includeImages ? 'IMPORTANT: Include "image_prompt" (detailed search query) and "image_description" for EVERY slide to be used for AI image generation.' : ''}
 
       Return ONLY the JSON object, nothing else.`
         });
@@ -131,7 +132,7 @@ Return ONLY valid JSON.`,
 
       // Add images if requested
       if (includeImages) {
-        if (usePerplexity) {
+        if (usePerplexity && useWebImages) {
           toast.info('Using web-sourced educational images...');
           // Perplexity provides image URLs directly
           slides = slides.map(slide => {
@@ -189,7 +190,7 @@ Purpose: Help students understand ${slide.image_prompt}`;
       }
 
       onSlidesGenerated(slides);
-      toast.success(`Generated ${slideCount} slides${includeImages ? (usePerplexity ? ' with web-sourced images' : ' with AI-generated images') : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? (usePerplexity && useWebImages ? ' with web-sourced images' : ' with AI-generated images') : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
@@ -254,21 +255,41 @@ Purpose: Help students understand ${slide.image_prompt}`;
             </Label>
           </div>
 
+          <div className="space-y-3">
             <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-            <input
-              type="checkbox"
-              id="usePerplexity"
-              checked={usePerplexity}
-              onChange={(e) => setUsePerplexity(e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600"
-            />
-            <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
-              <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
-              <p className="text-xs text-blue-700 mt-1">
-                Enhanced research with real-time web search, citations, and more accurate information
-              </p>
-            </Label>
+              <input
+                type="checkbox"
+                id="usePerplexity"
+                checked={usePerplexity}
+                onChange={(e) => setUsePerplexity(e.target.checked)}
+                className="w-4 h-4 rounded text-blue-600"
+              />
+              <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
+                <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
+                <p className="text-xs text-blue-700 mt-1">
+                  Enhanced research with real-time web search, citations, and more accurate information
+                </p>
+              </Label>
             </div>
+
+            {usePerplexity && includeImages && (
+              <div className="ml-8 flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                <input
+                  type="checkbox"
+                  id="useWebImages"
+                  checked={useWebImages}
+                  onChange={(e) => setUseWebImages(e.target.checked)}
+                  className="w-4 h-4 rounded text-green-600"
+                />
+                <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
+                  <span className="font-semibold text-green-900">🌐 Search Web for Images</span>
+                  <p className="text-xs text-green-700 mt-1">
+                    Find real educational images from authoritative sources (unchecked = AI-generated images)
+                  </p>
+                </Label>
+              </div>
+            )}
+          </div>
 
           <Button
             onClick={generateFromTopic}
