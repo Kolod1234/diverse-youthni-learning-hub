@@ -187,9 +187,9 @@ export default function Home() {
                 <img
                   src={imgUrl}
                   alt={`Educational background ${idx + 1}`}
-                  className="w-full h-full object-cover opacity-20"
+                  className="w-full h-full object-cover opacity-40"
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#d32f2f]/40 via-transparent to-[#c62828]/40" />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#d32f2f]/60 via-transparent to-[#c62828]/60" />
               </div>
             ))}
           </div>
