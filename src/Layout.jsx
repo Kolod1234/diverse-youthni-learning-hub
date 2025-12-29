@@ -66,9 +66,10 @@ export default function Layout({ children, currentPageName }) {
     }
   };
 
-  // Only show tutor features if user is explicitly a tutor or admin
+  // Role checks
   const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
   const isAdmin = user && user.role === 'admin';
+  const isCoordinator = user && user.is_coordinator === true && !user.coordinator_banned;
 
   const navigation = [
     { name: 'Home', href: createPageUrl('Home'), icon: Home },
@@ -243,6 +244,14 @@ export default function Layout({ children, currentPageName }) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  {isCoordinator && !isTutorOrAdmin && (
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer">
+                        <User className="w-4 h-4 mr-2" />
+                        Coordinators Dashboard
+                      </Link>
+                    </DropdownMenuItem>
+                  )}
                   {isTutorOrAdmin && (
                     <>
                       <DropdownMenuItem asChild>
@@ -279,10 +288,18 @@ export default function Layout({ children, currentPageName }) {
                     </>
                   )}
                   {isAdmin && (
-                    <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Admin Panel
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer">
+                        <Settings className="w-4 h-4 mr-2" />
+                        Admin Panel
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer">
+                          <User className="w-4 h-4 mr-2" />
+                          Manage Coordinators
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                 </DropdownMenuContent>
               </DropdownMenu>

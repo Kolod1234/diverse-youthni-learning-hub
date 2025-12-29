@@ -32,6 +32,8 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
+import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
+import AdminCoordinators from './pages/AdminCoordinators';
 import __Layout from './Layout.jsx';
 
 
@@ -70,6 +72,8 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
+    "CoordinatorsDashboard": CoordinatorsDashboard,
+    "AdminCoordinators": AdminCoordinators,
 }
 
 export const pagesConfig = {
