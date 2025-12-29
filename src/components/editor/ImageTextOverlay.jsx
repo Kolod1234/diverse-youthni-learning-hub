@@ -520,9 +520,9 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                   )}
                 </div>
               ))}
-              </div>
-            )}
-          </div>
+            </div>
+          )}
+        </div>
 
           {/* Properties Panel */}
           <div className="w-80 border-l bg-gray-50 p-4 overflow-auto">
