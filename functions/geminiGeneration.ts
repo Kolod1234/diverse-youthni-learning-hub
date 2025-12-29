@@ -32,7 +32,7 @@ Deno.serve(async (req) => {
           'Authorization': `Bearer ${openaiKey}`
         },
         body: JSON.stringify({
-          model: 'gpt-4o-mini',
+          model: 'gpt-3.5-turbo',
           messages: [
             {
               role: 'user',
@@ -53,7 +53,7 @@ Deno.serve(async (req) => {
 
     return Response.json({ 
       content,
-      model: 'gpt-4o-mini'
+      model: 'gpt-3.5-turbo'
     });
     
   } catch (error) {
