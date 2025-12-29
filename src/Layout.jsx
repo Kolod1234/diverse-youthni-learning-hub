@@ -370,6 +370,54 @@ export default function Layout({ children, currentPageName }) {
                 <SheetContent side="right" className="w-72 overflow-y-auto">
                   <div className="flex flex-col gap-4 mt-8 pb-8">
                     <NavLinks mobile onItemClick={() => {}} />
+                    
+                    {/* Become Coordinator - Mobile */}
+                    {user && !user.is_coordinator && user.role !== 'admin' && (
+                      <div className="px-2 py-1">
+                        <BecomeCoordinatorButton user={user} />
+                      </div>
+                    )}
+                    
+                    {/* Additional Mobile Menu Items */}
+                    <Link to={createPageUrl('ContactUs')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                      <MessageSquare className="w-5 h-5" />
+                      <span>Contact Us</span>
+                    </Link>
+
+                    {isCoordinator && !isTutorOrAdmin && (
+                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <User className="w-5 h-5" />
+                        <span>Coordinators Dashboard</span>
+                      </Link>
+                    )}
+
+                    {isTutorOrAdmin && (
+                      <>
+                        <div className="border-t border-gray-200 my-2" />
+                        <Link to={createPageUrl('Templates')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <ClipboardList className="w-5 h-5" />
+                          <span>Templates</span>
+                        </Link>
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <Settings className="w-5 h-5" />
+                          <span>Tutor Dashboard</span>
+                        </Link>
+                      </>
+                    )}
+
+                    {isAdmin && (
+                      <>
+                        <div className="border-t border-gray-200 my-2" />
+                        <button onClick={() => setShowAdminPassword(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full text-left">
+                          <Settings className="w-5 h-5" />
+                          <span>Admin Panel</span>
+                        </button>
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <User className="w-5 h-5" />
+                          <span>Manage Coordinators</span>
+                        </Link>
+                      </>
+                    )}
                   </div>
                 </SheetContent>
               </Sheet>
