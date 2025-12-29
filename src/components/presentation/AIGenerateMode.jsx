@@ -4,8 +4,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Loader2, Sparkles, Lightbulb } from 'lucide-react';
+import { Loader2, Sparkles, Lightbulb, Image } from 'lucide-react';
 import { toast } from 'sonner';
+import ImageSearchPreview from './ImageSearchPreview';
 
 export default function AIGenerateMode({ onSlidesGenerated }) {
   const [topic, setTopic] = useState('');
@@ -15,8 +16,12 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [usePerplexity, setUsePerplexity] = useState(false);
   const [useWebImages, setUseWebImages] = useState(true);
   const [educationLevel, setEducationLevel] = useState('gcse');
+  const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
+  const [showImagePreview, setShowImagePreview] = useState(false);
+  const [currentSlideForImage, setCurrentSlideForImage] = useState(null);
+  const [generatedSlides, setGeneratedSlides] = useState([]);
 
   const generateFromTopic = async () => {
     if (!topic.trim()) {
@@ -147,20 +152,33 @@ Return ONLY valid JSON.`,
 
       // Add images if requested
       if (includeImages) {
-        if (usePerplexity && useWebImages) {
-          toast.info('Using web-sourced educational images...');
-          // Perplexity provides image URLs directly
-          slides = slides.map(slide => {
-            if (slide.image_url) {
-              const imageDescription = slide.image_description || slide.title;
-              const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                <img src="${slide.image_url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-              </div>${slide.content}`;
-              return { ...slide, content: contentWithImage };
-            }
-            return slide;
-          });
+        if (useWebImages) {
+          toast.info('Searching high-quality images from Unsplash...');
+          slides = await Promise.all(
+            slides.map(async (slide) => {
+              const searchQuery = imageSearchTerms || slide.image_prompt || slide.title;
+              try {
+                const result = await base44.functions.invoke('searchUnsplashImages', {
+                  query: searchQuery,
+                  perPage: 1
+                });
+
+                if (result.data.images?.length > 0) {
+                  const image = result.data.images[0];
+                  const imageDescription = slide.image_description || slide.title;
+                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                    <img src="${image.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
+                    <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Photo by <a href="${image.photographer_url}" target="_blank" style="color: #64748b;">${image.photographer}</a></p>
+                  </div>${slide.content}`;
+                  return { ...slide, content: contentWithImage };
+                }
+              } catch (error) {
+                console.error('Failed to fetch Unsplash image:', error);
+              }
+              return slide;
+            })
+          );
         } else {
           toast.info('Generating educational diagrams with Nano Banana AI...');
           slides = await Promise.all(
@@ -205,9 +223,10 @@ Level: ${levelInstructions[educationLevel]}`;
         }
       }
 
+      setGeneratedSlides(slides);
       onSlidesGenerated(slides);
       setHasGenerated(true);
-      toast.success(`Generated ${slideCount} slides${includeImages ? (usePerplexity && useWebImages ? ' with web-sourced images' : ' with AI-generated images') : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? (useWebImages ? ' with Unsplash images' : ' with AI-generated images') : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
@@ -243,6 +262,20 @@ Level: ${levelInstructions[educationLevel]}`;
               rows={4}
             />
           </div>
+
+          {includeImages && useWebImages && (
+            <div>
+              <Label>Image Search Terms (Optional)</Label>
+              <Input
+                value={imageSearchTerms}
+                onChange={(e) => setImageSearchTerms(e.target.value)}
+                placeholder="e.g., biology diagrams, chemical structures, historical photos"
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                Specify custom search terms for images. Leave empty to use slide titles.
+              </p>
+            </div>
+          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -355,19 +388,29 @@ Level: ${levelInstructions[educationLevel]}`;
       </div>
 
       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-        <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-          <Lightbulb className="w-4 h-4" />
-          AI Features
-        </h4>
-        <ul className="text-sm text-purple-700 space-y-1">
-          <li>• Researches topic using internet data with cited sources</li>
-          <li>• Creates structured, educational content with expert quotes</li>
-          <li>• Formats with professional styling and HTML</li>
-          <li>• Includes real statistics, examples, and definitions</li>
-          <li>• Searches for high-quality educational images from reputable sources</li>
-          <li>• Integrates visuals seamlessly with content</li>
-        </ul>
+      <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+      <Lightbulb className="w-4 h-4" />
+      AI Features
+      </h4>
+      <ul className="text-sm text-purple-700 space-y-1">
+      <li>• Researches topic using internet data with cited sources</li>
+      <li>• Creates structured, educational content with expert quotes</li>
+      <li>• Formats with professional styling and HTML</li>
+      <li>• Includes real statistics, examples, and definitions</li>
+      <li>• Searches high-quality images from Unsplash with proper attribution</li>
+      <li>• Integrates visuals seamlessly with content</li>
+      </ul>
       </div>
-    </div>
-  );
-}
+
+      <ImageSearchPreview
+      isOpen={showImagePreview}
+      onClose={() => setShowImagePreview(false)}
+      onSelectImage={(image) => {
+      // Handle image selection if needed
+      toast.success('Image selected!');
+      }}
+      defaultQuery={imageSearchTerms || topic}
+      />
+      </div>
+      );
+      }
