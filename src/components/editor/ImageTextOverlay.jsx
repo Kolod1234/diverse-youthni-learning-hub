@@ -3,15 +3,106 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
-import { X, Plus, Type, Trash2 } from 'lucide-react';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Slider } from '@/components/ui/slider';
+import { X, Plus, Type, Trash2, Image as ImageIcon, Crop, RotateCw, Sun, Droplet, Scissors } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
 export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
+  const [activeTab, setActiveTab] = useState('edit'); // 'edit' or 'labels'
   const [textBoxes, setTextBoxes] = useState([]);
   const [selectedBox, setSelectedBox] = useState(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragOffset, setDragOffset] = useState({ x: 0, y: 0 });
+  
+  // Image editing state
+  const [editedImageUrl, setEditedImageUrl] = useState(imageUrl);
+  const [brightness, setBrightness] = useState(100);
+  const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
+  const [rotation, setRotation] = useState(0);
+  const [filter, setFilter] = useState('none');
+  const [cropMode, setCropMode] = useState(false);
+  const [cropArea, setCropArea] = useState({ x: 0, y: 0, width: 100, height: 100 });
+  const canvasRef = React.useRef(null);
+
+  // Apply image edits to canvas
+  const applyImageEdits = async () => {
+    const canvas = document.createElement('canvas');
+    const ctx = canvas.getContext('2d');
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    
+    await new Promise((resolve, reject) => {
+      img.onload = resolve;
+      img.onerror = reject;
+      img.src = imageUrl;
+    });
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    // Apply rotation
+    if (rotation !== 0) {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+    }
+    
+    // Apply filters
+    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`;
+    
+    // Apply preset filter
+    if (filter === 'grayscale') {
+      ctx.filter += ' grayscale(100%)';
+    } else if (filter === 'sepia') {
+      ctx.filter += ' sepia(100%)';
+    } else if (filter === 'invert') {
+      ctx.filter += ' invert(100%)';
+    } else if (filter === 'blur') {
+      ctx.filter += ' blur(3px)';
+    }
+    
+    ctx.drawImage(img, 0, 0);
+    
+    // Apply crop if needed
+    if (cropMode && (cropArea.width < 100 || cropArea.height < 100)) {
+      const cropX = (cropArea.x / 100) * canvas.width;
+      const cropY = (cropArea.y / 100) * canvas.height;
+      const cropW = (cropArea.width / 100) * canvas.width;
+      const cropH = (cropArea.height / 100) * canvas.height;
+      
+      const croppedCanvas = document.createElement('canvas');
+      croppedCanvas.width = cropW;
+      croppedCanvas.height = cropH;
+      const croppedCtx = croppedCanvas.getContext('2d');
+      croppedCtx.drawImage(canvas, cropX, cropY, cropW, cropH, 0, 0, cropW, cropH);
+      
+      return croppedCanvas.toDataURL('image/png');
+    }
+    
+    return canvas.toDataURL('image/png');
+  };
+
+  const handleApplyEdits = async () => {
+    toast.info('Applying edits...');
+    const editedUrl = await applyImageEdits();
+    setEditedImageUrl(editedUrl);
+    setActiveTab('labels');
+    toast.success('Edits applied! Now add labels.');
+  };
+
+  const handleResetEdits = () => {
+    setBrightness(100);
+    setContrast(100);
+    setSaturation(100);
+    setRotation(0);
+    setFilter('none');
+    setCropMode(false);
+    setCropArea({ x: 0, y: 0, width: 100, height: 100 });
+    setEditedImageUrl(imageUrl);
+  };
 
   const addTextBox = () => {
     const newBox = {
@@ -144,14 +235,14 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
       const canvas = document.createElement('canvas');
       const ctx = canvas.getContext('2d');
       
-      // Load the original image
+      // Load the edited image
       const img = new Image();
       img.crossOrigin = 'anonymous';
       
       await new Promise((resolve, reject) => {
         img.onload = resolve;
         img.onerror = reject;
-        img.src = imageUrl;
+        img.src = editedImageUrl;
       });
       
       // Set canvas size to match image
@@ -269,39 +360,103 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
       <Card className="w-full max-w-6xl h-[90vh] flex flex-col bg-white">
         <div className="flex items-center justify-between p-4 border-b">
           <div className="flex items-center gap-3">
-            <Type className="w-5 h-5 text-indigo-600" />
+            <ImageIcon className="w-5 h-5 text-indigo-600" />
             <div>
-              <h3 className="font-bold text-lg">Add Text Labels to Image</h3>
-              <p className="text-sm text-gray-500">Click and drag to position labels with correct spelling</p>
+              <h3 className="font-bold text-lg">Edit Image & Add Labels</h3>
+              <p className="text-sm text-gray-500">
+                {activeTab === 'edit' ? 'Adjust image before adding labels' : 'Click and drag to position labels'}
+              </p>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Button onClick={addTextBox} className="bg-indigo-600 hover:bg-indigo-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Label
-            </Button>
+            {activeTab === 'labels' && (
+              <Button onClick={addTextBox} className="bg-indigo-600 hover:bg-indigo-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Label
+              </Button>
+            )}
             <Button onClick={onClose} variant="ghost" size="icon">
               <X className="w-4 h-4" />
             </Button>
           </div>
         </div>
 
+        {/* Tabs for Edit vs Labels */}
+        <div className="px-4 pt-4 border-b">
+          <Tabs value={activeTab} onValueChange={setActiveTab}>
+            <TabsList className="grid w-full grid-cols-2">
+              <TabsTrigger value="edit">
+                <ImageIcon className="w-4 h-4 mr-2" />
+                Edit Image
+              </TabsTrigger>
+              <TabsTrigger value="labels">
+                <Type className="w-4 h-4 mr-2" />
+                Add Labels
+              </TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
         <div className="flex-1 flex overflow-hidden">
           {/* Canvas Area */}
           <div className="flex-1 p-6 overflow-auto bg-gray-100">
-            <div 
-              className="relative mx-auto max-w-4xl bg-white rounded-lg shadow-lg"
-              onMouseMove={handleMouseMove}
-              onMouseUp={handleMouseUp}
-              onMouseLeave={handleMouseUp}
-            >
-              <img 
-                src={imageUrl} 
-                alt="Edit" 
-                className="w-full h-auto rounded-lg block"
-                draggable={false}
-              />
-              {textBoxes.map(box => (
+            {activeTab === 'edit' ? (
+              /* Image Editing View */
+              <div className="relative mx-auto max-w-4xl bg-white rounded-lg shadow-lg p-4">
+                <div 
+                  className="relative"
+                  style={{
+                    filter: `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%)`,
+                    transform: `rotate(${rotation}deg)`,
+                    transition: 'all 0.3s ease'
+                  }}
+                >
+                  <img 
+                    src={imageUrl} 
+                    alt="Edit" 
+                    className={`w-full h-auto rounded-lg block ${
+                      filter === 'grayscale' ? 'grayscale' :
+                      filter === 'sepia' ? 'sepia' :
+                      filter === 'invert' ? 'invert' :
+                      filter === 'blur' ? 'blur-sm' : ''
+                    }`}
+                    draggable={false}
+                  />
+
+                  {/* Crop overlay */}
+                  {cropMode && (
+                    <div 
+                      className="absolute border-4 border-indigo-500 border-dashed cursor-move"
+                      style={{
+                        left: `${cropArea.x}%`,
+                        top: `${cropArea.y}%`,
+                        width: `${cropArea.width}%`,
+                        height: `${cropArea.height}%`,
+                        backgroundColor: 'rgba(99, 102, 241, 0.1)'
+                      }}
+                    >
+                      <div className="absolute inset-0 flex items-center justify-center">
+                        <Scissors className="w-8 h-8 text-white drop-shadow-lg" />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ) : (
+              /* Label Editing View */
+              <div 
+                className="relative mx-auto max-w-4xl bg-white rounded-lg shadow-lg"
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+              >
+                <img 
+                  src={editedImageUrl} 
+                  alt="Edit" 
+                  className="w-full h-auto rounded-lg block"
+                  draggable={false}
+                />
+                {textBoxes.map(box => (
                 <div key={box.id}>
                   <div
                   className={`absolute transition-shadow ${
@@ -370,7 +525,146 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
 
           {/* Properties Panel */}
           <div className="w-80 border-l bg-gray-50 p-4 overflow-auto">
-            {selectedBoxData ? (
+            {activeTab === 'edit' ? (
+              /* Image Editing Controls */
+              <div className="space-y-6">
+                <div>
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Sun className="w-4 h-4 mr-2" />
+                    Adjustments
+                  </h4>
+
+                  <div className="space-y-4">
+                    <div>
+                      <Label className="text-xs">Brightness</Label>
+                      <div className="flex items-center gap-3 mt-2">
+                        <Slider
+                          value={[brightness]}
+                          onValueChange={(v) => setBrightness(v[0])}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="flex-1"
+                        />
+                        <span className="text-xs font-medium w-12">{brightness}%</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs">Contrast</Label>
+                      <div className="flex items-center gap-3 mt-2">
+                        <Slider
+                          value={[contrast]}
+                          onValueChange={(v) => setContrast(v[0])}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="flex-1"
+                        />
+                        <span className="text-xs font-medium w-12">{contrast}%</span>
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label className="text-xs">Saturation</Label>
+                      <div className="flex items-center gap-3 mt-2">
+                        <Slider
+                          value={[saturation]}
+                          onValueChange={(v) => setSaturation(v[0])}
+                          min={0}
+                          max={200}
+                          step={5}
+                          className="flex-1"
+                        />
+                        <span className="text-xs font-medium w-12">{saturation}%</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <RotateCw className="w-4 h-4 mr-2" />
+                    Rotation
+                  </h4>
+                  <div className="flex items-center gap-3">
+                    <Slider
+                      value={[rotation]}
+                      onValueChange={(v) => setRotation(v[0])}
+                      min={-180}
+                      max={180}
+                      step={15}
+                      className="flex-1"
+                    />
+                    <span className="text-xs font-medium w-12">{rotation}°</span>
+                  </div>
+                  <div className="flex gap-2 mt-3">
+                    <Button size="sm" variant="outline" onClick={() => setRotation(r => r - 90)} className="flex-1">
+                      ↶ 90°
+                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => setRotation(r => r + 90)} className="flex-1">
+                      90° ↷
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Droplet className="w-4 h-4 mr-2" />
+                    Filters
+                  </h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    {[
+                      { value: 'none', label: 'None' },
+                      { value: 'grayscale', label: 'B&W' },
+                      { value: 'sepia', label: 'Sepia' },
+                      { value: 'invert', label: 'Invert' },
+                      { value: 'blur', label: 'Blur' }
+                    ].map(f => (
+                      <button
+                        key={f.value}
+                        type="button"
+                        onClick={() => setFilter(f.value)}
+                        className={`p-2 text-xs border rounded transition-colors ${
+                          filter === f.value
+                            ? 'bg-indigo-100 border-indigo-500 text-indigo-900'
+                            : 'bg-white border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        {f.label}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div>
+                  <h4 className="font-semibold mb-4 flex items-center">
+                    <Crop className="w-4 h-4 mr-2" />
+                    Crop
+                  </h4>
+                  <Button
+                    variant={cropMode ? "default" : "outline"}
+                    size="sm"
+                    onClick={() => setCropMode(!cropMode)}
+                    className="w-full"
+                  >
+                    {cropMode ? 'Disable Crop' : 'Enable Crop'}
+                  </Button>
+                  <p className="text-xs text-gray-500 mt-2">
+                    {cropMode ? 'Drag to define crop area' : 'Enable to crop image'}
+                  </p>
+                </div>
+
+                <div className="pt-4 space-y-2">
+                  <Button onClick={handleApplyEdits} className="w-full bg-indigo-600 hover:bg-indigo-700">
+                    Apply Edits & Continue
+                  </Button>
+                  <Button onClick={handleResetEdits} variant="outline" className="w-full">
+                    Reset All
+                  </Button>
+                </div>
+              </div>
+            ) : selectedBoxData ? (
               <div className="space-y-4">
                 <div className="flex items-center justify-between mb-4">
                   <h4 className="font-semibold">Edit Label</h4>
@@ -518,17 +812,31 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
         </div>
 
         <div className="border-t p-4 bg-gray-50 flex justify-between items-center">
-          <p className="text-sm text-gray-600">
-            {textBoxes.length} label{textBoxes.length !== 1 ? 's' : ''} added
-          </p>
-          <div className="flex gap-3">
-            <Button variant="outline" onClick={onClose}>
-              Cancel
-            </Button>
-            <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
-              Save on Image
-            </Button>
-          </div>
+          {activeTab === 'edit' ? (
+            <>
+              <p className="text-sm text-gray-600">Adjust image settings</p>
+              <Button onClick={handleApplyEdits} className="bg-indigo-600 hover:bg-indigo-700">
+                Apply & Add Labels
+              </Button>
+            </>
+          ) : (
+            <>
+              <p className="text-sm text-gray-600">
+                {textBoxes.length} label{textBoxes.length !== 1 ? 's' : ''} added
+              </p>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setActiveTab('edit')}>
+                  ← Back to Edit
+                </Button>
+                <Button variant="outline" onClick={onClose}>
+                  Cancel
+                </Button>
+                <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
+                  Save Final Image
+                </Button>
+              </div>
+            </>
+          )}
         </div>
       </Card>
     </div>
