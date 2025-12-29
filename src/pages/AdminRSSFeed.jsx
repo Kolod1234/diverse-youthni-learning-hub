@@ -35,6 +35,7 @@ export default function AdminRSSFeed() {
     category: '',
     is_featured: false,
   });
+  const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -124,6 +125,27 @@ export default function AdminRSSFeed() {
   const handleCloseDialog = () => {
     setShowDialog(false);
     setEditingFeed(null);
+  };
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, image_url: result.file_url });
+      toast.success('Image uploaded successfully!');
+    } catch (error) {
+      toast.error('Failed to upload image');
+    } finally {
+      setUploading(false);
+    }
   };
 
   const handleSubmit = (e) => {
@@ -344,14 +366,35 @@ export default function AdminRSSFeed() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Image URL
+                  Image
                 </label>
-                <Input
-                  type="url"
-                  value={formData.image_url}
-                  onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
-                  placeholder="https://..."
-                />
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3">
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={handleImageUpload}
+                      disabled={uploading}
+                      className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                    />
+                  </div>
+                  <div className="text-xs text-gray-500">Or paste an image URL:</div>
+                  <Input
+                    type="url"
+                    value={formData.image_url}
+                    onChange={(e) => setFormData({ ...formData, image_url: e.target.value })}
+                    placeholder="https://..."
+                  />
+                  {formData.image_url && (
+                    <div className="relative w-full h-32 rounded-lg overflow-hidden border">
+                      <img
+                        src={formData.image_url}
+                        alt="Preview"
+                        className="w-full h-full object-cover"
+                      />
+                    </div>
+                  )}
+                </div>
               </div>
 
               <div className="grid grid-cols-2 gap-4">
