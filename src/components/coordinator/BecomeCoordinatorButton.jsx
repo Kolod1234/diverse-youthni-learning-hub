@@ -81,10 +81,13 @@ export default function BecomeCoordinatorButton({ user }) {
 
   return (
     <>
-      <Button onClick={() => setShowPasscode(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
-        <UserCheck className="w-4 h-4" />
+      <button 
+        onClick={() => setShowPasscode(true)} 
+        className="flex items-center w-full text-left"
+      >
+        <UserCheck className="w-4 h-4 mr-2" />
         Become a Coordinator
-      </Button>
+      </button>
 
       {/* Passcode Dialog */}
       <Dialog open={showPasscode} onOpenChange={setShowPasscode}>

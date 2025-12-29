@@ -245,6 +245,16 @@ export default function Layout({ children, currentPageName }) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuSeparator />
+                  {user && !user.is_coordinator && user.role !== 'admin' && (
+                    <>
+                      <DropdownMenuItem asChild>
+                        <div className="cursor-pointer">
+                          <BecomeCoordinatorButton user={user} />
+                        </div>
+                      </DropdownMenuItem>
+                      <DropdownMenuSeparator />
+                    </>
+                  )}
                   {isCoordinator && !isTutorOrAdmin && (
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer">
@@ -308,9 +318,6 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
-              {/* Become Coordinator Button */}
-              <BecomeCoordinatorButton user={user} />
-
               {/* Notifications */}
               <NotificationBell />
 
