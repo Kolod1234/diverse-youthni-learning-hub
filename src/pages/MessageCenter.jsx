@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
@@ -8,9 +8,16 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { 
   MessageSquare, Send, Search, Mail, MailOpen, 
-  ArrowLeft, Sparkles, Loader2, FileText
+  ArrowLeft, Sparkles, Loader2, FileText, PlusCircle, Smile
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -21,7 +28,14 @@ export default function MessageCenter() {
   const [selectedThread, setSelectedThread] = useState(null);
   const [replyText, setReplyText] = useState('');
   const [searchQuery, setSearchQuery] = useState('');
+  const [showNewMessageDialog, setShowNewMessageDialog] = useState(false);
+  const [newMessageRecipient, setNewMessageRecipient] = useState('');
+  const [newMessageContent, setNewMessageContent] = useState('');
+  const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
+
+  const emojis = ['😊', '👍', '❤️', '😂', '🎉', '👏', '🔥', '💯', '✅', '🙏', '💪', '🎯', '📚', '✨', '🌟', '💡'];
 
   useEffect(() => {
     const loadUser = async () => {
@@ -48,6 +62,17 @@ export default function MessageCenter() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
+  const { data: allUsers = [] } = useQuery({
+    queryKey: ['all-users'],
+    queryFn: async () => {
+      if (user?.role === 'admin') {
+        return base44.asServiceRole.entities.User.list('full_name', 1000);
+      }
+      return base44.entities.User.list('full_name', 100);
+    },
+    enabled: !!user,
+  });
+
   const markAsReadMutation = useMutation({
     mutationFn: (messageId) => base44.entities.Message.update(messageId, { is_read: true }),
     onSuccess: () => {
@@ -60,28 +85,72 @@ export default function MessageCenter() {
       const message = await base44.entities.Message.create(messageData);
       
       // Send notification to recipient
+      await base44.entities.Notification.create({
+        user_email: messageData.recipient_email,
+        title: 'New Message',
+        message: `You have a new message from ${user?.full_name}`,
+        type: 'message',
+      });
+
       try {
-        await base44.functions.invoke('sendNotification', {
-          recipient_email: messageData.recipient_email,
-          title: 'New Message',
-          message: `You have a new message from ${user?.full_name || 'a tutor'}`,
-          type: 'message',
-          link: `/message-center`,
-          send_email: true,
+        await base44.integrations.Core.SendEmail({
+          to: messageData.recipient_email,
+          subject: 'New Message from ' + user?.full_name,
+          body: messageData.content,
         });
       } catch (err) {
-        console.error('Failed to send notification:', err);
+        console.error('Email send failed:', err);
       }
       
       return message;
     },
     onSuccess: () => {
+      queryClient.invalidateQueries(['messages']);
       queryClient.invalidateQueries(['sent-messages']);
-      toast.success('Reply sent and recipient notified!');
+      toast.success('Message sent!');
       setReplyText('');
+      if (messagesEndRef.current) {
+        messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+      }
     },
     onError: () => {
-      toast.error('Failed to send reply');
+      toast.error('Failed to send message');
+    },
+  });
+
+  const sendNewMessageMutation = useMutation({
+    mutationFn: async (messageData) => {
+      const message = await base44.entities.Message.create(messageData);
+      
+      await base44.entities.Notification.create({
+        user_email: messageData.recipient_email,
+        title: 'New Message',
+        message: `You have a new message from ${user?.full_name}`,
+        type: 'message',
+      });
+
+      try {
+        await base44.integrations.Core.SendEmail({
+          to: messageData.recipient_email,
+          subject: 'New Message from ' + user?.full_name,
+          body: messageData.content,
+        });
+      } catch (err) {
+        console.error('Email send failed:', err);
+      }
+      
+      return message;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['messages']);
+      queryClient.invalidateQueries(['sent-messages']);
+      toast.success('Message sent!');
+      setShowNewMessageDialog(false);
+      setNewMessageRecipient('');
+      setNewMessageContent('');
+    },
+    onError: () => {
+      toast.error('Failed to send message');
     },
   });
 
@@ -185,6 +254,44 @@ Reply:`,
     });
   };
 
+  const handleSendNewMessage = () => {
+    if (!newMessageContent.trim() || !newMessageRecipient) {
+      toast.error('Please select a recipient and enter a message');
+      return;
+    }
+
+    const recipient = allUsers.find(u => u.email === newMessageRecipient);
+    
+    sendNewMessageMutation.mutate({
+      sender_email: user?.email,
+      sender_name: user?.full_name,
+      recipient_email: newMessageRecipient,
+      content: newMessageContent,
+      is_read: false,
+    });
+  };
+
+  const addEmoji = (emoji) => {
+    setReplyText(prev => prev + emoji);
+    setShowEmojiPicker(false);
+  };
+
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth' });
+    }
+  }, [selectedThread?.messages]);
+
+  // Filter users based on role
+  const availableUsers = allUsers.filter(u => {
+    if (u.email === user?.email) return false;
+    if (user?.role === 'admin') return true;
+    if (u.role === 'admin') return true;
+    if (u.is_coordinator) return true;
+    if (u.is_tutor && !user?.is_tutor) return true;
+    return false;
+  });
+
   const courseName = courses.find(c => c.id === selectedThread?.courseId)?.title || 'General';
 
   return (
@@ -199,12 +306,77 @@ Reply:`,
           {/* Thread List */}
           <Card className="lg:col-span-1">
             <div className="p-4 border-b">
-              <div className="flex items-center gap-2 mb-3">
-                <MessageSquare className="w-5 h-5 text-indigo-600" />
-                <h2 className="font-semibold text-gray-900">Conversations</h2>
-                {unreadCount > 0 && (
-                  <Badge className="bg-red-500">{unreadCount}</Badge>
-                )}
+              <div className="flex items-center justify-between mb-3">
+                <div className="flex items-center gap-2">
+                  <MessageSquare className="w-5 h-5 text-indigo-600" />
+                  <h2 className="font-semibold text-gray-900">Conversations</h2>
+                  {unreadCount > 0 && (
+                    <Badge className="bg-red-500">{unreadCount}</Badge>
+                  )}
+                </div>
+                <Dialog open={showNewMessageDialog} onOpenChange={setShowNewMessageDialog}>
+                  <DialogTrigger asChild>
+                    <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
+                      <PlusCircle className="w-4 h-4 mr-1" />
+                      New
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent>
+                    <DialogHeader>
+                      <DialogTitle>New Message</DialogTitle>
+                    </DialogHeader>
+                    <div className="space-y-4 pt-4">
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          To:
+                        </label>
+                        <select
+                          value={newMessageRecipient}
+                          onChange={(e) => setNewMessageRecipient(e.target.value)}
+                          className="w-full px-3 py-2 border rounded-lg"
+                        >
+                          <option value="">Select recipient...</option>
+                          {availableUsers.map(u => (
+                            <option key={u.email} value={u.email}>
+                              {u.full_name} ({u.role === 'admin' ? 'Admin' : u.is_coordinator ? 'Coordinator' : u.is_tutor ? 'Tutor' : 'Student'})
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-gray-700 mb-2">
+                          Message:
+                        </label>
+                        <Textarea
+                          value={newMessageContent}
+                          onChange={(e) => setNewMessageContent(e.target.value)}
+                          placeholder="Type your message..."
+                          className="min-h-[120px]"
+                        />
+                      </div>
+                      <div className="flex justify-end gap-2">
+                        <Button
+                          variant="outline"
+                          onClick={() => {
+                            setShowNewMessageDialog(false);
+                            setNewMessageRecipient('');
+                            setNewMessageContent('');
+                          }}
+                        >
+                          Cancel
+                        </Button>
+                        <Button
+                          onClick={handleSendNewMessage}
+                          disabled={sendNewMessageMutation.isPending}
+                          className="bg-indigo-600 hover:bg-indigo-700"
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Message
+                        </Button>
+                      </div>
+                    </div>
+                  </DialogContent>
+                </Dialog>
               </div>
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
@@ -326,27 +498,30 @@ Reply:`,
                       .map((msg) => {
                         const isOwn = msg.sender_email === user?.email;
                         return (
-                          <div
+                          <motion.div
                             key={msg.id}
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
                             className={`flex ${isOwn ? 'justify-end' : 'justify-start'}`}
                           >
                             <div className={`max-w-[70%] ${isOwn ? 'order-2' : 'order-1'}`}>
                               <div
-                                className={`rounded-2xl px-4 py-3 ${
+                                className={`rounded-2xl px-4 py-3 shadow-sm ${
                                   isOwn
                                     ? 'bg-indigo-600 text-white'
                                     : 'bg-gray-100 text-gray-900'
                                 }`}
                               >
-                                <p className="text-sm whitespace-pre-wrap">{msg.content}</p>
+                                <p className="text-sm whitespace-pre-wrap leading-relaxed">{msg.content}</p>
                               </div>
-                              <p className="text-xs text-gray-400 mt-1 px-2">
+                              <p className={`text-xs text-gray-400 mt-1 px-2 ${isOwn ? 'text-right' : 'text-left'}`}>
                                 {format(new Date(msg.created_date), 'MMM d, h:mm a')}
                               </p>
                             </div>
-                          </div>
+                          </motion.div>
                         );
                       })}
+                    <div ref={messagesEndRef} />
                   </div>
                 </ScrollArea>
 
@@ -370,27 +545,58 @@ Reply:`,
                       Suggest Reply
                     </Button>
                   </div>
-                  <div className="flex gap-2">
-                    <Textarea
-                      value={replyText}
-                      onChange={(e) => setReplyText(e.target.value)}
-                      placeholder="Type your message..."
-                      rows={3}
-                      className="resize-none"
-                      onKeyDown={(e) => {
-                        if (e.key === 'Enter' && !e.shiftKey) {
-                          e.preventDefault();
-                          handleSendReply();
-                        }
-                      }}
-                    />
-                    <Button
-                      onClick={handleSendReply}
-                      disabled={!replyText.trim() || sendReplyMutation.isPending}
-                      className="bg-indigo-600 hover:bg-indigo-700 shrink-0"
-                    >
-                      <Send className="w-4 h-4" />
-                    </Button>
+                  <div className="space-y-2">
+                    {showEmojiPicker && (
+                      <div className="flex flex-wrap gap-2 p-3 bg-gray-50 rounded-lg border">
+                        {emojis.map(emoji => (
+                          <button
+                            key={emoji}
+                            onClick={() => addEmoji(emoji)}
+                            className="text-2xl hover:scale-125 transition-transform"
+                          >
+                            {emoji}
+                          </button>
+                        ))}
+                      </div>
+                    )}
+                    <div className="flex gap-2 items-end">
+                      <div className="flex-1 space-y-2">
+                        <Textarea
+                          value={replyText}
+                          onChange={(e) => setReplyText(e.target.value)}
+                          placeholder="Type your message... (Press Enter to send, Shift+Enter for new line)"
+                          rows={3}
+                          className="resize-none"
+                          onKeyDown={(e) => {
+                            if (e.key === 'Enter' && !e.shiftKey) {
+                              e.preventDefault();
+                              handleSendReply();
+                            }
+                          }}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <Button
+                          variant="outline"
+                          size="icon"
+                          onClick={() => setShowEmojiPicker(!showEmojiPicker)}
+                        >
+                          <Smile className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          onClick={handleSendReply}
+                          disabled={!replyText.trim() || sendReplyMutation.isPending}
+                          className="bg-indigo-600 hover:bg-indigo-700"
+                          size="icon"
+                        >
+                          {sendReplyMutation.isPending ? (
+                            <Loader2 className="w-4 h-4 animate-spin" />
+                          ) : (
+                            <Send className="w-4 h-4" />
+                          )}
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </div>
