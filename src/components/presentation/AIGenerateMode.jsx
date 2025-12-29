@@ -467,8 +467,8 @@ Level: ${levelInstructions[educationLevel]}`;
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="font-semibold text-sm mb-1">💬 ChatGPT</div>
-                <div className="text-xs text-gray-600">OpenAI GPT-4</div>
+                <div className="font-semibold text-sm mb-1">💬 GPT-3.5 Turbo</div>
+                <div className="text-xs text-gray-600">OpenAI GPT-3.5</div>
               </button>
             </div>
           </div>
