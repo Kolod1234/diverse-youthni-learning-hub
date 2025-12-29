@@ -129,27 +129,10 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
         ? `rgba(${parseInt(rgbaMatch[1].substr(0,2), 16)}, ${parseInt(rgbaMatch[1].substr(2,2), 16)}, ${parseInt(rgbaMatch[1].substr(4,2), 16)}, ${box.opacity})`
         : box.backgroundColor;
       
-      return `
-      <div style="position: absolute; left: ${box.x}%; top: ${box.y}%; 
-                  width: ${box.width}%; height: ${box.height}%;
-                  font-size: ${box.fontSize}px; color: ${box.color}; 
-                  background-color: ${bgColor}; 
-                  padding: ${box.padding}px; 
-                  border-radius: ${getShapeStyle(box.shape)};
-                  font-weight: ${box.bold ? '700' : '400'};
-                  box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-                  display: flex; align-items: center; justify-content: center;
-                  text-align: center;
-                  pointer-events: none;">
-        ${box.text}
-      </div>
-    `;
+      return `<div style="position: absolute; left: ${box.x}%; top: ${box.y}%; width: ${box.width}%; height: ${box.height}%; font-size: ${box.fontSize}px; color: ${box.color}; background-color: ${bgColor}; padding: ${box.padding}px; border-radius: ${getShapeStyle(box.shape)}; font-weight: ${box.bold ? '700' : '400'}; box-shadow: 0 2px 4px rgba(0,0,0,0.2); display: flex; align-items: center; justify-content: center; text-align: center; pointer-events: none;">${box.text}</div>`;
     }).join('');
 
-    return `<div style="position: relative; margin: 20px auto; max-width: 100%; text-align: center;">
-      <img src="${imageUrl}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block;" alt="Labeled diagram" />
-      ${overlays}
-    </div>`;
+    return `<div style="position: relative; margin: 20px auto; max-width: 100%; text-align: center;"><img src="${imageUrl}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block;" alt="Labeled diagram" />${overlays}</div>`;
   };
 
   const handleSave = () => {
