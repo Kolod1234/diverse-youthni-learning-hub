@@ -144,7 +144,7 @@ export default function Layout({ children, currentPageName }) {
   );
 
   return (
-    <div className="relative min-h-screen w-full flex flex-col bg-gray-50">
+    <div className="relative w-full bg-gray-50">
       <style>
         {`
           :root {
@@ -364,7 +364,7 @@ export default function Layout({ children, currentPageName }) {
       </header>
 
       {/* Main Content */}
-      <main className="flex-1 w-full max-w-full">{children}</main>
+      <main className="w-full">{children}</main>
 
       {/* Admin Password Modal */}
       {showAdminPassword && (
