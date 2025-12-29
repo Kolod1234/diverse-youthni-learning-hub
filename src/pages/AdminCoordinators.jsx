@@ -83,40 +83,53 @@ export default function AdminCoordinators() {
 
   const approveRequestMutation = useMutation({
     mutationFn: async ({ requestId, userEmail, userName }) => {
-      // 1. Assign coordinator role
-      await base44.entities.User.update(userEmail, { is_coordinator: true });
+      // 1. Find the user by email
+      const users = await base44.entities.User.filter({ email: userEmail });
+      const targetUser = users[0];
       
-      // 2. Update request status
+      if (!targetUser) {
+        throw new Error('User not found');
+      }
+
+      // 2. Assign coordinator role
+      await base44.entities.User.update(targetUser.id, { is_coordinator: true });
+      
+      // 3. Update request status
       await base44.entities.CoordinatorRequest.update(requestId, { 
         status: 'approved',
         processed_by: user.email,
         processed_date: new Date().toISOString()
       });
 
-      // 3. Send welcome email
-      await base44.functions.invoke('sendNotification', {
-        recipient_email: userEmail,
-        title: 'Welcome as a Coordinator!',
-        message: `Congratulations ${userName}! Your coordinator request has been approved. You can now access the Coordinators Dashboard to manage participants, approve logbooks, and send messages. Use the coordinator password to access your dashboard.`,
-        type: 'general',
-        send_email: true,
-      });
+      // 4. Send welcome email
+      try {
+        await base44.functions.invoke('sendNotification', {
+          recipient_email: userEmail,
+          title: 'Welcome as a Coordinator!',
+          message: `Congratulations ${userName}! Your coordinator request has been approved. You can now access the Coordinators Dashboard to manage participants, approve logbooks, and send messages. Use the coordinator password to access your dashboard.`,
+          type: 'general',
+          send_email: true,
+        });
+      } catch (err) {
+        console.error('Failed to send welcome email:', err);
+      }
 
-      // 4. Check for programs that need this coordinator
-      const programs = await base44.entities.Program.list('-created_date', 100);
-      const programsNeedingCoordinator = programs.filter(p => 
-        p.coordinator_email === userEmail || 
-        (!p.coordinator && !p.coordinator_email)
-      );
+      // 5. Check for programs that need this coordinator
+      try {
+        const programs = await base44.entities.Program.list('-created_date', 100);
+        const programsNeedingCoordinator = programs.filter(p => 
+          p.coordinator_email === userEmail
+        );
 
-      // Auto-assign to matching programs
-      for (const program of programsNeedingCoordinator) {
-        if (program.coordinator_email === userEmail) {
+        // Auto-assign to matching programs
+        for (const program of programsNeedingCoordinator) {
           await base44.entities.Program.update(program.id, {
             coordinator: userName,
             coordinator_email: userEmail
           });
         }
+      } catch (err) {
+        console.error('Failed to assign programs:', err);
       }
     },
     onSuccess: () => {
@@ -124,6 +137,9 @@ export default function AdminCoordinators() {
       queryClient.invalidateQueries(['all-users']);
       queryClient.invalidateQueries(['programs']);
       toast.success('Coordinator approved and welcome email sent!');
+    },
+    onError: (error) => {
+      toast.error(`Failed to approve: ${error.message}`);
     },
   });
 

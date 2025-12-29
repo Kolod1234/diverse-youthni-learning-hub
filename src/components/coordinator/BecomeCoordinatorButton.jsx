@@ -4,12 +4,15 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
+import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { UserCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function BecomeCoordinatorButton({ user }) {
   const [open, setOpen] = useState(false);
+  const [showPasscode, setShowPasscode] = useState(false);
+  const [passcode, setPasscode] = useState('');
   const [reason, setReason] = useState('');
   const queryClient = useQueryClient();
 
@@ -38,6 +41,16 @@ export default function BecomeCoordinatorButton({ user }) {
       toast.error('Failed to submit request');
     },
   });
+
+  const handlePasscodeSubmit = () => {
+    if (passcode === 'YELP26') {
+      setShowPasscode(false);
+      setOpen(true);
+      setPasscode('');
+    } else {
+      toast.error('Incorrect passcode');
+    }
+  };
 
   const handleSubmit = () => {
     if (!reason.trim()) {
@@ -68,11 +81,45 @@ export default function BecomeCoordinatorButton({ user }) {
 
   return (
     <>
-      <Button onClick={() => setOpen(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
+      <Button onClick={() => setShowPasscode(true)} className="bg-purple-600 hover:bg-purple-700 gap-2">
         <UserCheck className="w-4 h-4" />
         Become a Coordinator
       </Button>
 
+      {/* Passcode Dialog */}
+      <Dialog open={showPasscode} onOpenChange={setShowPasscode}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Enter Coordinator Passcode</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Passcode</Label>
+              <Input
+                type="password"
+                value={passcode}
+                onChange={(e) => setPasscode(e.target.value)}
+                placeholder="Enter passcode"
+                className="mt-2"
+                onKeyPress={(e) => e.key === 'Enter' && handlePasscodeSubmit()}
+              />
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                onClick={handlePasscodeSubmit}
+                className="flex-1 bg-purple-600 hover:bg-purple-700"
+              >
+                Submit
+              </Button>
+              <Button onClick={() => setShowPasscode(false)} variant="outline" className="flex-1">
+                Cancel
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Request Form Dialog */}
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="max-w-md">
           <DialogHeader>
