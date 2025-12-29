@@ -14,6 +14,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [usePerplexity, setUsePerplexity] = useState(false);
   const [useWebImages, setUseWebImages] = useState(true);
+  const [educationLevel, setEducationLevel] = useState('gcse');
+  const [hasGenerated, setHasGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
 
   const generateFromTopic = async () => {
@@ -28,11 +30,21 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       let response;
 
+      const levelInstructions = {
+        phd: 'PhD/Research level - Advanced academic content with in-depth analysis, research methodologies, and scholarly references',
+        alevel: 'A-Level (16-18 years) - Advanced secondary education with detailed explanations and analytical depth',
+        gcse: 'GCSE Level (14-16 years) - Clear, structured content suitable for secondary school students',
+        primary: 'Primary School (5-11 years) - Simple, engaging content with clear examples and age-appropriate language'
+      };
+
       if (usePerplexity) {
         // Use Perplexity for research-based content
         const researchResult = await base44.functions.invoke('perplexitySearch', {
           query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
       ${details ? `\nContext: ${details}` : ''}
+      
+      TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+      Adapt the complexity, vocabulary, and depth of content accordingly.
 
       CRITICAL: Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
       {
@@ -82,6 +94,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
 
 ${details ? `Additional context: ${details}` : ''}
+
+TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+Adapt the complexity, vocabulary, and depth of content accordingly.
 
 For each slide, provide:
 - A clear title
@@ -190,6 +205,7 @@ Purpose: Help students understand ${slide.image_prompt}`;
       }
 
       onSlidesGenerated(slides);
+      setHasGenerated(true);
       toast.success(`Generated ${slideCount} slides${includeImages ? (usePerplexity && useWebImages ? ' with web-sourced images' : ' with AI-generated images') : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
@@ -227,16 +243,31 @@ Purpose: Help students understand ${slide.image_prompt}`;
             />
           </div>
 
-          <div>
-            <Label>Number of Slides</Label>
-            <Input
-              type="number"
-              value={slideCount}
-              onChange={(e) => setSlideCount(parseInt(e.target.value) || 5)}
-              min={3}
-              max={15}
-              className="max-w-xs"
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Number of Slides</Label>
+              <Input
+                type="number"
+                value={slideCount}
+                onChange={(e) => setSlideCount(parseInt(e.target.value) || 5)}
+                min={3}
+                max={15}
+              />
+            </div>
+            
+            <div>
+              <Label>Education Level</Label>
+              <select
+                value={educationLevel}
+                onChange={(e) => setEducationLevel(e.target.value)}
+                className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-purple-500"
+              >
+                <option value="primary">Primary School (5-11)</option>
+                <option value="gcse">GCSE (14-16)</option>
+                <option value="alevel">A-Level (16-18)</option>
+                <option value="phd">PhD/Research</option>
+              </select>
+            </div>
           </div>
 
           <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
@@ -289,23 +320,36 @@ Purpose: Help students understand ${slide.image_prompt}`;
             </Label>
           </div>
 
-          <Button
-            onClick={generateFromTopic}
-            disabled={!topic.trim() || generating}
-            className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-          >
-            {generating ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Generating with AI...
-              </>
-            ) : (
-              <>
-                <Sparkles className="w-4 h-4 mr-2" />
-                Generate Presentation
-              </>
+          <div className="flex gap-3">
+            <Button
+              onClick={generateFromTopic}
+              disabled={!topic.trim() || generating}
+              className="flex-1 bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+            >
+              {generating ? (
+                <>
+                  <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                  Generating...
+                </>
+              ) : (
+                <>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  {hasGenerated ? 'Generate Again' : 'Generate Presentation'}
+                </>
+              )}
+            </Button>
+            
+            {hasGenerated && !generating && (
+              <Button
+                onClick={generateFromTopic}
+                disabled={!topic.trim()}
+                variant="outline"
+                className="px-6 border-purple-300 text-purple-700 hover:bg-purple-50"
+              >
+                Regenerate
+              </Button>
             )}
-          </Button>
+          </div>
         </div>
       </div>
 
