@@ -143,7 +143,7 @@ export default function Home() {
   });
 
   return (
-    <div className="min-h-screen bg-white">
+    <div className="bg-white">
       {/* Search Bar - Sticky at top */}
       <section className="sticky top-16 z-40 bg-[#003366] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
