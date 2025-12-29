@@ -29,7 +29,7 @@ export default function AdminCoordinators() {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list('full_name', 1000),
+    queryFn: () => base44.asServiceRole.entities.User.list('full_name', 1000),
   });
 
   const { data: coordinatorRequests = [] } = useQuery({
@@ -52,7 +52,7 @@ export default function AdminCoordinators() {
   const currentPassword = siteContent.find(c => c.key === 'coordinator_password')?.value || 'YELP26';
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
+    mutationFn: ({ userId, data }) => base44.asServiceRole.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       queryClient.invalidateQueries(['assigned-participants']);
@@ -84,15 +84,15 @@ export default function AdminCoordinators() {
   const approveRequestMutation = useMutation({
     mutationFn: async ({ requestId, userEmail, userName }) => {
       // 1. Find the user by email
-      const users = await base44.entities.User.filter({ email: userEmail });
+      const users = await base44.asServiceRole.entities.User.filter({ email: userEmail });
       const targetUser = users[0];
-      
+
       if (!targetUser) {
         throw new Error('User not found');
       }
 
       // 2. Assign coordinator role
-      await base44.entities.User.update(targetUser.id, { is_coordinator: true });
+      await base44.asServiceRole.entities.User.update(targetUser.id, { is_coordinator: true });
       
       // 3. Update request status
       await base44.entities.CoordinatorRequest.update(requestId, { 
