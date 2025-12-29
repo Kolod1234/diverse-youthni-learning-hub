@@ -20,6 +20,15 @@ export default function Home() {
   const [user, setUser] = useState(null);
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
+  const [heroEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
+  
+  const heroBackgroundImages = [
+    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80',
+    'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920&q=80',
+    'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=80',
+    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80',
+    'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1920&q=80'
+  ];
 
   useEffect(() => {
     const loadUser = async () => {
@@ -160,16 +169,19 @@ export default function Home() {
 
       {/* Promotional Hero Banner */}
       <section className="relative overflow-hidden bg-gradient-to-r from-[#d32f2f] to-[#c62828]">
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0" style={{
-            backgroundImage: `repeating-linear-gradient(
-              45deg,
-              transparent,
-              transparent 10px,
-              rgba(255,255,255,.05) 10px,
-              rgba(255,255,255,.05) 20px
-            )`
-          }} />
+        {/* Background Image Slideshow */}
+        <div className="absolute inset-0" ref={heroEmblaRef}>
+          <div className="flex h-full">
+            {heroBackgroundImages.map((imgUrl, idx) => (
+              <div key={idx} className="flex-[0_0_100%] min-w-0 h-full">
+                <img
+                  src={imgUrl}
+                  alt={`Educational background ${idx + 1}`}
+                  className="w-full h-full object-cover opacity-25"
+                />
+              </div>
+            ))}
+          </div>
         </div>
         
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
@@ -180,8 +192,8 @@ export default function Home() {
             className="text-center"
           >
             <motion.div 
-              className="inline-block bg-yellow-400 text-[#d32f2f] px-8 py-3 rounded-full text-2xl md:text-3xl font-black mb-6 shadow-2xl transform -rotate-2 animate-pulse"
-              whileHover={{ scale: 1.1, rotate: -5 }}
+              className="inline-block bg-yellow-400 text-[#d32f2f] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
+              whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
             >
               {getContent('hero_online_learning', 'ONLINE LEARNING')}

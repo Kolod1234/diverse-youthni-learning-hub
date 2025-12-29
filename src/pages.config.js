@@ -12,6 +12,7 @@ import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
+import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
 import LessonPlayer from './pages/LessonPlayer';
 import LessonPlayerClassic from './pages/LessonPlayerClassic';
@@ -31,7 +32,6 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import KnowledgeBase from './pages/KnowledgeBase';
 import __Layout from './Layout.jsx';
 
 
@@ -50,6 +50,7 @@ export const PAGES = {
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
     "Home": Home,
+    "KnowledgeBase": KnowledgeBase,
     "LearningPaths": LearningPaths,
     "LessonPlayer": LessonPlayer,
     "LessonPlayerClassic": LessonPlayerClassic,
@@ -69,7 +70,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "KnowledgeBase": KnowledgeBase,
 }
 
 export const pagesConfig = {
