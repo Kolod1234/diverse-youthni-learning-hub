@@ -58,7 +58,8 @@ export default function Layout({ children, currentPageName }) {
   }
 
   const handleAdminAccess = () => {
-    if (adminPassword === 'Edu24!') {
+    const correctPassword = getContent('admin_panel_password', 'Edu24!');
+    if (adminPassword === correctPassword) {
       window.location.href = createPageUrl('AdminDashboard');
     } else {
       alert('Incorrect password');

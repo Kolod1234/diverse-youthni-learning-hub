@@ -215,7 +215,11 @@ export default function AdminDashboard() {
             </TabsTrigger>
             <TabsTrigger value="passwords" className="rounded-lg">
               <Key className="w-4 h-4 mr-2" />
-              Passwords
+              User Passwords
+            </TabsTrigger>
+            <TabsTrigger value="site-passwords" className="rounded-lg">
+              <Lock className="w-4 h-4 mr-2" />
+              Site Passwords
             </TabsTrigger>
             <TabsTrigger value="partners" className="rounded-lg">
               <Users className="w-4 h-4 mr-2" />
@@ -293,6 +297,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="passwords">
             <PasswordManagement users={allUsers} />
+          </TabsContent>
+
+          <TabsContent value="site-passwords">
+            <SitePasswordsManagement siteContent={siteContent} />
           </TabsContent>
 
           <TabsContent value="partners">
@@ -2443,8 +2451,8 @@ function PasswordManagement({ users }) {
   return (
     <Card className="p-6">
       <div className="mb-6">
-        <h2 className="text-xl font-semibold mb-2">Password Management</h2>
-        <p className="text-gray-500">Reset user passwords as admin</p>
+        <h2 className="text-xl font-semibold mb-2">User Password Management</h2>
+        <p className="text-gray-500">Reset individual user login passwords</p>
       </div>
 
       {selectedUser && (
@@ -2500,6 +2508,128 @@ function PasswordManagement({ users }) {
             </div>
           </Card>
         ))}
+      </div>
+    </Card>
+  );
+}
+
+function SitePasswordsManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [passwords, setPasswords] = useState({
+    course_access_password: '',
+    admin_panel_password: ''
+  });
+
+  useEffect(() => {
+    const coursePass = siteContent.find(c => c.key === 'course_access_password');
+    const adminPass = siteContent.find(c => c.key === 'admin_panel_password');
+    
+    setPasswords({
+      course_access_password: coursePass?.value || 'LEARNERS26',
+      admin_panel_password: adminPass?.value || 'Edu24!'
+    });
+  }, [siteContent]);
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: async ({ key, value }) => {
+      const existing = siteContent.find(c => c.key === key);
+      if (existing) {
+        return base44.entities.SiteContent.update(existing.id, { value });
+      } else {
+        return base44.entities.SiteContent.create({ 
+          key, 
+          value, 
+          section: 'security',
+          description: key === 'course_access_password' ? 'Password to access courses' : 'Password to access admin panel'
+        });
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      toast.success('Password updated successfully');
+    },
+  });
+
+  const handleUpdate = (key) => {
+    if (!passwords[key]?.trim()) {
+      toast.error('Password cannot be empty');
+      return;
+    }
+    if (confirm(`Update ${key === 'course_access_password' ? 'course access' : 'admin panel'} password?`)) {
+      updatePasswordMutation.mutate({ key, value: passwords[key] });
+    }
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">Site Passwords Management</h2>
+        <p className="text-gray-500">Manage access passwords for different sections of the website</p>
+      </div>
+
+      <div className="space-y-6 max-w-2xl">
+        <Card className="p-5 bg-indigo-50 border-indigo-200">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
+              <Lock className="w-5 h-5 text-indigo-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900 mb-1">Course Access Password</h3>
+              <p className="text-sm text-gray-600 mb-3">Users must enter this password to access courses and course-related pages</p>
+              <div className="flex gap-3">
+                <Input
+                  type="text"
+                  value={passwords.course_access_password}
+                  onChange={(e) => setPasswords({ ...passwords, course_access_password: e.target.value })}
+                  placeholder="Enter password"
+                  className="flex-1"
+                />
+                <Button onClick={() => handleUpdate('course_access_password')}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <Card className="p-5 bg-red-50 border-red-200">
+          <div className="flex items-start gap-3 mb-4">
+            <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+              <Shield className="w-5 h-5 text-red-600" />
+            </div>
+            <div className="flex-1">
+              <h3 className="font-semibold text-gray-900 mb-1">Admin Panel Password</h3>
+              <p className="text-sm text-gray-600 mb-3">Password required to access the admin dashboard (shown in the More menu)</p>
+              <div className="flex gap-3">
+                <Input
+                  type="text"
+                  value={passwords.admin_panel_password}
+                  onChange={(e) => setPasswords({ ...passwords, admin_panel_password: e.target.value })}
+                  placeholder="Enter password"
+                  className="flex-1"
+                />
+                <Button onClick={() => handleUpdate('admin_panel_password')}>
+                  Save
+                </Button>
+              </div>
+            </div>
+          </div>
+        </Card>
+
+        <div className="bg-yellow-50 border border-yellow-200 rounded-lg p-4">
+          <div className="flex items-start gap-3">
+            <AlertCircle className="w-5 h-5 text-yellow-600 mt-0.5" />
+            <div className="text-sm text-yellow-800">
+              <p className="font-semibold mb-1">Important Notes:</p>
+              <ul className="list-disc list-inside space-y-1 text-yellow-700">
+                <li>Admins always bypass the course access password</li>
+                <li>Passwords are case-sensitive</li>
+                <li>Users will need to re-enter password after changes</li>
+                <li>Share passwords securely with authorized users</li>
+              </ul>
+            </div>
+          </div>
+        </div>
       </div>
     </Card>
   );
