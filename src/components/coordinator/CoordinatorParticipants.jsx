@@ -32,7 +32,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   );
 
   const updateParticipantMutation = useMutation({
-    mutationFn: ({ email, data }) => base44.entities.User.update(email, data),
+    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('Participant updated');
@@ -41,7 +41,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
 
   const handleBanToggle = async (participant) => {
     await updateParticipantMutation.mutateAsync({
-      email: participant.email,
+      userId: participant.id,
       data: { participant_banned: !participant.participant_banned }
     });
     
@@ -65,7 +65,7 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
     if (!selectedParticipant) return;
     
     await updateParticipantMutation.mutateAsync({
-      email: selectedParticipant.email,
+      userId: selectedParticipant.id,
       data: { 
         coordinator_rating: rating,
         coordinator_notes: notes

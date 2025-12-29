@@ -1,8 +1,10 @@
 import Achievements from './pages/Achievements';
+import AdminCoordinators from './pages/AdminCoordinators';
 import AdminDashboard from './pages/AdminDashboard';
 import Analytics from './pages/Analytics';
 import BookSession from './pages/BookSession';
 import ContactUs from './pages/ContactUs';
+import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
@@ -32,17 +34,17 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
-import AdminCoordinators from './pages/AdminCoordinators';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Achievements": Achievements,
+    "AdminCoordinators": AdminCoordinators,
     "AdminDashboard": AdminDashboard,
     "Analytics": Analytics,
     "BookSession": BookSession,
     "ContactUs": ContactUs,
+    "CoordinatorsDashboard": CoordinatorsDashboard,
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
@@ -72,8 +74,6 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "CoordinatorsDashboard": CoordinatorsDashboard,
-    "AdminCoordinators": AdminCoordinators,
 }
 
 export const pagesConfig = {

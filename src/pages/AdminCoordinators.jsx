@@ -47,7 +47,7 @@ export default function AdminCoordinators() {
   const currentPassword = siteContent.find(c => c.key === 'coordinator_password')?.value || 'YELP26';
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ email, data }) => base44.entities.User.update(email, data),
+    mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User updated successfully');
@@ -75,23 +75,23 @@ export default function AdminCoordinators() {
     },
   });
 
-  const toggleCoordinator = async (userEmail, isCoordinator) => {
+  const toggleCoordinator = async (userId, isCoordinator) => {
     await updateUserMutation.mutateAsync({
-      email: userEmail,
+      userId,
       data: { is_coordinator: !isCoordinator }
     });
   };
 
-  const toggleBan = async (userEmail, isBanned) => {
+  const toggleBan = async (userId, isBanned) => {
     await updateUserMutation.mutateAsync({
-      email: userEmail,
+      userId,
       data: { coordinator_banned: !isBanned }
     });
   };
 
-  const assignCoordinator = async (participantEmail, coordinatorEmail) => {
+  const assignCoordinator = async (participantId, coordinatorEmail) => {
     await updateUserMutation.mutateAsync({
-      email: participantEmail,
+      userId: participantId,
       data: { assigned_coordinator_email: coordinatorEmail }
     });
   };
@@ -164,14 +164,14 @@ export default function AdminCoordinators() {
                       <Button
                         size="sm"
                         variant={coordinator.coordinator_banned ? "default" : "destructive"}
-                        onClick={() => toggleBan(coordinator.email, coordinator.coordinator_banned)}
+                        onClick={() => toggleBan(coordinator.id, coordinator.coordinator_banned)}
                       >
                         {coordinator.coordinator_banned ? 'Unban' : 'Ban'}
                       </Button>
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => toggleCoordinator(coordinator.email, true)}
+                        onClick={() => toggleCoordinator(coordinator.id, true)}
                       >
                         Remove Role
                       </Button>
@@ -212,7 +212,7 @@ export default function AdminCoordinators() {
                       <Button
                         size="sm"
                         variant="outline"
-                        onClick={() => toggleCoordinator(participant.email, false)}
+                        onClick={() => toggleCoordinator(participant.id, false)}
                       >
                         <Plus className="w-3 h-3 mr-1" />
                         Make Coordinator
@@ -223,7 +223,7 @@ export default function AdminCoordinators() {
                     <Label className="text-xs text-gray-600 mb-1 block">Assigned Coordinator</Label>
                     <select
                       value={participant.assigned_coordinator_email || ''}
-                      onChange={(e) => assignCoordinator(participant.email, e.target.value)}
+                      onChange={(e) => assignCoordinator(participant.id, e.target.value)}
                       className="w-full px-3 py-2 border rounded-lg text-sm"
                     >
                       <option value="">None</option>
