@@ -1332,10 +1332,9 @@ Format as a simple bulleted list.`,
           <ImageTextOverlay
             imageUrl={overlayImageUrl}
             onSave={(html) => {
-              const currentContent = currentSlideData?.content || '';
-              // Remove the original image
-              const contentWithoutImg = currentContent.replace(/<img[^>]+src="[^">]+">/, '');
-              updateSlide(currentSlide, 'content', contentWithoutImg + html);
+              updateSlide(currentSlide, 'content', html);
+              setShowImageOverlay(false);
+              setOverlayImageUrl('');
             }}
             onClose={() => {
               setShowImageOverlay(false);

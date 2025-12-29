@@ -23,6 +23,7 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
       fontSize: 18,
       color: '#000000',
       backgroundColor: '#FFFFFF',
+      opacity: 1,
       bold: true,
       padding: 8,
       shape: 'rectangle' // rectangle, rounded, circle, pill
@@ -122,11 +123,17 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
   };
 
   const generateHTML = () => {
-    const overlays = textBoxes.map(box => `
+    const overlays = textBoxes.map(box => {
+      const rgbaMatch = box.backgroundColor.match(/^#([0-9a-f]{6})$/i);
+      const bgColor = rgbaMatch 
+        ? `rgba(${parseInt(rgbaMatch[1].substr(0,2), 16)}, ${parseInt(rgbaMatch[1].substr(2,2), 16)}, ${parseInt(rgbaMatch[1].substr(4,2), 16)}, ${box.opacity})`
+        : box.backgroundColor;
+      
+      return `
       <div style="position: absolute; left: ${box.x}%; top: ${box.y}%; 
                   width: ${box.width}%; height: ${box.height}%;
                   font-size: ${box.fontSize}px; color: ${box.color}; 
-                  background-color: ${box.backgroundColor}; 
+                  background-color: ${bgColor}; 
                   padding: ${box.padding}px; 
                   border-radius: ${getShapeStyle(box.shape)};
                   font-weight: ${box.bold ? '700' : '400'};
@@ -136,10 +143,11 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                   pointer-events: none;">
         ${box.text}
       </div>
-    `).join('');
+    `;
+    }).join('');
 
     return `<div style="position: relative; margin: 20px auto; max-width: 100%; text-align: center;">
-      <img src="${imageUrl}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block;" />
+      <img src="${imageUrl}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block;" alt="Labeled diagram" />
       ${overlays}
     </div>`;
   };
@@ -193,31 +201,32 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
               {textBoxes.map(box => (
                 <div key={box.id}>
                   <div
-                    className={`absolute transition-shadow ${
-                      selectedBox === box.id ? 'ring-2 ring-indigo-500 shadow-lg' : ''
-                    }`}
-                    style={{
-                      left: `${box.x}%`,
-                      top: `${box.y}%`,
-                      width: `${box.width}%`,
-                      height: `${box.height}%`,
-                      fontSize: `${box.fontSize}px`,
-                      color: box.color,
-                      backgroundColor: box.backgroundColor,
-                      padding: `${box.padding}px`,
-                      borderRadius: getShapeStyle(box.shape),
-                      fontWeight: box.bold ? '700' : '400',
-                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                      userSelect: 'none',
-                      cursor: 'move',
-                      display: 'flex',
-                      alignItems: 'center',
-                      justifyContent: 'center',
-                      textAlign: 'center'
-                    }}
-                    onMouseDown={(e) => handleMouseDown(e, box)}
+                  className={`absolute transition-shadow ${
+                    selectedBox === box.id ? 'ring-2 ring-indigo-500 shadow-lg' : ''
+                  }`}
+                  style={{
+                    left: `${box.x}%`,
+                    top: `${box.y}%`,
+                    width: `${box.width}%`,
+                    height: `${box.height}%`,
+                    fontSize: `${box.fontSize}px`,
+                    color: box.color,
+                    backgroundColor: box.backgroundColor,
+                    opacity: box.opacity,
+                    padding: `${box.padding}px`,
+                    borderRadius: getShapeStyle(box.shape),
+                    fontWeight: box.bold ? '700' : '400',
+                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                    userSelect: 'none',
+                    cursor: 'move',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    textAlign: 'center'
+                  }}
+                  onMouseDown={(e) => handleMouseDown(e, box)}
                   >
-                    {box.text}
+                  {box.text}
                   </div>
                   
                   {selectedBox === box.id && (
@@ -340,6 +349,23 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                     max={24}
                     className="mt-1"
                   />
+                </div>
+
+                <div>
+                  <Label>Opacity / Blending</Label>
+                  <div className="flex items-center gap-3 mt-1">
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      value={selectedBoxData.opacity}
+                      onChange={(e) => updateTextBox(selectedBoxData.id, { opacity: parseFloat(e.target.value) })}
+                      className="flex-1"
+                    />
+                    <span className="text-sm font-medium w-12">{Math.round(selectedBoxData.opacity * 100)}%</span>
+                  </div>
+                  <p className="text-xs text-gray-500 mt-1">Lower opacity blends better with the image</p>
                 </div>
 
                 <div>
