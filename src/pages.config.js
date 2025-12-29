@@ -31,12 +31,13 @@ import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
+import TutorDashboardOverview from './pages/TutorDashboardOverview';
 import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
-import TutorDashboardOverview from './pages/TutorDashboardOverview';
 import YouthWork from './pages/YouthWork';
+import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import __Layout from './Layout.jsx';
 
 
@@ -74,12 +75,13 @@ export const PAGES = {
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
+    "TutorDashboardOverview": TutorDashboardOverview,
     "TutorSessionsDashboard": TutorSessionsDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
-    "TutorDashboardOverview": TutorDashboardOverview,
     "YouthWork": YouthWork,
+    "YouthWorkWorkbook": YouthWorkWorkbook,
 }
 
 export const pagesConfig = {
