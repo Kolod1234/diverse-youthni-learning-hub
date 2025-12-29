@@ -13,7 +13,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [usePerplexity, setUsePerplexity] = useState(false);
+  const [aiProvider, setAiProvider] = useState('standard'); // 'standard', 'perplexity', 'gemini'
   const [useWebImages, setUseWebImages] = useState(true);
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
@@ -42,7 +42,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         primary: 'Primary School (5-11 years) - Simple, engaging content with clear examples and age-appropriate language'
       };
 
-      if (usePerplexity) {
+      if (aiProvider === 'perplexity') {
         // Use Perplexity for research-based content
         const researchResult = await base44.functions.invoke('perplexitySearch', {
           query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
@@ -89,12 +89,53 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           } catch (parseError) {
             console.error('Failed to parse Perplexity response:', parseError);
             toast.error('Failed to parse AI response, falling back to standard AI');
-            usePerplexity = false;
           }
-        }
-      }
+          }
+          } else if (aiProvider === 'gemini') {
+          // Use Gemini for content generation
+          const geminiResult = await base44.functions.invoke('geminiSearch', {
+          query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
+          ${details ? `\nContext: ${details}` : ''}
 
-      if (!usePerplexity || !response) {
+          TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+          Adapt the complexity, vocabulary, and depth of content accordingly.
+
+          CRITICAL: Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
+          {
+          "slides": [
+          {
+          "title": "Engaging slide title",
+          "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples.",
+          "order": 1,
+          ${includeImages ? '"image_prompt": "Specific search query for finding a relevant educational image",' : ''}
+          "image_description": "Brief description of what the image shows"
+          }
+          ]
+          }
+
+          ${includeImages ? 'IMPORTANT: Include "image_prompt" (detailed search query) and "image_description" for EVERY slide.' : ''}
+
+          Return ONLY the JSON object, nothing else.`
+          });
+
+          if (geminiResult?.data?.content) {
+          try {
+            const content = geminiResult.data.content.trim();
+            const jsonMatch = content.match(/\{[\s\S]*\}/);
+            if (jsonMatch) {
+              response = JSON.parse(jsonMatch[0]);
+              toast.success('Content generated with Gemini AI!');
+            } else {
+              throw new Error('No JSON found in response');
+            }
+          } catch (parseError) {
+            console.error('Failed to parse Gemini response:', parseError);
+            toast.error('Failed to parse AI response, falling back to standard AI');
+          }
+          }
+          }
+
+          if (!response) {
         response = await base44.integrations.Core.InvokeLLM({
           prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
 
@@ -338,20 +379,46 @@ Level: ${levelInstructions[educationLevel]}`;
             </div>
           )}
 
-          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-            <input
-              type="checkbox"
-              id="usePerplexity"
-              checked={usePerplexity}
-              onChange={(e) => setUsePerplexity(e.target.checked)}
-              className="w-4 h-4 rounded text-blue-600"
-            />
-            <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
-              <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
-              <p className="text-xs text-blue-700 mt-1">
-                Enhanced research with real-time web search, citations, and more accurate information
-              </p>
-            </Label>
+          <div className="space-y-2">
+            <Label>AI Provider</Label>
+            <div className="grid grid-cols-3 gap-3">
+              <button
+                type="button"
+                onClick={() => setAiProvider('standard')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'standard'
+                    ? 'border-purple-500 bg-purple-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">Standard AI</div>
+                <div className="text-xs text-gray-600">Fast & reliable</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiProvider('perplexity')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'perplexity'
+                    ? 'border-blue-500 bg-blue-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">🔍 Perplexity</div>
+                <div className="text-xs text-gray-600">Web search & citations</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiProvider('gemini')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'gemini'
+                    ? 'border-green-500 bg-green-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">✨ Gemini</div>
+                <div className="text-xs text-gray-600">Google AI</div>
+              </button>
+            </div>
           </div>
 
           <div className="flex gap-3">
