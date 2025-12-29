@@ -15,43 +15,52 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const geminiKey = Deno.env.get('GEMINI_API_KEY');
+    const openaiKey = Deno.env.get('OPENAI_API_KEY');
     
-    if (!geminiKey) {
+    if (!openaiKey) {
       return Response.json({ 
-        error: 'GEMINI_API_KEY not set'
+        error: 'OPENAI_API_KEY not set'
       }, { status: 500 });
     }
 
-    // Use Gemini's Imagen API for generating educational diagrams
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:predict?key=${geminiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          instances: [{
+    // Try DALL-E first
+    try {
+      const response = await fetch(
+        'https://api.openai.com/v1/images/generations',
+        {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${openaiKey}`
+          },
+          body: JSON.stringify({
+            model: 'dall-e-3',
             prompt: `A professional educational infographic of ${prompt}. Ensure all text labels are spelled correctly, the layout is clear, and diagrams are accurate. High quality, suitable for classroom use.`,
-            sampleCount: 1
-          }],
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: "16:9"
-          }
-        })
-      }
-    );
+            n: 1,
+            size: '1792x1024',
+            quality: 'standard'
+          })
+        }
+      );
 
-    if (!response.ok) {
-      const errorData = await response.text();
-      
-      // Fallback to Gemini text generation to describe the image, then use standard image generation
-      console.log('Gemini Imagen not available, using fallback...');
-      
-      const fallbackPrompt = `Educational diagram showing ${prompt}. 
-      
+      if (response.ok) {
+        const data = await response.json();
+        if (data.data?.[0]?.url) {
+          return Response.json({ 
+            url: data.data[0].url,
+            source: 'dall-e-3'
+          });
+        }
+      }
+    } catch (dalleError) {
+      console.error('DALL-E failed:', dalleError);
+    }
+
+    // Fallback to base44 AI image generation
+    console.log('Falling back to base44 AI image generation');
+    
+    const fallbackPrompt = `Educational diagram showing ${prompt}. 
+    
 CRITICAL REQUIREMENTS:
 - Clean, professional educational diagram style
 - Perfect spelling of all scientific and technical terms
@@ -62,40 +71,19 @@ CRITICAL REQUIREMENTS:
 Topic context: ${topic || prompt}
 Style: Illustrative diagram, infographic, or educational chart`;
 
-      const imageResult = await base44.integrations.Core.GenerateImage({
-        prompt: fallbackPrompt
-      });
-
-      if (imageResult?.url) {
-        return Response.json({ 
-          url: imageResult.url,
-          source: 'fallback-ai'
-        });
-      }
-      
-      throw new Error(`Gemini Imagen error: ${response.status} - ${errorData}`);
-    }
-
-    const data = await response.json();
-    const imageUrl = data.predictions[0].bytesBase64Encoded;
-    
-    // Convert base64 to blob URL or upload to storage
-    const imageBlob = Uint8Array.from(atob(imageUrl), c => c.charCodeAt(0));
-    
-    // Upload to Base44 storage
-    const uploadResult = await base44.integrations.Core.UploadFile({
-      file: new Blob([imageBlob], { type: 'image/png' })
+    const fallbackResult = await base44.integrations.Core.GenerateImage({
+      prompt: fallbackPrompt
     });
 
     return Response.json({ 
-      url: uploadResult.file_url,
-      source: 'gemini-imagen'
+      url: fallbackResult.url,
+      source: 'base44-ai'
     });
     
   } catch (error) {
-    console.error('Error with Gemini image generation:', error);
+    console.error('Error generating image:', error);
     return Response.json({ 
-      error: error.message
+      error: error.message 
     }, { status: 500 });
   }
 });
