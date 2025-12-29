@@ -569,11 +569,12 @@ export default function YouthWorkWorkbook() {
                   </Card>
                 </div>
               </TabsContent>
-            </Tabs>
-          </div>
+            </div>
+          </Tabs>
+        </div>
 
-          {/* Footer */}
-          <div className="mt-8 flex items-center justify-between pb-8">
+        {/* Footer */}
+        <div className="mt-8 flex items-center justify-between pb-8">
           <Button 
             variant="outline" 
             onClick={() => setSelectedUnit(Math.max(0, selectedUnit - 1))} 
