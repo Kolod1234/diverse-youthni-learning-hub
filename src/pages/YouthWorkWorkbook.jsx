@@ -22,6 +22,9 @@ export default function YouthWorkWorkbook() {
   const [selectedUnit, setSelectedUnit] = useState(null);
   const [currentSection, setCurrentSection] = useState('overview');
   const [workbookData, setWorkbookData] = useState({});
+  const [showPasscodeDialog, setShowPasscodeDialog] = useState(true);
+  const [passcode, setPasscode] = useState('');
+  const [isUnlocked, setIsUnlocked] = useState(false);
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -38,11 +41,34 @@ export default function YouthWorkWorkbook() {
   });
 
   const saveProgressMutation = useMutation({
-    mutationFn: (data) => {
-      // Save workbook progress to database (you can create a WorkbookProgress entity)
-      return fetch('/api/save', { method: 'POST', body: JSON.stringify(data) });
+    mutationFn: async (data) => {
+      const existing = await base44.entities.WorkbookProgress.filter({
+        qualification_id: data.qualification_id,
+        unit_index: data.unit_index,
+        participant_email: data.user_email,
+      });
+
+      if (existing.length > 0) {
+        return base44.entities.WorkbookProgress.update(existing[0].id, {
+          workbook_data: data.data,
+          last_section: data.last_section,
+          progress_percent: Math.round(Object.keys(data.data).length / 10 * 100),
+        });
+      } else {
+        return base44.entities.WorkbookProgress.create({
+          qualification_id: data.qualification_id,
+          unit_index: data.unit_index,
+          participant_email: data.user_email,
+          participant_name: user?.full_name,
+          workbook_data: data.data,
+          last_section: data.last_section,
+          progress_percent: Math.round(Object.keys(data.data).length / 10 * 100),
+          assigned_coordinator_email: user?.assigned_coordinator_email,
+        });
+      }
     },
     onSuccess: () => {
+      queryClient.invalidateQueries(['workbook-progress']);
       toast.success('Progress saved successfully!');
     },
   });
@@ -61,8 +87,49 @@ export default function YouthWorkWorkbook() {
     setWorkbookData(prev => ({ ...prev, [key]: value }));
   };
 
+  const handlePasscodeSubmit = () => {
+    const correctPasscode = 'YoutworkerB1';
+    if (passcode === correctPasscode) {
+      setIsUnlocked(true);
+      setShowPasscodeDialog(false);
+      toast.success('Access granted!');
+    } else {
+      toast.error('Incorrect passcode');
+    }
+  };
+
   const selectedQual = qualifications.find(q => q.id === selectedQualification);
   const unit = selectedQual?.curriculum?.[selectedUnit];
+
+  // Passcode Protection
+  if (!isUnlocked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white flex items-center justify-center p-4">
+        <Card className="max-w-md w-full p-8">
+          <div className="text-center mb-6">
+            <div className="w-20 h-20 bg-gradient-to-br from-purple-600 to-pink-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
+              <BookOpen className="w-10 h-10 text-white" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Youth Work Access</h2>
+            <p className="text-gray-600">Enter passcode to access the workbook</p>
+          </div>
+          <div className="space-y-4">
+            <Input
+              type="password"
+              placeholder="Enter passcode..."
+              value={passcode}
+              onChange={(e) => setPasscode(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && handlePasscodeSubmit()}
+              className="text-center text-lg tracking-widest"
+            />
+            <Button onClick={handlePasscodeSubmit} className="w-full bg-gradient-to-r from-purple-600 to-pink-600">
+              Unlock Workbook
+            </Button>
+          </div>
+        </Card>
+      </div>
+    );
+  }
 
   if (!selectedQualification) {
     return (
@@ -120,6 +187,25 @@ export default function YouthWorkWorkbook() {
     );
   }
 
+  const checkLevelPasscode = (level) => {
+    const levelPasscodes = {
+      'Level 1': 'OCNNI01',
+      'Level 2': 'OCNNI02',
+      'Level 3': 'OCNNI03',
+    };
+    
+    const requiredPasscode = levelPasscodes[level];
+    const enteredPasscode = prompt(`Enter passcode for ${level}:`);
+    
+    if (enteredPasscode === requiredPasscode) {
+      toast.success(`${level} unlocked!`);
+      return true;
+    } else {
+      toast.error('Incorrect passcode');
+      return false;
+    }
+  };
+
   if (selectedUnit === null) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
@@ -145,7 +231,11 @@ export default function YouthWorkWorkbook() {
               <Card
                 key={idx}
                 className="p-6 hover:shadow-xl transition-all cursor-pointer border-2 border-transparent hover:border-purple-300"
-                onClick={() => setSelectedUnit(idx)}
+                onClick={() => {
+                  if (checkLevelPasscode(selectedQual.level)) {
+                    setSelectedUnit(idx);
+                  }
+                }}
               >
                 <div className="flex items-start justify-between">
                   <div className="flex-1">

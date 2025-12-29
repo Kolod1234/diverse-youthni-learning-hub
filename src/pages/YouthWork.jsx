@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
@@ -7,19 +7,39 @@ import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   GraduationCap, BookOpen, Award, CheckCircle, ArrowRight, 
-  Target, Users, Lightbulb, Clock, TrendingUp
+  Target, Users, Lightbulb, Clock, TrendingUp, Settings
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 
 export default function YouthWork() {
+  const [user, setUser] = useState(null);
   const [selectedLevel, setSelectedLevel] = useState('all');
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   const { data: qualifications = [] } = useQuery({
     queryKey: ['youth-work-qualifications'],
     queryFn: () => base44.entities.YouthWorkQualification.filter({ is_published: true }, 'order', 50),
   });
+
+  const { data: assignedProgress = [] } = useQuery({
+    queryKey: ['assigned-workbook-progress', user?.email],
+    queryFn: () => base44.entities.WorkbookProgress.filter({ 
+      assigned_coordinator_email: user?.email 
+    }, '-created_date', 100),
+    enabled: !!user?.is_coordinator,
+  });
+
+  const isCoordinator = user?.is_coordinator || user?.role === 'admin';
+  const isAdmin = user?.role === 'admin';
 
   const filteredQualifications = selectedLevel === 'all' 
     ? qualifications 
@@ -61,12 +81,22 @@ export default function YouthWork() {
           <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
             OCN Accredited qualifications aligned with the Model of Effective Practice in Youth Work (OCNI)
           </p>
-          <Link to={createPageUrl('YouthWorkWorkbook')}>
-            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg">
-              <BookOpen className="w-6 h-6 mr-3" />
-              Start Your Interactive Workbook
-            </Button>
-          </Link>
+          <div className="flex justify-center gap-4">
+            <Link to={createPageUrl('YouthWorkWorkbook')}>
+              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg">
+                <BookOpen className="w-6 h-6 mr-3" />
+                Start Your Interactive Workbook
+              </Button>
+            </Link>
+            {isAdmin && (
+              <Link to={createPageUrl('AdminYouthWork')}>
+                <Button variant="outline" className="px-8 py-6 text-lg rounded-xl shadow-lg">
+                  <Settings className="w-6 h-6 mr-3" />
+                  Admin Management
+                </Button>
+              </Link>
+            )}
+          </div>
         </motion.div>
 
         {/* Model of Effective Practice Overview */}
@@ -327,7 +357,48 @@ export default function YouthWork() {
             </p>
           </Card>
         )}
-      </div>
-    </div>
-  );
-}
+        </div>
+
+        {/* Coordinator View */}
+        {isCoordinator && assignedProgress.length > 0 && (
+        <div className="mt-12">
+          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Assigned Participants</h2>
+          <div className="grid gap-4">
+            {assignedProgress.map(progress => {
+              const qual = qualifications.find(q => q.id === progress.qualification_id);
+              return (
+                <Card key={progress.id} className="p-6">
+                  <div className="flex items-start justify-between">
+                    <div>
+                      <h3 className="font-bold text-gray-900">{progress.participant_name}</h3>
+                      <p className="text-sm text-gray-600">{progress.participant_email}</p>
+                      <p className="text-sm text-gray-600 mt-1">
+                        {qual?.title} - Unit {progress.unit_index + 1}
+                      </p>
+                      <div className="flex items-center gap-2 mt-2">
+                        <div className="h-2 w-32 bg-gray-200 rounded-full overflow-hidden">
+                          <div 
+                            className="h-full bg-emerald-600" 
+                            style={{ width: `${progress.progress_percent}%` }}
+                          />
+                        </div>
+                        <span className="text-sm text-gray-600">{progress.progress_percent}%</span>
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      {progress.is_approved ? (
+                        <Badge className="bg-green-100 text-green-700">Approved</Badge>
+                      ) : (
+                        <Badge className="bg-yellow-100 text-yellow-700">Pending Review</Badge>
+                      )}
+                    </div>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+        )}
+        </div>
+        );
+        }
