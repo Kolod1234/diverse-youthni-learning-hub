@@ -19,17 +19,27 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   const [notes, setNotes] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: assignedParticipants = [] } = useQuery({
+  const { data: assignedParticipants = [], isLoading: participantsLoading } = useQuery({
     queryKey: ['assigned-participants', coordinatorEmail],
     queryFn: async () => {
       const allUsers = await base44.entities.User.list('full_name', 1000);
-      return allUsers.filter(u => 
-        u.assigned_coordinator_email === coordinatorEmail && 
-        !u.is_coordinator && 
-        !u.is_tutor &&
-        u.role !== 'admin'
-      );
+      const filtered = allUsers.filter(u => {
+        const isAssigned = u.assigned_coordinator_email === coordinatorEmail;
+        const notCoordinator = !u.is_coordinator;
+        const notTutor = !u.is_tutor;
+        const notAdmin = u.role !== 'admin';
+        
+        return isAssigned && notCoordinator && notTutor && notAdmin;
+      });
+      
+      console.log('Coordinator Email:', coordinatorEmail);
+      console.log('Total Users:', allUsers.length);
+      console.log('Filtered Participants:', filtered.length);
+      console.log('Assigned Participants:', filtered.map(u => ({ name: u.full_name, email: u.email, assignedTo: u.assigned_coordinator_email })));
+      
+      return filtered;
     },
+    enabled: !!coordinatorEmail,
   });
 
   const updateParticipantMutation = useMutation({
@@ -78,6 +88,14 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
     setRating(0);
     setNotes('');
   };
+
+  if (participantsLoading) {
+    return (
+      <div className="flex items-center justify-center py-12">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="grid md:grid-cols-3 gap-6">
