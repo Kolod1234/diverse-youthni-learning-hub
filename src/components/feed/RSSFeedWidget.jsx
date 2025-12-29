@@ -44,11 +44,11 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
     queryFn: () => base44.entities.RSSFeed.list('-published_date', 100),
   });
 
-  // Filter to show only recent news (last 7 days) and custom announcements
+  // Filter to show only recent news (last 3 days) and custom announcements
   const recentItems = feedItems.filter(item => {
     if (item.category === 'ANNOUNCEMENT') return true; // Always show announcements
     const daysSincePublished = (new Date() - new Date(item.published_date)) / (1000 * 60 * 60 * 24);
-    return daysSincePublished <= 7; // Only show news from last 7 days
+    return daysSincePublished <= 3; // Only show news from last 3 days
   });
 
   const categories = ['all', ...new Set(recentItems.map(item => item.category).filter(Boolean))];
@@ -225,7 +225,7 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
         <div className="text-center py-12">
           <Rss className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">No recent news items found</p>
-          <p className="text-sm text-gray-400 mt-2">Showing news from the last 7 days</p>
+          <p className="text-sm text-gray-400 mt-2">Showing news from the last 3 days</p>
         </div>
       )}
       
@@ -233,7 +233,7 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
       {feedItems.length > 0 && recentItems.length < feedItems.length && (
         <div className="text-center py-4">
           <p className="text-sm text-gray-500">
-            Showing {recentItems.length} recent items from the last 7 days
+            Showing {recentItems.length} recent items from the last 3 days
           </p>
         </div>
       )}

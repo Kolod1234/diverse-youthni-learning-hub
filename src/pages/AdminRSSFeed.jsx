@@ -95,6 +95,21 @@ export default function AdminRSSFeed() {
     },
   });
 
+  const cleanupMutation = useMutation({
+    mutationFn: async () => {
+      const response = await base44.functions.invoke('cleanupOldNews', {});
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['rss-feed-admin']);
+      queryClient.invalidateQueries(['rss-feed']);
+      toast.success(data.message || 'Old news cleaned up successfully!');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to cleanup old news');
+    },
+  });
+
   const handleOpenDialog = (feed = null) => {
     if (feed) {
       setEditingFeed(feed);
@@ -196,6 +211,15 @@ export default function AdminRSSFeed() {
             </div>
           </div>
           <div className="flex gap-2">
+              <Button 
+                onClick={() => cleanupMutation.mutate()}
+                disabled={cleanupMutation.isPending}
+                variant="outline"
+                className="border-red-600 text-red-700 hover:bg-red-50"
+              >
+                <Trash2 className="w-4 h-4 mr-2" />
+                Clean Old News
+              </Button>
               <Button 
                 onClick={() => {
                   const sources = ['bbc', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni'];
@@ -354,7 +378,8 @@ export default function AdminRSSFeed() {
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
-                  Link (URL)
+                  Link (URL) {formData.category !== 'ANNOUNCEMENT' && <span className="text-red-500">*</span>}
+                  {formData.category === 'ANNOUNCEMENT' && <span className="text-xs text-gray-500">(Optional for announcements)</span>}
                 </label>
                 <Input
                   type="url"
