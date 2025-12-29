@@ -72,10 +72,29 @@ export default function LogbookManager({ programId, isAdmin, isMentor, userEmail
   });
 
   const approveMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Logbook.update(id, data),
+    mutationFn: async ({ id, data, participantEmail }) => {
+      // Update logbook
+      const updated = await base44.entities.Logbook.update(id, data);
+      
+      // Send notification to participant
+      try {
+        await base44.functions.invoke('sendNotification', {
+          recipient_email: participantEmail,
+          title: 'Logbook Approved',
+          message: `Your logbook entry has been reviewed and approved by the coordinator. Check the feedback!`,
+          type: 'logbook',
+          link: `/programs?view=logbook`,
+          send_email: true,
+        });
+      } catch (err) {
+        console.error('Failed to send notification:', err);
+      }
+      
+      return updated;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['logbooks', programId]);
-      toast.success('Logbook approved');
+      toast.success('Logbook approved and participant notified');
     },
   });
 
@@ -99,9 +118,10 @@ export default function LogbookManager({ programId, isAdmin, isMentor, userEmail
     createMutation.mutate(formData);
   };
 
-  const handleApprove = (logbookId, coordinatorComment, recommendation) => {
+  const handleApprove = (logbookId, coordinatorComment, recommendation, participantEmail) => {
     approveMutation.mutate({
       id: logbookId,
+      participantEmail,
       data: { 
         coordinator_comment: coordinatorComment,
         recommendation_for_improvement: recommendation,
@@ -556,7 +576,7 @@ export default function LogbookManager({ programId, isAdmin, isMentor, userEmail
                           const comment = document.getElementById(`comment-${entry.id}`).value;
                           const recommendation = document.getElementById(`recommendation-${entry.id}`).value;
                           if (comment.trim()) {
-                            handleApprove(entry.id, comment, recommendation);
+                            handleApprove(entry.id, comment, recommendation, entry.participant_email);
                           } else {
                             toast.error('Please provide a comment before approving');
                           }
