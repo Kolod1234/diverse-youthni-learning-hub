@@ -13,9 +13,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [aiProvider, setAiProvider] = useState('standard'); // 'standard', 'perplexity', 'gemini'
+  const [aiProvider, setAiProvider] = useState('standard'); // 'standard', 'perplexity', 'chatgpt'
   const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'gemini'
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -92,9 +92,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             toast.error('Failed to parse AI response, falling back to standard AI');
           }
           }
-          } else if (aiProvider === 'gemini') {
-            // Use Gemini for content generation
-            const geminiResult = await base44.functions.invoke('geminiGeneration', {
+          } else if (aiProvider === 'chatgpt') {
+            // Use ChatGPT for content generation
+            const chatgptResult = await base44.functions.invoke('geminiGeneration', {
           query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
           ${details ? `\nContext: ${details}` : ''}
 
@@ -119,18 +119,18 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           Return ONLY the JSON object, nothing else.`
           });
 
-          if (geminiResult?.data?.content) {
+          if (chatgptResult?.data?.content) {
           try {
-            const content = geminiResult.data.content.trim();
+            const content = chatgptResult.data.content.trim();
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
               response = JSON.parse(jsonMatch[0]);
-              toast.success('Content generated with Gemini AI!');
+              toast.success('Content generated with ChatGPT!');
             } else {
               throw new Error('No JSON found in response');
             }
           } catch (parseError) {
-            console.error('Failed to parse Gemini response:', parseError);
+            console.error('Failed to parse ChatGPT response:', parseError);
             toast.error('Failed to parse AI response, falling back to standard AI');
           }
           }
@@ -222,7 +222,7 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          const generatorName = imageGenerator === 'gemini' ? 'Gemini Imagen' : 'Nano Banana AI';
+          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : 'Nano Banana AI';
           toast.info(`Generating educational diagrams with ${generatorName}...`);
           
           slides = await Promise.all(
@@ -231,8 +231,8 @@ Return ONLY valid JSON.`,
                 try {
                   let generatedImage;
                   
-                  if (imageGenerator === 'gemini') {
-                    // Use Gemini for image generation
+                  if (imageGenerator === 'dalle') {
+                    // Use DALL-E for image generation
                     const result = await base44.functions.invoke('geminiImageGeneration', {
                       prompt: slide.image_prompt,
                       topic: `${topic} - ${slide.title}`
@@ -415,14 +415,14 @@ Level: ${levelInstructions[educationLevel]}`;
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageGenerator('gemini')}
+                      onClick={() => setImageGenerator('dalle')}
                       className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'gemini'
+                        imageGenerator === 'dalle'
                           ? 'border-green-500 bg-green-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <div className="font-semibold text-sm mb-1">✨ Gemini Imagen</div>
+                      <div className="font-semibold text-sm mb-1">✨ DALL-E 3</div>
                       <div className="text-xs text-gray-600">High-quality diagrams</div>
                     </button>
                   </div>
@@ -460,15 +460,15 @@ Level: ${levelInstructions[educationLevel]}`;
               </button>
               <button
                 type="button"
-                onClick={() => setAiProvider('gemini')}
+                onClick={() => setAiProvider('chatgpt')}
                 className={`p-4 rounded-lg border-2 transition-all ${
-                  aiProvider === 'gemini'
+                  aiProvider === 'chatgpt'
                     ? 'border-green-500 bg-green-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="font-semibold text-sm mb-1">✨ Gemini</div>
-                <div className="text-xs text-gray-600">Google AI</div>
+                <div className="font-semibold text-sm mb-1">💬 ChatGPT</div>
+                <div className="text-xs text-gray-600">OpenAI GPT-4</div>
               </button>
             </div>
           </div>
