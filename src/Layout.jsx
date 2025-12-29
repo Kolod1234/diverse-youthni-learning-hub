@@ -206,18 +206,30 @@ export default function Layout({ children, currentPageName }) {
                   </Button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer">
-                      <GraduationCap className="w-4 h-4 mr-2" />
-                      Tutors
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Messages
-                    </Link>
-                  </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer">
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        Tutors
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('YouthWork')} className="flex items-center cursor-pointer">
+                        <GraduationCap className="w-4 h-4 mr-2" />
+                        Youth Work (OCN)
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer">
+                        <Video className="w-4 h-4 mr-2" />
+                        Live Sessions
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer">
+                        <MessageSquare className="w-4 h-4 mr-2" />
+                        Messages
+                      </Link>
+                    </DropdownMenuItem>
                   <DropdownMenuItem asChild>
                     <Link to={createPageUrl('Analytics')} className="flex items-center cursor-pointer">
                       <BarChart3 className="w-4 h-4 mr-2" />
