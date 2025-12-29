@@ -138,35 +138,39 @@ export default function CourseDetails() {
 
   if (loadingCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse">
-            <div className="h-64 bg-gray-200 rounded-2xl mb-8" />
-            <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
-            <div className="h-4 bg-gray-200 rounded w-1/2" />
+      <CoursePasswordProtection user={user}>
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <div className="animate-pulse">
+              <div className="h-64 bg-gray-200 rounded-2xl mb-8" />
+              <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
+              <div className="h-4 bg-gray-200 rounded w-1/2" />
+            </div>
           </div>
-          </div>
-          </div>
-          </CoursePasswordProtection>
-          );
-          }
+        </div>
+      </CoursePasswordProtection>
+    );
+  }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h2>
-          <Link to={createPageUrl('Explore')}>
-            <Button>Browse Courses</Button>
-          </Link>
+      <CoursePasswordProtection user={user}>
+        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+          <div className="text-center">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h2 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h2>
+            <Link to={createPageUrl('Explore')}>
+              <Button>Browse Courses</Button>
+            </Link>
+          </div>
         </div>
-      </div>
+      </CoursePasswordProtection>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <CoursePasswordProtection user={user}>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
         <div className="absolute inset-0 bg-black/20" />
