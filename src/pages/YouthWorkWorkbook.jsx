@@ -176,69 +176,108 @@ export default function YouthWorkWorkbook() {
   const progress = Object.keys(workbookData).length / 10 * 100;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-purple-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* Header */}
-        <div className="flex items-center justify-between mb-6">
-          <Button
-            variant="outline"
-            onClick={() => setSelectedUnit(null)}
-          >
-            ← Back to Units
-          </Button>
-          <Button onClick={handleSave} className="bg-purple-600 hover:bg-purple-700">
-            <Save className="w-4 h-4 mr-2" />
-            Save Progress
-          </Button>
-        </div>
+    <div className="min-h-screen bg-gray-50">
+      {/* Decorative Border */}
+      <div className="fixed left-0 top-0 bottom-0 w-16 bg-gradient-to-b from-red-500 via-orange-500 via-yellow-500 via-green-500 via-blue-500 via-indigo-500 to-purple-500 opacity-90 hidden lg:block" />
+      <div className="fixed right-0 top-0 bottom-0 w-16 bg-gradient-to-b from-purple-500 via-indigo-500 via-blue-500 via-green-500 via-yellow-500 via-orange-500 to-red-500 opacity-90 hidden lg:block" />
+      
+      <div className="lg:px-20 px-4">
+        <div className="max-w-5xl mx-auto py-8">
+          {/* Header */}
+          <div className="flex items-center justify-between mb-6">
+            <Button
+              variant="outline"
+              onClick={() => setSelectedUnit(null)}
+              className="border-2"
+            >
+              ← Back to Units
+            </Button>
+            <Button onClick={handleSave} className="bg-[#5B2C6F] hover:bg-[#4A2359] text-white shadow-lg">
+              <Save className="w-4 h-4 mr-2" />
+              Save Progress
+            </Button>
+          </div>
 
-        {/* Workbook Header */}
-        <div className="bg-gradient-to-r from-amber-400 via-yellow-400 to-amber-400 rounded-t-2xl p-1">
-          <div className="bg-gradient-to-r from-purple-800 to-purple-900 text-white rounded-t-xl p-6">
-            <div className="flex items-start justify-between">
-              <div>
-                <Badge className="bg-white text-purple-700 mb-3">
-                  Unit {selectedUnit + 1} of {selectedQual?.curriculum?.length}
-                </Badge>
-                <h1 className="text-2xl font-bold mb-2">{unit?.unit_title}</h1>
-                <p className="text-purple-200 text-sm">Code: {unit?.unit_code}</p>
+          {/* Workbook Header */}
+          <div className="relative mb-6">
+            {/* Yellow accent strip */}
+            <div className="absolute -left-4 lg:-left-12 top-0 bottom-0 w-8 bg-gradient-to-b from-yellow-400 to-amber-500" />
+            
+            <div className="bg-[#5B2C6F] text-white shadow-xl relative overflow-hidden">
+              {/* Geometric pattern overlay */}
+              <div className="absolute right-0 top-0 bottom-0 w-64 opacity-10">
+                <div className="absolute top-0 right-0 w-32 h-32 bg-white transform rotate-45 translate-x-16 -translate-y-16" />
+                <div className="absolute bottom-0 right-16 w-24 h-24 bg-white transform rotate-12" />
               </div>
-              <div className="text-right">
-                <div className="bg-white/20 rounded-lg p-3">
-                  <Award className="w-6 h-6 mb-1 mx-auto" />
-                  <p className="text-sm font-semibold">{unit?.credits} Credits</p>
+              
+              <div className="relative p-8">
+                <div className="flex items-start justify-between">
+                  <div className="flex-1">
+                    <div className="inline-block bg-amber-400 text-[#5B2C6F] px-4 py-1 rounded-full mb-4 font-bold text-sm">
+                      Unit {selectedUnit + 1} of {selectedQual?.curriculum?.length}
+                    </div>
+                    <h1 className="text-3xl font-bold mb-3">{unit?.unit_title}</h1>
+                    <p className="text-purple-200 text-sm mb-2">Assessment Criteria</p>
+                    <p className="text-white font-mono text-xs bg-white/10 inline-block px-3 py-1 rounded">
+                      Code: {unit?.unit_code}
+                    </p>
+                  </div>
+                  <div className="text-center bg-white/10 backdrop-blur-sm rounded-xl p-4 ml-4">
+                    <Award className="w-8 h-8 mb-2 mx-auto text-amber-400" />
+                    <p className="text-2xl font-bold">{unit?.credits}</p>
+                    <p className="text-xs text-purple-200">Credits</p>
+                  </div>
                 </div>
               </div>
             </div>
           </div>
-        </div>
 
         {/* Progress Bar */}
-        <div className="bg-white p-4 border-x-2 border-purple-200">
-          <div className="flex items-center justify-between mb-2">
-            <span className="text-sm font-medium text-gray-700">Your Progress</span>
-            <span className="text-sm font-semibold text-purple-600">{Math.round(progress)}%</span>
+        <div className="bg-white shadow-md relative mb-6">
+          <div className="absolute -left-4 lg:-left-12 top-0 bottom-0 w-8 bg-gradient-to-b from-amber-500 to-yellow-400" />
+          <div className="p-6 border-l-4 border-[#5B2C6F]">
+            <div className="flex items-center justify-between mb-3">
+              <span className="text-sm font-bold text-gray-900">Your Progress</span>
+              <span className="text-lg font-bold text-[#5B2C6F]">{Math.round(progress)}%</span>
+            </div>
+            <Progress value={progress} className="h-3" />
           </div>
-          <Progress value={progress} className="h-2" />
         </div>
 
         {/* Main Content */}
-        <Card className="border-2 border-purple-200">
+        <div className="bg-white shadow-xl relative">
+          <div className="absolute -left-4 lg:-left-12 top-0 bottom-0 w-8 bg-gradient-to-b from-yellow-400 to-amber-500" />
+          
           <Tabs value={currentSection} onValueChange={setCurrentSection}>
-            <TabsList className="w-full justify-start bg-purple-50 border-b-2 border-purple-200 rounded-none p-0">
-              <TabsTrigger value="overview" className="data-[state=active]:bg-white data-[state=active]:border-b-4 data-[state=active]:border-purple-600">
+            <TabsList className="w-full justify-start bg-[#5B2C6F] rounded-none p-0 h-auto">
+              <TabsTrigger 
+                value="overview" 
+                className="data-[state=active]:bg-amber-400 data-[state=active]:text-[#5B2C6F] text-white font-semibold px-6 py-4 rounded-none data-[state=active]:shadow-lg"
+              >
                 Overview
               </TabsTrigger>
-              <TabsTrigger value="learning" className="data-[state=active]:bg-white data-[state=active]:border-b-4 data-[state=active]:border-purple-600">
+              <TabsTrigger 
+                value="learning" 
+                className="data-[state=active]:bg-amber-400 data-[state=active]:text-[#5B2C6F] text-white font-semibold px-6 py-4 rounded-none data-[state=active]:shadow-lg"
+              >
                 Learning Outcomes
               </TabsTrigger>
-              <TabsTrigger value="activities" className="data-[state=active]:bg-white data-[state=active]:border-b-4 data-[state=active]:border-purple-600">
+              <TabsTrigger 
+                value="activities" 
+                className="data-[state=active]:bg-amber-400 data-[state=active]:text-[#5B2C6F] text-white font-semibold px-6 py-4 rounded-none data-[state=active]:shadow-lg"
+              >
                 Activities
               </TabsTrigger>
-              <TabsTrigger value="evidence" className="data-[state=active]:bg-white data-[state=active]:border-b-4 data-[state=active]:border-purple-600">
+              <TabsTrigger 
+                value="evidence" 
+                className="data-[state=active]:bg-amber-400 data-[state=active]:text-[#5B2C6F] text-white font-semibold px-6 py-4 rounded-none data-[state=active]:shadow-lg"
+              >
                 Evidence
               </TabsTrigger>
-              <TabsTrigger value="reflection" className="data-[state=active]:bg-white data-[state=active]:border-b-4 data-[state=active]:border-purple-600">
+              <TabsTrigger 
+                value="reflection" 
+                className="data-[state=active]:bg-amber-400 data-[state=active]:text-[#5B2C6F] text-white font-semibold px-6 py-4 rounded-none data-[state=active]:shadow-lg"
+              >
                 Reflection
               </TabsTrigger>
             </TabsList>
@@ -246,37 +285,39 @@ export default function YouthWorkWorkbook() {
             <div className="p-8">
               {/* Overview Tab */}
               <TabsContent value="overview" className="mt-0">
-                <div className="space-y-6">
-                  <div className="bg-purple-50 rounded-xl p-6 border-l-4 border-purple-600">
-                    <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                      <Target className="w-5 h-5 text-purple-600" />
+                <div className="p-8 space-y-6">
+                  <div className="bg-purple-50 rounded-lg p-6 border-l-8 border-[#5B2C6F]">
+                    <h3 className="font-bold text-[#5B2C6F] mb-4 flex items-center gap-2 text-lg">
+                      <Target className="w-6 h-6" />
                       Learning Outcomes
                     </h3>
-                    <ul className="space-y-2">
+                    <ul className="space-y-3">
                       {unit?.learning_outcomes?.map((outcome, idx) => (
-                        <li key={idx} className="flex items-start gap-2 text-gray-700">
-                          <CheckCircle className="w-4 h-4 text-purple-600 mt-0.5 shrink-0" />
-                          <span className="text-sm">{outcome}</span>
+                        <li key={idx} className="flex items-start gap-3 text-gray-800">
+                          <div className="w-6 h-6 rounded-full bg-amber-400 flex items-center justify-center shrink-0 mt-0.5">
+                            <span className="text-xs font-bold text-[#5B2C6F]">{idx + 1}</span>
+                          </div>
+                          <span className="text-sm leading-relaxed">{outcome}</span>
                         </li>
                       ))}
                     </ul>
                   </div>
 
                   <div className="grid md:grid-cols-3 gap-4">
-                    <Card className="p-4 bg-gradient-to-br from-blue-50 to-blue-100">
-                      <Clock className="w-8 h-8 text-blue-600 mb-2" />
-                      <p className="text-sm text-gray-600">Estimated Time</p>
-                      <p className="text-xl font-bold text-gray-900">4-6 weeks</p>
+                    <Card className="p-5 border-2 border-[#5B2C6F] bg-white shadow-md">
+                      <Clock className="w-10 h-10 text-[#5B2C6F] mb-3" />
+                      <p className="text-xs font-semibold text-gray-600 uppercase">Estimated Time</p>
+                      <p className="text-2xl font-bold text-[#5B2C6F]">4-6 weeks</p>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-green-50 to-green-100">
-                      <Award className="w-8 h-8 text-green-600 mb-2" />
-                      <p className="text-sm text-gray-600">Credits</p>
-                      <p className="text-xl font-bold text-gray-900">{unit?.credits}</p>
+                    <Card className="p-5 border-2 border-amber-400 bg-amber-50 shadow-md">
+                      <Award className="w-10 h-10 text-[#5B2C6F] mb-3" />
+                      <p className="text-xs font-semibold text-gray-600 uppercase">Credits</p>
+                      <p className="text-2xl font-bold text-[#5B2C6F]">{unit?.credits}</p>
                     </Card>
-                    <Card className="p-4 bg-gradient-to-br from-purple-50 to-purple-100">
-                      <FileText className="w-8 h-8 text-purple-600 mb-2" />
-                      <p className="text-sm text-gray-600">Level</p>
-                      <p className="text-xl font-bold text-gray-900">{unit?.level}</p>
+                    <Card className="p-5 border-2 border-[#5B2C6F] bg-white shadow-md">
+                      <FileText className="w-10 h-10 text-[#5B2C6F] mb-3" />
+                      <p className="text-xs font-semibold text-gray-600 uppercase">Level</p>
+                      <p className="text-2xl font-bold text-[#5B2C6F]">{unit?.level}</p>
                     </Card>
                   </div>
                 </div>
@@ -284,40 +325,47 @@ export default function YouthWorkWorkbook() {
 
               {/* Learning Outcomes Tab */}
               <TabsContent value="learning" className="mt-0">
-                <div className="space-y-6">
-                  <div className="bg-purple-800 text-white rounded-t-xl p-4">
-                    <h3 className="font-bold">Assessment Criteria</h3>
+                <div className="p-8 space-y-6">
+                  <div className="bg-[#5B2C6F] text-white px-6 py-4 -mx-8 -mt-8 mb-6">
+                    <h3 className="font-bold text-lg">Assessment Criteria</h3>
+                    <p className="text-purple-200 text-sm mt-1">Evidence you need to achieve</p>
                   </div>
-                  <div className="border-2 border-purple-200 rounded-b-xl overflow-hidden">
+                  
+                  <div className="border-4 border-[#5B2C6F] overflow-hidden">
                     <table className="w-full">
-                      <thead className="bg-purple-50">
-                        <tr>
-                          <th className="text-left p-3 border-b-2 border-purple-200">Learning Outcome</th>
-                          <th className="text-left p-3 border-b-2 border-purple-200">Assessment Criteria</th>
-                          <th className="text-center p-3 border-b-2 border-purple-200 w-32">Achieved</th>
+                      <thead>
+                        <tr className="bg-amber-400">
+                          <th className="text-left p-4 font-bold text-[#5B2C6F] border-r-2 border-[#5B2C6F]">This Learner will:</th>
+                          <th className="text-left p-4 font-bold text-[#5B2C6F] border-r-2 border-[#5B2C6F]">Assessment Criteria</th>
+                          <th className="text-center p-4 font-bold text-[#5B2C6F] w-32">Evidence</th>
                         </tr>
                       </thead>
                       <tbody>
                         {unit?.learning_outcomes?.map((outcome, idx) => (
-                          <tr key={idx} className="border-b border-purple-100">
-                            <td className="p-3 align-top">
-                              <Badge variant="outline" className="mb-2">LO {idx + 1}</Badge>
-                              <p className="text-sm">{outcome}</p>
+                          <tr key={idx} className="border-b-2 border-[#5B2C6F]">
+                            <td className="p-4 align-top bg-purple-50 border-r-2 border-[#5B2C6F]">
+                              <div className="flex items-start gap-2 mb-2">
+                                <div className="w-6 h-6 rounded-full bg-[#5B2C6F] text-white flex items-center justify-center text-xs font-bold shrink-0">
+                                  {idx + 1}
+                                </div>
+                                <Badge className="bg-amber-400 text-[#5B2C6F] hover:bg-amber-500">LO {idx + 1}</Badge>
+                              </div>
+                              <p className="text-sm font-medium text-gray-800 leading-relaxed">{outcome}</p>
                             </td>
-                            <td className="p-3">
+                            <td className="p-4 border-r-2 border-[#5B2C6F]">
                               <Textarea
                                 placeholder="Describe how you will demonstrate this outcome..."
                                 value={workbookData[`criteria_${idx}`] || ''}
                                 onChange={(e) => updateWorkbookData(`criteria_${idx}`, e.target.value)}
-                                className="min-h-[100px]"
+                                className="min-h-[100px] border-2 border-gray-300 focus:border-[#5B2C6F]"
                               />
                             </td>
-                            <td className="p-3 text-center">
+                            <td className="p-4 text-center bg-gray-50">
                               <input
                                 type="checkbox"
                                 checked={workbookData[`achieved_${idx}`] || false}
                                 onChange={(e) => updateWorkbookData(`achieved_${idx}`, e.target.checked)}
-                                className="w-5 h-5 text-purple-600"
+                                className="w-6 h-6 text-[#5B2C6F] border-2 border-[#5B2C6F] rounded"
                               />
                             </td>
                           </tr>
@@ -330,12 +378,13 @@ export default function YouthWorkWorkbook() {
 
               {/* Activities Tab */}
               <TabsContent value="activities" className="mt-0">
-                <div className="space-y-6">
-                  <div className="bg-purple-800 text-white rounded-t-xl p-4">
-                    <h3 className="font-bold">Activity Planning & Delivery</h3>
+                <div className="p-8 space-y-6">
+                  <div className="bg-[#5B2C6F] text-white px-6 py-4 -mx-8 -mt-8 mb-6">
+                    <h3 className="font-bold text-lg">Activity Planning & Delivery</h3>
+                    <p className="text-purple-200 text-sm mt-1">Plan and record your youth work activities</p>
                   </div>
                   
-                  <Card className="p-6 border-2 border-purple-200">
+                  <Card className="p-6 border-4 border-[#5B2C6F] bg-white shadow-lg">
                     <h4 className="font-semibold mb-4">Activity Details</h4>
                     <div className="space-y-4">
                       <div>
@@ -402,12 +451,13 @@ export default function YouthWorkWorkbook() {
 
               {/* Evidence Tab */}
               <TabsContent value="evidence" className="mt-0">
-                <div className="space-y-6">
-                  <div className="bg-purple-800 text-white rounded-t-xl p-4">
-                    <h3 className="font-bold">Evidence Collection</h3>
+                <div className="p-8 space-y-6">
+                  <div className="bg-[#5B2C6F] text-white px-6 py-4 -mx-8 -mt-8 mb-6">
+                    <h3 className="font-bold text-lg">Evidence Collection</h3>
+                    <p className="text-purple-200 text-sm mt-1">Document your evidence for assessment</p>
                   </div>
 
-                  <Card className="p-6 border-2 border-purple-200">
+                  <Card className="p-6 border-4 border-[#5B2C6F] bg-white shadow-lg">
                     <div className="space-y-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -460,12 +510,13 @@ export default function YouthWorkWorkbook() {
 
               {/* Reflection Tab */}
               <TabsContent value="reflection" className="mt-0">
-                <div className="space-y-6">
-                  <div className="bg-purple-800 text-white rounded-t-xl p-4">
-                    <h3 className="font-bold">Personal Reflection</h3>
+                <div className="p-8 space-y-6">
+                  <div className="bg-[#5B2C6F] text-white px-6 py-4 -mx-8 -mt-8 mb-6">
+                    <h3 className="font-bold text-lg">Personal Reflection</h3>
+                    <p className="text-purple-200 text-sm mt-1">Reflect on your learning and practice development</p>
                   </div>
 
-                  <Card className="p-6 border-2 border-purple-200">
+                  <Card className="p-6 border-4 border-[#5B2C6F] bg-white shadow-lg">
                     <div className="space-y-6">
                       <div>
                         <h4 className="font-semibold text-gray-900 mb-3">
@@ -520,24 +571,30 @@ export default function YouthWorkWorkbook() {
               </TabsContent>
             </div>
           </Tabs>
-        </Card>
+        </div>
 
         {/* Footer */}
-        <div className="mt-6 flex items-center justify-between">
-          <Button variant="outline" onClick={() => setSelectedUnit(Math.max(0, selectedUnit - 1))} disabled={selectedUnit === 0}>
+        <div className="mt-8 flex items-center justify-between pb-8">
+          <Button 
+            variant="outline" 
+            onClick={() => setSelectedUnit(Math.max(0, selectedUnit - 1))} 
+            disabled={selectedUnit === 0}
+            className="border-2 border-[#5B2C6F] text-[#5B2C6F] hover:bg-[#5B2C6F] hover:text-white font-semibold"
+          >
             ← Previous Unit
           </Button>
           <Button 
             onClick={handleSave}
-            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+            className="bg-amber-400 hover:bg-amber-500 text-[#5B2C6F] font-bold shadow-lg px-8"
           >
-            <Save className="w-4 h-4 mr-2" />
+            <Save className="w-5 h-5 mr-2" />
             Save & Continue
           </Button>
           <Button 
             variant="outline" 
             onClick={() => setSelectedUnit(Math.min(selectedQual.curriculum.length - 1, selectedUnit + 1))}
             disabled={selectedUnit === selectedQual.curriculum.length - 1}
+            className="border-2 border-[#5B2C6F] text-[#5B2C6F] hover:bg-[#5B2C6F] hover:text-white font-semibold"
           >
             Next Unit →
           </Button>
