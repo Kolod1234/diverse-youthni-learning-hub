@@ -56,10 +56,28 @@ export default function MessageCenter() {
   });
 
   const sendReplyMutation = useMutation({
-    mutationFn: (messageData) => base44.entities.Message.create(messageData),
+    mutationFn: async (messageData) => {
+      const message = await base44.entities.Message.create(messageData);
+      
+      // Send notification to recipient
+      try {
+        await base44.functions.invoke('sendNotification', {
+          recipient_email: messageData.recipient_email,
+          title: 'New Message',
+          message: `You have a new message from ${user?.full_name || 'a tutor'}`,
+          type: 'message',
+          link: `/message-center`,
+          send_email: true,
+        });
+      } catch (err) {
+        console.error('Failed to send notification:', err);
+      }
+      
+      return message;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['sent-messages']);
-      toast.success('Reply sent!');
+      toast.success('Reply sent and recipient notified!');
       setReplyText('');
     },
     onError: () => {
