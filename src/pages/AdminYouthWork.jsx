@@ -553,41 +553,44 @@ export default function AdminYouthWork() {
 
         {/* Edit Qualification Dialog */}
         <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
-          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+          <DialogContent className="sm:max-w-[900px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
               <DialogTitle>Edit Qualification</DialogTitle>
             </DialogHeader>
             {editingQualification && (
-              <div className="space-y-4 pt-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Level
-                  </label>
-                  <select
-                    value={editingQualification.level}
-                    onChange={(e) => setEditingQualification({
-                      ...editingQualification,
-                      level: e.target.value
-                    })}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="Level 1">Level 1</option>
-                    <option value="Level 2">Level 2</option>
-                    <option value="Level 3">Level 3</option>
-                  </select>
+              <div className="space-y-6 pt-4">
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Level
+                    </label>
+                    <select
+                      value={editingQualification.level}
+                      onChange={(e) => setEditingQualification({
+                        ...editingQualification,
+                        level: e.target.value
+                      })}
+                      className="w-full px-3 py-2 border rounded-lg"
+                    >
+                      <option value="Level 1">Level 1</option>
+                      <option value="Level 2">Level 2</option>
+                      <option value="Level 3">Level 3</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Title
+                    </label>
+                    <Input
+                      value={editingQualification.title}
+                      onChange={(e) => setEditingQualification({
+                        ...editingQualification,
+                        title: e.target.value
+                      })}
+                    />
+                  </div>
                 </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Title
-                  </label>
-                  <Input
-                    value={editingQualification.title}
-                    onChange={(e) => setEditingQualification({
-                      ...editingQualification,
-                      title: e.target.value
-                    })}
-                  />
-                </div>
+                
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Description
@@ -598,9 +601,10 @@ export default function AdminYouthWork() {
                       ...editingQualification,
                       description: e.target.value
                     })}
-                    className="min-h-[100px]"
+                    className="min-h-[80px]"
                   />
                 </div>
+                
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -629,7 +633,190 @@ export default function AdminYouthWork() {
                     />
                   </div>
                 </div>
-                <div className="flex justify-end gap-2 pt-4">
+
+                {/* Curriculum Units */}
+                <div className="border-t pt-4">
+                  <div className="flex items-center justify-between mb-3">
+                    <h4 className="font-semibold text-gray-900">Curriculum Units</h4>
+                    <Button
+                      size="sm"
+                      onClick={() => {
+                        const newCurriculum = [...(editingQualification.curriculum || [])];
+                        newCurriculum.push({
+                          unit_title: 'New Unit',
+                          unit_code: '',
+                          credits: 0,
+                          level: editingQualification.level,
+                          learning_outcomes: ['']
+                        });
+                        setEditingQualification({
+                          ...editingQualification,
+                          curriculum: newCurriculum
+                        });
+                      }}
+                    >
+                      Add Unit
+                    </Button>
+                  </div>
+                  
+                  <div className="space-y-4">
+                    {(editingQualification.curriculum || []).map((unit, unitIdx) => (
+                      <Card key={unitIdx} className="p-4 bg-gray-50">
+                        <div className="flex items-start justify-between mb-3">
+                          <h5 className="font-semibold text-sm text-gray-900">Unit {unitIdx + 1}</h5>
+                          <Button
+                            size="sm"
+                            variant="destructive"
+                            onClick={() => {
+                              const newCurriculum = editingQualification.curriculum.filter((_, i) => i !== unitIdx);
+                              setEditingQualification({
+                                ...editingQualification,
+                                curriculum: newCurriculum
+                              });
+                            }}
+                          >
+                            Remove
+                          </Button>
+                        </div>
+                        
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Unit Title
+                              </label>
+                              <Input
+                                value={unit.unit_title}
+                                onChange={(e) => {
+                                  const newCurriculum = [...editingQualification.curriculum];
+                                  newCurriculum[unitIdx].unit_title = e.target.value;
+                                  setEditingQualification({
+                                    ...editingQualification,
+                                    curriculum: newCurriculum
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Unit Code
+                              </label>
+                              <Input
+                                value={unit.unit_code}
+                                onChange={(e) => {
+                                  const newCurriculum = [...editingQualification.curriculum];
+                                  newCurriculum[unitIdx].unit_code = e.target.value;
+                                  setEditingQualification({
+                                    ...editingQualification,
+                                    curriculum: newCurriculum
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+                          
+                          <div className="grid grid-cols-2 gap-3">
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Credits
+                              </label>
+                              <Input
+                                type="number"
+                                value={unit.credits}
+                                onChange={(e) => {
+                                  const newCurriculum = [...editingQualification.curriculum];
+                                  newCurriculum[unitIdx].credits = Number(e.target.value);
+                                  setEditingQualification({
+                                    ...editingQualification,
+                                    curriculum: newCurriculum
+                                  });
+                                }}
+                              />
+                            </div>
+                            <div>
+                              <label className="block text-xs font-medium text-gray-700 mb-1">
+                                Level
+                              </label>
+                              <Input
+                                value={unit.level}
+                                onChange={(e) => {
+                                  const newCurriculum = [...editingQualification.curriculum];
+                                  newCurriculum[unitIdx].level = e.target.value;
+                                  setEditingQualification({
+                                    ...editingQualification,
+                                    curriculum: newCurriculum
+                                  });
+                                }}
+                              />
+                            </div>
+                          </div>
+
+                          {/* Learning Outcomes */}
+                          <div>
+                            <div className="flex items-center justify-between mb-2">
+                              <label className="block text-xs font-medium text-gray-700">
+                                Learning Outcomes / Assessment Criteria
+                              </label>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={() => {
+                                  const newCurriculum = [...editingQualification.curriculum];
+                                  newCurriculum[unitIdx].learning_outcomes = [
+                                    ...(newCurriculum[unitIdx].learning_outcomes || []),
+                                    ''
+                                  ];
+                                  setEditingQualification({
+                                    ...editingQualification,
+                                    curriculum: newCurriculum
+                                  });
+                                }}
+                              >
+                                Add Outcome
+                              </Button>
+                            </div>
+                            <div className="space-y-2">
+                              {(unit.learning_outcomes || []).map((outcome, outcomeIdx) => (
+                                <div key={outcomeIdx} className="flex gap-2">
+                                  <Textarea
+                                    value={outcome}
+                                    onChange={(e) => {
+                                      const newCurriculum = [...editingQualification.curriculum];
+                                      newCurriculum[unitIdx].learning_outcomes[outcomeIdx] = e.target.value;
+                                      setEditingQualification({
+                                        ...editingQualification,
+                                        curriculum: newCurriculum
+                                      });
+                                    }}
+                                    placeholder="Enter learning outcome..."
+                                    className="min-h-[60px] text-sm"
+                                  />
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    onClick={() => {
+                                      const newCurriculum = [...editingQualification.curriculum];
+                                      newCurriculum[unitIdx].learning_outcomes = 
+                                        newCurriculum[unitIdx].learning_outcomes.filter((_, i) => i !== outcomeIdx);
+                                      setEditingQualification({
+                                        ...editingQualification,
+                                        curriculum: newCurriculum
+                                      });
+                                    }}
+                                  >
+                                    ×
+                                  </Button>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="flex justify-end gap-2 pt-4 border-t">
                   <Button
                     variant="outline"
                     onClick={() => {
@@ -643,13 +830,7 @@ export default function AdminYouthWork() {
                     onClick={() => {
                       updateQualificationMutation.mutate({
                         qualId: editingQualification.id,
-                        data: {
-                          level: editingQualification.level,
-                          title: editingQualification.title,
-                          description: editingQualification.description,
-                          credit_value: editingQualification.credit_value,
-                          guided_learning_hours: editingQualification.guided_learning_hours,
-                        }
+                        data: editingQualification
                       });
                     }}
                     disabled={updateQualificationMutation.isPending}
