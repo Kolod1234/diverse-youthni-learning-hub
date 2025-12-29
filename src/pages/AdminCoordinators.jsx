@@ -135,6 +135,13 @@ export default function AdminCoordinators() {
           </div>
         </motion.div>
 
+        {/* Debug Info */}
+        <Card className="p-4 mb-4 bg-blue-50 border-blue-200">
+          <p className="text-sm text-blue-900">
+            <strong>Debug:</strong> Total users: {allUsers.length}, Coordinators: {coordinators.length}, Participants: {participants.length}
+          </p>
+        </Card>
+
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Coordinators List */}
           <Card className="p-6">
@@ -221,7 +228,9 @@ export default function AdminCoordinators() {
                     )}
                   </div>
                   <div>
-                    <Label className="text-xs text-gray-600 mb-1 block">Assigned Coordinator</Label>
+                    <Label className="text-xs text-gray-600 mb-1 block">
+                      Assigned Coordinator {participant.assigned_coordinator_email && `(Current: ${participant.assigned_coordinator_email})`}
+                    </Label>
                     <select
                       value={participant.assigned_coordinator_email || ''}
                       onChange={(e) => assignCoordinator(participant.id, e.target.value)}
@@ -230,7 +239,7 @@ export default function AdminCoordinators() {
                       <option value="">None</option>
                       {coordinators.map(coord => (
                         <option key={coord.email} value={coord.email}>
-                          {coord.full_name}
+                          {coord.full_name} ({coord.email})
                         </option>
                       ))}
                     </select>
