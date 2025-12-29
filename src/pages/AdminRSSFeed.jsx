@@ -202,7 +202,7 @@ export default function AdminRSSFeed() {
             <div className="flex items-center gap-6 text-sm text-gray-600 mt-2">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Live news from 10 sources</span>
+                <span>Live news from 11 sources</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
@@ -222,7 +222,7 @@ export default function AdminRSSFeed() {
               </Button>
               <Button 
                 onClick={() => {
-                  const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament'];
+                  const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather'];
                   sources.forEach(source => importFeedMutation.mutate(source));
                 }}
                 disabled={importFeedMutation.isPending}
@@ -269,6 +269,9 @@ export default function AdminRSSFeed() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => importFeedMutation.mutate('migrantni')}>
                     Migrant NI
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('metroweather')}>
+                    Metro UK
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -459,6 +462,7 @@ export default function AdminRSSFeed() {
                     <option value="OCNNI">OCN NI</option>
                     <option value="UKHOMEOFFICE">UK Home Office</option>
                     <option value="MIGRANTNI">Migrant NI</option>
+                    <option value="METROWEATHER">Metro UK</option>
                   </select>
                 </div>
 
