@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Slider } from '@/components/ui/slider';
@@ -10,6 +10,7 @@ import { Filter, X, BookOpen } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
+import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 
 const categories = [
   { id: 'mathematics', label: 'Mathematics' },
@@ -28,12 +29,25 @@ const levels = [
 ];
 
 export default function Explore() {
+  const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
   const [selectedCategories, setSelectedCategories] = useState([]);
   const [selectedLevels, setSelectedLevels] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [showFreeOnly, setShowFreeOnly] = useState(false);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.log('User not logged in');
+      }
+    };
+    loadUser();
+  }, []);
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
@@ -196,8 +210,9 @@ export default function Explore() {
   );
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <CoursePasswordProtection user={user}>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Explore Courses</h1>
@@ -307,6 +322,6 @@ export default function Explore() {
           </div>
         </div>
       </div>
-    </div>
+    </CoursePasswordProtection>
   );
 }
