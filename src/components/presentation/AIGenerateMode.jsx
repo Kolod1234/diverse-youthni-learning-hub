@@ -255,40 +255,38 @@ Purpose: Help students understand ${slide.image_prompt}`;
             </Label>
           </div>
 
-          <div className="space-y-3">
-            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+          {includeImages && (
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
               <input
                 type="checkbox"
-                id="usePerplexity"
-                checked={usePerplexity}
-                onChange={(e) => setUsePerplexity(e.target.checked)}
-                className="w-4 h-4 rounded text-blue-600"
+                id="useWebImages"
+                checked={useWebImages}
+                onChange={(e) => setUseWebImages(e.target.checked)}
+                className="w-4 h-4 rounded text-green-600"
               />
-              <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
-                <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
-                <p className="text-xs text-blue-700 mt-1">
-                  Enhanced research with real-time web search, citations, and more accurate information
+              <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
+                <span className="font-semibold text-green-900">🌐 Use Web-Sourced Images</span>
+                <p className="text-xs text-green-700 mt-1">
+                  Find real educational images from authoritative sources (unchecked = AI-generated images)
                 </p>
               </Label>
             </div>
+          )}
 
-            {usePerplexity && includeImages && (
-              <div className="ml-8 flex items-center gap-3 p-3 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                <input
-                  type="checkbox"
-                  id="useWebImages"
-                  checked={useWebImages}
-                  onChange={(e) => setUseWebImages(e.target.checked)}
-                  className="w-4 h-4 rounded text-green-600"
-                />
-                <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
-                  <span className="font-semibold text-green-900">🌐 Search Web for Images</span>
-                  <p className="text-xs text-green-700 mt-1">
-                    Find real educational images from authoritative sources (unchecked = AI-generated images)
-                  </p>
-                </Label>
-              </div>
-            )}
+          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+            <input
+              type="checkbox"
+              id="usePerplexity"
+              checked={usePerplexity}
+              onChange={(e) => setUsePerplexity(e.target.checked)}
+              className="w-4 h-4 rounded text-blue-600"
+            />
+            <Label htmlFor="usePerplexity" className="flex-1 cursor-pointer text-sm">
+              <span className="font-semibold text-blue-900">🔍 Use Perplexity AI</span>
+              <p className="text-xs text-blue-700 mt-1">
+                Enhanced research with real-time web search, citations, and more accurate information
+              </p>
+            </Label>
           </div>
 
           <Button
