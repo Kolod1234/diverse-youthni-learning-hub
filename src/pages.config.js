@@ -1,6 +1,7 @@
 import Achievements from './pages/Achievements';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminRSSFeed from './pages/AdminRSSFeed';
 import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
 import BookSession from './pages/BookSession';
@@ -9,6 +10,7 @@ import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
+import CourseParticipants from './pages/CourseParticipants';
 import CreateAssignment from './pages/CreateAssignment';
 import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
@@ -39,8 +41,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import CourseParticipants from './pages/CourseParticipants';
-import AdminRSSFeed from './pages/AdminRSSFeed';
 import __Layout from './Layout.jsx';
 
 
@@ -48,6 +48,7 @@ export const PAGES = {
     "Achievements": Achievements,
     "AdminCoordinators": AdminCoordinators,
     "AdminDashboard": AdminDashboard,
+    "AdminRSSFeed": AdminRSSFeed,
     "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
     "BookSession": BookSession,
@@ -56,6 +57,7 @@ export const PAGES = {
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
+    "CourseParticipants": CourseParticipants,
     "CreateAssignment": CreateAssignment,
     "Dashboard": Dashboard,
     "DataPresentation": DataPresentation,
@@ -86,8 +88,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "CourseParticipants": CourseParticipants,
-    "AdminRSSFeed": AdminRSSFeed,
 }
 
 export const pagesConfig = {

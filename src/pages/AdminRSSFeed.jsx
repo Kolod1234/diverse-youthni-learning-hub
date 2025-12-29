@@ -164,36 +164,48 @@ export default function AdminRSSFeed() {
             <p className="text-gray-600">Create and manage news feed items</p>
           </div>
           <div className="flex gap-2">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button variant="outline" disabled={importFeedMutation.isPending}>
-                  <Download className="w-4 h-4 mr-2" />
-                  Import Feeds
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => importFeedMutation.mutate('bbc')}>
-                  BBC News
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => importFeedMutation.mutate('cnn')}>
-                  CNN
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => importFeedMutation.mutate('ocnni')}>
-                  OCN NI
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => importFeedMutation.mutate('ukhomeoffice')}>
-                  UK Home Office
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => importFeedMutation.mutate('migrantni')}>
-                  Migrant NI
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Feed Item
-            </Button>
-          </div>
+              <Button 
+                onClick={() => {
+                  const sources = ['bbc', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni'];
+                  sources.forEach(source => importFeedMutation.mutate(source));
+                }}
+                disabled={importFeedMutation.isPending}
+                variant="outline"
+                className="border-green-600 text-green-700 hover:bg-green-50"
+              >
+                <Download className="w-4 h-4 mr-2" />
+                Refresh All News
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button variant="outline" disabled={importFeedMutation.isPending}>
+                    <Download className="w-4 h-4 mr-2" />
+                    Import Source
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('bbc')}>
+                    BBC News
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('cnn')}>
+                    CNN
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('ocnni')}>
+                    OCN NI
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('ukhomeoffice')}>
+                    UK Home Office
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('migrantni')}>
+                    Migrant NI
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+              <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700">
+                <Plus className="w-4 h-4 mr-2" />
+                Create Custom Announcement
+              </Button>
+            </div>
         </div>
 
         <div className="grid gap-4">
@@ -277,7 +289,10 @@ export default function AdminRSSFeed() {
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="sm:max-w-[600px]">
             <DialogHeader>
-              <DialogTitle>{editingFeed ? 'Edit Feed Item' : 'Add Feed Item'}</DialogTitle>
+              <DialogTitle>{editingFeed ? 'Edit News Item' : 'Create Custom Announcement'}</DialogTitle>
+              <p className="text-sm text-gray-600 mt-2">
+                {editingFeed ? 'Update news item details' : 'Share important updates with your users on the homepage'}
+              </p>
             </DialogHeader>
             <form onSubmit={handleSubmit} className="space-y-4 pt-4">
               <div>
@@ -332,13 +347,21 @@ export default function AdminRSSFeed() {
               <div className="grid grid-cols-2 gap-4">
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
-                    Category
+                    Source / Category
                   </label>
-                  <Input
+                  <select
                     value={formData.category}
                     onChange={(e) => setFormData({ ...formData, category: e.target.value })}
-                    placeholder="News, Events, etc."
-                  />
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">Select source...</option>
+                    <option value="ANNOUNCEMENT">📢 Custom Announcement</option>
+                    <option value="BBC">BBC News</option>
+                    <option value="CNN">CNN</option>
+                    <option value="OCNNI">OCN NI</option>
+                    <option value="UKHOMEOFFICE">UK Home Office</option>
+                    <option value="MIGRANTNI">Migrant NI</option>
+                  </select>
                 </div>
 
                 <div>
