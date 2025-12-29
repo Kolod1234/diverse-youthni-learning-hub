@@ -275,6 +275,12 @@ export default function Layout({ children, currentPageName }) {
                   {isTutorOrAdmin && (
                     <>
                       <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer">
+                          <Settings className="w-4 h-4 mr-2" />
+                          Tutor Overview
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer">
                           <ClipboardList className="w-4 h-4 mr-2" />
                           Templates
@@ -301,7 +307,7 @@ export default function Layout({ children, currentPageName }) {
                       <DropdownMenuItem asChild>
                         <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer">
                           <Settings className="w-4 h-4 mr-2" />
-                          Tutor Dashboard
+                          Full Tutor Dashboard
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
@@ -406,13 +412,17 @@ export default function Layout({ children, currentPageName }) {
                     {isTutorOrAdmin && (
                       <>
                         <div className="border-t border-gray-200 my-2" />
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <Settings className="w-5 h-5" />
+                          <span>Tutor Overview</span>
+                        </Link>
                         <Link to={createPageUrl('Templates')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                           <ClipboardList className="w-5 h-5" />
                           <span>Templates</span>
                         </Link>
                         <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                           <Settings className="w-5 h-5" />
-                          <span>Tutor Dashboard</span>
+                          <span>Full Tutor Dashboard</span>
                         </Link>
                       </>
                     )}

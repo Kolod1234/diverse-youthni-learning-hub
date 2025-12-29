@@ -13,6 +13,7 @@ import { motion } from 'framer-motion';
 import CoordinatorParticipants from '@/components/coordinator/CoordinatorParticipants';
 import CoordinatorLogbooks from '@/components/coordinator/CoordinatorLogbooks';
 import CoordinatorMessages from '@/components/coordinator/CoordinatorMessages';
+import ParticipantProgressOverview from '@/components/coordinator/ParticipantProgressOverview';
 
 export default function CoordinatorsDashboard() {
   const [user, setUser] = useState(null);

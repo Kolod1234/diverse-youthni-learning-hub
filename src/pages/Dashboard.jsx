@@ -16,6 +16,7 @@ import PointsDisplay from '@/components/gamification/PointsDisplay';
 import Leaderboard from '@/components/gamification/Leaderboard';
 import StreakTracker from '@/components/gamification/StreakTracker';
 import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';
+import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
@@ -225,6 +226,9 @@ export default function Dashboard() {
 
                 {/* Leaderboard */}
                 <Leaderboard limit={5} />
+
+                {/* Recommended Courses */}
+                <RecommendedCourses userEnrollments={enrollments} />
 
                 {/* Achievements */}
                 <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">

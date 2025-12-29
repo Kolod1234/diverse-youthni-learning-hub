@@ -35,6 +35,7 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
+import TutorDashboardOverview from './pages/TutorDashboardOverview';
 import __Layout from './Layout.jsx';
 
 
@@ -76,6 +77,7 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
+    "TutorDashboardOverview": TutorDashboardOverview,
 }
 
 export const pagesConfig = {
