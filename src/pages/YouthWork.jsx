@@ -10,6 +10,8 @@ import {
   Target, Users, Lightbulb, Clock, TrendingUp
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function YouthWork() {
   const [selectedLevel, setSelectedLevel] = useState('all');
@@ -56,9 +58,15 @@ export default function YouthWork() {
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
             Youth Work Qualifications
           </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
             OCN Accredited qualifications aligned with the Model of Effective Practice in Youth Work (OCNI)
           </p>
+          <Link to={createPageUrl('YouthWorkWorkbook')}>
+            <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg">
+              <BookOpen className="w-6 h-6 mr-3" />
+              Start Your Interactive Workbook
+            </Button>
+          </Link>
         </motion.div>
 
         {/* Model of Effective Practice Overview */}

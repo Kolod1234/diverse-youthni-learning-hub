@@ -219,12 +219,6 @@ export default function Layout({ children, currentPageName }) {
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('YouthWorkWorkbook')} className="flex items-center cursor-pointer">
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        Youth Work Workbook
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
                       <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer">
                         <Video className="w-4 h-4 mr-2" />
                         Live Sessions
