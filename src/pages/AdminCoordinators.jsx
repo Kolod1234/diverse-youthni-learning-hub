@@ -81,6 +81,36 @@ export default function AdminCoordinators() {
     },
   });
 
+  const approveRequestMutation = useMutation({
+    mutationFn: async ({ requestId, userEmail }) => {
+      await base44.entities.User.update(userEmail, { is_coordinator: true });
+      await base44.entities.CoordinatorRequest.update(requestId, { 
+        status: 'approved',
+        processed_by: user.email,
+        processed_date: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['coordinator-requests']);
+      queryClient.invalidateQueries(['all-users']);
+      toast.success('Coordinator request approved!');
+    },
+  });
+
+  const rejectRequestMutation = useMutation({
+    mutationFn: async (requestId) => {
+      await base44.entities.CoordinatorRequest.update(requestId, { 
+        status: 'rejected',
+        processed_by: user.email,
+        processed_date: new Date().toISOString()
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['coordinator-requests']);
+      toast.success('Request rejected');
+    },
+  });
+
   const toggleCoordinator = async (userId, isCoordinator) => {
     await updateUserMutation.mutateAsync({
       userId,
