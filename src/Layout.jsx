@@ -15,7 +15,7 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
@@ -77,6 +77,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Explore', href: createPageUrl('Explore'), icon: Compass },
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
+    { name: 'Live Sessions', href: createPageUrl('Sessions'), icon: Video },
     { name: 'Messages', href: createPageUrl('MessageCenter'), icon: MessageSquare },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Achievements', href: createPageUrl('Achievements'), icon: Award },
