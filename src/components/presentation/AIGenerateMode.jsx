@@ -65,7 +65,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       - Make content educational and engaging for students
       - Format content with proper HTML for visual hierarchy
 
-      ${includeImages && useWebImages ? 'IMPORTANT: Use your web search to find REAL image URLs from authoritative sources (Wikimedia Commons, NASA, educational institutions, government sites). Include direct "image_url" (full https:// URL ending in .jpg, .png, .svg) and "image_description" for EVERY slide. Prioritize images with correct labels and professional quality.' : includeImages ? 'IMPORTANT: Include "image_prompt" (detailed search query) and "image_description" for EVERY slide to be used for AI image generation.' : ''}
+      ${includeImages && useWebImages ? 'IMPORTANT: Use your web search to find REAL image URLs from authoritative sources (Wikimedia Commons, NASA, educational institutions, government sites). Include direct "image_url" (full https:// URL ending in .jpg, .png, .svg) and "image_description" for EVERY slide. Prioritize images with correct labels and professional quality.' : includeImages ? 'IMPORTANT: Include "image_prompt" (detailed instructions for generating educational diagrams using Nano Banana image generation) and "image_description" for EVERY slide. For image_prompt, provide specific, detailed instructions for creating educational diagrams, infographics, or illustrations suitable for the topic.' : ''}
 
       Return ONLY the JSON object, nothing else.`
         });
@@ -162,24 +162,25 @@ Return ONLY valid JSON.`,
             return slide;
           });
         } else {
-          toast.info('Generating educational diagrams with AI...');
+          toast.info('Generating educational diagrams with Nano Banana AI...');
           slides = await Promise.all(
             slides.map(async (slide) => {
               if (slide.image_prompt) {
                 try {
                   const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
 
-CRITICAL REQUIREMENTS:
+CRITICAL REQUIREMENTS FOR NANO BANANA:
 - Clean, professional educational diagram style
 - If text is needed, ensure PERFECT spelling of all scientific and technical terms
 - Clear labels with correct spelling (double-check terms like "mitosis", "meiosis", "photosynthesis", etc.)
-- Simple, clean design suitable for students
+- Simple, clean design suitable for students at ${educationLevel} level
 - No text artifacts or misspellings
-- Professional educational quality
+- Professional educational quality suitable for classroom use
 
 Context: ${topic} - ${slide.title}
 Style: Illustrative diagram, infographic, or educational chart
-Purpose: Help students understand ${slide.image_prompt}`;
+Purpose: Help students understand ${slide.image_prompt}
+Level: ${levelInstructions[educationLevel]}`;
 
                   const generatedImage = await base44.integrations.Core.GenerateImage({
                     prompt: imagePrompt
