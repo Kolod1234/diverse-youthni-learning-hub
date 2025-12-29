@@ -19,21 +19,23 @@ export default function CoordinatorParticipants({ coordinatorEmail }) {
   const [notes, setNotes] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list('full_name', 1000),
+  const { data: assignedParticipants = [] } = useQuery({
+    queryKey: ['assigned-participants', coordinatorEmail],
+    queryFn: async () => {
+      const allUsers = await base44.entities.User.list('full_name', 1000);
+      return allUsers.filter(u => 
+        u.assigned_coordinator_email === coordinatorEmail && 
+        !u.is_coordinator && 
+        !u.is_tutor &&
+        u.role !== 'admin'
+      );
+    },
   });
-
-  const assignedParticipants = allUsers.filter(u => 
-    u.assigned_coordinator_email === coordinatorEmail && 
-    !u.is_coordinator && 
-    !u.is_tutor &&
-    u.role !== 'admin'
-  );
 
   const updateParticipantMutation = useMutation({
     mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
     onSuccess: () => {
+      queryClient.invalidateQueries(['assigned-participants']);
       queryClient.invalidateQueries(['all-users']);
       toast.success('Participant updated');
     },

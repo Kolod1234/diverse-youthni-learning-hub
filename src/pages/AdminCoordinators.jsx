@@ -50,6 +50,7 @@ export default function AdminCoordinators() {
     mutationFn: ({ userId, data }) => base44.entities.User.update(userId, data),
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
+      queryClient.invalidateQueries(['assigned-participants']);
       toast.success('User updated successfully');
     },
   });

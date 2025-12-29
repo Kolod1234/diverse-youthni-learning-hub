@@ -13,17 +13,18 @@ export default function CoordinatorMessages({ coordinatorEmail, coordinatorName 
   const [messageText, setMessageText] = useState('');
   const queryClient = useQueryClient();
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list('full_name', 1000),
+  const { data: assignedParticipants = [] } = useQuery({
+    queryKey: ['assigned-participants', coordinatorEmail],
+    queryFn: async () => {
+      const allUsers = await base44.entities.User.list('full_name', 1000);
+      return allUsers.filter(u => 
+        u.assigned_coordinator_email === coordinatorEmail && 
+        !u.is_coordinator && 
+        !u.is_tutor &&
+        u.role !== 'admin'
+      );
+    },
   });
-
-  const assignedParticipants = allUsers.filter(u => 
-    u.assigned_coordinator_email === coordinatorEmail && 
-    !u.is_coordinator && 
-    !u.is_tutor &&
-    u.role !== 'admin'
-  );
 
   const sendMessageMutation = useMutation({
     mutationFn: async (data) => {
