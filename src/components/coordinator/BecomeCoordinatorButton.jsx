@@ -29,7 +29,18 @@ export default function BecomeCoordinatorButton({ user }) {
 
   const requestMutation = useMutation({
     mutationFn: async (data) => {
-      return await base44.entities.CoordinatorRequest.create(data);
+      if (existingRequest && existingRequest.status === 'rejected') {
+        // Update existing rejected request
+        return await base44.entities.CoordinatorRequest.update(existingRequest.id, {
+          reason: data.reason,
+          status: 'pending',
+          processed_by: null,
+          processed_date: null
+        });
+      } else {
+        // Create new request
+        return await base44.entities.CoordinatorRequest.create(data);
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['coordinator-request']);
@@ -70,23 +81,27 @@ export default function BecomeCoordinatorButton({ user }) {
     return null;
   }
 
-  if (existingRequest) {
+  if (existingRequest && existingRequest.status === 'pending') {
     return (
-      <Button disabled variant="outline" className="gap-2">
-        <UserCheck className="w-4 h-4" />
-        Request {existingRequest.status}
-      </Button>
+      <button className="flex items-center w-full text-left text-gray-400 cursor-not-allowed">
+        <UserCheck className="w-4 h-4 mr-2" />
+        Request Pending
+      </button>
     );
+  }
+
+  if (existingRequest && existingRequest.status === 'approved') {
+    return null;
   }
 
   return (
     <>
       <button 
         onClick={() => setShowPasscode(true)} 
-        className="flex items-center w-full text-left"
+        className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
         <UserCheck className="w-4 h-4 mr-2" />
-        Become a Coordinator
+        {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
       </button>
 
       {/* Passcode Dialog */}

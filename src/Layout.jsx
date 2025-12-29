@@ -247,10 +247,8 @@ export default function Layout({ children, currentPageName }) {
                   <DropdownMenuSeparator />
                   {user && !user.is_coordinator && user.role !== 'admin' && (
                     <>
-                      <DropdownMenuItem asChild>
-                        <div className="cursor-pointer">
-                          <BecomeCoordinatorButton user={user} />
-                        </div>
+                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
+                        <BecomeCoordinatorButton user={user} />
                       </DropdownMenuItem>
                       <DropdownMenuSeparator />
                     </>
