@@ -29,6 +29,8 @@ export default function AdminYouthWork() {
   const [showMessageDialog, setShowMessageDialog] = useState(false);
   const [selectedParticipant, setSelectedParticipant] = useState(null);
   const [messageContent, setMessageContent] = useState('');
+  const [editingQualification, setEditingQualification] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -113,6 +115,17 @@ export default function AdminYouthWork() {
       setShowMessageDialog(false);
       setMessageContent('');
       setSelectedParticipant(null);
+    },
+  });
+
+  const updateQualificationMutation = useMutation({
+    mutationFn: ({ qualId, data }) =>
+      base44.entities.YouthWorkQualification.update(qualId, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['youth-work-qualifications']);
+      toast.success('Qualification updated successfully!');
+      setShowEditDialog(false);
+      setEditingQualification(null);
     },
   });
 
@@ -520,7 +533,14 @@ export default function AdminYouthWork() {
                         {qual.curriculum?.length || 0} Units • {qual.credit_value} Credits
                       </p>
                     </div>
-                    <Button variant="outline" size="sm">
+                    <Button 
+                      variant="outline" 
+                      size="sm"
+                      onClick={() => {
+                        setEditingQualification(qual);
+                        setShowEditDialog(true);
+                      }}
+                    >
                       <Settings className="w-4 h-4 mr-1" />
                       Edit
                     </Button>
@@ -530,6 +550,118 @@ export default function AdminYouthWork() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Edit Qualification Dialog */}
+        <Dialog open={showEditDialog} onOpenChange={setShowEditDialog}>
+          <DialogContent className="sm:max-w-[600px] max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle>Edit Qualification</DialogTitle>
+            </DialogHeader>
+            {editingQualification && (
+              <div className="space-y-4 pt-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Level
+                  </label>
+                  <select
+                    value={editingQualification.level}
+                    onChange={(e) => setEditingQualification({
+                      ...editingQualification,
+                      level: e.target.value
+                    })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="Level 1">Level 1</option>
+                    <option value="Level 2">Level 2</option>
+                    <option value="Level 3">Level 3</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Title
+                  </label>
+                  <Input
+                    value={editingQualification.title}
+                    onChange={(e) => setEditingQualification({
+                      ...editingQualification,
+                      title: e.target.value
+                    })}
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-2">
+                    Description
+                  </label>
+                  <Textarea
+                    value={editingQualification.description}
+                    onChange={(e) => setEditingQualification({
+                      ...editingQualification,
+                      description: e.target.value
+                    })}
+                    className="min-h-[100px]"
+                  />
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Credit Value
+                    </label>
+                    <Input
+                      type="number"
+                      value={editingQualification.credit_value || ''}
+                      onChange={(e) => setEditingQualification({
+                        ...editingQualification,
+                        credit_value: Number(e.target.value)
+                      })}
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Guided Learning Hours
+                    </label>
+                    <Input
+                      type="number"
+                      value={editingQualification.guided_learning_hours || ''}
+                      onChange={(e) => setEditingQualification({
+                        ...editingQualification,
+                        guided_learning_hours: Number(e.target.value)
+                      })}
+                    />
+                  </div>
+                </div>
+                <div className="flex justify-end gap-2 pt-4">
+                  <Button
+                    variant="outline"
+                    onClick={() => {
+                      setShowEditDialog(false);
+                      setEditingQualification(null);
+                    }}
+                  >
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={() => {
+                      updateQualificationMutation.mutate({
+                        qualId: editingQualification.id,
+                        data: {
+                          level: editingQualification.level,
+                          title: editingQualification.title,
+                          description: editingQualification.description,
+                          credit_value: editingQualification.credit_value,
+                          guided_learning_hours: editingQualification.guided_learning_hours,
+                        }
+                      });
+                    }}
+                    disabled={updateQualificationMutation.isPending}
+                    className="bg-purple-600 hover:bg-purple-700"
+                  >
+                    Save Changes
+                  </Button>
+                </div>
+              </div>
+            )}
+          </DialogContent>
+        </Dialog>
 
         {/* Message Dialog */}
         <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
