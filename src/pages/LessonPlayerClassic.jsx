@@ -133,29 +133,28 @@ export default function LessonPlayerClassic() {
   return (
     <div className="h-screen flex flex-col bg-slate-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-6 py-4 flex items-center justify-between">
-        <div className="flex items-center gap-4">
-          <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg">
+      <header className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
+          <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
             <X className="w-5 h-5" />
           </button>
-          <div>
-            <h1 className="font-semibold text-gray-900">{lesson.title}</h1>
-            <p className="text-sm text-gray-500">Lesson {currentLessonIndex + 1} of {sortedLessons.length}</p>
-          </div>
-        </div>
-        <div className="flex items-center gap-3">
           <button 
             onClick={() => setShowSidebar(!showSidebar)} 
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg"
+            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg shrink-0"
           >
             <Menu className="w-5 h-5" />
           </button>
-          
+          <div className="min-w-0">
+            <h1 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{lesson.title}</h1>
+            <p className="text-xs sm:text-sm text-gray-500">Lesson {currentLessonIndex + 1} of {sortedLessons.length}</p>
+          </div>
+        </div>
+        <div className="flex items-center gap-2 shrink-0">
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Layout className="w-4 h-4 mr-2" />
-                Player Style
+              <Button variant="outline" size="sm" className="hidden sm:flex">
+                <Layout className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Player Style</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
@@ -176,8 +175,8 @@ export default function LessonPlayerClassic() {
               size="sm"
               className="bg-green-600 hover:bg-green-700"
             >
-              <CheckCircle className="w-4 h-4 mr-2" />
-              Mark Complete
+              <CheckCircle className="w-4 h-4 sm:mr-2" />
+              <span className="hidden sm:inline">Mark Complete</span>
             </Button>
           )}
         </div>
@@ -186,12 +185,17 @@ export default function LessonPlayerClassic() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         {showSidebar && (
-          <aside className="w-80 bg-white border-r border-gray-200 overflow-y-auto">
+          <aside className="absolute lg:relative z-10 w-80 h-full bg-white border-r border-gray-200 overflow-y-auto shadow-xl lg:shadow-none">
             <div className="p-4">
-              <h3 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-                <BookOpen className="w-5 h-5" />
-                Course Content
-              </h3>
+              <div className="flex items-center justify-between mb-4">
+                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
+                  <BookOpen className="w-5 h-5" />
+                  Course Content
+                </h3>
+                <button onClick={() => setShowSidebar(false)} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
+                  <X className="w-5 h-5" />
+                </button>
+              </div>
               <div className="space-y-2">
                 {sortedLessons.map((l, idx) => {
                   const completed = enrollment?.completed_lessons?.includes(l.id);
@@ -228,27 +232,27 @@ export default function LessonPlayerClassic() {
 
         {/* Main Content */}
         <main className="flex-1 flex flex-col overflow-hidden">
-          <div className="flex-1 overflow-y-auto p-6">
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6">
             {/* Learning Objectives */}
             {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-              <div className="max-w-5xl mx-auto mb-6">
+              <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
                 <button
                   onClick={() => setShowObjectives(!showObjectives)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-4 flex items-center justify-between"
+                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base"
                 >
-                  <div className="flex items-center gap-3">
-                    <Target className="w-5 h-5" />
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <Target className="w-4 h-4 sm:w-5 sm:h-5" />
                     <span className="font-semibold">Learning Objectives</span>
                   </div>
-                  <ChevronRight className={`w-5 h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+                  <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
                 </button>
                 
                 {showObjectives && (
-                  <div className="bg-white rounded-b-xl border border-gray-200 p-4 space-y-2">
+                  <div className="bg-white rounded-b-xl border border-gray-200 p-3 sm:p-4 space-y-2">
                     {lesson.learning_objectives.map((objective, idx) => (
-                      <div key={idx} className="flex items-start gap-3">
+                      <div key={idx} className="flex items-start gap-2 sm:gap-3">
                         <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                        <p className="text-gray-700 text-sm">{objective}</p>
+                        <p className="text-gray-700 text-xs sm:text-sm">{objective}</p>
                       </div>
                     ))}
                   </div>
