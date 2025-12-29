@@ -116,15 +116,22 @@ export default function AdminYouthWork() {
     },
   });
 
-  const downloadWorkbook = (progress) => {
-    const content = JSON.stringify(progress, null, 2);
-    const blob = new Blob([content], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = `workbook-${progress.participant_name}-${Date.now()}.json`;
-    a.click();
-    URL.revokeObjectURL(url);
+  const downloadWorkbook = async (progress) => {
+    try {
+      const response = await base44.functions.invoke('exportWorkbookPDF', { progressId: progress.id });
+      const blob = new Blob([response.data], { type: 'application/pdf' });
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = `workbook-${progress.participant_name}-${Date.now()}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      a.remove();
+      toast.success('Workbook downloaded as PDF');
+    } catch (error) {
+      toast.error('Failed to download workbook');
+    }
   };
 
   const coordinators = allUsers.filter(u => u.is_coordinator || u.role === 'admin');

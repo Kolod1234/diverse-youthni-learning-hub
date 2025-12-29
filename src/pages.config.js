@@ -1,6 +1,7 @@
 import Achievements from './pages/Achievements';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
 import BookSession from './pages/BookSession';
 import ContactUs from './pages/ContactUs';
@@ -38,7 +39,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminYouthWork from './pages/AdminYouthWork';
 import __Layout from './Layout.jsx';
 
 
@@ -46,6 +46,7 @@ export const PAGES = {
     "Achievements": Achievements,
     "AdminCoordinators": AdminCoordinators,
     "AdminDashboard": AdminDashboard,
+    "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
     "BookSession": BookSession,
     "ContactUs": ContactUs,
@@ -83,7 +84,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminYouthWork": AdminYouthWork,
 }
 
 export const pagesConfig = {
