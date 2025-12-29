@@ -290,7 +290,9 @@ export default function AdminRSSFeed() {
                   <img
                     src={item.image_url}
                     alt={item.title}
-                    className="w-32 h-24 object-cover rounded-lg"
+                    loading="lazy"
+                    className="w-40 h-28 object-cover object-center rounded-lg"
+                    style={{ imageRendering: 'high-quality' }}
                   />
                 )}
                 <div className="flex-1">

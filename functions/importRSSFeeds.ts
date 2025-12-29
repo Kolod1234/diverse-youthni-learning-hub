@@ -63,17 +63,53 @@ async function parseRSSFeed(xmlText) {
                     getTextContent(itemXml, 'dc:date') || 
                     getTextContent(itemXml, 'date');
     
-    // Extract image
-    let imageUrl = extractImageFromContent(description);
+    // Extract image - prioritize high-resolution sources
+    let imageUrl = null;
     
-    if (!imageUrl) {
-      const mediaMatch = itemXml.match(/<media:(?:content|thumbnail)[^>]+url=["']([^"']+)["']/i);
-      if (mediaMatch) imageUrl = mediaMatch[1];
+    // Try media:content with explicit width/height (usually higher quality)
+    const mediaContentMatches = itemXml.matchAll(/<media:content[^>]*url=["']([^"']+)["'][^>]*>/gi);
+    let bestMediaUrl = null;
+    let maxWidth = 0;
+    
+    for (const match of mediaContentMatches) {
+      const fullTag = match[0];
+      const url = match[1];
+      const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
+      const width = widthMatch ? parseInt(widthMatch[1]) : 0;
+      
+      if (width > maxWidth && url.match(/\.(jpg|jpeg|png|webp)/i)) {
+        maxWidth = width;
+        bestMediaUrl = url;
+      }
     }
     
+    if (bestMediaUrl) imageUrl = bestMediaUrl;
+    
+    // Try enclosure with image type
     if (!imageUrl) {
       const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
       if (enclosureMatch) imageUrl = enclosureMatch[1];
+    }
+    
+    // Try media:thumbnail (fallback)
+    if (!imageUrl) {
+      const mediaThumbnailMatches = itemXml.matchAll(/<media:thumbnail[^>]*url=["']([^"']+)["'][^>]*>/gi);
+      for (const match of mediaThumbnailMatches) {
+        const fullTag = match[0];
+        const url = match[1];
+        const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
+        const width = widthMatch ? parseInt(widthMatch[1]) : 0;
+        
+        if (width > maxWidth) {
+          maxWidth = width;
+          imageUrl = url;
+        }
+      }
+    }
+    
+    // Extract from content as last resort
+    if (!imageUrl) {
+      imageUrl = extractImageFromContent(description);
     }
     
     // Clean description

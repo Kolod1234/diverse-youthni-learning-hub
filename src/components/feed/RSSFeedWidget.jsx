@@ -149,7 +149,9 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
                       <img
                         src={item.image_url}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                        loading="lazy"
+                        className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
+                        style={{ imageRendering: 'high-quality' }}
                       />
                     </div>
                   )}
