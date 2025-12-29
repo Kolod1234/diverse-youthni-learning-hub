@@ -44,7 +44,9 @@ export default function ProgramDetailsCard({ program, participants }) {
           <User className="w-5 h-5 text-[#FF8C00]" />
           <div>
             <p className="text-xs text-gray-500">Coordinator</p>
-            <p className="font-medium text-gray-900">{program.coordinator || 'Not assigned'}</p>
+            <p className="font-medium text-gray-900">
+              {program.coordinator || program.coordinator_email || 'Not assigned'}
+            </p>
           </div>
         </div>
       </div>
