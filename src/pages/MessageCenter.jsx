@@ -65,10 +65,8 @@ export default function MessageCenter() {
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
     queryFn: async () => {
-      if (user?.role === 'admin') {
-        return base44.asServiceRole.entities.User.list('full_name', 1000);
-      }
-      return base44.entities.User.list('full_name', 100);
+      const response = await base44.functions.invoke('getMessageableUsers');
+      return response.data;
     },
     enabled: !!user,
   });
@@ -282,15 +280,7 @@ Reply:`,
     }
   }, [selectedThread?.messages]);
 
-  // Filter users based on role
-  const availableUsers = allUsers.filter(u => {
-    if (u.email === user?.email) return false;
-    if (user?.role === 'admin') return true;
-    if (u.role === 'admin') return true;
-    if (u.is_coordinator) return true;
-    if (u.is_tutor && !user?.is_tutor) return true;
-    return false;
-  });
+  const availableUsers = allUsers || [];
 
   const courseName = courses.find(c => c.id === selectedThread?.courseId)?.title || 'General';
 
