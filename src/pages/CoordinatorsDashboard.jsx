@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lock, Users, BookOpen, MessageSquare, UserCheck, UserX, Star } from 'lucide-react';
+import { Lock, Users, BookOpen, MessageSquare, UserCheck, UserX, Star, ClipboardList } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import CoordinatorParticipants from '@/components/coordinator/CoordinatorParticipants';
@@ -164,6 +164,11 @@ export default function CoordinatorsDashboard() {
           </div>
         </motion.div>
 
+        {/* Progress Overview */}
+        <div className="mb-6">
+          <ParticipantProgressOverview user={user} />
+        </div>
+
         {/* Main Content */}
         <Tabs defaultValue="participants" className="space-y-6">
           <TabsList className="bg-white border border-gray-200 p-1 rounded-xl">
@@ -172,7 +177,7 @@ export default function CoordinatorsDashboard() {
               My Participants
             </TabsTrigger>
             <TabsTrigger value="logbooks">
-              <BookOpen className="w-4 h-4 mr-2" />
+              <ClipboardList className="w-4 h-4 mr-2" />
               Logbooks
             </TabsTrigger>
             <TabsTrigger value="messages">
