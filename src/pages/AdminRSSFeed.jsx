@@ -202,7 +202,7 @@ export default function AdminRSSFeed() {
             <div className="flex items-center gap-6 text-sm text-gray-600 mt-2">
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
-                <span>Live news from 5 sources</span>
+                <span>Live news from 10 sources</span>
               </div>
               <div className="flex items-center gap-2">
                 <div className="w-3 h-3 bg-blue-500 rounded-full"></div>
