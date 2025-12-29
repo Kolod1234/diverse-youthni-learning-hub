@@ -12,7 +12,13 @@ import {
   DialogHeader,
   DialogTitle,
 } from '@/components/ui/dialog';
-import { Rss, Plus, Pencil, Trash2, ExternalLink } from 'lucide-react';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Rss, Plus, Pencil, Trash2, ExternalLink, Download } from 'lucide-react';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
 
@@ -70,6 +76,21 @@ export default function AdminRSSFeed() {
       queryClient.invalidateQueries(['rss-feed-admin']);
       queryClient.invalidateQueries(['rss-feed']);
       toast.success('RSS feed item deleted!');
+    },
+  });
+
+  const importFeedMutation = useMutation({
+    mutationFn: async (source) => {
+      const response = await base44.functions.invoke('importRSSFeeds', { source });
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['rss-feed-admin']);
+      queryClient.invalidateQueries(['rss-feed']);
+      toast.success(data.message || 'RSS feed imported successfully!');
+    },
+    onError: (error) => {
+      toast.error(error.message || 'Failed to import RSS feed');
     },
   });
 
@@ -142,10 +163,37 @@ export default function AdminRSSFeed() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">RSS Feed Management</h1>
             <p className="text-gray-600">Create and manage news feed items</p>
           </div>
-          <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Add Feed Item
-          </Button>
+          <div className="flex gap-2">
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" disabled={importFeedMutation.isPending}>
+                  <Download className="w-4 h-4 mr-2" />
+                  Import Feeds
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end">
+                <DropdownMenuItem onClick={() => importFeedMutation.mutate('bbc')}>
+                  BBC News
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => importFeedMutation.mutate('cnn')}>
+                  CNN
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => importFeedMutation.mutate('ocnni')}>
+                  OCN NI
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => importFeedMutation.mutate('ukhomeoffice')}>
+                  UK Home Office
+                </DropdownMenuItem>
+                <DropdownMenuItem onClick={() => importFeedMutation.mutate('migrantni')}>
+                  Migrant NI
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
+            <Button onClick={() => handleOpenDialog()} className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Feed Item
+            </Button>
+          </div>
         </div>
 
         <div className="grid gap-4">
