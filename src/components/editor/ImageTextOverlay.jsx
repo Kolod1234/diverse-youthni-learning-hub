@@ -18,11 +18,14 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
       text: 'Label',
       x: 50,
       y: 50,
+      width: 120,
+      height: 40,
       fontSize: 18,
       color: '#000000',
       backgroundColor: '#FFFFFF',
       bold: true,
-      padding: 8
+      padding: 8,
+      shape: 'rectangle' // rectangle, rounded, circle, pill
     };
     setTextBoxes([...textBoxes, newBox]);
     setSelectedBox(newBox.id);
@@ -40,9 +43,10 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
     if (selectedBox === id) setSelectedBox(null);
   };
 
-  const handleMouseDown = (e, box) => {
+  const handleMouseDown = (e, box, resizeHandle = null) => {
+    e.stopPropagation();
     setSelectedBox(box.id);
-    setIsDragging(true);
+    setIsDragging(resizeHandle ? resizeHandle : true);
     const rect = e.currentTarget.getBoundingClientRect();
     setDragOffset({
       x: e.clientX - rect.left,
@@ -54,27 +58,81 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
     if (!isDragging || !selectedBox) return;
     
     const container = e.currentTarget.getBoundingClientRect();
-    const x = ((e.clientX - container.left - dragOffset.x) / container.width) * 100;
-    const y = ((e.clientY - container.top - dragOffset.y) / container.height) * 100;
-    
-    updateTextBox(selectedBox, {
-      x: Math.max(0, Math.min(95, x)),
-      y: Math.max(0, Math.min(95, y))
-    });
+    const box = textBoxes.find(b => b.id === selectedBox);
+    if (!box) return;
+
+    if (isDragging === true) {
+      // Moving
+      const x = ((e.clientX - container.left - dragOffset.x) / container.width) * 100;
+      const y = ((e.clientY - container.top - dragOffset.y) / container.height) * 100;
+      
+      updateTextBox(selectedBox, {
+        x: Math.max(0, Math.min(95, x)),
+        y: Math.max(0, Math.min(95, y))
+      });
+    } else {
+      // Resizing
+      const boxLeft = (box.x / 100) * container.width;
+      const boxTop = (box.y / 100) * container.height;
+      const mouseX = e.clientX - container.left;
+      const mouseY = e.clientY - container.top;
+
+      let newWidth = box.width;
+      let newHeight = box.height;
+      let newX = box.x;
+      let newY = box.y;
+
+      if (isDragging.includes('e')) {
+        newWidth = ((mouseX - boxLeft) / container.width) * 100;
+      }
+      if (isDragging.includes('w')) {
+        const deltaX = mouseX - boxLeft;
+        newWidth = box.width - (deltaX / container.width) * 100;
+        newX = box.x + (deltaX / container.width) * 100;
+      }
+      if (isDragging.includes('s')) {
+        newHeight = ((mouseY - boxTop) / container.height) * 100;
+      }
+      if (isDragging.includes('n')) {
+        const deltaY = mouseY - boxTop;
+        newHeight = box.height - (deltaY / container.height) * 100;
+        newY = box.y + (deltaY / container.height) * 100;
+      }
+
+      updateTextBox(selectedBox, {
+        x: Math.max(0, newX),
+        y: Math.max(0, newY),
+        width: Math.max(5, newWidth),
+        height: Math.max(3, newHeight)
+      });
+    }
   };
 
   const handleMouseUp = () => {
     setIsDragging(false);
   };
 
+  const getShapeStyle = (shape) => {
+    switch (shape) {
+      case 'rounded': return '12px';
+      case 'circle': return '50%';
+      case 'pill': return '999px';
+      default: return '4px';
+    }
+  };
+
   const generateHTML = () => {
     const overlays = textBoxes.map(box => `
       <div style="position: absolute; left: ${box.x}%; top: ${box.y}%; 
+                  width: ${box.width}%; height: ${box.height}%;
                   font-size: ${box.fontSize}px; color: ${box.color}; 
                   background-color: ${box.backgroundColor}; 
-                  padding: ${box.padding}px; border-radius: 4px;
+                  padding: ${box.padding}px; 
+                  border-radius: ${getShapeStyle(box.shape)};
                   font-weight: ${box.bold ? '700' : '400'};
                   box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+                  display: flex; align-items: center; justify-content: center;
+                  text-align: center;
                   pointer-events: none;">
         ${box.text}
       </div>
@@ -133,26 +191,66 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                 draggable={false}
               />
               {textBoxes.map(box => (
-                <div
-                  key={box.id}
-                  className={`absolute cursor-move transition-shadow ${
-                    selectedBox === box.id ? 'ring-2 ring-indigo-500 shadow-lg' : ''
-                  }`}
-                  style={{
-                    left: `${box.x}%`,
-                    top: `${box.y}%`,
-                    fontSize: `${box.fontSize}px`,
-                    color: box.color,
-                    backgroundColor: box.backgroundColor,
-                    padding: `${box.padding}px`,
-                    borderRadius: '4px',
-                    fontWeight: box.bold ? '700' : '400',
-                    boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
-                    userSelect: 'none'
-                  }}
-                  onMouseDown={(e) => handleMouseDown(e, box)}
-                >
-                  {box.text}
+                <div key={box.id}>
+                  <div
+                    className={`absolute transition-shadow ${
+                      selectedBox === box.id ? 'ring-2 ring-indigo-500 shadow-lg' : ''
+                    }`}
+                    style={{
+                      left: `${box.x}%`,
+                      top: `${box.y}%`,
+                      width: `${box.width}%`,
+                      height: `${box.height}%`,
+                      fontSize: `${box.fontSize}px`,
+                      color: box.color,
+                      backgroundColor: box.backgroundColor,
+                      padding: `${box.padding}px`,
+                      borderRadius: getShapeStyle(box.shape),
+                      fontWeight: box.bold ? '700' : '400',
+                      boxShadow: '0 2px 4px rgba(0,0,0,0.2)',
+                      userSelect: 'none',
+                      cursor: 'move',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      textAlign: 'center'
+                    }}
+                    onMouseDown={(e) => handleMouseDown(e, box)}
+                  >
+                    {box.text}
+                  </div>
+                  
+                  {selectedBox === box.id && (
+                    <>
+                      {/* Resize handles */}
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-nw-resize" 
+                           style={{ left: `calc(${box.x}% - 6px)`, top: `calc(${box.y}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'nw')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-ne-resize" 
+                           style={{ left: `calc(${box.x + box.width}% - 6px)`, top: `calc(${box.y}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'ne')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-sw-resize" 
+                           style={{ left: `calc(${box.x}% - 6px)`, top: `calc(${box.y + box.height}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'sw')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-se-resize" 
+                           style={{ left: `calc(${box.x + box.width}% - 6px)`, top: `calc(${box.y + box.height}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'se')} />
+                      
+                      {/* Edge handles */}
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-n-resize" 
+                           style={{ left: `calc(${box.x + box.width / 2}% - 6px)`, top: `calc(${box.y}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'n')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-s-resize" 
+                           style={{ left: `calc(${box.x + box.width / 2}% - 6px)`, top: `calc(${box.y + box.height}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 's')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-w-resize" 
+                           style={{ left: `calc(${box.x}% - 6px)`, top: `calc(${box.y + box.height / 2}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'w')} />
+                      <div className="absolute w-3 h-3 bg-indigo-600 rounded-full cursor-e-resize" 
+                           style={{ left: `calc(${box.x + box.width}% - 6px)`, top: `calc(${box.y + box.height / 2}% - 6px)` }}
+                           onMouseDown={(e) => handleMouseDown(e, box, 'e')} />
+                    </>
+                  )}
                 </div>
               ))}
             </div>
@@ -242,6 +340,31 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                     max={24}
                     className="mt-1"
                   />
+                </div>
+
+                <div>
+                  <Label>Shape</Label>
+                  <div className="grid grid-cols-2 gap-2 mt-1">
+                    {[
+                      { value: 'rectangle', label: 'Rectangle' },
+                      { value: 'rounded', label: 'Rounded' },
+                      { value: 'pill', label: 'Pill' },
+                      { value: 'circle', label: 'Circle' }
+                    ].map(shape => (
+                      <button
+                        key={shape.value}
+                        type="button"
+                        onClick={() => updateTextBox(selectedBoxData.id, { shape: shape.value })}
+                        className={`p-2 text-xs border rounded transition-colors ${
+                          selectedBoxData.shape === shape.value
+                            ? 'bg-indigo-100 border-indigo-500 text-indigo-900'
+                            : 'bg-white border-gray-300 hover:border-gray-400'
+                        }`}
+                      >
+                        {shape.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
 
                 <div className="flex items-center gap-2">
