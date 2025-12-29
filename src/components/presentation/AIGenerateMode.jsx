@@ -93,8 +93,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           }
           }
           } else if (aiProvider === 'gemini') {
-          // Use Gemini for content generation
-          const geminiResult = await base44.functions.invoke('geminiSearch', {
+            // Use Gemini for content generation
+            const geminiResult = await base44.functions.invoke('geminiGeneration', {
           query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
           ${details ? `\nContext: ${details}` : ''}
 
