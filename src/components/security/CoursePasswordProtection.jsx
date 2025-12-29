@@ -13,10 +13,10 @@ export default function CoursePasswordProtection({ children, user }) {
   const [hasAccess, setHasAccess] = useState(false);
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-  const [loading, setLoading] = useState(true);
+  const [userLoading, setUserLoading] = useState(true);
   const navigate = useNavigate();
 
-  const { data: siteContent = [] } = useQuery({
+  const { data: siteContent = [], isLoading: contentLoading } = useQuery({
     queryKey: ['site-content'],
     queryFn: () => base44.entities.SiteContent.list('key', 1000),
   });
@@ -28,10 +28,16 @@ export default function CoursePasswordProtection({ children, user }) {
 
   useEffect(() => {
     const checkAccess = async () => {
+      // Wait for user to be defined (either logged in or null)
+      if (user === null && userLoading) {
+        return;
+      }
+      
+      setUserLoading(false);
+
       // Admin always has access
       if (user?.role === 'admin') {
         setHasAccess(true);
-        setLoading(false);
         return;
       }
 
@@ -39,15 +45,15 @@ export default function CoursePasswordProtection({ children, user }) {
       const accessGranted = sessionStorage.getItem('course_access_granted');
       if (accessGranted === 'true') {
         setHasAccess(true);
-        setLoading(false);
         return;
       }
 
-      setLoading(false);
+      // Otherwise, user needs to enter password
+      setHasAccess(false);
     };
 
     checkAccess();
-  }, [user]);
+  }, [user, userLoading]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -69,7 +75,7 @@ export default function CoursePasswordProtection({ children, user }) {
     navigate(createPageUrl('Home'));
   };
 
-  if (loading) {
+  if (userLoading || contentLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-gray-50">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
