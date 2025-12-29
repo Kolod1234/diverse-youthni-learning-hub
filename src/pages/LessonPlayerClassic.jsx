@@ -264,32 +264,32 @@ export default function LessonPlayerClassic() {
             <div className="max-w-5xl mx-auto">
               {hasSlides ? (
                 <div className="bg-white rounded-xl shadow-lg overflow-hidden">
-                  <div className="p-8 min-h-[500px]">
-                    <h2 className="text-2xl font-bold text-gray-900 mb-4">
+                  <div className="p-4 sm:p-8 min-h-[400px] sm:min-h-[500px]">
+                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
                       {sortedSlides[currentSlideIndex]?.title}
                     </h2>
                     <div 
-                      className="prose prose-lg max-w-none"
+                      className="prose prose-sm sm:prose-lg max-w-none"
                       dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
                     />
                   </div>
-                  <div className="bg-gray-50 px-4 sm:px-8 py-4 flex items-center justify-between border-t">
+                  <div className="bg-gray-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t gap-2">
                     <button
                       onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                       disabled={currentSlideIndex === 0}
-                      className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center w-12 h-12 bg-gray-800 text-white rounded-full hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all active:scale-95"
                     >
-                      <ChevronLeft className="w-5 h-5" />
+                      <ChevronLeft className="w-6 h-6" />
                     </button>
-                    <span className="text-xs sm:text-sm text-gray-600">
+                    <span className="text-xs sm:text-sm text-gray-600 font-medium">
                       Slide {currentSlideIndex + 1} of {sortedSlides.length}
                     </span>
                     <button
                       onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
                       disabled={currentSlideIndex === sortedSlides.length - 1}
-                      className="flex items-center justify-center w-10 h-10 sm:w-auto sm:h-auto sm:px-4 sm:py-2 bg-white border rounded-lg hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                      className="flex items-center justify-center w-12 h-12 bg-gray-800 text-white rounded-full hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all active:scale-95"
                     >
-                      <ChevronRight className="w-5 h-5" />
+                      <ChevronRight className="w-6 h-6" />
                     </button>
                   </div>
                 </div>
@@ -314,28 +314,31 @@ export default function LessonPlayerClassic() {
           </div>
 
           {/* Navigation Footer */}
-          <footer className="bg-white border-t border-gray-200 px-6 py-4">
-            <div className="max-w-5xl mx-auto flex items-center justify-between">
+          <footer className="bg-white border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4">
+            <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
               <Button
                 variant="outline"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
+                size="sm"
+                className="shrink-0"
               >
-                <ChevronLeft className="w-4 h-4 mr-2" />
-                Previous
+                <ChevronLeft className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Previous</span>
               </Button>
               
-              <span className="text-sm text-gray-500">
+              <span className="text-xs sm:text-sm text-gray-500 text-center">
                 {enrollment?.completed_lessons?.length || 0} of {sortedLessons.length} completed
               </span>
 
               <Button
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
-                className="bg-indigo-600 hover:bg-indigo-700"
+                size="sm"
+                className="bg-indigo-600 hover:bg-indigo-700 shrink-0"
               >
-                Next
-                <ChevronRight className="w-4 h-4 ml-2" />
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4 sm:ml-2" />
               </Button>
             </div>
           </footer>
