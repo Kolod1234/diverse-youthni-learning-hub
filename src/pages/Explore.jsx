@@ -322,6 +322,7 @@ export default function Explore() {
           </div>
         </div>
       </div>
+      </div>
     </CoursePasswordProtection>
   );
 }
