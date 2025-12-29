@@ -40,8 +40,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       "title": "Engaging slide title",
       "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples with proper context.",
       "order": 1,
-      "image_prompt": "Specific search query for finding a relevant educational image",
-      "image_description": "Brief description of what the image should show"
+      "image_url": "Direct URL to relevant educational image from web (Wikimedia Commons, NASA, NIH, .edu, .gov sources)",
+      "image_description": "Brief description of what the image shows"
       }
       ]
       }
@@ -52,7 +52,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       - Make content educational and engaging for students
       - Format content with proper HTML for visual hierarchy
 
-      ${includeImages ? 'IMPORTANT: Include "image_prompt" (search query) and "image_description" for EVERY slide.' : ''}
+      ${includeImages ? 'IMPORTANT: Use your web search to find REAL image URLs from authoritative sources (Wikimedia Commons, NASA, educational institutions, government sites). Include direct "image_url" (full https:// URL ending in .jpg, .png, .svg) and "image_description" for EVERY slide. Prioritize images with correct labels and professional quality.' : ''}
 
       Return ONLY the JSON object, nothing else.`
         });
@@ -129,15 +129,29 @@ Return ONLY valid JSON.`,
 
       let slides = response.slides;
 
-      // Generate images if requested
+      // Add images if requested
       if (includeImages) {
-        toast.info('Generating educational diagrams with AI...');
-
-        slides = await Promise.all(
-          slides.map(async (slide) => {
-            if (slide.image_prompt) {
-              try {
-                const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
+        if (usePerplexity) {
+          toast.info('Using web-sourced educational images...');
+          // Perplexity provides image URLs directly
+          slides = slides.map(slide => {
+            if (slide.image_url) {
+              const imageDescription = slide.image_description || slide.title;
+              const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                <img src="${slide.image_url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
+              </div>${slide.content}`;
+              return { ...slide, content: contentWithImage };
+            }
+            return slide;
+          });
+        } else {
+          toast.info('Generating educational diagrams with AI...');
+          slides = await Promise.all(
+            slides.map(async (slide) => {
+              if (slide.image_prompt) {
+                try {
+                  const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
 
 CRITICAL REQUIREMENTS:
 - Clean, professional educational diagram style
@@ -151,30 +165,31 @@ Context: ${topic} - ${slide.title}
 Style: Illustrative diagram, infographic, or educational chart
 Purpose: Help students understand ${slide.image_prompt}`;
 
-                const generatedImage = await base44.integrations.Core.GenerateImage({
-                  prompt: imagePrompt
-                });
+                  const generatedImage = await base44.integrations.Core.GenerateImage({
+                    prompt: imagePrompt
+                  });
 
-                if (generatedImage?.url) {
-                  const imageDescription = slide.image_description || slide.title;
-                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                    <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-                  </div>${slide.content}`;
+                  if (generatedImage?.url) {
+                    const imageDescription = slide.image_description || slide.title;
+                    const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                      <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                      <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
+                    </div>${slide.content}`;
 
-                  return { ...slide, content: contentWithImage };
+                    return { ...slide, content: contentWithImage };
+                  }
+                } catch (error) {
+                  console.error('Failed to generate image:', error);
                 }
-              } catch (error) {
-                console.error('Failed to generate image:', error);
               }
-            }
-            return slide;
-          })
-        );
+              return slide;
+            })
+          );
+        }
       }
 
       onSlidesGenerated(slides);
-      toast.success(`Generated ${slideCount} slides${includeImages ? ' with AI-generated images' : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? (usePerplexity ? ' with web-sourced images' : ' with AI-generated images') : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
