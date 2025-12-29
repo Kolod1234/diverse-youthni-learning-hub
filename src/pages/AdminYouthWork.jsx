@@ -10,13 +10,25 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Users, BookOpen, CheckCircle, XCircle, Download, UserX,
-  Calendar, FileText, Award, Settings
+  Calendar, FileText, Award, Settings, MessageSquare, Bell,
+  AlertCircle, TrendingUp, BarChart3, Send
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { Progress } from '@/components/ui/progress';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 
 export default function AdminYouthWork() {
   const [user, setUser] = useState(null);
+  const [showMessageDialog, setShowMessageDialog] = useState(false);
+  const [selectedParticipant, setSelectedParticipant] = useState(null);
+  const [messageContent, setMessageContent] = useState('');
   const queryClient = useQueryClient();
 
   React.useEffect(() => {
@@ -81,6 +93,29 @@ export default function AdminYouthWork() {
     },
   });
 
+  const sendMessageMutation = useMutation({
+    mutationFn: async ({ recipientEmail, message }) => {
+      await base44.entities.Notification.create({
+        user_email: recipientEmail,
+        title: 'Message from Coordinator',
+        message: message,
+        type: 'message',
+      });
+      
+      await base44.integrations.Core.SendEmail({
+        to: recipientEmail,
+        subject: 'Youth Work - Message from Your Coordinator',
+        body: message,
+      });
+    },
+    onSuccess: () => {
+      toast.success('Message sent successfully!');
+      setShowMessageDialog(false);
+      setMessageContent('');
+      setSelectedParticipant(null);
+    },
+  });
+
   const downloadWorkbook = (progress) => {
     const content = JSON.stringify(progress, null, 2);
     const blob = new Blob([content], { type: 'application/json' });
@@ -94,6 +129,23 @@ export default function AdminYouthWork() {
 
   const coordinators = allUsers.filter(u => u.is_coordinator || u.role === 'admin');
   const participants = allUsers.filter(u => !u.role || u.role === 'user');
+
+  // Calculate insights
+  const pendingApprovals = allProgress.filter(p => p.is_submitted && !p.is_approved).length;
+  const atRiskParticipants = allProgress.filter(p => 
+    p.progress_percent < 30 && 
+    !p.is_approved &&
+    new Date() - new Date(p.updated_date || p.created_date) > 7 * 24 * 60 * 60 * 1000 // 7 days
+  );
+  const avgProgress = allProgress.length > 0 
+    ? Math.round(allProgress.reduce((sum, p) => sum + (p.progress_percent || 0), 0) / allProgress.length)
+    : 0;
+
+  const needsAttention = allProgress.filter(p => {
+    const daysSinceUpdate = (new Date() - new Date(p.updated_date || p.created_date)) / (1000 * 60 * 60 * 24);
+    return (p.progress_percent < 50 && daysSinceUpdate > 14) || 
+           (p.is_submitted && !p.is_approved && daysSinceUpdate > 7);
+  });
 
   if (!user || user.role !== 'admin') {
     return (
@@ -117,13 +169,158 @@ export default function AdminYouthWork() {
           <p className="text-gray-600">Manage qualifications, participants, and assessments</p>
         </motion.div>
 
-        <Tabs defaultValue="submissions" className="space-y-6">
+        {/* Visual Overview Dashboard */}
+        <div className="grid md:grid-cols-4 gap-4 mb-8">
+          <Card className="p-6 bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+            <div className="flex items-center justify-between mb-2">
+              <Users className="w-8 h-8 text-purple-600" />
+              <span className="text-3xl font-bold text-purple-900">{participants.length}</span>
+            </div>
+            <p className="text-sm font-medium text-purple-700">Total Participants</p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+            <div className="flex items-center justify-between mb-2">
+              <Bell className="w-8 h-8 text-yellow-600" />
+              <span className="text-3xl font-bold text-yellow-900">{pendingApprovals}</span>
+            </div>
+            <p className="text-sm font-medium text-yellow-700">Pending Approvals</p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+            <div className="flex items-center justify-between mb-2">
+              <AlertCircle className="w-8 h-8 text-red-600" />
+              <span className="text-3xl font-bold text-red-900">{needsAttention.length}</span>
+            </div>
+            <p className="text-sm font-medium text-red-700">Needs Attention</p>
+          </Card>
+
+          <Card className="p-6 bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+            <div className="flex items-center justify-between mb-2">
+              <TrendingUp className="w-8 h-8 text-green-600" />
+              <span className="text-3xl font-bold text-green-900">{avgProgress}%</span>
+            </div>
+            <p className="text-sm font-medium text-green-700">Average Progress</p>
+          </Card>
+        </div>
+
+        {/* Alerts & Reminders */}
+        {(needsAttention.length > 0 || pendingApprovals > 0) && (
+          <Card className="p-6 mb-8 border-l-4 border-yellow-500 bg-yellow-50">
+            <div className="flex items-start gap-3">
+              <Bell className="w-6 h-6 text-yellow-600 flex-shrink-0 mt-1" />
+              <div className="flex-1">
+                <h3 className="font-bold text-yellow-900 mb-2">Action Required</h3>
+                <ul className="space-y-1 text-sm text-yellow-800">
+                  {pendingApprovals > 0 && (
+                    <li>• {pendingApprovals} submission{pendingApprovals > 1 ? 's' : ''} pending approval</li>
+                  )}
+                  {needsAttention.length > 0 && (
+                    <li>• {needsAttention.length} participant{needsAttention.length > 1 ? 's' : ''} need{needsAttention.length === 1 ? 's' : ''} immediate attention</li>
+                  )}
+                </ul>
+              </div>
+            </div>
+          </Card>
+        )}
+
+        <Tabs defaultValue="overview" className="space-y-6">
           <TabsList>
+            <TabsTrigger value="overview">Overview</TabsTrigger>
             <TabsTrigger value="submissions">Submissions</TabsTrigger>
             <TabsTrigger value="participants">Participants</TabsTrigger>
             <TabsTrigger value="attendance">Attendance</TabsTrigger>
             <TabsTrigger value="qualifications">Qualifications</TabsTrigger>
           </TabsList>
+
+          {/* Overview Tab */}
+          <TabsContent value="overview">
+            <div className="space-y-6">
+              {/* Needs Attention Section */}
+              {needsAttention.length > 0 && (
+                <Card className="p-6 border-red-200 bg-red-50">
+                  <div className="flex items-center gap-2 mb-4">
+                    <AlertCircle className="w-5 h-5 text-red-600" />
+                    <h3 className="font-bold text-red-900">Participants Needing Attention</h3>
+                  </div>
+                  <div className="space-y-3">
+                    {needsAttention.map(progress => {
+                      const qual = qualifications.find(q => q.id === progress.qualification_id);
+                      const participant = allUsers.find(u => u.email === progress.participant_email);
+                      return (
+                        <div key={progress.id} className="bg-white rounded-lg p-4 flex items-center justify-between">
+                          <div className="flex items-center gap-3">
+                            <Avatar>
+                              <AvatarImage src={participant?.avatar} />
+                              <AvatarFallback>{progress.participant_name?.charAt(0)}</AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-semibold text-gray-900">{progress.participant_name}</p>
+                              <p className="text-sm text-gray-600">{qual?.title} - Unit {progress.unit_index + 1}</p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <div className="w-32 h-2 bg-gray-200 rounded-full overflow-hidden">
+                                  <div 
+                                    className="h-full bg-red-500" 
+                                    style={{ width: `${progress.progress_percent}%` }}
+                                  />
+                                </div>
+                                <span className="text-xs text-gray-600">{progress.progress_percent}%</span>
+                              </div>
+                            </div>
+                          </div>
+                          <Button
+                            size="sm"
+                            onClick={() => {
+                              setSelectedParticipant({ 
+                                email: progress.participant_email, 
+                                name: progress.participant_name 
+                              });
+                              setShowMessageDialog(true);
+                            }}
+                          >
+                            <MessageSquare className="w-4 h-4 mr-1" />
+                            Send Message
+                          </Button>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </Card>
+              )}
+
+              {/* Progress Overview by Qualification */}
+              <Card className="p-6">
+                <h3 className="font-bold text-lg mb-4 flex items-center gap-2">
+                  <BarChart3 className="w-5 h-5 text-purple-600" />
+                  Progress Overview by Qualification
+                </h3>
+                <div className="space-y-4">
+                  {qualifications.map(qual => {
+                    const qualProgress = allProgress.filter(p => p.qualification_id === qual.id);
+                    const avgQualProgress = qualProgress.length > 0
+                      ? Math.round(qualProgress.reduce((sum, p) => sum + (p.progress_percent || 0), 0) / qualProgress.length)
+                      : 0;
+                    const completed = qualProgress.filter(p => p.is_approved).length;
+                    
+                    return (
+                      <div key={qual.id} className="border-b pb-4 last:border-b-0">
+                        <div className="flex items-center justify-between mb-2">
+                          <div>
+                            <p className="font-semibold text-gray-900">{qual.title}</p>
+                            <p className="text-sm text-gray-600">
+                              {qualProgress.length} enrolled • {completed} completed
+                            </p>
+                          </div>
+                          <Badge variant="outline">{avgQualProgress}% avg</Badge>
+                        </div>
+                        <Progress value={avgQualProgress} className="h-2" />
+                      </div>
+                    );
+                  })}
+                </div>
+              </Card>
+            </div>
+          </TabsContent>
 
           {/* Submissions Tab */}
           <TabsContent value="submissions">
@@ -155,32 +352,46 @@ export default function AdminYouthWork() {
                         )}
                       </div>
                       <div className="flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => downloadWorkbook(progress)}
-                        >
-                          <Download className="w-4 h-4 mr-1" />
-                          Download
-                        </Button>
-                        {!progress.is_approved && (
-                          <Button
-                            size="sm"
-                            onClick={() => {
-                              const feedback = prompt('Enter feedback:');
-                              if (feedback !== null) {
-                                approveWorkbookMutation.mutate({ 
-                                  progressId: progress.id, 
-                                  feedback 
-                                });
-                              }
-                            }}
-                            className="bg-green-600 hover:bg-green-700"
-                          >
-                            <CheckCircle className="w-4 h-4 mr-1" />
-                            Approve
-                          </Button>
-                        )}
+                       <Button
+                         size="sm"
+                         variant="outline"
+                         onClick={() => {
+                           setSelectedParticipant({ 
+                             email: progress.participant_email, 
+                             name: progress.participant_name 
+                           });
+                           setShowMessageDialog(true);
+                         }}
+                       >
+                         <MessageSquare className="w-4 h-4 mr-1" />
+                         Message
+                       </Button>
+                       <Button
+                         size="sm"
+                         variant="outline"
+                         onClick={() => downloadWorkbook(progress)}
+                       >
+                         <Download className="w-4 h-4 mr-1" />
+                         Download
+                       </Button>
+                       {!progress.is_approved && (
+                         <Button
+                           size="sm"
+                           onClick={() => {
+                             const feedback = prompt('Enter feedback:');
+                             if (feedback !== null) {
+                               approveWorkbookMutation.mutate({ 
+                                 progressId: progress.id, 
+                                 feedback 
+                               });
+                             }
+                           }}
+                           className="bg-green-600 hover:bg-green-700"
+                         >
+                           <CheckCircle className="w-4 h-4 mr-1" />
+                           Approve
+                         </Button>
+                       )}
                       </div>
                     </div>
                   </Card>
@@ -218,30 +429,44 @@ export default function AdminYouthWork() {
                         </div>
                       </div>
                       <div className="flex gap-2">
-                        <select
-                          value={participant.assigned_coordinator_email || ''}
-                          onChange={(e) => assignCoordinatorMutation.mutate({
-                            userId: participant.id,
-                            coordinatorEmail: e.target.value,
-                          })}
-                          className="px-3 py-2 border rounded-lg text-sm"
-                        >
-                          <option value="">Assign Coordinator</option>
-                          {coordinators.map(coord => (
-                            <option key={coord.email} value={coord.email}>
-                              {coord.full_name}
-                            </option>
-                          ))}
-                        </select>
-                        <Button
-                          size="sm"
-                          variant="destructive"
-                          onClick={() => blockUserMutation.mutate(participant.id)}
-                          disabled={participant.youth_work_blocked}
-                        >
-                          <UserX className="w-4 h-4 mr-1" />
-                          {participant.youth_work_blocked ? 'Blocked' : 'Block'}
-                        </Button>
+                       <Button
+                         size="sm"
+                         variant="outline"
+                         onClick={() => {
+                           setSelectedParticipant({ 
+                             email: participant.email, 
+                             name: participant.full_name 
+                           });
+                           setShowMessageDialog(true);
+                         }}
+                       >
+                         <MessageSquare className="w-4 h-4 mr-1" />
+                         Message
+                       </Button>
+                       <select
+                         value={participant.assigned_coordinator_email || ''}
+                         onChange={(e) => assignCoordinatorMutation.mutate({
+                           userId: participant.id,
+                           coordinatorEmail: e.target.value,
+                         })}
+                         className="px-3 py-2 border rounded-lg text-sm"
+                       >
+                         <option value="">Assign Coordinator</option>
+                         {coordinators.map(coord => (
+                           <option key={coord.email} value={coord.email}>
+                             {coord.full_name}
+                           </option>
+                         ))}
+                       </select>
+                       <Button
+                         size="sm"
+                         variant="destructive"
+                         onClick={() => blockUserMutation.mutate(participant.id)}
+                         disabled={participant.youth_work_blocked}
+                       >
+                         <UserX className="w-4 h-4 mr-1" />
+                         {participant.youth_work_blocked ? 'Blocked' : 'Block'}
+                       </Button>
                       </div>
                     </div>
                   </Card>
@@ -298,6 +523,55 @@ export default function AdminYouthWork() {
             </div>
           </TabsContent>
         </Tabs>
+
+        {/* Message Dialog */}
+        <Dialog open={showMessageDialog} onOpenChange={setShowMessageDialog}>
+          <DialogContent className="sm:max-w-[500px]">
+            <DialogHeader>
+              <DialogTitle>Send Message to {selectedParticipant?.name}</DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4 pt-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-2">
+                  Message
+                </label>
+                <Textarea
+                  placeholder="Type your message here..."
+                  value={messageContent}
+                  onChange={(e) => setMessageContent(e.target.value)}
+                  className="min-h-[120px]"
+                />
+              </div>
+              <div className="flex justify-end gap-2">
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowMessageDialog(false);
+                    setMessageContent('');
+                    setSelectedParticipant(null);
+                  }}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  onClick={() => {
+                    if (messageContent.trim() && selectedParticipant) {
+                      sendMessageMutation.mutate({
+                        recipientEmail: selectedParticipant.email,
+                        message: messageContent,
+                      });
+                    }
+                  }}
+                  disabled={!messageContent.trim() || sendMessageMutation.isPending}
+                  className="bg-purple-600 hover:bg-purple-700"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Send Message
+                </Button>
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
       </div>
     </div>
   );
