@@ -88,7 +88,7 @@ export default function YouthWorkWorkbook() {
   };
 
   const handlePasscodeSubmit = () => {
-    const correctPasscode = 'YoutworkerB1';
+    const correctPasscode = 'YouthworkerB1';
     if (passcode === correctPasscode) {
       setIsUnlocked(true);
       setShowPasscodeDialog(false);
