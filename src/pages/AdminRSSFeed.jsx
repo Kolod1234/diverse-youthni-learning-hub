@@ -222,7 +222,7 @@ export default function AdminRSSFeed() {
               </Button>
               <Button 
                 onClick={() => {
-                  const sources = ['bbc', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni'];
+                  const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament'];
                   sources.forEach(source => importFeedMutation.mutate(source));
                 }}
                 disabled={importFeedMutation.isPending}
@@ -239,12 +239,27 @@ export default function AdminRSSFeed() {
                     Import Source
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
+                <DropdownMenuContent align="end" className="max-h-96 overflow-y-auto">
                   <DropdownMenuItem onClick={() => importFeedMutation.mutate('bbc')}>
                     BBC News
                   </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('bbceducation')}>
+                    BBC Education
+                  </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => importFeedMutation.mutate('cnn')}>
                     CNN
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('eani')}>
+                    Education Authority NI
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('deni')}>
+                    Department of Education NI
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('govuk')}>
+                    Gov.uk Education
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('ukparliament')}>
+                    UK Parliament Education
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => importFeedMutation.mutate('ocnni')}>
                     OCN NI
@@ -435,7 +450,12 @@ export default function AdminRSSFeed() {
                     <option value="">Select source...</option>
                     <option value="ANNOUNCEMENT">📢 Custom Announcement</option>
                     <option value="BBC">BBC News</option>
+                    <option value="BBCEDUCATION">BBC Education</option>
                     <option value="CNN">CNN</option>
+                    <option value="EANI">Education Authority NI</option>
+                    <option value="DENI">Department of Education NI</option>
+                    <option value="GOVUK">Gov.uk Education</option>
+                    <option value="UKPARLIAMENT">UK Parliament Education</option>
                     <option value="OCNNI">OCN NI</option>
                     <option value="UKHOMEOFFICE">UK Home Office</option>
                     <option value="MIGRANTNI">Migrant NI</option>

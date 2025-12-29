@@ -2,10 +2,15 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const RSS_FEEDS = {
   bbc: 'https://feeds.bbci.co.uk/news/rss.xml',
+  bbceducation: 'https://feeds.bbci.co.uk/news/education/rss.xml',
   cnn: 'http://rss.cnn.com/rss/edition.rss',
   ocnni: 'https://ocnni.org.uk/feed/',
   ukhomeoffice: 'https://homeofficemedia.blog.gov.uk/feed/',
   migrantni: 'https://migrantni.org/feed/',
+  eani: 'https://www.eani.org.uk/news-and-events/feed',
+  deni: 'https://www.education-ni.gov.uk/rss/news.xml',
+  govuk: 'https://www.gov.uk/government/organisations/department-for-education.atom',
+  ukparliament: 'https://www.parliament.uk/site-information/rss-feeds/rss-education/',
 };
 
 function cleanText(text) {
