@@ -62,10 +62,10 @@ export default function MessageCenter() {
     queryFn: () => base44.entities.Course.list('-created_date', 100),
   });
 
-  const { data: allUsers = [] } = useQuery({
-    queryKey: ['all-users'],
+  const { data: allUsers = [], isLoading: usersLoading } = useQuery({
+    queryKey: ['all-users', user?.email],
     queryFn: async () => {
-      const response = await base44.functions.invoke('getMessageableUsers');
+      const response = await base44.functions.invoke('getMessageableUsers', {});
       return response.data;
     },
     enabled: !!user,
@@ -231,7 +231,7 @@ Reply:`,
 
   const unreadCount = messages.filter(m => !m.is_read).length;
 
-  const handleSelectThread = (thread) => {
+    const handleSelectThread = (thread) => {
     setSelectedThread(thread);
     // Mark messages as read
     thread.messages
@@ -280,8 +280,6 @@ Reply:`,
     }
   }, [selectedThread?.messages]);
 
-  const availableUsers = allUsers || [];
-
   const courseName = courses.find(c => c.id === selectedThread?.courseId)?.title || 'General';
 
   return (
@@ -324,9 +322,10 @@ Reply:`,
                           value={newMessageRecipient}
                           onChange={(e) => setNewMessageRecipient(e.target.value)}
                           className="w-full px-3 py-2 border rounded-lg"
+                          disabled={usersLoading}
                         >
-                          <option value="">Select recipient...</option>
-                          {availableUsers.map(u => (
+                          <option value="">{usersLoading ? 'Loading users...' : 'Select recipient...'}</option>
+                          {allUsers.map(u => (
                             <option key={u.email} value={u.email}>
                               {u.full_name} ({u.role === 'admin' ? 'Admin' : u.is_coordinator ? 'Coordinator' : u.is_tutor ? 'Tutor' : 'Student'})
                             </option>
