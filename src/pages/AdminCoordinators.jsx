@@ -32,6 +32,11 @@ export default function AdminCoordinators() {
     queryFn: () => base44.entities.User.list('full_name', 1000),
   });
 
+  const { data: coordinatorRequests = [] } = useQuery({
+    queryKey: ['coordinator-requests'],
+    queryFn: () => base44.entities.CoordinatorRequest.filter({ status: 'pending' }, '-created_date', 100),
+  });
+
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
     queryFn: () => base44.entities.SiteContent.list('key', 1000),
@@ -141,6 +146,48 @@ export default function AdminCoordinators() {
             <strong>Debug:</strong> Total users: {allUsers.length}, Coordinators: {coordinators.length}, Participants: {participants.length}
           </p>
         </Card>
+
+        {/* Coordinator Requests */}
+        {coordinatorRequests.length > 0 && (
+          <Card className="p-6 mb-6 bg-purple-50 border-purple-200">
+            <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+              <UserCheck className="w-5 h-5 text-purple-600" />
+              Pending Coordinator Requests ({coordinatorRequests.length})
+            </h2>
+            <div className="space-y-3">
+              {coordinatorRequests.map(request => (
+                <div key={request.id} className="bg-white rounded-lg p-4 border border-purple-200">
+                  <div className="flex items-start justify-between mb-2">
+                    <div>
+                      <p className="font-semibold text-gray-900">{request.user_name}</p>
+                      <p className="text-sm text-gray-600">{request.user_email}</p>
+                    </div>
+                    <Badge className="bg-yellow-100 text-yellow-800">Pending</Badge>
+                  </div>
+                  <p className="text-sm text-gray-700 mb-3 italic">"{request.reason}"</p>
+                  <div className="flex gap-2">
+                    <Button 
+                      size="sm"
+                      onClick={() => approveRequestMutation.mutate({ requestId: request.id, userEmail: request.user_email })}
+                      disabled={approveRequestMutation.isPending}
+                      className="bg-green-600 hover:bg-green-700"
+                    >
+                      Approve
+                    </Button>
+                    <Button 
+                      size="sm"
+                      variant="outline"
+                      onClick={() => rejectRequestMutation.mutate(request.id)}
+                      disabled={rejectRequestMutation.isPending}
+                    >
+                      Reject
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </Card>
+        )}
 
         <div className="grid lg:grid-cols-2 gap-6">
           {/* Coordinators List */}

@@ -18,6 +18,7 @@ import {
   Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
+import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import { motion } from 'framer-motion';
 
 export default function Layout({ children, currentPageName }) {
@@ -307,6 +308,9 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
+              {/* Become Coordinator Button */}
+              <BecomeCoordinatorButton user={user} />
+
               {/* Notifications */}
               <NotificationBell />
 
