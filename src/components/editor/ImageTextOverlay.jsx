@@ -520,7 +520,8 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
                   )}
                 </div>
               ))}
-            </div>
+              </div>
+            )}
           </div>
 
           {/* Properties Panel */}
