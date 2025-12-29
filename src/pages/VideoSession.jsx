@@ -80,7 +80,13 @@ export default function VideoSession() {
         data: { status: 'live' }
       });
     }
-    setInSession(true);
+    
+    // Redirect to Google Meet if available
+    if (session.meet_link) {
+      window.open(session.meet_link, '_blank');
+    } else {
+      setInSession(true);
+    }
   };
 
   const handleEndSession = () => {
@@ -94,7 +100,9 @@ export default function VideoSession() {
   };
 
   const handleResumeSession = () => {
-    if (session.status === 'live' || (isTutor && session.status === 'scheduled')) {
+    if (session.meet_link) {
+      window.open(session.meet_link, '_blank');
+    } else if (session.status === 'live' || (isTutor && session.status === 'scheduled')) {
       setInSession(true);
     }
   };
@@ -232,8 +240,16 @@ export default function VideoSession() {
             <div className="mb-6">
               <h3 className="font-semibold text-gray-900 mb-2">About this session</h3>
               <p className="text-gray-600">
-                Join this live video session to learn directly from your tutor. Make sure you have a stable internet connection and your camera/microphone ready.
+                Join this live video session to learn directly from your tutor. The session will open in Google Meet in a new tab.
               </p>
+              {session.meet_link && (
+                <div className="mt-3 p-3 bg-green-50 border border-green-200 rounded-lg">
+                  <p className="text-sm text-green-800 flex items-center gap-2">
+                    <CheckCircle className="w-4 h-4" />
+                    Google Meet link is ready
+                  </p>
+                </div>
+              )}
             </div>
 
             <div className="mb-6">
@@ -272,7 +288,7 @@ export default function VideoSession() {
                   className="flex-1 h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
                 >
                   <PlayCircle className="w-5 h-5 mr-2" />
-                  Resume Session
+                  {session.meet_link ? 'Join Google Meet' : 'Resume Session'}
                 </Button>
               ) : (
                 <Button
@@ -281,7 +297,7 @@ export default function VideoSession() {
                   className="flex-1 h-14 text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 >
                   <Video className="w-5 h-5 mr-2" />
-                  {isTutor ? 'Start Session' : 'Join Session'}
+                  {isTutor ? 'Start Google Meet' : 'Join Google Meet'}
                 </Button>
               )}
 

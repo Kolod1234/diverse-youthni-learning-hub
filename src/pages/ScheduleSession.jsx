@@ -67,26 +67,33 @@ export default function ScheduleSession() {
     mutationFn: async (sessionData) => {
       const session = await base44.entities.VideoSession.create(sessionData);
       
-      // Sync to Google Calendar
-      if (syncToCalendar) {
-        try {
-          await base44.functions.invoke('syncSessionToCalendar', {
-            sessionId: session.id,
-            action: 'create'
-          });
-        } catch (error) {
-          console.error('Calendar sync failed:', error);
-        }
-      }
-      
-      // Schedule reminders
+      // Create Google Meet link
       try {
-        await base44.functions.invoke('scheduleSessionReminders', {
-          sessionId: session.id,
-          reminderTimings: [24 * 60, 60]
+        const meetResult = await base44.functions.invoke('createGoogleMeetSession', {
+          sessionData,
+          sessionId: session.id
         });
+        
+        if (meetResult.data?.meet_link) {
+          // Send notifications to invited students
+          for (const studentEmail of sessionData.invited_students || []) {
+            try {
+              await base44.functions.invoke('sendNotification', {
+                recipient_email: studentEmail,
+                title: `New Live Session: ${sessionData.title}`,
+                message: `You've been invited to a live session on ${sessionData.scheduled_date} at ${sessionData.scheduled_time}. Join via Google Meet.`,
+                type: 'session_reminder',
+                link: `/video-session?id=${session.id}`,
+                send_email: true
+              });
+            } catch (err) {
+              console.error('Failed to send notification:', err);
+            }
+          }
+        }
       } catch (error) {
-        console.error('Failed to schedule reminders:', error);
+        console.error('Failed to create Google Meet link:', error);
+        toast.error('Session created but Google Meet link failed. You can add it later.');
       }
       
       return session;
