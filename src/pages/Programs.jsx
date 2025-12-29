@@ -52,7 +52,28 @@ export default function Programs() {
   const isEnrolled = participants.some(p => p.participant_email === user?.email);
 
   const enrollMutation = useMutation({
-    mutationFn: (data) => base44.entities.ProgramParticipant.create(data),
+    mutationFn: async (data) => {
+      const participant = await base44.entities.ProgramParticipant.create(data);
+      
+      // Notify program coordinators/admins about new enrollment
+      try {
+        const coordinators = await base44.entities.User.filter({ role: 'admin' });
+        for (const coord of coordinators) {
+          await base44.functions.invoke('sendNotification', {
+            recipient_email: coord.email,
+            title: 'New Programme Enrollment',
+            message: `${data.participant_name} has enrolled in ${selectedProgram.name}`,
+            type: 'program',
+            link: `/programs`,
+            send_email: true,
+          });
+        }
+      } catch (err) {
+        console.error('Failed to send notification:', err);
+      }
+      
+      return participant;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['program-participants']);
       setShowSignUpDialog(false);
