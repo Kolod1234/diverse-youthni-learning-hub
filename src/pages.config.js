@@ -36,6 +36,7 @@ import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import TutorDashboardOverview from './pages/TutorDashboardOverview';
+import YouthWork from './pages/YouthWork';
 import __Layout from './Layout.jsx';
 
 
@@ -78,6 +79,7 @@ export const PAGES = {
     "Tutors": Tutors,
     "VideoSession": VideoSession,
     "TutorDashboardOverview": TutorDashboardOverview,
+    "YouthWork": YouthWork,
 }
 
 export const pagesConfig = {

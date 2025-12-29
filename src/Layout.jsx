@@ -79,6 +79,7 @@ export default function Layout({ children, currentPageName }) {
     { name: 'Tutors', href: createPageUrl('Tutors'), icon: GraduationCap },
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     { name: 'Live Sessions', href: createPageUrl('Sessions'), icon: Video },
+    { name: 'Youth Work', href: createPageUrl('YouthWork'), icon: GraduationCap },
     { name: 'Messages', href: createPageUrl('MessageCenter'), icon: MessageSquare },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
     { name: 'Achievements', href: createPageUrl('Achievements'), icon: Award },
