@@ -177,8 +177,9 @@ export default function Home() {
                 <img
                   src={imgUrl}
                   alt={`Educational background ${idx + 1}`}
-                  className="w-full h-full object-cover opacity-25"
+                  className="w-full h-full object-cover opacity-20"
                 />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#d32f2f]/40 via-transparent to-[#c62828]/40" />
               </div>
             ))}
           </div>
@@ -195,6 +196,7 @@ export default function Home() {
               className="inline-block bg-yellow-400 text-[#d32f2f] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
               whileHover={{ scale: 1.05 }}
               transition={{ duration: 0.2 }}
+              style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
             >
               {getContent('hero_online_learning', 'ONLINE LEARNING')}
             </motion.div>
@@ -204,7 +206,7 @@ export default function Home() {
               whileHover={{ scale: 1.05, rotate: 2 }}
               transition={{ duration: 0.2 }}
             >
-              <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight">
+              <h1 className="text-5xl md:text-7xl font-black text-[#d32f2f] tracking-tight" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.2)' }}>
                 {getContent('hero_afterschool_hours', 'Afterschool Hours')}
               </h1>
             </motion.div>
@@ -213,6 +215,7 @@ export default function Home() {
               className="text-3xl md:text-5xl font-extrabold text-white mb-4"
               whileHover={{ scale: 1.08, y: -5 }}
               transition={{ duration: 0.2 }}
+              style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' }}
             >
               {getContent('hero_online_quizzes', 'Online Quizzes')}
             </motion.h2>
@@ -222,13 +225,13 @@ export default function Home() {
               whileHover={{ scale: 1.1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
               transition={{ duration: 0.2 }}
             >
-              <p className="text-5xl md:text-7xl font-black text-[#d32f2f]">
+              <p className="text-5xl md:text-7xl font-black text-[#d32f2f]" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.3)' }}>
                 {getContent('hero_free_access', 'FREE ACCESS')}
                 <span className="block text-3xl md:text-4xl mt-2">{getContent('hero_all_courses', 'ALL COURSES')}</span>
               </p>
             </motion.div>
 
-            <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8">
+            <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8" style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.6)' }}>
               {getContent('hero_description', 'Access them at the comfort of your home')}
             </p>
 
