@@ -15,47 +15,80 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Query is required' }, { status: 400 });
     }
 
-    const unsplashKey = Deno.env.get('UNSPLASH_ACCESS_KEY');
+    // Use Perplexity to search for educational images from authoritative sources
+    const perplexityKey = Deno.env.get('PERPLEXITY_API_KEY');
     
-    if (!unsplashKey) {
-      // Fallback to placeholder images if no API key
-      return Response.json({
-        images: [
-          {
-            id: '1',
-            url: `https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=1200&q=80`,
-            thumbnail: `https://images.unsplash.com/photo-1516339901601-2e1b62dc0c45?w=400&q=80`,
-            description: query,
-            photographer: 'Unsplash',
-            photographer_url: 'https://unsplash.com'
-          }
-        ],
+    if (!perplexityKey) {
+      return Response.json({ 
+        error: 'PERPLEXITY_API_KEY not set',
+        images: [],
         fallback: true
-      });
+      }, { status: 500 });
     }
 
-    const response = await fetch(
-      `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=${perPage}&orientation=landscape&content_filter=high`,
-      {
-        headers: {
-          'Authorization': `Client-ID ${unsplashKey}`
-        }
-      }
-    );
+    const searchPrompt = `Find ${perPage} high-quality educational images about "${query}" from authoritative sources like:
+- Wikimedia Commons (commons.wikimedia.org)
+- NASA images (images.nasa.gov)
+- NIH/Medical images (.nih.gov)
+- Educational institutions (.edu)
+- Government sources (.gov)
+
+Return ONLY valid JSON in this exact format:
+{
+  "images": [
+    {
+      "url": "direct image URL ending in .jpg, .png, or .svg",
+      "description": "brief description of the image",
+      "source": "source name (e.g., NASA, Wikimedia Commons)"
+    }
+  ]
+}
+
+CRITICAL: All URLs must be direct image links (ending in image extensions), not webpage links.`;
+
+    const response = await fetch('https://api.perplexity.ai/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${perplexityKey}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        model: 'llama-3.1-sonar-small-128k-online',
+        messages: [
+          {
+            role: 'system',
+            content: 'You are an expert at finding educational images from authoritative sources. Always return valid JSON only.'
+          },
+          {
+            role: 'user',
+            content: searchPrompt
+          }
+        ]
+      })
+    });
 
     if (!response.ok) {
-      throw new Error(`Unsplash API error: ${response.status}`);
+      throw new Error(`Perplexity API error: ${response.status}`);
     }
 
     const data = await response.json();
+    const content = data.choices[0].message.content;
     
-    const images = data.results.map(img => ({
-      id: img.id,
-      url: img.urls.regular,
-      thumbnail: img.urls.small,
-      description: img.description || img.alt_description || query,
-      photographer: img.user.name,
-      photographer_url: img.user.links.html
+    // Parse JSON from response
+    const jsonMatch = content.match(/\{[\s\S]*\}/);
+    if (!jsonMatch) {
+      throw new Error('No valid JSON found in response');
+    }
+    
+    const result = JSON.parse(jsonMatch[0]);
+    
+    const images = result.images.map((img, idx) => ({
+      id: `${Date.now()}-${idx}`,
+      url: img.url,
+      thumbnail: img.url,
+      description: img.description || query,
+      photographer: img.source || 'Educational Source',
+      photographer_url: img.url
     }));
 
     return Response.json({ images, fallback: false });
