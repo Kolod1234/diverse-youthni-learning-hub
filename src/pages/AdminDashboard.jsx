@@ -181,6 +181,10 @@ export default function AdminDashboard() {
               <ImageIcon className="w-4 h-4 mr-2" />
               Leadership Carousel
             </TabsTrigger>
+            <TabsTrigger value="hero-carousel" className="rounded-lg">
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Hero Carousel
+            </TabsTrigger>
             <TabsTrigger value="certificates" className="rounded-lg">
               <Award className="w-4 h-4 mr-2" />
               Certificates
@@ -261,6 +265,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="leadership-carousel">
             <CarouselManager carouselType="leadership" title="Leadership Programme Carousel" />
+          </TabsContent>
+
+          <TabsContent value="hero-carousel">
+            <CarouselManager carouselType="hero" title="Hero Background Images" />
           </TabsContent>
 
           <TabsContent value="certificates">

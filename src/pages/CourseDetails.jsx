@@ -17,6 +17,7 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import CourseLeaderboard from '@/components/gamification/CourseLeaderboard';
+import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 
 const levelColors = {
   beginner: 'bg-green-100 text-green-700',
@@ -679,6 +680,7 @@ export default function CourseDetails() {
             </div>
         </div>
       </section>
-    </div>
+      </div>
+    </CoursePasswordProtection>
   );
 }
