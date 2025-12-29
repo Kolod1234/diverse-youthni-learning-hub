@@ -82,18 +82,48 @@ export default function AdminCoordinators() {
   });
 
   const approveRequestMutation = useMutation({
-    mutationFn: async ({ requestId, userEmail }) => {
+    mutationFn: async ({ requestId, userEmail, userName }) => {
+      // 1. Assign coordinator role
       await base44.entities.User.update(userEmail, { is_coordinator: true });
+      
+      // 2. Update request status
       await base44.entities.CoordinatorRequest.update(requestId, { 
         status: 'approved',
         processed_by: user.email,
         processed_date: new Date().toISOString()
       });
+
+      // 3. Send welcome email
+      await base44.functions.invoke('sendNotification', {
+        recipient_email: userEmail,
+        title: 'Welcome as a Coordinator!',
+        message: `Congratulations ${userName}! Your coordinator request has been approved. You can now access the Coordinators Dashboard to manage participants, approve logbooks, and send messages. Use the coordinator password to access your dashboard.`,
+        type: 'general',
+        send_email: true,
+      });
+
+      // 4. Check for programs that need this coordinator
+      const programs = await base44.entities.Program.list('-created_date', 100);
+      const programsNeedingCoordinator = programs.filter(p => 
+        p.coordinator_email === userEmail || 
+        (!p.coordinator && !p.coordinator_email)
+      );
+
+      // Auto-assign to matching programs
+      for (const program of programsNeedingCoordinator) {
+        if (program.coordinator_email === userEmail) {
+          await base44.entities.Program.update(program.id, {
+            coordinator: userName,
+            coordinator_email: userEmail
+          });
+        }
+      }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['coordinator-requests']);
       queryClient.invalidateQueries(['all-users']);
-      toast.success('Coordinator request approved!');
+      queryClient.invalidateQueries(['programs']);
+      toast.success('Coordinator approved and welcome email sent!');
     },
   });
 
@@ -198,7 +228,11 @@ export default function AdminCoordinators() {
                   <div className="flex gap-2">
                     <Button 
                       size="sm"
-                      onClick={() => approveRequestMutation.mutate({ requestId: request.id, userEmail: request.user_email })}
+                      onClick={() => approveRequestMutation.mutate({ 
+                        requestId: request.id, 
+                        userEmail: request.user_email,
+                        userName: request.user_name
+                      })}
                       disabled={approveRequestMutation.isPending}
                       className="bg-green-600 hover:bg-green-700"
                     >
