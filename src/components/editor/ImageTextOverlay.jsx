@@ -5,6 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { X, Plus, Type, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
 
 export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
   const [textBoxes, setTextBoxes] = useState([]);
@@ -135,11 +136,130 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
     return `<div style="position: relative; margin: 20px auto; max-width: 100%; text-align: center;"><img src="${imageUrl}" style="width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block;" alt="Labeled diagram" />${overlays}</div>`;
   };
 
-  const handleSave = () => {
-    const html = generateHTML();
-    onSave(html);
-    toast.success('Image with labels saved to slide!');
-    onClose();
+  const handleSave = async () => {
+    try {
+      toast.info('Generating labeled image...');
+      
+      // Create a canvas to render the image with labels
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+      
+      // Load the original image
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = reject;
+        img.src = imageUrl;
+      });
+      
+      // Set canvas size to match image
+      canvas.width = img.width;
+      canvas.height = img.height;
+      
+      // Draw the original image
+      ctx.drawImage(img, 0, 0);
+      
+      // Draw each text box
+      textBoxes.forEach(box => {
+        const x = (box.x / 100) * canvas.width;
+        const y = (box.y / 100) * canvas.height;
+        const width = (box.width / 100) * canvas.width;
+        const height = (box.height / 100) * canvas.height;
+        
+        // Parse background color with opacity
+        const rgbaMatch = box.backgroundColor.match(/^#([0-9a-f]{6})$/i);
+        const bgColor = rgbaMatch 
+          ? `rgba(${parseInt(rgbaMatch[1].substr(0,2), 16)}, ${parseInt(rgbaMatch[1].substr(2,2), 16)}, ${parseInt(rgbaMatch[1].substr(4,2), 16)}, ${box.opacity})`
+          : box.backgroundColor;
+        
+        // Draw background shape
+        ctx.fillStyle = bgColor;
+        ctx.shadowColor = 'rgba(0, 0, 0, 0.2)';
+        ctx.shadowBlur = 4;
+        ctx.shadowOffsetY = 2;
+        
+        const borderRadius = box.shape === 'circle' ? Math.min(width, height) / 2 :
+                            box.shape === 'pill' ? height / 2 :
+                            box.shape === 'rounded' ? 12 : 4;
+        
+        if (box.shape === 'circle') {
+          const centerX = x + width / 2;
+          const centerY = y + height / 2;
+          const radius = Math.min(width, height) / 2;
+          ctx.beginPath();
+          ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+          ctx.fill();
+        } else {
+          ctx.beginPath();
+          ctx.moveTo(x + borderRadius, y);
+          ctx.lineTo(x + width - borderRadius, y);
+          ctx.quadraticCurveTo(x + width, y, x + width, y + borderRadius);
+          ctx.lineTo(x + width, y + height - borderRadius);
+          ctx.quadraticCurveTo(x + width, y + height, x + width - borderRadius, y + height);
+          ctx.lineTo(x + borderRadius, y + height);
+          ctx.quadraticCurveTo(x, y + height, x, y + height - borderRadius);
+          ctx.lineTo(x, y + borderRadius);
+          ctx.quadraticCurveTo(x, y, x + borderRadius, y);
+          ctx.closePath();
+          ctx.fill();
+        }
+        
+        ctx.shadowColor = 'transparent';
+        ctx.shadowBlur = 0;
+        
+        // Draw text
+        ctx.fillStyle = box.color;
+        ctx.font = `${box.bold ? 'bold' : 'normal'} ${box.fontSize}px Arial, sans-serif`;
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        
+        const centerX = x + width / 2;
+        const centerY = y + height / 2;
+        
+        // Word wrap text if needed
+        const words = box.text.split(' ');
+        const lines = [];
+        let currentLine = '';
+        
+        words.forEach(word => {
+          const testLine = currentLine + (currentLine ? ' ' : '') + word;
+          const metrics = ctx.measureText(testLine);
+          if (metrics.width > width - box.padding * 2 && currentLine) {
+            lines.push(currentLine);
+            currentLine = word;
+          } else {
+            currentLine = testLine;
+          }
+        });
+        if (currentLine) lines.push(currentLine);
+        
+        const lineHeight = box.fontSize * 1.2;
+        const totalHeight = lines.length * lineHeight;
+        const startY = centerY - totalHeight / 2 + lineHeight / 2;
+        
+        lines.forEach((line, i) => {
+          ctx.fillText(line, centerX, startY + i * lineHeight);
+        });
+      });
+      
+      // Convert canvas to blob and upload
+      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const file = new File([blob], 'labeled-image.png', { type: 'image/png' });
+      
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      // Create HTML with the new labeled image
+      const html = `<div style="text-align: center; margin: 20px auto; max-width: 100%;"><img src="${file_url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Labeled diagram" /></div>`;
+      
+      onSave(html);
+      toast.success('Labels saved on image!');
+      onClose();
+    } catch (error) {
+      console.error('Failed to save labeled image:', error);
+      toast.error('Failed to save image. Error: ' + error.message);
+    }
   };
 
   const selectedBoxData = textBoxes.find(box => box.id === selectedBox);
@@ -406,7 +526,7 @@ export default function ImageTextOverlay({ imageUrl, onSave, onClose }) {
               Cancel
             </Button>
             <Button onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
-              Save to Slide
+              Save on Image
             </Button>
           </div>
         </div>
