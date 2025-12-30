@@ -15,7 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva'
   const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'canva'
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -294,7 +294,7 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'canva' ? 'Canva AI' : 'Nano Banana AI';
+          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Google Imagen' : 'Nano Banana AI';
           toast.info(`Generating educational diagrams with ${generatorName}...`);
           
           slides = await Promise.all(
@@ -313,18 +313,19 @@ Return ONLY valid JSON.`,
                     if (result.data?.url) {
                       generatedImage = { url: result.data.url };
                     }
-                  } else if (imageGenerator === 'canva') {
-                    // Use Canva for image generation
-                    const canvaPrompt = `Educational diagram: ${slide.image_prompt}
-                    
-Topic: ${topic} - ${slide.title}
-Style: Clean, professional educational design
-Purpose: Help students understand the concept
-Level: ${levelInstructions[educationLevel]}`;
+                  } else if (imageGenerator === 'imagen') {
+                    // Use Google Imagen for image generation
+                    const imagenPrompt = `Educational diagram and illustration: ${slide.image_prompt}
 
-                    const result = await base44.functions.invoke('canvaIntegration', {
-                      action: 'generate_image',
-                      prompt: canvaPrompt
+Topic: ${topic} - ${slide.title}
+Style: Professional educational diagram, clear and informative
+Purpose: Help students understand the concept
+Level: ${levelInstructions[educationLevel]}
+Quality: High-detail, classroom-ready visual`;
+
+                    const result = await base44.functions.invoke('generateImagenAI', {
+                      prompt: imagenPrompt,
+                      aspectRatio: '16:9'
                     });
                     
                     if (result.data?.url) {
@@ -516,15 +517,15 @@ Level: ${levelInstructions[educationLevel]}`;
                     </button>
                     <button
                       type="button"
-                      onClick={() => setImageGenerator('canva')}
+                      onClick={() => setImageGenerator('imagen')}
                       className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'canva'
+                        imageGenerator === 'imagen'
                           ? 'border-blue-500 bg-blue-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <div className="font-semibold text-sm mb-1">🎨 Canva AI</div>
-                      <div className="text-xs text-gray-600">Design-focused</div>
+                      <div className="font-semibold text-sm mb-1">🎨 Google Imagen</div>
+                      <div className="text-xs text-gray-600">Professional</div>
                     </button>
                   </div>
                 </div>
