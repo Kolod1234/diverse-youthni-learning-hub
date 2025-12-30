@@ -270,7 +270,7 @@ export default function LessonPlayerClassic() {
             {quizzes.length > 0 && (
               <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
                 <button
-                  onClick={() => navigate(`/Quiz?id=${quizzes[0].id}&course=${courseId}`)}
+                  onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
                   className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-purple-700 hover:to-pink-700 transition-all"
                 >
                   <div className="flex items-center gap-2 sm:gap-3">

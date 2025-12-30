@@ -318,7 +318,7 @@ export default function LessonPlayerPowerPoint() {
           {!isPresenting && quizzes.length > 0 && (
             <div className="w-full max-w-[960px] mb-4">
               <button
-                onClick={() => navigate(`/Quiz?id=${quizzes[0].id}&course=${courseId}`)}
+                onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
                 className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-4 flex items-center justify-between hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
               >
                 <div className="flex items-center gap-3">
