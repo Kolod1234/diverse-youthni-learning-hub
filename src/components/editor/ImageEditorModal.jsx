@@ -268,7 +268,12 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     } else if (cropMode) {
       setCropStart({ x, y });
     } else if (highlightMode) {
-      setCurrentRegion({ startX: x, startY: y, endX: x, endY: y });
+      if (highlightTool === 'rectangle') {
+        setCurrentRegion({ startX: x, startY: y, endX: x, endY: y });
+      } else if (highlightTool === 'brush') {
+        setIsDrawing(true);
+        paintEraseMask(x, y);
+      }
     } else if (liquifyMode) {
       setIsDrawing(true);
       applyLiquify(e);
