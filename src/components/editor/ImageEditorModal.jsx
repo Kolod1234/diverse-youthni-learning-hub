@@ -1453,13 +1453,50 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       const r = data3.data[i];
       const g = data3.data[i + 1];
       const b = data3.data[i + 2];
-      // Enhance blue text by looking at blue-red-green differences
       const blueStrength = b - (r + g) / 2;
       const val = blueStrength > 20 ? 0 : 255;
       data3.data[i] = data3.data[i + 1] = data3.data[i + 2] = val;
     }
     ctx3.putImageData(data3, 0, 0);
     versions.push(canvas3);
+    
+    // Version 5: Red channel extraction (for red text)
+    const canvas5 = document.createElement('canvas');
+    canvas5.width = img.width;
+    canvas5.height = img.height;
+    const ctx5 = canvas5.getContext('2d');
+    ctx5.drawImage(img, 0, 0);
+    const data5 = ctx5.getImageData(0, 0, canvas5.width, canvas5.height);
+    
+    for (let i = 0; i < data5.data.length; i += 4) {
+      const r = data5.data[i];
+      const g = data5.data[i + 1];
+      const b = data5.data[i + 2];
+      const redStrength = r - (g + b) / 2;
+      const val = redStrength > 30 ? 0 : 255;
+      data5.data[i] = data5.data[i + 1] = data5.data[i + 2] = val;
+    }
+    ctx5.putImageData(data5, 0, 0);
+    versions.push(canvas5);
+    
+    // Version 6: Green channel extraction (for green text)
+    const canvas6 = document.createElement('canvas');
+    canvas6.width = img.width;
+    canvas6.height = img.height;
+    const ctx6 = canvas6.getContext('2d');
+    ctx6.drawImage(img, 0, 0);
+    const data6 = ctx6.getImageData(0, 0, canvas6.width, canvas6.height);
+    
+    for (let i = 0; i < data6.data.length; i += 4) {
+      const r = data6.data[i];
+      const g = data6.data[i + 1];
+      const b = data6.data[i + 2];
+      const greenStrength = g - (r + b) / 2;
+      const val = greenStrength > 25 ? 0 : 255;
+      data6.data[i] = data6.data[i + 1] = data6.data[i + 2] = val;
+    }
+    ctx6.putImageData(data6, 0, 0);
+    versions.push(canvas6);
     
     // Version 4: Adaptive local thresholding (for varying backgrounds)
     const canvas4 = document.createElement('canvas');
