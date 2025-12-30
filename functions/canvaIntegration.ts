@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, designId, exportFormat, prompt } = await req.json();
+    const { action, designId, exportFormat, prompt, canvaUrl } = await req.json();
 
     const clientId = Deno.env.get('CANVA_CLIENT_ID');
     const clientSecret = Deno.env.get('CANVA_CLIENT_SECRET');
@@ -94,9 +94,80 @@ Deno.serve(async (req) => {
       });
     }
 
+    // Import and parse existing Canva design
+    if (action === 'import_design') {
+      let extractedDesignId = designId;
+      
+      // Extract design ID from Canva URL if provided
+      if (canvaUrl) {
+        const urlMatch = canvaUrl.match(/design\/([A-Za-z0-9_-]+)/);
+        if (urlMatch) {
+          extractedDesignId = urlMatch[1];
+        }
+      }
+      
+      if (!extractedDesignId) {
+        return Response.json({ 
+          error: 'Design ID or valid Canva URL required' 
+        }, { status: 400 });
+      }
+
+      // Fetch design data from Canva API
+      const designUrl = `https://api.canva.com/rest/v1/designs/${extractedDesignId}`;
+      
+      const designResponse = await fetch(designUrl, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${clientSecret}`,
+          'Content-Type': 'application/json'
+        }
+      });
+
+      if (!designResponse.ok) {
+        return Response.json({ 
+          error: 'Failed to fetch Canva design',
+          status: designResponse.status 
+        }, { status: 500 });
+      }
+
+      const designData = await designResponse.json();
+      
+      // Export the design to get the actual content
+      const exportUrl = `https://api.canva.com/rest/v1/exports`;
+      
+      const exportResponse = await fetch(exportUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${clientSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          design_id: extractedDesignId,
+          format: {
+            type: 'png'
+          }
+        })
+      });
+
+      if (!exportResponse.ok) {
+        return Response.json({ 
+          error: 'Failed to export Canva design',
+          status: exportResponse.status 
+        }, { status: 500 });
+      }
+
+      const exportData = await exportResponse.json();
+      
+      return Response.json({ 
+        design: designData,
+        export: exportData,
+        message: 'Design imported successfully'
+      });
+    }
+
     return Response.json({ 
       error: 'Invalid action',
-      validActions: ['create_design', 'export_design', 'get_embed_url', 'generate_image']
+      validActions: ['create_design', 'export_design', 'get_embed_url', 'generate_image', 'import_design']
     }, { status: 400 });
 
   } catch (error) {

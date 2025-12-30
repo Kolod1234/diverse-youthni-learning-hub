@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download } from 'lucide-react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
@@ -14,6 +14,7 @@ import TemplateBlocks from '@/components/editor/TemplateBlocks';
 import ImageManager from '@/components/editor/ImageManager';
 import ImageTextOverlay from '@/components/editor/ImageTextOverlay';
 import CanvaIntegration from '@/components/editor/CanvaIntegration';
+import CanvaImporter from '@/components/editor/CanvaImporter';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -169,6 +170,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showImageOverlay, setShowImageOverlay] = useState(false);
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
   const [showCanva, setShowCanva] = useState(false);
+  const [showCanvaImporter, setShowCanvaImporter] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -588,6 +590,15 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           >
             <Grid3x3 className="w-4 h-4 mr-2" />
             Blocks
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowCanvaImporter(true)}
+            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Import Canva
           </Button>
           <Button
             variant="outline"
@@ -1480,6 +1491,21 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               updateSlide(currentSlide, 'content', currentContent + imageHtml);
             }}
             onClose={() => setShowCanva(false)}
+          />
+        )}
+
+        {/* Canva Importer */}
+        {showCanvaImporter && (
+          <CanvaImporter
+            onImport={(importedSlides) => {
+              const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
+                ...slide,
+                order: slides.length + idx + 1
+              }))];
+              onChange(newSlides);
+              setCurrentSlide(slides.length);
+            }}
+            onClose={() => setShowCanvaImporter(false)}
           />
         )}
         </div>
