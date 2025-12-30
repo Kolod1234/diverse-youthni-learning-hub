@@ -23,33 +23,18 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
-    // Use Google's Imagen 3 via Vertex AI
-    const endpoint = `https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict`;
+    // Use Gemini API with imagen-3.0-generate-001
+    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generate?key=${apiKey}`;
     
-    // Format aspect ratio for Imagen
-    const aspectRatioMap = {
-      '16:9': '16:9',
-      'landscape': '16:9',
-      'portrait': '9:16',
-      'square': '1:1'
-    };
-
     const imagenResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        instances: [{
-          prompt: prompt,
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: aspectRatioMap[aspectRatio] || '16:9',
-            safetyFilterLevel: 'block_some',
-            personGeneration: 'allow_adult'
-          }
-        }]
+        prompt: prompt,
+        numberOfImages: 1,
+        aspectRatio: aspectRatio === 'landscape' ? '16:9' : aspectRatio === 'portrait' ? '9:16' : aspectRatio === 'square' ? '1:1' : '16:9'
       })
     });
 
@@ -63,16 +48,26 @@ Deno.serve(async (req) => {
     }
 
     const data = await imagenResponse.json();
-    const imageUrl = data.predictions?.[0]?.bytesBase64Encoded;
-
-    if (!imageUrl) {
+    
+    // Check for generated images
+    if (!data.generatedImages || data.generatedImages.length === 0) {
       return Response.json({ 
         error: 'No image returned from Imagen' 
       }, { status: 500 });
     }
 
+    // Get the first generated image
+    const imageData = data.generatedImages[0];
+    const base64Image = imageData.bytesBase64Encoded || imageData.image;
+
+    if (!base64Image) {
+      return Response.json({ 
+        error: 'Invalid image data from Imagen' 
+      }, { status: 500 });
+    }
+
     // Convert base64 to data URL
-    const dataUrl = `data:image/png;base64,${imageUrl}`;
+    const dataUrl = `data:image/png;base64,${base64Image}`;
 
     return Response.json({ 
       url: dataUrl,
