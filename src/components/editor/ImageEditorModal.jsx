@@ -104,6 +104,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [ocrLanguage, setOcrLanguage] = useState('eng');
   const [ocrPreprocess, setOcrPreprocess] = useState(true);
   const [ocrConfidence, setOcrConfidence] = useState(0);
+  const [ocrHistory, setOcrHistory] = useState([]);
+  const [ocrFontFamily, setOcrFontFamily] = useState('Arial');
+  const [ocrFontBold, setOcrFontBold] = useState(false);
+  const [ocrFontItalic, setOcrFontItalic] = useState(false);
+  const [ocrFontUnderline, setOcrFontUnderline] = useState(false);
+  const [ocrTextColor, setOcrTextColor] = useState('#000000');
+  const [ocrAutoCorrect, setOcrAutoCorrect] = useState(true);
+  const [copiedText, setCopiedText] = useState('');
 
   useEffect(() => {
     const img = new Image();
@@ -1361,7 +1369,62 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     });
   };
 
-  const handleOCRReplace = () => {
+  const autoCorrectText = (text) => {
+    if (!ocrAutoCorrect) return text;
+    
+    // Simple auto-correct dictionary
+    const corrections = {
+      'teh': 'the',
+      'adn': 'and',
+      'recieve': 'receive',
+      'occured': 'occurred',
+      'seperate': 'separate',
+      'definately': 'definitely',
+      'wiht': 'with',
+      'thier': 'their',
+      'acheive': 'achieve',
+      'beleive': 'believe'
+    };
+    
+    return text.split(' ').map(word => {
+      const lower = word.toLowerCase();
+      return corrections[lower] || word;
+    }).join(' ');
+  };
+
+  const saveOCRHistory = (layer) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = layer.canvas.width;
+    canvas.height = layer.canvas.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(layer.canvas, 0, 0);
+    
+    setOcrHistory([...ocrHistory, canvas.toDataURL()]);
+  };
+
+  const undoOCRChange = () => {
+    if (ocrHistory.length === 0) {
+      toast.error('No OCR changes to undo');
+      return;
+    }
+
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const lastState = ocrHistory[ocrHistory.length - 1];
+    const img = new Image();
+    img.onload = () => {
+      const ctx = layer.canvas.getContext('2d');
+      ctx.clearRect(0, 0, layer.canvas.width, layer.canvas.height);
+      ctx.drawImage(img, 0, 0);
+      updateActiveLayer();
+      setOcrHistory(ocrHistory.slice(0, -1));
+      toast.success('Undid last OCR change');
+    };
+    img.src = lastState;
+  };
+
+  const handleOCRReplace = async () => {
     if (!ocrTargetText.trim() || !ocrReplacementText.trim() || !ocrResult) {
       toast.error('Please enter both target and replacement text');
       return;
@@ -1369,6 +1432,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
     const layer = getActiveLayer();
     if (!layer) return;
+
+    saveOCRHistory(layer);
 
     const ctx = layer.canvas.getContext('2d');
     
@@ -1384,19 +1449,72 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       return;
     }
 
+    const correctedText = autoCorrectText(ocrReplacementText);
+    if (correctedText !== ocrReplacementText) {
+      toast.info(`Auto-corrected to: "${correctedText}"`);
+    }
+
     matchingBoxes.forEach(bbox => {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+      const width = bbox.x1 - bbox.x0;
+      const height = bbox.y1 - bbox.y0;
       
-      const fontSize = Math.max(12, bbox.y1 - bbox.y0);
-      ctx.font = `${fontSize}px Arial`;
-      ctx.fillStyle = 'red';
-      ctx.fillText(ocrReplacementText, bbox.x0, bbox.y1 - 2);
+      // Advanced inpainting - blend with surrounding colors
+      const surroundingData = ctx.getImageData(
+        Math.max(0, bbox.x0 - 5),
+        Math.max(0, bbox.y0 - 5),
+        Math.min(10, layer.canvas.width - bbox.x0),
+        Math.min(10, layer.canvas.height - bbox.y0)
+      );
+      
+      const avgColor = { r: 0, g: 0, b: 0 };
+      const pixels = surroundingData.data.length / 4;
+      for (let i = 0; i < surroundingData.data.length; i += 4) {
+        avgColor.r += surroundingData.data[i];
+        avgColor.g += surroundingData.data[i + 1];
+        avgColor.b += surroundingData.data[i + 2];
+      }
+      avgColor.r = Math.round(avgColor.r / pixels);
+      avgColor.g = Math.round(avgColor.g / pixels);
+      avgColor.b = Math.round(avgColor.b / pixels);
+      
+      // Fill with blended background
+      ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, width + 4, height + 4);
+      
+      // Apply new text with styling
+      const fontSize = Math.max(12, height);
+      let fontStyle = '';
+      if (ocrFontItalic) fontStyle += 'italic ';
+      if (ocrFontBold) fontStyle += 'bold ';
+      
+      ctx.font = `${fontStyle}${fontSize}px ${ocrFontFamily}`;
+      ctx.fillStyle = ocrTextColor;
+      ctx.textBaseline = 'bottom';
+      
+      // Add shadow for better readability
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+      
+      ctx.fillText(correctedText, bbox.x0, bbox.y1);
+      
+      if (ocrFontUnderline) {
+        const textWidth = ctx.measureText(correctedText).width;
+        ctx.beginPath();
+        ctx.moveTo(bbox.x0, bbox.y1 + 2);
+        ctx.lineTo(bbox.x0 + textWidth, bbox.y1 + 2);
+        ctx.strokeStyle = ocrTextColor;
+        ctx.lineWidth = 1;
+        ctx.stroke();
+      }
+      
+      ctx.shadowColor = 'transparent';
     });
 
     updateActiveLayer();
     saveToHistory();
-    toast.success(`Replaced ${matchingBoxes.length} occurrence(s)!`);
+    toast.success(`Replaced ${matchingBoxes.length} occurrence(s) with styled text!`);
   };
 
   const handleOCRRemove = () => {
@@ -1407,6 +1525,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
     const layer = getActiveLayer();
     if (!layer) return;
+
+    saveOCRHistory(layer);
 
     const ctx = layer.canvas.getContext('2d');
     
@@ -1423,13 +1543,60 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     }
 
     matchingBoxes.forEach(bbox => {
-      ctx.fillStyle = 'white';
-      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+      // Advanced inpainting for removal
+      const width = bbox.x1 - bbox.x0;
+      const height = bbox.y1 - bbox.y0;
+      
+      const surroundingData = ctx.getImageData(
+        Math.max(0, bbox.x0 - 10),
+        Math.max(0, bbox.y0 - 10),
+        Math.min(20, layer.canvas.width - bbox.x0),
+        Math.min(20, layer.canvas.height - bbox.y0)
+      );
+      
+      const avgColor = { r: 0, g: 0, b: 0 };
+      const pixels = surroundingData.data.length / 4;
+      for (let i = 0; i < surroundingData.data.length; i += 4) {
+        avgColor.r += surroundingData.data[i];
+        avgColor.g += surroundingData.data[i + 1];
+        avgColor.b += surroundingData.data[i + 2];
+      }
+      avgColor.r = Math.round(avgColor.r / pixels);
+      avgColor.g = Math.round(avgColor.g / pixels);
+      avgColor.b = Math.round(avgColor.b / pixels);
+      
+      ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, width + 4, height + 4);
     });
 
     updateActiveLayer();
     saveToHistory();
     toast.success(`Removed ${matchingBoxes.length} text occurrence(s)!`);
+  };
+
+  const handleCopyText = () => {
+    if (!ocrTargetText.trim()) {
+      toast.error('Please enter text to copy');
+      return;
+    }
+    setCopiedText(ocrTargetText);
+    navigator.clipboard.writeText(ocrTargetText);
+    toast.success('Text copied to clipboard!');
+  };
+
+  const handlePasteText = async () => {
+    try {
+      const text = await navigator.clipboard.readText();
+      setOcrReplacementText(text);
+      toast.success('Text pasted from clipboard!');
+    } catch (error) {
+      if (copiedText) {
+        setOcrReplacementText(copiedText);
+        toast.success('Text pasted from internal clipboard!');
+      } else {
+        toast.error('No text in clipboard');
+      }
+    }
   };
 
   const flattenImage = () => {
@@ -2118,23 +2285,119 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                     {/* Replace */}
                     <div>
                       <Label className="text-sm">Replace Text</Label>
-                      <Input
-                        value={ocrTargetText}
-                        onChange={(e) => setOcrTargetText(e.target.value)}
-                        placeholder="Find text"
-                        className="text-sm mt-1"
-                        disabled={!ocrResult}
-                      />
-                      <Input
-                        value={ocrReplacementText}
-                        onChange={(e) => setOcrReplacementText(e.target.value)}
-                        placeholder="Replace with"
-                        className="text-sm mt-1"
-                        disabled={!ocrResult}
-                      />
-                      <Button size="sm" onClick={handleOCRReplace} className="w-full mt-1" disabled={!ocrResult}>
-                        Replace
-                      </Button>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={ocrTargetText}
+                          onChange={(e) => setOcrTargetText(e.target.value)}
+                          placeholder="Find text"
+                          className="text-sm flex-1"
+                          disabled={!ocrResult}
+                        />
+                        <Button size="sm" onClick={handleCopyText} variant="outline" disabled={!ocrTargetText.trim()}>
+                          <Copy className="w-3 h-3" />
+                        </Button>
+                      </div>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={ocrReplacementText}
+                          onChange={(e) => setOcrReplacementText(e.target.value)}
+                          placeholder="Replace with"
+                          className="text-sm flex-1"
+                          disabled={!ocrResult}
+                        />
+                        <Button size="sm" onClick={handlePasteText} variant="outline">
+                          📋
+                        </Button>
+                      </div>
+                      
+                      <div className="mt-2 space-y-2">
+                        <div>
+                          <Label className="text-xs">Font Family</Label>
+                          <select 
+                            value={ocrFontFamily} 
+                            onChange={(e) => setOcrFontFamily(e.target.value)}
+                            className="w-full px-2 py-1 border rounded text-xs mt-1"
+                          >
+                            <option value="Arial">Arial</option>
+                            <option value="Helvetica">Helvetica</option>
+                            <option value="Times New Roman">Times New Roman</option>
+                            <option value="Georgia">Georgia</option>
+                            <option value="Courier New">Courier New</option>
+                            <option value="Verdana">Verdana</option>
+                            <option value="Impact">Impact</option>
+                            <option value="Comic Sans MS">Comic Sans MS</option>
+                            <option value="Trebuchet MS">Trebuchet MS</option>
+                            <option value="Palatino">Palatino</option>
+                          </select>
+                        </div>
+                        
+                        <div className="flex gap-2">
+                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                            <input 
+                              type="checkbox" 
+                              checked={ocrFontBold} 
+                              onChange={(e) => setOcrFontBold(e.target.checked)}
+                              className="rounded"
+                            />
+                            <span className="font-bold">Bold</span>
+                          </label>
+                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                            <input 
+                              type="checkbox" 
+                              checked={ocrFontItalic} 
+                              onChange={(e) => setOcrFontItalic(e.target.checked)}
+                              className="rounded"
+                            />
+                            <span className="italic">Italic</span>
+                          </label>
+                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                            <input 
+                              type="checkbox" 
+                              checked={ocrFontUnderline} 
+                              onChange={(e) => setOcrFontUnderline(e.target.checked)}
+                              className="rounded"
+                            />
+                            <span className="underline">Underline</span>
+                          </label>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-xs">Text Color</Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input 
+                              type="color" 
+                              value={ocrTextColor} 
+                              onChange={(e) => setOcrTextColor(e.target.value)}
+                              className="w-12 h-8 p-1"
+                            />
+                            <Input 
+                              type="text" 
+                              value={ocrTextColor} 
+                              onChange={(e) => setOcrTextColor(e.target.value)}
+                              className="flex-1 text-xs"
+                            />
+                          </div>
+                        </div>
+                        
+                        <label className="flex items-center gap-2 text-xs cursor-pointer">
+                          <input 
+                            type="checkbox" 
+                            checked={ocrAutoCorrect} 
+                            onChange={(e) => setOcrAutoCorrect(e.target.checked)}
+                            className="rounded"
+                          />
+                          Auto-correct spelling
+                        </label>
+                      </div>
+                      
+                      <div className="flex gap-2 mt-2">
+                        <Button size="sm" onClick={handleOCRReplace} className="flex-1" disabled={!ocrResult}>
+                          Replace
+                        </Button>
+                        <Button size="sm" onClick={undoOCRChange} variant="outline" disabled={ocrHistory.length === 0}>
+                          <Undo className="w-3 h-3" />
+                        </Button>
+                      </div>
                     </div>
 
                     {/* Remove */}
