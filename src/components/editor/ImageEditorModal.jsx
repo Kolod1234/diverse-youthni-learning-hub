@@ -2040,6 +2040,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                   Highlight Text Mode - Click & Drag
                 </div>
               )}
+              {objectRemovalMode && (
+                <div className="absolute top-2 left-2 bg-red-500 text-white px-3 py-1 rounded-full text-xs">
+                  Object Removal Mode - Mark Objects
+                </div>
+              )}
               {liquifyMode && (
                 <div className="absolute top-2 left-2 bg-purple-600 text-white px-3 py-1 rounded-full text-xs">
                   Liquify Mode - Click & Drag
