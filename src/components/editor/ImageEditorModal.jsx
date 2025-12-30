@@ -2016,7 +2016,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
           {/* Canvas Area */}
           <div className="flex-1 flex items-center justify-center bg-gray-100 p-8 overflow-auto">
-            <div className="relative" style={{ cursor: eraseMode || cropMode || highlightMode || liquifyMode || colorPickerMode || textMode || shapeMode ? 'crosshair' : 'default' }}>
+            <div className="relative" style={{ cursor: eraseMode || cropMode || highlightMode || objectRemovalMode || liquifyMode || colorPickerMode || textMode || shapeMode ? 'crosshair' : 'default' }}>
               <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
