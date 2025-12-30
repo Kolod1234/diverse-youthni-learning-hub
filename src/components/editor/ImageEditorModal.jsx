@@ -45,6 +45,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [currentRegion, setCurrentRegion] = useState(null);
   const [eraseMaskCanvas, setEraseMaskCanvas] = useState(null);
   
+  // AI Object Removal
+  const [objectRemovalMode, setObjectRemovalMode] = useState(false);
+  const [removalTool, setRemovalTool] = useState('rectangle'); // 'rectangle' or 'brush'
+  const [removalBrushSize, setRemovalBrushSize] = useState(40);
+  const [removalRegions, setRemovalRegions] = useState([]);
+  const [currentRemovalRegion, setCurrentRemovalRegion] = useState(null);
+  const [removalMaskCanvas, setRemovalMaskCanvas] = useState(null);
+  
   // Liquify/Warp tool
   const [liquifyMode, setLiquifyMode] = useState(false);
   const [warpStrength, setWarpStrength] = useState(30);
