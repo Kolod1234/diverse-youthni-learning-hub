@@ -1688,6 +1688,124 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                     </p>
                   </div>
                 </div>
+
+                {/* AI Object Removal */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <Label className="text-base font-semibold mb-3 block">AI Object Removal</Label>
+                  <div className="space-y-2">
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-sm">Step 1: Mark Object</Label>
+                      <Button
+                        size="sm"
+                        variant={objectRemovalMode ? 'default' : 'outline'}
+                        onClick={() => {
+                          setObjectRemovalMode(!objectRemovalMode);
+                          setEraseMode(false);
+                          setCropMode(false);
+                          setHighlightMode(false);
+                        }}
+                      >
+                        <Sparkles className="w-4 h-4 mr-1" />
+                        {objectRemovalMode ? 'Active' : 'Activate'}
+                      </Button>
+                    </div>
+                    
+                    {objectRemovalMode && (
+                      <>
+                        <div className="flex gap-2 mb-2">
+                          <Button
+                            size="sm"
+                            variant={removalTool === 'rectangle' ? 'default' : 'outline'}
+                            onClick={() => setRemovalTool('rectangle')}
+                            className="flex-1"
+                          >
+                            <Square className="w-3 h-3 mr-1" />
+                            Rectangle
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={removalTool === 'brush' ? 'default' : 'outline'}
+                            onClick={() => setRemovalTool('brush')}
+                            className="flex-1"
+                          >
+                            <Eraser className="w-3 h-3 mr-1" />
+                            Brush
+                          </Button>
+                        </div>
+                        
+                        {removalTool === 'brush' && (
+                          <div>
+                            <Label className="text-xs">Brush Size</Label>
+                            <Slider 
+                              value={[removalBrushSize]} 
+                              onValueChange={(v) => setRemovalBrushSize(v[0])} 
+                              min={15} 
+                              max={120} 
+                              step={5} 
+                              className="mt-2" 
+                            />
+                            <span className="text-xs text-gray-600">{removalBrushSize}px</span>
+                          </div>
+                        )}
+                        
+                        <p className="text-xs text-red-700 bg-red-50 p-2 rounded">
+                          {removalTool === 'rectangle' 
+                            ? 'Select object areas to remove' 
+                            : 'Paint over objects to remove'}
+                        </p>
+                      </>
+                    )}
+                    
+                    {(removalRegions.length > 0 || (removalMaskCanvas && removalTool === 'brush')) && (
+                      <div className="flex items-center justify-between bg-green-50 p-2 rounded">
+                        <span className="text-xs text-green-700">
+                          {removalRegions.length > 0 && `${removalRegions.length} area(s) `}
+                          {removalTool === 'brush' && 'Painted areas '}
+                          marked
+                        </span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setRemovalRegions([]);
+                            if (removalMaskCanvas) {
+                              const maskCtx = removalMaskCanvas.getContext('2d');
+                              maskCtx.clearRect(0, 0, removalMaskCanvas.width, removalMaskCanvas.height);
+                            }
+                            compositeAllLayers();
+                            toast.success('Markings cleared');
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                    )}
+                    
+                    <Button 
+                      onClick={handleAIObjectRemoval} 
+                      size="sm" 
+                      className="w-full bg-red-500 hover:bg-red-600" 
+                      disabled={loading || (removalRegions.length === 0 && removalTool !== 'brush')}
+                    >
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          Removing...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-1" />
+                          Remove Object with AI
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-gray-500">
+                      {removalTool === 'rectangle' 
+                        ? 'Select object areas, AI will remove them and regenerate background' 
+                        : 'Paint over objects, AI will intelligently remove them'}
+                    </p>
+                  </div>
+                </div>
               </TabsContent>
 
               <TabsContent value="advanced" className="space-y-4">
