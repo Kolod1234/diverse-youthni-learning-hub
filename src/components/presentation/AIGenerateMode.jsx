@@ -506,22 +506,6 @@ Educational Requirements:
 
           {includeImages && (
             <>
-              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-                <input
-                  type="checkbox"
-                  id="enforceSpelling"
-                  checked={enforceSpelling}
-                  onChange={(e) => setEnforceSpelling(e.target.checked)}
-                  className="w-4 h-4 rounded text-blue-600"
-                />
-                <Label htmlFor="enforceSpelling" className="flex-1 cursor-pointer text-sm">
-                  <span className="font-semibold text-blue-900">✓ Enforce Perfect Spelling</span>
-                  <p className="text-xs text-blue-700 mt-1">
-                    Apply strict spelling accuracy instructions to all AI-generated images - ensures text is treated as critical content, not noise
-                  </p>
-                </Label>
-              </div>
-
               <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
                 <input
                   type="checkbox"
@@ -539,9 +523,26 @@ Educational Requirements:
               </div>
 
               {!useWebImages && (
-                <div className="space-y-2">
-                  <Label>Image Generator</Label>
-                  <div className="grid grid-cols-3 gap-3">
+                <>
+                  <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+                    <input
+                      type="checkbox"
+                      id="enforceSpelling"
+                      checked={enforceSpelling}
+                      onChange={(e) => setEnforceSpelling(e.target.checked)}
+                      className="w-4 h-4 rounded text-blue-600"
+                    />
+                    <Label htmlFor="enforceSpelling" className="flex-1 cursor-pointer text-sm">
+                      <span className="font-semibold text-blue-900">✓ Enforce Perfect Spelling</span>
+                      <p className="text-xs text-blue-700 mt-1">
+                        Apply strict spelling accuracy instructions to all AI-generated images - ensures text is treated as critical content, not noise
+                      </p>
+                    </Label>
+                  </div>
+
+                  <div className="space-y-2">
+                    <Label>Image Generator</Label>
+                    <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setImageGenerator('nano-banana')}
@@ -580,6 +581,7 @@ Educational Requirements:
                     </button>
                   </div>
                 </div>
+                </>
               )}
             </>
           )}
