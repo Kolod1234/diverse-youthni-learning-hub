@@ -1447,7 +1447,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                       onClick={handleAITextReplace} 
                       size="sm" 
                       className="w-full bg-amber-500 hover:bg-amber-600" 
-                      disabled={loading || textRegions.length === 0}
+                      disabled={loading || (textRegions.length === 0 && highlightTool !== 'brush')}
                     >
                       {loading ? (
                         <>
