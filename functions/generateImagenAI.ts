@@ -49,7 +49,7 @@ Deno.serve(async (req) => {
           weight: 1
         }],
         cfg_scale: 7,
-        height: aspectRatio === 'portrait' || aspectRatio === '9:16' ? 1344 : 1024,
+        height: aspectRatio === 'portrait' || aspectRatio === '9:16' ? 768 : aspectRatio === 'landscape' || aspectRatio === '16:9' ? 640 : 1024,
         width: aspectRatio === 'landscape' || aspectRatio === '16:9' ? 1536 : aspectRatio === 'portrait' || aspectRatio === '9:16' ? 640 : 1024,
         samples: 1,
         steps: 30
