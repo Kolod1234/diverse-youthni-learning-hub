@@ -35,19 +35,7 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify({
             model: 'dall-e-3',
-            prompt: `Create a high-resolution educational infographic of: ${prompt}
-
-CRITICAL TYPOGRAPHY REQUIREMENT:
-All text labels, titles, and annotations must be spelled 100% accurately.
-
-TEXT INSTRUCTIONS:
-1. Spelling must be perfect - verify all scientific and technical terms
-2. Font style: Bold, legible, high-contrast for classroom visibility
-3. Text placement: Integrated naturally (labels, diagrams, titles)
-4. Do not hallucinate extra letters or characters
-5. Each character must be clearly visible and correctly spelled
-
-Quality: Professional, suitable for classroom use, high detail`,
+            prompt: prompt,
             n: 1,
             size: '1792x1024',
             quality: 'standard'
@@ -70,21 +58,9 @@ Quality: Professional, suitable for classroom use, high detail`,
 
     // Fallback to base44 AI image generation
     console.log('Falling back to base44 AI image generation');
-    
-    const fallbackPrompt = `Educational diagram showing ${prompt}. 
-    
-CRITICAL REQUIREMENTS:
-- Clean, professional educational diagram style
-- Perfect spelling of all scientific and technical terms
-- Clear labels with correct spelling
-- Simple, clean design suitable for students
-- Professional educational quality for classroom use
-
-Topic context: ${topic || prompt}
-Style: Illustrative diagram, infographic, or educational chart`;
 
     const fallbackResult = await base44.integrations.Core.GenerateImage({
-      prompt: fallbackPrompt
+      prompt: prompt
     });
 
     return Response.json({ 

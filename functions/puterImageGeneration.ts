@@ -20,19 +20,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
     }
 
-    // Enhance prompt with educational values and spelling accuracy
-    const enhancedPrompt = `${prompt}, diverse representation, respectful, community-focused, educational, professional.
-
-CRITICAL TYPOGRAPHY REQUIREMENT:
-All visible text must be spelled 100% accurately.
-
-TEXT INSTRUCTIONS:
-1. Spelling must be perfect - no gibberish or pseudotext
-2. Font style: Bold, legible, high-contrast
-3. Text placement: Integrated naturally
-4. Do not hallucinate extra letters
-5. Each character must be clearly visible and correctly spelled`;
-
     // Call Stability AI's SDXL API
     const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
       method: 'POST',
@@ -41,7 +28,7 @@ TEXT INSTRUCTIONS:
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        text_prompts: [{ text: enhancedPrompt }],
+        text_prompts: [{ text: prompt }],
         cfg_scale: 7,
         height: 1024,
         width: 1024,
