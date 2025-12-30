@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-  BookOpen, Menu, Maximize2, Layout, Presentation
+  BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
@@ -55,6 +55,12 @@ export default function LessonPlayerClassic() {
       return enrollments[0];
     },
     enabled: !!courseId
+  });
+
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['lessonQuizzes', lessonId],
+    queryFn: () => base44.entities.Quiz.filter({ lesson_id: lessonId }),
+    enabled: !!lessonId
   });
 
   const markCompleteMutation = useMutation({
@@ -257,6 +263,22 @@ export default function LessonPlayerClassic() {
                     ))}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Quiz Link */}
+            {quizzes.length > 0 && (
+              <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
+                <button
+                  onClick={() => navigate(`/Quiz?id=${quizzes[0].id}&course=${courseId}`)}
+                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-purple-700 hover:to-pink-700 transition-all"
+                >
+                  <div className="flex items-center gap-2 sm:gap-3">
+                    <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                    <span className="font-semibold">Take Quiz</span>
+                  </div>
+                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
+                </button>
               </div>
             )}
 
