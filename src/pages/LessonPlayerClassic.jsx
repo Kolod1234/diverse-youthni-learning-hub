@@ -137,9 +137,9 @@ export default function LessonPlayerClassic() {
   const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   return (
-    <div className="h-screen flex flex-col bg-slate-50">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between">
+      <header className="bg-white/80 backdrop-blur-xl border-b border-purple-100 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg shadow-purple-100/50">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
             <X className="w-5 h-5" />
@@ -179,7 +179,7 @@ export default function LessonPlayerClassic() {
             <Button 
               onClick={() => markCompleteMutation.mutate()}
               size="sm"
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 transform hover:scale-105 font-semibold"
             >
               <CheckCircle className="w-4 h-4 sm:mr-2" />
               <span className="hidden sm:inline">Mark Complete</span>
@@ -191,7 +191,7 @@ export default function LessonPlayerClassic() {
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
         {showSidebar && (
-          <aside className="absolute lg:relative z-10 w-80 h-full bg-white border-r border-gray-200 overflow-y-auto shadow-xl lg:shadow-none">
+          <aside className="absolute lg:relative z-10 w-80 h-full bg-gradient-to-b from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto shadow-2xl lg:shadow-lg">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -211,10 +211,10 @@ export default function LessonPlayerClassic() {
                     <button
                       key={l.id}
                       onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
-                      className={`w-full text-left p-3 rounded-lg transition-all ${
+                      className={`w-full text-left p-3 rounded-xl transition-all ${
                         isCurrent
-                          ? 'bg-indigo-50 border-2 border-indigo-600'
-                          : 'bg-gray-50 hover:bg-gray-100'
+                          ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-600 shadow-lg'
+                          : 'bg-gray-50 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:shadow-md'
                       }`}
                     >
                       <div className="flex items-center gap-3">
@@ -244,21 +244,25 @@ export default function LessonPlayerClassic() {
               <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
                 <button
                   onClick={() => setShowObjectives(!showObjectives)}
-                  className="w-full bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base"
+                  className="w-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transform hover:scale-[1.02]"
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <Target className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="font-semibold">Learning Objectives</span>
+                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <Target className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span className="font-bold">Learning Objectives</span>
                   </div>
                   <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
                 </button>
                 
                 {showObjectives && (
-                  <div className="bg-white rounded-b-xl border border-gray-200 p-3 sm:p-4 space-y-2">
+                  <div className="bg-gradient-to-br from-white to-indigo-50/50 rounded-b-2xl border border-t-0 border-indigo-200 p-3 sm:p-4 space-y-3 shadow-lg">
                     {lesson.learning_objectives.map((objective, idx) => (
-                      <div key={idx} className="flex items-start gap-2 sm:gap-3">
-                        <CheckCircle className="w-4 h-4 text-green-500 shrink-0 mt-0.5" />
-                        <p className="text-gray-700 text-xs sm:text-sm">{objective}</p>
+                      <div key={idx} className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg hover:bg-white/60 transition-colors">
+                        <div className="p-1 bg-green-100 rounded-full">
+                          <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+                        </div>
+                        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-medium">{objective}</p>
                       </div>
                     ))}
                   </div>
@@ -287,38 +291,38 @@ export default function LessonPlayerClassic() {
             {/* Slide Content */}
             <div className="max-w-5xl mx-auto">
               {hasSlides ? (
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden">
+                <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-4 ring-purple-50">
                   <div className="p-4 sm:p-8 min-h-[400px] sm:min-h-[500px]">
-                    <h2 className="text-xl sm:text-2xl font-bold text-gray-900 mb-3 sm:mb-4">
+                    <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
                       {sortedSlides[currentSlideIndex]?.title}
                     </h2>
                     <div 
-                      className="prose prose-sm sm:prose-lg max-w-none"
+                      className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
                       dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
                     />
                   </div>
-                  <div className="bg-gray-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t gap-2">
+                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
                     <button
                       onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                       disabled={currentSlideIndex === 0}
-                      className="flex items-center justify-center w-12 h-12 bg-gray-800 text-white rounded-full hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all active:scale-95"
+                      className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
                     >
                       <ChevronLeft className="w-6 h-6" />
                     </button>
-                    <span className="text-xs sm:text-sm text-gray-600 font-medium">
+                    <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                       Slide {currentSlideIndex + 1} of {sortedSlides.length}
                     </span>
                     <button
                       onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
                       disabled={currentSlideIndex === sortedSlides.length - 1}
-                      className="flex items-center justify-center w-12 h-12 bg-gray-800 text-white rounded-full hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg transition-all active:scale-95"
+                      className="flex items-center justify-center w-12 h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
                     >
                       <ChevronRight className="w-6 h-6" />
                     </button>
                   </div>
                 </div>
               ) : slideUrl ? (
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden aspect-video">
+                <div className="bg-white rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden aspect-video border-2 border-purple-100 ring-4 ring-purple-50">
                   <iframe 
                     src={slideUrl} 
                     className="w-full h-full"
@@ -327,10 +331,12 @@ export default function LessonPlayerClassic() {
                   />
                 </div>
               ) : (
-                <div className="bg-white rounded-xl shadow-lg overflow-hidden aspect-video flex items-center justify-center">
-                  <div className="text-center text-gray-400">
-                    <BookOpen className="w-16 h-16 mx-auto mb-4" />
-                    <p>No content available</p>
+                <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <BookOpen className="w-10 h-10 text-purple-400" />
+                    </div>
+                    <p className="text-gray-600 font-medium">No content available</p>
                   </div>
                 </div>
               )}
@@ -338,20 +344,20 @@ export default function LessonPlayerClassic() {
           </div>
 
           {/* Navigation Footer */}
-          <footer className="bg-white border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4">
+          <footer className="bg-white/80 backdrop-blur-xl border-t border-purple-100 px-3 sm:px-6 py-3 sm:py-4 shadow-lg shadow-purple-100/50">
             <div className="max-w-5xl mx-auto flex items-center justify-between gap-2">
               <Button
                 variant="outline"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
                 size="sm"
-                className="shrink-0"
+                className="shrink-0 border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-300 font-semibold text-purple-700"
               >
                 <ChevronLeft className="w-4 h-4 sm:mr-2" />
                 <span className="hidden sm:inline">Previous</span>
               </Button>
               
-              <span className="text-xs sm:text-sm text-gray-500 text-center">
+              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center">
                 {enrollment?.completed_lessons?.length || 0} of {sortedLessons.length} completed
               </span>
 
@@ -359,7 +365,7 @@ export default function LessonPlayerClassic() {
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
                 size="sm"
-                className="bg-indigo-600 hover:bg-indigo-700 shrink-0"
+                className="shrink-0 bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transform hover:scale-105 font-bold"
               >
                 <span className="hidden sm:inline">Next</span>
                 <ChevronRight className="w-4 h-4 sm:ml-2" />
