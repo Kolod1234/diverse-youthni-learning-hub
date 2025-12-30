@@ -17,7 +17,6 @@ import CanvaIntegration from '@/components/editor/CanvaIntegration';
 import CanvaImporter from '@/components/editor/CanvaImporter';
 import FigmaImporter from '@/components/editor/FigmaImporter';
 import ImageEditorModal from '@/components/editor/ImageEditorModal';
-import PerfectTextGenerator from '@/components/editor/PerfectTextGenerator';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -177,7 +176,6 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showFigmaImporter, setShowFigmaImporter] = useState(false);
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [imageToEdit, setImageToEdit] = useState(null);
-  const [showPerfectTextGen, setShowPerfectTextGen] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -856,12 +854,6 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                       >
                         <Sparkles className="w-4 h-4 mr-2" />
                         Generate AI Image
-                      </DropdownMenuItem>
-                      <DropdownMenuItem 
-                        onClick={() => setShowPerfectTextGen(true)}
-                      >
-                        <Type className="w-4 h-4 mr-2" />
-                        Perfect Text Generator
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => setShowImageManager(true)}
@@ -1576,18 +1568,6 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setShowImageEditor(false);
               setImageToEdit(null);
             }}
-          />
-        )}
-
-        {/* Perfect Text Generator */}
-        {showPerfectTextGen && (
-          <PerfectTextGenerator
-            onImageGenerated={(imageUrl) => {
-              const currentContent = currentSlideData?.content || '';
-              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Perfect spelling image" /></div>`;
-              updateSlide(currentSlide, 'content', currentContent + imageHtml);
-            }}
-            onClose={() => setShowPerfectTextGen(false)}
           />
         )}
         </div>
