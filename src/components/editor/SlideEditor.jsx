@@ -396,31 +396,37 @@ Purpose: Support understanding of educational concepts through clear visuals.`
     setAiLoading(true);
     setImageSuggestions([]);
     try {
-      const currentContent = currentSlideData.content || currentSlideData.title || '';
+      const slideTitle = currentSlideData.title || '';
+      const currentContent = currentSlideData.content || '';
       const plainText = currentContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-      // Search for relevant images online
+      // Build focused search query: prioritize title, then first 100 chars of content
+      const searchQuery = slideTitle || plainText.substring(0, 100);
+
+      // Use AI to generate a better search term
+      const aiSearchTerm = await base44.integrations.Core.InvokeLLM({
+        prompt: `Based on this slide title: "${slideTitle}" and content: "${plainText.substring(0, 300)}"
+
+Generate ONE specific search query (3-6 words) to find the most relevant educational diagram, illustration, or image. Just return the search query, nothing else.`,
+        add_context_from_internet: false
+      });
+
+      // Search for relevant images using AI-generated term
       const searchResult = await base44.functions.invoke('searchImageOnline', {
-        query: plainText.substring(0, 200) || 'educational content',
-        context: 'educational diagram or illustration'
+        query: aiSearchTerm.trim() || searchQuery,
+        slideTitle: slideTitle,
+        slideContent: plainText.substring(0, 200)
       });
 
       const imageResults = searchResult.data?.images || [];
       setImageSuggestions(imageResults);
 
-      // Also get AI suggestions
-      const aiResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `Based on this educational content: "${plainText.substring(0, 500)}"
-
-Suggest 3 relevant search terms for finding educational images. Just list the search terms, one per line.`,
-        add_context_from_internet: true
-      });
-
-      setAiPrompt(aiResult);
-      toast.success(`Found ${imageResults.length} images!`);
+      setAiPrompt(`Search query used: "${aiSearchTerm.trim() || searchQuery}"`);
+      toast.success(`Found ${imageResults.length} matching images!`);
       
     } catch (error) {
-      toast.error('Failed to generate suggestions');
+      toast.error('Failed to search for images');
+      console.error(error);
     } finally {
       setAiLoading(false);
     }
