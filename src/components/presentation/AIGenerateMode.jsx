@@ -15,7 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva'
   const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle'
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'canva'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -294,7 +294,7 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : 'Nano Banana AI';
+          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'canva' ? 'Canva AI' : 'Nano Banana AI';
           toast.info(`Generating educational diagrams with ${generatorName}...`);
           
           slides = await Promise.all(
@@ -308,6 +308,23 @@ Return ONLY valid JSON.`,
                     const result = await base44.functions.invoke('geminiImageGeneration', {
                       prompt: slide.image_prompt,
                       topic: `${topic} - ${slide.title}`
+                    });
+                    
+                    if (result.data?.url) {
+                      generatedImage = { url: result.data.url };
+                    }
+                  } else if (imageGenerator === 'canva') {
+                    // Use Canva for image generation
+                    const canvaPrompt = `Educational diagram: ${slide.image_prompt}
+                    
+Topic: ${topic} - ${slide.title}
+Style: Clean, professional educational design
+Purpose: Help students understand the concept
+Level: ${levelInstructions[educationLevel]}`;
+
+                    const result = await base44.functions.invoke('canvaIntegration', {
+                      action: 'generate_image',
+                      prompt: canvaPrompt
                     });
                     
                     if (result.data?.url) {
@@ -472,7 +489,7 @@ Level: ${levelInstructions[educationLevel]}`;
               {!useWebImages && (
                 <div className="space-y-2">
                   <Label>Image Generator</Label>
-                  <div className="grid grid-cols-2 gap-3">
+                  <div className="grid grid-cols-3 gap-3">
                     <button
                       type="button"
                       onClick={() => setImageGenerator('nano-banana')}
@@ -483,7 +500,7 @@ Level: ${levelInstructions[educationLevel]}`;
                       }`}
                     >
                       <div className="font-semibold text-sm mb-1">🍌 Nano Banana</div>
-                      <div className="text-xs text-gray-600">Fast diagram generation</div>
+                      <div className="text-xs text-gray-600">Fast diagrams</div>
                     </button>
                     <button
                       type="button"
@@ -495,7 +512,19 @@ Level: ${levelInstructions[educationLevel]}`;
                       }`}
                     >
                       <div className="font-semibold text-sm mb-1">✨ DALL-E 3</div>
-                      <div className="text-xs text-gray-600">High-quality diagrams</div>
+                      <div className="text-xs text-gray-600">High-quality</div>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageGenerator('canva')}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        imageGenerator === 'canva'
+                          ? 'border-blue-500 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm mb-1">🎨 Canva AI</div>
+                      <div className="text-xs text-gray-600">Design-focused</div>
                     </button>
                   </div>
                 </div>
