@@ -313,17 +313,27 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       const canvas = canvasRef.current;
       const ctx = canvas.getContext('2d');
       
-      // Create mask - BLACK background with WHITE regions to inpaint
+      // Step 1: Erase the highlighted text areas
+      toast.info('Erasing highlighted text...');
+      ctx.globalCompositeOperation = 'destination-out';
+      textRegions.forEach(region => {
+        const x = Math.min(region.startX, region.endX);
+        const y = Math.min(region.startY, region.endY);
+        const width = Math.abs(region.endX - region.startX);
+        const height = Math.abs(region.endY - region.startY);
+        ctx.fillRect(x, y, width, height);
+      });
+      ctx.globalCompositeOperation = 'source-over';
+      
+      // Step 2: Create mask for AI to fill in the erased areas
       const maskCanvas = document.createElement('canvas');
       maskCanvas.width = canvas.width;
       maskCanvas.height = canvas.height;
       const maskCtx = maskCanvas.getContext('2d');
       
-      // Fill entire mask with black
       maskCtx.fillStyle = 'black';
       maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
       
-      // Fill highlighted regions with white (areas to replace)
       maskCtx.fillStyle = 'white';
       textRegions.forEach(region => {
         const x = Math.min(region.startX, region.endX);
@@ -337,23 +347,21 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
       const maskBlob = await new Promise(resolve => maskCanvas.toBlob(resolve, 'image/png'));
       
-      // Upload files
       const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
       const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
       
-      toast.info('Uploading image and mask...');
+      toast.info('Uploading to AI...');
       const imageUpload = await base44.integrations.Core.UploadFile({ file: imageFile });
       const maskUpload = await base44.integrations.Core.UploadFile({ file: maskFile });
       
-      toast.info('Generating replacement with AI...');
+      toast.info('Generating new text with AI...');
       const result = await base44.functions.invoke('inpaintImage', {
         imageUrl: imageUpload.file_url,
         maskUrl: maskUpload.file_url,
-        prompt: `Clean professional text that says "${replacementText}". Clear, legible, high quality typography.`
+        prompt: `Clean, professional, legible text that says "${replacementText}". High quality typography, clear font.`
       });
       
       if (result?.data?.url) {
-        // Load and draw result
         const resultImg = new Image();
         resultImg.crossOrigin = 'anonymous';
         
