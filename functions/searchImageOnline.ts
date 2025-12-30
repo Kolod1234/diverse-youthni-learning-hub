@@ -91,14 +91,24 @@ Prioritize sources:
 Return ONLY the direct image URL (must end in .png, .jpg, .jpeg, .svg, or .gif).
 Choose the image that best illustrates the specific topic "${query}" within the presentation context.`;
 
-    // Use AI to search the web for actual images
-    const searchPrompt = `${contextPrompt}
+    // Use AI with Google Search to find real images from the web
+    const searchPrompt = `Search Google for educational images about: "${query}"
+${slideTitle ? `\nSlide title: "${slideTitle}"` : ''}
+${slideContent ? `\nSlide content context: "${slideContent.replace(/<[^>]*>/g, ' ').substring(0, 200)}"` : ''}
 
-Return a JSON array with 5-8 of the best matching images you can find from the web.`;
+SEARCH REQUIREMENTS:
+- Use Google to find REAL, high-quality educational images
+- Look for: ${styleGuide[style] || 'educational diagrams, illustrations, or photographs'}
+- Focus on authoritative sources: Wikimedia Commons, .edu domains, science websites, educational publishers
+- Find images that DIRECTLY illustrate the topic "${query}"
+- Ensure images are publicly accessible and have proper URLs ending in .jpg, .png, .svg, or .gif
+- Prefer ${ratioGuide[aspectRatio] || 'landscape format'}
+
+Return 6-10 of the best matching images you find from Google search results.`;
 
     const webSearchResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: searchPrompt,
-      add_context_from_internet: true,
+      add_context_from_internet: true, // This enables Google Search
       response_json_schema: {
         type: "object",
         properties: {
@@ -107,22 +117,31 @@ Return a JSON array with 5-8 of the best matching images you can find from the w
             items: {
               type: "object",
               properties: {
-                url: { type: "string" },
-                description: { type: "string" },
-                source: { type: "string" }
-              }
+                url: { type: "string", description: "Direct image URL from Google search" },
+                description: { type: "string", description: "What the image shows" },
+                source: { type: "string", description: "Website domain where image is from" }
+              },
+              required: ["url", "description"]
             }
           }
-        }
+        },
+        required: ["images"]
       }
     });
 
     const images = webSearchResult?.images || [];
     
-    if (images.length > 0) {
+    // Filter to ensure valid image URLs
+    const validImages = images.filter(img => 
+      img.url && 
+      (img.url.match(/\.(jpg|jpeg|png|gif|svg|webp)(\?|$)/i) || img.url.includes('wikimedia') || img.url.includes('placeholder'))
+    );
+    
+    if (validImages.length > 0) {
       return Response.json({ 
-        images: images,
-        search_query: query
+        images: validImages,
+        search_query: query,
+        search_engine: 'Google (via AI with web context)'
       });
     }
 
