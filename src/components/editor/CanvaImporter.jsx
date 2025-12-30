@@ -12,54 +12,33 @@ export default function CanvaImporter({ onImport, onClose }) {
   const [loading, setLoading] = useState(false);
   const [previewData, setPreviewData] = useState(null);
 
-  const handleImportDesign = async () => {
-    if (!canvaUrl.trim()) {
-      toast.error('Please enter a Canva design URL or ID');
+  const handleFileUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('image/')) {
+      toast.error('Please upload an image file');
       return;
     }
 
     setLoading(true);
     try {
-      toast.info('Importing Canva design...');
+      const result = await base44.integrations.Core.UploadFile({ file });
       
-      const result = await base44.functions.invoke('canvaIntegration', {
-        action: 'import_design',
-        canvaUrl: canvaUrl.trim()
-      });
+      const slides = [{
+        title: file.name.replace(/\.[^/.]+$/, ''),
+        content: `<div style="text-align: center; padding: 20px;">
+          <h2 style="color: #1A3C5A; font-size: 32px; font-weight: 700; margin-bottom: 20px;">Imported from Canva</h2>
+          <img src="${result.file_url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Canva Design" />
+        </div>`,
+        order: 1
+      }];
 
-      if (result?.data?.export) {
-        const exportData = result.data.export;
-        const designData = result.data.design;
-        
-        setPreviewData({ exportData, designData });
-        
-        // Convert Canva export to slides
-        if (exportData.job?.url || exportData.url) {
-          const imageUrl = exportData.job?.url || exportData.url;
-          
-          // Create slides from the exported design
-          const slides = [{
-            title: designData?.title || 'Imported from Canva',
-            content: `<div style="text-align: center; padding: 20px;">
-              <h2 style="color: #1A3C5A; font-size: 32px; font-weight: 700; margin-bottom: 20px;">${designData?.title || 'Imported Design'}</h2>
-              <img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Canva Design" />
-              <p style="color: #6B7280; font-size: 14px; margin-top: 12px; font-style: italic;">Imported from Canva</p>
-            </div>`,
-            order: 1
-          }];
-
-          onImport(slides);
-          toast.success('Canva design imported successfully!');
-          onClose();
-        } else {
-          toast.error('Unable to extract design content');
-        }
-      } else {
-        toast.error('Failed to import Canva design');
-      }
+      onImport(slides);
+      toast.success('Canva design imported successfully!');
+      onClose();
     } catch (error) {
-      console.error('Import error:', error);
-      toast.error('Failed to import design: ' + (error.message || 'Unknown error'));
+      toast.error('Failed to upload image');
     } finally {
       setLoading(false);
     }
@@ -93,27 +72,44 @@ export default function CanvaImporter({ onImport, onClose }) {
               How it works
             </h4>
             <ol className="text-sm text-blue-800 space-y-1 list-decimal list-inside">
-              <li>Open your Canva design or click "Browse Designs" below</li>
-              <li>Copy the design URL from your browser</li>
-              <li>Paste the URL here to import</li>
-              <li>We'll extract the design and add it to your slides</li>
+              <li>Open your Canva design</li>
+              <li>Click "Share" → "Download" → Choose PNG or JPG</li>
+              <li>Download the design to your computer</li>
+              <li>Upload it below to add to your slides</li>
             </ol>
           </div>
 
-          {/* Input */}
+          {/* Upload section */}
           <div>
-            <Label>Canva Design URL or ID</Label>
-            <Input
-              value={canvaUrl}
-              onChange={(e) => setCanvaUrl(e.target.value)}
-              placeholder="https://www.canva.com/design/ABC123/..."
-              className="mt-2"
-              disabled={loading}
-              onKeyPress={(e) => e.key === 'Enter' && handleImportDesign()}
-            />
-            <p className="text-xs text-gray-500 mt-2">
-              Paste the full Canva design URL or just the design ID
-            </p>
+            <Label>Upload Canva Design</Label>
+            <div className="mt-2 border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-purple-400 transition-colors">
+              <FileImage className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+              <p className="text-sm text-gray-600 mb-2">Download from Canva, then upload here</p>
+              <p className="text-xs text-gray-400 mb-4">PNG or JPG format</p>
+              <Input
+                type="file"
+                accept="image/*"
+                onChange={handleFileUpload}
+                disabled={loading}
+                className="hidden"
+                id="canva-upload"
+              />
+              <Button asChild disabled={loading}>
+                <label htmlFor="canva-upload" className="cursor-pointer">
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Uploading...
+                    </>
+                  ) : (
+                    <>
+                      <Download className="w-4 h-4 mr-2" />
+                      Choose File
+                    </>
+                  )}
+                </label>
+              </Button>
+            </div>
           </div>
 
           {/* Quick actions */}
@@ -125,30 +121,20 @@ export default function CanvaImporter({ onImport, onClose }) {
               disabled={loading}
             >
               <ExternalLink className="w-4 h-4 mr-2" />
-              Browse Designs
+              Open Canva
             </Button>
           </div>
 
-          {/* Preview if available */}
-          {previewData && (
-            <div className="border rounded-lg p-4 bg-gray-50">
-              <p className="text-sm font-semibold text-gray-900 mb-2">
-                Preview: {previewData.designData?.title || 'Canva Design'}
-              </p>
-              <p className="text-xs text-gray-600">
-                Design will be imported as a slide with the original image and styling
-              </p>
-            </div>
-          )}
+
 
           {/* Tips */}
           <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-4">
             <h4 className="font-semibold text-purple-900 mb-2">💡 Pro Tips</h4>
             <ul className="text-sm text-purple-800 space-y-1">
-              <li>• Works with any Canva design you have access to</li>
-              <li>• Presentation designs work best for multi-slide imports</li>
-              <li>• Individual designs become single slides</li>
-              <li>• Maintains original Canva styling and layout</li>
+              <li>• Download your design from Canva as PNG for best quality</li>
+              <li>• For presentations, download each page separately</li>
+              <li>• High-resolution exports look best on slides</li>
+              <li>• Transparent backgrounds work great for overlays</li>
             </ul>
           </div>
         </div>
@@ -159,24 +145,7 @@ export default function CanvaImporter({ onImport, onClose }) {
             onClick={onClose} 
             disabled={loading}
           >
-            Cancel
-          </Button>
-          <Button 
-            onClick={handleImportDesign}
-            disabled={loading || !canvaUrl.trim()}
-            className="bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
-          >
-            {loading ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Importing...
-              </>
-            ) : (
-              <>
-                <Download className="w-4 h-4 mr-2" />
-                Import Design
-              </>
-            )}
+            Close
           </Button>
         </div>
       </DialogContent>
