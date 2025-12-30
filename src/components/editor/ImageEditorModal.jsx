@@ -311,66 +311,74 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     setLoading(true);
     try {
       const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
       
-      // Process each text region
-      for (const region of textRegions) {
+      // Create mask - BLACK background with WHITE regions to inpaint
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = canvas.width;
+      maskCanvas.height = canvas.height;
+      const maskCtx = maskCanvas.getContext('2d');
+      
+      // Fill entire mask with black
+      maskCtx.fillStyle = 'black';
+      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+      
+      // Fill highlighted regions with white (areas to replace)
+      maskCtx.fillStyle = 'white';
+      textRegions.forEach(region => {
         const x = Math.min(region.startX, region.endX);
         const y = Math.min(region.startY, region.endY);
         const width = Math.abs(region.endX - region.startX);
         const height = Math.abs(region.endY - region.startY);
-        
-        // Create a mask for the text region
-        const maskCanvas = document.createElement('canvas');
-        maskCanvas.width = canvas.width;
-        maskCanvas.height = canvas.height;
-        const maskCtx = maskCanvas.getContext('2d');
-        
-        // Fill the region in white (area to inpaint)
-        maskCtx.fillStyle = 'white';
         maskCtx.fillRect(x, y, width, height);
+      });
+      
+      // Convert to blobs
+      const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const maskBlob = await new Promise(resolve => maskCanvas.toBlob(resolve, 'image/png'));
+      
+      // Upload files
+      const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
+      const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
+      
+      toast.info('Uploading image and mask...');
+      const imageUpload = await base44.integrations.Core.UploadFile({ file: imageFile });
+      const maskUpload = await base44.integrations.Core.UploadFile({ file: maskFile });
+      
+      toast.info('Generating replacement with AI...');
+      const result = await base44.functions.invoke('inpaintImage', {
+        imageUrl: imageUpload.file_url,
+        maskUrl: maskUpload.file_url,
+        prompt: `Clean professional text that says "${replacementText}". Clear, legible, high quality typography.`
+      });
+      
+      if (result?.data?.url) {
+        // Load and draw result
+        const resultImg = new Image();
+        resultImg.crossOrigin = 'anonymous';
         
-        const imageData = canvas.toDataURL('image/png');
-        const maskData = maskCanvas.toDataURL('image/png');
-        
-        // Upload both images
-        const imageBlob = await fetch(imageData).then(r => r.blob());
-        const maskBlob = await fetch(maskData).then(r => r.blob());
-        
-        const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
-        const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
-        
-        const imageUpload = await base44.integrations.Core.UploadFile({ file: imageFile });
-        const maskUpload = await base44.integrations.Core.UploadFile({ file: maskFile });
-        
-        // Use Stable Diffusion inpainting
-        const result = await base44.functions.invoke('inpaintImage', {
-          imageUrl: imageUpload.file_url,
-          maskUrl: maskUpload.file_url,
-          prompt: `Replace text with: "${replacementText}". Clean, professional text on transparent background.`
+        await new Promise((resolve, reject) => {
+          resultImg.onload = resolve;
+          resultImg.onerror = reject;
+          resultImg.src = result.data.url;
         });
         
-        if (result?.data?.url) {
-          // Load the result and draw it on canvas
-          const resultImg = new Image();
-          resultImg.crossOrigin = 'anonymous';
-          await new Promise((resolve) => {
-            resultImg.onload = resolve;
-            resultImg.src = result.data.url;
-          });
-          
-          const ctx = canvas.getContext('2d');
-          ctx.drawImage(resultImg, 0, 0);
-        }
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(resultImg, 0, 0);
+        
+        setTextRegions([]);
+        setReplacementText('');
+        setHighlightMode(false);
+        saveToHistory();
+        toast.success('Text replaced successfully!');
+      } else {
+        throw new Error('No image returned from AI');
       }
       
-      setTextRegions([]);
-      setReplacementText('');
-      saveToHistory();
-      toast.success('Text replaced successfully!');
-      
     } catch (error) {
-      console.error(error);
-      toast.error('Failed to replace text: ' + (error.message || 'Unknown error'));
+      console.error('Text replacement error:', error);
+      const errorMsg = error?.response?.data?.error || error?.message || 'Unknown error';
+      toast.error('Failed to replace text: ' + errorMsg);
     } finally {
       setLoading(false);
     }
