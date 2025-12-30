@@ -446,6 +446,61 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     drawTextRegions();
   };
 
+  const paintRemovalMask = (x, y) => {
+    if (!removalMaskCanvas) return;
+    
+    const ctx = removalMaskCanvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(x, y, removalBrushSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    drawRemovalRegions();
+  };
+
+  const drawRemovalRegions = () => {
+    compositeAllLayers();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw rectangle regions
+    removalRegions.forEach((region) => {
+      const x = Math.min(region.startX, region.endX);
+      const y = Math.min(region.startY, region.endY);
+      const width = Math.abs(region.endX - region.startX);
+      const height = Math.abs(region.endY - region.startY);
+      
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#EF4444';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+    });
+    
+    // Draw current rectangle region being drawn
+    if (currentRemovalRegion) {
+      const x = Math.min(currentRemovalRegion.startX, currentRemovalRegion.endX);
+      const y = Math.min(currentRemovalRegion.startY, currentRemovalRegion.endY);
+      const width = Math.abs(currentRemovalRegion.endX - currentRemovalRegion.startX);
+      const height = Math.abs(currentRemovalRegion.endY - currentRemovalRegion.startY);
+      
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.3)';
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#EF4444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(x, y, width, height);
+      ctx.setLineDash([]);
+    }
+    
+    // Draw brush-painted mask overlay
+    if (removalMaskCanvas && removalTool === 'brush') {
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(removalMaskCanvas, 0, 0);
+      ctx.globalAlpha = 1;
+    }
+  };
+
   const drawTextRegions = () => {
     compositeAllLayers();
     const canvas = canvasRef.current;
