@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo, Droplet, Palette, Circle, Square } from 'lucide-react';
+import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo, Droplet, Palette, Circle, Square, Layers, Eye, EyeOff, ChevronUp, ChevronDown, Trash2, Copy } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
@@ -72,6 +72,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [shapeStart, setShapeStart] = useState(null);
   const [shapeEnd, setShapeEnd] = useState(null);
   
+  // Layers system
+  const [layers, setLayers] = useState([]);
+  const [activeLayerId, setActiveLayerId] = useState(null);
+  const [nextLayerId, setNextLayerId] = useState(1);
+  
   // History for undo/redo
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
@@ -83,13 +88,86 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       setImage(img);
       setResizeWidth(img.width);
       setResizeHeight(img.height);
-      drawCanvas(img);
+      
+      // Initialize with background layer
+      const bgCanvas = document.createElement('canvas');
+      bgCanvas.width = img.width;
+      bgCanvas.height = img.height;
+      const bgCtx = bgCanvas.getContext('2d');
+      bgCtx.drawImage(img, 0, 0);
+      
+      const bgLayer = {
+        id: 0,
+        name: 'Background',
+        canvas: bgCanvas,
+        visible: true,
+        opacity: 1,
+        blendMode: 'normal',
+        locked: false
+      };
+      
+      setLayers([bgLayer]);
+      setActiveLayerId(0);
+      setNextLayerId(1);
+      compositeAllLayers([bgLayer]);
       saveToHistory();
     };
     img.src = imageUrl;
   }, [imageUrl]);
 
+  const compositeAllLayers = (layersToComposite = layers) => {
+    if (!canvasRef.current || layersToComposite.length === 0) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    const firstLayer = layersToComposite[0];
+    canvas.width = firstLayer.canvas.width;
+    canvas.height = firstLayer.canvas.height;
+    
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Apply filters and rotation
+    ctx.save();
+    
+    if (rotation !== 0) {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+    }
+    
+    ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`;
+    
+    // Composite all visible layers
+    layersToComposite.forEach(layer => {
+      if (!layer.visible) return;
+      
+      ctx.globalAlpha = layer.opacity;
+      ctx.globalCompositeOperation = layer.blendMode;
+      ctx.drawImage(layer.canvas, 0, 0);
+    });
+    
+    ctx.restore();
+    
+    // Apply vignette on top
+    if (vignetteIntensity > 0) {
+      const gradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 0,
+        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 1.5
+      );
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');
+      gradient.addColorStop(1, `rgba(0,0,0,${vignetteIntensity / 100})`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
+  };
+
   const drawCanvas = (img = image, applyFilters = true) => {
+    if (layers.length > 0) {
+      compositeAllLayers();
+      return;
+    }
+    
     if (!img || !canvasRef.current) return;
     
     const canvas = canvasRef.current;
@@ -113,7 +191,6 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     ctx.drawImage(img, 0, 0);
     ctx.restore();
     
-    // Apply vignette
     if (vignetteIntensity > 0) {
       const gradient = ctx.createRadialGradient(
         canvas.width / 2, canvas.height / 2, 0,
@@ -164,8 +241,12 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   useEffect(() => {
-    drawCanvas();
-  }, [brightness, contrast, saturation, blur, rotation, vignetteIntensity]);
+    if (layers.length > 0) {
+      compositeAllLayers();
+    } else {
+      drawCanvas();
+    }
+  }, [brightness, contrast, saturation, blur, rotation, vignetteIntensity, layers]);
 
   const handleMouseDown = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
@@ -237,24 +318,43 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     }
   };
 
+  const getActiveLayer = () => {
+    return layers.find(l => l.id === activeLayerId);
+  };
+
+  const updateActiveLayer = () => {
+    const layer = getActiveLayer();
+    if (layer) {
+      const newLayers = [...layers];
+      const idx = newLayers.findIndex(l => l.id === activeLayerId);
+      newLayers[idx] = { ...layer };
+      setLayers(newLayers);
+      compositeAllLayers(newLayers);
+    }
+  };
+
   const erase = (e) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
+    const layer = getActiveLayer();
+    if (!layer || layer.locked) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
+    const ctx = layer.canvas.getContext('2d');
     ctx.globalCompositeOperation = 'destination-out';
     ctx.beginPath();
     ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
     ctx.fill();
     ctx.globalCompositeOperation = 'source-over';
+    
+    updateActiveLayer();
   };
 
   const drawCropRect = () => {
     if (!cropStart || !cropEnd) return;
     
-    drawCanvas(image, true);
+    compositeAllLayers();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
@@ -271,7 +371,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   const drawTextRegions = () => {
-    drawCanvas(image, true);
+    compositeAllLayers();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
@@ -472,13 +572,15 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   const applyLiquify = (e) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const rect = canvas.getBoundingClientRect();
+    const layer = getActiveLayer();
+    if (!layer || layer.locked) return;
+    
+    const rect = canvasRef.current.getBoundingClientRect();
     const x = e.clientX - rect.left;
     const y = e.clientY - rect.top;
     
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const ctx = layer.canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, layer.canvas.width, layer.canvas.height);
     const radius = warpStrength;
     
     for (let dx = -radius; dx <= radius; dx++) {
@@ -490,9 +592,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
           const srcY = Math.floor(y + dy - dy * factor);
           const destX = Math.floor(x + dx);
           const destY = Math.floor(y + dy);
-          
-          if (srcX >= 0 && srcX < canvas.width && srcY >= 0 && srcY < canvas.height &&
-              destX >= 0 && destX < canvas.width && destY >= 0 && destY < canvas.height) {
+
+          if (srcX >= 0 && srcX < layer.canvas.width && srcY >= 0 && srcY < layer.canvas.height &&
+              destX >= 0 && destX < layer.canvas.width && destY >= 0 && destY < layer.canvas.height) {
+            const srcIdx = (srcY * layer.canvas.width + srcX) * 4;
+            const destIdx = (destY * layer.canvas.width + destX) * 4;
             const srcIdx = (srcY * canvas.width + srcX) * 4;
             const destIdx = (destY * canvas.width + destX) * 4;
             
@@ -509,9 +613,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   const pickAndReplaceColor = (x, y) => {
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
-    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const layer = getActiveLayer();
+    if (!layer || layer.locked) return;
+    
+    const ctx = layer.canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, layer.canvas.width, layer.canvas.height);
     const data = imageData.data;
     
     // Get target color from image
@@ -542,6 +648,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     }
     
     ctx.putImageData(imageData, 0, 0);
+    updateActiveLayer();
     saveToHistory();
     toast.success('Color replaced!');
   };
@@ -552,8 +659,10 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       return;
     }
     
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const layer = getActiveLayer();
+    if (!layer || layer.locked) return;
+    
+    const ctx = layer.canvas.getContext('2d');
     
     ctx.font = `${fontSize}px ${fontFamily}`;
     ctx.fillStyle = textColor;
@@ -580,6 +689,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     ctx.shadowOffsetX = 0;
     ctx.shadowOffsetY = 0;
     
+    updateActiveLayer();
     saveToHistory();
     toast.success('Text added!');
   };
@@ -587,7 +697,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const drawShapePreview = () => {
     if (!shapeStart || !shapeEnd) return;
     
-    drawCanvas(image, true);
+    compositeAllLayers();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
@@ -625,8 +735,10 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const drawShape = () => {
     if (!shapeStart || !shapeEnd) return;
     
-    const canvas = canvasRef.current;
-    const ctx = canvas.getContext('2d');
+    const layer = getActiveLayer();
+    if (!layer || layer.locked) return;
+    
+    const ctx = layer.canvas.getContext('2d');
     
     ctx.strokeStyle = shapeColor;
     ctx.fillStyle = shapeColor;
@@ -655,7 +767,198 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       }
     }
     
+    updateActiveLayer();
     toast.success('Shape added!');
+  };
+
+  // Layer management functions
+  const addNewLayer = (type = 'empty') => {
+    if (layers.length === 0) return;
+    
+    const firstLayer = layers[0];
+    const newCanvas = document.createElement('canvas');
+    newCanvas.width = firstLayer.canvas.width;
+    newCanvas.height = firstLayer.canvas.height;
+    
+    const newLayer = {
+      id: nextLayerId,
+      name: `Layer ${nextLayerId}`,
+      canvas: newCanvas,
+      visible: true,
+      opacity: 1,
+      blendMode: 'normal',
+      locked: false
+    };
+    
+    setLayers([...layers, newLayer]);
+    setActiveLayerId(nextLayerId);
+    setNextLayerId(nextLayerId + 1);
+    toast.success('New layer added!');
+  };
+
+  const deleteLayer = (layerId) => {
+    if (layers.length === 1) {
+      toast.error('Cannot delete the last layer');
+      return;
+    }
+    
+    const newLayers = layers.filter(l => l.id !== layerId);
+    setLayers(newLayers);
+    
+    if (activeLayerId === layerId) {
+      setActiveLayerId(newLayers[newLayers.length - 1].id);
+    }
+    
+    compositeAllLayers(newLayers);
+    toast.success('Layer deleted!');
+  };
+
+  const duplicateLayer = (layerId) => {
+    const layer = layers.find(l => l.id === layerId);
+    if (!layer) return;
+    
+    const newCanvas = document.createElement('canvas');
+    newCanvas.width = layer.canvas.width;
+    newCanvas.height = layer.canvas.height;
+    const newCtx = newCanvas.getContext('2d');
+    newCtx.drawImage(layer.canvas, 0, 0);
+    
+    const newLayer = {
+      id: nextLayerId,
+      name: `${layer.name} Copy`,
+      canvas: newCanvas,
+      visible: layer.visible,
+      opacity: layer.opacity,
+      blendMode: layer.blendMode,
+      locked: false
+    };
+    
+    const layerIndex = layers.findIndex(l => l.id === layerId);
+    const newLayers = [...layers];
+    newLayers.splice(layerIndex + 1, 0, newLayer);
+    
+    setLayers(newLayers);
+    setActiveLayerId(nextLayerId);
+    setNextLayerId(nextLayerId + 1);
+    compositeAllLayers(newLayers);
+    toast.success('Layer duplicated!');
+  };
+
+  const moveLayer = (layerId, direction) => {
+    const index = layers.findIndex(l => l.id === layerId);
+    if (index === -1) return;
+    
+    if (direction === 'up' && index === layers.length - 1) return;
+    if (direction === 'down' && index === 0) return;
+    
+    const newLayers = [...layers];
+    const targetIndex = direction === 'up' ? index + 1 : index - 1;
+    [newLayers[index], newLayers[targetIndex]] = [newLayers[targetIndex], newLayers[index]];
+    
+    setLayers(newLayers);
+    compositeAllLayers(newLayers);
+  };
+
+  const toggleLayerVisibility = (layerId) => {
+    const newLayers = layers.map(l => 
+      l.id === layerId ? { ...l, visible: !l.visible } : l
+    );
+    setLayers(newLayers);
+    compositeAllLayers(newLayers);
+  };
+
+  const updateLayerOpacity = (layerId, opacity) => {
+    const newLayers = layers.map(l => 
+      l.id === layerId ? { ...l, opacity } : l
+    );
+    setLayers(newLayers);
+    compositeAllLayers(newLayers);
+  };
+
+  const updateLayerBlendMode = (layerId, blendMode) => {
+    const newLayers = layers.map(l => 
+      l.id === layerId ? { ...l, blendMode } : l
+    );
+    setLayers(newLayers);
+    compositeAllLayers(newLayers);
+  };
+
+  const renameLayer = (layerId, newName) => {
+    const newLayers = layers.map(l => 
+      l.id === layerId ? { ...l, name: newName } : l
+    );
+    setLayers(newLayers);
+  };
+
+  const mergeLayers = (layerId1, layerId2) => {
+    const layer1 = layers.find(l => l.id === layerId1);
+    const layer2 = layers.find(l => l.id === layerId2);
+    
+    if (!layer1 || !layer2) return;
+    
+    const mergedCanvas = document.createElement('canvas');
+    mergedCanvas.width = layer1.canvas.width;
+    mergedCanvas.height = layer1.canvas.height;
+    const mergedCtx = mergedCanvas.getContext('2d');
+    
+    mergedCtx.globalAlpha = layer1.opacity;
+    mergedCtx.globalCompositeOperation = layer1.blendMode;
+    mergedCtx.drawImage(layer1.canvas, 0, 0);
+    
+    mergedCtx.globalAlpha = layer2.opacity;
+    mergedCtx.globalCompositeOperation = layer2.blendMode;
+    mergedCtx.drawImage(layer2.canvas, 0, 0);
+    
+    const mergedLayer = {
+      id: nextLayerId,
+      name: 'Merged Layer',
+      canvas: mergedCanvas,
+      visible: true,
+      opacity: 1,
+      blendMode: 'normal',
+      locked: false
+    };
+    
+    const newLayers = layers.filter(l => l.id !== layerId1 && l.id !== layerId2);
+    newLayers.push(mergedLayer);
+    
+    setLayers(newLayers);
+    setActiveLayerId(nextLayerId);
+    setNextLayerId(nextLayerId + 1);
+    compositeAllLayers(newLayers);
+    toast.success('Layers merged!');
+  };
+
+  const flattenImage = () => {
+    const flatCanvas = document.createElement('canvas');
+    const firstLayer = layers[0];
+    flatCanvas.width = firstLayer.canvas.width;
+    flatCanvas.height = firstLayer.canvas.height;
+    const flatCtx = flatCanvas.getContext('2d');
+    
+    layers.forEach(layer => {
+      if (!layer.visible) return;
+      flatCtx.globalAlpha = layer.opacity;
+      flatCtx.globalCompositeOperation = layer.blendMode;
+      flatCtx.drawImage(layer.canvas, 0, 0);
+    });
+    
+    const flatLayer = {
+      id: 0,
+      name: 'Flattened',
+      canvas: flatCanvas,
+      visible: true,
+      opacity: 1,
+      blendMode: 'normal',
+      locked: false
+    };
+    
+    setLayers([flatLayer]);
+    setActiveLayerId(0);
+    setNextLayerId(1);
+    compositeAllLayers([flatLayer]);
+    saveToHistory();
+    toast.success('Image flattened!');
   };
 
   return (
@@ -690,6 +993,155 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         </div>
 
         <div className="flex flex-1 overflow-hidden">
+          {/* Layers Panel */}
+          <div className="w-64 border-r bg-gray-50 p-4 overflow-y-auto">
+            <div className="flex items-center justify-between mb-3">
+              <h4 className="font-semibold text-gray-900 flex items-center gap-2">
+                <Layers className="w-4 h-4" />
+                Layers
+              </h4>
+              <Button size="sm" onClick={() => addNewLayer()} className="h-7 px-2">
+                Add Layer
+              </Button>
+            </div>
+            
+            <div className="space-y-2 mb-4">
+              {[...layers].reverse().map((layer) => (
+                <div
+                  key={layer.id}
+                  className={`border rounded-lg p-2 bg-white ${
+                    activeLayerId === layer.id ? 'ring-2 ring-indigo-500' : ''
+                  }`}
+                  onClick={() => setActiveLayerId(layer.id)}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <input
+                      value={layer.name}
+                      onChange={(e) => renameLayer(layer.id, e.target.value)}
+                      className="text-sm font-medium bg-transparent border-none outline-none flex-1"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                    <div className="flex gap-1">
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-6 w-6 p-0"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          toggleLayerVisibility(layer.id);
+                        }}
+                      >
+                        {layer.visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                      </Button>
+                    </div>
+                  </div>
+                  
+                  <div className="mb-2">
+                    <Label className="text-xs">Opacity: {Math.round(layer.opacity * 100)}%</Label>
+                    <Slider
+                      value={[layer.opacity * 100]}
+                      onValueChange={(v) => updateLayerOpacity(layer.id, v[0] / 100)}
+                      min={0}
+                      max={100}
+                      step={1}
+                      className="mt-1"
+                      onClick={(e) => e.stopPropagation()}
+                    />
+                  </div>
+                  
+                  <div className="mb-2">
+                    <Label className="text-xs">Blend Mode</Label>
+                    <select
+                      value={layer.blendMode}
+                      onChange={(e) => updateLayerBlendMode(layer.id, e.target.value)}
+                      className="w-full px-2 py-1 border rounded text-xs mt-1"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <option value="normal">Normal</option>
+                      <option value="multiply">Multiply</option>
+                      <option value="screen">Screen</option>
+                      <option value="overlay">Overlay</option>
+                      <option value="darken">Darken</option>
+                      <option value="lighten">Lighten</option>
+                      <option value="color-dodge">Color Dodge</option>
+                      <option value="color-burn">Color Burn</option>
+                      <option value="hard-light">Hard Light</option>
+                      <option value="soft-light">Soft Light</option>
+                      <option value="difference">Difference</option>
+                      <option value="exclusion">Exclusion</option>
+                      <option value="hue">Hue</option>
+                      <option value="saturation">Saturation</option>
+                      <option value="color">Color</option>
+                      <option value="luminosity">Luminosity</option>
+                    </select>
+                  </div>
+                  
+                  <div className="flex gap-1">
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-7 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveLayer(layer.id, 'up');
+                      }}
+                      disabled={layers.indexOf(layer) === layers.length - 1}
+                    >
+                      <ChevronUp className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-7 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        moveLayer(layer.id, 'down');
+                      }}
+                      disabled={layers.indexOf(layer) === 0}
+                    >
+                      <ChevronDown className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-7 text-xs"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        duplicateLayer(layer.id);
+                      }}
+                    >
+                      <Copy className="w-3 h-3" />
+                    </Button>
+                    <Button
+                      variant="outline"
+                      size="sm"
+                      className="flex-1 h-7 text-xs text-red-600"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        if (confirm('Delete this layer?')) deleteLayer(layer.id);
+                      }}
+                      disabled={layers.length === 1}
+                    >
+                      <Trash2 className="w-3 h-3" />
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+            
+            <div className="space-y-2">
+              <Button
+                variant="outline"
+                size="sm"
+                className="w-full"
+                onClick={flattenImage}
+                disabled={layers.length === 1}
+              >
+                Flatten All Layers
+              </Button>
+            </div>
+          </div>
+
           {/* Tools Sidebar */}
           <div className="w-80 border-r bg-gray-50 p-4 overflow-y-auto">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
