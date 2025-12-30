@@ -1461,7 +1461,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-gray-500">Highlight text areas, then enter new text to replace them</p>
+                    <p className="text-xs text-gray-500">
+                      {highlightTool === 'rectangle' 
+                        ? 'Select text areas with rectangle, then enter new text' 
+                        : 'Paint over letters/words, then enter replacement text'}
+                    </p>
                   </div>
                 </div>
               </TabsContent>
