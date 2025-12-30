@@ -388,10 +388,13 @@ Purpose: Support understanding of educational concepts through clear visuals.`
     }
   };
 
+  const [imageSuggestions, setImageSuggestions] = useState([]);
+
   const handleAISuggestImages = async () => {
     if (!currentSlideData) return;
 
     setAiLoading(true);
+    setImageSuggestions([]);
     try {
       const currentContent = currentSlideData.content || currentSlideData.title || '';
       const plainText = currentContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
@@ -403,27 +406,56 @@ Purpose: Support understanding of educational concepts through clear visuals.`
       });
 
       const imageResults = searchResult.data?.images || [];
+      setImageSuggestions(imageResults);
 
       // Also get AI suggestions
       const aiResult = await base44.integrations.Core.InvokeLLM({
         prompt: `Based on this educational content: "${plainText.substring(0, 500)}"
 
-Suggest 5 relevant images or visual elements that would enhance learning. For each suggestion, provide:
-1. A clear search term for finding the image online
-2. Why it would be helpful for learning
-
-Format as a simple numbered list with search terms in quotes.`,
+Suggest 3 relevant search terms for finding educational images. Just list the search terms, one per line.`,
         add_context_from_internet: true
       });
 
-      setAiPrompt(`ONLINE IMAGE SEARCH RESULTS:\n\n${imageResults.map((img, idx) => `${idx + 1}. ${img.description}\n   URL: ${img.url}`).join('\n\n')}\n\n---\n\nAI SUGGESTIONS:\n\n${aiResult}`);
-      toast.success('Image suggestions generated!');
+      setAiPrompt(aiResult);
+      toast.success(`Found ${imageResults.length} images!`);
       
     } catch (error) {
       toast.error('Failed to generate suggestions');
     } finally {
       setAiLoading(false);
     }
+  };
+
+  const handleInsertImage = (imageUrl) => {
+    const currentContent = currentSlideData?.content || '';
+    const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Educational image" /></div>`;
+    updateSlide(currentSlide, 'content', currentContent + imageHtml);
+    setShowAIDialog(false);
+    setImageSuggestions([]);
+    setAiPrompt('');
+    toast.success('Image added to slide!');
+  };
+
+  const handleReplaceImage = (imageUrl) => {
+    let currentContent = currentSlideData?.content || '';
+    
+    // Find and replace the first image in the content
+    const imgRegex = /<img[^>]+src="[^">]+"[^>]*>/i;
+    if (imgRegex.test(currentContent)) {
+      const newImageTag = `<img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Educational image" />`;
+      currentContent = currentContent.replace(imgRegex, newImageTag);
+      updateSlide(currentSlide, 'content', currentContent);
+      toast.success('Image replaced successfully!');
+    } else {
+      // No image found, add it
+      const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Educational image" /></div>`;
+      updateSlide(currentSlide, 'content', currentContent + imageHtml);
+      toast.success('Image added to slide!');
+    }
+    
+    setShowAIDialog(false);
+    setImageSuggestions([]);
+    setAiPrompt('');
   };
 
   const allTemplates = {
@@ -1062,37 +1094,53 @@ Format as a simple numbered list with search terms in quotes.`,
                 {aiAction === 'images' && (
                   <div>
                     <Label>Image Suggestions with Online Search</Label>
-                    <Textarea
-                      value={aiPrompt}
-                      onChange={(e) => setAiPrompt(e.target.value)}
-                      className="mt-1 h-64 font-mono text-xs"
-                      disabled={aiLoading}
-                      readOnly
-                    />
-                    <p className="text-xs text-gray-500 mt-2">
-                      {aiLoading ? 'Searching online and generating suggestions...' : 'Found images online with AI-powered suggestions. Click URLs to view and copy them for use in your slides.'}
-                    </p>
-                    {!aiLoading && aiPrompt && (
-                      <div className="mt-3 flex gap-2">
-                        <Button
-                          size="sm"
-                          variant="outline"
-                          onClick={() => {
-                            navigator.clipboard.writeText(aiPrompt);
-                            toast.success('Suggestions copied to clipboard!');
-                          }}
-                          className="flex-1"
-                        >
-                          Copy All
-                        </Button>
-                        <Button
-                          size="sm"
-                          onClick={() => setShowImageManager(true)}
-                          className="flex-1 bg-purple-600 hover:bg-purple-700"
-                        >
-                          <ImageIcon className="w-4 h-4 mr-2" />
-                          Browse & Add Images
-                        </Button>
+                    {imageSuggestions.length > 0 ? (
+                      <div className="mt-2 space-y-3 max-h-96 overflow-y-auto">
+                        {imageSuggestions.map((img, idx) => (
+                          <div key={idx} className="border rounded-lg overflow-hidden bg-white">
+                            <img 
+                              src={img.url} 
+                              alt={img.description || 'Suggested image'} 
+                              className="w-full h-40 object-cover"
+                              onError={(e) => e.target.src = 'https://via.placeholder.com/400x200/E5E7EB/9CA3AF?text=Image+Not+Available'}
+                            />
+                            <div className="p-3 space-y-2">
+                              <p className="text-sm font-medium text-gray-900 line-clamp-2">{img.description || 'Educational image'}</p>
+                              <p className="text-xs text-gray-500 truncate">{img.url}</p>
+                              <div className="flex gap-2">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleReplaceImage(img.url)}
+                                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                                >
+                                  Replace Image
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => handleInsertImage(img.url)}
+                                  className="flex-1"
+                                >
+                                  Add as New
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="mt-2 p-8 border-2 border-dashed rounded-lg text-center">
+                        <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                        <p className="text-sm text-gray-600 mb-2">
+                          {aiLoading ? 'Searching for relevant images...' : 'Click the button below to search for images'}
+                        </p>
+                      </div>
+                    )}
+                    
+                    {aiPrompt && !aiLoading && (
+                      <div className="mt-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                        <p className="text-xs font-semibold text-purple-900 mb-2">💡 AI Search Suggestions:</p>
+                        <p className="text-xs text-purple-700 whitespace-pre-line">{aiPrompt}</p>
                       </div>
                     )}
                   </div>
