@@ -427,7 +427,7 @@ Educational Context:
                       generatedImage = { url: result.data.url };
                     }
                   } else if (imageGenerator === 'base44-pro') {
-                    // Use Base44 AI Pro with optimized spelling
+                    // Use Base44 AI Pro with advanced spelling optimization
                     let base44ProPrompt;
                     
                     if (architectPrompt) {
@@ -437,59 +437,71 @@ Educational Context:
 Educational Context:
 - Topic: ${topic} - ${slide.title}
 - Level: ${levelInstructions[educationLevel]}
-- Purpose: ${slide.image_prompt}`;
+- Purpose: ${slide.image_prompt}
+
+CRITICAL: All text must be treated as VECTOR DATA, not painted imagery. Spelling errors will mislead students.`;
                     } else if (enforceSpelling) {
+                      // Enhanced prompt using Text Layout Architect methodology
+                      base44ProPrompt = `Request: Create a professional educational diagram showing ${slide.image_prompt}
+
+Style: Vector Illustration / High-Contrast Graphic Design. Text must be flat, sharp, and 2D.
+
+--- TYPOGRAPHY RULES (STRICT) ---
+1. TEXT IS CRITICAL DATA: Treat all text as "Vector Data" distinct from the background
+2. SPELLING VERIFICATION: Use ONLY verified dictionary words. Scientific terms: ${slide.image_prompt.match(/\b[A-Z][a-z]+\b/g)?.join(', ') || 'verify all terms'}
+3. KERNING: Uniform spacing between letters - no irregular gaps
+4. ANTI-ALIASING: Text edges must be sharp and clean, not blurry or painterly
+5. LEGIBILITY: Bold, high-contrast fonts suitable for classroom projection
+6. ERROR CHECK: Do NOT generate "simulated" text (squiggles). If text is too small to read clearly, leave it blank
+7. NO HALLUCINATION: Each letter must be intentional and correct
+
+Educational Context:
+- Topic: ${topic} - ${slide.title}
+- Audience: ${levelInstructions[educationLevel]}
+- Purpose: Students will learn from this - accuracy is MANDATORY
+- Quality Standard: Professional textbook/classroom poster quality
+
+REMEMBER: This is educational material. Spelling errors = misinformation = student confusion.`;
+                    } else {
                       base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
 
-CRITICAL TYPOGRAPHY REQUIREMENT:
-The diagram MUST feature perfectly spelled text and labels.
-
-TEXT INSTRUCTIONS:
-1. Spelling must be 100% accurate: verify all scientific and technical terms
-2. Font style: Bold, legible, high-contrast for classroom use
-3. Text placement: Integrated naturally (labels, annotations, diagram titles)
-4. Do not hallucinate extra letters or misspell scientific terms
-5. Each character must be clearly visible and correctly spelled
-
-Educational Requirements:
+Educational Context:
 - Topic: ${topic} - ${slide.title}
 - Level: ${levelInstructions[educationLevel]}
-- Style: Professional, high-quality educational diagram
-- Purpose: Help students understand ${slide.image_prompt}
-- Quality: Premium classroom-ready visuals, no text artifacts`;
-                    } else {
-                      base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional, high-quality educational diagram`;
+- Style: Professional, high-quality educational diagram suitable for classroom use`;
                     }
 
                     generatedImage = await base44.integrations.Core.GenerateImage({
                       prompt: base44ProPrompt
                     });
                   } else {
-                    // Use Nano Banana (default) with optimized spelling
-                    const imagePrompt = enforceSpelling 
-                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
+                  // Use Nano Banana (default) with optimized spelling
+                  const imagePrompt = enforceSpelling 
+                    ? `Request: Create a professional educational diagram showing ${slide.image_prompt}
 
-CRITICAL TYPOGRAPHY REQUIREMENT:
-The diagram MUST feature perfectly spelled text and labels.
+                  Style: Vector Illustration / High-Contrast Graphic Design. Text must be flat, sharp, and 2D.
 
-TEXT INSTRUCTIONS:
-1. Spelling must be 100% accurate: verify all scientific and technical terms
-2. Font style: Bold, legible, high-contrast for classroom use
-3. Text placement: Integrated naturally (labels, annotations, diagram titles)
-4. Do not hallucinate extra letters or misspell terms like "mitosis", "meiosis", "photosynthesis"
-5. Each character must be clearly visible and correctly spelled
+                  --- TYPOGRAPHY RULES (STRICT) ---
+                  1. TEXT IS VECTOR DATA: Treat all text as distinct graphic elements, not painted strokes
+                  2. SPELLING MUST BE PERFECT: Use only verified English dictionary words and accurate scientific terminology
+                  3. KERNING: Uniform letter spacing - no irregular gaps or overlaps
+                  4. SHARPNESS: Text edges must be crisp and clean (anti-aliased), not blurry or painterly
+                  5. LEGIBILITY: Bold, high-contrast fonts for classroom visibility
+                  6. NO PSEUDO-TEXT: Do NOT generate squiggles or gibberish. If text cannot be rendered clearly, omit it.
+                  7. ACCURACY CHECK: Each word must be spelled correctly - this is educational content
 
-Educational Requirements:
-- Topic: ${topic} - ${slide.title}
-- Level: ${levelInstructions[educationLevel]}
-- Style: Clean, professional educational diagram
-- Purpose: Help students understand ${slide.image_prompt}
-- Quality: Classroom-ready, no text artifacts`
-                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Clean, professional educational diagram`;
+                  Educational Context:
+                  - Topic: ${topic} - ${slide.title}
+                  - Audience: ${levelInstructions[educationLevel]}
+                  - Purpose: Help students learn ${slide.image_prompt}
+                  - Critical: Spelling errors will misinform students
 
-                    generatedImage = await base44.integrations.Core.GenerateImage({
-                      prompt: imagePrompt
-                    });
+                  Style: Clean, professional educational diagram suitable for textbooks and classroom use.`
+                    : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Clean, professional educational diagram`;
+
+                  generatedImage = await base44.integrations.Core.GenerateImage({
+                    prompt: imagePrompt
+                  });
                   }
 
                   if (generatedImage?.url) {
