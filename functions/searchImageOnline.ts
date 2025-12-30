@@ -91,7 +91,42 @@ Prioritize sources:
 Return ONLY the direct image URL (must end in .png, .jpg, .jpeg, .svg, or .gif).
 Choose the image that best illustrates the specific topic "${query}" within the presentation context.`;
 
-    // Use AI to generate the image directly
+    // Use AI to search the web for actual images
+    const searchPrompt = `${contextPrompt}
+
+Return a JSON array with 5-8 of the best matching images you can find from the web.`;
+
+    const webSearchResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: searchPrompt,
+      add_context_from_internet: true,
+      response_json_schema: {
+        type: "object",
+        properties: {
+          images: {
+            type: "array",
+            items: {
+              type: "object",
+              properties: {
+                url: { type: "string" },
+                description: { type: "string" },
+                source: { type: "string" }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    const images = webSearchResult?.images || [];
+    
+    if (images.length > 0) {
+      return Response.json({ 
+        images: images,
+        search_query: query
+      });
+    }
+
+    // Fallback: Generate an AI image
     try {
       const aiImagePrompt = `Educational ${style} ${styleGuide[style] || 'illustration'}: ${query}. 
 Context: ${presentationTopic || query}${slideTitle ? ` - ${slideTitle}` : ''}.
@@ -105,18 +140,23 @@ Colors: ${colorGuide[colorPalette] || 'balanced color scheme'}.`;
 
       if (generatedImage?.url) {
         return Response.json({ 
-          url: generatedImage.url,
-          source: 'ai_generated'
+          images: [{
+            url: generatedImage.url,
+            description: `AI-generated: ${query}`,
+            source: 'ai_generated'
+          }],
+          search_query: query
         });
       }
     } catch (genError) {
       console.error('AI image generation failed:', genError);
     }
 
-    // Fallback: return placeholder
+    // Final fallback
     return Response.json({ 
-      url: `https://via.placeholder.com/800x450/6366F1/FFFFFF?text=${encodeURIComponent(query.substring(0, 50))}`,
-      source: 'placeholder'
+      images: [],
+      search_query: query,
+      error: 'No images found'
     });
 
   } catch (error) {
