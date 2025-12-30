@@ -33,6 +33,7 @@ Deno.serve(async (req) => {
     // Use Stable Diffusion inpainting API
     const formData = new FormData();
     formData.append('init_image', imageBlob, 'image.png');
+    formData.append('mask_source', 'MASK_IMAGE_WHITE');
     formData.append('mask_image', maskBlob, 'mask.png');
     formData.append('text_prompts[0][text]', prompt);
     formData.append('text_prompts[0][weight]', '1');
@@ -40,7 +41,7 @@ Deno.serve(async (req) => {
     formData.append('samples', '1');
     formData.append('steps', '30');
 
-    const endpoint = 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/image-to-image/masking';
+    const endpoint = 'https://api.stability.ai/v1/generation/stable-diffusion-512-v2-1/image-to-image/masking';
     
     const sdResponse = await fetch(endpoint, {
       method: 'POST',
