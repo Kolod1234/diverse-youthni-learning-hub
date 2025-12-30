@@ -16,11 +16,77 @@ Deno.serve(async (req) => {
       presentationTopic,
       style = 'photographic',
       aspectRatio = 'landscape',
-      colorPalette = 'any'
+      colorPalette = 'any',
+      useStockLibrary = false
     } = await req.json();
 
     if (!query) {
       return Response.json({ error: 'Search query is required' }, { status: 400 });
+    }
+
+    // If stock library is requested, use Unsplash/Pexels API directly
+    if (useStockLibrary) {
+      const unsplashKey = Deno.env.get('UNSPLASH_ACCESS_KEY');
+      
+      if (unsplashKey) {
+        try {
+          const searchUrl = `https://api.unsplash.com/search/photos?query=${encodeURIComponent(query)}&per_page=20&orientation=${aspectRatio === 'portrait' ? 'portrait' : aspectRatio === 'square' ? 'squarish' : 'landscape'}`;
+          
+          const unsplashResponse = await fetch(searchUrl, {
+            headers: {
+              'Authorization': `Client-ID ${unsplashKey}`
+            }
+          });
+
+          if (unsplashResponse.ok) {
+            const data = await unsplashResponse.json();
+            const images = data.results.map(img => ({
+              url: img.urls.regular,
+              description: img.description || img.alt_description || query,
+              source: 'Unsplash',
+              photographer: img.user.name,
+              downloadLocation: img.links.download_location
+            }));
+
+            if (images.length > 0) {
+              return Response.json({ images });
+            }
+          }
+        } catch (error) {
+          console.error('Unsplash API error:', error);
+        }
+      }
+
+      // Fallback to Pexels
+      const pexelsKey = Deno.env.get('PEXELS_API_KEY');
+      
+      if (pexelsKey) {
+        try {
+          const pexelsUrl = `https://api.pexels.com/v1/search?query=${encodeURIComponent(query)}&per_page=20&orientation=${aspectRatio === 'portrait' ? 'portrait' : aspectRatio === 'square' ? 'square' : 'landscape'}`;
+          
+          const pexelsResponse = await fetch(pexelsUrl, {
+            headers: {
+              'Authorization': pexelsKey
+            }
+          });
+
+          if (pexelsResponse.ok) {
+            const data = await pexelsResponse.json();
+            const images = data.photos.map(img => ({
+              url: img.src.large,
+              description: query,
+              source: 'Pexels',
+              photographer: img.photographer
+            }));
+
+            if (images.length > 0) {
+              return Response.json({ images });
+            }
+          }
+        } catch (error) {
+          console.error('Pexels API error:', error);
+        }
+      }
     }
 
     // Map style preferences
