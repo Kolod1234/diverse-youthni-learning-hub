@@ -114,6 +114,12 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       setNextLayerId(1);
       compositeAllLayers([bgLayer]);
       saveToHistory();
+      
+      // Initialize erase mask canvas for text highlighting
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = img.width;
+      maskCanvas.height = img.height;
+      setEraseMaskCanvas(maskCanvas);
     };
     img.src = imageUrl;
   }, [imageUrl]);
