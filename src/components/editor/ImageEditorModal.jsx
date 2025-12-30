@@ -117,6 +117,15 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [selectedTextBox, setSelectedTextBox] = useState(null);
   const [isEditingText, setIsEditingText] = useState(false);
   const [editingTextContent, setEditingTextContent] = useState('');
+  const [ocrTextOpacity, setOcrTextOpacity] = useState(100);
+  const [ocrBackgroundColor, setOcrBackgroundColor] = useState('transparent');
+  const [ocrBackgroundOpacity, setOcrBackgroundOpacity] = useState(0);
+  const [ocrSubscript, setOcrSubscript] = useState(false);
+  const [ocrSuperscript, setOcrSuperscript] = useState(false);
+  const [showMathEditor, setShowMathEditor] = useState(false);
+  const [mathSymbols, setMathSymbols] = useState(['∑', '∫', '∏', '√', '∞', '≈', '≠', '≤', '≥', '±', '×', '÷', 'π', 'α', 'β', 'γ', 'θ', 'λ', 'μ', 'σ', '∂', '∇', '∈', '∉', '⊂', '⊃', '∪', '∩', '∀', '∃']);
+  const [greekSymbols, setGreekSymbols] = useState(['α', 'β', 'γ', 'δ', 'ε', 'ζ', 'η', 'θ', 'ι', 'κ', 'λ', 'μ', 'ν', 'ξ', 'ο', 'π', 'ρ', 'σ', 'τ', 'υ', 'φ', 'χ', 'ψ', 'ω']);
+  const [commonSymbols, setCommonSymbols] = useState(['°', '©', '®', '™', '€', '£', '¥', '¢', '¶', '§', '†', '‡', '•', '…', '‰', '‱']);
 
   useEffect(() => {
     const img = new Image();
@@ -318,7 +327,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         setSelectedTextBox({
           bbox: clickedWord.bbox,
           text: clickedWord.text,
-          originalWord: clickedWord
+          originalWord: clickedWord,
+          type: 'text'
         });
         setOcrTargetText(clickedWord.text);
         setOcrReplacementText(clickedWord.text);
@@ -331,6 +341,13 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         drawSelectedTextBox(clickedWord.bbox);
         toast.success('Text selected! Edit in the panel →');
       }
+      return;
+    }
+    
+    // Object/Shape selection mode
+    if (cursorMode === 'shape-select') {
+      setIsDrawing(true);
+      setShapeStart({ x, y });
       return;
     }
     
@@ -1517,25 +1534,55 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
     ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, width + 4, height + 4);
     
+    // Apply background if set
+    if (ocrBackgroundOpacity > 0 && ocrBackgroundColor !== 'transparent') {
+      const bgAlpha = ocrBackgroundOpacity / 100;
+      const bgColorWithAlpha = ocrBackgroundColor.startsWith('#') 
+        ? `${ocrBackgroundColor}${Math.round(bgAlpha * 255).toString(16).padStart(2, '0')}`
+        : ocrBackgroundColor;
+      
+      ctx.fillStyle = bgColorWithAlpha;
+      const padding = 4;
+      ctx.fillRect(bbox.x0 - padding, bbox.y0 - padding, width + padding * 2, height + padding * 2);
+    }
+    
     // Apply new text with styling
-    const fontSize = ocrFontSize || Math.max(12, height);
+    let fontSize = ocrFontSize || Math.max(12, height);
+    
+    // Adjust for subscript/superscript
+    if (ocrSubscript || ocrSuperscript) {
+      fontSize = fontSize * 0.7; // Smaller font for sub/super script
+    }
+    
     let fontStyle = '';
     if (ocrFontItalic) fontStyle += 'italic ';
     if (ocrFontBold) fontStyle += 'bold ';
     
     ctx.font = `${fontStyle}${fontSize}px ${ocrFontFamily}`;
+    
+    // Apply opacity
+    ctx.globalAlpha = ocrTextOpacity / 100;
     ctx.fillStyle = ocrTextColor;
-    ctx.textBaseline = 'bottom';
     
-    // Add shadow for better readability
-    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-    ctx.shadowBlur = 2;
-    ctx.shadowOffsetX = 1;
-    ctx.shadowOffsetY = 1;
+    // Adjust baseline for subscript/superscript
+    if (ocrSubscript) {
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(correctedText, bbox.x0, bbox.y1 + (fontSize * 0.3));
+    } else if (ocrSuperscript) {
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(correctedText, bbox.x0, bbox.y1 - (fontSize * 0.5));
+    } else {
+      ctx.textBaseline = 'bottom';
+      // Add shadow for better readability
+      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+      ctx.shadowBlur = 2;
+      ctx.shadowOffsetX = 1;
+      ctx.shadowOffsetY = 1;
+      
+      ctx.fillText(correctedText, bbox.x0, bbox.y1);
+    }
     
-    ctx.fillText(correctedText, bbox.x0, bbox.y1);
-    
-    if (ocrFontUnderline) {
+    if (ocrFontUnderline && !ocrSubscript && !ocrSuperscript) {
       const textWidth = ctx.measureText(correctedText).width;
       ctx.beginPath();
       ctx.moveTo(bbox.x0, bbox.y1 + 2);
@@ -1546,6 +1593,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     }
     
     ctx.shadowColor = 'transparent';
+    ctx.globalAlpha = 1;
     updateActiveLayer();
     saveToHistory();
   };
@@ -2365,10 +2413,23 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                       >
                         🔍 Zoom
                       </Button>
+                      <Button
+                        size="sm"
+                        variant={cursorMode === 'shape-select' ? 'default' : 'outline'}
+                        onClick={() => setCursorMode('shape-select')}
+                        className="text-xs col-span-2"
+                      >
+                        🔷 Select Shape/Object
+                      </Button>
                     </div>
                     {cursorMode === 'text-select' && (
                       <p className="text-xs text-blue-700 mt-2">
                         Click on any text in the image to select and edit it
+                      </p>
+                    )}
+                    {cursorMode === 'shape-select' && (
+                      <p className="text-xs text-blue-700 mt-2">
+                        Click and drag to select shapes, objects, or regions
                       </p>
                     )}
                   </div>
@@ -2376,7 +2437,9 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                   {selectedTextBox && (
                     <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-3">
                       <div className="flex justify-between items-center mb-2">
-                        <Label className="text-xs font-semibold">Selected Text</Label>
+                        <Label className="text-xs font-semibold">
+                          Selected {selectedTextBox.type === 'text' ? 'Text' : 'Object'}
+                        </Label>
                         <Button
                           size="sm"
                           variant="ghost"
@@ -2389,8 +2452,30 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                           Clear
                         </Button>
                       </div>
-                      <div className="text-xs text-green-800 bg-white p-2 rounded">
-                        "{selectedTextBox.text}"
+                      {selectedTextBox.type === 'text' && (
+                        <div className="text-xs text-green-800 bg-white p-2 rounded">
+                          "{selectedTextBox.text}"
+                        </div>
+                      )}
+                      
+                      {/* Quick size adjusters */}
+                      <div className="flex gap-2 mt-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setOcrFontSize(Math.max(8, ocrFontSize - 2))}
+                          className="flex-1 h-7 text-xs"
+                        >
+                          A- Size
+                        </Button>
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => setOcrFontSize(Math.min(200, ocrFontSize + 2))}
+                          className="flex-1 h-7 text-xs"
+                        >
+                          A+ Size
+                        </Button>
                       </div>
                     </div>
                   )}
@@ -2487,8 +2572,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                           </select>
                         </div>
                         
-                        <div className="flex gap-2">
-                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                        <div className="grid grid-cols-2 gap-2">
+                          <label className="flex items-center gap-1 text-xs cursor-pointer">
                             <input 
                               type="checkbox" 
                               checked={ocrFontBold} 
@@ -2497,7 +2582,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                             />
                             <span className="font-bold">Bold</span>
                           </label>
-                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                          <label className="flex items-center gap-1 text-xs cursor-pointer">
                             <input 
                               type="checkbox" 
                               checked={ocrFontItalic} 
@@ -2506,7 +2591,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                             />
                             <span className="italic">Italic</span>
                           </label>
-                          <label className="flex items-center gap-1 text-xs cursor-pointer flex-1">
+                          <label className="flex items-center gap-1 text-xs cursor-pointer">
                             <input 
                               type="checkbox" 
                               checked={ocrFontUnderline} 
@@ -2514,6 +2599,30 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                               className="rounded"
                             />
                             <span className="underline">Underline</span>
+                          </label>
+                          <label className="flex items-center gap-1 text-xs cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={ocrSubscript} 
+                              onChange={(e) => {
+                                setOcrSubscript(e.target.checked);
+                                if (e.target.checked) setOcrSuperscript(false);
+                              }}
+                              className="rounded"
+                            />
+                            <span>X<sub>2</sub></span>
+                          </label>
+                          <label className="flex items-center gap-1 text-xs cursor-pointer">
+                            <input 
+                              type="checkbox" 
+                              checked={ocrSuperscript} 
+                              onChange={(e) => {
+                                setOcrSuperscript(e.target.checked);
+                                if (e.target.checked) setOcrSubscript(false);
+                              }}
+                              className="rounded"
+                            />
+                            <span>X<sup>2</sup></span>
                           </label>
                         </div>
                         
@@ -2535,6 +2644,50 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                           </div>
                         </div>
                         
+                        <div>
+                          <Label className="text-xs">Text Opacity: {ocrTextOpacity}%</Label>
+                          <Slider 
+                            value={[ocrTextOpacity]} 
+                            onValueChange={(v) => setOcrTextOpacity(v[0])}
+                            min={0}
+                            max={100}
+                            step={5}
+                            className="mt-2"
+                          />
+                        </div>
+                        
+                        <div>
+                          <Label className="text-xs">Background Color</Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input 
+                              type="color" 
+                              value={ocrBackgroundColor === 'transparent' ? '#ffffff' : ocrBackgroundColor} 
+                              onChange={(e) => setOcrBackgroundColor(e.target.value)}
+                              className="w-12 h-8 p-1"
+                            />
+                            <Button
+                              size="sm"
+                              variant="outline"
+                              onClick={() => setOcrBackgroundColor('transparent')}
+                              className="flex-1 text-xs"
+                            >
+                              Clear BG
+                            </Button>
+                          </div>
+                        </div>
+                        
+                        <div>
+                          <Label className="text-xs">Background Opacity: {ocrBackgroundOpacity}%</Label>
+                          <Slider 
+                            value={[ocrBackgroundOpacity]} 
+                            onValueChange={(v) => setOcrBackgroundOpacity(v[0])}
+                            min={0}
+                            max={100}
+                            step={5}
+                            className="mt-2"
+                          />
+                        </div>
+                        
                         <label className="flex items-center gap-2 text-xs cursor-pointer">
                           <input 
                             type="checkbox" 
@@ -2544,6 +2697,119 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                           />
                           Auto-correct spelling
                         </label>
+                        
+                        {/* Math & Symbols Editor */}
+                        <div className="border-t pt-2">
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => setShowMathEditor(!showMathEditor)}
+                            className="w-full text-xs"
+                          >
+                            {showMathEditor ? '✖️ Close' : '➕'} Math & Symbols
+                          </Button>
+                          
+                          {showMathEditor && (
+                            <div className="mt-2 space-y-2 max-h-48 overflow-y-auto border rounded p-2 bg-white">
+                              <div>
+                                <Label className="text-xs font-semibold">Math Symbols</Label>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {mathSymbols.map((symbol, idx) => (
+                                    <Button
+                                      key={idx}
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setOcrReplacementText(ocrReplacementText + symbol)}
+                                      className="h-7 w-7 p-0 text-sm"
+                                    >
+                                      {symbol}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <Label className="text-xs font-semibold">Greek Letters</Label>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {greekSymbols.map((symbol, idx) => (
+                                    <Button
+                                      key={idx}
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setOcrReplacementText(ocrReplacementText + symbol)}
+                                      className="h-7 w-7 p-0 text-sm"
+                                    >
+                                      {symbol}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <Label className="text-xs font-semibold">Common Symbols</Label>
+                                <div className="flex flex-wrap gap-1 mt-1">
+                                  {commonSymbols.map((symbol, idx) => (
+                                    <Button
+                                      key={idx}
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setOcrReplacementText(ocrReplacementText + symbol)}
+                                      className="h-7 w-7 p-0 text-sm"
+                                    >
+                                      {symbol}
+                                    </Button>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <Label className="text-xs font-semibold">Formula Templates</Label>
+                                <div className="space-y-1 mt-1">
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setOcrReplacementText('x² + y² = r²')}
+                                    className="w-full text-xs justify-start"
+                                  >
+                                    Pythagorean: x² + y² = r²
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setOcrReplacementText('E = mc²')}
+                                    className="w-full text-xs justify-start"
+                                  >
+                                    Einstein: E = mc²
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setOcrReplacementText('∫f(x)dx')}
+                                    className="w-full text-xs justify-start"
+                                  >
+                                    Integral: ∫f(x)dx
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setOcrReplacementText('∑(n=1 to ∞)')}
+                                    className="w-full text-xs justify-start"
+                                  >
+                                    Summation: ∑(n=1 to ∞)
+                                  </Button>
+                                  <Button
+                                    size="sm"
+                                    variant="outline"
+                                    onClick={() => setOcrReplacementText('lim(x→∞)')}
+                                    className="w-full text-xs justify-start"
+                                  >
+                                    Limit: lim(x→∞)
+                                  </Button>
+                                </div>
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       
                       <div className="flex gap-2 mt-2">
@@ -2789,6 +3055,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                 eraseMode || cropMode || highlightMode || objectRemovalMode || liquifyMode || colorPickerMode || shapeMode ? 'crosshair' :
                 textMode ? 'text' :
                 cursorMode === 'text-select' ? 'text' :
+                cursorMode === 'shape-select' ? 'crosshair' :
                 cursorMode === 'drag' ? 'move' :
                 cursorMode === 'zoom' ? 'zoom-in' :
                 'default'
