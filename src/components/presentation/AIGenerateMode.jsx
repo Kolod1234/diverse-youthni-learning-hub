@@ -15,7 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva'
   const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen'
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen', 'base44-pro'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -207,6 +207,69 @@ Return ONLY the JSON object, nothing else.`,
           response = canvaResult;
           toast.success('Design-focused content generated with Canva AI!');
         }
+      } else if (aiProvider === 'base44-pro') {
+        // Use Base44 AI Pro for premium content generation
+        const base44ProResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are an elite educational content creator with expertise in curriculum design.
+
+Create a ${slideCount}-slide premium educational presentation about: "${topic}"
+${details ? `\nContext: ${details}` : ''}
+
+TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+
+PREMIUM QUALITY STANDARDS:
+- Accurate, research-backed information
+- Clear, engaging explanations
+- Professional educational formatting
+- Well-structured learning progression
+- Rich, detailed content with examples
+- Proper HTML formatting with visual hierarchy
+
+CRITICAL: Return ONLY valid JSON in this EXACT format:
+{
+  "slides": [
+    {
+      "title": "Clear, engaging title",
+      "content": "Premium educational content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Include detailed explanations, examples, and key insights.",
+      "order": 1,
+      ${includeImages ? '"image_prompt": "Detailed description for premium educational visual",' : ''}
+      "image_description": "What the visual represents"
+    }
+  ]
+}
+
+${includeImages ? 'Include "image_prompt" (detailed description for high-quality educational diagrams) and "image_description" for EVERY slide.' : ''}
+
+Return ONLY the JSON object, nothing else.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              slides: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    content: { type: "string" },
+                    order: { type: "number" },
+                    ...(includeImages ? {
+                      image_prompt: { type: "string" },
+                      image_description: { type: "string" }
+                    } : {})
+                  },
+                  required: ["title", "content", "order"]
+                }
+              }
+            },
+            required: ["slides"]
+          }
+        });
+
+        if (base44ProResult?.slides) {
+          response = base44ProResult;
+          toast.success('Premium content generated with Base44 AI Pro!');
+        }
       }
 
           if (!response) {
@@ -295,7 +358,7 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Stable Diffusion' : 'Nano Banana AI';
+          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Stable Diffusion' : imageGenerator === 'base44-pro' ? 'Base44 AI Pro' : 'Nano Banana AI';
           toast.info(`Generating educational diagrams with ${generatorName}...`);
           
           slides = await Promise.all(
@@ -360,6 +423,32 @@ Educational Context:
                     if (result.data?.url) {
                       generatedImage = { url: result.data.url };
                     }
+                  } else if (imageGenerator === 'base44-pro') {
+                    // Use Base44 AI Pro with optimized spelling
+                    const base44ProPrompt = enforceSpelling 
+                      ? `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
+
+CRITICAL TYPOGRAPHY REQUIREMENT:
+The diagram MUST feature perfectly spelled text and labels.
+
+TEXT INSTRUCTIONS:
+1. Spelling must be 100% accurate: verify all scientific and technical terms
+2. Font style: Bold, legible, high-contrast for classroom use
+3. Text placement: Integrated naturally (labels, annotations, diagram titles)
+4. Do not hallucinate extra letters or misspell scientific terms
+5. Each character must be clearly visible and correctly spelled
+
+Educational Requirements:
+- Topic: ${topic} - ${slide.title}
+- Level: ${levelInstructions[educationLevel]}
+- Style: Professional, high-quality educational diagram
+- Purpose: Help students understand ${slide.image_prompt}
+- Quality: Premium classroom-ready visuals, no text artifacts`
+                      : `Create a high-resolution professional educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional, high-quality educational diagram`;
+
+                    generatedImage = await base44.integrations.Core.GenerateImage({
+                      prompt: base44ProPrompt
+                    });
                   } else {
                     // Use Nano Banana (default) with optimized spelling
                     const imagePrompt = enforceSpelling 
@@ -542,7 +631,7 @@ Educational Requirements:
 
                   <div className="space-y-2">
                     <Label>Image Generator</Label>
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="grid grid-cols-2 gap-3">
                     <button
                       type="button"
                       onClick={() => setImageGenerator('nano-banana')}
@@ -579,6 +668,18 @@ Educational Requirements:
                       <div className="font-semibold text-sm mb-1">🎨 Stable Diffusion</div>
                       <div className="text-xs text-gray-600">Professional</div>
                     </button>
+                    <button
+                      type="button"
+                      onClick={() => setImageGenerator('base44-pro')}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        imageGenerator === 'base44-pro'
+                          ? 'border-orange-500 bg-orange-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
+                      <div className="text-xs text-gray-600">Premium quality</div>
+                    </button>
                   </div>
                 </div>
                 </>
@@ -588,7 +689,7 @@ Educational Requirements:
 
           <div className="space-y-2">
             <Label>AI Provider</Label>
-            <div className="grid grid-cols-3 gap-3">
+            <div className="grid grid-cols-2 gap-3">
               <button
                 type="button"
                 onClick={() => setAiProvider('perplexity')}
@@ -624,6 +725,18 @@ Educational Requirements:
               >
                 <div className="font-semibold text-sm mb-1">🎨 Canva AI</div>
                 <div className="text-xs text-gray-600">Design-focused</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiProvider('base44-pro')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'base44-pro'
+                    ? 'border-orange-500 bg-orange-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
+                <div className="text-xs text-gray-600">Advanced AI</div>
               </button>
             </div>
           </div>
