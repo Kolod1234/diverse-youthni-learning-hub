@@ -396,25 +396,32 @@ Purpose: Support understanding of educational concepts through clear visuals.`
       const currentContent = currentSlideData.content || currentSlideData.title || '';
       const plainText = currentContent.replace(/<[^>]*>/g, ' ').replace(/\s+/g, ' ').trim();
 
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Based on this educational content: "${plainText.substring(0, 500)}"
-
-Suggest 3-5 relevant images or visual elements that would enhance learning. For each suggestion, provide:
-1. A clear description of what the image should show
-2. Why it would be helpful for learning
-3. Where it should be placed in the content
-
-Format as a simple bulleted list.`,
-        add_context_from_internet: false
+      // Search for relevant images online
+      const searchResult = await base44.functions.invoke('searchImageOnline', {
+        query: plainText.substring(0, 200) || 'educational content',
+        context: 'educational diagram or illustration'
       });
 
-      // Show suggestions in a toast
-      toast.success('Image suggestions generated! Check the prompt field for ideas.');
-      setAiPrompt(result);
-      setAiLoading(false);
+      const imageResults = searchResult.data?.images || [];
+
+      // Also get AI suggestions
+      const aiResult = await base44.integrations.Core.InvokeLLM({
+        prompt: `Based on this educational content: "${plainText.substring(0, 500)}"
+
+Suggest 5 relevant images or visual elements that would enhance learning. For each suggestion, provide:
+1. A clear search term for finding the image online
+2. Why it would be helpful for learning
+
+Format as a simple numbered list with search terms in quotes.`,
+        add_context_from_internet: true
+      });
+
+      setAiPrompt(`ONLINE IMAGE SEARCH RESULTS:\n\n${imageResults.map((img, idx) => `${idx + 1}. ${img.description}\n   URL: ${img.url}`).join('\n\n')}\n\n---\n\nAI SUGGESTIONS:\n\n${aiResult}`);
+      toast.success('Image suggestions generated!');
       
     } catch (error) {
       toast.error('Failed to generate suggestions');
+    } finally {
       setAiLoading(false);
     }
   };
@@ -1054,17 +1061,40 @@ Format as a simple bulleted list.`,
 
                 {aiAction === 'images' && (
                   <div>
-                    <Label>Image Suggestions</Label>
+                    <Label>Image Suggestions with Online Search</Label>
                     <Textarea
                       value={aiPrompt}
                       onChange={(e) => setAiPrompt(e.target.value)}
-                      className="mt-1 h-48"
+                      className="mt-1 h-64 font-mono text-xs"
                       disabled={aiLoading}
                       readOnly
                     />
                     <p className="text-xs text-gray-500 mt-2">
-                      {aiLoading ? 'Generating suggestions...' : 'Use these suggestions to find or create relevant images for your slide'}
+                      {aiLoading ? 'Searching online and generating suggestions...' : 'Found images online with AI-powered suggestions. Click URLs to view and copy them for use in your slides.'}
                     </p>
+                    {!aiLoading && aiPrompt && (
+                      <div className="mt-3 flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => {
+                            navigator.clipboard.writeText(aiPrompt);
+                            toast.success('Suggestions copied to clipboard!');
+                          }}
+                          className="flex-1"
+                        >
+                          Copy All
+                        </Button>
+                        <Button
+                          size="sm"
+                          onClick={() => setShowImageManager(true)}
+                          className="flex-1 bg-purple-600 hover:bg-purple-700"
+                        >
+                          <ImageIcon className="w-4 h-4 mr-2" />
+                          Browse & Add Images
+                        </Button>
+                      </div>
+                    )}
                   </div>
                 )}
 
@@ -1095,45 +1125,72 @@ Format as a simple bulleted list.`,
               </div>
 
               <div className="flex gap-3 mt-6">
-                {aiAction !== 'images' && (
-                  <Button 
-                    onClick={
-                      aiAction === 'generate' ? handleAIGenerate : 
-                      aiAction === 'rewrite' ? handleAIRewrite :
-                      aiAction === 'generate-image' ? handleAIGenerateImage :
-                      null
-                    }
-                    className="flex-1 bg-purple-600 hover:bg-purple-700"
-                    disabled={aiLoading || ((aiAction === 'generate' || aiAction === 'generate-image') && !aiPrompt.trim())}
-                  >
-                    {aiLoading ? (
-                      <>
-                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        {aiAction === 'generate-image' ? 'Generating Image...' : 'Processing...'}
-                      </>
-                    ) : (
-                      <>
+                {aiAction === 'images' ? (
+                  <>
+                    {!aiLoading && !aiPrompt && (
+                      <Button 
+                        onClick={handleAISuggestImages}
+                        className="flex-1 bg-purple-600 hover:bg-purple-700"
+                      >
                         <Sparkles className="w-4 h-4 mr-2" />
-                        {aiAction === 'generate' ? 'Generate Slide' : 
-                         aiAction === 'rewrite' ? 'Rewrite Content' :
-                         aiAction === 'generate-image' ? 'Generate Image' : 'Process'}
-                      </>
+                        Search & Suggest Images
+                      </Button>
                     )}
-                  </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        if (!aiLoading) {
+                          setShowAIDialog(false);
+                          setAiPrompt('');
+                        }
+                      }}
+                      className="flex-1"
+                      disabled={aiLoading}
+                    >
+                      Close
+                    </Button>
+                  </>
+                ) : (
+                  <>
+                    <Button 
+                      onClick={
+                        aiAction === 'generate' ? handleAIGenerate : 
+                        aiAction === 'rewrite' ? handleAIRewrite :
+                        aiAction === 'generate-image' ? handleAIGenerateImage :
+                        null
+                      }
+                      className="flex-1 bg-purple-600 hover:bg-purple-700"
+                      disabled={aiLoading || ((aiAction === 'generate' || aiAction === 'generate-image') && !aiPrompt.trim())}
+                    >
+                      {aiLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          {aiAction === 'generate-image' ? 'Generating Image...' : 'Processing...'}
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          {aiAction === 'generate' ? 'Generate Slide' : 
+                           aiAction === 'rewrite' ? 'Rewrite Content' :
+                           aiAction === 'generate-image' ? 'Generate Image' : 'Process'}
+                        </>
+                      )}
+                    </Button>
+                    <Button 
+                      variant="outline" 
+                      onClick={() => {
+                        if (!aiLoading) {
+                          setShowAIDialog(false);
+                          setAiPrompt('');
+                        }
+                      }}
+                      className="flex-1"
+                      disabled={aiLoading}
+                    >
+                      Cancel
+                    </Button>
+                  </>
                 )}
-                <Button 
-                  variant="outline" 
-                  onClick={() => {
-                    if (!aiLoading) {
-                      setShowAIDialog(false);
-                      setAiPrompt('');
-                    }
-                  }}
-                  className="flex-1"
-                  disabled={aiLoading}
-                >
-                  {aiAction === 'images' ? 'Close' : 'Cancel'}
-                </Button>
               </div>
             </div>
           </div>
