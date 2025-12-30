@@ -103,6 +103,14 @@ CRITICAL REQUIREMENTS FOR PROFESSIONAL QUALITY:
 
 2. **Visual Elements**: Include in your HTML:
    - <img> tags with descriptive placeholder URLs like: https://via.placeholder.com/800x500/4F46E5/FFFFFF?text=Photosynthesis+Diagram
+   
+   **CRITICAL TEXT IN IMAGES:**
+   When adding text to images or placeholders:
+   1. Spelling must be 100% accurate
+   2. Use clear, high-contrast, legible fonts
+   3. Integrate text naturally (labels, diagrams, titles)
+   4. Do not hallucinate extra letters or characters
+   5. Each character must be clearly visible and correctly spelled
    - Styled <div> boxes for definitions (blue gradient background)
    - <table> for comparing concepts
    - Color-coded <span> elements for key terms
