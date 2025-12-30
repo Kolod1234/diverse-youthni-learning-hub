@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, designId, exportFormat } = await req.json();
+    const { action, designId, exportFormat, prompt } = await req.json();
 
     const clientId = Deno.env.get('CANVA_CLIENT_ID');
     const clientSecret = Deno.env.get('CANVA_CLIENT_SECRET');
@@ -63,9 +63,40 @@ Deno.serve(async (req) => {
       return Response.json({ embedUrl });
     }
 
+    // Generate image using Canva AI
+    if (action === 'generate_image' && prompt) {
+      const generateUrl = 'https://api.canva.com/v1/ai/images/generate';
+      
+      const generateResponse = await fetch(generateUrl, {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${clientSecret}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          prompt: prompt,
+          aspect_ratio: '16:9',
+          quality: 'standard'
+        })
+      });
+
+      if (!generateResponse.ok) {
+        return Response.json({ 
+          error: 'Failed to generate image with Canva AI',
+          status: generateResponse.status 
+        }, { status: 500 });
+      }
+
+      const imageData = await generateResponse.json();
+      return Response.json({ 
+        url: imageData.image?.url || imageData.url,
+        message: 'Image generated successfully with Canva AI'
+      });
+    }
+
     return Response.json({ 
       error: 'Invalid action',
-      validActions: ['create_design', 'export_design', 'get_embed_url']
+      validActions: ['create_design', 'export_design', 'get_embed_url', 'generate_image']
     }, { status: 400 });
 
   } catch (error) {
