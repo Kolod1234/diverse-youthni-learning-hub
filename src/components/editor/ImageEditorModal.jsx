@@ -288,6 +288,13 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         setIsDrawing(true);
         paintEraseMask(x, y);
       }
+    } else if (objectRemovalMode) {
+      if (removalTool === 'rectangle') {
+        setCurrentRemovalRegion({ startX: x, startY: y, endX: x, endY: y });
+      } else if (removalTool === 'brush') {
+        setIsDrawing(true);
+        paintRemovalMask(x, y);
+      }
     } else if (liquifyMode) {
       setIsDrawing(true);
       applyLiquify(e);
