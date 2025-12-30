@@ -15,54 +15,69 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = Deno.env.get('GEMINI_API_KEY');
+    const apiKey = Deno.env.get('STABILITY_API_KEY');
     
     if (!apiKey) {
       return Response.json({ 
-        error: 'GEMINI_API_KEY not configured' 
+        error: 'STABILITY_API_KEY not configured. Please add your Stability AI API key in settings.' 
       }, { status: 500 });
     }
 
-    // Use Gemini API with imagen-3.0-generate-001
-    const endpoint = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generate?key=${apiKey}`;
+    // Map aspect ratios
+    const aspectRatioMap = {
+      'landscape': '16:9',
+      'portrait': '9:16',
+      'square': '1:1',
+      '16:9': '16:9',
+      '9:16': '9:16',
+      '1:1': '1:1'
+    };
+
+    // Use Stable Diffusion via Stability AI API
+    const endpoint = 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image';
     
-    const imagenResponse = await fetch(endpoint, {
+    const sdResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json'
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${apiKey}`,
+        'Accept': 'application/json'
       },
       body: JSON.stringify({
-        prompt: prompt,
-        numberOfImages: 1,
-        aspectRatio: aspectRatio === 'landscape' ? '16:9' : aspectRatio === 'portrait' ? '9:16' : aspectRatio === 'square' ? '1:1' : '16:9'
+        text_prompts: [{
+          text: prompt,
+          weight: 1
+        }],
+        cfg_scale: 7,
+        height: aspectRatio === 'portrait' || aspectRatio === '9:16' ? 1344 : 1024,
+        width: aspectRatio === 'landscape' || aspectRatio === '16:9' ? 1792 : aspectRatio === 'portrait' || aspectRatio === '9:16' ? 768 : 1024,
+        samples: 1,
+        steps: 30
       })
     });
 
-    if (!imagenResponse.ok) {
-      const errorText = await imagenResponse.text();
-      console.error('Imagen API error:', errorText);
+    if (!sdResponse.ok) {
+      const errorText = await sdResponse.text();
+      console.error('Stable Diffusion API error:', errorText);
       return Response.json({ 
-        error: 'Failed to generate image with Imagen',
+        error: 'Failed to generate image with Stable Diffusion',
         details: errorText
-      }, { status: imagenResponse.status });
+      }, { status: sdResponse.status });
     }
 
-    const data = await imagenResponse.json();
+    const data = await sdResponse.json();
     
-    // Check for generated images
-    if (!data.generatedImages || data.generatedImages.length === 0) {
+    if (!data.artifacts || data.artifacts.length === 0) {
       return Response.json({ 
-        error: 'No image returned from Imagen' 
+        error: 'No image returned from Stable Diffusion' 
       }, { status: 500 });
     }
 
-    // Get the first generated image
-    const imageData = data.generatedImages[0];
-    const base64Image = imageData.bytesBase64Encoded || imageData.image;
+    const base64Image = data.artifacts[0].base64;
 
     if (!base64Image) {
       return Response.json({ 
-        error: 'Invalid image data from Imagen' 
+        error: 'Invalid image data from Stable Diffusion' 
       }, { status: 500 });
     }
 
@@ -71,7 +86,7 @@ Deno.serve(async (req) => {
 
     return Response.json({ 
       url: dataUrl,
-      message: 'Image generated successfully with Google Imagen'
+      message: 'Image generated successfully with Stable Diffusion'
     });
 
   } catch (error) {
