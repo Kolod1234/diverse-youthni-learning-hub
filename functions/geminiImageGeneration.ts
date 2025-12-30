@@ -35,7 +35,19 @@ Deno.serve(async (req) => {
           },
           body: JSON.stringify({
             model: 'dall-e-3',
-            prompt: `A professional educational infographic of ${prompt}. Ensure all text labels are spelled correctly, the layout is clear, and diagrams are accurate. High quality, suitable for classroom use.`,
+            prompt: `Create a high-resolution educational infographic of: ${prompt}
+
+CRITICAL TYPOGRAPHY REQUIREMENT:
+All text labels, titles, and annotations must be spelled 100% accurately.
+
+TEXT INSTRUCTIONS:
+1. Spelling must be perfect - verify all scientific and technical terms
+2. Font style: Bold, legible, high-contrast for classroom visibility
+3. Text placement: Integrated naturally (labels, diagrams, titles)
+4. Do not hallucinate extra letters or characters
+5. Each character must be clearly visible and correctly spelled
+
+Quality: Professional, suitable for classroom use, high detail`,
             n: 1,
             size: '1792x1024',
             quality: 'standard'
