@@ -7,6 +7,7 @@ import { Label } from '@/components/ui/label';
 import { Loader2, Sparkles, Lightbulb, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageSearchPreview from './ImageSearchPreview';
+import TextLayoutArchitect from './TextLayoutArchitect';
 
 export default function AIGenerateMode({ onSlidesGenerated }) {
   const [topic, setTopic] = useState('');
@@ -24,6 +25,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [currentSlideForImage, setCurrentSlideForImage] = useState(null);
   const [generatedSlides, setGeneratedSlides] = useState([]);
   const [enforceSpelling, setEnforceSpelling] = useState(true);
+  const [showArchitect, setShowArchitect] = useState(false);
+  const [architectPrompt, setArchitectPrompt] = useState('');
 
   const generateFromTopic = async () => {
     if (!topic.trim()) {
@@ -425,8 +428,18 @@ Educational Context:
                     }
                   } else if (imageGenerator === 'base44-pro') {
                     // Use Base44 AI Pro with optimized spelling
-                    const base44ProPrompt = enforceSpelling 
-                      ? `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
+                    let base44ProPrompt;
+                    
+                    if (architectPrompt) {
+                      // Use Text Layout Architect prompt structure
+                      base44ProPrompt = `${architectPrompt}
+
+Educational Context:
+- Topic: ${topic} - ${slide.title}
+- Level: ${levelInstructions[educationLevel]}
+- Purpose: ${slide.image_prompt}`;
+                    } else if (enforceSpelling) {
+                      base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
 
 CRITICAL TYPOGRAPHY REQUIREMENT:
 The diagram MUST feature perfectly spelled text and labels.
@@ -443,8 +456,10 @@ Educational Requirements:
 - Level: ${levelInstructions[educationLevel]}
 - Style: Professional, high-quality educational diagram
 - Purpose: Help students understand ${slide.image_prompt}
-- Quality: Premium classroom-ready visuals, no text artifacts`
-                      : `Create a high-resolution professional educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional, high-quality educational diagram`;
+- Quality: Premium classroom-ready visuals, no text artifacts`;
+                    } else {
+                      base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional, high-quality educational diagram`;
+                    }
 
                     generatedImage = await base44.integrations.Core.GenerateImage({
                       prompt: base44ProPrompt
@@ -628,6 +643,27 @@ Educational Requirements:
                       </p>
                     </Label>
                   </div>
+
+                  {imageGenerator === 'base44-pro' && (
+                    <div className="space-y-2">
+                      <Button
+                        type="button"
+                        onClick={() => setShowArchitect(!showArchitect)}
+                        variant="outline"
+                        className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
+                      >
+                        {showArchitect ? 'Hide' : 'Show'} Text Layout Architect (Advanced)
+                      </Button>
+                      {showArchitect && (
+                        <TextLayoutArchitect 
+                          onPromptGenerated={(prompt) => {
+                            setArchitectPrompt(prompt);
+                            toast.success('Architect prompt will be used for Base44 AI Pro images');
+                          }}
+                        />
+                      )}
+                    </div>
+                  )}
 
                   <div className="space-y-2">
                     <Label>Image Generator</Label>
