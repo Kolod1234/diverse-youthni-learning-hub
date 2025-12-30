@@ -7,6 +7,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo, Droplet, Palette, Circle, Square, Layers, Eye, EyeOff, ChevronUp, ChevronDown, Trash2, Copy, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import { createWorker } from 'tesseract.js';
 
 export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const canvasRef = useRef(null);
@@ -92,6 +93,15 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [history, setHistory] = useState([]);
   const [historyIndex, setHistoryIndex] = useState(-1);
 
+  // OCR text editing
+  const [ocrResult, setOcrResult] = useState(null);
+  const [ocrLoading, setOcrLoading] = useState(false);
+  const [ocrSearchText, setOcrSearchText] = useState('');
+  const [ocrTargetText, setOcrTargetText] = useState('');
+  const [ocrReplacementText, setOcrReplacementText] = useState('');
+  const [ocrRemoveText, setOcrRemoveText] = useState('');
+  const [ocrHighlightBoxes, setOcrHighlightBoxes] = useState([]);
+
   useEffect(() => {
     const img = new Image();
     img.crossOrigin = 'anonymous';
@@ -122,20 +132,23 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       setNextLayerId(1);
       compositeAllLayers([bgLayer]);
       saveToHistory();
-      
+
       // Initialize erase mask canvas for text highlighting
       const maskCanvas = document.createElement('canvas');
       maskCanvas.width = img.width;
       maskCanvas.height = img.height;
       setEraseMaskCanvas(maskCanvas);
-      
+
       // Initialize removal mask canvas for object removal
       const removalCanvas = document.createElement('canvas');
       removalCanvas.width = img.width;
       removalCanvas.height = img.height;
       setRemovalMaskCanvas(removalCanvas);
-    };
-    img.src = imageUrl;
+
+      // Perform OCR
+      performOCR(img);
+      };
+      img.src = imageUrl;
   }, [imageUrl]);
 
   const compositeAllLayers = (layersToComposite = layers) => {
@@ -1231,6 +1244,142 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     toast.success('Layers merged!');
   };
 
+  const performOCR = async (img) => {
+    setOcrLoading(true);
+    try {
+      const worker = await createWorker('eng');
+      const canvas = document.createElement('canvas');
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext('2d');
+      ctx.drawImage(img, 0, 0);
+      
+      const { data } = await worker.recognize(canvas);
+      setOcrResult(data);
+      await worker.terminate();
+      toast.success(`OCR detected ${data.words.length} words`);
+    } catch (error) {
+      console.error('OCR error:', error);
+      toast.error('OCR text detection failed');
+    } finally {
+      setOcrLoading(false);
+    }
+  };
+
+  const handleOCRHighlight = () => {
+    if (!ocrSearchText.trim() || !ocrResult) {
+      toast.error('Please enter text to search');
+      return;
+    }
+
+    const boxes = [];
+    ocrResult.words.forEach(word => {
+      if (word.text.toLowerCase().includes(ocrSearchText.toLowerCase())) {
+        const bbox = word.bbox;
+        boxes.push({
+          x: bbox.x0,
+          y: bbox.y0,
+          width: bbox.x1 - bbox.x0,
+          height: bbox.y1 - bbox.y0,
+          text: word.text
+        });
+      }
+    });
+
+    if (boxes.length > 0) {
+      setOcrHighlightBoxes(boxes);
+      drawOCRHighlights(boxes);
+      toast.success(`Found ${boxes.length} match(es)`);
+    } else {
+      toast.warning('Text not found in image');
+    }
+  };
+
+  const drawOCRHighlights = (boxes) => {
+    compositeAllLayers();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    boxes.forEach(box => {
+      ctx.fillStyle = 'rgba(255, 255, 0, 0.4)';
+      ctx.fillRect(box.x, box.y, box.width, box.height);
+      ctx.strokeStyle = '#FFC107';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(box.x, box.y, box.width, box.height);
+    });
+  };
+
+  const handleOCRReplace = () => {
+    if (!ocrTargetText.trim() || !ocrReplacementText.trim() || !ocrResult) {
+      toast.error('Please enter both target and replacement text');
+      return;
+    }
+
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const ctx = layer.canvas.getContext('2d');
+    
+    const matchingBoxes = [];
+    ocrResult.words.forEach(word => {
+      if (word.text.toLowerCase().includes(ocrTargetText.toLowerCase())) {
+        matchingBoxes.push(word.bbox);
+      }
+    });
+
+    if (matchingBoxes.length === 0) {
+      toast.warning('Target text not found');
+      return;
+    }
+
+    matchingBoxes.forEach(bbox => {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+      
+      const fontSize = Math.max(12, bbox.y1 - bbox.y0);
+      ctx.font = `${fontSize}px Arial`;
+      ctx.fillStyle = 'red';
+      ctx.fillText(ocrReplacementText, bbox.x0, bbox.y1 - 2);
+    });
+
+    updateActiveLayer();
+    saveToHistory();
+    toast.success(`Replaced ${matchingBoxes.length} occurrence(s)!`);
+  };
+
+  const handleOCRRemove = () => {
+    if (!ocrRemoveText.trim() || !ocrResult) {
+      toast.error('Please enter text to remove');
+      return;
+    }
+
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const ctx = layer.canvas.getContext('2d');
+    
+    const matchingBoxes = [];
+    ocrResult.words.forEach(word => {
+      if (word.text.toLowerCase().includes(ocrRemoveText.toLowerCase())) {
+        matchingBoxes.push(word.bbox);
+      }
+    });
+
+    if (matchingBoxes.length === 0) {
+      toast.warning('Text not found');
+      return;
+    }
+
+    matchingBoxes.forEach(bbox => {
+      ctx.fillStyle = 'white';
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+    });
+
+    updateActiveLayer();
+    saveToHistory();
+    toast.success(`Removed ${matchingBoxes.length} text occurrence(s)!`);
+  };
+
   const flattenImage = () => {
     const flatCanvas = document.createElement('canvas');
     const firstLayer = layers[0];
@@ -1804,6 +1953,97 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                         ? 'Select object areas, AI will remove them and regenerate background' 
                         : 'Paint over objects, AI will intelligently remove them'}
                     </p>
+                  </div>
+                </div>
+
+                {/* OCR Text Tools */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <Label className="text-base font-semibold mb-3 block flex items-center gap-2">
+                    <Type className="w-4 h-4" />
+                    OCR Text Tools
+                  </Label>
+                  
+                  {ocrLoading && (
+                    <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
+                      <div className="flex items-center gap-2">
+                        <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
+                        <span className="text-xs text-blue-800">Detecting text...</span>
+                      </div>
+                    </div>
+                  )}
+
+                  {ocrResult && (
+                    <div className="bg-green-50 border border-green-200 rounded p-2 mb-3">
+                      <span className="text-xs text-green-800">✅ Detected {ocrResult.words.length} words</span>
+                    </div>
+                  )}
+
+                  <div className="space-y-3">
+                    {/* Highlight */}
+                    <div>
+                      <Label className="text-sm">Highlight Text</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={ocrSearchText}
+                          onChange={(e) => setOcrSearchText(e.target.value)}
+                          placeholder="Search text"
+                          className="text-sm"
+                          onKeyPress={(e) => e.key === 'Enter' && handleOCRHighlight()}
+                          disabled={!ocrResult}
+                        />
+                        <Button size="sm" onClick={handleOCRHighlight} disabled={!ocrResult}>
+                          <Search className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
+
+                    {ocrHighlightBoxes.length > 0 && (
+                      <div className="bg-amber-50 p-2 rounded text-xs text-amber-800">
+                        Found {ocrHighlightBoxes.length} match(es)
+                        <Button size="sm" variant="ghost" onClick={() => { setOcrHighlightBoxes([]); compositeAllLayers(); }} className="ml-2 h-6">
+                          Clear
+                        </Button>
+                      </div>
+                    )}
+
+                    {/* Replace */}
+                    <div>
+                      <Label className="text-sm">Replace Text</Label>
+                      <Input
+                        value={ocrTargetText}
+                        onChange={(e) => setOcrTargetText(e.target.value)}
+                        placeholder="Find text"
+                        className="text-sm mt-1"
+                        disabled={!ocrResult}
+                      />
+                      <Input
+                        value={ocrReplacementText}
+                        onChange={(e) => setOcrReplacementText(e.target.value)}
+                        placeholder="Replace with"
+                        className="text-sm mt-1"
+                        disabled={!ocrResult}
+                      />
+                      <Button size="sm" onClick={handleOCRReplace} className="w-full mt-1" disabled={!ocrResult}>
+                        Replace
+                      </Button>
+                    </div>
+
+                    {/* Remove */}
+                    <div>
+                      <Label className="text-sm">Remove Text</Label>
+                      <div className="flex gap-2 mt-1">
+                        <Input
+                          value={ocrRemoveText}
+                          onChange={(e) => setOcrRemoveText(e.target.value)}
+                          placeholder="Text to remove"
+                          className="text-sm"
+                          disabled={!ocrResult}
+                        />
+                        <Button size="sm" onClick={handleOCRRemove} variant="destructive" disabled={!ocrResult}>
+                          <Eraser className="w-3 h-3" />
+                        </Button>
+                      </div>
+                    </div>
                   </div>
                 </div>
               </TabsContent>
