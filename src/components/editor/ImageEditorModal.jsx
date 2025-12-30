@@ -4,7 +4,7 @@ import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
 import { Slider } from '@/components/ui/slider';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo } from 'lucide-react';
+import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo, Droplet, Palette, Circle, Square } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
@@ -41,6 +41,36 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [highlightMode, setHighlightMode] = useState(false);
   const [textRegions, setTextRegions] = useState([]);
   const [currentRegion, setCurrentRegion] = useState(null);
+  
+  // Liquify/Warp tool
+  const [liquifyMode, setLiquifyMode] = useState(false);
+  const [warpStrength, setWarpStrength] = useState(30);
+  
+  // Color replacement
+  const [colorPickerMode, setColorPickerMode] = useState(false);
+  const [targetColor, setTargetColor] = useState('#000000');
+  const [replacementColor, setReplacementColor] = useState('#ff0000');
+  const [colorTolerance, setColorTolerance] = useState(30);
+  
+  // Vignette
+  const [vignetteIntensity, setVignetteIntensity] = useState(0);
+  
+  // Text tool
+  const [textMode, setTextMode] = useState(false);
+  const [textInput, setTextInput] = useState('');
+  const [fontSize, setFontSize] = useState(48);
+  const [textColor, setTextColor] = useState('#000000');
+  const [fontFamily, setFontFamily] = useState('Arial');
+  const [textOutline, setTextOutline] = useState(false);
+  const [textShadow, setTextShadow] = useState(false);
+  
+  // Shape tools
+  const [shapeMode, setShapeMode] = useState('');
+  const [shapeColor, setShapeColor] = useState('#4F46E5');
+  const [shapeFilled, setShapeFilled] = useState(false);
+  const [shapeLineWidth, setShapeLineWidth] = useState(2);
+  const [shapeStart, setShapeStart] = useState(null);
+  const [shapeEnd, setShapeEnd] = useState(null);
   
   // History for undo/redo
   const [history, setHistory] = useState([]);
@@ -82,6 +112,18 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     
     ctx.drawImage(img, 0, 0);
     ctx.restore();
+    
+    // Apply vignette
+    if (vignetteIntensity > 0) {
+      const gradient = ctx.createRadialGradient(
+        canvas.width / 2, canvas.height / 2, 0,
+        canvas.width / 2, canvas.height / 2, Math.max(canvas.width, canvas.height) / 1.5
+      );
+      gradient.addColorStop(0, 'rgba(0,0,0,0)');
+      gradient.addColorStop(1, `rgba(0,0,0,${vignetteIntensity / 100})`);
+      ctx.fillStyle = gradient;
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+    }
   };
 
   const saveToHistory = () => {
@@ -123,47 +165,50 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
   useEffect(() => {
     drawCanvas();
-  }, [brightness, contrast, saturation, blur, rotation]);
+  }, [brightness, contrast, saturation, blur, rotation, vignetteIntensity]);
 
   const handleMouseDown = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
     if (eraseMode) {
       setIsDrawing(true);
       erase(e);
     } else if (cropMode) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      setCropStart({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
+      setCropStart({ x, y });
     } else if (highlightMode) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      setCurrentRegion({
-        startX: e.clientX - rect.left,
-        startY: e.clientY - rect.top,
-        endX: e.clientX - rect.left,
-        endY: e.clientY - rect.top
-      });
+      setCurrentRegion({ startX: x, startY: y, endX: x, endY: y });
+    } else if (liquifyMode) {
+      setIsDrawing(true);
+      applyLiquify(e);
+    } else if (colorPickerMode) {
+      pickAndReplaceColor(x, y);
+    } else if (textMode) {
+      addText(x, y);
+    } else if (shapeMode) {
+      setShapeStart({ x, y });
     }
   };
 
   const handleMouseMove = (e) => {
+    const rect = canvasRef.current.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
     if (eraseMode && isDrawing) {
       erase(e);
     } else if (cropMode && cropStart) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      setCropEnd({
-        x: e.clientX - rect.left,
-        y: e.clientY - rect.top
-      });
+      setCropEnd({ x, y });
       drawCropRect();
     } else if (highlightMode && currentRegion) {
-      const rect = canvasRef.current.getBoundingClientRect();
-      setCurrentRegion({
-        ...currentRegion,
-        endX: e.clientX - rect.left,
-        endY: e.clientY - rect.top
-      });
+      setCurrentRegion({ ...currentRegion, endX: x, endY: y });
       drawTextRegions();
+    } else if (liquifyMode && isDrawing) {
+      applyLiquify(e);
+    } else if (shapeMode && shapeStart) {
+      setShapeEnd({ x, y });
+      drawShapePreview();
     }
   };
 
@@ -181,6 +226,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         toast.success('Text region highlighted!');
       }
       setCurrentRegion(null);
+    } else if (liquifyMode) {
+      setIsDrawing(false);
+      saveToHistory();
+    } else if (shapeMode && shapeStart && shapeEnd) {
+      drawShape();
+      setShapeStart(null);
+      setShapeEnd(null);
+      saveToHistory();
     }
   };
 
@@ -414,7 +467,195 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     setSaturation(100);
     setBlur(0);
     setRotation(0);
+    setVignetteIntensity(0);
     toast.success('Filters reset!');
+  };
+
+  const applyLiquify = (e) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const radius = warpStrength;
+    
+    for (let dx = -radius; dx <= radius; dx++) {
+      for (let dy = -radius; dy <= radius; dy++) {
+        const distance = Math.sqrt(dx * dx + dy * dy);
+        if (distance <= radius) {
+          const factor = (1 - distance / radius) * 0.5;
+          const srcX = Math.floor(x + dx - dx * factor);
+          const srcY = Math.floor(y + dy - dy * factor);
+          const destX = Math.floor(x + dx);
+          const destY = Math.floor(y + dy);
+          
+          if (srcX >= 0 && srcX < canvas.width && srcY >= 0 && srcY < canvas.height &&
+              destX >= 0 && destX < canvas.width && destY >= 0 && destY < canvas.height) {
+            const srcIdx = (srcY * canvas.width + srcX) * 4;
+            const destIdx = (destY * canvas.width + destX) * 4;
+            
+            imageData.data[destIdx] = imageData.data[srcIdx];
+            imageData.data[destIdx + 1] = imageData.data[srcIdx + 1];
+            imageData.data[destIdx + 2] = imageData.data[srcIdx + 2];
+            imageData.data[destIdx + 3] = imageData.data[srcIdx + 3];
+          }
+        }
+      }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+  };
+
+  const pickAndReplaceColor = (x, y) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+    const data = imageData.data;
+    
+    // Get target color from image
+    const idx = (Math.floor(y) * canvas.width + Math.floor(x)) * 4;
+    const tr = data[idx];
+    const tg = data[idx + 1];
+    const tb = data[idx + 2];
+    
+    // Parse replacement color
+    const hex = replacementColor.replace('#', '');
+    const rr = parseInt(hex.substring(0, 2), 16);
+    const rg = parseInt(hex.substring(2, 4), 16);
+    const rb = parseInt(hex.substring(4, 6), 16);
+    
+    // Replace similar colors
+    for (let i = 0; i < data.length; i += 4) {
+      const colorDiff = Math.sqrt(
+        Math.pow(data[i] - tr, 2) +
+        Math.pow(data[i + 1] - tg, 2) +
+        Math.pow(data[i + 2] - tb, 2)
+      );
+      
+      if (colorDiff <= colorTolerance) {
+        data[i] = rr;
+        data[i + 1] = rg;
+        data[i + 2] = rb;
+      }
+    }
+    
+    ctx.putImageData(imageData, 0, 0);
+    saveToHistory();
+    toast.success('Color replaced!');
+  };
+
+  const addText = (x, y) => {
+    if (!textInput.trim()) {
+      toast.error('Please enter text first');
+      return;
+    }
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.font = `${fontSize}px ${fontFamily}`;
+    ctx.fillStyle = textColor;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    
+    if (textShadow) {
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 5;
+      ctx.shadowOffsetX = 2;
+      ctx.shadowOffsetY = 2;
+    }
+    
+    if (textOutline) {
+      ctx.strokeStyle = '#000000';
+      ctx.lineWidth = 3;
+      ctx.strokeText(textInput, x, y);
+    }
+    
+    ctx.fillText(textInput, x, y);
+    
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    ctx.shadowOffsetX = 0;
+    ctx.shadowOffsetY = 0;
+    
+    saveToHistory();
+    toast.success('Text added!');
+  };
+
+  const drawShapePreview = () => {
+    if (!shapeStart || !shapeEnd) return;
+    
+    drawCanvas(image, true);
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.strokeStyle = shapeColor;
+    ctx.fillStyle = shapeColor;
+    ctx.lineWidth = shapeLineWidth;
+    ctx.setLineDash([5, 5]);
+    
+    const width = shapeEnd.x - shapeStart.x;
+    const height = shapeEnd.y - shapeStart.y;
+    
+    if (shapeMode === 'rectangle') {
+      if (shapeFilled) {
+        ctx.fillRect(shapeStart.x, shapeStart.y, width, height);
+      } else {
+        ctx.strokeRect(shapeStart.x, shapeStart.y, width, height);
+      }
+    } else if (shapeMode === 'circle') {
+      const radius = Math.sqrt(width * width + height * height) / 2;
+      const centerX = shapeStart.x + width / 2;
+      const centerY = shapeStart.y + height / 2;
+      
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      if (shapeFilled) {
+        ctx.fill();
+      } else {
+        ctx.stroke();
+      }
+    }
+    
+    ctx.setLineDash([]);
+  };
+
+  const drawShape = () => {
+    if (!shapeStart || !shapeEnd) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.strokeStyle = shapeColor;
+    ctx.fillStyle = shapeColor;
+    ctx.lineWidth = shapeLineWidth;
+    
+    const width = shapeEnd.x - shapeStart.x;
+    const height = shapeEnd.y - shapeStart.y;
+    
+    if (shapeMode === 'rectangle') {
+      if (shapeFilled) {
+        ctx.fillRect(shapeStart.x, shapeStart.y, width, height);
+      } else {
+        ctx.strokeRect(shapeStart.x, shapeStart.y, width, height);
+      }
+    } else if (shapeMode === 'circle') {
+      const radius = Math.sqrt(width * width + height * height) / 2;
+      const centerX = shapeStart.x + width / 2;
+      const centerY = shapeStart.y + height / 2;
+      
+      ctx.beginPath();
+      ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
+      if (shapeFilled) {
+        ctx.fill();
+      } else {
+        ctx.stroke();
+      }
+    }
+    
+    toast.success('Shape added!');
   };
 
   return (
@@ -452,9 +693,10 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
           {/* Tools Sidebar */}
           <div className="w-80 border-r bg-gray-50 p-4 overflow-y-auto">
             <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-2 mb-4">
+              <TabsList className="grid w-full grid-cols-3 mb-4">
                 <TabsTrigger value="filters">Filters</TabsTrigger>
                 <TabsTrigger value="tools">Tools</TabsTrigger>
+                <TabsTrigger value="advanced">Advanced</TabsTrigger>
               </TabsList>
 
               <TabsContent value="filters" className="space-y-4">
@@ -486,6 +728,12 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                   <Label>Rotation</Label>
                   <Slider value={[rotation]} onValueChange={(v) => setRotation(v[0])} min={0} max={360} step={1} className="mt-2" />
                   <span className="text-xs text-gray-600">{rotation}°</span>
+                </div>
+
+                <div>
+                  <Label>Vignette</Label>
+                  <Slider value={[vignetteIntensity]} onValueChange={(v) => setVignetteIntensity(v[0])} min={0} max={100} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{vignetteIntensity}%</span>
                 </div>
 
                 <Button onClick={resetFilters} variant="outline" className="w-full">
@@ -633,12 +881,216 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                   </div>
                 </div>
               </TabsContent>
+
+              <TabsContent value="advanced" className="space-y-4">
+                {/* Liquify Tool */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold">Liquify/Warp</Label>
+                    <Button
+                      size="sm"
+                      variant={liquifyMode ? 'default' : 'outline'}
+                      onClick={() => {
+                        setLiquifyMode(!liquifyMode);
+                        setEraseMode(false);
+                        setCropMode(false);
+                        setHighlightMode(false);
+                        setColorPickerMode(false);
+                        setTextMode(false);
+                        setShapeMode('');
+                      }}
+                    >
+                      <Droplet className="w-4 h-4 mr-1" />
+                      {liquifyMode ? 'Active' : 'Activate'}
+                    </Button>
+                  </div>
+                  {liquifyMode && (
+                    <div>
+                      <Label>Warp Strength</Label>
+                      <Slider value={[warpStrength]} onValueChange={(v) => setWarpStrength(v[0])} min={10} max={80} step={5} className="mt-2" />
+                      <span className="text-xs text-gray-600">{warpStrength}px</span>
+                      <p className="text-xs text-gray-500 mt-2">Click and drag to distort the image</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Color Replacement */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold">Color Replace</Label>
+                    <Button
+                      size="sm"
+                      variant={colorPickerMode ? 'default' : 'outline'}
+                      onClick={() => {
+                        setColorPickerMode(!colorPickerMode);
+                        setLiquifyMode(false);
+                        setEraseMode(false);
+                        setCropMode(false);
+                        setHighlightMode(false);
+                        setTextMode(false);
+                        setShapeMode('');
+                      }}
+                    >
+                      <Palette className="w-4 h-4 mr-1" />
+                      {colorPickerMode ? 'Active' : 'Activate'}
+                    </Button>
+                  </div>
+                  {colorPickerMode && (
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs">New Color</Label>
+                        <div className="flex gap-2 mt-1">
+                          <Input type="color" value={replacementColor} onChange={(e) => setReplacementColor(e.target.value)} className="w-16 h-10" />
+                          <Input type="text" value={replacementColor} onChange={(e) => setReplacementColor(e.target.value)} className="flex-1" />
+                        </div>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Tolerance</Label>
+                        <Slider value={[colorTolerance]} onValueChange={(v) => setColorTolerance(v[0])} min={1} max={100} step={1} className="mt-2" />
+                        <span className="text-xs text-gray-600">{colorTolerance}</span>
+                      </div>
+                      <p className="text-xs text-gray-500">Click a color on the image to replace it</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Text Tool */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold">Text Tool</Label>
+                    <Button
+                      size="sm"
+                      variant={textMode ? 'default' : 'outline'}
+                      onClick={() => {
+                        setTextMode(!textMode);
+                        setLiquifyMode(false);
+                        setColorPickerMode(false);
+                        setEraseMode(false);
+                        setCropMode(false);
+                        setHighlightMode(false);
+                        setShapeMode('');
+                      }}
+                    >
+                      <Type className="w-4 h-4 mr-1" />
+                      {textMode ? 'Active' : 'Activate'}
+                    </Button>
+                  </div>
+                  {textMode && (
+                    <div className="space-y-3">
+                      <div>
+                        <Label className="text-xs">Text</Label>
+                        <Input value={textInput} onChange={(e) => setTextInput(e.target.value)} placeholder="Enter text" className="mt-1" />
+                      </div>
+                      <div>
+                        <Label className="text-xs">Font</Label>
+                        <select value={fontFamily} onChange={(e) => setFontFamily(e.target.value)} className="w-full px-3 py-2 border rounded-lg text-sm mt-1">
+                          <option value="Arial">Arial</option>
+                          <option value="Helvetica">Helvetica</option>
+                          <option value="Times New Roman">Times New Roman</option>
+                          <option value="Georgia">Georgia</option>
+                          <option value="Courier New">Courier New</option>
+                          <option value="Verdana">Verdana</option>
+                          <option value="Impact">Impact</option>
+                          <option value="Comic Sans MS">Comic Sans MS</option>
+                        </select>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Size</Label>
+                        <Slider value={[fontSize]} onValueChange={(v) => setFontSize(v[0])} min={12} max={200} step={1} className="mt-2" />
+                        <span className="text-xs text-gray-600">{fontSize}px</span>
+                      </div>
+                      <div>
+                        <Label className="text-xs">Color</Label>
+                        <div className="flex gap-2 mt-1">
+                          <Input type="color" value={textColor} onChange={(e) => setTextColor(e.target.value)} className="w-16 h-10" />
+                          <Input type="text" value={textColor} onChange={(e) => setTextColor(e.target.value)} className="flex-1" />
+                        </div>
+                      </div>
+                      <div className="flex gap-4">
+                        <label className="flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={textOutline} onChange={(e) => setTextOutline(e.target.checked)} className="rounded" />
+                          Outline
+                        </label>
+                        <label className="flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={textShadow} onChange={(e) => setTextShadow(e.target.checked)} className="rounded" />
+                          Shadow
+                        </label>
+                      </div>
+                      <p className="text-xs text-gray-500">Click on image to place text</p>
+                    </div>
+                  )}
+                </div>
+
+                {/* Shape Tools */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <Label className="text-base font-semibold mb-3 block">Shape Tools</Label>
+                  <div className="space-y-3">
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant={shapeMode === 'rectangle' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setShapeMode(shapeMode === 'rectangle' ? '' : 'rectangle');
+                          setLiquifyMode(false);
+                          setColorPickerMode(false);
+                          setTextMode(false);
+                          setEraseMode(false);
+                          setCropMode(false);
+                          setHighlightMode(false);
+                        }}
+                        className="flex-1"
+                      >
+                        <Square className="w-4 h-4 mr-1" />
+                        Rectangle
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={shapeMode === 'circle' ? 'default' : 'outline'}
+                        onClick={() => {
+                          setShapeMode(shapeMode === 'circle' ? '' : 'circle');
+                          setLiquifyMode(false);
+                          setColorPickerMode(false);
+                          setTextMode(false);
+                          setEraseMode(false);
+                          setCropMode(false);
+                          setHighlightMode(false);
+                        }}
+                        className="flex-1"
+                      >
+                        <Circle className="w-4 h-4 mr-1" />
+                        Circle
+                      </Button>
+                    </div>
+                    {shapeMode && (
+                      <>
+                        <div>
+                          <Label className="text-xs">Color</Label>
+                          <div className="flex gap-2 mt-1">
+                            <Input type="color" value={shapeColor} onChange={(e) => setShapeColor(e.target.value)} className="w-16 h-10" />
+                            <Input type="text" value={shapeColor} onChange={(e) => setShapeColor(e.target.value)} className="flex-1" />
+                          </div>
+                        </div>
+                        <div>
+                          <Label className="text-xs">Line Width</Label>
+                          <Slider value={[shapeLineWidth]} onValueChange={(v) => setShapeLineWidth(v[0])} min={1} max={20} step={1} className="mt-2" />
+                          <span className="text-xs text-gray-600">{shapeLineWidth}px</span>
+                        </div>
+                        <label className="flex items-center gap-2 text-sm">
+                          <input type="checkbox" checked={shapeFilled} onChange={(e) => setShapeFilled(e.target.checked)} className="rounded" />
+                          Filled
+                        </label>
+                        <p className="text-xs text-gray-500">Click and drag to draw shape</p>
+                      </>
+                    )}
+                  </div>
+                </div>
+              </TabsContent>
             </Tabs>
           </div>
 
           {/* Canvas Area */}
           <div className="flex-1 flex items-center justify-center bg-gray-100 p-8 overflow-auto">
-            <div className="relative" style={{ cursor: eraseMode ? 'crosshair' : cropMode ? 'crosshair' : highlightMode ? 'crosshair' : 'default' }}>
+            <div className="relative" style={{ cursor: eraseMode || cropMode || highlightMode || liquifyMode || colorPickerMode || textMode || shapeMode ? 'crosshair' : 'default' }}>
               <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
@@ -660,6 +1112,26 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
               {highlightMode && (
                 <div className="absolute top-2 left-2 bg-amber-500 text-white px-3 py-1 rounded-full text-xs">
                   Highlight Text Mode - Click & Drag
+                </div>
+              )}
+              {liquifyMode && (
+                <div className="absolute top-2 left-2 bg-purple-600 text-white px-3 py-1 rounded-full text-xs">
+                  Liquify Mode - Click & Drag
+                </div>
+              )}
+              {colorPickerMode && (
+                <div className="absolute top-2 left-2 bg-pink-600 text-white px-3 py-1 rounded-full text-xs">
+                  Color Replace - Click Color
+                </div>
+              )}
+              {textMode && (
+                <div className="absolute top-2 left-2 bg-green-600 text-white px-3 py-1 rounded-full text-xs">
+                  Text Mode - Click to Place
+                </div>
+              )}
+              {shapeMode && (
+                <div className="absolute top-2 left-2 bg-blue-600 text-white px-3 py-1 rounded-full text-xs">
+                  {shapeMode === 'rectangle' ? 'Rectangle' : 'Circle'} - Click & Drag
                 </div>
               )}
             </div>
