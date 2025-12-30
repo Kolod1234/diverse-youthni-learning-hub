@@ -51,6 +51,27 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
     refetchInterval: 300000, // Auto-refresh every 5 minutes
   });
 
+  // Auto-import fresh news every 5 minutes
+  useEffect(() => {
+    const importAllSources = async () => {
+      const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather'];
+      try {
+        for (const source of sources) {
+          await base44.functions.invoke('importRSSFeeds', { source });
+        }
+      } catch (error) {
+        console.log('Auto-refresh RSS feeds:', error.message);
+      }
+    };
+
+    // Import immediately on mount
+    importAllSources();
+
+    // Then import every 5 minutes
+    const interval = setInterval(importAllSources, 300000);
+    return () => clearInterval(interval);
+  }, []);
+
   // Filter to show only recent news (last 3 days) and custom announcements
   const recentItems = feedItems.filter(item => {
     if (item.category === 'ANNOUNCEMENT') return true; // Always show announcements
