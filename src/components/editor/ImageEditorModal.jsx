@@ -101,6 +101,9 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [ocrReplacementText, setOcrReplacementText] = useState('');
   const [ocrRemoveText, setOcrRemoveText] = useState('');
   const [ocrHighlightBoxes, setOcrHighlightBoxes] = useState([]);
+  const [ocrLanguage, setOcrLanguage] = useState('eng');
+  const [ocrPreprocess, setOcrPreprocess] = useState(true);
+  const [ocrConfidence, setOcrConfidence] = useState(0);
 
   useEffect(() => {
     const img = new Image();
@@ -1244,25 +1247,74 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     toast.success('Layers merged!');
   };
 
+  const preprocessImageForOCR = (img) => {
+    const canvas = document.createElement('canvas');
+    canvas.width = img.width;
+    canvas.height = img.height;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(img, 0, 0);
+    
+    if (ocrPreprocess) {
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      
+      // Enhance contrast and convert to grayscale
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        // Increase contrast
+        const contrast = 1.5;
+        let val = ((avg - 128) * contrast) + 128;
+        val = Math.max(0, Math.min(255, val));
+        
+        // Apply threshold for better text detection
+        val = val > 128 ? 255 : 0;
+        
+        data[i] = data[i + 1] = data[i + 2] = val;
+      }
+      
+      ctx.putImageData(imageData, 0, 0);
+    }
+    
+    return canvas;
+  };
+
   const performOCR = async (img) => {
     setOcrLoading(true);
     try {
-      const worker = await createWorker('eng');
-      const canvas = document.createElement('canvas');
-      canvas.width = img.width;
-      canvas.height = img.height;
-      const ctx = canvas.getContext('2d');
-      ctx.drawImage(img, 0, 0);
+      const worker = await createWorker(ocrLanguage, 1, {
+        logger: (m) => {
+          if (m.status === 'recognizing text') {
+            console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+          }
+        }
+      });
       
+      await worker.setParameters({
+        tessedit_char_whitelist: '',
+        tessedit_pageseg_mode: '3', // Fully automatic page segmentation
+        preserve_interword_spaces: '1',
+      });
+      
+      const canvas = preprocessImageForOCR(img);
       const { data } = await worker.recognize(canvas);
+      
       setOcrResult(data);
+      const avgConfidence = Math.round(data.confidence);
+      setOcrConfidence(avgConfidence);
       await worker.terminate();
-      toast.success(`OCR detected ${data.words.length} words`);
+      
+      toast.success(`OCR detected ${data.words.length} words (${avgConfidence}% confidence)`);
     } catch (error) {
       console.error('OCR error:', error);
       toast.error('OCR text detection failed');
     } finally {
       setOcrLoading(false);
+    }
+  };
+
+  const rerunOCR = () => {
+    if (image) {
+      performOCR(image);
     }
   };
 
@@ -1963,18 +2015,75 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                     OCR Text Tools
                   </Label>
                   
+                  <div className="space-y-2 mb-3">
+                    <div>
+                      <Label className="text-xs">Language</Label>
+                      <select 
+                        value={ocrLanguage} 
+                        onChange={(e) => setOcrLanguage(e.target.value)}
+                        className="w-full px-2 py-1 border rounded text-sm mt-1"
+                        disabled={ocrLoading}
+                      >
+                        <option value="eng">English</option>
+                        <option value="spa">Spanish</option>
+                        <option value="fra">French</option>
+                        <option value="deu">German</option>
+                        <option value="ita">Italian</option>
+                        <option value="por">Portuguese</option>
+                        <option value="rus">Russian</option>
+                        <option value="ara">Arabic</option>
+                        <option value="chi_sim">Chinese (Simplified)</option>
+                        <option value="chi_tra">Chinese (Traditional)</option>
+                        <option value="jpn">Japanese</option>
+                        <option value="kor">Korean</option>
+                        <option value="hin">Hindi</option>
+                      </select>
+                    </div>
+                    
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="ocr-preprocess"
+                        checked={ocrPreprocess}
+                        onChange={(e) => setOcrPreprocess(e.target.checked)}
+                        className="rounded"
+                        disabled={ocrLoading}
+                      />
+                      <Label htmlFor="ocr-preprocess" className="text-xs cursor-pointer">
+                        Enhance image quality (for low quality/complex layouts)
+                      </Label>
+                    </div>
+                    
+                    <Button size="sm" onClick={rerunOCR} variant="outline" className="w-full" disabled={ocrLoading || !image}>
+                      {ocrLoading ? (
+                        <>
+                          <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Type className="w-3 h-3 mr-1" />
+                          Re-run OCR
+                        </>
+                      )}
+                    </Button>
+                  </div>
+                  
                   {ocrLoading && (
                     <div className="bg-blue-50 border border-blue-200 rounded p-2 mb-3">
                       <div className="flex items-center gap-2">
                         <Loader2 className="w-4 h-4 animate-spin text-blue-600" />
-                        <span className="text-xs text-blue-800">Detecting text...</span>
+                        <span className="text-xs text-blue-800">Detecting text with enhanced recognition...</span>
                       </div>
                     </div>
                   )}
 
                   {ocrResult && (
                     <div className="bg-green-50 border border-green-200 rounded p-2 mb-3">
-                      <span className="text-xs text-green-800">✅ Detected {ocrResult.words.length} words</span>
+                      <div className="text-xs text-green-800">
+                        <div>✅ Detected {ocrResult.words.length} words</div>
+                        <div className="mt-1">📊 Confidence: {ocrConfidence}%</div>
+                      </div>
                     </div>
                   )}
 
