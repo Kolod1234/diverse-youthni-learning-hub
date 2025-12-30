@@ -324,8 +324,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       });
       
       if (clickedWord) {
+        // Create a tighter bbox by analyzing the actual text pixels
+        const tighterBbox = getTightBoundingBox(clickedWord.bbox, image);
+        
         setSelectedTextBox({
-          bbox: clickedWord.bbox,
+          bbox: tighterBbox,
           text: clickedWord.text,
           originalWord: clickedWord,
           type: 'text'
@@ -335,10 +338,10 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         setEditingTextContent(clickedWord.text);
         
         // Estimate font size from bbox height
-        const estimatedSize = Math.max(12, clickedWord.bbox.y1 - clickedWord.bbox.y0);
+        const estimatedSize = Math.max(12, tighterBbox.y1 - tighterBbox.y0);
         setOcrFontSize(estimatedSize);
         
-        drawSelectedTextBox(clickedWord.bbox);
+        drawSelectedTextBox(tighterBbox);
         toast.success('Text selected! Edit in the panel →');
       }
       return;
@@ -1404,6 +1407,71 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     setNextLayerId(nextLayerId + 1);
     compositeAllLayers(newLayers);
     toast.success('Layers merged!');
+  };
+
+  const getTightBoundingBox = (bbox, img) => {
+    // Create a temporary canvas to analyze the text region
+    const tempCanvas = document.createElement('canvas');
+    const padding = 10; // Extra padding to check around the bbox
+    const width = (bbox.x1 - bbox.x0) + padding * 2;
+    const height = (bbox.y1 - bbox.y0) + padding * 2;
+    
+    tempCanvas.width = width;
+    tempCanvas.height = height;
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    // Draw the region of interest
+    tempCtx.drawImage(
+      img,
+      Math.max(0, bbox.x0 - padding), Math.max(0, bbox.y0 - padding),
+      width, height,
+      0, 0,
+      width, height
+    );
+    
+    const imageData = tempCtx.getImageData(0, 0, width, height);
+    const data = imageData.data;
+    
+    // Find actual content bounds by checking for non-background pixels
+    let minX = width, maxX = 0, minY = height, maxY = 0;
+    
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        const idx = (y * width + x) * 4;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        
+        // Check if pixel is text (not pure white/background)
+        // Detect any significantly colored or dark pixel
+        const isWhiteish = r > 230 && g > 230 && b > 230;
+        const avgColor = (r + g + b) / 3;
+        const colorVariation = Math.abs(r - avgColor) + Math.abs(g - avgColor) + Math.abs(b - avgColor);
+        
+        // Pixel is text if it's dark OR has significant color variation
+        const isText = !isWhiteish && (avgColor < 200 || colorVariation > 30);
+        
+        if (isText) {
+          minX = Math.min(minX, x);
+          maxX = Math.max(maxX, x);
+          minY = Math.min(minY, y);
+          maxY = Math.max(maxY, y);
+        }
+      }
+    }
+    
+    // If we found text pixels, use tight bounds; otherwise use original bbox
+    if (maxX > minX && maxY > minY) {
+      return {
+        x0: Math.max(0, bbox.x0 - padding + minX - 2),
+        y0: Math.max(0, bbox.y0 - padding + minY - 2),
+        x1: Math.min(img.width, bbox.x0 - padding + maxX + 2),
+        y1: Math.min(img.height, bbox.y0 - padding + maxY + 2)
+      };
+    }
+    
+    // Fallback to original bbox if no clear text found
+    return bbox;
   };
 
   const createMultiplePreprocessedVersions = (img) => {
