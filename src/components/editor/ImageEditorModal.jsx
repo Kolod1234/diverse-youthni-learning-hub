@@ -1406,66 +1406,98 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     toast.success('Layers merged!');
   };
 
-  const preprocessImageForOCR = (img) => {
-    const canvas = document.createElement('canvas');
-    canvas.width = img.width;
-    canvas.height = img.height;
-    const ctx = canvas.getContext('2d');
-    ctx.drawImage(img, 0, 0);
+  const createMultiplePreprocessedVersions = (img) => {
+    const versions = [];
     
-    if (ocrPreprocess) {
-      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const data = imageData.data;
-      
-      // Advanced preprocessing for all text colors
-      for (let i = 0; i < data.length; i += 4) {
-        const r = data[i];
-        const g = data[i + 1];
-        const b = data[i + 2];
-        
-        // Convert to grayscale using luminosity method (better for colored text)
-        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
-        
-        // Adaptive contrast enhancement
-        const contrast = 1.8;
-        let enhanced = ((gray - 128) * contrast) + 128;
-        enhanced = Math.max(0, Math.min(255, enhanced));
-        
-        // Adaptive thresholding - better for varied backgrounds
-        const threshold = 140;
-        const val = enhanced > threshold ? 255 : 0;
-        
-        data[i] = data[i + 1] = data[i + 2] = val;
-      }
-      
-      ctx.putImageData(imageData, 0, 0);
-      
-      // Additional sharpening pass for embedded text
-      const sharpenData = ctx.getImageData(0, 0, canvas.width, canvas.height);
-      const sharpen = sharpenData.data;
-      
-      for (let y = 1; y < canvas.height - 1; y++) {
-        for (let x = 1; x < canvas.width - 1; x++) {
-          const idx = (y * canvas.width + x) * 4;
-          const center = sharpen[idx];
-          
-          // Sharpening kernel
-          const top = sharpen[((y - 1) * canvas.width + x) * 4];
-          const bottom = sharpen[((y + 1) * canvas.width + x) * 4];
-          const left = sharpen[(y * canvas.width + (x - 1)) * 4];
-          const right = sharpen[(y * canvas.width + (x + 1)) * 4];
-          
-          const sharpened = center * 5 - top - bottom - left - right;
-          const clamped = Math.max(0, Math.min(255, sharpened));
-          
-          sharpen[idx] = sharpen[idx + 1] = sharpen[idx + 2] = clamped;
-        }
-      }
-      
-      ctx.putImageData(sharpenData, 0, 0);
+    // Version 1: Standard grayscale with high contrast (for black text)
+    const canvas1 = document.createElement('canvas');
+    canvas1.width = img.width;
+    canvas1.height = img.height;
+    const ctx1 = canvas1.getContext('2d');
+    ctx1.drawImage(img, 0, 0);
+    const data1 = ctx1.getImageData(0, 0, canvas1.width, canvas1.height);
+    
+    for (let i = 0; i < data1.data.length; i += 4) {
+      const gray = 0.299 * data1.data[i] + 0.587 * data1.data[i + 1] + 0.114 * data1.data[i + 2];
+      const val = gray > 127 ? 255 : 0;
+      data1.data[i] = data1.data[i + 1] = data1.data[i + 2] = val;
     }
+    ctx1.putImageData(data1, 0, 0);
+    versions.push(canvas1);
     
-    return canvas;
+    // Version 2: Inverted for white text on colored backgrounds
+    const canvas2 = document.createElement('canvas');
+    canvas2.width = img.width;
+    canvas2.height = img.height;
+    const ctx2 = canvas2.getContext('2d');
+    ctx2.drawImage(img, 0, 0);
+    const data2 = ctx2.getImageData(0, 0, canvas2.width, canvas2.height);
+    
+    for (let i = 0; i < data2.data.length; i += 4) {
+      const gray = 0.299 * data2.data[i] + 0.587 * data2.data[i + 1] + 0.114 * data2.data[i + 2];
+      const val = gray > 127 ? 0 : 255;
+      data2.data[i] = data2.data[i + 1] = data2.data[i + 2] = val;
+    }
+    ctx2.putImageData(data2, 0, 0);
+    versions.push(canvas2);
+    
+    // Version 3: Blue channel extraction (for blue text)
+    const canvas3 = document.createElement('canvas');
+    canvas3.width = img.width;
+    canvas3.height = img.height;
+    const ctx3 = canvas3.getContext('2d');
+    ctx3.drawImage(img, 0, 0);
+    const data3 = ctx3.getImageData(0, 0, canvas3.width, canvas3.height);
+    
+    for (let i = 0; i < data3.data.length; i += 4) {
+      const r = data3.data[i];
+      const g = data3.data[i + 1];
+      const b = data3.data[i + 2];
+      // Enhance blue text by looking at blue-red-green differences
+      const blueStrength = b - (r + g) / 2;
+      const val = blueStrength > 20 ? 0 : 255;
+      data3.data[i] = data3.data[i + 1] = data3.data[i + 2] = val;
+    }
+    ctx3.putImageData(data3, 0, 0);
+    versions.push(canvas3);
+    
+    // Version 4: Adaptive local thresholding (for varying backgrounds)
+    const canvas4 = document.createElement('canvas');
+    canvas4.width = img.width;
+    canvas4.height = img.height;
+    const ctx4 = canvas4.getContext('2d');
+    ctx4.drawImage(img, 0, 0);
+    const data4 = ctx4.getImageData(0, 0, canvas4.width, canvas4.height);
+    const width = canvas4.width;
+    const height = canvas4.height;
+    
+    // Calculate local means for adaptive thresholding
+    const windowSize = 15;
+    for (let y = 0; y < height; y++) {
+      for (let x = 0; x < width; x++) {
+        let sum = 0;
+        let count = 0;
+        
+        for (let wy = Math.max(0, y - windowSize); wy < Math.min(height, y + windowSize); wy++) {
+          for (let wx = Math.max(0, x - windowSize); wx < Math.min(width, x + windowSize); wx++) {
+            const idx = (wy * width + wx) * 4;
+            const gray = 0.299 * data4.data[idx] + 0.587 * data4.data[idx + 1] + 0.114 * data4.data[idx + 2];
+            sum += gray;
+            count++;
+          }
+        }
+        
+        const localMean = sum / count;
+        const idx = (y * width + x) * 4;
+        const gray = 0.299 * data4.data[idx] + 0.587 * data4.data[idx + 1] + 0.114 * data4.data[idx + 2];
+        const val = gray > localMean - 10 ? 255 : 0;
+        data4.data[idx] = data4.data[idx + 1] = data4.data[idx + 2] = val;
+      }
+    }
+    ctx4.putImageData(data4, 0, 0);
+    versions.push(canvas4);
+    
+    return versions;
   };
 
   const performOCR = async (img) => {
@@ -1479,26 +1511,37 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         }
       });
       
-      // Enhanced parameters for better text detection
       await worker.setParameters({
-        tessedit_char_whitelist: '', // Allow all characters
-        tessedit_pageseg_mode: '1', // Automatic with OSD (better for complex layouts)
+        tessedit_char_whitelist: '',
+        tessedit_pageseg_mode: '1',
         preserve_interword_spaces: '1',
-        tessedit_ocr_engine_mode: '1', // Neural nets LSTM only (best accuracy)
-        // Enhance detection of text in objects and colored backgrounds
-        textord_heavy_nr: '1',
-        textord_min_linesize: '1.5',
-        edges_max_children_per_outline: '40',
-        edges_children_count_limit: '45',
-        // Better handling of colored and embedded text
-        textord_noise_area_ratio: '0.7',
-        textord_initialx_ile: '1.0',
+        tessedit_ocr_engine_mode: '1',
       });
       
-      const canvas = preprocessImageForOCR(img);
-      const { data } = await worker.recognize(canvas);
+      const allWords = [];
+      const seenWords = new Set();
       
-      // Also try on original image for colored text
+      if (ocrPreprocess) {
+        // Run OCR on multiple preprocessed versions
+        const versions = createMultiplePreprocessedVersions(img);
+        
+        for (let i = 0; i < versions.length; i++) {
+          try {
+            const { data } = await worker.recognize(versions[i]);
+            data.words.forEach(word => {
+              const key = `${word.text}_${Math.round(word.bbox.x0)}_${Math.round(word.bbox.y0)}`;
+              if (!seenWords.has(key) && word.text.trim().length > 0) {
+                seenWords.add(key);
+                allWords.push(word);
+              }
+            });
+          } catch (e) {
+            console.warn(`OCR pass ${i + 1} failed:`, e);
+          }
+        }
+      }
+      
+      // Also run on original image
       const originalCanvas = document.createElement('canvas');
       originalCanvas.width = img.width;
       originalCanvas.height = img.height;
@@ -1506,16 +1549,29 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       originalCtx.drawImage(img, 0, 0);
       
       const { data: originalData } = await worker.recognize(originalCanvas);
+      originalData.words.forEach(word => {
+        const key = `${word.text}_${Math.round(word.bbox.x0)}_${Math.round(word.bbox.y0)}`;
+        if (!seenWords.has(key) && word.text.trim().length > 0) {
+          seenWords.add(key);
+          allWords.push(word);
+        }
+      });
       
-      // Merge results - prioritize more words found
-      const finalData = originalData.words.length > data.words.length ? originalData : data;
+      // Create combined result
+      const combinedData = {
+        ...originalData,
+        words: allWords,
+        text: allWords.map(w => w.text).join(' ')
+      };
       
-      setOcrResult(finalData);
-      const avgConfidence = Math.round(finalData.confidence);
+      setOcrResult(combinedData);
+      const avgConfidence = allWords.length > 0 
+        ? Math.round(allWords.reduce((sum, w) => sum + w.confidence, 0) / allWords.length)
+        : 0;
       setOcrConfidence(avgConfidence);
       await worker.terminate();
       
-      toast.success(`OCR detected ${finalData.words.length} words (${avgConfidence}% confidence)`);
+      toast.success(`OCR detected ${allWords.length} words (${avgConfidence}% confidence)`);
     } catch (error) {
       console.error('OCR error:', error);
       toast.error('OCR text detection failed');
