@@ -393,12 +393,24 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     ctx.setLineDash([]);
   };
 
+  const paintEraseMask = (x, y) => {
+    if (!eraseMaskCanvas) return;
+    
+    const ctx = eraseMaskCanvas.getContext('2d');
+    ctx.fillStyle = 'white';
+    ctx.beginPath();
+    ctx.arc(x, y, highlightBrushSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    
+    drawTextRegions();
+  };
+
   const drawTextRegions = () => {
     compositeAllLayers();
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
     
-    // Draw existing regions
+    // Draw rectangle regions
     textRegions.forEach((region) => {
       const x = Math.min(region.startX, region.endX);
       const y = Math.min(region.startY, region.endY);
@@ -412,7 +424,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       ctx.strokeRect(x, y, width, height);
     });
     
-    // Draw current region being drawn
+    // Draw current rectangle region being drawn
     if (currentRegion) {
       const x = Math.min(currentRegion.startX, currentRegion.endX);
       const y = Math.min(currentRegion.startY, currentRegion.endY);
@@ -426,6 +438,13 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       ctx.setLineDash([5, 5]);
       ctx.strokeRect(x, y, width, height);
       ctx.setLineDash([]);
+    }
+    
+    // Draw brush-painted mask overlay
+    if (eraseMaskCanvas && highlightTool === 'brush') {
+      ctx.globalAlpha = 0.4;
+      ctx.drawImage(eraseMaskCanvas, 0, 0);
+      ctx.globalAlpha = 1;
     }
   };
 
