@@ -112,6 +112,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [ocrTextColor, setOcrTextColor] = useState('#000000');
   const [ocrAutoCorrect, setOcrAutoCorrect] = useState(true);
   const [copiedText, setCopiedText] = useState('');
+  const [ocrFontSize, setOcrFontSize] = useState(16);
+  const [cursorMode, setCursorMode] = useState('default'); // 'default', 'text-select', 'edit', 'drag'
+  const [selectedTextBox, setSelectedTextBox] = useState(null);
+  const [isEditingText, setIsEditingText] = useState(false);
+  const [editingTextContent, setEditingTextContent] = useState('');
 
   useEffect(() => {
     const img = new Image();
@@ -297,8 +302,37 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
   const handleMouseDown = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+    
+    // OCR text selection mode
+    if (cursorMode === 'text-select' && ocrResult) {
+      const clickedWord = ocrResult.words.find(word => {
+        const bbox = word.bbox;
+        return x >= bbox.x0 && x <= bbox.x1 && y >= bbox.y0 && y <= bbox.y1;
+      });
+      
+      if (clickedWord) {
+        setSelectedTextBox({
+          bbox: clickedWord.bbox,
+          text: clickedWord.text,
+          originalWord: clickedWord
+        });
+        setOcrTargetText(clickedWord.text);
+        setOcrReplacementText(clickedWord.text);
+        setEditingTextContent(clickedWord.text);
+        
+        // Estimate font size from bbox height
+        const estimatedSize = Math.max(12, clickedWord.bbox.y1 - clickedWord.bbox.y0);
+        setOcrFontSize(estimatedSize);
+        
+        drawSelectedTextBox(clickedWord.bbox);
+        toast.success('Text selected! Edit in the panel →');
+      }
+      return;
+    }
     
     if (eraseMode) {
       setIsDrawing(true);
@@ -333,8 +367,10 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
   const handleMouseMove = (e) => {
     const rect = canvasRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
+    const scaleX = canvasRef.current.width / rect.width;
+    const scaleY = canvasRef.current.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
     
     if (eraseMode && isDrawing) {
       erase(e);
@@ -1369,6 +1405,26 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     });
   };
 
+  const drawSelectedTextBox = (bbox) => {
+    compositeAllLayers();
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+    ctx.fillRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+    ctx.strokeStyle = '#3B82F6';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+    
+    // Draw resize handles
+    const handleSize = 6;
+    ctx.fillStyle = '#3B82F6';
+    ctx.fillRect(bbox.x1 - handleSize/2, bbox.y0 - handleSize/2, handleSize, handleSize);
+    ctx.fillRect(bbox.x1 - handleSize/2, bbox.y1 - handleSize/2, handleSize, handleSize);
+    ctx.fillRect(bbox.x0 - handleSize/2, bbox.y0 - handleSize/2, handleSize, handleSize);
+    ctx.fillRect(bbox.x0 - handleSize/2, bbox.y1 - handleSize/2, handleSize, handleSize);
+  };
+
   const autoCorrectText = (text) => {
     if (!ocrAutoCorrect) return text;
     
@@ -1424,9 +1480,79 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     img.src = lastState;
   };
 
+  const applyTextReplacement = (bbox, replacementText) => {
+    const layer = getActiveLayer();
+    if (!layer) return;
+
+    const ctx = layer.canvas.getContext('2d');
+    
+    const correctedText = autoCorrectText(replacementText);
+    
+    if (correctedText !== replacementText && ocrAutoCorrect) {
+      toast.info(`Auto-corrected to: "${correctedText}"`);
+    }
+    const width = bbox.x1 - bbox.x0;
+    const height = bbox.y1 - bbox.y0;
+    
+    // Advanced inpainting - blend with surrounding colors
+    const surroundingData = ctx.getImageData(
+      Math.max(0, bbox.x0 - 5),
+      Math.max(0, bbox.y0 - 5),
+      Math.min(10, layer.canvas.width - bbox.x0),
+      Math.min(10, layer.canvas.height - bbox.y0)
+    );
+    
+    const avgColor = { r: 0, g: 0, b: 0 };
+    const pixels = surroundingData.data.length / 4;
+    for (let i = 0; i < surroundingData.data.length; i += 4) {
+      avgColor.r += surroundingData.data[i];
+      avgColor.g += surroundingData.data[i + 1];
+      avgColor.b += surroundingData.data[i + 2];
+    }
+    avgColor.r = Math.round(avgColor.r / pixels);
+    avgColor.g = Math.round(avgColor.g / pixels);
+    avgColor.b = Math.round(avgColor.b / pixels);
+    
+    // Fill with blended background
+    ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
+    ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, width + 4, height + 4);
+    
+    // Apply new text with styling
+    const fontSize = ocrFontSize || Math.max(12, height);
+    let fontStyle = '';
+    if (ocrFontItalic) fontStyle += 'italic ';
+    if (ocrFontBold) fontStyle += 'bold ';
+    
+    ctx.font = `${fontStyle}${fontSize}px ${ocrFontFamily}`;
+    ctx.fillStyle = ocrTextColor;
+    ctx.textBaseline = 'bottom';
+    
+    // Add shadow for better readability
+    ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
+    ctx.shadowBlur = 2;
+    ctx.shadowOffsetX = 1;
+    ctx.shadowOffsetY = 1;
+    
+    ctx.fillText(correctedText, bbox.x0, bbox.y1);
+    
+    if (ocrFontUnderline) {
+      const textWidth = ctx.measureText(correctedText).width;
+      ctx.beginPath();
+      ctx.moveTo(bbox.x0, bbox.y1 + 2);
+      ctx.lineTo(bbox.x0 + textWidth, bbox.y1 + 2);
+      ctx.strokeStyle = ocrTextColor;
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    }
+    
+    ctx.shadowColor = 'transparent';
+    updateActiveLayer();
+    saveToHistory();
+  };
+
   const handleOCRReplace = async () => {
-    if (!ocrTargetText.trim() || !ocrReplacementText.trim() || !ocrResult) {
-      toast.error('Please enter both target and replacement text');
+    if (!ocrReplacementText.trim() || !ocrResult) {
+      toast.error('Please enter replacement text');
       return;
     }
 
@@ -1434,87 +1560,35 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     if (!layer) return;
 
     saveOCRHistory(layer);
-
-    const ctx = layer.canvas.getContext('2d');
     
-    const matchingBoxes = [];
-    ocrResult.words.forEach(word => {
-      if (word.text.toLowerCase().includes(ocrTargetText.toLowerCase())) {
-        matchingBoxes.push(word.bbox);
-      }
-    });
+    if (selectedTextBox) {
+      // Replace selected text only
+      applyTextReplacement(selectedTextBox.bbox, ocrReplacementText);
+      setSelectedTextBox(null);
+      compositeAllLayers();
+      toast.success('Text replaced!');
+    } else if (ocrTargetText.trim()) {
+      // Search and replace all matches
+      const matchingBoxes = [];
+      ocrResult.words.forEach(word => {
+        if (word.text.toLowerCase().includes(ocrTargetText.toLowerCase())) {
+          matchingBoxes.push(word.bbox);
+        }
+      });
 
-    if (matchingBoxes.length === 0) {
-      toast.warning('Target text not found');
-      return;
+      if (matchingBoxes.length === 0) {
+        toast.warning('Target text not found');
+        return;
+      }
+
+      matchingBoxes.forEach(bbox => {
+        applyTextReplacement(bbox, ocrReplacementText);
+      });
+
+      toast.success(`Replaced ${matchingBoxes.length} occurrence(s)!`);
+    } else {
+      toast.error('Please select text or enter text to find');
     }
-
-    const correctedText = autoCorrectText(ocrReplacementText);
-    if (correctedText !== ocrReplacementText) {
-      toast.info(`Auto-corrected to: "${correctedText}"`);
-    }
-
-    matchingBoxes.forEach(bbox => {
-      const width = bbox.x1 - bbox.x0;
-      const height = bbox.y1 - bbox.y0;
-      
-      // Advanced inpainting - blend with surrounding colors
-      const surroundingData = ctx.getImageData(
-        Math.max(0, bbox.x0 - 5),
-        Math.max(0, bbox.y0 - 5),
-        Math.min(10, layer.canvas.width - bbox.x0),
-        Math.min(10, layer.canvas.height - bbox.y0)
-      );
-      
-      const avgColor = { r: 0, g: 0, b: 0 };
-      const pixels = surroundingData.data.length / 4;
-      for (let i = 0; i < surroundingData.data.length; i += 4) {
-        avgColor.r += surroundingData.data[i];
-        avgColor.g += surroundingData.data[i + 1];
-        avgColor.b += surroundingData.data[i + 2];
-      }
-      avgColor.r = Math.round(avgColor.r / pixels);
-      avgColor.g = Math.round(avgColor.g / pixels);
-      avgColor.b = Math.round(avgColor.b / pixels);
-      
-      // Fill with blended background
-      ctx.fillStyle = `rgb(${avgColor.r}, ${avgColor.g}, ${avgColor.b})`;
-      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, width + 4, height + 4);
-      
-      // Apply new text with styling
-      const fontSize = Math.max(12, height);
-      let fontStyle = '';
-      if (ocrFontItalic) fontStyle += 'italic ';
-      if (ocrFontBold) fontStyle += 'bold ';
-      
-      ctx.font = `${fontStyle}${fontSize}px ${ocrFontFamily}`;
-      ctx.fillStyle = ocrTextColor;
-      ctx.textBaseline = 'bottom';
-      
-      // Add shadow for better readability
-      ctx.shadowColor = 'rgba(0, 0, 0, 0.3)';
-      ctx.shadowBlur = 2;
-      ctx.shadowOffsetX = 1;
-      ctx.shadowOffsetY = 1;
-      
-      ctx.fillText(correctedText, bbox.x0, bbox.y1);
-      
-      if (ocrFontUnderline) {
-        const textWidth = ctx.measureText(correctedText).width;
-        ctx.beginPath();
-        ctx.moveTo(bbox.x0, bbox.y1 + 2);
-        ctx.lineTo(bbox.x0 + textWidth, bbox.y1 + 2);
-        ctx.strokeStyle = ocrTextColor;
-        ctx.lineWidth = 1;
-        ctx.stroke();
-      }
-      
-      ctx.shadowColor = 'transparent';
-    });
-
-    updateActiveLayer();
-    saveToHistory();
-    toast.success(`Replaced ${matchingBoxes.length} occurrence(s) with styled text!`);
   };
 
   const handleOCRRemove = () => {
@@ -2254,6 +2328,73 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                     </div>
                   )}
 
+                  {/* Cursor Mode Selector */}
+                  <div className="p-3 bg-blue-50 border border-blue-200 rounded-lg mb-3">
+                    <Label className="text-xs font-semibold mb-2 block">Cursor Mode</Label>
+                    <div className="grid grid-cols-2 gap-2">
+                      <Button
+                        size="sm"
+                        variant={cursorMode === 'default' ? 'default' : 'outline'}
+                        onClick={() => setCursorMode('default')}
+                        className="text-xs"
+                      >
+                        🖱️ Default
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={cursorMode === 'text-select' ? 'default' : 'outline'}
+                        onClick={() => setCursorMode('text-select')}
+                        className="text-xs"
+                        disabled={!ocrResult}
+                      >
+                        📝 Select Text
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={cursorMode === 'drag' ? 'default' : 'outline'}
+                        onClick={() => setCursorMode('drag')}
+                        className="text-xs"
+                      >
+                        ✋ Drag
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={cursorMode === 'zoom' ? 'default' : 'outline'}
+                        onClick={() => setCursorMode('zoom')}
+                        className="text-xs"
+                      >
+                        🔍 Zoom
+                      </Button>
+                    </div>
+                    {cursorMode === 'text-select' && (
+                      <p className="text-xs text-blue-700 mt-2">
+                        Click on any text in the image to select and edit it
+                      </p>
+                    )}
+                  </div>
+
+                  {selectedTextBox && (
+                    <div className="p-3 bg-green-50 border border-green-200 rounded-lg mb-3">
+                      <div className="flex justify-between items-center mb-2">
+                        <Label className="text-xs font-semibold">Selected Text</Label>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setSelectedTextBox(null);
+                            compositeAllLayers();
+                          }}
+                          className="h-6 text-xs"
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                      <div className="text-xs text-green-800 bg-white p-2 rounded">
+                        "{selectedTextBox.text}"
+                      </div>
+                    </div>
+                  )}
+
                   <div className="space-y-3">
                     {/* Highlight */}
                     <div>
@@ -2311,6 +2452,21 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                       </div>
                       
                       <div className="mt-2 space-y-2">
+                        <div>
+                          <Label className="text-xs">Font Size</Label>
+                          <div className="flex gap-2 items-center mt-1">
+                            <Input
+                              type="number"
+                              value={ocrFontSize}
+                              onChange={(e) => setOcrFontSize(Number(e.target.value))}
+                              min="8"
+                              max="200"
+                              className="text-xs"
+                            />
+                            <span className="text-xs text-gray-500">px</span>
+                          </div>
+                        </div>
+                        
                         <div>
                           <Label className="text-xs">Font Family</Label>
                           <select 
@@ -2628,7 +2784,15 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
           {/* Canvas Area */}
           <div className="flex-1 flex items-center justify-center bg-gray-100 p-8 overflow-auto">
-            <div className="relative" style={{ cursor: eraseMode || cropMode || highlightMode || objectRemovalMode || liquifyMode || colorPickerMode || textMode || shapeMode ? 'crosshair' : 'default' }}>
+            <div className="relative" style={{ 
+              cursor: 
+                eraseMode || cropMode || highlightMode || objectRemovalMode || liquifyMode || colorPickerMode || shapeMode ? 'crosshair' :
+                textMode ? 'text' :
+                cursorMode === 'text-select' ? 'text' :
+                cursorMode === 'drag' ? 'move' :
+                cursorMode === 'zoom' ? 'zoom-in' :
+                'default'
+            }}>
               <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
