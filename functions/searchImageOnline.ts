@@ -91,20 +91,29 @@ Prioritize sources:
 Return ONLY the direct image URL (must end in .png, .jpg, .jpeg, .svg, or .gif).
 Choose the image that best illustrates the specific topic "${query}" within the presentation context.`;
 
-    // Use AI with Google Search to find real images from the web
-    const searchPrompt = `Search Google for educational images about: "${query}"
-${slideTitle ? `\nSlide title: "${slideTitle}"` : ''}
-${slideContent ? `\nSlide content context: "${slideContent.replace(/<[^>]*>/g, ' ').substring(0, 200)}"` : ''}
+    // Use AI with Google Search to find real, DIVERSE images from the web
+    const searchPrompt = `You are searching Google for educational images about: "${query}"
+${slideTitle ? `Context - Slide title: "${slideTitle}"` : ''}
+${slideContent ? `Context - Slide content: "${slideContent.replace(/<[^>]*>/g, ' ').substring(0, 200)}"` : ''}
 
-SEARCH REQUIREMENTS:
-- Use Google to find REAL, high-quality educational images
-- Look for: ${styleGuide[style] || 'educational diagrams, illustrations, or photographs'}
-- Focus on authoritative sources: Wikimedia Commons, .edu domains, science websites, educational publishers
-- Find images that DIRECTLY illustrate the topic "${query}"
-- Ensure images are publicly accessible and have proper URLs ending in .jpg, .png, .svg, or .gif
-- Prefer ${ratioGuide[aspectRatio] || 'landscape format'}
+CRITICAL REQUIREMENTS - Google Image Search:
+1. Find 6-10 DIFFERENT images from DIFFERENT sources
+2. Each image MUST have a UNIQUE URL from actual websites
+3. Search for: ${styleGuide[style] || 'educational diagrams, illustrations, or photographs'}
+4. Prioritize authoritative sources:
+   - Wikimedia Commons (commons.wikimedia.org)
+   - Educational institutions (.edu sites)
+   - Science websites (NASA, NIH, scientific journals)
+   - Government education sites (.gov)
+   - Trusted educational publishers
 
-Return 6-10 of the best matching images you find from Google search results.`;
+5. The images MUST directly illustrate: "${query}"
+6. Return ACTUAL image URLs from Google search results
+7. Each URL must be different - NO DUPLICATES
+8. Verify URLs end in .jpg, .jpeg, .png, .svg, .gif, or .webp
+9. Prefer ${ratioGui de[aspectRatio] || 'landscape format'}
+
+IMPORTANT: Return diverse, real images from different websites. NOT generated URLs. Find what Google actually shows for this search term.`;
 
     const webSearchResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: searchPrompt,
