@@ -91,29 +91,47 @@ Prioritize sources:
 Return ONLY the direct image URL (must end in .png, .jpg, .jpeg, .svg, or .gif).
 Choose the image that best illustrates the specific topic "${query}" within the presentation context.`;
 
-    // Use AI with Google Search to find real, DIVERSE images from the web
-    const searchPrompt = `You are searching Google for educational images about: "${query}"
-${slideTitle ? `Context - Slide title: "${slideTitle}"` : ''}
-${slideContent ? `Context - Slide content: "${slideContent.replace(/<[^>]*>/g, ' ').substring(0, 200)}"` : ''}
+    // Enhanced prompt with better context integration
+    const searchPrompt = `You are an expert educational image curator searching Google for: "${query}"
 
-CRITICAL REQUIREMENTS - Google Image Search:
-1. Find 6-10 DIFFERENT images from DIFFERENT sources
-2. Each image MUST have a UNIQUE URL from actual websites
-3. Search for: ${styleGuide[style] || 'educational diagrams, illustrations, or photographs'}
-4. Prioritize authoritative sources:
-   - Wikimedia Commons (commons.wikimedia.org)
-   - Educational institutions (.edu sites)
-   - Science websites (NASA, NIH, scientific journals)
-   - Government education sites (.gov)
-   - Trusted educational publishers
+PRESENTATION CONTEXT:
+${presentationTopic ? `- Overall Topic: ${presentationTopic}` : ''}
+${slideTitle ? `- Current Slide: "${slideTitle}"` : ''}
+${slideContent ? `- Slide Content: ${slideContent.replace(/<[^>]*>/g, ' ').substring(0, 300)}` : ''}
 
-5. The images MUST directly illustrate: "${query}"
-6. Return ACTUAL image URLs from Google search results
-7. Each URL must be different - NO DUPLICATES
-8. Verify URLs end in .jpg, .jpeg, .png, .svg, .gif, or .webp
-9. Prefer ${ratioGui de[aspectRatio] || 'landscape format'}
+SEARCH SPECIFICATIONS:
+📸 Style Required: ${styleGuide[style] || 'high-quality educational content'}
+   ${style === 'diagram' ? '→ Focus on labeled diagrams, technical illustrations, educational schematics' : ''}
+   ${style === 'photographic' ? '→ Focus on professional photographs, real-world examples' : ''}
+   ${style === 'illustrative' ? '→ Focus on educational illustrations, infographics, artistic representations' : ''}
+   ${style === 'abstract' ? '→ Focus on conceptual visualizations, abstract representations' : ''}
 
-IMPORTANT: Return diverse, real images from different websites. NOT generated URLs. Find what Google actually shows for this search term.`;
+📐 Format: ${ratioGuide[aspectRatio] || 'landscape orientation'}
+🎯 Topic: "${query}" in the context of: ${presentationTopic || slideTitle || 'education'}
+
+CRITICAL REQUIREMENTS:
+1. Find 8-12 DIVERSE images from DIFFERENT authoritative sources
+2. Each image MUST have a UNIQUE URL - NO DUPLICATES
+3. Prioritize these trusted sources (in order):
+   ✓ Wikimedia Commons (commons.wikimedia.org) - Highest priority
+   ✓ Educational institutions (.edu domains)
+   ✓ Government agencies (.gov domains)
+   ✓ Scientific organizations (NASA, NIH, science journals)
+   ✓ Educational publishers and resources
+
+4. Images must DIRECTLY illustrate: "${query}"
+5. Return ACTUAL URLs from Google search results
+6. Verify each URL ends in: .jpg, .jpeg, .png, .svg, .gif, or .webp
+7. Images should be high-resolution and professionally produced
+8. Must be appropriate for educational presentations
+
+SEARCH STRATEGY:
+- Use Google Image Search with terms: "${query}" + educational + ${style}
+- Cross-reference with slide context for relevance
+- Verify image quality and educational value
+- Ensure visual clarity and professional presentation
+
+Return only real, existing images from the web that match these criteria.`;
 
     const webSearchResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
       prompt: searchPrompt,

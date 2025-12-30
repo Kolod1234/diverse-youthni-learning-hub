@@ -3,7 +3,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Search, Loader2, X, Link as LinkIcon } from 'lucide-react';
+import { Upload, Search, Loader2, X, Link as LinkIcon, Image as ImageIcon, Palette, Ratio } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
@@ -14,6 +14,9 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
   const [uploading, setUploading] = useState(false);
   const [searching, setSearching] = useState(false);
   const [searchResults, setSearchResults] = useState([]);
+  const [imageStyle, setImageStyle] = useState('photographic');
+  const [aspectRatio, setAspectRatio] = useState('landscape');
+  const [reverseSearchFile, setReverseSearchFile] = useState(null);
 
   const handleSearchImage = async () => {
     if (!searchQuery.trim()) {
@@ -26,19 +29,49 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
       const result = await base44.functions.invoke('searchImageOnline', {
         query: searchQuery,
         slideTitle,
-        slideContent
+        slideContent,
+        style: imageStyle,
+        aspectRatio: aspectRatio
       });
 
-      if (result?.data?.url) {
-        setSearchResults([result.data.url]);
-        toast.success('Image found!');
+      if (result?.data?.images && result.data.images.length > 0) {
+        setSearchResults(result.data.images);
+        toast.success(`Found ${result.data.images.length} images!`);
       } else {
-        toast.error('No image found. Try a different query.');
+        toast.error('No images found. Try a different query.');
       }
     } catch (error) {
       toast.error('Failed to search for image');
     } finally {
       setSearching(false);
+    }
+  };
+
+  const handleReverseImageSearch = async (file) => {
+    if (!file) return;
+
+    setSearching(true);
+    try {
+      const uploadResult = await base44.integrations.Core.UploadFile({ file });
+      
+      const result = await base44.functions.invoke('reverseImageSearch', {
+        imageUrl: uploadResult.file_url,
+        slideTitle,
+        slideContent,
+        style: imageStyle
+      });
+
+      if (result?.data?.images && result.data.images.length > 0) {
+        setSearchResults(result.data.images);
+        toast.success(`Found ${result.data.images.length} similar images!`);
+      } else {
+        toast.error('No similar images found.');
+      }
+    } catch (error) {
+      toast.error('Failed to search for similar images');
+    } finally {
+      setSearching(false);
+      setReverseSearchFile(null);
     }
   };
 
@@ -97,10 +130,14 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
         </div>
 
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-3 mb-6">
+          <TabsList className="grid w-full grid-cols-4 mb-6">
             <TabsTrigger value="search">
               <Search className="w-4 h-4 mr-2" />
               AI Search
+            </TabsTrigger>
+            <TabsTrigger value="reverse">
+              <ImageIcon className="w-4 h-4 mr-2" />
+              Similar
             </TabsTrigger>
             <TabsTrigger value="upload">
               <Upload className="w-4 h-4 mr-2" />
@@ -131,30 +168,188 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
                   )}
                 </Button>
               </div>
-              <p className="text-xs text-gray-500 mt-2">
-                AI will search for high-quality educational images from reputable sources
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="flex items-center gap-2 mb-2">
+                  <Palette className="w-4 h-4" />
+                  Image Style
+                </Label>
+                <select 
+                  value={imageStyle} 
+                  onChange={(e) => setImageStyle(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                  disabled={searching}
+                >
+                  <option value="photographic">📷 Photographic</option>
+                  <option value="diagram">📊 Diagram</option>
+                  <option value="illustrative">🎨 Illustration</option>
+                  <option value="abstract">🌀 Abstract</option>
+                </select>
+              </div>
+
+              <div>
+                <Label className="flex items-center gap-2 mb-2">
+                  <Ratio className="w-4 h-4" />
+                  Aspect Ratio
+                </Label>
+                <select 
+                  value={aspectRatio} 
+                  onChange={(e) => setAspectRatio(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                  disabled={searching}
+                >
+                  <option value="landscape">🖼️ Landscape</option>
+                  <option value="portrait">📱 Portrait</option>
+                  <option value="square">⬜ Square</option>
+                </select>
+              </div>
+            </div>
+
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+              <p className="text-xs text-blue-800">
+                💡 AI searches Google for diverse, high-quality images matching your style and ratio preferences
               </p>
             </div>
 
             {searchResults.length > 0 && (
-              <div className="space-y-3">
-                <Label>Search Results</Label>
-                {searchResults.map((url, idx) => (
-                  <div key={idx} className="border rounded-lg overflow-hidden">
-                    <img src={url} alt="Search result" className="w-full h-48 object-cover" />
-                    <div className="p-3 bg-gray-50 flex justify-between items-center">
-                      <p className="text-xs text-gray-600 truncate flex-1">{url}</p>
-                      <Button
-                        size="sm"
-                        onClick={() => {
-                          onImageSelected(url);
-                          toast.success('Image selected!');
-                          onClose();
-                        }}
-                        className="ml-2"
-                      >
-                        Use This Image
-                      </Button>
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                <Label>Search Results ({searchResults.length} images)</Label>
+                {searchResults.map((result, idx) => (
+                  <div key={idx} className="border rounded-lg overflow-hidden hover:border-indigo-400 transition-colors">
+                    <img src={result.url || result} alt="Search result" className="w-full h-48 object-cover" />
+                    <div className="p-3 bg-gray-50">
+                      {result.description && (
+                        <p className="text-sm font-medium text-gray-800 mb-1">{result.description}</p>
+                      )}
+                      {result.source && (
+                        <p className="text-xs text-gray-500 mb-2">Source: {result.source}</p>
+                      )}
+                      <div className="flex justify-between items-center gap-2">
+                        <p className="text-xs text-gray-600 truncate flex-1">{result.url || result}</p>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            onImageSelected(result.url || result);
+                            toast.success('Image selected!');
+                            onClose();
+                          }}
+                        >
+                          Use Image
+                        </Button>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </TabsContent>
+
+          <TabsContent value="reverse" className="space-y-4">
+            <div>
+              <Label>Find Similar Images</Label>
+              <p className="text-sm text-gray-600 mb-4">Upload an image to find similar educational images</p>
+              
+              <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-colors">
+                <ImageIcon className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-sm text-gray-600 mb-2">Upload an image to find similar ones</p>
+                <p className="text-xs text-gray-400 mb-4">PNG, JPG, GIF up to 10MB</p>
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={(e) => {
+                    const file = e.target.files?.[0];
+                    if (file) {
+                      setReverseSearchFile(file);
+                      handleReverseImageSearch(file);
+                    }
+                  }}
+                  disabled={searching}
+                  className="hidden"
+                  id="reverse-search-upload"
+                />
+                <Button asChild disabled={searching}>
+                  <label htmlFor="reverse-search-upload" className="cursor-pointer">
+                    {searching ? (
+                      <>
+                        <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                        Searching...
+                      </>
+                    ) : (
+                      <>
+                        <Upload className="w-4 h-4 mr-2" />
+                        Choose Image
+                      </>
+                    )}
+                  </label>
+                </Button>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="flex items-center gap-2 mb-2">
+                  <Palette className="w-4 h-4" />
+                  Preferred Style
+                </Label>
+                <select 
+                  value={imageStyle} 
+                  onChange={(e) => setImageStyle(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                  disabled={searching}
+                >
+                  <option value="photographic">📷 Photographic</option>
+                  <option value="diagram">📊 Diagram</option>
+                  <option value="illustrative">🎨 Illustration</option>
+                  <option value="abstract">🌀 Abstract</option>
+                </select>
+              </div>
+
+              <div>
+                <Label className="flex items-center gap-2 mb-2">
+                  <Ratio className="w-4 h-4" />
+                  Aspect Ratio
+                </Label>
+                <select 
+                  value={aspectRatio} 
+                  onChange={(e) => setAspectRatio(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-lg text-sm"
+                  disabled={searching}
+                >
+                  <option value="landscape">🖼️ Landscape</option>
+                  <option value="portrait">📱 Portrait</option>
+                  <option value="square">⬜ Square</option>
+                </select>
+              </div>
+            </div>
+
+            {searchResults.length > 0 && (
+              <div className="space-y-3 max-h-[400px] overflow-y-auto">
+                <Label>Similar Images ({searchResults.length} found)</Label>
+                {searchResults.map((result, idx) => (
+                  <div key={idx} className="border rounded-lg overflow-hidden hover:border-indigo-400 transition-colors">
+                    <img src={result.url || result} alt="Similar image" className="w-full h-48 object-cover" />
+                    <div className="p-3 bg-gray-50">
+                      {result.description && (
+                        <p className="text-sm font-medium text-gray-800 mb-1">{result.description}</p>
+                      )}
+                      {result.source && (
+                        <p className="text-xs text-gray-500 mb-2">Source: {result.source}</p>
+                      )}
+                      <div className="flex justify-between items-center gap-2">
+                        <p className="text-xs text-gray-600 truncate flex-1">{result.url || result}</p>
+                        <Button
+                          size="sm"
+                          onClick={() => {
+                            onImageSelected(result.url || result);
+                            toast.success('Image selected!');
+                            onClose();
+                          }}
+                        >
+                          Use Image
+                        </Button>
+                      </div>
                     </div>
                   </div>
                 ))}
