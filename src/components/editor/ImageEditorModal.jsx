@@ -324,6 +324,13 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       } else if (highlightTool === 'brush' && isDrawing) {
         paintEraseMask(x, y);
       }
+    } else if (objectRemovalMode) {
+      if (removalTool === 'rectangle' && currentRemovalRegion) {
+        setCurrentRemovalRegion({ ...currentRemovalRegion, endX: x, endY: y });
+        drawRemovalRegions();
+      } else if (removalTool === 'brush' && isDrawing) {
+        paintRemovalMask(x, y);
+      }
     } else if (liquifyMode && isDrawing) {
       applyLiquify(e);
     } else if (shapeMode && shapeStart) {
