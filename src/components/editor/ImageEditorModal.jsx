@@ -1319,21 +1319,52 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
       const data = imageData.data;
       
-      // Enhance contrast and convert to grayscale
+      // Advanced preprocessing for all text colors
       for (let i = 0; i < data.length; i += 4) {
-        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-        // Increase contrast
-        const contrast = 1.5;
-        let val = ((avg - 128) * contrast) + 128;
-        val = Math.max(0, Math.min(255, val));
+        const r = data[i];
+        const g = data[i + 1];
+        const b = data[i + 2];
         
-        // Apply threshold for better text detection
-        val = val > 128 ? 255 : 0;
+        // Convert to grayscale using luminosity method (better for colored text)
+        const gray = 0.299 * r + 0.587 * g + 0.114 * b;
+        
+        // Adaptive contrast enhancement
+        const contrast = 1.8;
+        let enhanced = ((gray - 128) * contrast) + 128;
+        enhanced = Math.max(0, Math.min(255, enhanced));
+        
+        // Adaptive thresholding - better for varied backgrounds
+        const threshold = 140;
+        const val = enhanced > threshold ? 255 : 0;
         
         data[i] = data[i + 1] = data[i + 2] = val;
       }
       
       ctx.putImageData(imageData, 0, 0);
+      
+      // Additional sharpening pass for embedded text
+      const sharpenData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const sharpen = sharpenData.data;
+      
+      for (let y = 1; y < canvas.height - 1; y++) {
+        for (let x = 1; x < canvas.width - 1; x++) {
+          const idx = (y * canvas.width + x) * 4;
+          const center = sharpen[idx];
+          
+          // Sharpening kernel
+          const top = sharpen[((y - 1) * canvas.width + x) * 4];
+          const bottom = sharpen[((y + 1) * canvas.width + x) * 4];
+          const left = sharpen[(y * canvas.width + (x - 1)) * 4];
+          const right = sharpen[(y * canvas.width + (x + 1)) * 4];
+          
+          const sharpened = center * 5 - top - bottom - left - right;
+          const clamped = Math.max(0, Math.min(255, sharpened));
+          
+          sharpen[idx] = sharpen[idx + 1] = sharpen[idx + 2] = clamped;
+        }
+      }
+      
+      ctx.putImageData(sharpenData, 0, 0);
     }
     
     return canvas;
@@ -1350,21 +1381,43 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         }
       });
       
+      // Enhanced parameters for better text detection
       await worker.setParameters({
-        tessedit_char_whitelist: '',
-        tessedit_pageseg_mode: '3', // Fully automatic page segmentation
+        tessedit_char_whitelist: '', // Allow all characters
+        tessedit_pageseg_mode: '1', // Automatic with OSD (better for complex layouts)
         preserve_interword_spaces: '1',
+        tessedit_ocr_engine_mode: '1', // Neural nets LSTM only (best accuracy)
+        // Enhance detection of text in objects and colored backgrounds
+        textord_heavy_nr: '1',
+        textord_min_linesize: '1.5',
+        edges_max_children_per_outline: '40',
+        edges_children_count_limit: '45',
+        // Better handling of colored and embedded text
+        textord_noise_area_ratio: '0.7',
+        textord_initialx_ile: '1.0',
       });
       
       const canvas = preprocessImageForOCR(img);
       const { data } = await worker.recognize(canvas);
       
-      setOcrResult(data);
-      const avgConfidence = Math.round(data.confidence);
+      // Also try on original image for colored text
+      const originalCanvas = document.createElement('canvas');
+      originalCanvas.width = img.width;
+      originalCanvas.height = img.height;
+      const originalCtx = originalCanvas.getContext('2d');
+      originalCtx.drawImage(img, 0, 0);
+      
+      const { data: originalData } = await worker.recognize(originalCanvas);
+      
+      // Merge results - prioritize more words found
+      const finalData = originalData.words.length > data.words.length ? originalData : data;
+      
+      setOcrResult(finalData);
+      const avgConfidence = Math.round(finalData.confidence);
       setOcrConfidence(avgConfidence);
       await worker.terminate();
       
-      toast.success(`OCR detected ${data.words.length} words (${avgConfidence}% confidence)`);
+      toast.success(`OCR detected ${finalData.words.length} words (${avgConfidence}% confidence)`);
     } catch (error) {
       console.error('OCR error:', error);
       toast.error('OCR text detection failed');
@@ -2339,8 +2392,18 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                         disabled={ocrLoading}
                       />
                       <Label htmlFor="ocr-preprocess" className="text-xs cursor-pointer">
-                        Enhance image quality (for low quality/complex layouts)
+                        Advanced preprocessing (colored text, objects, complex layouts)
                       </Label>
+                    </div>
+
+                    <div className="text-xs text-gray-600 bg-blue-50 p-2 rounded border border-blue-200">
+                      <strong>Detection modes:</strong>
+                      <ul className="list-disc ml-4 mt-1">
+                        <li>Black & colored text</li>
+                        <li>Text in objects/shapes</li>
+                        <li>Complex backgrounds</li>
+                        <li>Multiple orientations</li>
+                      </ul>
                     </div>
                     
                     <Button size="sm" onClick={rerunOCR} variant="outline" className="w-full" disabled={ocrLoading || !image}>
