@@ -317,14 +317,19 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       saveToHistory();
     } else if (cropMode && cropStart && cropEnd) {
       applyCrop();
-    } else if (highlightMode && currentRegion) {
-      const width = Math.abs(currentRegion.endX - currentRegion.startX);
-      const height = Math.abs(currentRegion.endY - currentRegion.startY);
-      if (width > 10 && height > 10) {
-        setTextRegions([...textRegions, currentRegion]);
-        toast.success('Text region highlighted!');
+    } else if (highlightMode) {
+      if (highlightTool === 'rectangle' && currentRegion) {
+        const width = Math.abs(currentRegion.endX - currentRegion.startX);
+        const height = Math.abs(currentRegion.endY - currentRegion.startY);
+        if (width > 10 && height > 10) {
+          setTextRegions([...textRegions, currentRegion]);
+          toast.success('Text region highlighted!');
+        }
+        setCurrentRegion(null);
+      } else if (highlightTool === 'brush') {
+        setIsDrawing(false);
+        drawTextRegions();
       }
-      setCurrentRegion(null);
     } else if (liquifyMode) {
       setIsDrawing(false);
       saveToHistory();
