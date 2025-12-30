@@ -13,7 +13,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [aiProvider, setAiProvider] = useState('standard'); // 'standard', 'perplexity', 'chatgpt'
+  const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva'
   const [useWebImages, setUseWebImages] = useState(true);
   const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle'
   const [educationLevel, setEducationLevel] = useState('gcse');
@@ -134,7 +134,79 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             toast.error('Failed to parse AI response, falling back to standard AI');
           }
           }
+          } else if (aiProvider === 'canva') {
+        // Use Canva AI for design-focused content
+        const canvaResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are a professional presentation designer creating visually stunning slides.
+
+Create a ${slideCount}-slide presentation about: "${topic}"
+${details ? `\nContext: ${details}` : ''}
+
+TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+
+DESIGN PRINCIPLES (Canva-style):
+- Use clear, visual hierarchy with bold headings
+- Keep text concise and impactful (bullet points preferred)
+- Focus on visual storytelling over dense text
+- Each slide should have one key message
+- Content should be easily digestible at a glance
+- Use professional, engaging language
+
+CRITICAL: Return ONLY valid JSON in this EXACT format:
+{
+  "slides": [
+    {
+      "title": "Short, impactful title (max 6 words)",
+      "content": "Concise, visually-focused content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Use short sentences and bullet points. Max 3-4 points per slide.",
+      "order": 1,
+      ${includeImages ? '"image_prompt": "Design-focused description for finding relevant visual",' : ''}
+      "image_description": "What the visual represents",
+      "design_notes": "Color scheme suggestion (e.g., 'vibrant blues', 'warm sunset tones')"
+    }
+  ]
+}
+
+Design requirements:
+- Each slide max 50 words of text
+- Focus on visual impact and clarity
+- Use bullet points liberally
+- Create slides that "pop" visually
+- Think like a graphic designer, not a writer
+
+${includeImages ? 'Include "image_prompt" (visual search query for design-focused images) and "image_description" for EVERY slide. Focus on impactful visuals.' : ''}
+
+Return ONLY the JSON object, nothing else.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              slides: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    content: { type: "string" },
+                    order: { type: "number" },
+                    ...(includeImages ? {
+                      image_prompt: { type: "string" },
+                      image_description: { type: "string" },
+                      design_notes: { type: "string" }
+                    } : {})
+                  },
+                  required: ["title", "content", "order"]
+                }
+              }
+            },
+            required: ["slides"]
           }
+        });
+
+        if (canvaResult?.slides) {
+          response = canvaResult;
+          toast.success('Design-focused content generated with Canva AI!');
+        }
+      }
 
           if (!response) {
         response = await base44.integrations.Core.InvokeLLM({
@@ -436,18 +508,6 @@ Level: ${levelInstructions[educationLevel]}`;
             <div className="grid grid-cols-3 gap-3">
               <button
                 type="button"
-                onClick={() => setAiProvider('standard')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  aiProvider === 'standard'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1">Standard AI</div>
-                <div className="text-xs text-gray-600">Fast & reliable</div>
-              </button>
-              <button
-                type="button"
                 onClick={() => setAiProvider('perplexity')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   aiProvider === 'perplexity'
@@ -467,8 +527,20 @@ Level: ${levelInstructions[educationLevel]}`;
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <div className="font-semibold text-sm mb-1">💬 GPT-3.5 Turbo</div>
+                <div className="font-semibold text-sm mb-1">💬 GPT-3.5</div>
                 <div className="text-xs text-gray-600">OpenAI GPT-3.5</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiProvider('canva')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'canva'
+                    ? 'border-purple-500 bg-purple-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">🎨 Canva AI</div>
+                <div className="text-xs text-gray-600">Design-focused</div>
               </button>
             </div>
           </div>
