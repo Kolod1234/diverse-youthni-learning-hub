@@ -39,8 +39,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   const [textToReplace, setTextToReplace] = useState('');
   const [replacementText, setReplacementText] = useState('');
   const [highlightMode, setHighlightMode] = useState(false);
+  const [highlightTool, setHighlightTool] = useState('rectangle'); // 'rectangle' or 'brush'
+  const [highlightBrushSize, setHighlightBrushSize] = useState(30);
   const [textRegions, setTextRegions] = useState([]);
   const [currentRegion, setCurrentRegion] = useState(null);
+  const [eraseMaskCanvas, setEraseMaskCanvas] = useState(null);
   
   // Liquify/Warp tool
   const [liquifyMode, setLiquifyMode] = useState(false);
