@@ -463,25 +463,42 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     
     setLoading(true);
     try {
-      const canvas = canvasRef.current;
-      const ctx = canvas.getContext('2d');
+      // Step 1: Create temporary composite canvas (won't be recomposited)
+      toast.info('Preparing image...');
+      const tempCanvas = document.createElement('canvas');
+      const firstLayer = layers[0];
+      tempCanvas.width = firstLayer.canvas.width;
+      tempCanvas.height = firstLayer.canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
       
-      // Step 1: Erase the highlighted text areas
+      // Composite all visible layers onto temp canvas
+      layers.forEach(layer => {
+        if (!layer.visible) return;
+        tempCtx.globalAlpha = layer.opacity;
+        tempCtx.globalCompositeOperation = layer.blendMode;
+        tempCtx.drawImage(layer.canvas, 0, 0);
+      });
+      
+      // Reset composite operation
+      tempCtx.globalAlpha = 1;
+      tempCtx.globalCompositeOperation = 'source-over';
+      
+      // Step 2: Erase the highlighted text areas from temp canvas
       toast.info('Erasing highlighted text...');
-      ctx.globalCompositeOperation = 'destination-out';
+      tempCtx.globalCompositeOperation = 'destination-out';
       textRegions.forEach(region => {
         const x = Math.min(region.startX, region.endX);
         const y = Math.min(region.startY, region.endY);
         const width = Math.abs(region.endX - region.startX);
         const height = Math.abs(region.endY - region.startY);
-        ctx.fillRect(x, y, width, height);
+        tempCtx.fillRect(x, y, width, height);
       });
-      ctx.globalCompositeOperation = 'source-over';
+      tempCtx.globalCompositeOperation = 'source-over';
       
-      // Step 2: Create mask for AI to fill in the erased areas
+      // Step 3: Create mask for AI to fill in the erased areas
       const maskCanvas = document.createElement('canvas');
-      maskCanvas.width = canvas.width;
-      maskCanvas.height = canvas.height;
+      maskCanvas.width = tempCanvas.width;
+      maskCanvas.height = tempCanvas.height;
       const maskCtx = maskCanvas.getContext('2d');
       
       maskCtx.fillStyle = 'black';
@@ -497,7 +514,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       });
       
       // Convert to blobs
-      const imageBlob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+      const imageBlob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
       const maskBlob = await new Promise(resolve => maskCanvas.toBlob(resolve, 'image/png'));
       
       const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
