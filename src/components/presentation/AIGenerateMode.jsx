@@ -23,6 +23,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [showImagePreview, setShowImagePreview] = useState(false);
   const [currentSlideForImage, setCurrentSlideForImage] = useState(null);
   const [generatedSlides, setGeneratedSlides] = useState([]);
+  const [enforceSpelling, setEnforceSpelling] = useState(true);
 
   const generateFromTopic = async () => {
     if (!topic.trim()) {
@@ -305,7 +306,8 @@ Return ONLY valid JSON.`,
                   
                   if (imageGenerator === 'dalle') {
                     // Use DALL-E for image generation with optimized spelling
-                    const dallePrompt = `Create a high-resolution educational image of: ${slide.image_prompt}
+                    const dallePrompt = enforceSpelling 
+                      ? `Create a high-resolution educational image of: ${slide.image_prompt}
 
 CRITICAL TYPOGRAPHY REQUIREMENT:
 The image MUST feature perfectly spelled text and labels.
@@ -317,7 +319,8 @@ TEXT INSTRUCTIONS:
 4. Do not hallucinate extra letters
 5. Each character must be clearly visible and correctly spelled
 
-Educational Context: ${topic} - ${slide.title}`;
+Educational Context: ${topic} - ${slide.title}`
+                      : `Create a high-resolution educational image of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}`;
 
                     const result = await base44.functions.invoke('geminiImageGeneration', {
                       prompt: dallePrompt,
@@ -329,7 +332,8 @@ Educational Context: ${topic} - ${slide.title}`;
                     }
                   } else if (imageGenerator === 'imagen') {
                     // Use Stable Diffusion for image generation with optimized spelling
-                    const imagenPrompt = `Create a high-resolution educational diagram of: ${slide.image_prompt}
+                    const imagenPrompt = enforceSpelling 
+                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
 
 CRITICAL TYPOGRAPHY REQUIREMENT:
 All text in the diagram must be spelled 100% accurately.
@@ -345,7 +349,8 @@ Educational Context:
 - Topic: ${topic} - ${slide.title}
 - Level: ${levelInstructions[educationLevel]}
 - Style: Professional educational diagram, clear and informative
-- Quality: High-detail, classroom-ready visual`;
+- Quality: High-detail, classroom-ready visual`
+                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional educational diagram`;
 
                     const result = await base44.functions.invoke('generateImagenAI', {
                       prompt: imagenPrompt,
@@ -357,7 +362,8 @@ Educational Context:
                     }
                   } else {
                     // Use Nano Banana (default) with optimized spelling
-                    const imagePrompt = `Create a high-resolution educational diagram of: ${slide.image_prompt}
+                    const imagePrompt = enforceSpelling 
+                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
 
 CRITICAL TYPOGRAPHY REQUIREMENT:
 The diagram MUST feature perfectly spelled text and labels.
@@ -374,7 +380,8 @@ Educational Requirements:
 - Level: ${levelInstructions[educationLevel]}
 - Style: Clean, professional educational diagram
 - Purpose: Help students understand ${slide.image_prompt}
-- Quality: Classroom-ready, no text artifacts`;
+- Quality: Classroom-ready, no text artifacts`
+                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Clean, professional educational diagram`;
 
                     generatedImage = await base44.integrations.Core.GenerateImage({
                       prompt: imagePrompt
@@ -499,6 +506,22 @@ Educational Requirements:
 
           {includeImages && (
             <>
+              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
+                <input
+                  type="checkbox"
+                  id="enforceSpelling"
+                  checked={enforceSpelling}
+                  onChange={(e) => setEnforceSpelling(e.target.checked)}
+                  className="w-4 h-4 rounded text-blue-600"
+                />
+                <Label htmlFor="enforceSpelling" className="flex-1 cursor-pointer text-sm">
+                  <span className="font-semibold text-blue-900">✓ Enforce Perfect Spelling</span>
+                  <p className="text-xs text-blue-700 mt-1">
+                    Apply strict spelling accuracy instructions to all AI-generated images - ensures text is treated as critical content, not noise
+                  </p>
+                </Label>
+              </div>
+
               <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
                 <input
                   type="checkbox"
