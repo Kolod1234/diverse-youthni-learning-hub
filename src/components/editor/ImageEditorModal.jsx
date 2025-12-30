@@ -1363,21 +1363,71 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                         {highlightMode ? 'Active' : 'Activate'}
                       </Button>
                     </div>
+                    
                     {highlightMode && (
-                      <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded">
-                        Click and drag over text areas to highlight them
-                      </p>
+                      <>
+                        <div className="flex gap-2 mb-2">
+                          <Button
+                            size="sm"
+                            variant={highlightTool === 'rectangle' ? 'default' : 'outline'}
+                            onClick={() => setHighlightTool('rectangle')}
+                            className="flex-1"
+                          >
+                            <Square className="w-3 h-3 mr-1" />
+                            Rectangle
+                          </Button>
+                          <Button
+                            size="sm"
+                            variant={highlightTool === 'brush' ? 'default' : 'outline'}
+                            onClick={() => setHighlightTool('brush')}
+                            className="flex-1"
+                          >
+                            <Eraser className="w-3 h-3 mr-1" />
+                            Brush
+                          </Button>
+                        </div>
+                        
+                        {highlightTool === 'brush' && (
+                          <div>
+                            <Label className="text-xs">Brush Size</Label>
+                            <Slider 
+                              value={[highlightBrushSize]} 
+                              onValueChange={(v) => setHighlightBrushSize(v[0])} 
+                              min={10} 
+                              max={100} 
+                              step={5} 
+                              className="mt-2" 
+                            />
+                            <span className="text-xs text-gray-600">{highlightBrushSize}px</span>
+                          </div>
+                        )}
+                        
+                        <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded">
+                          {highlightTool === 'rectangle' 
+                            ? 'Click and drag to select text areas' 
+                            : 'Paint over text/letters to mark for replacement'}
+                        </p>
+                      </>
                     )}
-                    {textRegions.length > 0 && (
+                    
+                    {(textRegions.length > 0 || (eraseMaskCanvas && highlightTool === 'brush')) && (
                       <div className="flex items-center justify-between bg-green-50 p-2 rounded">
-                        <span className="text-xs text-green-700">{textRegions.length} region(s) highlighted</span>
+                        <span className="text-xs text-green-700">
+                          {textRegions.length > 0 && `${textRegions.length} region(s) `}
+                          {highlightTool === 'brush' && 'Painted areas '}
+                          marked
+                        </span>
                         <Button
                           size="sm"
                           variant="ghost"
                           onClick={() => {
                             setTextRegions([]);
-                            drawCanvas(image, true);
-                            toast.success('Regions cleared');
+                            if (eraseMaskCanvas) {
+                              const maskCtx = eraseMaskCanvas.getContext('2d');
+                              maskCtx.clearRect(0, 0, eraseMaskCanvas.width, eraseMaskCanvas.height);
+                            }
+                            compositeAllLayers();
+                            toast.success('Markings cleared');
                           }}
                         >
                           Clear
