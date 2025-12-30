@@ -38,6 +38,9 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   // AI Text Replacement
   const [textToReplace, setTextToReplace] = useState('');
   const [replacementText, setReplacementText] = useState('');
+  const [highlightMode, setHighlightMode] = useState(false);
+  const [textRegions, setTextRegions] = useState([]);
+  const [currentRegion, setCurrentRegion] = useState(null);
   
   // History for undo/redo
   const [history, setHistory] = useState([]);
@@ -132,6 +135,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         x: e.clientX - rect.left,
         y: e.clientY - rect.top
       });
+    } else if (highlightMode) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      setCurrentRegion({
+        startX: e.clientX - rect.left,
+        startY: e.clientY - rect.top,
+        endX: e.clientX - rect.left,
+        endY: e.clientY - rect.top
+      });
     }
   };
 
@@ -145,6 +156,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         y: e.clientY - rect.top
       });
       drawCropRect();
+    } else if (highlightMode && currentRegion) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      setCurrentRegion({
+        ...currentRegion,
+        endX: e.clientX - rect.left,
+        endY: e.clientY - rect.top
+      });
+      drawTextRegions();
     }
   };
 
@@ -154,6 +173,14 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       saveToHistory();
     } else if (cropMode && cropStart && cropEnd) {
       applyCrop();
+    } else if (highlightMode && currentRegion) {
+      const width = Math.abs(currentRegion.endX - currentRegion.startX);
+      const height = Math.abs(currentRegion.endY - currentRegion.startY);
+      if (width > 10 && height > 10) {
+        setTextRegions([...textRegions, currentRegion]);
+        toast.success('Text region highlighted!');
+      }
+      setCurrentRegion(null);
     }
   };
 
@@ -188,6 +215,42 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       cropEnd.y - cropStart.y
     );
     ctx.setLineDash([]);
+  };
+
+  const drawTextRegions = () => {
+    drawCanvas(image, true);
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    // Draw existing regions
+    textRegions.forEach((region) => {
+      const x = Math.min(region.startX, region.endX);
+      const y = Math.min(region.startY, region.endY);
+      const width = Math.abs(region.endX - region.startX);
+      const height = Math.abs(region.endY - region.startY);
+      
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#FFC107';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(x, y, width, height);
+    });
+    
+    // Draw current region being drawn
+    if (currentRegion) {
+      const x = Math.min(currentRegion.startX, currentRegion.endX);
+      const y = Math.min(currentRegion.startY, currentRegion.endY);
+      const width = Math.abs(currentRegion.endX - currentRegion.startX);
+      const height = Math.abs(currentRegion.endY - currentRegion.startY);
+      
+      ctx.fillStyle = 'rgba(255, 193, 7, 0.3)';
+      ctx.fillRect(x, y, width, height);
+      ctx.strokeStyle = '#FFC107';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      ctx.strokeRect(x, y, width, height);
+      ctx.setLineDash([]);
+    }
   };
 
   const applyCrop = () => {
@@ -235,26 +298,79 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   const handleAITextReplace = async () => {
-    if (!textToReplace.trim() || !replacementText.trim()) {
-      toast.error('Please enter both text to replace and replacement text');
+    if (textRegions.length === 0) {
+      toast.error('Please highlight text areas first');
+      return;
+    }
+    
+    if (!replacementText.trim()) {
+      toast.error('Please enter replacement text');
       return;
     }
     
     setLoading(true);
     try {
       const canvas = canvasRef.current;
-      const dataUrl = canvas.toDataURL();
       
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Given an image with text "${textToReplace}", replace it with "${replacementText}". Return the modified image.`,
-        file_urls: [dataUrl]
-      });
+      // Process each text region
+      for (const region of textRegions) {
+        const x = Math.min(region.startX, region.endX);
+        const y = Math.min(region.startY, region.endY);
+        const width = Math.abs(region.endX - region.startX);
+        const height = Math.abs(region.endY - region.startY);
+        
+        // Create a mask for the text region
+        const maskCanvas = document.createElement('canvas');
+        maskCanvas.width = canvas.width;
+        maskCanvas.height = canvas.height;
+        const maskCtx = maskCanvas.getContext('2d');
+        
+        // Fill the region in white (area to inpaint)
+        maskCtx.fillStyle = 'white';
+        maskCtx.fillRect(x, y, width, height);
+        
+        const imageData = canvas.toDataURL('image/png');
+        const maskData = maskCanvas.toDataURL('image/png');
+        
+        // Upload both images
+        const imageBlob = await fetch(imageData).then(r => r.blob());
+        const maskBlob = await fetch(maskData).then(r => r.blob());
+        
+        const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
+        const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
+        
+        const imageUpload = await base44.integrations.Core.UploadFile({ file: imageFile });
+        const maskUpload = await base44.integrations.Core.UploadFile({ file: maskFile });
+        
+        // Use Stable Diffusion inpainting
+        const result = await base44.functions.invoke('inpaintImage', {
+          imageUrl: imageUpload.file_url,
+          maskUrl: maskUpload.file_url,
+          prompt: `Replace text with: "${replacementText}". Clean, professional text on transparent background.`
+        });
+        
+        if (result?.data?.url) {
+          // Load the result and draw it on canvas
+          const resultImg = new Image();
+          resultImg.crossOrigin = 'anonymous';
+          await new Promise((resolve) => {
+            resultImg.onload = resolve;
+            resultImg.src = result.data.url;
+          });
+          
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(resultImg, 0, 0);
+        }
+      }
       
-      // For now, show message - actual implementation would need image editing AI
-      toast.info('AI text replacement requires advanced image editing API. Use manual editing tools instead.');
+      setTextRegions([]);
+      setReplacementText('');
+      saveToHistory();
+      toast.success('Text replaced successfully!');
       
     } catch (error) {
-      toast.error('Failed to replace text');
+      console.error(error);
+      toast.error('Failed to replace text: ' + (error.message || 'Unknown error'));
     } finally {
       setLoading(false);
     }
@@ -434,30 +550,70 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                 <div className="p-4 border rounded-lg bg-white">
                   <Label className="text-base font-semibold mb-3 block">AI Text Replace</Label>
                   <div className="space-y-2">
-                    <Input
-                      placeholder="Text to replace"
-                      value={textToReplace}
-                      onChange={(e) => setTextToReplace(e.target.value)}
-                    />
-                    <Input
-                      placeholder="Replacement text"
-                      value={replacementText}
-                      onChange={(e) => setReplacementText(e.target.value)}
-                    />
-                    <Button onClick={handleAITextReplace} size="sm" className="w-full" disabled={loading}>
+                    <div className="flex items-center justify-between mb-2">
+                      <Label className="text-sm">Step 1: Highlight Text</Label>
+                      <Button
+                        size="sm"
+                        variant={highlightMode ? 'default' : 'outline'}
+                        onClick={() => {
+                          setHighlightMode(!highlightMode);
+                          setEraseMode(false);
+                          setCropMode(false);
+                        }}
+                      >
+                        <Type className="w-4 h-4 mr-1" />
+                        {highlightMode ? 'Active' : 'Activate'}
+                      </Button>
+                    </div>
+                    {highlightMode && (
+                      <p className="text-xs text-amber-700 bg-amber-50 p-2 rounded">
+                        Click and drag over text areas to highlight them
+                      </p>
+                    )}
+                    {textRegions.length > 0 && (
+                      <div className="flex items-center justify-between bg-green-50 p-2 rounded">
+                        <span className="text-xs text-green-700">{textRegions.length} region(s) highlighted</span>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          onClick={() => {
+                            setTextRegions([]);
+                            drawCanvas(image, true);
+                            toast.success('Regions cleared');
+                          }}
+                        >
+                          Clear
+                        </Button>
+                      </div>
+                    )}
+                    <div className="pt-2 border-t">
+                      <Label className="text-sm">Step 2: Enter New Text</Label>
+                      <Input
+                        placeholder="Enter replacement text"
+                        value={replacementText}
+                        onChange={(e) => setReplacementText(e.target.value)}
+                        className="mt-2"
+                      />
+                    </div>
+                    <Button 
+                      onClick={handleAITextReplace} 
+                      size="sm" 
+                      className="w-full bg-amber-500 hover:bg-amber-600" 
+                      disabled={loading || textRegions.length === 0}
+                    >
                       {loading ? (
                         <>
                           <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                          Processing...
+                          Replacing...
                         </>
                       ) : (
                         <>
                           <Wand2 className="w-4 h-4 mr-1" />
-                          Replace Text
+                          Replace Text with AI
                         </>
                       )}
                     </Button>
-                    <p className="text-xs text-gray-500">Note: Advanced AI text editing coming soon</p>
+                    <p className="text-xs text-gray-500">Highlight text areas, then enter new text to replace them</p>
                   </div>
                 </div>
               </TabsContent>
@@ -466,7 +622,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
 
           {/* Canvas Area */}
           <div className="flex-1 flex items-center justify-center bg-gray-100 p-8 overflow-auto">
-            <div className="relative" style={{ cursor: eraseMode ? 'crosshair' : cropMode ? 'crosshair' : 'default' }}>
+            <div className="relative" style={{ cursor: eraseMode ? 'crosshair' : cropMode ? 'crosshair' : highlightMode ? 'crosshair' : 'default' }}>
               <canvas
                 ref={canvasRef}
                 onMouseDown={handleMouseDown}
@@ -483,6 +639,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
               {cropMode && (
                 <div className="absolute top-2 left-2 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs">
                   Crop Mode - Click & Drag
+                </div>
+              )}
+              {highlightMode && (
+                <div className="absolute top-2 left-2 bg-amber-500 text-white px-3 py-1 rounded-full text-xs">
+                  Highlight Text Mode - Click & Drag
                 </div>
               )}
             </div>
