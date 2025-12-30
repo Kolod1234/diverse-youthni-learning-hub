@@ -112,28 +112,8 @@ Deno.serve(async (req) => {
         }, { status: 400 });
       }
 
-      // Fetch design data from Canva API
-      const designUrl = `https://api.canva.com/rest/v1/designs/${extractedDesignId}`;
-      
-      const designResponse = await fetch(designUrl, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${clientSecret}`,
-          'Content-Type': 'application/json'
-        }
-      });
-
-      if (!designResponse.ok) {
-        return Response.json({ 
-          error: 'Failed to fetch Canva design',
-          status: designResponse.status 
-        }, { status: 500 });
-      }
-
-      const designData = await designResponse.json();
-      
-      // Export the design to get the actual content
-      const exportUrl = `https://api.canva.com/rest/v1/exports`;
+      // Use Canva Connect API to export the design
+      const exportUrl = `https://api.canva.com/v1/exports`;
       
       const exportResponse = await fetch(exportUrl, {
         method: 'POST',
@@ -143,25 +123,65 @@ Deno.serve(async (req) => {
         },
         body: JSON.stringify({
           design_id: extractedDesignId,
-          format: {
-            type: 'png'
-          }
+          format: 'png',
+          pages: 'all'
         })
       });
 
       if (!exportResponse.ok) {
+        const errorText = await exportResponse.text();
+        console.error('Canva export error:', errorText);
         return Response.json({ 
-          error: 'Failed to export Canva design',
+          error: 'Failed to export Canva design. Make sure you have access to this design.',
+          details: errorText,
           status: exportResponse.status 
-        }, { status: 500 });
+        }, { status: exportResponse.status });
       }
 
       const exportData = await exportResponse.json();
       
+      // Poll for export completion if needed
+      if (exportData.job && exportData.job.status === 'in_progress') {
+        const jobId = exportData.job.id;
+        let attempts = 0;
+        const maxAttempts = 10;
+        
+        while (attempts < maxAttempts) {
+          await new Promise(resolve => setTimeout(resolve, 2000));
+          
+          const statusResponse = await fetch(`https://api.canva.com/v1/exports/${jobId}`, {
+            headers: {
+              'Authorization': `Bearer ${clientSecret}`
+            }
+          });
+          
+          if (statusResponse.ok) {
+            const statusData = await statusResponse.json();
+            if (statusData.job.status === 'success') {
+              return Response.json({ 
+                images: statusData.job.urls || [statusData.job.url],
+                message: 'Design exported successfully'
+              });
+            } else if (statusData.job.status === 'failed') {
+              return Response.json({ 
+                error: 'Export failed',
+                details: statusData.job.error 
+              }, { status: 500 });
+            }
+          }
+          
+          attempts++;
+        }
+        
+        return Response.json({ 
+          error: 'Export timeout' 
+        }, { status: 408 });
+      }
+      
+      // Return immediate export results
       return Response.json({ 
-        design: designData,
-        export: exportData,
-        message: 'Design imported successfully'
+        images: exportData.urls || [exportData.url],
+        message: 'Design exported successfully'
       });
     }
 
