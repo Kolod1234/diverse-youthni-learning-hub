@@ -271,11 +271,13 @@ export default function LessonPlayerClassic() {
               <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
                 <button
                   onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
-                  className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-purple-700 hover:to-pink-700 transition-all"
+                  className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 transition-all shadow-xl shadow-purple-200 hover:shadow-2xl hover:shadow-purple-300 transform hover:scale-[1.02]"
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
-                    <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-                    <span className="font-semibold">Take Quiz</span>
+                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                      <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
+                    </div>
+                    <span className="font-bold">Take Quiz</span>
                   </div>
                   <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
                 </button>
