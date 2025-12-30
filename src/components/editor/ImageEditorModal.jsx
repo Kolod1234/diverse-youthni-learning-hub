@@ -607,6 +607,13 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         setTextRegions([]);
         setReplacementText('');
         setHighlightMode(false);
+        
+        // Clear erase mask
+        if (eraseMaskCanvas) {
+          const maskCtx = eraseMaskCanvas.getContext('2d');
+          maskCtx.clearRect(0, 0, eraseMaskCanvas.width, eraseMaskCanvas.height);
+        }
+        
         saveToHistory();
         toast.success('Text replaced successfully!');
       } else {
