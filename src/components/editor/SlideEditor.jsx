@@ -1181,21 +1181,30 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               <div className="flex gap-3 mt-6">
                 {aiAction === 'images' ? (
                   <>
-                    {!aiLoading && !aiPrompt && (
-                      <Button 
-                        onClick={handleAISuggestImages}
-                        className="flex-1 bg-purple-600 hover:bg-purple-700"
-                      >
-                        <Sparkles className="w-4 h-4 mr-2" />
-                        Search & Suggest Images
-                      </Button>
-                    )}
+                    <Button 
+                      onClick={handleAISuggestImages}
+                      className="flex-1 bg-purple-600 hover:bg-purple-700"
+                      disabled={aiLoading}
+                    >
+                      {aiLoading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                          Searching...
+                        </>
+                      ) : (
+                        <>
+                          <Sparkles className="w-4 h-4 mr-2" />
+                          {imageSuggestions.length > 0 ? 'Search Again' : 'Search & Suggest Images'}
+                        </>
+                      )}
+                    </Button>
                     <Button 
                       variant="outline" 
                       onClick={() => {
                         if (!aiLoading) {
                           setShowAIDialog(false);
                           setAiPrompt('');
+                          setImageSuggestions([]);
                         }
                       }}
                       className="flex-1"
