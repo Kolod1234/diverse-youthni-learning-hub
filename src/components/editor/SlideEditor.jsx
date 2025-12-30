@@ -13,6 +13,7 @@ import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder
 import TemplateBlocks from '@/components/editor/TemplateBlocks';
 import ImageManager from '@/components/editor/ImageManager';
 import ImageTextOverlay from '@/components/editor/ImageTextOverlay';
+import CanvaIntegration from '@/components/editor/CanvaIntegration';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -167,6 +168,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showImageManager, setShowImageManager] = useState(false);
   const [showImageOverlay, setShowImageOverlay] = useState(false);
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
+  const [showCanva, setShowCanva] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -836,6 +838,12 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                         Add/Replace Image
                       </DropdownMenuItem>
                       <DropdownMenuItem 
+                        onClick={() => setShowCanva(true)}
+                      >
+                        <Sparkles className="w-4 h-4 mr-2" />
+                        Design with Canva
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
                         onClick={() => {
                           // Extract first image from current slide
                           const content = currentSlideData?.content || '';
@@ -1460,6 +1468,18 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setShowImageOverlay(false);
               setOverlayImageUrl('');
             }}
+          />
+        )}
+
+        {/* Canva Integration */}
+        {showCanva && (
+          <CanvaIntegration
+            onImageImported={(imageUrl) => {
+              const currentContent = currentSlideData?.content || '';
+              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Canva design" /></div>`;
+              updateSlide(currentSlide, 'content', currentContent + imageHtml);
+            }}
+            onClose={() => setShowCanva(false)}
           />
         )}
         </div>
