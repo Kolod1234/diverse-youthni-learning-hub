@@ -9,39 +9,14 @@ export default function CanvaIntegration({ onImageImported, onClose }) {
   const [loading, setLoading] = useState(false);
   const [canvaUrl, setCanvaUrl] = useState('');
 
-  const handleOpenCanva = async () => {
-    setLoading(true);
-    try {
-      const response = await base44.functions.invoke('canvaIntegration', {
-        action: 'create_design'
-      });
-
-      if (response.data.editorUrl) {
-        // Open Canva in new window
-        const canvaWindow = window.open(
-          response.data.editorUrl,
-          'canva-editor',
-          'width=1200,height=800,toolbar=no,location=no,menubar=no'
-        );
-
-        if (canvaWindow) {
-          toast.success('Canva editor opened! Create your design and export it.');
-          setCanvaUrl(response.data.editorUrl);
-        } else {
-          toast.error('Please allow popups to use Canva editor');
-        }
-      }
-    } catch (error) {
-      toast.error('Failed to open Canva editor');
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
+  const handleOpenCanva = () => {
+    window.open('https://www.canva.com/', '_blank');
+    toast.info('Create your design in Canva, then download and upload it here');
   };
 
   const handleDirectLink = () => {
-    window.open('https://www.canva.com/', '_blank');
-    toast.info('Create your design in Canva, then download and upload it here');
+    window.open('https://www.canva.com/create', '_blank');
+    toast.info('Start creating - download your design when done and upload it here');
   };
 
   const handleFileUpload = async (e) => {
@@ -97,20 +72,10 @@ export default function CanvaIntegration({ onImageImported, onClose }) {
           <div className="grid grid-cols-2 gap-4">
             <Button
               onClick={handleOpenCanva}
-              disabled={loading}
               className="h-24 flex-col gap-2 bg-gradient-to-br from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700"
             >
-              {loading ? (
-                <>
-                  <Loader2 className="w-6 h-6 animate-spin" />
-                  <span className="text-sm">Opening...</span>
-                </>
-              ) : (
-                <>
-                  <ExternalLink className="w-6 h-6" />
-                  <span className="text-sm font-semibold">Open Canva</span>
-                </>
-              )}
+              <ExternalLink className="w-6 h-6" />
+              <span className="text-sm font-semibold">Open Canva</span>
             </Button>
 
             <Button
