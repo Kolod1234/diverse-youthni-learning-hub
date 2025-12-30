@@ -1410,9 +1410,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
   };
 
   const getTightBoundingBox = (bbox, img) => {
-    // Create a temporary canvas to analyze the text region
     const tempCanvas = document.createElement('canvas');
-    const padding = 10; // Extra padding to check around the bbox
+    const padding = 5;
     const width = (bbox.x1 - bbox.x0) + padding * 2;
     const height = (bbox.y1 - bbox.y0) + padding * 2;
     
@@ -1420,7 +1419,6 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     tempCanvas.height = height;
     const tempCtx = tempCanvas.getContext('2d');
     
-    // Draw the region of interest
     tempCtx.drawImage(
       img,
       Math.max(0, bbox.x0 - padding), Math.max(0, bbox.y0 - padding),
@@ -1432,8 +1430,29 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     const imageData = tempCtx.getImageData(0, 0, width, height);
     const data = imageData.data;
     
-    // Find actual content bounds by checking for non-background pixels
+    // Calculate average background color from edges
+    const edgePixels = [];
+    for (let x = 0; x < width; x++) {
+      edgePixels.push((0 * width + x) * 4); // Top edge
+      edgePixels.push(((height - 1) * width + x) * 4); // Bottom edge
+    }
+    for (let y = 0; y < height; y++) {
+      edgePixels.push((y * width + 0) * 4); // Left edge
+      edgePixels.push((y * width + (width - 1)) * 4); // Right edge
+    }
+    
+    let bgR = 0, bgG = 0, bgB = 0;
+    edgePixels.forEach(idx => {
+      bgR += data[idx];
+      bgG += data[idx + 1];
+      bgB += data[idx + 2];
+    });
+    bgR /= edgePixels.length;
+    bgG /= edgePixels.length;
+    bgB /= edgePixels.length;
+    
     let minX = width, maxX = 0, minY = height, maxY = 0;
+    let foundText = false;
     
     for (let y = 0; y < height; y++) {
       for (let x = 0; x < width; x++) {
@@ -1442,35 +1461,35 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         const g = data[idx + 1];
         const b = data[idx + 2];
         
-        // Check if pixel is text (not pure white/background)
-        // Detect any significantly colored or dark pixel
-        const isWhiteish = r > 230 && g > 230 && b > 230;
-        const avgColor = (r + g + b) / 3;
-        const colorVariation = Math.abs(r - avgColor) + Math.abs(g - avgColor) + Math.abs(b - avgColor);
+        // Calculate difference from background
+        const diffFromBg = Math.sqrt(
+          Math.pow(r - bgR, 2) + 
+          Math.pow(g - bgG, 2) + 
+          Math.pow(b - bgB, 2)
+        );
         
-        // Pixel is text if it's dark OR has significant color variation
-        const isText = !isWhiteish && (avgColor < 200 || colorVariation > 30);
+        // More aggressive text detection - any pixel significantly different from background
+        const isText = diffFromBg > 40;
         
         if (isText) {
           minX = Math.min(minX, x);
           maxX = Math.max(maxX, x);
           minY = Math.min(minY, y);
           maxY = Math.max(maxY, y);
+          foundText = true;
         }
       }
     }
     
-    // If we found text pixels, use tight bounds; otherwise use original bbox
-    if (maxX > minX && maxY > minY) {
+    if (foundText && maxX > minX && maxY > minY) {
       return {
-        x0: Math.max(0, bbox.x0 - padding + minX - 2),
-        y0: Math.max(0, bbox.y0 - padding + minY - 2),
-        x1: Math.min(img.width, bbox.x0 - padding + maxX + 2),
-        y1: Math.min(img.height, bbox.y0 - padding + maxY + 2)
+        x0: Math.max(0, bbox.x0 - padding + minX - 1),
+        y0: Math.max(0, bbox.y0 - padding + minY - 1),
+        x1: Math.min(img.width, bbox.x0 - padding + maxX + 1),
+        y1: Math.min(img.height, bbox.y0 - padding + maxY + 1)
       };
     }
     
-    // Fallback to original bbox if no clear text found
     return bbox;
   };
 
