@@ -541,8 +541,19 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
           resultImg.src = result.data.url;
         });
         
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        ctx.drawImage(resultImg, 0, 0);
+        // Update the background layer with AI result
+        const bgLayer = layers.find(l => l.id === 0);
+        if (bgLayer) {
+          const bgCtx = bgLayer.canvas.getContext('2d');
+          bgCtx.clearRect(0, 0, bgLayer.canvas.width, bgLayer.canvas.height);
+          bgCtx.drawImage(resultImg, 0, 0);
+          
+          const newLayers = [...layers];
+          const bgIdx = newLayers.findIndex(l => l.id === 0);
+          newLayers[bgIdx] = { ...bgLayer };
+          setLayers(newLayers);
+          compositeAllLayers(newLayers);
+        }
         
         setTextRegions([]);
         setReplacementText('');
