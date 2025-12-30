@@ -294,7 +294,7 @@ Return ONLY valid JSON.`,
             })
           );
         } else {
-          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Google Imagen' : 'Nano Banana AI';
+          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Stable Diffusion' : 'Nano Banana AI';
           toast.info(`Generating educational diagrams with ${generatorName}...`);
           
           slides = await Promise.all(
@@ -314,7 +314,7 @@ Return ONLY valid JSON.`,
                       generatedImage = { url: result.data.url };
                     }
                   } else if (imageGenerator === 'imagen') {
-                    // Use Google Imagen for image generation
+                    // Use Stable Diffusion for image generation
                     const imagenPrompt = `Educational diagram and illustration: ${slide.image_prompt}
 
 Topic: ${topic} - ${slide.title}
@@ -325,7 +325,7 @@ Quality: High-detail, classroom-ready visual`;
 
                     const result = await base44.functions.invoke('generateImagenAI', {
                       prompt: imagenPrompt,
-                      aspectRatio: '16:9'
+                      aspectRatio: 'landscape'
                     });
                     
                     if (result.data?.url) {
@@ -524,7 +524,7 @@ Level: ${levelInstructions[educationLevel]}`;
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      <div className="font-semibold text-sm mb-1">🎨 Google Imagen</div>
+                      <div className="font-semibold text-sm mb-1">🎨 Stable Diffusion</div>
                       <div className="text-xs text-gray-600">Professional</div>
                     </button>
                   </div>
