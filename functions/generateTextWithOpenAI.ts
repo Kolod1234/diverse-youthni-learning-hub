@@ -28,18 +28,20 @@ Deno.serve(async (req) => {
       apiKey: apiKey
     });
 
-    // Create spelling-optimized prompt
+    // Create spelling-optimized prompt using best practices
     const scene = sceneDescription || 'a clean, professional background';
     const optimizedPrompt = `
-A high-quality image of ${scene}.
+    Create a high-resolution image of: ${scene}
 
-IMPORTANT VISUAL REQUIREMENT:
-The image must prominently feature the text "${textToDisplay}".
-The text must be spelled correctly: "${textToDisplay}".
+    CRITICAL TYPOGRAPHY REQUIREMENT:
+    The image MUST feature the text: "${textToDisplay}"
 
-Typography Style: Clear, legible, high-contrast, ${style}.
-The text should be integrated naturally into the scene (e.g., on a sign, label, or overlay).
-Focus on perfect typography and spelling accuracy.
+    TEXT INSTRUCTIONS:
+    1. Spelling must be 100% accurate: "${textToDisplay}"
+    2. Font style: Bold, legible, high-contrast, ${style}
+    3. Text placement: Integrated naturally (e.g., on a neon sign, billboard, label, or overlay)
+    4. Do not hallucinate extra letters
+    5. Each character must be clearly visible and correctly spelled
     `.trim();
 
     console.log('Generating with prompt:', optimizedPrompt);
