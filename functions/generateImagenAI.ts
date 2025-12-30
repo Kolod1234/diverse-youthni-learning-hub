@@ -50,7 +50,7 @@ Deno.serve(async (req) => {
         }],
         cfg_scale: 7,
         height: aspectRatio === 'portrait' || aspectRatio === '9:16' ? 1344 : 1024,
-        width: aspectRatio === 'landscape' || aspectRatio === '16:9' ? 1792 : aspectRatio === 'portrait' || aspectRatio === '9:16' ? 768 : 1024,
+        width: aspectRatio === 'landscape' || aspectRatio === '16:9' ? 1536 : aspectRatio === 'portrait' || aspectRatio === '9:16' ? 640 : 1024,
         samples: 1,
         steps: 30
       })
