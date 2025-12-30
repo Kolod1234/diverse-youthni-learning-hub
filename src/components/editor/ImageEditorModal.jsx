@@ -128,6 +128,12 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       maskCanvas.width = img.width;
       maskCanvas.height = img.height;
       setEraseMaskCanvas(maskCanvas);
+      
+      // Initialize removal mask canvas for object removal
+      const removalCanvas = document.createElement('canvas');
+      removalCanvas.width = img.width;
+      removalCanvas.height = img.height;
+      setRemovalMaskCanvas(removalCanvas);
     };
     img.src = imageUrl;
   }, [imageUrl]);
