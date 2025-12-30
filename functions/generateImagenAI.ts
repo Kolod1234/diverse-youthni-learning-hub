@@ -36,6 +36,21 @@ Deno.serve(async (req) => {
     // Use Stable Diffusion via Stability AI API
     const endpoint = 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image';
     
+    // Optimize prompt for text spelling accuracy
+    const optimizedPrompt = prompt.includes('text:') || prompt.includes('TEXT:') || prompt.includes('spell') || prompt.includes('word') ? `
+    Create a high-resolution image of: ${prompt}
+
+    CRITICAL TYPOGRAPHY REQUIREMENT:
+    All text in the image must be spelled 100% accurately.
+
+    TEXT INSTRUCTIONS:
+    1. Spelling must be perfect - no extra or missing letters
+    2. Font style: Bold, legible, and high-contrast
+    3. Text placement: Integrated naturally into the scene
+    4. Do not hallucinate extra characters
+    5. Each character must be clearly visible and correctly spelled
+    `.trim() : prompt;
+
     const sdResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
@@ -45,7 +60,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         text_prompts: [{
-          text: prompt,
+          text: optimizedPrompt,
           weight: 1
         }],
         cfg_scale: 7,
