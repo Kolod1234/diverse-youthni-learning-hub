@@ -371,22 +371,24 @@ Return ONLY the improved HTML content.`,
 
     setAiLoading(true);
     try {
-      toast.info('Generating educational image...');
-      
-      const imageResult = await base44.integrations.Core.GenerateImage({
-        prompt: `Educational illustration: ${aiPrompt}. 
-Style: Clean, professional, suitable for educational materials and student learning.
-Purpose: Support understanding of educational concepts through clear visuals.`
+      toast.info('Generating educational image with Stable Diffusion...');
+
+      const imageResult = await base44.functions.invoke('generateImagenAI', {
+        prompt: `Educational illustration: ${aiPrompt}. Style: Clean, professional, suitable for educational materials and student learning. Purpose: Support understanding of educational concepts through clear visuals.`,
+        aspectRatio: 'landscape'
       });
 
       // Insert the generated image into the current slide
       const currentContent = currentSlideData?.content || '';
       const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageResult.url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
       
+      const resultUrl = imageResult.data?.url || imageResult.url;
+      const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${resultUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
+
       updateSlide(currentSlide, 'content', currentContent + imageHtml);
       setShowAIDialog(false);
       setAiPrompt('');
-      toast.success('AI-generated image added to slide!');
+      toast.success('Stable Diffusion image added to slide!');
     } catch (error) {
       toast.error('Failed to generate image');
     } finally {
