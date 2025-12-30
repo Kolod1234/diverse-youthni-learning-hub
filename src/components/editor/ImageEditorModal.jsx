@@ -597,9 +597,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
               destX >= 0 && destX < layer.canvas.width && destY >= 0 && destY < layer.canvas.height) {
             const srcIdx = (srcY * layer.canvas.width + srcX) * 4;
             const destIdx = (destY * layer.canvas.width + destX) * 4;
-            const srcIdx = (srcY * canvas.width + srcX) * 4;
-            const destIdx = (destY * canvas.width + destX) * 4;
-            
+
             imageData.data[destIdx] = imageData.data[srcIdx];
             imageData.data[destIdx + 1] = imageData.data[srcIdx + 1];
             imageData.data[destIdx + 2] = imageData.data[srcIdx + 2];
