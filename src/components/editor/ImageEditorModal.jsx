@@ -547,6 +547,8 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
       maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
       
       maskCtx.fillStyle = 'white';
+      
+      // Add rectangle regions to mask
       textRegions.forEach(region => {
         const x = Math.min(region.startX, region.endX);
         const y = Math.min(region.startY, region.endY);
@@ -554,6 +556,11 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         const height = Math.abs(region.endY - region.startY);
         maskCtx.fillRect(x, y, width, height);
       });
+      
+      // Add brush-painted areas to mask
+      if (eraseMaskCanvas && highlightTool === 'brush') {
+        maskCtx.drawImage(eraseMaskCanvas, 0, 0);
+      }
       
       // Convert to blobs
       const imageBlob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
