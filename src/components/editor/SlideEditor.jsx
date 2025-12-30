@@ -380,12 +380,10 @@ Return ONLY the improved HTML content.`,
 
       // Insert the generated image into the current slide
       const currentContent = currentSlideData?.content || '';
-      const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${imageResult.url}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
-      
       const resultUrl = imageResult.data?.url || imageResult.url;
-      const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${resultUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
+      const generatedImageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${resultUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
 
-      updateSlide(currentSlide, 'content', currentContent + imageHtml);
+      updateSlide(currentSlide, 'content', currentContent + generatedImageHtml);
       setShowAIDialog(false);
       setAiPrompt('');
       toast.success('Stable Diffusion image added to slide!');
