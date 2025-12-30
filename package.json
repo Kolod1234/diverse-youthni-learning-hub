@@ -98,7 +98,8 @@
     "@cyntler/react-doc-viewer": "^1.16.2",
     "react-zoom-pan-pinch": "^3.4.4",
     "dom-to-image-more": "^3.0.0",
-    "html-to-image": "^1.11.11"
+    "html-to-image": "^1.11.11",
+    "tesseract.js": "^5.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
