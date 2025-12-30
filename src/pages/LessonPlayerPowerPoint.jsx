@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout
+  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck
 } from 'lucide-react';
 import { toast } from 'sonner';
 import {
@@ -60,6 +60,12 @@ export default function LessonPlayerPowerPoint() {
       return enrollments[0];
     },
     enabled: !!courseId
+  });
+
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['lessonQuizzes', lessonId],
+    queryFn: () => base44.entities.Quiz.filter({ lesson_id: lessonId }),
+    enabled: !!lessonId
   });
 
   // Mark lesson complete mutation
@@ -308,6 +314,27 @@ export default function LessonPlayerPowerPoint() {
         <main className={`flex-1 flex flex-col items-center overflow-auto ${
           isPresenting ? 'p-0 bg-black justify-center' : 'bg-[#edebe9] p-10'
         }`}>
+          {/* Quiz Link (Not in Presentation Mode) */}
+          {!isPresenting && quizzes.length > 0 && (
+            <div className="w-full max-w-[960px] mb-4">
+              <button
+                onClick={() => navigate(`/Quiz?id=${quizzes[0].id}&course=${courseId}`)}
+                className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-4 flex items-center justify-between hover:from-purple-700 hover:to-pink-700 transition-all shadow-lg"
+              >
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-white/20 rounded-lg flex items-center justify-center">
+                    <ClipboardCheck className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h3 className="font-semibold">Take Quiz</h3>
+                    <p className="text-xs opacity-90">Test your knowledge</p>
+                  </div>
+                </div>
+                <ChevronRight className="w-5 h-5" />
+              </button>
+            </div>
+          )}
+
           {/* Learning Objectives (Not in Presentation Mode) */}
           {!isPresenting && lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
             <div className="w-full max-w-[960px] mb-4">
