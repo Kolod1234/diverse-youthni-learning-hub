@@ -304,9 +304,23 @@ Return ONLY valid JSON.`,
                   let generatedImage;
                   
                   if (imageGenerator === 'dalle') {
-                    // Use DALL-E for image generation
+                    // Use DALL-E for image generation with optimized spelling
+                    const dallePrompt = `Create a high-resolution educational image of: ${slide.image_prompt}
+
+CRITICAL TYPOGRAPHY REQUIREMENT:
+The image MUST feature perfectly spelled text and labels.
+
+TEXT INSTRUCTIONS:
+1. Spelling must be 100% accurate: "${slide.image_prompt}"
+2. Font style: Bold, legible, high-contrast
+3. Text placement: Integrated naturally (on diagrams, labels, or educational visuals)
+4. Do not hallucinate extra letters
+5. Each character must be clearly visible and correctly spelled
+
+Educational Context: ${topic} - ${slide.title}`;
+
                     const result = await base44.functions.invoke('geminiImageGeneration', {
-                      prompt: slide.image_prompt,
+                      prompt: dallePrompt,
                       topic: `${topic} - ${slide.title}`
                     });
                     
@@ -314,14 +328,24 @@ Return ONLY valid JSON.`,
                       generatedImage = { url: result.data.url };
                     }
                   } else if (imageGenerator === 'imagen') {
-                    // Use Stable Diffusion for image generation
-                    const imagenPrompt = `Educational diagram and illustration: ${slide.image_prompt}
+                    // Use Stable Diffusion for image generation with optimized spelling
+                    const imagenPrompt = `Create a high-resolution educational diagram of: ${slide.image_prompt}
 
-Topic: ${topic} - ${slide.title}
-Style: Professional educational diagram, clear and informative
-Purpose: Help students understand the concept
-Level: ${levelInstructions[educationLevel]}
-Quality: High-detail, classroom-ready visual`;
+CRITICAL TYPOGRAPHY REQUIREMENT:
+All text in the diagram must be spelled 100% accurately.
+
+TEXT INSTRUCTIONS:
+1. Spelling must be perfect: verify scientific terms, labels, and titles
+2. Font style: Bold, legible, high-contrast for classroom visibility
+3. Text placement: Integrated naturally (labels, annotations, titles)
+4. Do not hallucinate extra letters or characters
+5. Each character must be clearly visible and correctly spelled
+
+Educational Context:
+- Topic: ${topic} - ${slide.title}
+- Level: ${levelInstructions[educationLevel]}
+- Style: Professional educational diagram, clear and informative
+- Quality: High-detail, classroom-ready visual`;
 
                     const result = await base44.functions.invoke('generateImagenAI', {
                       prompt: imagenPrompt,
@@ -332,21 +356,25 @@ Quality: High-detail, classroom-ready visual`;
                       generatedImage = { url: result.data.url };
                     }
                   } else {
-                    // Use Nano Banana (default)
-                    const imagePrompt = `Educational diagram and illustration showing: ${slide.image_prompt}
+                    // Use Nano Banana (default) with optimized spelling
+                    const imagePrompt = `Create a high-resolution educational diagram of: ${slide.image_prompt}
 
-CRITICAL REQUIREMENTS FOR NANO BANANA:
-- Clean, professional educational diagram style
-- If text is needed, ensure PERFECT spelling of all scientific and technical terms
-- Clear labels with correct spelling (double-check terms like "mitosis", "meiosis", "photosynthesis", etc.)
-- Simple, clean design suitable for students at ${educationLevel} level
-- No text artifacts or misspellings
-- Professional educational quality suitable for classroom use
+CRITICAL TYPOGRAPHY REQUIREMENT:
+The diagram MUST feature perfectly spelled text and labels.
 
-Context: ${topic} - ${slide.title}
-Style: Illustrative diagram, infographic, or educational chart
-Purpose: Help students understand ${slide.image_prompt}
-Level: ${levelInstructions[educationLevel]}`;
+TEXT INSTRUCTIONS:
+1. Spelling must be 100% accurate: verify all scientific and technical terms
+2. Font style: Bold, legible, high-contrast for classroom use
+3. Text placement: Integrated naturally (labels, annotations, diagram titles)
+4. Do not hallucinate extra letters or misspell terms like "mitosis", "meiosis", "photosynthesis"
+5. Each character must be clearly visible and correctly spelled
+
+Educational Requirements:
+- Topic: ${topic} - ${slide.title}
+- Level: ${levelInstructions[educationLevel]}
+- Style: Clean, professional educational diagram
+- Purpose: Help students understand ${slide.image_prompt}
+- Quality: Classroom-ready, no text artifacts`;
 
                     generatedImage = await base44.integrations.Core.GenerateImage({
                       prompt: imagePrompt
