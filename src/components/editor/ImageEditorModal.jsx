@@ -588,6 +588,130 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     toast.success('Image resized!');
   };
 
+  const handleAIObjectRemoval = async () => {
+    if (removalRegions.length === 0 && (!removalMaskCanvas || removalTool !== 'brush')) {
+      toast.error('Please mark object areas first');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      toast.info('Preparing image...');
+      const tempCanvas = document.createElement('canvas');
+      const firstLayer = layers[0];
+      tempCanvas.width = firstLayer.canvas.width;
+      tempCanvas.height = firstLayer.canvas.height;
+      const tempCtx = tempCanvas.getContext('2d');
+      
+      // Composite all visible layers onto temp canvas
+      layers.forEach(layer => {
+        if (!layer.visible) return;
+        tempCtx.globalAlpha = layer.opacity;
+        tempCtx.globalCompositeOperation = layer.blendMode;
+        tempCtx.drawImage(layer.canvas, 0, 0);
+      });
+      
+      tempCtx.globalAlpha = 1;
+      tempCtx.globalCompositeOperation = 'source-over';
+      
+      // Erase marked object areas
+      toast.info('Erasing marked objects...');
+      tempCtx.globalCompositeOperation = 'destination-out';
+      removalRegions.forEach(region => {
+        const x = Math.min(region.startX, region.endX);
+        const y = Math.min(region.startY, region.endY);
+        const width = Math.abs(region.endX - region.startX);
+        const height = Math.abs(region.endY - region.startY);
+        tempCtx.fillRect(x, y, width, height);
+      });
+      tempCtx.globalCompositeOperation = 'source-over';
+      
+      // Create mask
+      const maskCanvas = document.createElement('canvas');
+      maskCanvas.width = tempCanvas.width;
+      maskCanvas.height = tempCanvas.height;
+      const maskCtx = maskCanvas.getContext('2d');
+      
+      maskCtx.fillStyle = 'black';
+      maskCtx.fillRect(0, 0, maskCanvas.width, maskCanvas.height);
+      
+      maskCtx.fillStyle = 'white';
+      
+      removalRegions.forEach(region => {
+        const x = Math.min(region.startX, region.endX);
+        const y = Math.min(region.startY, region.endY);
+        const width = Math.abs(region.endX - region.startX);
+        const height = Math.abs(region.endY - region.startY);
+        maskCtx.fillRect(x, y, width, height);
+      });
+      
+      if (removalMaskCanvas && removalTool === 'brush') {
+        maskCtx.drawImage(removalMaskCanvas, 0, 0);
+      }
+      
+      const imageBlob = await new Promise(resolve => tempCanvas.toBlob(resolve, 'image/png'));
+      const maskBlob = await new Promise(resolve => maskCanvas.toBlob(resolve, 'image/png'));
+      
+      const imageFile = new File([imageBlob], 'image.png', { type: 'image/png' });
+      const maskFile = new File([maskBlob], 'mask.png', { type: 'image/png' });
+      
+      toast.info('Uploading to AI...');
+      const imageUpload = await base44.integrations.Core.UploadFile({ file: imageFile });
+      const maskUpload = await base44.integrations.Core.UploadFile({ file: maskFile });
+      
+      toast.info('Removing objects with AI...');
+      const result = await base44.functions.invoke('inpaintImage', {
+        imageUrl: imageUpload.file_url,
+        maskUrl: maskUpload.file_url,
+        prompt: `Clean, natural background. Remove the selected object completely and fill the area with contextually appropriate background that matches the surrounding environment. High quality inpainting.`
+      });
+      
+      if (result?.data?.url) {
+        const resultImg = new Image();
+        resultImg.crossOrigin = 'anonymous';
+        
+        await new Promise((resolve, reject) => {
+          resultImg.onload = resolve;
+          resultImg.onerror = reject;
+          resultImg.src = result.data.url;
+        });
+        
+        const bgLayer = layers.find(l => l.id === 0);
+        if (bgLayer) {
+          const bgCtx = bgLayer.canvas.getContext('2d');
+          bgCtx.clearRect(0, 0, bgLayer.canvas.width, bgLayer.canvas.height);
+          bgCtx.drawImage(resultImg, 0, 0);
+          
+          const newLayers = [...layers];
+          const bgIdx = newLayers.findIndex(l => l.id === 0);
+          newLayers[bgIdx] = { ...bgLayer };
+          setLayers(newLayers);
+          compositeAllLayers(newLayers);
+        }
+        
+        setRemovalRegions([]);
+        setObjectRemovalMode(false);
+        
+        if (removalMaskCanvas) {
+          const maskCtx = removalMaskCanvas.getContext('2d');
+          maskCtx.clearRect(0, 0, removalMaskCanvas.width, removalMaskCanvas.height);
+        }
+        
+        saveToHistory();
+        toast.success('Object removed successfully!');
+      } else {
+        throw new Error('No image returned from AI');
+      }
+      
+    } catch (error) {
+      console.error('Object removal error:', error);
+      const errorMsg = error?.response?.data?.error || error?.message || 'Unknown error';
+      toast.error('Failed to remove object: ' + errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAITextReplace = async () => {
     if (textRegions.length === 0) {
       toast.error('Please highlight text areas first');
