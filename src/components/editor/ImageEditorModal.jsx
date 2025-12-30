@@ -1,0 +1,494 @@
+import React, { useState, useRef, useEffect } from 'react';
+import { Button } from '@/components/ui/button';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
+import { Slider } from '@/components/ui/slider';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { X, Download, RotateCw, Eraser, Type, Crop, Maximize2, Wand2, Loader2, Undo, Redo } from 'lucide-react';
+import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
+
+export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
+  const canvasRef = useRef(null);
+  const [image, setImage] = useState(null);
+  const [activeTab, setActiveTab] = useState('filters');
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [loading, setLoading] = useState(false);
+  
+  // Filters
+  const [brightness, setBrightness] = useState(100);
+  const [contrast, setContrast] = useState(100);
+  const [saturation, setSaturation] = useState(100);
+  const [blur, setBlur] = useState(0);
+  const [rotation, setRotation] = useState(0);
+  
+  // Erase tool
+  const [eraseMode, setEraseMode] = useState(false);
+  const [brushSize, setBrushSize] = useState(20);
+  
+  // Crop
+  const [cropStart, setCropStart] = useState(null);
+  const [cropEnd, setCropEnd] = useState(null);
+  const [cropMode, setCropMode] = useState(false);
+  
+  // Resize
+  const [resizeWidth, setResizeWidth] = useState(0);
+  const [resizeHeight, setResizeHeight] = useState(0);
+  
+  // AI Text Replacement
+  const [textToReplace, setTextToReplace] = useState('');
+  const [replacementText, setReplacementText] = useState('');
+  
+  // History for undo/redo
+  const [history, setHistory] = useState([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+
+  useEffect(() => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      setImage(img);
+      setResizeWidth(img.width);
+      setResizeHeight(img.height);
+      drawCanvas(img);
+      saveToHistory();
+    };
+    img.src = imageUrl;
+  }, [imageUrl]);
+
+  const drawCanvas = (img = image, applyFilters = true) => {
+    if (!img || !canvasRef.current) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    canvas.width = img.width;
+    canvas.height = img.height;
+    
+    ctx.save();
+    
+    if (rotation !== 0) {
+      ctx.translate(canvas.width / 2, canvas.height / 2);
+      ctx.rotate((rotation * Math.PI) / 180);
+      ctx.translate(-canvas.width / 2, -canvas.height / 2);
+    }
+    
+    if (applyFilters) {
+      ctx.filter = `brightness(${brightness}%) contrast(${contrast}%) saturate(${saturation}%) blur(${blur}px)`;
+    }
+    
+    ctx.drawImage(img, 0, 0);
+    ctx.restore();
+  };
+
+  const saveToHistory = () => {
+    if (!canvasRef.current) return;
+    const canvas = canvasRef.current;
+    const newHistory = history.slice(0, historyIndex + 1);
+    newHistory.push(canvas.toDataURL());
+    setHistory(newHistory);
+    setHistoryIndex(newHistory.length - 1);
+  };
+
+  const undo = () => {
+    if (historyIndex > 0) {
+      setHistoryIndex(historyIndex - 1);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = history[historyIndex - 1];
+    }
+  };
+
+  const redo = () => {
+    if (historyIndex < history.length - 1) {
+      setHistoryIndex(historyIndex + 1);
+      const img = new Image();
+      img.onload = () => {
+        const canvas = canvasRef.current;
+        const ctx = canvas.getContext('2d');
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(img, 0, 0);
+      };
+      img.src = history[historyIndex + 1];
+    }
+  };
+
+  useEffect(() => {
+    drawCanvas();
+  }, [brightness, contrast, saturation, blur, rotation]);
+
+  const handleMouseDown = (e) => {
+    if (eraseMode) {
+      setIsDrawing(true);
+      erase(e);
+    } else if (cropMode) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      setCropStart({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+    }
+  };
+
+  const handleMouseMove = (e) => {
+    if (eraseMode && isDrawing) {
+      erase(e);
+    } else if (cropMode && cropStart) {
+      const rect = canvasRef.current.getBoundingClientRect();
+      setCropEnd({
+        x: e.clientX - rect.left,
+        y: e.clientY - rect.top
+      });
+      drawCropRect();
+    }
+  };
+
+  const handleMouseUp = () => {
+    if (eraseMode) {
+      setIsDrawing(false);
+      saveToHistory();
+    } else if (cropMode && cropStart && cropEnd) {
+      applyCrop();
+    }
+  };
+
+  const erase = (e) => {
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    
+    ctx.globalCompositeOperation = 'destination-out';
+    ctx.beginPath();
+    ctx.arc(x, y, brushSize / 2, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.globalCompositeOperation = 'source-over';
+  };
+
+  const drawCropRect = () => {
+    if (!cropStart || !cropEnd) return;
+    
+    drawCanvas(image, true);
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    ctx.strokeStyle = '#4F46E5';
+    ctx.lineWidth = 2;
+    ctx.setLineDash([5, 5]);
+    ctx.strokeRect(
+      cropStart.x,
+      cropStart.y,
+      cropEnd.x - cropStart.x,
+      cropEnd.y - cropStart.y
+    );
+    ctx.setLineDash([]);
+  };
+
+  const applyCrop = () => {
+    if (!cropStart || !cropEnd) return;
+    
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    
+    const x = Math.min(cropStart.x, cropEnd.x);
+    const y = Math.min(cropStart.y, cropEnd.y);
+    const width = Math.abs(cropEnd.x - cropStart.x);
+    const height = Math.abs(cropEnd.y - cropStart.y);
+    
+    const imageData = ctx.getImageData(x, y, width, height);
+    
+    canvas.width = width;
+    canvas.height = height;
+    ctx.putImageData(imageData, 0, 0);
+    
+    setCropStart(null);
+    setCropEnd(null);
+    setCropMode(false);
+    setResizeWidth(width);
+    setResizeHeight(height);
+    saveToHistory();
+    toast.success('Image cropped!');
+  };
+
+  const applyResize = () => {
+    const canvas = canvasRef.current;
+    const tempCanvas = document.createElement('canvas');
+    const tempCtx = tempCanvas.getContext('2d');
+    
+    tempCanvas.width = canvas.width;
+    tempCanvas.height = canvas.height;
+    tempCtx.drawImage(canvas, 0, 0);
+    
+    canvas.width = resizeWidth;
+    canvas.height = resizeHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(tempCanvas, 0, 0, resizeWidth, resizeHeight);
+    
+    saveToHistory();
+    toast.success('Image resized!');
+  };
+
+  const handleAITextReplace = async () => {
+    if (!textToReplace.trim() || !replacementText.trim()) {
+      toast.error('Please enter both text to replace and replacement text');
+      return;
+    }
+    
+    setLoading(true);
+    try {
+      const canvas = canvasRef.current;
+      const dataUrl = canvas.toDataURL();
+      
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Given an image with text "${textToReplace}", replace it with "${replacementText}". Return the modified image.`,
+        file_urls: [dataUrl]
+      });
+      
+      // For now, show message - actual implementation would need image editing AI
+      toast.info('AI text replacement requires advanced image editing API. Use manual editing tools instead.');
+      
+    } catch (error) {
+      toast.error('Failed to replace text');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleSave = () => {
+    const canvas = canvasRef.current;
+    const finalDataUrl = canvas.toDataURL('image/png');
+    onSave(finalDataUrl);
+    toast.success('Image saved!');
+  };
+
+  const downloadImage = () => {
+    const canvas = canvasRef.current;
+    const link = document.createElement('a');
+    link.download = 'edited-image.png';
+    link.href = canvas.toDataURL();
+    link.click();
+    toast.success('Image downloaded!');
+  };
+
+  const resetFilters = () => {
+    setBrightness(100);
+    setContrast(100);
+    setSaturation(100);
+    setBlur(0);
+    setRotation(0);
+    toast.success('Filters reset!');
+  };
+
+  return (
+    <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
+      <div className="bg-white rounded-2xl w-full max-w-7xl max-h-[95vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
+        {/* Header */}
+        <div className="flex items-center justify-between p-4 border-b bg-gradient-to-r from-indigo-50 to-purple-50">
+          <div>
+            <h3 className="text-xl font-bold text-gray-900">Image Editor</h3>
+            <p className="text-sm text-gray-600">Edit, crop, and enhance your image</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <Button variant="outline" size="sm" onClick={undo} disabled={historyIndex <= 0}>
+              <Undo className="w-4 h-4 mr-1" />
+              Undo
+            </Button>
+            <Button variant="outline" size="sm" onClick={redo} disabled={historyIndex >= history.length - 1}>
+              <Redo className="w-4 h-4 mr-1" />
+              Redo
+            </Button>
+            <Button variant="outline" size="sm" onClick={downloadImage}>
+              <Download className="w-4 h-4 mr-1" />
+              Download
+            </Button>
+            <Button size="sm" onClick={handleSave} className="bg-indigo-600 hover:bg-indigo-700">
+              Save Changes
+            </Button>
+            <Button variant="ghost" size="sm" onClick={onClose}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+        </div>
+
+        <div className="flex flex-1 overflow-hidden">
+          {/* Tools Sidebar */}
+          <div className="w-80 border-r bg-gray-50 p-4 overflow-y-auto">
+            <Tabs value={activeTab} onValueChange={setActiveTab}>
+              <TabsList className="grid w-full grid-cols-2 mb-4">
+                <TabsTrigger value="filters">Filters</TabsTrigger>
+                <TabsTrigger value="tools">Tools</TabsTrigger>
+              </TabsList>
+
+              <TabsContent value="filters" className="space-y-4">
+                <div>
+                  <Label>Brightness</Label>
+                  <Slider value={[brightness]} onValueChange={(v) => setBrightness(v[0])} min={0} max={200} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{brightness}%</span>
+                </div>
+
+                <div>
+                  <Label>Contrast</Label>
+                  <Slider value={[contrast]} onValueChange={(v) => setContrast(v[0])} min={0} max={200} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{contrast}%</span>
+                </div>
+
+                <div>
+                  <Label>Saturation</Label>
+                  <Slider value={[saturation]} onValueChange={(v) => setSaturation(v[0])} min={0} max={200} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{saturation}%</span>
+                </div>
+
+                <div>
+                  <Label>Blur</Label>
+                  <Slider value={[blur]} onValueChange={(v) => setBlur(v[0])} min={0} max={20} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{blur}px</span>
+                </div>
+
+                <div>
+                  <Label>Rotation</Label>
+                  <Slider value={[rotation]} onValueChange={(v) => setRotation(v[0])} min={0} max={360} step={1} className="mt-2" />
+                  <span className="text-xs text-gray-600">{rotation}°</span>
+                </div>
+
+                <Button onClick={resetFilters} variant="outline" className="w-full">
+                  <RotateCw className="w-4 h-4 mr-2" />
+                  Reset Filters
+                </Button>
+              </TabsContent>
+
+              <TabsContent value="tools" className="space-y-4">
+                {/* Erase Tool */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold">Erase Tool</Label>
+                    <Button
+                      size="sm"
+                      variant={eraseMode ? 'default' : 'outline'}
+                      onClick={() => {
+                        setEraseMode(!eraseMode);
+                        setCropMode(false);
+                      }}
+                    >
+                      <Eraser className="w-4 h-4 mr-1" />
+                      {eraseMode ? 'Active' : 'Activate'}
+                    </Button>
+                  </div>
+                  {eraseMode && (
+                    <div>
+                      <Label>Brush Size</Label>
+                      <Slider value={[brushSize]} onValueChange={(v) => setBrushSize(v[0])} min={5} max={100} step={1} className="mt-2" />
+                      <span className="text-xs text-gray-600">{brushSize}px</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Crop Tool */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <div className="flex items-center justify-between mb-3">
+                    <Label className="text-base font-semibold">Crop Tool</Label>
+                    <Button
+                      size="sm"
+                      variant={cropMode ? 'default' : 'outline'}
+                      onClick={() => {
+                        setCropMode(!cropMode);
+                        setEraseMode(false);
+                        setCropStart(null);
+                        setCropEnd(null);
+                      }}
+                    >
+                      <Crop className="w-4 h-4 mr-1" />
+                      {cropMode ? 'Active' : 'Activate'}
+                    </Button>
+                  </div>
+                  {cropMode && (
+                    <p className="text-xs text-gray-600">Click and drag on the image to select crop area</p>
+                  )}
+                </div>
+
+                {/* Resize Tool */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <Label className="text-base font-semibold mb-3 block">Resize Image</Label>
+                  <div className="space-y-2">
+                    <div>
+                      <Label className="text-xs">Width (px)</Label>
+                      <Input type="number" value={resizeWidth} onChange={(e) => setResizeWidth(Number(e.target.value))} className="mt-1" />
+                    </div>
+                    <div>
+                      <Label className="text-xs">Height (px)</Label>
+                      <Input type="number" value={resizeHeight} onChange={(e) => setResizeHeight(Number(e.target.value))} className="mt-1" />
+                    </div>
+                    <Button onClick={applyResize} size="sm" className="w-full">
+                      <Maximize2 className="w-4 h-4 mr-1" />
+                      Apply Resize
+                    </Button>
+                  </div>
+                </div>
+
+                {/* AI Text Replacement */}
+                <div className="p-4 border rounded-lg bg-white">
+                  <Label className="text-base font-semibold mb-3 block">AI Text Replace</Label>
+                  <div className="space-y-2">
+                    <Input
+                      placeholder="Text to replace"
+                      value={textToReplace}
+                      onChange={(e) => setTextToReplace(e.target.value)}
+                    />
+                    <Input
+                      placeholder="Replacement text"
+                      value={replacementText}
+                      onChange={(e) => setReplacementText(e.target.value)}
+                    />
+                    <Button onClick={handleAITextReplace} size="sm" className="w-full" disabled={loading}>
+                      {loading ? (
+                        <>
+                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                          Processing...
+                        </>
+                      ) : (
+                        <>
+                          <Wand2 className="w-4 h-4 mr-1" />
+                          Replace Text
+                        </>
+                      )}
+                    </Button>
+                    <p className="text-xs text-gray-500">Note: Advanced AI text editing coming soon</p>
+                  </div>
+                </div>
+              </TabsContent>
+            </Tabs>
+          </div>
+
+          {/* Canvas Area */}
+          <div className="flex-1 flex items-center justify-center bg-gray-100 p-8 overflow-auto">
+            <div className="relative" style={{ cursor: eraseMode ? 'crosshair' : cropMode ? 'crosshair' : 'default' }}>
+              <canvas
+                ref={canvasRef}
+                onMouseDown={handleMouseDown}
+                onMouseMove={handleMouseMove}
+                onMouseUp={handleMouseUp}
+                onMouseLeave={handleMouseUp}
+                className="max-w-full max-h-full border-2 border-gray-300 shadow-xl rounded-lg bg-white"
+              />
+              {eraseMode && (
+                <div className="absolute top-2 left-2 bg-black/70 text-white px-3 py-1 rounded-full text-xs">
+                  Erase Mode Active
+                </div>
+              )}
+              {cropMode && (
+                <div className="absolute top-2 left-2 bg-indigo-600 text-white px-3 py-1 rounded-full text-xs">
+                  Crop Mode - Click & Drag
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}

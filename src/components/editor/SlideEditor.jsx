@@ -16,6 +16,7 @@ import ImageTextOverlay from '@/components/editor/ImageTextOverlay';
 import CanvaIntegration from '@/components/editor/CanvaIntegration';
 import CanvaImporter from '@/components/editor/CanvaImporter';
 import FigmaImporter from '@/components/editor/FigmaImporter';
+import ImageEditorModal from '@/components/editor/ImageEditorModal';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -173,6 +174,8 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showCanva, setShowCanva] = useState(false);
   const [showCanvaImporter, setShowCanvaImporter] = useState(false);
   const [showFigmaImporter, setShowFigmaImporter] = useState(false);
+  const [showImageEditor, setShowImageEditor] = useState(false);
+  const [imageToEdit, setImageToEdit] = useState(null);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -381,12 +384,11 @@ Return ONLY the improved HTML content.`,
       // Insert the generated image into the current slide
       const currentContent = currentSlideData?.content || '';
       const resultUrl = imageResult.data?.url || imageResult.url;
-      const generatedImageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${resultUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="${aiPrompt}" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 8px; font-style: italic;">${aiPrompt}</p></div>`;
 
-      updateSlide(currentSlide, 'content', currentContent + generatedImageHtml);
+      // Open image editor for the generated image
+      setImageToEdit(resultUrl);
+      setShowImageEditor(true);
       setShowAIDialog(false);
-      setAiPrompt('');
-      toast.success('Stable Diffusion image added to slide!');
     } catch (error) {
       toast.error('Failed to generate image');
     } finally {
@@ -858,6 +860,21 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                       >
                         <ImageIcon className="w-4 h-4 mr-2" />
                         Add/Replace Image
+                      </DropdownMenuItem>
+                      <DropdownMenuItem 
+                        onClick={() => {
+                          const content = currentSlideData?.content || '';
+                          const imgMatch = content.match(/<img[^>]+src="([^">]+)"/);
+                          if (imgMatch) {
+                            setImageToEdit(imgMatch[1]);
+                            setShowImageEditor(true);
+                          } else {
+                            toast.error('No image found in current slide');
+                          }
+                        }}
+                      >
+                        <Wand2 className="w-4 h-4 mr-2" />
+                        Edit Current Image
                       </DropdownMenuItem>
                       <DropdownMenuItem 
                         onClick={() => setShowCanva(true)}
@@ -1532,6 +1549,25 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setCurrentSlide(slides.length);
             }}
             onClose={() => setShowFigmaImporter(false)}
+          />
+        )}
+
+        {/* Image Editor */}
+        {showImageEditor && imageToEdit && (
+          <ImageEditorModal
+            imageUrl={imageToEdit}
+            onSave={(editedImageUrl) => {
+              const currentContent = currentSlideData?.content || '';
+              const imageHtml = `<div style="text-align: center; margin: 20px 0;"><img src="${editedImageUrl}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" alt="Edited image" /></div>`;
+              updateSlide(currentSlide, 'content', currentContent + imageHtml);
+              setShowImageEditor(false);
+              setImageToEdit(null);
+              toast.success('Edited image added to slide!');
+            }}
+            onClose={() => {
+              setShowImageEditor(false);
+              setImageToEdit(null);
+            }}
           />
         )}
         </div>
