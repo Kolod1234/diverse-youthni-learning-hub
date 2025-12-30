@@ -15,6 +15,7 @@ import ImageManager from '@/components/editor/ImageManager';
 import ImageTextOverlay from '@/components/editor/ImageTextOverlay';
 import CanvaIntegration from '@/components/editor/CanvaIntegration';
 import CanvaImporter from '@/components/editor/CanvaImporter';
+import FigmaImporter from '@/components/editor/FigmaImporter';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -171,6 +172,7 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [overlayImageUrl, setOverlayImageUrl] = useState('');
   const [showCanva, setShowCanva] = useState(false);
   const [showCanvaImporter, setShowCanvaImporter] = useState(false);
+  const [showFigmaImporter, setShowFigmaImporter] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -599,6 +601,15 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           >
             <Download className="w-4 h-4 mr-2" />
             Import Canva
+          </Button>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => setShowFigmaImporter(true)}
+            className="bg-pink-50 border-pink-200 text-pink-700 hover:bg-pink-100"
+          >
+            <Download className="w-4 h-4 mr-2" />
+            Import Figma
           </Button>
           <Button
             variant="outline"
@@ -1506,6 +1517,21 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setCurrentSlide(slides.length);
             }}
             onClose={() => setShowCanvaImporter(false)}
+          />
+        )}
+
+        {/* Figma Importer */}
+        {showFigmaImporter && (
+          <FigmaImporter
+            onImport={(importedSlides) => {
+              const newSlides = [...slides, ...importedSlides.map((slide, idx) => ({
+                ...slide,
+                order: slides.length + idx + 1
+              }))];
+              onChange(newSlides);
+              setCurrentSlide(slides.length);
+            }}
+            onClose={() => setShowFigmaImporter(false)}
           />
         )}
         </div>

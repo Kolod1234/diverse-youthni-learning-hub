@@ -17,6 +17,7 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
   const [imageStyle, setImageStyle] = useState('photographic');
   const [aspectRatio, setAspectRatio] = useState('landscape');
   const [reverseSearchFile, setReverseSearchFile] = useState(null);
+  const [useStockLibrary, setUseStockLibrary] = useState(false);
 
   const handleSearchImage = async () => {
     if (!searchQuery.trim()) {
@@ -31,7 +32,8 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
         slideTitle,
         slideContent,
         style: imageStyle,
-        aspectRatio: aspectRatio
+        aspectRatio: aspectRatio,
+        useStockLibrary: useStockLibrary
       });
 
       if (result?.data?.images && result.data.images.length > 0) {
@@ -207,9 +209,26 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
               </div>
             </div>
 
+            <div className="flex items-center gap-2 mb-3">
+              <input
+                type="checkbox"
+                id="stock-library"
+                checked={useStockLibrary}
+                onChange={(e) => setUseStockLibrary(e.target.checked)}
+                className="w-4 h-4 rounded border-gray-300"
+                disabled={searching}
+              />
+              <Label htmlFor="stock-library" className="text-sm cursor-pointer">
+                Use stock photo libraries (Unsplash/Pexels)
+              </Label>
+            </div>
+
             <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
               <p className="text-xs text-blue-800">
-                💡 AI searches Google for diverse, high-quality images matching your style and ratio preferences
+                {useStockLibrary 
+                  ? '📸 Searches curated stock photo libraries with high-quality, royalty-free images'
+                  : '💡 AI searches Google for diverse, high-quality images matching your style and ratio preferences'
+                }
               </p>
             </div>
 
