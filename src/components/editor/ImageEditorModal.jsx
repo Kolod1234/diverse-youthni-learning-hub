@@ -358,6 +358,19 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
         setIsDrawing(false);
         drawTextRegions();
       }
+    } else if (objectRemovalMode) {
+      if (removalTool === 'rectangle' && currentRemovalRegion) {
+        const width = Math.abs(currentRemovalRegion.endX - currentRemovalRegion.startX);
+        const height = Math.abs(currentRemovalRegion.endY - currentRemovalRegion.startY);
+        if (width > 10 && height > 10) {
+          setRemovalRegions([...removalRegions, currentRemovalRegion]);
+          toast.success('Object area marked!');
+        }
+        setCurrentRemovalRegion(null);
+      } else if (removalTool === 'brush') {
+        setIsDrawing(false);
+        drawRemovalRegions();
+      }
     } else if (liquifyMode) {
       setIsDrawing(false);
       saveToHistory();
