@@ -665,6 +665,104 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     toast.success('Image resized!');
   };
 
+  const handleOpenAITextGenerate = async () => {
+    if (!replacementText.trim()) {
+      toast.error('Please enter text to generate');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      toast.info('Generating perfectly spelled text with DALL-E 3...');
+
+      // Determine scene description from selected area or use default
+      let sceneDescription = 'a clean professional background with clear typography';
+      
+      if (textRegions.length > 0) {
+        sceneDescription = 'the existing background scene, naturally integrated';
+      }
+
+      const result = await base44.functions.invoke('generateTextWithOpenAI', {
+        sceneDescription: sceneDescription,
+        textToDisplay: replacementText,
+        style: 'professional, high-contrast',
+        size: '1024x1024'
+      });
+
+      if (result?.data?.url) {
+        const resultImg = new Image();
+        resultImg.crossOrigin = 'anonymous';
+        
+        await new Promise((resolve, reject) => {
+          resultImg.onload = resolve;
+          resultImg.onerror = reject;
+          resultImg.src = result.data.url;
+        });
+
+        // If text regions are marked, replace only those areas
+        if (textRegions.length > 0) {
+          const bgLayer = layers.find(l => l.id === 0);
+          if (bgLayer) {
+            const bgCtx = bgLayer.canvas.getContext('2d');
+            
+            textRegions.forEach(region => {
+              const x = Math.min(region.startX, region.endX);
+              const y = Math.min(region.startY, region.endY);
+              const width = Math.abs(region.endX - region.startX);
+              const height = Math.abs(region.endY - region.startY);
+              
+              // Scale and draw the generated image in the region
+              bgCtx.drawImage(resultImg, 
+                0, 0, resultImg.width, resultImg.height,
+                x, y, width, height
+              );
+            });
+            
+            const newLayers = [...layers];
+            const bgIdx = newLayers.findIndex(l => l.id === 0);
+            newLayers[bgIdx] = { ...bgLayer };
+            setLayers(newLayers);
+            compositeAllLayers(newLayers);
+          }
+        } else {
+          // Replace entire background
+          const bgLayer = layers.find(l => l.id === 0);
+          if (bgLayer) {
+            const bgCtx = bgLayer.canvas.getContext('2d');
+            bgCtx.clearRect(0, 0, bgLayer.canvas.width, bgLayer.canvas.height);
+            bgCtx.drawImage(resultImg, 0, 0, bgLayer.canvas.width, bgLayer.canvas.height);
+            
+            const newLayers = [...layers];
+            const bgIdx = newLayers.findIndex(l => l.id === 0);
+            newLayers[bgIdx] = { ...bgLayer };
+            setLayers(newLayers);
+            compositeAllLayers(newLayers);
+          }
+        }
+        
+        setTextRegions([]);
+        setReplacementText('');
+        
+        if (eraseMaskCanvas) {
+          const maskCtx = eraseMaskCanvas.getContext('2d');
+          maskCtx.clearRect(0, 0, eraseMaskCanvas.width, eraseMaskCanvas.height);
+        }
+        
+        saveToHistory();
+        toast.success('Text generated with perfect spelling!');
+      } else {
+        throw new Error('No image returned from OpenAI');
+      }
+      
+    } catch (error) {
+      console.error('OpenAI text generation error:', error);
+      const errorMsg = error?.response?.data?.error || error?.data?.error || error?.message || 'Unknown error';
+      toast.error('Failed to generate text: ' + errorMsg);
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleAIObjectRemoval = async () => {
     if (removalRegions.length === 0 && (!removalMaskCanvas || removalTool !== 'brush')) {
       toast.error('Please mark object areas first');
@@ -2206,28 +2304,46 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
                         className="mt-2"
                       />
                     </div>
-                    <Button 
-                      onClick={handleAITextReplace} 
-                      size="sm" 
-                      className="w-full bg-amber-500 hover:bg-amber-600" 
-                      disabled={loading || (textRegions.length === 0 && highlightTool !== 'brush')}
-                    >
-                      {loading ? (
-                        <>
-                          <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                          Replacing...
-                        </>
-                      ) : (
-                        <>
-                          <Wand2 className="w-4 h-4 mr-1" />
-                          Replace Text with AI
-                        </>
-                      )}
-                    </Button>
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={handleAITextReplace} 
+                        size="sm" 
+                        className="flex-1 bg-amber-500 hover:bg-amber-600" 
+                        disabled={loading || (textRegions.length === 0 && highlightTool !== 'brush')}
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            Replacing...
+                          </>
+                        ) : (
+                          <>
+                            <Wand2 className="w-4 h-4 mr-1" />
+                            Inpaint
+                          </>
+                        )}
+                      </Button>
+                      <Button 
+                        onClick={handleOpenAITextGenerate} 
+                        size="sm" 
+                        className="flex-1 bg-green-600 hover:bg-green-700" 
+                        disabled={loading || !replacementText.trim()}
+                      >
+                        {loading ? (
+                          <>
+                            <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                            Generating...
+                          </>
+                        ) : (
+                          <>
+                            <Sparkles className="w-4 h-4 mr-1" />
+                            DALL-E 3
+                          </>
+                        )}
+                      </Button>
+                    </div>
                     <p className="text-xs text-gray-500">
-                      {highlightTool === 'rectangle' 
-                        ? 'Select text areas with rectangle, then enter new text' 
-                        : 'Paint over letters/words, then enter replacement text'}
+                      <strong>Inpaint:</strong> Replace in marked areas. <strong>DALL-E 3:</strong> Perfect spelling.
                     </p>
                   </div>
                 </div>
