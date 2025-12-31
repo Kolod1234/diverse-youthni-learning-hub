@@ -15,7 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [includeCharts, setIncludeCharts] = useState(false);
   const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
-  const [imageProvider, setImageProvider] = useState('manus'); // 'manus', 'dalle', 'stability'
+  const [imageProvider, setImageProvider] = useState('base44'); // 'base44', 'manus', 'dalle', 'stability'
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
@@ -113,7 +113,12 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             const enhancedPrompt = `Educational diagram, flat vector style, white background: ${slide.imagePrompt}`;
 
             // Choose image provider
-            if (imageProvider === 'dalle') {
+            if (imageProvider === 'base44') {
+              const result = await base44.integrations.Core.GenerateImage({
+                prompt: enhancedPrompt
+              });
+              imageResult = { data: { url: result.url } };
+            } else if (imageProvider === 'dalle') {
               imageResult = await base44.functions.invoke('generateImageWithDallE', {
                 prompt: enhancedPrompt,
                 size: '1792x1024'
@@ -270,17 +275,17 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             {includeImages && (
               <div className="ml-6 pt-2">
                 <Label className="text-xs text-gray-600 mb-2 block">Image Generator</Label>
-                <div className="grid grid-cols-3 gap-2">
+                <div className="grid grid-cols-2 gap-2">
                   <button
-                    onClick={() => setImageProvider('manus')}
+                    onClick={() => setImageProvider('base44')}
                     disabled={generating}
                     className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                      imageProvider === 'manus'
-                        ? 'border-purple-600 bg-purple-50'
+                      imageProvider === 'base44'
+                        ? 'border-indigo-600 bg-indigo-50 font-semibold'
                         : 'border-gray-200 hover:border-gray-300'
                     }`}
                   >
-                    Manus
+                    Base44 AI
                   </button>
                   <button
                     onClick={() => setImageProvider('dalle')}
@@ -292,6 +297,17 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                     }`}
                   >
                     DALL-E 3
+                  </button>
+                  <button
+                    onClick={() => setImageProvider('manus')}
+                    disabled={generating}
+                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                      imageProvider === 'manus'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    Manus
                   </button>
                   <button
                     onClick={() => setImageProvider('stability')}
