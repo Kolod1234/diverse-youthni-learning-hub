@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles, Loader2, Image as ImageIcon, BarChart2 } from 'lucide-react';
+import { Sparkles, Loader2, Image as ImageIcon, BarChart2, Zap } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AIGenerateMode({ onSlidesGenerated }) {
@@ -14,7 +14,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
   const [includeCharts, setIncludeCharts] = useState(false);
-  const [deepResearch, setDeepResearch] = useState(false);
+  const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
@@ -28,7 +28,6 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       toast.info('Generating slide structure...');
 
       // Step 1: Generate slide structure 
-      // We ask for CLEAN content so we can style it ourselves in React
       const prompt = `Create an educational presentation about "${topic}".
   ${description ? `Additional context: ${description}` : ''}
 
@@ -47,26 +46,54 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
   Return JSON with a "slides" array.`;
 
-      const slideData = await base44.integrations.Core.InvokeLLM({
-        prompt,
-        add_context_from_internet: deepResearch,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            slides: {
-              type: 'array',
-              items: {
-                type: 'object',
-                properties: {
-                  title: { type: 'string' },
-                  content: { type: 'string' },
-                  imagePrompt: { type: 'string' }
+      let slideData;
+      
+      if (aiProvider === 'perplexity') {
+        // Use Perplexity for web-grounded research
+        const response = await base44.functions.invoke('perplexitySearch', {
+          query: prompt,
+          return_json: true,
+          json_schema: {
+            type: 'object',
+            properties: {
+              slides: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    title: { type: 'string' },
+                    content: { type: 'string' },
+                    imagePrompt: { type: 'string' }
+                  }
                 }
               }
             }
           }
-        }
-      });
+        });
+        slideData = response.data;
+      } else {
+        // Use default LLM
+        slideData = await base44.integrations.Core.InvokeLLM({
+          prompt,
+          add_context_from_internet: aiProvider === 'default_research',
+          response_json_schema: {
+            type: 'object',
+            properties: {
+              slides: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    title: { type: 'string' },
+                    content: { type: 'string' },
+                    imagePrompt: { type: 'string' }
+                  }
+                }
+              }
+            }
+          }
+        });
+      }
 
       let slides = slideData.slides || [];
 
@@ -162,6 +189,53 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             />
           </div>
 
+          <div>
+            <Label>AI Content Provider</Label>
+            <div className="grid grid-cols-3 gap-2 mt-2">
+              <button
+                onClick={() => setAiProvider('default')}
+                disabled={generating}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  aiProvider === 'default'
+                    ? 'border-indigo-600 bg-indigo-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <Sparkles className="w-5 h-5 mx-auto mb-1 text-indigo-600" />
+                <div className="text-xs font-medium">Standard</div>
+              </button>
+              <button
+                onClick={() => setAiProvider('default_research')}
+                disabled={generating}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  aiProvider === 'default_research'
+                    ? 'border-indigo-600 bg-indigo-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <BarChart2 className="w-5 h-5 mx-auto mb-1 text-indigo-600" />
+                <div className="text-xs font-medium">Research</div>
+              </button>
+              <button
+                onClick={() => setAiProvider('perplexity')}
+                disabled={generating}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  aiProvider === 'perplexity'
+                    ? 'border-purple-600 bg-purple-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <Zap className="w-5 h-5 mx-auto mb-1 text-purple-600" />
+                <div className="text-xs font-medium">Perplexity</div>
+              </button>
+            </div>
+            <p className="text-xs text-gray-500 mt-2">
+              {aiProvider === 'default' && '• Fast generation with standard AI'}
+              {aiProvider === 'default_research' && '• Enhanced with web search for current info'}
+              {aiProvider === 'perplexity' && '• Real-time web search with citations'}
+            </p>
+          </div>
+
           <div className="space-y-3 pt-2">
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
@@ -183,18 +257,6 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
               <Switch
                 checked={includeCharts}
                 onCheckedChange={setIncludeCharts}
-                disabled={generating}
-              />
-            </div>
-
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <Sparkles className="w-4 h-4 text-indigo-600" />
-                <Label className="cursor-pointer">Deep Research Mode</Label>
-              </div>
-              <Switch
-                checked={deepResearch}
-                onCheckedChange={setDeepResearch}
                 disabled={generating}
               />
             </div>
@@ -228,8 +290,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         <ul className="text-sm text-indigo-700 space-y-1">
           <li>• AI-generated content with proper formatting</li>
           <li>• Professional images tailored to your topic</li>
-          <li>• Modern slide layouts with rich typography</li>
-          <li>• Deep research mode for comprehensive content</li>
+          <li>• Choose between standard, research, or Perplexity AI</li>
+          <li>• Web-grounded content with real-time data</li>
           <li>• Fully editable after generation</li>
         </ul>
       </div>
