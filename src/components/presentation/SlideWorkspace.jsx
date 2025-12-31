@@ -47,6 +47,9 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [imageProvider, setImageProvider] = useState('base44');
   const [imageAspectRatio, setImageAspectRatio] = useState('16:9');
   const [regenerating, setRegenerating] = useState(false);
+  const [showOCREditor, setShowOCREditor] = useState(false);
+  const [ocrText, setOcrText] = useState('');
+  const [extractingOCR, setExtractingOCR] = useState(false);
   const activeSlide = slides[currentSlideIndex];
 
   const themes = {
@@ -290,6 +293,89 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     }
   };
 
+  const extractTextFromImage = async () => {
+    if (!activeSlide.imageUrl) {
+      toast.error('No image to extract text from');
+      return;
+    }
+
+    setExtractingOCR(true);
+    try {
+      toast.info('Extracting text from image...');
+      
+      const result = await Tesseract.recognize(
+        activeSlide.imageUrl,
+        'eng',
+        {
+          logger: (m) => {
+            if (m.status === 'recognizing text') {
+              console.log(`OCR Progress: ${Math.round(m.progress * 100)}%`);
+            }
+          }
+        }
+      );
+
+      setOcrText(result.data.text);
+      setShowOCREditor(true);
+      toast.success('Text extracted successfully!');
+    } catch (error) {
+      toast.error('Failed to extract text: ' + error.message);
+    } finally {
+      setExtractingOCR(false);
+    }
+  };
+
+  const regenerateImageWithText = async () => {
+    if (!ocrText.trim()) {
+      toast.error('Please enter text for the image');
+      return;
+    }
+
+    setRegenerating(true);
+    try {
+      const enhancedPrompt = `Educational diagram with text overlay. Text content: "${ocrText}". Style: clean, professional, educational diagram with clear typography`;
+      const dalleSize = imageAspectRatio === '1:1' ? '1024x1024' : '1792x1024';
+      
+      let imageResult;
+      if (imageProvider === 'base44') {
+        const result = await base44.integrations.Core.GenerateImage({
+          prompt: enhancedPrompt
+        });
+        imageResult = { data: { url: result.url } };
+      } else if (imageProvider === 'dalle') {
+        imageResult = await base44.functions.invoke('generateImageWithDallE', {
+          prompt: enhancedPrompt,
+          size: dalleSize
+        });
+      } else if (imageProvider === 'stability') {
+        imageResult = await base44.functions.invoke('generateImageWithStability', {
+          prompt: enhancedPrompt,
+          aspect_ratio: imageAspectRatio
+        });
+      } else {
+        imageResult = await base44.functions.invoke('generateImageWithManus', {
+          prompt: enhancedPrompt,
+          aspect_ratio: imageAspectRatio
+        });
+      }
+
+      const imageUrl = imageResult.data?.url || imageResult?.url || imageResult?.response?.url;
+      
+      if (imageUrl) {
+        updateSlide('imageUrl', imageUrl);
+        toast.success('Image regenerated with new text!');
+        setShowOCREditor(false);
+        setOcrText('');
+      } else {
+        toast.error('Failed to generate image');
+      }
+    } catch (error) {
+      toast.error('Failed to regenerate image: ' + error.message);
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden font-sans">
       
@@ -449,41 +535,53 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                         className="w-full h-full object-contain p-4"
                       />
                       {/* Hover Actions */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
-                        <Button 
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            setShowImageEditor(true);
-                            setImageEditPrompt('');
-                          }}
-                        >
-                          AI Regenerate
-                        </Button>
-                        <Button 
-                          variant="secondary"
-                          size="sm"
-                          onClick={handleImageUpload}
-                        >
-                          Upload
-                        </Button>
-                        <Button 
-                          variant="secondary"
-                          size="sm"
-                          onClick={() => {
-                            const url = window.prompt("Enter image URL");
-                            if(url) updateSlide('imageUrl', url);
-                          }}
-                        >
-                          URL
-                        </Button>
-                        <Button 
-                          variant="destructive"
-                          size="sm"
-                          onClick={() => updateSlide('imageUrl', null)}
-                        >
-                          Remove
-                        </Button>
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-4">
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              setShowImageEditor(true);
+                              setImageEditPrompt('');
+                            }}
+                          >
+                            AI Regenerate
+                          </Button>
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={extractTextFromImage}
+                            disabled={extractingOCR}
+                          >
+                            {extractingOCR ? 'Extracting...' : 'OCR Edit'}
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={handleImageUpload}
+                          >
+                            Upload
+                          </Button>
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              const url = window.prompt("Enter image URL");
+                              if(url) updateSlide('imageUrl', url);
+                            }}
+                          >
+                            URL
+                          </Button>
+                          <Button 
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => updateSlide('imageUrl', null)}
+                          >
+                            Remove
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   ) : (
@@ -800,6 +898,109 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
               <Button onClick={regenerateImage} disabled={regenerating}>
                 {regenerating ? 'Generating...' : 'Generate Image'}
               </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* OCR Text Editor Dialog */}
+      <Dialog open={showOCREditor} onOpenChange={setShowOCREditor}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>OCR Text Editor</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <Label className="mb-2 block">Original Image</Label>
+                {activeSlide.imageUrl && (
+                  <img 
+                    src={activeSlide.imageUrl} 
+                    alt="Original" 
+                    className="w-full rounded-lg border"
+                  />
+                )}
+              </div>
+              <div>
+                <Label className="mb-2 block">Extracted & Editable Text</Label>
+                <textarea
+                  value={ocrText}
+                  onChange={(e) => setOcrText(e.target.value)}
+                  placeholder="Edit the extracted text here..."
+                  className="w-full h-[300px] p-3 border rounded-lg text-sm font-mono"
+                />
+                <p className="text-xs text-gray-500 mt-2">
+                  Edit the text and click regenerate to create a new image with your changes
+                </p>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs text-gray-600 mb-2 block">AI Provider for Regeneration</Label>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  onClick={() => setImageProvider('base44')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'base44'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Base44 AI
+                </button>
+                <button
+                  onClick={() => setImageProvider('dalle')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'dalle'
+                      ? 'border-green-600 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  DALL-E 3
+                </button>
+                <button
+                  onClick={() => setImageProvider('manus')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'manus'
+                      ? 'border-purple-600 bg-purple-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Manus
+                </button>
+                <button
+                  onClick={() => setImageProvider('stability')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'stability'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Stability AI
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-between items-center pt-2">
+              <Button 
+                variant="outline" 
+                onClick={extractTextFromImage}
+                disabled={extractingOCR}
+              >
+                {extractingOCR ? 'Re-extracting...' : 'Re-extract Text'}
+              </Button>
+              <div className="flex gap-3">
+                <Button variant="outline" onClick={() => setShowOCREditor(false)}>
+                  Cancel
+                </Button>
+                <Button onClick={regenerateImageWithText} disabled={regenerating}>
+                  {regenerating ? 'Regenerating...' : 'Regenerate Image'}
+                </Button>
+              </div>
             </div>
           </div>
         </DialogContent>
