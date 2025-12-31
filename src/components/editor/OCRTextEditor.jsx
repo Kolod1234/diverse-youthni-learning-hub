@@ -13,6 +13,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [activeTab, setActiveTab] = useState('highlight');
   const [loading, setLoading] = useState(false);
   const [ocrResult, setOcrResult] = useState(null);
+  const [selectedWord, setSelectedWord] = useState(null);
+  const [editingWord, setEditingWord] = useState(null);
   
   // Highlight mode
   const [searchText, setSearchText] = useState('');
@@ -36,7 +38,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     img.src = imageUrl;
   }, [imageUrl]);
 
-  const drawCanvas = (img, overlayBoxes = []) => {
+  const drawCanvas = (img, overlayBoxes = [], drawAllWords = false) => {
     if (!img || !canvasRef.current) return;
     
     const canvas = canvasRef.current;
@@ -48,6 +50,16 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     
+    // Draw all word boundaries if requested
+    if (drawAllWords && ocrResult) {
+      ocrResult.words.forEach(word => {
+        const bbox = word.bbox;
+        ctx.strokeStyle = 'rgba(100, 100, 255, 0.3)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+      });
+    }
+    
     // Draw highlight boxes
     overlayBoxes.forEach(box => {
       ctx.fillStyle = 'rgba(255, 255, 0, 0.4)';
@@ -56,6 +68,16 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       ctx.lineWidth = 2;
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     });
+
+    // Draw selected word highlight
+    if (selectedWord) {
+      const bbox = selectedWord.bbox;
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+      ctx.fillRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+      ctx.strokeStyle = '#3B82F6';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+    }
   };
 
   const performOCR = async (img) => {
@@ -209,6 +231,70 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     drawCanvas(image);
   };
 
+  const handleCanvasClick = (e) => {
+    if (!ocrResult || activeTab !== 'selector') return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    // Find word at click position
+    const clickedWord = ocrResult.words.find(word => {
+      const bbox = word.bbox;
+      return x >= bbox.x0 && x <= bbox.x1 && y >= bbox.y0 && y <= bbox.y1;
+    });
+
+    if (clickedWord) {
+      setSelectedWord(clickedWord);
+      setEditingWord(clickedWord.text);
+      drawCanvas(image, highlightedBoxes, true);
+    }
+  };
+
+  const handleWordEdit = () => {
+    if (!selectedWord || !editingWord.trim()) {
+      toast.error('Please enter replacement text');
+      return;
+    }
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const bbox = selectedWord.bbox;
+
+    // Erase old text
+    ctx.fillStyle = 'white';
+    ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+
+    // Draw new text
+    const fontSize = Math.max(12, bbox.y1 - bbox.y0);
+    ctx.font = `${fontSize}px Arial`;
+    ctx.fillStyle = 'black';
+    ctx.fillText(editingWord, bbox.x0, bbox.y1 - 2);
+
+    toast.success('Word replaced!');
+    setSelectedWord(null);
+    setEditingWord(null);
+  };
+
+  const handleWordRemove = () => {
+    if (!selectedWord) return;
+
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    const bbox = selectedWord.bbox;
+
+    ctx.fillStyle = 'white';
+    ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+
+    toast.success('Word removed!');
+    setSelectedWord(null);
+    setEditingWord(null);
+    drawCanvas(image);
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -231,12 +317,86 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
         <div className="flex flex-1 overflow-hidden">
           {/* Tools Sidebar */}
           <div className="w-80 border-r bg-gray-50 p-4 overflow-y-auto">
-            <Tabs value={activeTab} onValueChange={setActiveTab}>
-              <TabsList className="grid w-full grid-cols-3 mb-4">
+            <Tabs value={activeTab} onValueChange={(v) => {
+              setActiveTab(v);
+              setSelectedWord(null);
+              setEditingWord(null);
+              drawCanvas(image, highlightedBoxes, v === 'selector');
+            }}>
+              <TabsList className="grid w-full grid-cols-4 mb-4">
+                <TabsTrigger value="selector">Selector</TabsTrigger>
                 <TabsTrigger value="highlight">Highlight</TabsTrigger>
                 <TabsTrigger value="replace">Replace</TabsTrigger>
                 <TabsTrigger value="remove">Remove</TabsTrigger>
               </TabsList>
+
+              {/* Word Selector Tab */}
+              <TabsContent value="selector" className="space-y-4">
+                <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
+                  <p className="text-xs text-blue-800 mb-2">
+                    👆 Click on any word in the image to select it for editing or removal
+                  </p>
+                </div>
+
+                {selectedWord && (
+                  <div className="space-y-4 p-4 bg-white border border-blue-300 rounded-lg">
+                    <div>
+                      <Label className="text-blue-900">Selected Word</Label>
+                      <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-center font-semibold text-blue-900">
+                        {selectedWord.text}
+                      </div>
+                    </div>
+
+                    <div>
+                      <Label>Edit Word</Label>
+                      <Input
+                        value={editingWord || ''}
+                        onChange={(e) => setEditingWord(e.target.value)}
+                        placeholder="Enter new text"
+                        className="mt-2"
+                      />
+                    </div>
+
+                    <div className="flex gap-2">
+                      <Button 
+                        onClick={handleWordEdit} 
+                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        disabled={!editingWord?.trim()}
+                      >
+                        Replace
+                      </Button>
+                      <Button 
+                        onClick={handleWordRemove} 
+                        variant="destructive"
+                        className="flex-1"
+                      >
+                        <Eraser className="w-4 h-4 mr-2" />
+                        Remove
+                      </Button>
+                    </div>
+
+                    <Button 
+                      onClick={() => {
+                        setSelectedWord(null);
+                        setEditingWord(null);
+                        drawCanvas(image, highlightedBoxes, true);
+                      }} 
+                      variant="outline"
+                      className="w-full"
+                    >
+                      Clear Selection
+                    </Button>
+                  </div>
+                )}
+
+                {!selectedWord && ocrResult && (
+                  <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
+                    <p className="text-xs text-gray-600">
+                      {ocrResult.words.length} words detected. Click on the image to select a word.
+                    </p>
+                  </div>
+                )}
+              </TabsContent>
 
               {/* Highlight Tab */}
               <TabsContent value="highlight" className="space-y-4">
@@ -391,7 +551,10 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
             <div className="relative">
               <canvas
                 ref={canvasRef}
-                className="max-w-full max-h-full border-2 border-gray-300 shadow-xl rounded-lg bg-white"
+                onClick={handleCanvasClick}
+                className={`max-w-full max-h-full border-2 border-gray-300 shadow-xl rounded-lg bg-white ${
+                  activeTab === 'selector' ? 'cursor-pointer' : ''
+                }`}
               />
             </div>
           </div>
