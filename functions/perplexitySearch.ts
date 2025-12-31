@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { query, searchDepth = 'standard' } = await req.json();
+    const { query, searchDepth = 'standard', return_json = false, json_schema = null } = await req.json();
 
     if (!query) {
       return Response.json({ error: 'Query is required' }, { status: 400 });
@@ -31,27 +31,42 @@ Deno.serve(async (req) => {
     };
     const model = modelMap[searchDepth] || 'sonar-pro';
 
+    // Build messages
+    const messages = [
+      {
+        role: 'system',
+        content: return_json 
+          ? 'You are a precise JSON generator. You MUST return ONLY valid JSON matching the schema, no markdown, no explanations, no extra text.'
+          : 'You are a helpful assistant that provides accurate, well-researched information.'
+      },
+      {
+        role: 'user',
+        content: query
+      }
+    ];
+
     // Call Perplexity API
+    const requestBody = {
+      model: model,
+      messages: messages,
+      temperature: 0.2
+    };
+
+    // Add response format if JSON is requested
+    if (return_json && json_schema) {
+      requestBody.response_format = {
+        type: 'json_object',
+        schema: json_schema
+      };
+    }
+
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify({
-        model: model,
-        messages: [
-          {
-            role: 'system',
-            content: 'You are a precise JSON generator. You MUST return ONLY valid JSON, no markdown, no explanations, no extra text.'
-          },
-          {
-            role: 'user',
-            content: query
-          }
-        ],
-        temperature: 0.2
-      })
+      body: JSON.stringify(requestBody)
     });
 
     if (!response.ok) {
@@ -63,9 +78,23 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
+    const content = data.choices[0].message.content;
+    
+    // If JSON was requested, parse and return it
+    if (return_json) {
+      try {
+        const parsed = JSON.parse(content);
+        return Response.json(parsed);
+      } catch (e) {
+        return Response.json({ 
+          error: 'Failed to parse JSON response',
+          raw_content: content
+        }, { status: 500 });
+      }
+    }
     
     return Response.json({ 
-      content: data.choices[0].message.content,
+      content: content,
       citations: data.citations || [],
       model: model
     });
