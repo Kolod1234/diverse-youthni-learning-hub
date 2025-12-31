@@ -355,6 +355,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     // Update main image ref
     const newUrl = canvas.toDataURL();
     const newImg = new Image();
+    newImg.crossOrigin = 'anonymous';
     newImg.onload = () => {
         imageRef.current = newImg;
         setImage(newImg);
@@ -411,6 +412,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
             mathImg.onload = () => {
                 ctx.drawImage(mathImg, x, y);
                 const newImg = new Image();
+                newImg.crossOrigin = 'anonymous';
                 newImg.onload = () => {
                     imageRef.current = newImg;
                     setImage(newImg);
@@ -425,6 +427,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
             ctx.fillStyle = "black";
             ctx.fillText(insertText, x, y);
             const newImg = new Image();
+            newImg.crossOrigin = 'anonymous';
             newImg.onload = () => {
                 imageRef.current = newImg;
                 setImage(newImg);
