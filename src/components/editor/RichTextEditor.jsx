@@ -1299,7 +1299,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     },
     editorProps: {
       attributes: {
-        class: 'prose prose-sm max-w-none focus:outline-none min-h-[250px] max-h-[600px] overflow-y-auto p-4',
+        class: 'prose prose-sm max-w-none focus:outline-none h-full p-4',
         placeholder: placeholder || 'Start writing...',
       },
       handleClickOn: (view, pos, node, nodePos, event) => {
