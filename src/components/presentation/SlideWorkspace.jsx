@@ -17,7 +17,26 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [textEditorCollapsed, setTextEditorCollapsed] = useState(false);
   const [showSpeakerNotes, setShowSpeakerNotes] = useState(false);
+  const [showAddDialog, setShowAddDialog] = useState(false);
+  const [showSaveTemplate, setShowSaveTemplate] = useState(false);
+  const [selectedCourse, setSelectedCourse] = useState('');
+  const [lessonMode, setLessonMode] = useState('new');
+  const [selectedLesson, setSelectedLesson] = useState('');
+  const [newLessonTitle, setNewLessonTitle] = useState('');
+  const [templateName, setTemplateName] = useState('');
+  const [saving, setSaving] = useState(false);
   const activeSlide = slides[currentSlideIndex];
+
+  const { data: courses = [] } = useQuery({
+    queryKey: ['courses-for-lesson'],
+    queryFn: () => base44.entities.Course.list(),
+  });
+
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['lessons-for-course', selectedCourse],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: selectedCourse }),
+    enabled: !!selectedCourse,
+  });
 
   // Sync changes to parent
   const updateSlides = (newSlides) => {
