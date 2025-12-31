@@ -15,6 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
+  const [useManusImages, setUseManusImages] = useState(true);
   const [aiProvider, setAiProvider] = useState('perplexity');
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -426,62 +427,28 @@ Return ONLY valid JSON.`,
       let slides = response.slides;
 
       // Add AI-generated images if requested
-      if (includeImages) {
-        let imageGenFunction = 'geminiImageGeneration';
-        let generatorName = 'DALL-E 3';
-        
-        if (aiProvider === 'base44-pro') {
-          imageGenFunction = 'geminiImageGeneration';
-          generatorName = 'Base44 AI (DALL-E 3)';
-        } else if (aiProvider === 'manus') {
-          imageGenFunction = 'puterImageGeneration';
-          generatorName = 'Manus AI';
-        }
-        
-        toast.info(`Generating educational diagrams with ${generatorName}...`);
+      if (includeImages && useManusImages) {
+        toast.info('Generating educational diagrams with Manus AI...');
           
         slides = await Promise.all(
           slides.map(async (slide) => {
             if (slide.image_prompt) {
               try {
-                let generatedImage;
-                
-                if (aiProvider === 'perplexity' || aiProvider === 'base44-pro') {
-                  const dallePrompt = `Educational diagram: ${slide.image_prompt}
+                const manusPrompt = `Educational diagram: ${slide.image_prompt}
 
-Style: Simple line drawing or vector illustration with clear labels
-Requirements: Clean white background, black text labels, minimal colors
+Style: Clear, professional educational illustration
+Requirements: High quality, accurate visual representation
 Context: ${topic} - ${slide.title}`;
 
-                  const result = await base44.functions.invoke(imageGenFunction, {
-                    prompt: dallePrompt,
-                    topic: `${topic} - ${slide.title}`
-                  });
-                  
-                  if (result.data?.url) {
-                    generatedImage = { url: result.data.url };
-                  }
-                } else if (aiProvider === 'manus') {
-                  const manusPrompt = `Educational diagram: ${slide.image_prompt}
+                const result = await base44.functions.invoke('generateImageWithManus', {
+                  prompt: manusPrompt,
+                  aspect_ratio: '16:9'
+                });
 
-Style: Simple vector illustration with clear labels
-Context: ${topic} - ${slide.title}`;
-
-                  const result = await base44.functions.invoke(imageGenFunction, {
-                    prompt: manusPrompt,
-                    agentProfile: manusAgentProfile,
-                    taskMode: manusTaskMode
-                  });
-
-                  if (result?.data?.url) {
-                    generatedImage = { url: result.data.url };
-                  }
-                }
-
-                if (generatedImage?.url) {
+                if (result?.data?.url) {
                   const imageDescription = slide.image_description || slide.title;
                   const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                    <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                    <img src="${result.data.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
                     <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
                   </div>${slide.content}`;
 
@@ -489,6 +456,7 @@ Context: ${topic} - ${slide.title}`;
                 }
               } catch (error) {
                 console.error('Failed to generate image:', error);
+                toast.error(`Image generation failed: ${error.message}`);
               }
             }
             return slide;
@@ -499,7 +467,7 @@ Context: ${topic} - ${slide.title}`;
       setGeneratedSlides(slides);
       onSlidesGenerated(slides);
       setHasGenerated(true);
-      toast.success(`Generated ${slideCount} slides${includeImages ? ' with AI-generated images' : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages && useManusImages ? ' with Manus AI images' : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
@@ -563,20 +531,40 @@ Context: ${topic} - ${slide.title}`;
             </div>
           </div>
 
-          <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
-            <input
-              type="checkbox"
-              id="includeImages"
-              checked={includeImages}
-              onChange={(e) => setIncludeImages(e.target.checked)}
-              className="w-4 h-4 rounded text-purple-600"
-            />
-            <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
-              <span className="font-semibold text-purple-900">Generate Educational Diagrams</span>
-              <p className="text-xs text-purple-700 mt-1">
-                AI will generate relevant images automatically using its preferred method
-              </p>
-            </Label>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
+              <input
+                type="checkbox"
+                id="includeImages"
+                checked={includeImages}
+                onChange={(e) => setIncludeImages(e.target.checked)}
+                className="w-4 h-4 rounded text-purple-600"
+              />
+              <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
+                <span className="font-semibold text-purple-900">Generate Educational Diagrams</span>
+                <p className="text-xs text-purple-700 mt-1">
+                  AI will generate relevant images automatically
+                </p>
+              </Label>
+            </div>
+
+            {includeImages && (
+              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200 ml-6">
+                <input
+                  type="checkbox"
+                  id="useManusImages"
+                  checked={useManusImages}
+                  onChange={(e) => setUseManusImages(e.target.checked)}
+                  className="w-4 h-4 rounded text-indigo-600"
+                />
+                <Label htmlFor="useManusImages" className="flex-1 cursor-pointer text-sm">
+                  <span className="font-semibold text-indigo-900">Use Manus AI for Images</span>
+                  <p className="text-xs text-indigo-700 mt-1">
+                    Generate high-quality educational images with Manus
+                  </p>
+                </Label>
+              </div>
+            )}
           </div>
 
           <div className="space-y-2">
@@ -749,7 +737,7 @@ Context: ${topic} - ${slide.title}`;
         <ul className="text-sm text-purple-700 space-y-1">
           <li>• Researches topic using internet data and reliable sources</li>
           <li>• Creates structured, educational content with proper formatting</li>
-          <li>• Each AI uses its preferred image generation method</li>
+          <li>• Generates high-quality educational images with Manus AI</li>
           <li>• Adapts content to your selected education level</li>
         </ul>
       </div>
