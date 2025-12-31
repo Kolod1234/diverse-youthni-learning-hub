@@ -463,9 +463,8 @@ Return ONLY the JSON object, nothing else.`,
           toast.success('Premium content generated with Base44 AI Pro!');
           }
           } else if (aiProvider === 'manus') {
-          // Use Manus AI for advanced content generation
-          const manusResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an advanced AI content creator using state-of-the-art language models.
+            const manusResult = await base44.functions.invoke('manusTextGeneration', {
+              prompt: `You are an advanced AI content creator using state-of-the-art language models.
 
           Create a ${slideCount}-slide high-quality educational presentation about: "${topic}"
           ${details ? `\nContext: ${details}` : ''}
@@ -495,35 +494,19 @@ Return ONLY the JSON object, nothing else.`,
           ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
 
           Return ONLY the JSON object, nothing else.`,
-          add_context_from_internet: true,
-          response_json_schema: {
-            type: "object",
-            properties: {
-              slides: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    title: { type: "string" },
-                    content: { type: "string" },
-                    order: { type: "number" },
-                    ...(includeImages ? {
-                      image_prompt: { type: "string" },
-                      image_description: { type: "string" }
-                    } : {})
-                  },
-                  required: ["title", "content", "order"]
-                }
-              }
-            },
-            required: ["slides"]
-          }
-          });
+              agentProfile: manusAgentProfile,
+              taskMode: manusTaskMode,
+              connectors: manusConnectors
+            });
 
-          if (manusResult?.slides) {
-          response = manusResult;
-          toast.success('Advanced content generated with Manus AI!');
-          }
+            if (manusResult?.data?.text) {
+              const content = manusResult.data.text.trim();
+              const jsonMatch = content.match(/\{[\s\S]*\}/);
+              if (jsonMatch) {
+                response = JSON.parse(jsonMatch[0]);
+                toast.success('Advanced content generated with Manus AI!');
+              }
+            }
           }
 
           if (!response) {
@@ -706,7 +689,7 @@ Educational Context:
                       connectors: manusConnectors
                     });
 
-                    if (result.data?.url) {
+                    if (result?.data?.url) {
                       generatedImage = { url: result.data.url };
                     }
                   } else if (imageGenerator === 'base44-pro') {

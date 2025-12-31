@@ -45,20 +45,44 @@ Deno.serve(async (req) => {
       }, { status: response.status });
     }
 
-    const result = await response.json();
-    
-    return Response.json({ 
-      task_id: result.task_id,
-      task_url: result.task_url,
-      share_url: result.share_url,
-      message: 'Manus task created - check your Manus console for results'
-    });
+    const taskResult = await response.json();
+    const taskId = taskResult.task_id;
 
-  } catch (error) {
+    let status = 'pending';
+    let attempt = 0;
+    const MAX_ATTEMPTS = 60;
+
+    while (status !== 'completed' && status !== 'failed' && attempt < MAX_ATTEMPTS) {
+      attempt++;
+      await new Promise(resolve => setTimeout(resolve, 5000));
+
+      const statusResponse = await fetch(`https://api.manus.ai/v1/tasks/${taskId}`, {
+        headers: { 'API_KEY': apiKey }
+      });
+
+      if (!statusResponse.ok) {
+        const errorText = await statusResponse.text();
+        console.error('Failed to get task status:', errorText);
+        return Response.json({ error: 'Failed to get task status', details: errorText }, { status: statusResponse.status });
+      }
+
+      const taskStatus = await statusResponse.json();
+      status = taskStatus.status;
+
+      if (status === 'completed') {
+        return Response.json({ url: taskStatus.result?.url || taskStatus.result });
+      } else if (status === 'failed') {
+        return Response.json({ error: 'Task failed', details: taskStatus.error_message }, { status: 500 });
+      }
+    }
+
+    return Response.json({ error: 'Task timed out' }, { status: 500 });
+
+    } catch (error) {
     console.error('Error creating Manus task:', error);
     return Response.json({ 
       error: 'Failed to create Manus task',
       details: error.message 
     }, { status: 500 });
-  }
-});
+    }
+    });
