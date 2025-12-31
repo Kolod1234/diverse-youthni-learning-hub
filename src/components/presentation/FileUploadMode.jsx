@@ -9,6 +9,7 @@ import { toast } from 'sonner';
 export default function FileUploadMode({ onSlidesGenerated }) {
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const [uploadedFile, setUploadedFile] = useState(null);
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -17,11 +18,40 @@ export default function FileUploadMode({ onSlidesGenerated }) {
     setUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const fileExt = file.name.split('.').pop().toLowerCase();
+      
+      if (fileExt === 'pptx') {
+        setUploadedFile({ url: file_url, name: file.name, type: 'pptx' });
+        toast.success('PPTX uploaded! Click "Convert to Slides" to process.');
+      } else {
+        await processFile(file_url, file.name);
+      }
       setUploading(false);
-      await processFile(file_url, file.name);
     } catch (error) {
       toast.error('Failed to upload file');
       setUploading(false);
+    }
+  };
+
+  const convertPptxToSlides = async () => {
+    if (!uploadedFile) return;
+    
+    setProcessing(true);
+    try {
+      toast.info('Converting PowerPoint presentation...');
+      const result = await base44.functions.invoke('convertPptxToSlides', { file_url: uploadedFile.url });
+      
+      if (result.data.error) {
+        throw new Error(result.data.error);
+      }
+      
+      onSlidesGenerated(result.data.slides || []);
+      toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
+      setUploadedFile(null);
+    } catch (error) {
+      toast.error('Failed to convert PPTX: ' + error.message);
+    } finally {
+      setProcessing(false);
     }
   };
 
@@ -29,20 +59,6 @@ export default function FileUploadMode({ onSlidesGenerated }) {
     setProcessing(true);
     try {
       const fileExt = fileName.split('.').pop().toLowerCase();
-      
-      // Check if it's a PPTX file
-      if (fileExt === 'pptx') {
-        toast.info('Converting PowerPoint presentation...');
-        const result = await base44.functions.invoke('convertPptxToSlides', { file_url: fileUrl });
-        
-        if (result.data.error) {
-          throw new Error(result.data.error);
-        }
-        
-        onSlidesGenerated(result.data.slides || []);
-        toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
-        return;
-      }
       
       // For other file types, extract structured data
       const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
@@ -147,6 +163,31 @@ Format each slide with HTML styling for beautiful presentation.`,
             )}
           </label>
         </div>
+
+        {uploadedFile && uploadedFile.type === 'pptx' && (
+          <div className="mt-4 p-4 bg-green-50 border border-green-200 rounded-lg">
+            <div className="flex items-center justify-between">
+              <div>
+                <p className="font-medium text-green-900">📄 {uploadedFile.name}</p>
+                <p className="text-sm text-green-700">Ready to convert</p>
+              </div>
+              <Button
+                onClick={convertPptxToSlides}
+                disabled={processing}
+                className="bg-green-600 hover:bg-green-700"
+              >
+                {processing ? (
+                  <>
+                    <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                    Converting...
+                  </>
+                ) : (
+                  'Convert to Slides'
+                )}
+              </Button>
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
