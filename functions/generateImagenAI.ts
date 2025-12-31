@@ -76,23 +76,9 @@ Deno.serve(async (req) => {
       }, { status: sdResponse.status });
     }
 
-    const data = await sdResponse.json();
-    
-    if (!data.artifacts || data.artifacts.length === 0) {
-      return Response.json({ 
-        error: 'No image returned from Stable Diffusion' 
-      }, { status: 500 });
-    }
-
-    const base64Image = data.artifacts[0].base64;
-
-    if (!base64Image) {
-      return Response.json({ 
-        error: 'Invalid image data from Stable Diffusion' 
-      }, { status: 500 });
-    }
-
-    // Convert base64 to data URL
+    // Get image as ArrayBuffer and convert to base64
+    const imageBuffer = await sdResponse.arrayBuffer();
+    const base64Image = btoa(String.fromCharCode(...new Uint8Array(imageBuffer)));
     const dataUrl = `data:image/png;base64,${base64Image}`;
 
     return Response.json({ 
