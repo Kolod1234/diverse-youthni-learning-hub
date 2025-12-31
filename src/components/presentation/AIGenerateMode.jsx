@@ -264,8 +264,8 @@ Return ONLY the JSON object, nothing else.`,
           console.error('No content in Perplexity response:', researchResult);
           toast.error('Perplexity returned no content');
         }
-          } else if (aiProvider === 'base44-pro') {
-            const base44ProResult = await base44.integrations.Core.InvokeLLM({
+      } else if (aiProvider === 'base44-pro') {
+        const base44ProResult = await base44.integrations.Core.InvokeLLM({
           prompt: `You are an elite educational content creator for Base44 AI Pro.
 
 Create a ${slideCount}-slide premium presentation about: "${topic}"
@@ -317,8 +317,9 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
         if (base44ProResult?.slides) {
           response = base44ProResult;
           toast.success('Premium content generated with Base44 AI Pro!');
-          } else if (aiProvider === 'manus') {
-            const manusResult = await base44.functions.invoke('manusTextGeneration', {
+        }
+      } else if (aiProvider === 'manus') {
+        const manusResult = await base44.functions.invoke('manusTextGeneration', {
               prompt: `You are an advanced AI content creator using state-of-the-art language models.
 
           Create a ${slideCount}-slide high-quality educational presentation about: "${topic}"
@@ -354,17 +355,17 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
               connectors: manusConnectors
             });
 
-            if (manusResult?.data?.text) {
-              const content = manusResult.data.text.trim();
-              const jsonMatch = content.match(/\{[\s\S]*\}/);
-              if (jsonMatch) {
-                response = JSON.parse(jsonMatch[0]);
-                toast.success('Advanced content generated with Manus AI!');
-              }
-            }
+        if (manusResult?.data?.text) {
+          const content = manusResult.data.text.trim();
+          const jsonMatch = content.match(/\{[\s\S]*\}/);
+          if (jsonMatch) {
+            response = JSON.parse(jsonMatch[0]);
+            toast.success('Advanced content generated with Manus AI!');
           }
+        }
+      }
 
-          if (!response) {
+      if (!response) {
         response = await base44.integrations.Core.InvokeLLM({
           prompt: `Create a ${slideCount}-slide educational presentation about: "${topic}"
 
