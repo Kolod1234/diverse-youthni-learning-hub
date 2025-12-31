@@ -15,6 +15,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [ocrResult, setOcrResult] = useState(null);
   const [selectedWord, setSelectedWord] = useState(null);
   const [editingWord, setEditingWord] = useState(null);
+  const [selectionMode, setSelectionMode] = useState('word'); // 'word' or 'character'
+  const [selectedItems, setSelectedItems] = useState([]);
   
   // Highlight mode
   const [searchText, setSearchText] = useState('');
@@ -50,14 +52,23 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(img, 0, 0);
     
-    // Draw all word boundaries if requested
+    // Draw all boundaries if requested
     if (drawAllWords && ocrResult) {
-      ocrResult.words.forEach(word => {
-        const bbox = word.bbox;
-        ctx.strokeStyle = 'rgba(100, 100, 255, 0.3)';
-        ctx.lineWidth = 1;
-        ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
-      });
+      if (selectionMode === 'character' && ocrResult.symbols) {
+        ocrResult.symbols.forEach(symbol => {
+          const bbox = symbol.bbox;
+          ctx.strokeStyle = 'rgba(100, 100, 255, 0.2)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+        });
+      } else {
+        ocrResult.words.forEach(word => {
+          const bbox = word.bbox;
+          ctx.strokeStyle = 'rgba(100, 100, 255, 0.3)';
+          ctx.lineWidth = 1;
+          ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+        });
+      }
     }
     
     // Draw highlight boxes
@@ -69,7 +80,17 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       ctx.strokeRect(box.x, box.y, box.width, box.height);
     });
 
-    // Draw selected word highlight
+    // Draw multiple selected items
+    selectedItems.forEach(item => {
+      const bbox = item.bbox;
+      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+      ctx.fillRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+      ctx.strokeStyle = '#3B82F6';
+      ctx.lineWidth = 2;
+      ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+    });
+
+    // Draw single selected word/character
     if (selectedWord) {
       const bbox = selectedWord.bbox;
       ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
@@ -90,10 +111,30 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       const ctx = canvas.getContext('2d');
       ctx.drawImage(img, 0, 0);
       
+      // Recognize with character-level segmentation
+      await worker.setParameters({
+        tessedit_pageseg_mode: '6', // Uniform block of text
+      });
+      
       const { data } = await worker.recognize(canvas);
-      setOcrResult(data);
+      
+      // Also get character-level data
+      const charData = { words: [], symbols: [] };
+      data.words.forEach(word => {
+        charData.words.push(word);
+        if (word.symbols) {
+          word.symbols.forEach(symbol => {
+            charData.symbols.push({
+              ...symbol,
+              parentWord: word.text
+            });
+          });
+        }
+      });
+      
+      setOcrResult(charData);
       await worker.terminate();
-      toast.success('Text detection complete!');
+      toast.success(`Detected ${charData.words.length} words, ${charData.symbols.length} characters`);
     } catch (error) {
       console.error('OCR error:', error);
       toast.error('Failed to detect text');
@@ -241,57 +282,93 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     const x = (e.clientX - rect.left) * scaleX;
     const y = (e.clientY - rect.top) * scaleY;
 
-    // Find word at click position
-    const clickedWord = ocrResult.words.find(word => {
-      const bbox = word.bbox;
-      return x >= bbox.x0 && x <= bbox.x1 && y >= bbox.y0 && y <= bbox.y1;
-    });
+    let clickedItem = null;
 
-    if (clickedWord) {
-      setSelectedWord(clickedWord);
-      setEditingWord(clickedWord.text);
+    if (selectionMode === 'character' && ocrResult.symbols) {
+      // Find character at click position
+      clickedItem = ocrResult.symbols.find(symbol => {
+        const bbox = symbol.bbox;
+        return x >= bbox.x0 && x <= bbox.x1 && y >= bbox.y0 && y <= bbox.y1;
+      });
+    } else {
+      // Find word at click position
+      clickedItem = ocrResult.words.find(word => {
+        const bbox = word.bbox;
+        return x >= bbox.x0 && x <= bbox.x1 && y >= bbox.y0 && y <= bbox.y1;
+      });
+    }
+
+    if (clickedItem) {
+      if (e.shiftKey) {
+        // Multi-select mode
+        const alreadySelected = selectedItems.find(item => item === clickedItem);
+        if (alreadySelected) {
+          setSelectedItems(selectedItems.filter(item => item !== clickedItem));
+        } else {
+          setSelectedItems([...selectedItems, clickedItem]);
+        }
+      } else {
+        // Single select
+        setSelectedWord(clickedItem);
+        setEditingWord(clickedItem.text);
+        setSelectedItems([clickedItem]);
+      }
       drawCanvas(image, highlightedBoxes, true);
     }
   };
 
   const handleWordEdit = () => {
-    if (!selectedWord || !editingWord.trim()) {
+    const itemsToEdit = selectedItems.length > 0 ? selectedItems : (selectedWord ? [selectedWord] : []);
+    
+    if (itemsToEdit.length === 0 || !editingWord.trim()) {
       toast.error('Please enter replacement text');
       return;
     }
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const bbox = selectedWord.bbox;
 
-    // Erase old text
-    ctx.fillStyle = 'white';
-    ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+    itemsToEdit.forEach(item => {
+      const bbox = item.bbox;
 
-    // Draw new text
-    const fontSize = Math.max(12, bbox.y1 - bbox.y0);
-    ctx.font = `${fontSize}px Arial`;
-    ctx.fillStyle = 'black';
-    ctx.fillText(editingWord, bbox.x0, bbox.y1 - 2);
+      // Erase old text
+      ctx.fillStyle = 'white';
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+    });
 
-    toast.success('Word replaced!');
+    // Draw new text at the first item's position
+    if (itemsToEdit.length > 0) {
+      const bbox = itemsToEdit[0].bbox;
+      const fontSize = Math.max(12, bbox.y1 - bbox.y0);
+      ctx.font = `${fontSize}px Arial`;
+      ctx.fillStyle = 'black';
+      ctx.fillText(editingWord, bbox.x0, bbox.y1 - 2);
+    }
+
+    toast.success(`Replaced ${itemsToEdit.length} item(s)!`);
     setSelectedWord(null);
     setEditingWord(null);
+    setSelectedItems([]);
   };
 
   const handleWordRemove = () => {
-    if (!selectedWord) return;
+    const itemsToRemove = selectedItems.length > 0 ? selectedItems : (selectedWord ? [selectedWord] : []);
+    
+    if (itemsToRemove.length === 0) return;
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
-    const bbox = selectedWord.bbox;
 
-    ctx.fillStyle = 'white';
-    ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+    itemsToRemove.forEach(item => {
+      const bbox = item.bbox;
+      ctx.fillStyle = 'white';
+      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+    });
 
-    toast.success('Word removed!');
+    toast.success(`Removed ${itemsToRemove.length} item(s)!`);
     setSelectedWord(null);
     setEditingWord(null);
+    setSelectedItems([]);
     drawCanvas(image);
   };
 
@@ -332,18 +409,58 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
               {/* Word Selector Tab */}
               <TabsContent value="selector" className="space-y-4">
+                <div>
+                  <Label>Selection Mode</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      size="sm"
+                      variant={selectionMode === 'word' ? 'default' : 'outline'}
+                      onClick={() => {
+                        setSelectionMode('word');
+                        setSelectedWord(null);
+                        setSelectedItems([]);
+                        drawCanvas(image, highlightedBoxes, true);
+                      }}
+                      className="flex-1"
+                    >
+                      Word Mode
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={selectionMode === 'character' ? 'default' : 'outline'}
+                      onClick={() => {
+                        setSelectionMode('character');
+                        setSelectedWord(null);
+                        setSelectedItems([]);
+                        drawCanvas(image, highlightedBoxes, true);
+                      }}
+                      className="flex-1"
+                    >
+                      Character Mode
+                    </Button>
+                  </div>
+                </div>
+
                 <div className="bg-blue-50 border border-blue-200 rounded-lg p-3">
                   <p className="text-xs text-blue-800 mb-2">
-                    👆 Click on any word in the image to select it for editing or removal
+                    👆 Click to select {selectionMode === 'character' ? 'letters' : 'words'}
+                  </p>
+                  <p className="text-xs text-blue-600">
+                    💡 Hold Shift to select multiple items
                   </p>
                 </div>
 
-                {selectedWord && (
+                {(selectedWord || selectedItems.length > 0) && (
                   <div className="space-y-4 p-4 bg-white border border-blue-300 rounded-lg">
                     <div>
-                      <Label className="text-blue-900">Selected Word</Label>
+                      <Label className="text-blue-900">
+                        Selected {selectionMode === 'character' ? 'Character(s)' : 'Word(s)'}
+                        {selectedItems.length > 1 && ` (${selectedItems.length})`}
+                      </Label>
                       <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-center font-semibold text-blue-900">
-                        {selectedWord.text}
+                        {selectedItems.length > 0 
+                          ? selectedItems.map(item => item.text).join('')
+                          : selectedWord?.text}
                       </div>
                     </div>
 
@@ -379,6 +496,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                       onClick={() => {
                         setSelectedWord(null);
                         setEditingWord(null);
+                        setSelectedItems([]);
                         drawCanvas(image, highlightedBoxes, true);
                       }} 
                       variant="outline"
@@ -389,10 +507,13 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                   </div>
                 )}
 
-                {!selectedWord && ocrResult && (
+                {!selectedWord && selectedItems.length === 0 && ocrResult && (
                   <div className="bg-gray-50 border border-gray-200 rounded-lg p-3">
                     <p className="text-xs text-gray-600">
-                      {ocrResult.words.length} words detected. Click on the image to select a word.
+                      {selectionMode === 'character' 
+                        ? `${ocrResult.symbols?.length || 0} characters detected`
+                        : `${ocrResult.words?.length || 0} words detected`}. 
+                      Click on the image to select.
                     </p>
                   </div>
                 )}
