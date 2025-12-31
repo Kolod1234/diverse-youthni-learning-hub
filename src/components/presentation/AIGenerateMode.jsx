@@ -15,6 +15,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeImages, setIncludeImages] = useState(true);
   const [includeCharts, setIncludeCharts] = useState(false);
   const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
+  const [imageProvider, setImageProvider] = useState('manus'); // 'manus', 'dalle', 'stability'
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
@@ -108,10 +109,27 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           try {
             console.log(`Generating image for slide ${idx + 1}:`, slide.imagePrompt);
 
-            const imageResult = await base44.functions.invoke('generateImageWithManus', {
-              prompt: `Educational diagram, flat vector style, white background: ${slide.imagePrompt}`,
-              aspect_ratio: '16:9' // or '4:3' depending on your slide shape
-            });
+            let imageResult;
+            const enhancedPrompt = `Educational diagram, flat vector style, white background: ${slide.imagePrompt}`;
+
+            // Choose image provider
+            if (imageProvider === 'dalle') {
+              imageResult = await base44.functions.invoke('generateImageWithDallE', {
+                prompt: enhancedPrompt,
+                size: '1792x1024'
+              });
+            } else if (imageProvider === 'stability') {
+              imageResult = await base44.functions.invoke('generateImageWithStability', {
+                prompt: enhancedPrompt,
+                aspect_ratio: '16:9'
+              });
+            } else {
+              // Default to Manus
+              imageResult = await base44.functions.invoke('generateImageWithManus', {
+                prompt: enhancedPrompt,
+                aspect_ratio: '16:9'
+              });
+            }
 
             console.log(`Result for slide ${idx + 1}:`, imageResult);
 
@@ -248,6 +266,47 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 disabled={generating}
               />
             </div>
+
+            {includeImages && (
+              <div className="ml-6 pt-2">
+                <Label className="text-xs text-gray-600 mb-2 block">Image Generator</Label>
+                <div className="grid grid-cols-3 gap-2">
+                  <button
+                    onClick={() => setImageProvider('manus')}
+                    disabled={generating}
+                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                      imageProvider === 'manus'
+                        ? 'border-purple-600 bg-purple-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    Manus
+                  </button>
+                  <button
+                    onClick={() => setImageProvider('dalle')}
+                    disabled={generating}
+                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                      imageProvider === 'dalle'
+                        ? 'border-green-600 bg-green-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    DALL-E 3
+                  </button>
+                  <button
+                    onClick={() => setImageProvider('stability')}
+                    disabled={generating}
+                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                      imageProvider === 'stability'
+                        ? 'border-blue-600 bg-blue-50'
+                        : 'border-gray-200 hover:border-gray-300'
+                    }`}
+                  >
+                    Stability AI
+                  </button>
+                </div>
+              </div>
+            )}
 
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-2">
