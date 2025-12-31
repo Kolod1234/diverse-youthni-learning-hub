@@ -24,28 +24,24 @@ export default function CodeToSlidesMode({ onSlidesGenerated }) {
       toast.info('Analyzing code and generating slides...');
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this ${language} source code and create educational presentation slides explaining the code:
+        prompt: `Split this ${language} source code into multiple presentation slides. Each slide should contain a logical chunk of the code.
 
 \`\`\`${language}
 ${sourceCode}
 \`\`\`
 
-${topic ? `Focus on: ${topic}` : ''}
+${topic ? `Title focus: ${topic}` : ''}
 
-Create 5-8 slides that:
-1. Overview slide with code purpose
-2. Key concepts and architecture
-3. Code walkthrough with syntax highlighting
-4. Important functions/classes explained
-5. Best practices and patterns used
-6. Summary and takeaways
+Instructions:
+- Split the code into 5-10 slides based on logical sections (imports, classes, functions, etc.)
+- Each slide should have a descriptive title indicating what code section it contains
+- Each slide content should ONLY contain the code chunk wrapped in proper HTML with syntax highlighting
+- Do not add explanations, just show the code
 
-For code examples in slides, use:
-<pre style="background: #1e1e1e; color: #d4d4d4; padding: 16px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace;">
-<code>your code here</code>
-</pre>
-
-Format other content with <h2>, <h3>, <p>, <ul>, <li>, <strong> tags.`,
+Use this exact format for code in each slide:
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6;">
+<code>the actual code chunk here</code>
+</pre>`,
         add_context_from_internet: false,
         response_json_schema: {
           type: "object",
@@ -86,7 +82,7 @@ Format other content with <h2>, <h3>, <p>, <ul>, <li>, <strong> tags.`,
       <div>
         <h3 className="font-semibold text-gray-900 mb-3">Code to Slides</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Paste your source code and AI will create educational slides explaining it
+          Paste your source code and AI will split it into multiple slides
         </p>
 
         <div className="space-y-4">
@@ -158,10 +154,10 @@ Format other content with <h2>, <h3>, <p>, <ul>, <li>, <strong> tags.`,
           How It Works
         </h4>
         <ul className="text-sm text-indigo-700 space-y-1">
-          <li>• AI analyzes your code structure and logic</li>
-          <li>• Creates slides explaining key concepts</li>
-          <li>• Highlights important code snippets with syntax</li>
-          <li>• Perfect for code reviews and teaching</li>
+          <li>• AI splits code into logical sections</li>
+          <li>• Each slide shows a portion of your code</li>
+          <li>• Automatic syntax highlighting</li>
+          <li>• Perfect for code presentations and walkthroughs</li>
         </ul>
       </div>
     </div>
