@@ -2,32 +2,27 @@ import React from 'react';
 
 export default function SlidePreview({ slide }) {
   return (
-    <div className="bg-white rounded-xl shadow-lg overflow-hidden min-h-[500px] flex flex-col">
-      {/* Image Section */}
-      {slide.imageUrl && (
-        <div className="w-full bg-gradient-to-br from-indigo-50 to-purple-50 p-6">
-          <img 
-            src={slide.imageUrl} 
-            alt={slide.title}
-            className="w-full h-auto max-h-[400px] object-contain rounded-lg shadow-md"
-          />
-        </div>
-      )}
+    <div className="w-full h-full p-12 bg-white rounded-xl shadow-lg flex flex-col min-h-[500px]">
+      {/* 1. Header Area */}
+      <h1 className="text-4xl font-bold text-indigo-900 mb-8">{slide.title}</h1>
 
-      {/* Content Section */}
-      <div className="flex-1 p-8">
-        <h2 className="text-3xl font-bold text-gray-900 mb-6">
-          {slide.title}
-        </h2>
+      <div className="flex-1 grid grid-cols-2 gap-8 items-center">
+        {/* 2. Text Area - Styled with Typography plugin or custom CSS */}
         <div 
-          className="prose prose-lg max-w-none"
-          dangerouslySetInnerHTML={{ __html: slide.content }}
-          style={{
-            fontSize: '18px',
-            lineHeight: '1.8',
-            color: '#374151'
-          }}
+          className="prose prose-lg text-slate-700" 
+          dangerouslySetInnerHTML={{ __html: slide.content }} 
         />
+
+        {/* 3. Image Area - Only renders if we have an image */}
+        {slide.imageUrl && (
+          <div className="flex justify-center">
+            <img 
+              src={slide.imageUrl} 
+              alt={slide.title} 
+              className="rounded-xl shadow-lg object-cover max-h-[400px]"
+            />
+          </div>
+        )}
       </div>
     </div>
   );
