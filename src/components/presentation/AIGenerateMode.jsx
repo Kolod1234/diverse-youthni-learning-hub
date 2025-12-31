@@ -80,7 +80,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                   properties: {
                     title: { type: 'string' },
                     content: { type: 'string' },
-                    imagePrompt: { type: 'string' }
+                    imagePrompt: { type: 'string' },
+                    speakerNotes: { type: 'string' }
                   }
                 }
               }
@@ -103,7 +104,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                   properties: {
                     title: { type: 'string' },
                     content: { type: 'string' },
-                    imagePrompt: { type: 'string' }
+                    imagePrompt: { type: 'string' },
+                    speakerNotes: { type: 'string' }
                   }
                 }
               }
