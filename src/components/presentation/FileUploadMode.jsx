@@ -3,13 +3,14 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Upload, FileText, Loader2 } from 'lucide-react';
+import { Upload, FileText, Loader2, Link as LinkIcon } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function FileUploadMode({ onSlidesGenerated }) {
   const [uploading, setUploading] = useState(false);
   const [processing, setProcessing] = useState(false);
   const [uploadedFile, setUploadedFile] = useState(null);
+  const [googleSlidesUrl, setGoogleSlidesUrl] = useState('');
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -70,6 +71,24 @@ export default function FileUploadMode({ onSlidesGenerated }) {
     setProcessing(true);
     try {
       const fileExt = fileName.split('.').pop().toLowerCase();
+      
+      // Handle PDF files
+      if (fileExt === 'pdf') {
+        toast.info('Converting PDF to slides...');
+        const result = await base44.functions.invoke('convertPdfToSlides', { fileUrl });
+        onSlidesGenerated(result.data.slides || []);
+        toast.success('PDF converted successfully!');
+        return;
+      }
+
+      // Handle DOC/DOCX files
+      if (fileExt === 'doc' || fileExt === 'docx') {
+        toast.info('Converting document to slides...');
+        const result = await base44.functions.invoke('convertDocToSlides', { fileUrl });
+        onSlidesGenerated(result.data.slides || []);
+        toast.success('Document converted successfully!');
+        return;
+      }
       
       // For other file types, extract structured data
       const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
@@ -139,6 +158,40 @@ Format each slide with HTML styling for beautiful presentation.`,
     }
   };
 
+  const importGoogleSlides = async () => {
+    if (!googleSlidesUrl.trim()) {
+      toast.error('Please enter a Google Slides URL');
+      return;
+    }
+
+    setProcessing(true);
+    try {
+      // Extract presentation ID from URL
+      const urlMatch = googleSlidesUrl.match(/\/presentation\/d\/([a-zA-Z0-9-_]+)/);
+      if (!urlMatch) {
+        throw new Error('Invalid Google Slides URL. Please use a valid presentation link.');
+      }
+
+      const presentationId = urlMatch[1];
+      toast.info('Importing Google Slides...');
+
+      const result = await base44.functions.invoke('importGoogleSlides', { presentationId });
+
+      if (result.data?.error) {
+        throw new Error(result.data.error);
+      }
+
+      onSlidesGenerated(result.data.slides || []);
+      toast.success('Google Slides imported successfully!');
+      setGoogleSlidesUrl('');
+    } catch (error) {
+      console.error('Google Slides import error:', error);
+      toast.error('Failed to import: ' + error.message);
+    } finally {
+      setProcessing(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -154,7 +207,7 @@ Format each slide with HTML styling for beautiful presentation.`,
             disabled={uploading || processing}
             className="hidden"
             id="file-upload"
-            accept=".csv,.xlsx,.xls,.json,.pdf,.docx,.txt,.pptx"
+            accept=".csv,.xlsx,.xls,.json,.pdf,.docx,.txt,.pptx,.doc"
           />
           <label htmlFor="file-upload" className="cursor-pointer">
             {uploading || processing ? (
@@ -169,7 +222,7 @@ Format each slide with HTML styling for beautiful presentation.`,
               <div>
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                 <p className="text-gray-900 font-medium mb-1">Click to upload or drag and drop</p>
-                <p className="text-sm text-gray-500">CSV, Excel, JSON, PDF, DOCX, PPTX</p>
+                <p className="text-sm text-gray-500">PDF, DOC, DOCX, PPTX, CSV, Excel, JSON</p>
               </div>
             )}
           </label>
@@ -201,16 +254,59 @@ Format each slide with HTML styling for beautiful presentation.`,
         )}
       </div>
 
+      <div className="relative">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-300"></div>
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="px-2 bg-white text-gray-500">OR</span>
+        </div>
+      </div>
+
+      <div>
+        <h3 className="font-semibold text-gray-900 mb-3">Import from Google Slides</h3>
+        <div className="flex gap-2">
+          <Input
+            type="text"
+            placeholder="Paste Google Slides URL here..."
+            value={googleSlidesUrl}
+            onChange={(e) => setGoogleSlidesUrl(e.target.value)}
+            disabled={processing}
+            className="flex-1"
+          />
+          <Button
+            onClick={importGoogleSlides}
+            disabled={processing || !googleSlidesUrl.trim()}
+            className="bg-blue-600 hover:bg-blue-700"
+          >
+            {processing ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                Importing...
+              </>
+            ) : (
+              <>
+                <LinkIcon className="w-4 h-4 mr-2" />
+                Import
+              </>
+            )}
+          </Button>
+        </div>
+        <p className="text-xs text-gray-500 mt-2">
+          Make sure the presentation is shared with "Anyone with the link can view"
+        </p>
+      </div>
+
       <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
         <h4 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
           <FileText className="w-4 h-4" />
-          How it works
+          Supported Formats
         </h4>
         <ul className="text-sm text-indigo-700 space-y-1">
-          <li>• AI extracts key information from your file</li>
-          <li>• Automatically creates structured slides</li>
-          <li>• Generates charts for numerical data</li>
-          <li>• You can edit slides after generation</li>
+          <li>• <strong>PDF & DOC:</strong> AI extracts and converts to slides</li>
+          <li>• <strong>PPTX:</strong> Converts to editable Google Slides</li>
+          <li>• <strong>Google Slides:</strong> Import directly via URL</li>
+          <li>• <strong>Data files:</strong> Creates charts and visualizations</li>
         </ul>
       </div>
     </div>
