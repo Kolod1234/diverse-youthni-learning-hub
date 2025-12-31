@@ -86,14 +86,14 @@ If a page has an image, chart, or diagram, the image_prompt MUST describe it in 
       })
     );
 
-    if (!response.slides || response.slides.length === 0) {
+    if (!slidesWithImages || slidesWithImages.length === 0) {
       throw new Error('No slides generated from PDF');
     }
 
     return Response.json({
       success: true,
-      slides: response.slides,
-      total_pages: response.total_pages || response.slides.length
+      slides: slidesWithImages,
+      total_pages: response.total_pages || slidesWithImages.length
     });
 
   } catch (error) {
