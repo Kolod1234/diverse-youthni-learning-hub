@@ -75,3 +75,12 @@ Preserve the original visual appearance - do not recreate or regenerate anything
     }, { status: 500 });
   }
 });
+
+  } catch (error) {
+    console.error('PDF conversion error:', error);
+    return Response.json({ 
+      error: 'Failed to convert PDF',
+      details: error.message 
+    }, { status: 500 });
+  }
+});
