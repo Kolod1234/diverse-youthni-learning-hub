@@ -11,11 +11,12 @@ import { toast } from 'sonner';
 
 export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [slides, setSlides] = useState(initialSlides.length > 0 ? initialSlides : [
-    { id: 1, title: 'New Presentation', content: '<p>Start typing here...</p>', imageUrl: null, order: 1 }
+    { id: 1, title: 'New Presentation', content: '<p>Start typing here...</p>', imageUrl: null, speakerNotes: '', order: 1 }
   ]);
   
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [textEditorCollapsed, setTextEditorCollapsed] = useState(false);
+  const [showSpeakerNotes, setShowSpeakerNotes] = useState(false);
   const activeSlide = slides[currentSlideIndex];
 
   // Sync changes to parent
@@ -37,6 +38,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
       title: 'New Slide',
       content: '<p>Add your content here...</p>',
       imageUrl: null,
+      speakerNotes: '',
       order: slides.length + 1
     };
     updateSlides([...slides, newSlide]);
@@ -162,7 +164,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
             {/* Slide Header Decoration */}
             <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex-shrink-0" />
 
-            <div className="flex-1 flex flex-col p-8 gap-6 h-full">
+            <div className="flex-1 flex flex-col p-8 gap-4 h-full overflow-y-auto">
               
               {/* Slide Title Input */}
               <Input
@@ -248,15 +250,38 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 </div>
               </div>
 
+              {/* Speaker Notes Section */}
+              {activeSlide.speakerNotes && (
+                <div className="mt-4">
+                  <button
+                    onClick={() => setShowSpeakerNotes(!showSpeakerNotes)}
+                    className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors mb-2"
+                  >
+                    <span>📝 Speaker Notes</span>
+                    <span className="text-slate-400">{showSpeakerNotes ? '▼' : '▶'}</span>
+                  </button>
+                  {showSpeakerNotes && (
+                    <div className="bg-amber-50 border border-amber-200 rounded-lg p-4">
+                      <textarea
+                        value={activeSlide.speakerNotes || ''}
+                        onChange={(e) => updateSlide('speakerNotes', e.target.value)}
+                        className="w-full min-h-[80px] text-sm bg-white border border-amber-200 rounded p-3 text-slate-700 resize-none focus:outline-none focus:ring-2 focus:ring-amber-400"
+                        placeholder="Add speaker notes..."
+                      />
+                    </div>
+                  )}
+                </div>
+              )}
+
               {/* Footer / Slide Number */}
               <div className="flex justify-between items-end mt-auto pt-4 border-t border-slate-100 text-xs text-slate-400 uppercase tracking-widest font-semibold">
                 <span>Educational Content</span>
                 <span>{currentSlideIndex + 1} / {slides.length}</span>
               </div>
 
-            </div>
-          </div>
-        </div>
+              </div>
+              </div>
+              </div>
 
         {/* Navigation Controls */}
         <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 bg-white rounded-full shadow-xl px-4 py-2 border border-slate-200">

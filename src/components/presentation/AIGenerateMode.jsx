@@ -14,6 +14,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
   const [includeCharts, setIncludeCharts] = useState(false);
+  const [includeSpeakerNotes, setIncludeSpeakerNotes] = useState(true);
+  const [contentType, setContentType] = useState('general'); // 'general', 'code', 'math', 'history'
   const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
   const [imageProvider, setImageProvider] = useState('base44'); // 'base44', 'manus', 'dalle', 'stability'
   const [generating, setGenerating] = useState(false);
@@ -28,24 +30,38 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
     try {
       toast.info('Generating slide structure...');
 
-      // Step 1: Generate slide structure 
+      // Step 1: Generate slide structure with specialized instructions
+      const contentInstructions = {
+        general: 'Use clear, educational language with bullet points and examples',
+        code: 'Include code examples with syntax highlighting, best practices, and step-by-step explanations. Use <pre><code> tags for code blocks',
+        math: 'Include mathematical equations, formulas, step-by-step problem solving, and visual diagrams. Use proper mathematical notation',
+        history: 'Present information chronologically with dates, key figures, causes and effects, and historical context'
+      };
+
       const prompt = `Create an educational presentation about "${topic}".
-  ${description ? `Additional context: ${description}` : ''}
+      ${description ? `Additional context: ${description}` : ''}
 
-  Generate exactly ${slideCount} slides.
+      Content Type: ${contentType.toUpperCase()}
+      Special Instructions: ${contentInstructions[contentType]}
 
-  Format requirements for 'content':
-  - Return semantic HTML (<ul>, <li>, <p>, <strong>)
-  - DO NOT use inline styles (style="...")
-  - DO NOT include <img> tags in the content
-  - Keep text concise (bullet points preferred)
+      Generate exactly ${slideCount} slides.
 
-  For each slide return:
-  - title: string
-  - content: html string
-  - imagePrompt: string (visual description for an image)
+      Format requirements for 'content':
+      - Return semantic HTML (<ul>, <li>, <p>, <strong>, <pre>, <code>)
+      - DO NOT use inline styles (style="...")
+      - DO NOT include <img> tags in the content
+      - Keep text concise (bullet points preferred)
+      - For code content type: Include practical code examples
+      - For math content type: Include formulas and equations
+      - For history content type: Include dates and timelines
 
-  Return JSON with a "slides" array.`;
+      For each slide return:
+      - title: string
+      - content: html string
+      - imagePrompt: string (visual description for an image)
+      ${includeSpeakerNotes ? '- speakerNotes: string (detailed talking points for the presenter, 2-3 sentences)' : ''}
+
+      Return JSON with a "slides" array.`;
 
       let slideData;
       
@@ -213,6 +229,56 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           </div>
 
           <div>
+            <Label>Content Type</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
+              <button
+                onClick={() => setContentType('general')}
+                disabled={generating}
+                className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                  contentType === 'general'
+                    ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                📚 General
+              </button>
+              <button
+                onClick={() => setContentType('code')}
+                disabled={generating}
+                className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                  contentType === 'code'
+                    ? 'border-green-600 bg-green-50 font-semibold'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                💻 Code Examples
+              </button>
+              <button
+                onClick={() => setContentType('math')}
+                disabled={generating}
+                className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                  contentType === 'math'
+                    ? 'border-blue-600 bg-blue-50 font-semibold'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                🔢 Mathematics
+              </button>
+              <button
+                onClick={() => setContentType('history')}
+                disabled={generating}
+                className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                  contentType === 'history'
+                    ? 'border-amber-600 bg-amber-50 font-semibold'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                📜 History/Timeline
+              </button>
+            </div>
+          </div>
+
+          <div>
             <Label>AI Content Provider</Label>
             <div className="grid grid-cols-3 gap-2 mt-2">
               <button
@@ -260,17 +326,29 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           </div>
 
           <div className="space-y-3 pt-2">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-2">
-                <ImageIcon className="w-4 h-4 text-indigo-600" />
-                <Label className="cursor-pointer">Generate Images</Label>
-              </div>
-              <Switch
-                checked={includeImages}
-                onCheckedChange={setIncludeImages}
-                disabled={generating}
-              />
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <ImageIcon className="w-4 h-4 text-indigo-600" />
+              <Label className="cursor-pointer">Generate Images</Label>
             </div>
+            <Switch
+              checked={includeImages}
+              onCheckedChange={setIncludeImages}
+              disabled={generating}
+            />
+          </div>
+
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <BarChart2 className="w-4 h-4 text-purple-600" />
+              <Label className="cursor-pointer">Speaker Notes</Label>
+            </div>
+            <Switch
+              checked={includeSpeakerNotes}
+              onCheckedChange={setIncludeSpeakerNotes}
+              disabled={generating}
+            />
+          </div>
 
             {includeImages && (
               <div className="ml-6 pt-2">
@@ -363,10 +441,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           Features
         </h4>
         <ul className="text-sm text-indigo-700 space-y-1">
-          <li>• AI-generated content with proper formatting</li>
-          <li>• Professional images tailored to your topic</li>
-          <li>• Choose between standard, research, or Perplexity AI</li>
-          <li>• Web-grounded content with real-time data</li>
+          <li>• <strong>Specialized content types:</strong> General, Code, Math, History</li>
+          <li>• <strong>AI models:</strong> Standard, Research, or Perplexity</li>
+          <li>• <strong>Image generators:</strong> Base44, DALL-E, Manus, Stability</li>
+          <li>• <strong>Speaker notes:</strong> Auto-generated talking points</li>
+          <li>• <strong>Real-time data:</strong> Web-grounded research content</li>
           <li>• Fully editable after generation</li>
         </ul>
       </div>
