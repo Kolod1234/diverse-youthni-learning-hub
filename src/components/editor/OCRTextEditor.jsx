@@ -3,9 +3,10 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { X, Search, Type, Eraser, Loader2, Upload } from 'lucide-react';
+import { X, Search, Type, Eraser, Loader2, Upload, Square, Pentagon, Tag, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
 import { createWorker } from 'tesseract.js';
+import { base44 } from '@/api/base44Client';
 
 export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const canvasRef = useRef(null);
@@ -17,6 +18,15 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [editingWord, setEditingWord] = useState(null);
   const [selectionMode, setSelectionMode] = useState('word'); // 'word' or 'character'
   const [selectedItems, setSelectedItems] = useState([]);
+  
+  // Annotation mode
+  const [annotations, setAnnotations] = useState([]);
+  const [drawingMode, setDrawingMode] = useState(null); // 'box', 'polygon', null
+  const [drawingStart, setDrawingStart] = useState(null);
+  const [currentPolygon, setCurrentPolygon] = useState([]);
+  const [labelInput, setLabelInput] = useState('');
+  const [suggestedLabels, setSuggestedLabels] = useState([]);
+  const [loadingLabels, setLoadingLabels] = useState(false);
   
   // Highlight mode
   const [searchText, setSearchText] = useState('');
@@ -98,6 +108,71 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       ctx.strokeStyle = '#3B82F6';
       ctx.lineWidth = 3;
       ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+    }
+
+    // Draw annotations
+    annotations.forEach((annotation, idx) => {
+      if (annotation.type === 'box') {
+        ctx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+        ctx.fillRect(annotation.x, annotation.y, annotation.width, annotation.height);
+        ctx.strokeStyle = '#22C55E';
+        ctx.lineWidth = 3;
+        ctx.strokeRect(annotation.x, annotation.y, annotation.width, annotation.height);
+        
+        if (annotation.label) {
+          ctx.fillStyle = '#22C55E';
+          ctx.fillRect(annotation.x, annotation.y - 25, ctx.measureText(annotation.label).width + 10, 25);
+          ctx.fillStyle = 'white';
+          ctx.font = '14px Arial';
+          ctx.fillText(annotation.label, annotation.x + 5, annotation.y - 8);
+        }
+      } else if (annotation.type === 'polygon') {
+        ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+        ctx.strokeStyle = '#A855F7';
+        ctx.lineWidth = 3;
+        
+        ctx.beginPath();
+        annotation.points.forEach((point, i) => {
+          if (i === 0) ctx.moveTo(point.x, point.y);
+          else ctx.lineTo(point.x, point.y);
+        });
+        ctx.closePath();
+        ctx.fill();
+        ctx.stroke();
+        
+        if (annotation.label && annotation.points.length > 0) {
+          const firstPoint = annotation.points[0];
+          ctx.fillStyle = '#A855F7';
+          ctx.fillRect(firstPoint.x, firstPoint.y - 25, ctx.measureText(annotation.label).width + 10, 25);
+          ctx.fillStyle = 'white';
+          ctx.font = '14px Arial';
+          ctx.fillText(annotation.label, firstPoint.x + 5, firstPoint.y - 8);
+        }
+      }
+    });
+
+    // Draw current polygon being drawn
+    if (currentPolygon.length > 0) {
+      ctx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+      ctx.strokeStyle = '#A855F7';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([5, 5]);
+      
+      ctx.beginPath();
+      currentPolygon.forEach((point, i) => {
+        if (i === 0) ctx.moveTo(point.x, point.y);
+        else ctx.lineTo(point.x, point.y);
+      });
+      ctx.stroke();
+      ctx.setLineDash([]);
+      
+      // Draw points
+      currentPolygon.forEach(point => {
+        ctx.fillStyle = '#A855F7';
+        ctx.beginPath();
+        ctx.arc(point.x, point.y, 5, 0, 2 * Math.PI);
+        ctx.fill();
+      });
     }
   };
 
@@ -273,7 +348,22 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   };
 
   const handleCanvasClick = (e) => {
-    if (!ocrResult || activeTab !== 'selector') return;
+    if (!ocrResult) return;
+
+    // Handle annotation drawing mode
+    if (activeTab === 'annotate' && drawingMode === 'polygon') {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      setCurrentPolygon([...currentPolygon, { x, y }]);
+      return;
+    }
+
+    if (activeTab !== 'selector') return;
 
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
@@ -372,6 +462,94 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     drawCanvas(image);
   };
 
+  const handleMouseDown = (e) => {
+    if (activeTab !== 'annotate' || drawingMode !== 'box') return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    setDrawingStart({ x, y });
+  };
+
+  const handleMouseUp = (e) => {
+    if (activeTab !== 'annotate' || drawingMode !== 'box' || !drawingStart) return;
+
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    const width = x - drawingStart.x;
+    const height = y - drawingStart.y;
+
+    if (Math.abs(width) > 10 && Math.abs(height) > 10) {
+      setAnnotations([...annotations, {
+        type: 'box',
+        x: Math.min(drawingStart.x, x),
+        y: Math.min(drawingStart.y, y),
+        width: Math.abs(width),
+        height: Math.abs(height),
+        label: labelInput || 'Unlabeled'
+      }]);
+      toast.success('Bounding box added!');
+    }
+
+    setDrawingStart(null);
+    drawCanvas(image);
+  };
+
+  const finishPolygon = () => {
+    if (currentPolygon.length < 3) {
+      toast.error('Polygon needs at least 3 points');
+      return;
+    }
+
+    setAnnotations([...annotations, {
+      type: 'polygon',
+      points: currentPolygon,
+      label: labelInput || 'Unlabeled'
+    }]);
+    
+    setCurrentPolygon([]);
+    toast.success('Polygon added!');
+    drawCanvas(image);
+  };
+
+  const suggestLabels = async () => {
+    setLoadingLabels(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this image and suggest relevant annotation labels. Consider common objects, text content, regions of interest, and educational elements that might need labeling.
+        
+Return 8-12 concise, specific label suggestions that would be useful for annotating this image.`,
+        file_urls: [imageUrl],
+        response_json_schema: {
+          type: "object",
+          properties: {
+            labels: {
+              type: "array",
+              items: { type: "string" }
+            }
+          }
+        }
+      });
+
+      setSuggestedLabels(result.labels || []);
+      toast.success(`Generated ${result.labels?.length || 0} label suggestions`);
+    } catch (error) {
+      console.error('Failed to suggest labels:', error);
+      toast.error('Failed to generate label suggestions');
+    } finally {
+      setLoadingLabels(false);
+    }
+  };
+
   return (
     <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4" onClick={onClose}>
       <div className="bg-white rounded-2xl w-full max-w-6xl max-h-[95vh] overflow-hidden flex flex-col" onClick={(e) => e.stopPropagation()}>
@@ -398,14 +576,148 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
               setActiveTab(v);
               setSelectedWord(null);
               setEditingWord(null);
+              setDrawingMode(null);
+              setCurrentPolygon([]);
               drawCanvas(image, highlightedBoxes, v === 'selector');
             }}>
-              <TabsList className="grid w-full grid-cols-4 mb-4">
+              <TabsList className="grid w-full grid-cols-5 mb-4 text-xs">
                 <TabsTrigger value="selector">Selector</TabsTrigger>
+                <TabsTrigger value="annotate">Annotate</TabsTrigger>
                 <TabsTrigger value="highlight">Highlight</TabsTrigger>
                 <TabsTrigger value="replace">Replace</TabsTrigger>
                 <TabsTrigger value="remove">Remove</TabsTrigger>
               </TabsList>
+
+              {/* Annotation Tab */}
+              <TabsContent value="annotate" className="space-y-4">
+                <div>
+                  <Label>Drawing Tool</Label>
+                  <div className="flex gap-2 mt-2">
+                    <Button
+                      size="sm"
+                      variant={drawingMode === 'box' ? 'default' : 'outline'}
+                      onClick={() => setDrawingMode('box')}
+                      className="flex-1"
+                    >
+                      <Square className="w-4 h-4 mr-1" />
+                      Box
+                    </Button>
+                    <Button
+                      size="sm"
+                      variant={drawingMode === 'polygon' ? 'default' : 'outline'}
+                      onClick={() => setDrawingMode('polygon')}
+                      className="flex-1"
+                    >
+                      <Pentagon className="w-4 h-4 mr-1" />
+                      Polygon
+                    </Button>
+                  </div>
+                </div>
+
+                <div>
+                  <Label>Label</Label>
+                  <Input
+                    value={labelInput}
+                    onChange={(e) => setLabelInput(e.target.value)}
+                    placeholder="Enter label for annotations"
+                    className="mt-2"
+                  />
+                </div>
+
+                <Button 
+                  onClick={suggestLabels} 
+                  variant="outline"
+                  className="w-full"
+                  disabled={loadingLabels}
+                >
+                  {loadingLabels ? (
+                    <>
+                      <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                      Generating...
+                    </>
+                  ) : (
+                    <>
+                      <Sparkles className="w-4 h-4 mr-2" />
+                      AI Suggest Labels
+                    </>
+                  )}
+                </Button>
+
+                {suggestedLabels.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-xs">Suggested Labels</Label>
+                    <div className="flex flex-wrap gap-2">
+                      {suggestedLabels.map((label, idx) => (
+                        <button
+                          key={idx}
+                          onClick={() => setLabelInput(label)}
+                          className="px-3 py-1 text-xs bg-purple-50 text-purple-700 border border-purple-200 rounded-full hover:bg-purple-100 transition-colors"
+                        >
+                          {label}
+                        </button>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {drawingMode === 'box' && (
+                  <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                    <p className="text-xs text-green-800">
+                      📦 Click and drag on the image to draw a bounding box
+                    </p>
+                  </div>
+                )}
+
+                {drawingMode === 'polygon' && (
+                  <div className="bg-purple-50 border border-purple-200 rounded-lg p-3 space-y-2">
+                    <p className="text-xs text-purple-800">
+                      🔷 Click points on the image to draw a polygon
+                    </p>
+                    {currentPolygon.length > 0 && (
+                      <Button size="sm" onClick={finishPolygon} className="w-full">
+                        Finish Polygon ({currentPolygon.length} points)
+                      </Button>
+                    )}
+                  </div>
+                )}
+
+                {annotations.length > 0 && (
+                  <div className="space-y-2">
+                    <Label className="text-xs">Annotations ({annotations.length})</Label>
+                    <div className="max-h-40 overflow-y-auto space-y-2">
+                      {annotations.map((ann, idx) => (
+                        <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 border rounded">
+                          <div className="flex items-center gap-2">
+                            {ann.type === 'box' ? <Square className="w-3 h-3 text-green-600" /> : <Pentagon className="w-3 h-3 text-purple-600" />}
+                            <span className="text-xs font-medium">{ann.label}</span>
+                          </div>
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            onClick={() => {
+                              setAnnotations(annotations.filter((_, i) => i !== idx));
+                              drawCanvas(image);
+                            }}
+                          >
+                            <X className="w-3 h-3" />
+                          </Button>
+                        </div>
+                      ))}
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={() => {
+                        setAnnotations([]);
+                        drawCanvas(image);
+                      }}
+                      className="w-full"
+                    >
+                      Clear All
+                    </Button>
+                  </div>
+                )}
+              </TabsContent>
 
               {/* Word Selector Tab */}
               <TabsContent value="selector" className="space-y-4">
@@ -673,8 +985,12 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
               <canvas
                 ref={canvasRef}
                 onClick={handleCanvasClick}
+                onMouseDown={handleMouseDown}
+                onMouseUp={handleMouseUp}
                 className={`max-w-full max-h-full border-2 border-gray-300 shadow-xl rounded-lg bg-white ${
-                  activeTab === 'selector' ? 'cursor-pointer' : ''
+                  activeTab === 'selector' ? 'cursor-pointer' : 
+                  activeTab === 'annotate' && drawingMode === 'box' ? 'cursor-crosshair' :
+                  activeTab === 'annotate' && drawingMode === 'polygon' ? 'cursor-crosshair' : ''
                 }`}
               />
             </div>
