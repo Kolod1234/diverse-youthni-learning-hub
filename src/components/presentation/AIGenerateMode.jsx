@@ -447,37 +447,11 @@ Return ONLY valid JSON.`,
                 let generatedImage;
                 
                 if (aiProvider === 'perplexity' || aiProvider === 'base44-pro') {
-                  const dallePrompt = base44EnforceSpelling && aiProvider === 'base44-pro'
-                    ? `Create a CLEAR, PROFESSIONAL educational diagram of: ${slide.image_prompt}
+                  const dallePrompt = `Educational diagram: ${slide.image_prompt}
 
-STRICT STYLE REQUIREMENTS:
-- Simple, clean scientific diagram style (like a textbook)
-- White or light background
-- Clear black text labels with arrows pointing to parts
-- NO artistic effects, NO decorative elements, NO abstract art
-- Minimalist, professional educational illustration
-- High contrast for easy reading
-- Focus on CLARITY and LEARNING, not aesthetics
-
-TEXT REQUIREMENTS:
-- 100% accurate spelling
-- Bold, legible sans-serif font
-- Black text on light background
-- Clear labels with connecting lines/arrows
-
-AVOID: Artistic interpretations, decorative patterns, 3D renders, photo-realistic art
-
-Educational Context: ${topic} - ${slide.title}
-Style: Clean textbook diagram`
-                    : `Create a CLEAR, SIMPLE educational diagram of: ${slide.image_prompt}
-
-STYLE: Clean textbook-style diagram (NOT artistic or decorative)
-- White/light background
-- Clear black text labels
-- Simple, professional illustration
-- Focus on clarity and learning
-
-Educational Context: ${topic} - ${slide.title}`;
+Style: Simple line drawing or vector illustration with clear labels
+Requirements: Clean white background, black text labels, minimal colors
+Context: ${topic} - ${slide.title}`;
 
                   const result = await base44.functions.invoke(imageGenFunction, {
                     prompt: dallePrompt,
@@ -488,20 +462,10 @@ Educational Context: ${topic} - ${slide.title}`;
                     generatedImage = { url: result.data.url };
                   }
                 } else if (aiProvider === 'manus') {
-                  const manusPrompt = `Create a CLEAR, PROFESSIONAL textbook-style educational diagram of: ${slide.image_prompt}
+                  const manusPrompt = `Educational diagram: ${slide.image_prompt}
 
-STRICT REQUIREMENTS:
-- Simple, clean scientific illustration style
-- White or light background with clear labels
-- Black text with arrows/lines pointing to diagram parts
-- NO artistic effects, NO decorative patterns, NO abstract art
-- Minimalist educational diagram (like a textbook or whiteboard drawing)
-- High contrast and easy to read
-
-Educational Context:
-- Topic: ${topic} - ${slide.title}
-- Level: ${levelInstructions[educationLevel]}
-- Style: Clean textbook diagram, NOT artistic illustration`;
+Style: Simple vector illustration with clear labels
+Context: ${topic} - ${slide.title}`;
 
                   const result = await base44.functions.invoke(imageGenFunction, {
                     prompt: manusPrompt,
