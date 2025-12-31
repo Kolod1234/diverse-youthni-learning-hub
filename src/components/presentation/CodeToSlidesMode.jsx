@@ -20,7 +20,7 @@ export default function CodeToSlidesMode({ onSlidesGenerated }) {
     setDetecting(true);
     try {
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Detect the programming language of this code. Return ONLY the language name in lowercase (javascript, python, java, cpp, csharp, go, rust, php, ruby, swift, kotlin, typescript, or other).
+        prompt: `Detect the programming language of this code. Return ONLY the language name in lowercase (html, css, javascript, python, java, cpp, csharp, go, rust, php, ruby, swift, kotlin, typescript, sql, or other).
 
 Code:
 \`\`\`
