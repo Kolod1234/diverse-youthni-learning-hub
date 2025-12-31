@@ -33,94 +33,114 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       // Step 1: Generate slide structure with specialized instructions
       const contentInstructions = {
-        general: 'Use clear, educational language with bullet points and examples',
-        code: 'Include code examples with syntax highlighting, best practices, and step-by-step explanations. Use <pre><code> tags for code blocks',
-        math: 'Include mathematical equations, formulas, step-by-step problem solving, and visual diagrams. Use proper mathematical notation',
-        history: 'Present information chronologically with dates, key figures, causes and effects, and historical context'
+        general: 'Use clear, educational language with extensive bullet points, real-world examples, case studies, and practical applications. Include statistics, research findings, and expert insights.',
+        code: 'Include multiple complete code examples with detailed line-by-line explanations, best practices, common pitfalls to avoid, performance considerations, and real-world use cases. Use <pre><code> tags for code blocks with proper syntax.',
+        math: 'Include comprehensive mathematical equations, formulas with complete derivations, step-by-step problem solving with explanations for each step, worked examples, visual diagrams, and practical applications. Use proper mathematical notation and explain the reasoning behind each step.',
+        history: 'Present detailed chronological information with specific dates, key historical figures with their contributions, detailed analysis of causes and effects, historical context, primary source references, and long-term impacts on society.'
       };
 
-      const prompt = `Create an educational presentation about "${topic}".
+      const prompt = `Create a COMPREHENSIVE educational presentation about "${topic}".
       ${description ? `Additional context: ${description}` : ''}
 
       Content Type: ${contentType.toUpperCase()}
       Special Instructions: ${contentInstructions[contentType]}
 
-      Generate exactly ${slideCount} slides.
+      Generate exactly ${slideCount} slides with MAXIMUM detail and depth.
 
-      CRITICAL: Create DETAILED, COMPREHENSIVE content for each slide:
-      - Write 4-6 bullet points per slide with DETAILED explanations (not just one-line summaries)
-      - Each bullet point should be 2-3 sentences with specific information, examples, and context
-      - Include relevant facts, statistics, definitions, and real-world applications
-      - For code: Include full working examples with explanations
-      - For math: Show complete solutions with step-by-step reasoning
-      - For history: Provide detailed context, causes, effects, and significance
+      CRITICAL CONTENT REQUIREMENTS - Create EXTENSIVE, IN-DEPTH content for each slide:
+
+      1. QUANTITY: Write 6-8 detailed bullet points per slide (minimum 5, maximum 10)
+      2. DEPTH: Each bullet point MUST be 3-5 complete sentences with:
+      - Specific facts, data, and statistics
+      - Real-world examples and case studies
+      - Expert insights and research findings
+      - Practical applications and implications
+      - Supporting evidence and reasoning
+
+      3. STRUCTURE: Organize content with:
+      - Main concepts with thorough explanations
+      - Subpoints using <ul> within <li> for nested details
+      - Use <h4> subheadings to break down complex topics
+      - Use <strong> to highlight key terms and concepts
+      - Use <em> for emphasis on important points
+
+      4. CONTENT TYPE SPECIFIC:
+      - Code: Multiple complete examples (10-30 lines each), detailed explanations of logic, best practices, edge cases, performance tips
+      - Math: Full derivations, multiple worked examples, step-by-step solutions with reasoning, alternative approaches
+      - History: Detailed timelines, key figures with biographies, comprehensive cause-effect analysis, social/economic/political context
+      - General: Deep dive into concepts, multiple perspectives, research-backed information, practical applications
+
+      5. NO SUMMARIES: Avoid high-level overviews. Provide specific, actionable, detailed information.
 
       Format requirements for 'content':
       - Return semantic HTML (<ul>, <li>, <p>, <strong>, <em>, <pre>, <code>, <h3>, <h4>)
+      - Use nested <ul> within <li> for subpoints and additional details
       - DO NOT use inline styles (style="...")
       - DO NOT include <img> tags in the content
-      - Use <strong> for emphasis and key terms
-      - Use subheadings (<h4>) to organize complex information
-      - For code content type: Include practical code examples in <pre><code> blocks
-      - For math content type: Include formulas and equations
-      - For history content type: Include dates and timelines
+      - Use <h4> for section headers within slides
+      - For code: Use <pre><code> with complete, runnable examples
+      - For math: Use proper notation, show all work
 
       For each slide return:
-      - title: string
-      - content: html string (detailed, not summary)
-      - imagePrompt: string (visual description for an image)
-      ${includeSpeakerNotes ? '- speakerNotes: string (detailed talking points for the presenter, 3-4 sentences)' : ''}
+      - title: string (specific and descriptive)
+      - content: html string (extensive detail, NOT summary)
+      - imagePrompt: string (detailed visual description for diagram/illustration)
+      ${includeSpeakerNotes ? '- speakerNotes: string (comprehensive talking points with additional context, examples, and teaching tips - 5-6 sentences minimum)' : ''}
 
       Return JSON with a "slides" array.`;
 
       let slideData;
-      
+
+      const jsonSchema = {
+        type: 'object',
+        properties: {
+          slides: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                content: { type: 'string' },
+                imagePrompt: { type: 'string' },
+                speakerNotes: { type: 'string' }
+              }
+            }
+          }
+        }
+      };
+
       if (aiProvider === 'perplexity') {
-        // Use Perplexity for web-grounded research
+        // Use Perplexity for deep web-grounded research
         const response = await base44.functions.invoke('perplexitySearch', {
           query: prompt,
           return_json: true,
-          json_schema: {
-            type: 'object',
-            properties: {
-              slides: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    title: { type: 'string' },
-                    content: { type: 'string' },
-                    imagePrompt: { type: 'string' },
-                    speakerNotes: { type: 'string' }
-                  }
-                }
-              }
-            }
-          }
+          json_schema: jsonSchema
         });
         slideData = response.data;
+      } else if (aiProvider === 'academic') {
+        // Academic mode: Use LLM with enhanced prompt for maximum detail
+        const academicPrompt = prompt + `\n\nACADEMIC MODE: Provide scholarly-level depth with:
+      - Extensive research-backed information
+      - Multiple perspectives and viewpoints
+      - Theoretical frameworks and concepts
+      - Critical analysis and evaluation
+      - Historical context and development
+      - Current debates and controversies
+      - Future implications and trends
+      - Cross-references between concepts
+      Write as if creating an academic textbook chapter with maximum comprehensiveness.`;
+
+        slideData = await base44.integrations.Core.InvokeLLM({
+          prompt: academicPrompt,
+          add_context_from_internet: true,
+          response_json_schema: jsonSchema
+        });
       } else {
-        // Use default LLM
+        // Use default LLM with optional web research
         slideData = await base44.integrations.Core.InvokeLLM({
           prompt,
           add_context_from_internet: aiProvider === 'default_research',
-          response_json_schema: {
-            type: 'object',
-            properties: {
-              slides: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    title: { type: 'string' },
-                    content: { type: 'string' },
-                    imagePrompt: { type: 'string' },
-                    speakerNotes: { type: 'string' }
-                  }
-                }
-              }
-            }
-          }
+          response_json_schema: jsonSchema
         });
       }
 
@@ -294,8 +314,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           </div>
 
           <div>
-            <Label>AI Content Provider</Label>
-            <div className="grid grid-cols-3 gap-2 mt-2">
+            <Label>AI Research Mode</Label>
+            <div className="grid grid-cols-2 gap-2 mt-2">
               <button
                 onClick={() => setAiProvider('default')}
                 disabled={generating}
@@ -306,19 +326,21 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 }`}
               >
                 <Sparkles className="w-5 h-5 mx-auto mb-1 text-indigo-600" />
-                <div className="text-xs font-medium">Standard</div>
+                <div className="text-xs font-medium">Standard AI</div>
+                <div className="text-[10px] text-gray-500 mt-1">Fast, comprehensive</div>
               </button>
               <button
                 onClick={() => setAiProvider('default_research')}
                 disabled={generating}
                 className={`p-3 rounded-lg border-2 transition-all ${
                   aiProvider === 'default_research'
-                    ? 'border-indigo-600 bg-indigo-50'
+                    ? 'border-blue-600 bg-blue-50'
                     : 'border-gray-200 hover:border-gray-300'
                 }`}
               >
-                <BarChart2 className="w-5 h-5 mx-auto mb-1 text-indigo-600" />
-                <div className="text-xs font-medium">Research</div>
+                <BarChart2 className="w-5 h-5 mx-auto mb-1 text-blue-600" />
+                <div className="text-xs font-medium">Web Research</div>
+                <div className="text-[10px] text-gray-500 mt-1">Real-time data</div>
               </button>
               <button
                 onClick={() => setAiProvider('perplexity')}
@@ -330,14 +352,30 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 }`}
               >
                 <Zap className="w-5 h-5 mx-auto mb-1 text-purple-600" />
-                <div className="text-xs font-medium">Perplexity</div>
+                <div className="text-xs font-medium">Perplexity Pro</div>
+                <div className="text-[10px] text-gray-500 mt-1">Deep research + citations</div>
+              </button>
+              <button
+                onClick={() => setAiProvider('academic')}
+                disabled={generating}
+                className={`p-3 rounded-lg border-2 transition-all ${
+                  aiProvider === 'academic'
+                    ? 'border-green-600 bg-green-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <BookOpen className="w-5 h-5 mx-auto mb-1 text-green-600" />
+                <div className="text-xs font-medium">Academic</div>
+                <div className="text-[10px] text-gray-500 mt-1">Scholarly depth</div>
               </button>
             </div>
-            <p className="text-xs text-gray-500 mt-2">
-              {aiProvider === 'default' && '• Fast generation with standard AI'}
-              {aiProvider === 'default_research' && '• Enhanced with web search for current info'}
-              {aiProvider === 'perplexity' && '• Real-time web search with citations'}
-            </p>
+            <div className="mt-3 p-3 bg-slate-50 rounded-lg text-xs text-slate-600">
+              <strong className="block mb-1 text-slate-700">Selected Mode:</strong>
+              {aiProvider === 'default' && '• Fast comprehensive content generation using advanced AI'}
+              {aiProvider === 'default_research' && '• Enhanced with live web search for current statistics, facts, and real-world examples'}
+              {aiProvider === 'perplexity' && '• Deep web research with multiple sources, citations, and up-to-date information'}
+              {aiProvider === 'academic' && '• Maximum detail with scholarly depth, comprehensive analysis, and extensive research'}
+            </div>
           </div>
 
           <div className="space-y-3 pt-2">
@@ -502,18 +540,19 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         </Button>
       </div>
 
-      <div className="bg-indigo-50 border border-indigo-200 rounded-lg p-4">
-        <h4 className="font-semibold text-indigo-900 mb-2 flex items-center gap-2">
-          <Sparkles className="w-4 h-4" />
-          Features
+      <div className="bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200 rounded-lg p-4">
+        <h4 className="font-semibold text-indigo-900 mb-3 flex items-center gap-2">
+          <Sparkles className="w-5 h-5" />
+          Advanced Features
         </h4>
-        <ul className="text-sm text-indigo-700 space-y-1">
-          <li>• <strong>Specialized content types:</strong> General, Code, Math, History</li>
-          <li>• <strong>AI models:</strong> Standard, Research, or Perplexity</li>
-          <li>• <strong>Image generators:</strong> Base44, DALL-E, Manus, Stability</li>
-          <li>• <strong>Speaker notes:</strong> Auto-generated talking points</li>
-          <li>• <strong>Real-time data:</strong> Web-grounded research content</li>
-          <li>• Fully editable after generation</li>
+        <ul className="text-sm text-indigo-700 space-y-2">
+          <li>• <strong>Deep Content Generation:</strong> 6-8 detailed points per slide with comprehensive explanations</li>
+          <li>• <strong>Research Modes:</strong> Standard AI, Web Research, Perplexity Pro, or Academic depth</li>
+          <li>• <strong>Specialized Types:</strong> General, Code (with examples), Math (with proofs), History (with analysis)</li>
+          <li>• <strong>Image AI:</strong> Base44, DALL-E 3, Manus, Stability AI with custom aspect ratios</li>
+          <li>• <strong>Real-Time Data:</strong> Web search integration for current statistics and facts</li>
+          <li>• <strong>Speaker Notes:</strong> Detailed 5-6 sentence talking points with teaching tips</li>
+          <li>• <strong>Full Customization:</strong> Editable slides with 6 visual themes</li>
         </ul>
       </div>
     </div>
