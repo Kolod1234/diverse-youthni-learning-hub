@@ -15,25 +15,31 @@ Deno.serve(async (req) => {
             return Response.json({ error: 'file_url is required' }, { status: 400 });
         }
 
-        // Get Google Drive access token
+        // Get Google Slides access token (includes drive.file scope)
         const accessToken = await base44.asServiceRole.connectors.getAccessToken('googleslides');
 
         // Download the PPTX file
         const fileResponse = await fetch(file_url);
+        if (!fileResponse.ok) {
+            return Response.json({ error: 'Failed to download PPTX file' }, { status: 500 });
+        }
         const fileBlob = await fileResponse.blob();
 
         // Upload to Google Drive and convert to Google Slides
-        const uploadResponse = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart&convert=true', {
+        const boundary = '-------314159265358979323846';
+        const uploadResponse = await fetch('https://www.googleapis.com/upload/drive/v3/files?uploadType=multipart', {
             method: 'POST',
             headers: {
                 'Authorization': `Bearer ${accessToken}`,
+                'Content-Type': `multipart/related; boundary=${boundary}`,
             },
-            body: await createMultipartBody(fileBlob, 'Presentation'),
+            body: await createMultipartBody(fileBlob, 'Presentation', boundary),
         });
 
         if (!uploadResponse.ok) {
             const error = await uploadResponse.text();
-            return Response.json({ error: `Failed to upload: ${error}` }, { status: 500 });
+            console.error('Google Drive upload error:', error);
+            return Response.json({ error: `Failed to upload to Google Drive: ${error}` }, { status: 500 });
         }
 
         const uploadData = await uploadResponse.json();
@@ -55,8 +61,7 @@ Deno.serve(async (req) => {
     }
 });
 
-async function createMultipartBody(blob, name) {
-    const boundary = '-------314159265358979323846';
+async function createMultipartBody(blob, name, boundary) {
     const delimiter = `\r\n--${boundary}\r\n`;
     const close_delim = `\r\n--${boundary}--`;
 
@@ -65,25 +70,32 @@ async function createMultipartBody(blob, name) {
         mimeType: 'application/vnd.google-apps.presentation'
     };
 
-    const multipartRequestBody =
-        delimiter +
+    const metadataPart = delimiter +
         'Content-Type: application/json; charset=UTF-8\r\n\r\n' +
-        JSON.stringify(metadata) +
-        delimiter +
-        'Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation\r\n\r\n';
+        JSON.stringify(metadata);
+
+    const filePart = delimiter +
+        'Content-Type: application/vnd.openxmlformats-officedocument.presentationml.presentation\r\n' +
+        'Content-Transfer-Encoding: base64\r\n\r\n';
 
     const uint8Array = new Uint8Array(await blob.arrayBuffer());
     
     const encoder = new TextEncoder();
-    const firstPart = encoder.encode(multipartRequestBody);
-    const lastPart = encoder.encode(close_delim);
+    const metadataBytes = encoder.encode(metadataPart);
+    const filePartBytes = encoder.encode(filePart);
+    const closeDelimBytes = encoder.encode(close_delim);
 
-    const totalLength = firstPart.length + uint8Array.length + lastPart.length;
+    const totalLength = metadataBytes.length + filePartBytes.length + uint8Array.length + closeDelimBytes.length;
     const combined = new Uint8Array(totalLength);
     
-    combined.set(firstPart, 0);
-    combined.set(uint8Array, firstPart.length);
-    combined.set(lastPart, firstPart.length + uint8Array.length);
+    let offset = 0;
+    combined.set(metadataBytes, offset);
+    offset += metadataBytes.length;
+    combined.set(filePartBytes, offset);
+    offset += filePartBytes.length;
+    combined.set(uint8Array, offset);
+    offset += uint8Array.length;
+    combined.set(closeDelimBytes, offset);
 
-    return new Blob([combined], { type: `multipart/related; boundary=${boundary}` });
+    return combined;
 }
