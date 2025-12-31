@@ -15,9 +15,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva'
+  const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva', 'base44-pro', 'manus'
   const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen', 'base44-pro'
+  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen', 'base44-pro', 'manus'
   const [educationLevel, setEducationLevel] = useState('gcse');
   const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
@@ -458,8 +458,70 @@ Return ONLY the JSON object, nothing else.`,
         if (base44ProResult?.slides) {
           response = base44ProResult;
           toast.success('Premium content generated with Base44 AI Pro!');
-        }
-      }
+          }
+          } else if (aiProvider === 'manus') {
+          // Use Manus AI for advanced content generation
+          const manusResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are an advanced AI content creator using state-of-the-art language models.
+
+          Create a ${slideCount}-slide high-quality educational presentation about: "${topic}"
+          ${details ? `\nContext: ${details}` : ''}
+
+          TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+
+          QUALITY STANDARDS:
+          - Comprehensive, well-researched content
+          - Clear explanations with real-world examples
+          - Engaging and interactive learning approach
+          - Professional formatting with visual hierarchy
+          - Rich HTML formatting for modern presentation
+
+          CRITICAL: Return ONLY valid JSON in this EXACT format:
+          {
+          "slides": [
+          {
+          "title": "Engaging, clear title",
+          "content": "High-quality content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Include examples, key concepts, and detailed explanations.",
+          "order": 1,
+          ${includeImages ? '"image_prompt": "Detailed description for generating educational visual",' : ''}
+          "image_description": "What the visual represents"
+          }
+          ]
+          }
+
+          ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
+
+          Return ONLY the JSON object, nothing else.`,
+          add_context_from_internet: true,
+          response_json_schema: {
+            type: "object",
+            properties: {
+              slides: {
+                type: "array",
+                items: {
+                  type: "object",
+                  properties: {
+                    title: { type: "string" },
+                    content: { type: "string" },
+                    order: { type: "number" },
+                    ...(includeImages ? {
+                      image_prompt: { type: "string" },
+                      image_description: { type: "string" }
+                    } : {})
+                  },
+                  required: ["title", "content", "order"]
+                }
+              }
+            },
+            required: ["slides"]
+          }
+          });
+
+          if (manusResult?.slides) {
+          response = manusResult;
+          toast.success('Advanced content generated with Manus AI!');
+          }
+          }
 
           if (!response) {
         response = await base44.integrations.Core.InvokeLLM({
@@ -609,6 +671,35 @@ Educational Context:
                       aspectRatio: 'landscape'
                     });
                     
+                    if (result.data?.url) {
+                      generatedImage = { url: result.data.url };
+                    }
+                  } else if (imageGenerator === 'manus') {
+                    // Use Manus for image generation with optimized spelling
+                    const manusPrompt = enforceSpelling 
+                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
+
+                  🎯 TEXT ACCURACY REQUIREMENTS:
+                  All text in the diagram must be spelled 100% correctly.
+
+                  TEXT INSTRUCTIONS:
+                  1. Spelling must be perfect: verify scientific terms, labels, and titles
+                  2. Font style: Bold, legible, high-contrast for classroom visibility
+                  3. Text placement: Integrated naturally (labels, annotations, titles)
+                  4. Do not hallucinate extra letters or characters
+                  5. Each character must be clearly visible and correctly spelled
+
+                  Educational Context:
+                  - Topic: ${topic} - ${slide.title}
+                  - Level: ${levelInstructions[educationLevel]}
+                  - Style: Professional educational diagram, clear and informative
+                  - Quality: High-detail, classroom-ready visual`
+                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional educational diagram`;
+
+                    const result = await base44.functions.invoke('puterImageGeneration', {
+                      prompt: manusPrompt
+                    });
+
                     if (result.data?.url) {
                       generatedImage = { url: result.data.url };
                     }
@@ -973,7 +1064,19 @@ Educational Context:
                       <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
                       <div className="text-xs text-gray-600">Premium quality</div>
                     </button>
-                  </div>
+                    <button
+                      type="button"
+                      onClick={() => setImageGenerator('manus')}
+                      className={`p-4 rounded-lg border-2 transition-all ${
+                        imageGenerator === 'manus'
+                          ? 'border-indigo-500 bg-indigo-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      <div className="font-semibold text-sm mb-1">⚡ Manus</div>
+                      <div className="text-xs text-gray-600">Advanced AI</div>
+                    </button>
+                    </div>
                 </div>
                 </>
               )}
@@ -1029,6 +1132,18 @@ Educational Context:
                 }`}
               >
                 <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
+                <div className="text-xs text-gray-600">Premium AI</div>
+              </button>
+              <button
+                type="button"
+                onClick={() => setAiProvider('manus')}
+                className={`p-4 rounded-lg border-2 transition-all ${
+                  aiProvider === 'manus'
+                    ? 'border-indigo-500 bg-indigo-50'
+                    : 'border-gray-200 hover:border-gray-300'
+                }`}
+              >
+                <div className="font-semibold text-sm mb-1">⚡ Manus</div>
                 <div className="text-xs text-gray-600">Advanced AI</div>
               </button>
             </div>
