@@ -423,7 +423,7 @@ Return ONLY valid JSON.`,
 
       // Add AI-generated images if requested
       if (includeImages) {
-        let imageGenFunction = 'geminiImageGeneration'; // DALL-E 3
+        let imageGenFunction = 'geminiImageGeneration';
         let generatorName = 'DALL-E 3';
         
         if (aiProvider === 'base44-pro') {
@@ -486,23 +486,22 @@ Educational Context:
                   }
                 }
 
-                  if (generatedImage?.url) {
-                    const imageDescription = slide.image_description || slide.title;
-                    const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                      <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                      <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-                    </div>${slide.content}`;
+                if (generatedImage?.url) {
+                  const imageDescription = slide.image_description || slide.title;
+                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
+                    <img src="${generatedImage.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
+                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
+                  </div>${slide.content}`;
 
-                    return { ...slide, content: contentWithImage };
-                  }
-                } catch (error) {
-                  console.error('Failed to generate image:', error);
+                  return { ...slide, content: contentWithImage };
                 }
+              } catch (error) {
+                console.error('Failed to generate image:', error);
               }
-              return slide;
-            })
-          );
-        }
+            }
+            return slide;
+          })
+        );
       }
 
       setGeneratedSlides(slides);
