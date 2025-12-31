@@ -31,7 +31,6 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   // Manus settings
   const [manusAgentProfile, setManusAgentProfile] = useState('manus-1.6');
   const [manusTaskMode, setManusTaskMode] = useState('agent');
-  const [manusConnectors, setManusConnectors] = useState([]);
 
   // Text scanning and auto-correction for Base44 AI Pro
   const scanAndCorrectImageText = async (imageUrl, slideContext, originalPrompt, maxRetries = 2) => {
@@ -320,40 +319,39 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
         }
       } else if (aiProvider === 'manus') {
         const manusResult = await base44.functions.invoke('manusTextGeneration', {
-              prompt: `You are an advanced AI content creator using state-of-the-art language models.
+          prompt: `You are an advanced AI content creator using state-of-the-art language models.
 
-          Create a ${slideCount}-slide high-quality educational presentation about: "${topic}"
-          ${details ? `\nContext: ${details}` : ''}
+        Create a ${slideCount}-slide high-quality educational presentation about: "${topic}"
+        ${details ? `\nContext: ${details}` : ''}
 
-          TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+        TARGET AUDIENCE: ${levelInstructions[educationLevel]}
 
-          QUALITY STANDARDS:
-          - Comprehensive, well-researched content
-          - Clear explanations with real-world examples
-          - Engaging and interactive learning approach
-          - Professional formatting with visual hierarchy
-          - Rich HTML formatting for modern presentation
+        QUALITY STANDARDS:
+        - Comprehensive, well-researched content
+        - Clear explanations with real-world examples
+        - Engaging and interactive learning approach
+        - Professional formatting with visual hierarchy
+        - Rich HTML formatting for modern presentation
 
-          CRITICAL: Return ONLY valid JSON in this EXACT format:
-          {
-          "slides": [
-          {
-          "title": "Engaging, clear title",
-          "content": "High-quality content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Include examples, key concepts, and detailed explanations.",
-          "order": 1,
-          ${includeImages ? '"image_prompt": "Detailed description for generating educational visual",' : ''}
-          "image_description": "What the visual represents"
-          }
-          ]
-          }
+        CRITICAL: Return ONLY valid JSON in this EXACT format:
+        {
+        "slides": [
+        {
+        "title": "Engaging, clear title",
+        "content": "High-quality content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Include examples, key concepts, and detailed explanations.",
+        "order": 1,
+        ${includeImages ? '"image_prompt": "Detailed description for generating educational visual",' : ''}
+        "image_description": "What the visual represents"
+        }
+        ]
+        }
 
-          ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
+        ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
 
-          Return ONLY the JSON object, nothing else.`,
-              agentProfile: manusAgentProfile,
-              taskMode: manusTaskMode,
-              connectors: manusConnectors
-            });
+        Return ONLY the JSON object, nothing else.`,
+          agentProfile: manusAgentProfile,
+          taskMode: manusTaskMode
+        });
 
         if (manusResult?.data?.text) {
           const content = manusResult.data.text.trim();
@@ -483,8 +481,7 @@ Educational Context:
                   const result = await base44.functions.invoke(imageGenFunction, {
                     prompt: manusPrompt,
                     agentProfile: manusAgentProfile,
-                    taskMode: manusTaskMode,
-                    connectors: manusConnectors
+                    taskMode: manusTaskMode
                   });
 
                   if (result?.data?.url) {
@@ -716,43 +713,9 @@ Educational Context:
                   <option value="chat">Chat (Interactive)</option>
                 </select>
               </div>
-              <div>
-                <Label className="text-xs mb-2 block">Connectors</Label>
-                <div className="space-y-2">
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="manus-web"
-                      checked={manusConnectors.includes('web-search')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setManusConnectors([...manusConnectors, 'web-search']);
-                        } else {
-                          setManusConnectors(manusConnectors.filter(c => c !== 'web-search'));
-                        }
-                      }}
-                      className="w-4 h-4 rounded text-indigo-600"
-                    />
-                    <Label htmlFor="manus-web" className="text-sm cursor-pointer">Web Search</Label>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <input
-                      type="checkbox"
-                      id="manus-img"
-                      checked={manusConnectors.includes('image-generation')}
-                      onChange={(e) => {
-                        if (e.target.checked) {
-                          setManusConnectors([...manusConnectors, 'image-generation']);
-                        } else {
-                          setManusConnectors(manusConnectors.filter(c => c !== 'image-generation'));
-                        }
-                      }}
-                      className="w-4 h-4 rounded text-indigo-600"
-                    />
-                    <Label htmlFor="manus-img" className="text-sm cursor-pointer">Image Generation</Label>
-                  </div>
-                </div>
-              </div>
+              <p className="text-xs text-indigo-600">
+                Using Manus autonomous agent mode for intelligent content generation
+              </p>
             </div>
           )}
 

@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { prompt, agentProfile = 'manus-1.6', taskMode = 'agent', connectors = [] } = await req.json();
+    const { prompt, agentProfile = 'manus-1.6', taskMode = 'agent' } = await req.json();
 
     if (!prompt) {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
@@ -30,7 +30,6 @@ Deno.serve(async (req) => {
         prompt,
         agentProfile,
         taskMode,
-        ...(connectors.length > 0 && { connectors }),
         hideInTaskList: false
       })
     });
