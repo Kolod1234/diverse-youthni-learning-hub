@@ -403,8 +403,9 @@ export default function Layout({ children, currentPageName }) {
                     <Menu className="w-5 h-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="right" className="w-72 overflow-y-auto">
-                  <div className="flex flex-col gap-4 mt-8 pb-8">
+                <SheetContent side="right" className="w-72 overflow-y-auto p-0">
+                  <ScrollArea className="h-full w-full">
+                  <div className="flex flex-col gap-4 mt-8 pb-8 px-6">
                     <NavLinks mobile onItemClick={() => {}} />
                     
                     {/* Become Coordinator - Mobile */}
@@ -462,10 +463,11 @@ export default function Layout({ children, currentPageName }) {
                           <span>Manage RSS Feed</span>
                         </Link>
                       </>
-                    )}
-                  </div>
-                </SheetContent>
-              </Sheet>
+                      )}
+                      </div>
+                      </ScrollArea>
+                      </SheetContent>
+                      </Sheet>
             </div>
           </div>
         </div>
