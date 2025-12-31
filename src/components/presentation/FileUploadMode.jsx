@@ -38,23 +38,28 @@ export default function FileUploadMode({ onSlidesGenerated }) {
     
     setProcessing(true);
     try {
-      toast.info('Converting PowerPoint presentation...');
-      const result = await base44.functions.invoke('convertPptxToSlides', { file_url: uploadedFile.url });
+      toast.info('Converting PowerPoint to Google Slides...');
+      const result = await base44.functions.invoke('convertPptxToGoogleSlides', { file_url: uploadedFile.url });
       
       if (result.data?.error) {
-        throw new Error(result.data.details || result.data.error);
+        throw new Error(result.data.error);
       }
       
-      if (result.data?.slides && result.data.slides.length > 0) {
-        onSlidesGenerated(result.data.slides);
-        toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
+      if (result.data?.embedUrl) {
+        const slide = {
+          title: uploadedFile.name.replace('.pptx', ''),
+          content: `<div class="professional-slide-stage"><iframe src="${result.data.embedUrl}?start=false&loop=false&delayms=3000" frameborder="0" allowfullscreen="true" mozallowfullscreen="true" webkitallowfullscreen="true"></iframe></div>`,
+          order: 1
+        };
+        onSlidesGenerated([slide]);
+        toast.success('Converted to Google Slides! You can now view and edit it.');
         setUploadedFile(null);
       } else {
-        throw new Error('No slides were generated from the PowerPoint file');
+        throw new Error('Failed to generate Google Slides embed URL');
       }
     } catch (error) {
       console.error('PPTX conversion error:', error);
-      const errorMsg = error.response?.data?.details || error.message || 'Conversion failed';
+      const errorMsg = error.response?.data?.error || error.message || 'Conversion failed';
       toast.error('Failed to convert PPTX: ' + errorMsg);
     } finally {
       setProcessing(false);
