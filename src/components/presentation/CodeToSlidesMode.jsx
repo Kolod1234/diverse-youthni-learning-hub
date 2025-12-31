@@ -133,6 +133,8 @@ Use this exact format for code in each slide:
               onChange={(e) => setLanguage(e.target.value)}
               className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
             >
+              <option value="html">HTML</option>
+              <option value="css">CSS</option>
               <option value="javascript">JavaScript</option>
               <option value="typescript">TypeScript</option>
               <option value="python">Python</option>
@@ -145,6 +147,7 @@ Use this exact format for code in each slide:
               <option value="ruby">Ruby</option>
               <option value="swift">Swift</option>
               <option value="kotlin">Kotlin</option>
+              <option value="sql">SQL</option>
             </select>
           </div>
 
