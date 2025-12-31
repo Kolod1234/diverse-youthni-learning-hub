@@ -5,7 +5,7 @@ import { Input } from '@/components/ui/input';
 import { 
   Plus, Trash2, Image as ImageIcon, 
   LayoutTemplate, ChevronLeft, ChevronRight,
-  MonitorPlay, Save
+  MonitorPlay, Save, PanelLeftClose, PanelLeftOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -15,6 +15,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   ]);
   
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [textEditorCollapsed, setTextEditorCollapsed] = useState(false);
   const activeSlide = slides[currentSlideIndex];
 
   // Sync changes to parent
@@ -172,22 +173,36 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
               />
 
               {/* Slide Content Grid */}
-              <div className="flex-1 grid grid-cols-2 gap-8 min-h-0">
+              <div className={`flex-1 grid gap-8 min-h-0 transition-all duration-300 ${textEditorCollapsed ? 'grid-cols-1' : 'grid-cols-2'}`}>
                 
                 {/* LEFT COL: Rich Text Editor */}
-                <div className="flex flex-col h-full bg-slate-50 rounded-lg border border-slate-100 focus-within:ring-2 focus-within:ring-indigo-100 transition-all overflow-hidden relative group">
-                  <RichTextEditor 
-                    value={activeSlide.content}
-                    onChange={(html) => updateSlide('content', html)}
-                    placeholder="Type your bullet points..."
-                  />
-                  <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
-                    <span className="text-xs bg-white px-2 py-1 rounded shadow text-slate-400 border border-slate-200">Text Editor</span>
+                {!textEditorCollapsed && (
+                  <div className="flex flex-col h-full bg-slate-50 rounded-lg border border-slate-100 focus-within:ring-2 focus-within:ring-indigo-100 transition-all overflow-hidden relative group">
+                    <RichTextEditor 
+                      value={activeSlide.content}
+                      onChange={(html) => updateSlide('content', html)}
+                      placeholder="Type your bullet points..."
+                    />
+                    <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity">
+                      <span className="text-xs bg-white px-2 py-1 rounded shadow text-slate-400 border border-slate-200">Text Editor</span>
+                    </div>
                   </div>
-                </div>
+                )}
 
                 {/* RIGHT COL: Image / Visuals */}
-                <div className="flex flex-col h-full">
+                <div className="flex flex-col h-full relative">
+                  {/* Toggle Button */}
+                  <button
+                    onClick={() => setTextEditorCollapsed(!textEditorCollapsed)}
+                    className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white border-2 border-slate-200 rounded-full p-2 shadow-lg hover:bg-slate-50 transition-all hover:scale-110"
+                    title={textEditorCollapsed ? 'Show text editor' : 'Hide text editor'}
+                  >
+                    {textEditorCollapsed ? (
+                      <PanelLeftOpen className="w-4 h-4 text-slate-600" />
+                    ) : (
+                      <PanelLeftClose className="w-4 h-4 text-slate-600" />
+                    )}
+                  </button>
                   {activeSlide.imageUrl ? (
                     <div className="relative w-full h-full rounded-xl overflow-hidden group border border-slate-200 bg-slate-50">
                       <img 
