@@ -31,34 +31,24 @@ Deno.serve(async (req) => {
     };
     const model = modelMap[searchDepth] || 'sonar-pro';
 
-    // Build messages
+    // Build messages - modify prompt for JSON if needed
+    let finalQuery = query;
+    if (return_json && json_schema) {
+      finalQuery = `${query}\n\nIMPORTANT: Return ONLY valid JSON matching this exact schema:\n${JSON.stringify(json_schema, null, 2)}\n\nNo markdown, no code blocks, no explanations - just raw JSON.`;
+    }
+
     const messages = [
       {
         role: 'system',
         content: return_json 
-          ? 'You are a precise JSON generator. You MUST return ONLY valid JSON matching the schema, no markdown, no explanations, no extra text.'
+          ? 'You are a precise JSON generator. Return ONLY valid JSON, no markdown, no code blocks, no explanations.'
           : 'You are a helpful assistant that provides accurate, well-researched information.'
       },
       {
         role: 'user',
-        content: query
+        content: finalQuery
       }
     ];
-
-    // Call Perplexity API
-    const requestBody = {
-      model: model,
-      messages: messages,
-      temperature: 0.2
-    };
-
-    // Add response format if JSON is requested
-    if (return_json && json_schema) {
-      requestBody.response_format = {
-        type: 'json_object',
-        schema: json_schema
-      };
-    }
 
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -66,7 +56,11 @@ Deno.serve(async (req) => {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json'
       },
-      body: JSON.stringify(requestBody)
+      body: JSON.stringify({
+        model: model,
+        messages: messages,
+        temperature: 0.2
+      })
     });
 
     if (!response.ok) {
@@ -78,17 +72,21 @@ Deno.serve(async (req) => {
     }
 
     const data = await response.json();
-    const content = data.choices[0].message.content;
+    let content = data.choices[0].message.content;
     
     // If JSON was requested, parse and return it
     if (return_json) {
       try {
+        // Clean up markdown code blocks if present
+        content = content.replace(/```json\s*/g, '').replace(/```\s*/g, '').trim();
         const parsed = JSON.parse(content);
         return Response.json(parsed);
       } catch (e) {
+        console.error('Failed to parse JSON:', e, 'Content:', content);
         return Response.json({ 
           error: 'Failed to parse JSON response',
-          raw_content: content
+          raw_content: content,
+          parse_error: e.message
         }, { status: 500 });
       }
     }
