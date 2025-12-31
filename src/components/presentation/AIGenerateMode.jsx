@@ -15,20 +15,20 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [details, setDetails] = useState('');
   const [slideCount, setSlideCount] = useState(5);
   const [includeImages, setIncludeImages] = useState(true);
-  const [aiProvider, setAiProvider] = useState('perplexity'); // 'perplexity', 'chatgpt', 'canva', 'base44-pro', 'manus'
-  const [useWebImages, setUseWebImages] = useState(true);
-  const [imageGenerator, setImageGenerator] = useState('nano-banana'); // 'nano-banana', 'dalle', 'imagen', 'base44-pro', 'manus'
+  const [aiProvider, setAiProvider] = useState('perplexity');
   const [educationLevel, setEducationLevel] = useState('gcse');
-  const [imageSearchTerms, setImageSearchTerms] = useState('');
   const [hasGenerated, setHasGenerated] = useState(false);
   const [generating, setGenerating] = useState(false);
-  const [showImagePreview, setShowImagePreview] = useState(false);
-  const [currentSlideForImage, setCurrentSlideForImage] = useState(null);
   const [generatedSlides, setGeneratedSlides] = useState([]);
-  const [enforceSpelling, setEnforceSpelling] = useState(true);
-  const [showArchitect, setShowArchitect] = useState(false);
-  const [architectPrompt, setArchitectPrompt] = useState('');
-  const [autoCorrectText, setAutoCorrectText] = useState(true);
+  
+  // Perplexity settings
+  const [perplexitySearchDepth, setPerplexitySearchDepth] = useState('standard');
+  
+  // Base44 AI Pro settings
+  const [base44EnforceSpelling, setBase44EnforceSpelling] = useState(true);
+  const [base44AutoCorrect, setBase44AutoCorrect] = useState(true);
+  
+  // Manus settings
   const [manusAgentProfile, setManusAgentProfile] = useState('manus-1.6');
   const [manusTaskMode, setManusTaskMode] = useState('agent');
   const [manusConnectors, setManusConnectors] = useState([]);
@@ -217,36 +217,33 @@ Educational accuracy is NON-NEGOTIABLE.`;
       };
 
       if (aiProvider === 'perplexity') {
-        // Use Perplexity for research-based content
         const researchResult = await base44.functions.invoke('perplexitySearch', {
           query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
-      ${details ? `\nContext: ${details}` : ''}
-      
-      TARGET AUDIENCE: ${levelInstructions[educationLevel]}
-      Adapt the complexity, vocabulary, and depth of content accordingly.
+${details ? `\nContext: ${details}` : ''}
 
-      CRITICAL: Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
-      {
-      "slides": [
-      {
-      "title": "Engaging slide title",
-      "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples with proper context.",
-      "order": 1,
-      ${includeImages && useWebImages ? '"image_url": "Direct URL to relevant educational image from web (Wikimedia Commons, NASA, NIH, .edu, .gov sources)",' : includeImages ? '"image_prompt": "Specific search query for finding a relevant educational image",' : ''}
-      "image_description": "Brief description of what the image shows"
-      }
-      ]
-      }
+TARGET AUDIENCE: ${levelInstructions[educationLevel]}
 
-      Research requirements:
-      - Use current, accurate information from reliable sources
-      - Include specific facts, statistics, and real examples
-      - Make content educational and engaging for students
-      - Format content with proper HTML for visual hierarchy
+CRITICAL: Return ONLY valid JSON in this EXACT format:
+{
+"slides": [
+{
+"title": "Engaging slide title",
+"content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples.",
+"order": 1,
+${includeImages ? '"image_prompt": "Detailed description for AI image generation",' : ''}
+"image_description": "Brief description of the visual"
+}
+]
+}
 
-      ${includeImages && useWebImages ? 'IMPORTANT: For EVERY slide, search the web for a RELEVANT educational image that DIRECTLY relates to that specific slide\'s content. Use image_url (full https:// URL ending in .jpg, .png, .svg) and image_description. CRITICAL: The image MUST match the slide topic exactly - if the slide is about cell division, find cell division diagrams from biology sources (Wikimedia Commons biology images, .edu biology departments, science textbooks). If about space, use NASA. Always match image source to the subject matter. Prioritize labeled diagrams and illustrations over generic photos.' : includeImages ? 'IMPORTANT: Include "image_prompt" (detailed instructions for generating educational diagrams using Nano Banana image generation) and "image_description" for EVERY slide. For image_prompt, provide specific, detailed instructions for creating educational diagrams, infographics, or illustrations suitable for the topic.' : ''}
+Research requirements:
+- Use current, accurate information from reliable sources
+- Include specific facts, statistics, and real examples
+- Format content with proper HTML for visual hierarchy
+${includeImages ? '- Include "image_prompt" for EVERY slide with detailed instructions for generating educational diagrams' : ''}
 
-      Return ONLY the JSON object, nothing else.`
+Return ONLY the JSON object, nothing else.`,
+          searchDepth: perplexitySearchDepth
         });
 
         if (researchResult?.data?.content) {
@@ -265,174 +262,31 @@ Educational accuracy is NON-NEGOTIABLE.`;
             toast.error('Failed to parse AI response, falling back to standard AI');
           }
           }
-          } else if (aiProvider === 'chatgpt') {
-            // Use ChatGPT for content generation
-            const chatgptResult = await base44.functions.invoke('geminiGeneration', {
-          query: `Create a ${slideCount}-slide educational presentation about: "${topic}"
-          ${details ? `\nContext: ${details}` : ''}
+          } else if (aiProvider === 'base44-pro') {
+            const base44ProResult = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are an elite educational content creator for Base44 AI Pro.
 
-          TARGET AUDIENCE: ${levelInstructions[educationLevel]}
-          Adapt the complexity, vocabulary, and depth of content accordingly.
-
-          CRITICAL: Return ONLY valid JSON in this EXACT format (no markdown, no extra text):
-          {
-          "slides": [
-          {
-          "title": "Engaging slide title",
-          "content": "Well-researched content with <h2>, <h3>, <p>, <strong>, <ul>, <li> HTML tags. Include specific facts, statistics, examples.",
-          "order": 1,
-          ${includeImages ? '"image_prompt": "Specific search query for finding a relevant educational image",' : ''}
-          "image_description": "Brief description of what the image shows"
-          }
-          ]
-          }
-
-          ${includeImages ? 'IMPORTANT: Include "image_prompt" (detailed search query) and "image_description" for EVERY slide.' : ''}
-
-          Return ONLY the JSON object, nothing else.`
-          });
-
-          if (chatgptResult?.data?.content) {
-          try {
-            const content = chatgptResult.data.content.trim();
-            const jsonMatch = content.match(/\{[\s\S]*\}/);
-            if (jsonMatch) {
-              response = JSON.parse(jsonMatch[0]);
-              toast.success('Content generated with ChatGPT!');
-            } else {
-              throw new Error('No JSON found in response');
-            }
-          } catch (parseError) {
-            console.error('Failed to parse ChatGPT response:', parseError);
-            toast.error('Failed to parse AI response, falling back to standard AI');
-          }
-          }
-          } else if (aiProvider === 'canva') {
-        // Use Canva AI for design-focused content
-        const canvaResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are a professional presentation designer creating visually stunning slides.
-
-Create a ${slideCount}-slide presentation about: "${topic}"
+Create a ${slideCount}-slide premium presentation about: "${topic}"
 ${details ? `\nContext: ${details}` : ''}
 
 TARGET AUDIENCE: ${levelInstructions[educationLevel]}
 
-DESIGN PRINCIPLES (Canva-style):
-- Use clear, visual hierarchy with bold headings
-- Keep text concise and impactful (bullet points preferred)
-- Focus on visual storytelling over dense text
-- Each slide should have one key message
-- Content should be easily digestible at a glance
-- Use professional, engaging language
+Use modern HTML formatting with styled sections, gradients, and visual hierarchy.
 
-CRITICAL: Return ONLY valid JSON in this EXACT format:
+CRITICAL: Return ONLY valid JSON:
 {
-  "slides": [
-    {
-      "title": "Short, impactful title (max 6 words)",
-      "content": "Concise, visually-focused content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Use short sentences and bullet points. Max 3-4 points per slide.",
-      "order": 1,
-      ${includeImages ? '"image_prompt": "Design-focused description for finding relevant visual",' : ''}
-      "image_description": "What the visual represents",
-      "design_notes": "Color scheme suggestion (e.g., 'vibrant blues', 'warm sunset tones')"
-    }
-  ]
+"slides": [
+{
+"title": "Engaging title",
+"content": "Modern HTML with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags and inline styles",
+"order": 1,
+${includeImages ? '"image_prompt": "Detailed description for AI image generation",' : ''}
+"image_description": "Visual description"
+}
+]
 }
 
-Design requirements:
-- Each slide max 50 words of text
-- Focus on visual impact and clarity
-- Use bullet points liberally
-- Create slides that "pop" visually
-- Think like a graphic designer, not a writer
-
-${includeImages ? 'Include "image_prompt" (visual search query for design-focused images) and "image_description" for EVERY slide. Focus on impactful visuals.' : ''}
-
-Return ONLY the JSON object, nothing else.`,
-          add_context_from_internet: true,
-          response_json_schema: {
-            type: "object",
-            properties: {
-              slides: {
-                type: "array",
-                items: {
-                  type: "object",
-                  properties: {
-                    title: { type: "string" },
-                    content: { type: "string" },
-                    order: { type: "number" },
-                    ...(includeImages ? {
-                      image_prompt: { type: "string" },
-                      image_description: { type: "string" },
-                      design_notes: { type: "string" }
-                    } : {})
-                  },
-                  required: ["title", "content", "order"]
-                }
-              }
-            },
-            required: ["slides"]
-          }
-        });
-
-        if (canvaResult?.slides) {
-          response = canvaResult;
-          toast.success('Design-focused content generated with Canva AI!');
-        }
-      } else if (aiProvider === 'base44-pro') {
-        // Use Base44 AI Pro for premium content generation
-        const base44ProResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an elite educational content creator specializing in modern, visually stunning presentations.
-
-      Create a ${slideCount}-slide premium educational presentation about: "${topic}"
-      ${details ? `\nContext: ${details}` : ''}
-
-      TARGET AUDIENCE: ${levelInstructions[educationLevel]}
-
-      MODERN FORMATTING REQUIREMENTS:
-      1. Typography: Use clear hierarchy with styled headings
-      2. Layout: Modern card-based design with spacing and visual sections
-      3. Style: Professional gradient accents, rounded elements, subtle shadows
-      4. Structure: Organized content blocks with clear separation
-      5. Visual Appeal: Color-coded sections, modern fonts, breathable white space
-
-      HTML STRUCTURE - Use this modern template for EVERY slide:
-      <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 16px;">
-      <h1 style="color: white; font-size: 32px; font-weight: 700; margin: 0;">{{Main Title}}</h1>
-      </div>
-
-      <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 16px;">
-      <h2 style="color: #1e293b; font-size: 24px; font-weight: 600; margin-bottom: 12px; border-left: 4px solid #667eea; padding-left: 12px;">{{Section Heading}}</h2>
-      <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 12px;">{{Content paragraph}}</p>
-      </div>
-
-      <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px;">
-      <h3 style="color: white; font-size: 20px; font-weight: 600; margin-bottom: 8px;">💡 Key Insight</h3>
-      <p style="color: white; font-size: 15px; line-height: 1.5;">{{Important point}}</p>
-      </div>
-
-      <ul style="list-style: none; padding: 0;">
-      <li style="background: #f8fafc; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #3b82f6;">
-      <strong style="color: #1e40af;">Point Title:</strong> <span style="color: #475569;">Description</span>
-      </li>
-      </ul>
-
-      CRITICAL: Return ONLY valid JSON in this EXACT format:
-      {
-      "slides": [
-      {
-      "title": "Clear, engaging title",
-      "content": "Modern HTML with gradient headers, card layouts, styled sections. Use the template structure above.",
-      "order": 1,
-      ${includeImages ? '"image_prompt": "Detailed description for premium educational visual",' : ''}
-      "image_description": "What the visual represents"
-      }
-      ]
-      }
-
-      ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
-
-      Return ONLY the JSON object, nothing else.`,
+${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -461,7 +315,6 @@ Return ONLY the JSON object, nothing else.`,
         if (base44ProResult?.slides) {
           response = base44ProResult;
           toast.success('Premium content generated with Base44 AI Pro!');
-          }
           } else if (aiProvider === 'manus') {
             const manusResult = await base44.functions.invoke('manusTextGeneration', {
               prompt: `You are an advanced AI content creator using state-of-the-art language models.
@@ -565,49 +418,30 @@ Return ONLY valid JSON.`,
 
       let slides = response.slides;
 
-      // Add images if requested
+      // Add AI-generated images if requested
       if (includeImages) {
-        if (useWebImages) {
-          toast.info('Searching high-quality images from Unsplash...');
-          slides = await Promise.all(
-            slides.map(async (slide) => {
-              const searchQuery = imageSearchTerms || slide.image_prompt || slide.title;
-              try {
-                const result = await base44.functions.invoke('searchUnsplashImages', {
-                  query: searchQuery,
-                  perPage: 1
-                });
-
-                if (result.data.images?.length > 0) {
-                  const image = result.data.images[0];
-                  const imageDescription = slide.image_description || slide.title;
-                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                    <img src="${image.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-                    <p style="font-size: 12px; color: #94a3b8; margin-top: 4px;">Photo by <a href="${image.photographer_url}" target="_blank" style="color: #64748b;">${image.photographer}</a></p>
-                  </div>${slide.content}`;
-                  return { ...slide, content: contentWithImage };
-                }
-              } catch (error) {
-                console.error('Failed to fetch Unsplash image:', error);
-              }
-              return slide;
-            })
-          );
-        } else {
-          const generatorName = imageGenerator === 'dalle' ? 'DALL-E 3' : imageGenerator === 'imagen' ? 'Stable Diffusion' : imageGenerator === 'base44-pro' ? 'Base44 AI Pro' : 'Nano Banana AI';
-          toast.info(`Generating educational diagrams with ${generatorName}...`);
+        let imageGenFunction = 'geminiImageGeneration'; // DALL-E 3
+        let generatorName = 'DALL-E 3';
+        
+        if (aiProvider === 'base44-pro') {
+          imageGenFunction = 'geminiImageGeneration';
+          generatorName = 'Base44 AI (DALL-E 3)';
+        } else if (aiProvider === 'manus') {
+          imageGenFunction = 'puterImageGeneration';
+          generatorName = 'Manus AI';
+        }
+        
+        toast.info(`Generating educational diagrams with ${generatorName}...`);
           
-          slides = await Promise.all(
-            slides.map(async (slide) => {
-              if (slide.image_prompt) {
-                try {
-                  let generatedImage;
-                  
-                  if (imageGenerator === 'dalle') {
-                    // Use DALL-E for image generation with optimized spelling
-                    const dallePrompt = enforceSpelling 
-                      ? `Create a high-resolution educational image of: ${slide.image_prompt}
+        slides = await Promise.all(
+          slides.map(async (slide) => {
+            if (slide.image_prompt) {
+              try {
+                let generatedImage;
+                
+                if (aiProvider === 'perplexity' || aiProvider === 'base44-pro') {
+                  const dallePrompt = base44EnforceSpelling && aiProvider === 'base44-pro'
+                    ? `Create a high-resolution educational image of: ${slide.image_prompt}
 
 CRITICAL TYPOGRAPHY REQUIREMENT:
 The image MUST feature perfectly spelled text and labels.
@@ -620,196 +454,34 @@ TEXT INSTRUCTIONS:
 5. Each character must be clearly visible and correctly spelled
 
 Educational Context: ${topic} - ${slide.title}`
-                      : `Create a high-resolution educational image of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}`;
+                    : `Create a high-resolution educational image of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}`;
 
-                    const result = await base44.functions.invoke('geminiImageGeneration', {
-                      prompt: dallePrompt,
-                      topic: `${topic} - ${slide.title}`
-                    });
-                    
-                    if (result.data?.url) {
-                      generatedImage = { url: result.data.url };
-                    }
-                  } else if (imageGenerator === 'imagen') {
-                    // Use Stable Diffusion for image generation with optimized spelling
-                    const imagenPrompt = enforceSpelling 
-                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
-
-CRITICAL TYPOGRAPHY REQUIREMENT:
-All text in the diagram must be spelled 100% accurately.
-
-TEXT INSTRUCTIONS:
-1. Spelling must be perfect: verify scientific terms, labels, and titles
-2. Font style: Bold, legible, high-contrast for classroom visibility
-3. Text placement: Integrated naturally (labels, annotations, titles)
-4. Do not hallucinate extra letters or characters
-5. Each character must be clearly visible and correctly spelled
-
+                  const result = await base44.functions.invoke(imageGenFunction, {
+                    prompt: dallePrompt,
+                    topic: `${topic} - ${slide.title}`
+                  });
+                  
+                  if (result.data?.url) {
+                    generatedImage = { url: result.data.url };
+                  }
+                } else if (aiProvider === 'manus') {
+                  const manusPrompt = `Create a high-resolution educational diagram of: ${slide.image_prompt} 
 Educational Context:
 - Topic: ${topic} - ${slide.title}
 - Level: ${levelInstructions[educationLevel]}
-- Style: Professional educational diagram, clear and informative
-- Quality: High-detail, classroom-ready visual`
-                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional educational diagram`;
+- Style: Professional educational diagram`;
 
-                    const result = await base44.functions.invoke('generateImagenAI', {
-                      prompt: imagenPrompt,
-                      aspectRatio: 'landscape'
-                    });
-                    
-                    if (result.data?.url) {
-                      generatedImage = { url: result.data.url };
-                    }
-                  } else if (imageGenerator === 'manus') {
-                    // Use Manus for image generation with optimized spelling
-                    const manusPrompt = enforceSpelling 
-                      ? `Create a high-resolution educational diagram of: ${slide.image_prompt}
-
-                  🎯 TEXT ACCURACY REQUIREMENTS:
-                  All text in the diagram must be spelled 100% correctly.
-
-                  TEXT INSTRUCTIONS:
-                  1. Spelling must be perfect: verify scientific terms, labels, and titles
-                  2. Font style: Bold, legible, high-contrast for classroom visibility
-                  3. Text placement: Integrated naturally (labels, annotations, titles)
-                  4. Do not hallucinate extra letters or characters
-                  5. Each character must be clearly visible and correctly spelled
-
-                  Educational Context:
-                  - Topic: ${topic} - ${slide.title}
-                  - Level: ${levelInstructions[educationLevel]}
-                  - Style: Professional educational diagram, clear and informative
-                  - Quality: High-detail, classroom-ready visual`
-                      : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional educational diagram`;
-
-                    const result = await base44.functions.invoke('puterImageGeneration', {
-                      prompt: manusPrompt,
-                      agentProfile: manusAgentProfile,
-                      taskMode: manusTaskMode,
-                      connectors: manusConnectors
-                    });
-
-                    if (result?.data?.url) {
-                      generatedImage = { url: result.data.url };
-                    }
-                  } else if (imageGenerator === 'base44-pro') {
-                    // Use Base44 AI Pro with MAXIMUM spelling enforcement
-                    let base44ProPrompt;
-
-                    // Extract key terms from the prompt for verification
-                    const keyTerms = slide.image_prompt.match(/\b[A-Za-z]{4,}\b/g) || [];
-                    const scientificTerms = keyTerms.filter(term => 
-                      /^[A-Z]|tion|sion|ation|ence|ance|ment|ness/.test(term)
-                    );
-
-                    if (architectPrompt) {
-                      // Use Text Layout Architect prompt structure
-                      base44ProPrompt = `${architectPrompt}
-
-                  Educational Context:
-                  - Topic: ${topic} - ${slide.title}
-                  - Level: ${levelInstructions[educationLevel]}
-                  - Purpose: ${slide.image_prompt}
-
-                  🚨 ABSOLUTE TEXT ACCURACY REQUIREMENT 🚨
-                  Expected key terms: ${scientificTerms.join(', ')}
-                  VERIFY spelling of EVERY word before rendering.
-                  Treat text as DATABASE ENTRIES - zero tolerance for errors.`;
-                    } else if (enforceSpelling) {
-                      // MAXIMUM enforcement prompt
-                      base44ProPrompt = `🎯 MISSION: Create educational diagram for "${slide.image_prompt}"
-
-                  ⚠️ TEXT IS MISSION-CRITICAL DATA ⚠️
-                  This is EDUCATIONAL CONTENT. Students will memorize these words.
-                  ONE spelling error = ONE misinformed student = FAILURE.
-
-                  📋 EXPECTED TERMS (verify each letter):
-                  ${scientificTerms.length > 0 ? scientificTerms.map(t => `• ${t.toUpperCase()}`).join('\n') : '• Verify ALL words in image'}
-
-                  🎨 RENDERING REQUIREMENTS:
-                  1. TEXT TYPE: Vector/Typography layer (NOT painted/artistic text)
-                  2. FONT: Sans-serif, bold, 18pt+ minimum
-                  3. CONTRAST: Black on white OR white on dark (minimum 4.5:1 ratio)
-                  4. SPACING: 120% line height, clear kerning
-                  5. EDGES: Sharp, crisp anti-aliasing (no blur, no artistic effects)
-                  6. PLACEMENT: Horizontal text (no rotation/warping/artistic transforms)
-                  7. QUALITY: Textbook/worksheet standard
-
-                  🔍 PRE-GENERATION CHECKLIST:
-                  - [ ] Spell-check EVERY word before rendering
-                  - [ ] Verify scientific terminology accuracy
-                  - [ ] Confirm letter-by-letter accuracy
-                  - [ ] No artistic font distortions
-                  - [ ] Text is readable at thumbnail size
-
-                  📚 CONTEXT:
-                  Topic: ${topic} - ${slide.title}
-                  Level: ${levelInstructions[educationLevel]}
-                  Purpose: ${slide.image_prompt}
-
-                  ⚡ REMEMBER: You are creating REFERENCE MATERIAL for students.
-                  Spelling accuracy = 100% mandatory. No exceptions.`;
-                    } else {
-                      base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
-
-                  Educational Context:
-                  - Topic: ${topic} - ${slide.title}
-                  - Level: ${levelInstructions[educationLevel]}
-                  - Style: Professional, high-quality educational diagram suitable for classroom use`;
-                    }
-
-                    generatedImage = await base44.integrations.Core.GenerateImage({
-                      prompt: base44ProPrompt
-                    });
-
-                    // CRITICAL: Auto-scan and correct text for Base44 AI Pro
-                    if (generatedImage?.url && autoCorrectText) {
-                      console.log('Starting auto-scan for image:', generatedImage.url);
-                      
-                      const scanResult = await scanAndCorrectImageText(
-                        generatedImage.url,
-                        `${slide.image_prompt} for ${topic} - ${slide.title}`,
-                        base44ProPrompt,
-                        2 // Max 2 regeneration attempts
-                      );
-                      
-                      if (scanResult.isValid && scanResult.imageUrl) {
-                        generatedImage = { url: scanResult.imageUrl };
-                        console.log('✓ Image passed spelling verification');
-                      } else {
-                        console.error('✗ Image failed spelling verification');
-                        toast.error('⚠️ Generated image has uncorrected spelling errors');
-                      }
-                    }
-                  } else {
-                  // Use Nano Banana (default) with optimized spelling
-                  const imagePrompt = enforceSpelling 
-                    ? `Request: Create a professional educational diagram showing ${slide.image_prompt}
-
-                  Style: Vector Illustration / High-Contrast Graphic Design. Text must be flat, sharp, and 2D.
-
-                  --- TYPOGRAPHY RULES (STRICT) ---
-                  1. TEXT IS VECTOR DATA: Treat all text as distinct graphic elements, not painted strokes
-                  2. SPELLING MUST BE PERFECT: Use only verified English dictionary words and accurate scientific terminology
-                  3. KERNING: Uniform letter spacing - no irregular gaps or overlaps
-                  4. SHARPNESS: Text edges must be crisp and clean (anti-aliased), not blurry or painterly
-                  5. LEGIBILITY: Bold, high-contrast fonts for classroom visibility
-                  6. NO PSEUDO-TEXT: Do NOT generate squiggles or gibberish. If text cannot be rendered clearly, omit it.
-                  7. ACCURACY CHECK: Each word must be spelled correctly - this is educational content
-
-                  Educational Context:
-                  - Topic: ${topic} - ${slide.title}
-                  - Audience: ${levelInstructions[educationLevel]}
-                  - Purpose: Help students learn ${slide.image_prompt}
-                  - Critical: Spelling errors will misinform students
-
-                  Style: Clean, professional educational diagram suitable for textbooks and classroom use.`
-                    : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Topic: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Clean, professional educational diagram`;
-
-                  generatedImage = await base44.integrations.Core.GenerateImage({
-                    prompt: imagePrompt
+                  const result = await base44.functions.invoke(imageGenFunction, {
+                    prompt: manusPrompt,
+                    agentProfile: manusAgentProfile,
+                    taskMode: manusTaskMode,
+                    connectors: manusConnectors
                   });
+
+                  if (result?.data?.url) {
+                    generatedImage = { url: result.data.url };
                   }
+                }
 
                   if (generatedImage?.url) {
                     const imageDescription = slide.image_description || slide.title;
@@ -833,7 +505,7 @@ Educational Context:
       setGeneratedSlides(slides);
       onSlidesGenerated(slides);
       setHasGenerated(true);
-      toast.success(`Generated ${slideCount} slides${includeImages ? (useWebImages ? ' with Unsplash images' : ' with AI-generated images') : ''}!`);
+      toast.success(`Generated ${slideCount} slides${includeImages ? ' with AI-generated images' : ''}!`);
     } catch (error) {
       console.error('Error generating presentation:', error);
       toast.error('Failed to generate presentation: ' + error.message);
@@ -869,20 +541,6 @@ Educational Context:
               rows={4}
             />
           </div>
-
-          {includeImages && useWebImages && (
-            <div>
-              <Label>Image Search Terms (Optional)</Label>
-              <Input
-                value={imageSearchTerms}
-                onChange={(e) => setImageSearchTerms(e.target.value)}
-                placeholder="e.g., biology diagrams, chemical structures, historical photos"
-              />
-              <p className="text-xs text-gray-500 mt-1">
-                Specify custom search terms for images. Leave empty to use slide titles.
-              </p>
-            </div>
-          )}
 
           <div className="grid grid-cols-2 gap-4">
             <div>
@@ -922,238 +580,10 @@ Educational Context:
             <Label htmlFor="includeImages" className="flex-1 cursor-pointer text-sm">
               <span className="font-semibold text-purple-900">Generate Educational Diagrams</span>
               <p className="text-xs text-purple-700 mt-1">
-                AI-generated illustrative diagrams and infographics with correct spelling verification
+                AI will generate relevant images automatically using its preferred method
               </p>
             </Label>
           </div>
-
-          {includeImages && (
-            <>
-              <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                <input
-                  type="checkbox"
-                  id="useWebImages"
-                  checked={useWebImages}
-                  onChange={(e) => setUseWebImages(e.target.checked)}
-                  className="w-4 h-4 rounded text-green-600"
-                />
-                <Label htmlFor="useWebImages" className="flex-1 cursor-pointer text-sm">
-                  <span className="font-semibold text-green-900">🌐 Use Web-Sourced Images</span>
-                  <p className="text-xs text-green-700 mt-1">
-                    Find real educational images from authoritative sources (unchecked = AI-generated images)
-                  </p>
-                </Label>
-              </div>
-
-              {imageGenerator === 'manus' && !useWebImages && (
-                <div className="space-y-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
-                  <h4 className="font-semibold text-indigo-900 text-sm">⚡ Manus Advanced Settings</h4>
-
-                  <div>
-                    <Label>Agent Profile</Label>
-                    <select
-                      value={manusAgentProfile}
-                      onChange={(e) => setManusAgentProfile(e.target.value)}
-                      className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="manus-1.6">Manus 1.6 (Balanced)</option>
-                      <option value="manus-1.6-lite">Manus 1.6 Lite (Fast)</option>
-                      <option value="manus-1.6-max">Manus 1.6 Max (Advanced)</option>
-                    </select>
-                    <p className="text-xs text-indigo-600 mt-1">
-                      {manusAgentProfile === 'manus-1.6-max' ? 'Most powerful for complex tasks' : 
-                       manusAgentProfile === 'manus-1.6-lite' ? 'Faster processing for simple tasks' : 
-                       'Balanced performance and quality'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label>Task Mode</Label>
-                    <select
-                      value={manusTaskMode}
-                      onChange={(e) => setManusTaskMode(e.target.value)}
-                      className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
-                    >
-                      <option value="agent">Agent (Autonomous)</option>
-                      <option value="adaptive">Adaptive (Smart)</option>
-                      <option value="chat">Chat (Interactive)</option>
-                    </select>
-                    <p className="text-xs text-indigo-600 mt-1">
-                      {manusTaskMode === 'agent' ? 'Full autonomous execution' : 
-                       manusTaskMode === 'adaptive' ? 'Adapts approach based on task' : 
-                       'Interactive conversation mode'}
-                    </p>
-                  </div>
-
-                  <div>
-                    <Label>Enable Connectors (Optional)</Label>
-                    <div className="space-y-2">
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="manus-web-search"
-                          checked={manusConnectors.includes('web-search')}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setManusConnectors([...manusConnectors, 'web-search']);
-                            } else {
-                              setManusConnectors(manusConnectors.filter(c => c !== 'web-search'));
-                            }
-                          }}
-                          className="w-4 h-4 rounded text-indigo-600"
-                        />
-                        <Label htmlFor="manus-web-search" className="text-sm cursor-pointer">Web Search</Label>
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <input
-                          type="checkbox"
-                          id="manus-image-gen"
-                          checked={manusConnectors.includes('image-generation')}
-                          onChange={(e) => {
-                            if (e.target.checked) {
-                              setManusConnectors([...manusConnectors, 'image-generation']);
-                            } else {
-                              setManusConnectors(manusConnectors.filter(c => c !== 'image-generation'));
-                            }
-                          }}
-                          className="w-4 h-4 rounded text-indigo-600"
-                        />
-                        <Label htmlFor="manus-image-gen" className="text-sm cursor-pointer">Image Generation</Label>
-                      </div>
-                    </div>
-                    <p className="text-xs text-indigo-600 mt-1">
-                      Connectors enhance Manus with external capabilities
-                    </p>
-                  </div>
-                </div>
-              )}
-
-              {!useWebImages && (
-                <>
-                  <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-lg border border-blue-200">
-                    <input
-                      type="checkbox"
-                      id="enforceSpelling"
-                      checked={enforceSpelling}
-                      onChange={(e) => setEnforceSpelling(e.target.checked)}
-                      className="w-4 h-4 rounded text-blue-600"
-                    />
-                    <Label htmlFor="enforceSpelling" className="flex-1 cursor-pointer text-sm">
-                      <span className="font-semibold text-blue-900">✓ Enforce Perfect Spelling</span>
-                      <p className="text-xs text-blue-700 mt-1">
-                        Apply strict spelling accuracy instructions to all AI-generated images - ensures text is treated as critical content, not noise
-                      </p>
-                    </Label>
-                  </div>
-
-                  {imageGenerator === 'base44-pro' && (
-                    <>
-                      <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
-                        <input
-                          type="checkbox"
-                          id="autoCorrectText"
-                          checked={autoCorrectText}
-                          onChange={(e) => setAutoCorrectText(e.target.checked)}
-                          className="w-4 h-4 rounded text-green-600"
-                        />
-                        <Label htmlFor="autoCorrectText" className="flex-1 cursor-pointer text-sm">
-                          <span className="font-semibold text-green-900">🔍 Auto-Scan & Correct Text</span>
-                          <p className="text-xs text-green-700 mt-1">
-                            Automatically scan images with OCR, detect spelling errors, and regenerate if needed - ensures 100% accuracy
-                          </p>
-                        </Label>
-                      </div>
-
-                      <div className="space-y-2">
-                        <Button
-                          type="button"
-                          onClick={() => setShowArchitect(!showArchitect)}
-                          variant="outline"
-                          className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
-                        >
-                          {showArchitect ? 'Hide' : 'Show'} Text Layout Architect (Advanced)
-                        </Button>
-                        {showArchitect && (
-                          <TextLayoutArchitect 
-                            onPromptGenerated={(prompt) => {
-                              setArchitectPrompt(prompt);
-                              toast.success('Architect prompt will be used for Base44 AI Pro images');
-                            }}
-                          />
-                        )}
-                      </div>
-                    </>
-                  )}
-
-                  <div className="space-y-2">
-                    <Label>Image Generator</Label>
-                    <div className="grid grid-cols-2 gap-3">
-                    <button
-                      type="button"
-                      onClick={() => setImageGenerator('nano-banana')}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'nano-banana'
-                          ? 'border-purple-500 bg-purple-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1">🍌 Nano Banana</div>
-                      <div className="text-xs text-gray-600">Fast diagrams</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageGenerator('dalle')}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'dalle'
-                          ? 'border-green-500 bg-green-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1">✨ DALL-E 3</div>
-                      <div className="text-xs text-gray-600">High-quality</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageGenerator('imagen')}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'imagen'
-                          ? 'border-blue-500 bg-blue-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1">🎨 Stable Diffusion</div>
-                      <div className="text-xs text-gray-600">Professional</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageGenerator('base44-pro')}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'base44-pro'
-                          ? 'border-orange-500 bg-orange-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
-                      <div className="text-xs text-gray-600">Premium quality</div>
-                    </button>
-                    <button
-                      type="button"
-                      onClick={() => setImageGenerator('manus')}
-                      className={`p-4 rounded-lg border-2 transition-all ${
-                        imageGenerator === 'manus'
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
-                    >
-                      <div className="font-semibold text-sm mb-1">⚡ Manus</div>
-                      <div className="text-xs text-gray-600">Advanced AI</div>
-                    </button>
-                    </div>
-                </div>
-                </>
-              )}
-            </>
-          )}
 
           <div className="space-y-2">
             <Label>AI Provider</Label>
@@ -1172,30 +602,6 @@ Educational Context:
               </button>
               <button
                 type="button"
-                onClick={() => setAiProvider('chatgpt')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  aiProvider === 'chatgpt'
-                    ? 'border-green-500 bg-green-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1">💬 GPT-3.5</div>
-                <div className="text-xs text-gray-600">OpenAI GPT-3.5</div>
-              </button>
-              <button
-                type="button"
-                onClick={() => setAiProvider('canva')}
-                className={`p-4 rounded-lg border-2 transition-all ${
-                  aiProvider === 'canva'
-                    ? 'border-purple-500 bg-purple-50'
-                    : 'border-gray-200 hover:border-gray-300'
-                }`}
-              >
-                <div className="font-semibold text-sm mb-1">🎨 Canva AI</div>
-                <div className="text-xs text-gray-600">Design-focused</div>
-              </button>
-              <button
-                type="button"
                 onClick={() => setAiProvider('base44-pro')}
                 className={`p-4 rounded-lg border-2 transition-all ${
                   aiProvider === 'base44-pro'
@@ -1204,7 +610,7 @@ Educational Context:
                 }`}
               >
                 <div className="font-semibold text-sm mb-1">🚀 Base44 AI Pro</div>
-                <div className="text-xs text-gray-600">Premium AI</div>
+                <div className="text-xs text-gray-600">Premium quality</div>
               </button>
               <button
                 type="button"
@@ -1220,6 +626,127 @@ Educational Context:
               </button>
             </div>
           </div>
+
+          {/* AI-Specific Settings */}
+          {aiProvider === 'perplexity' && (
+            <div className="p-4 bg-blue-50 border border-blue-200 rounded-lg space-y-3">
+              <h4 className="font-semibold text-blue-900 text-sm">🔍 Perplexity Settings</h4>
+              <div>
+                <Label>Search Depth</Label>
+                <select
+                  value={perplexitySearchDepth}
+                  onChange={(e) => setPerplexitySearchDepth(e.target.value)}
+                  className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white"
+                >
+                  <option value="basic">Basic (Fast)</option>
+                  <option value="standard">Standard (Balanced)</option>
+                  <option value="advanced">Advanced (Comprehensive)</option>
+                </select>
+                <p className="text-xs text-blue-600 mt-1">
+                  {perplexitySearchDepth === 'advanced' ? 'Most comprehensive research with multiple sources' : 
+                   perplexitySearchDepth === 'basic' ? 'Quick search for basic information' : 
+                   'Balanced research depth and speed'}
+                </p>
+              </div>
+            </div>
+          )}
+
+          {aiProvider === 'base44-pro' && (
+            <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg space-y-3">
+              <h4 className="font-semibold text-orange-900 text-sm">🚀 Base44 AI Pro Settings</h4>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="base44-spelling"
+                  checked={base44EnforceSpelling}
+                  onChange={(e) => setBase44EnforceSpelling(e.target.checked)}
+                  className="w-4 h-4 rounded text-orange-600"
+                />
+                <Label htmlFor="base44-spelling" className="text-sm cursor-pointer">
+                  Enforce perfect spelling in images
+                </Label>
+              </div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="base44-autocorrect"
+                  checked={base44AutoCorrect}
+                  onChange={(e) => setBase44AutoCorrect(e.target.checked)}
+                  className="w-4 h-4 rounded text-orange-600"
+                />
+                <Label htmlFor="base44-autocorrect" className="text-sm cursor-pointer">
+                  Auto-scan & correct text errors
+                </Label>
+              </div>
+            </div>
+          )}
+
+          {aiProvider === 'manus' && (
+            <div className="p-4 bg-indigo-50 border border-indigo-200 rounded-lg space-y-3">
+              <h4 className="font-semibold text-indigo-900 text-sm">⚡ Manus Settings</h4>
+              <div>
+                <Label>Agent Profile</Label>
+                <select
+                  value={manusAgentProfile}
+                  onChange={(e) => setManusAgentProfile(e.target.value)}
+                  className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white"
+                >
+                  <option value="manus-1.6">Manus 1.6 (Balanced)</option>
+                  <option value="manus-1.6-lite">Manus 1.6 Lite (Fast)</option>
+                  <option value="manus-1.6-max">Manus 1.6 Max (Advanced)</option>
+                </select>
+              </div>
+              <div>
+                <Label>Task Mode</Label>
+                <select
+                  value={manusTaskMode}
+                  onChange={(e) => setManusTaskMode(e.target.value)}
+                  className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white"
+                >
+                  <option value="agent">Agent (Autonomous)</option>
+                  <option value="adaptive">Adaptive (Smart)</option>
+                  <option value="chat">Chat (Interactive)</option>
+                </select>
+              </div>
+              <div>
+                <Label className="text-xs mb-2 block">Connectors</Label>
+                <div className="space-y-2">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="manus-web"
+                      checked={manusConnectors.includes('web-search')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setManusConnectors([...manusConnectors, 'web-search']);
+                        } else {
+                          setManusConnectors(manusConnectors.filter(c => c !== 'web-search'));
+                        }
+                      }}
+                      className="w-4 h-4 rounded text-indigo-600"
+                    />
+                    <Label htmlFor="manus-web" className="text-sm cursor-pointer">Web Search</Label>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="manus-img"
+                      checked={manusConnectors.includes('image-generation')}
+                      onChange={(e) => {
+                        if (e.target.checked) {
+                          setManusConnectors([...manusConnectors, 'image-generation']);
+                        } else {
+                          setManusConnectors(manusConnectors.filter(c => c !== 'image-generation'));
+                        }
+                      }}
+                      className="w-4 h-4 rounded text-indigo-600"
+                    />
+                    <Label htmlFor="manus-img" className="text-sm cursor-pointer">Image Generation</Label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           <div className="flex gap-3">
             <Button
@@ -1255,29 +782,17 @@ Educational Context:
       </div>
 
       <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-      <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
-      <Lightbulb className="w-4 h-4" />
-      AI Features
-      </h4>
-      <ul className="text-sm text-purple-700 space-y-1">
-      <li>• Researches topic using internet data with cited sources</li>
-      <li>• Creates structured, educational content with expert quotes</li>
-      <li>• Formats with professional styling and HTML</li>
-      <li>• Includes real statistics, examples, and definitions</li>
-      <li>• Searches high-quality images from Unsplash with proper attribution</li>
-      <li>• Integrates visuals seamlessly with content</li>
-      </ul>
+        <h4 className="font-semibold text-purple-900 mb-2 flex items-center gap-2">
+          <Lightbulb className="w-4 h-4" />
+          How It Works
+        </h4>
+        <ul className="text-sm text-purple-700 space-y-1">
+          <li>• Researches topic using internet data and reliable sources</li>
+          <li>• Creates structured, educational content with proper formatting</li>
+          <li>• Each AI uses its preferred image generation method</li>
+          <li>• Adapts content to your selected education level</li>
+        </ul>
       </div>
-
-      <ImageSearchPreview
-      isOpen={showImagePreview}
-      onClose={() => setShowImagePreview(false)}
-      onSelectImage={(image) => {
-      // Handle image selection if needed
-      toast.success('Image selected!');
-      }}
-      defaultQuery={imageSearchTerms || topic}
-      />
       </div>
       );
       }
