@@ -20,39 +20,42 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
     }
 
-    // Call Stability AI's SDXL API
-    const response = await fetch('https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image', {
+    // Call Manus API
+    const response = await fetch('https://api.manus.app/v1/images/generations', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`
       },
       body: JSON.stringify({
-        text_prompts: [{ text: prompt }],
-        cfg_scale: 7,
-        height: 1024,
+        prompt: prompt,
+        model: 'flux-1.1-pro',
         width: 1024,
-        steps: 30,
-        samples: 1
+        height: 1024,
+        num_inference_steps: 30
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Stability AI error:', errorText);
+      console.error('Manus API error:', errorText);
       return Response.json({ 
-        error: 'Failed to generate image with Stability AI',
+        error: 'Failed to generate image with Manus',
         details: errorText 
       }, { status: response.status });
     }
 
     const result = await response.json();
     
-    // Stability AI returns base64 encoded images
-    if (result.artifacts && result.artifacts.length > 0) {
-      const base64Image = result.artifacts[0].base64;
+    // Manus returns image URL or base64
+    if (result.url) {
       return Response.json({ 
-        url: `data:image/png;base64,${base64Image}`,
+        url: result.url,
+        success: true 
+      });
+    } else if (result.image) {
+      return Response.json({ 
+        url: `data:image/png;base64,${result.image}`,
         success: true 
       });
     }
