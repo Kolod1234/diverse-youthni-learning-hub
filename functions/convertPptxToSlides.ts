@@ -15,26 +15,48 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'file_url is required' }, { status: 400 });
     }
 
-    // Use AI to convert PPTX to slides with proper rendering
-    const prompt = `I have a PowerPoint presentation (.pptx) at this URL: ${file_url}
+    // Extract structured data from PPTX
+    const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
+      file_url: file_url,
+      json_schema: {
+        type: 'object',
+        properties: {
+          slides: {
+            type: 'array',
+            items: {
+              type: 'object',
+              properties: {
+                title: { type: 'string' },
+                content: { type: 'string' },
+                bullet_points: { type: 'array', items: { type: 'string' } },
+                order: { type: 'number' }
+              }
+            }
+          }
+        }
+      }
+    });
+
+    if (extractionResult.status === 'error') {
+      throw new Error(extractionResult.details || 'Failed to extract PPTX content');
+    }
+
+    const extractedData = extractionResult.output;
     
-Please analyze this PowerPoint file and convert each slide into HTML content. For each slide:
-1. Extract all text content including titles, bullet points, and body text
-2. Identify any images, diagrams, charts, or visual elements
-3. Preserve the layout structure and formatting
-4. Note any speaker notes or annotations
-5. Return structured HTML that represents the slide content with proper styling
-
-Return a JSON array where each object represents a slide with:
-- title: The slide title or main heading
-- content: Full HTML representation of the slide with proper formatting (<h2>, <p>, <ul>, <li>, <strong>, etc.)
-- order: Slide number (0-indexed)
-- notes: Any speaker notes (optional)`;
-
+    // Convert extracted data to HTML slides
     const response = await base44.integrations.Core.InvokeLLM({
-      prompt,
-      add_context_from_internet: false,
-      file_urls: [file_url],
+      prompt: `Convert this PowerPoint data into HTML slides:
+
+${JSON.stringify(extractedData, null, 2)}
+
+For each slide, create rich HTML content with:
+- Proper heading tags (<h2>, <h3>)
+- Formatted paragraphs (<p>)
+- Bullet lists (<ul><li>)
+- Bold text for emphasis (<strong>)
+- Clean, professional styling
+
+Return the slides in the same order.`,
       response_json_schema: {
         type: "object",
         properties: {
@@ -45,13 +67,11 @@ Return a JSON array where each object represents a slide with:
               properties: {
                 title: { type: "string" },
                 content: { type: "string" },
-                order: { type: "number" },
-                notes: { type: "string" }
+                order: { type: "number" }
               },
               required: ["title", "content", "order"]
             }
-          },
-          total_slides: { type: "number" }
+          }
         },
         required: ["slides"]
       }
