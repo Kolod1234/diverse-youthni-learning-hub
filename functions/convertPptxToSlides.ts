@@ -63,8 +63,8 @@ Return a JSON array where each object represents a slide with:
 
     return Response.json({
       success: true,
-      slides: response.slides,
-      total_slides: response.total_slides || response.slides.length
+      slides: response.slides || [],
+      total_slides: response.slides?.length || 0
     });
 
   } catch (error) {
