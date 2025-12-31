@@ -17,6 +17,8 @@ import CanvaIntegration from '@/components/editor/CanvaIntegration';
 import CanvaImporter from '@/components/editor/CanvaImporter';
 import FigmaImporter from '@/components/editor/FigmaImporter';
 import ImageEditorModal from '@/components/editor/ImageEditorModal';
+import InlineCodeEditor from '@/components/editor/InlineCodeEditor';
+import InlineTextEditor from '@/components/editor/InlineTextEditor';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -176,6 +178,10 @@ export default function SlideEditor({ slides = [], onChange }) {
   const [showFigmaImporter, setShowFigmaImporter] = useState(false);
   const [showImageEditor, setShowImageEditor] = useState(false);
   const [imageToEdit, setImageToEdit] = useState(null);
+  const [showInlineCodeEditor, setShowInlineCodeEditor] = useState(false);
+  const [inlineCode, setInlineCode] = useState('');
+  const [codeLanguage, setCodeLanguage] = useState('javascript');
+  const [showInlineTextEditor, setShowInlineTextEditor] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -231,6 +237,86 @@ export default function SlideEditor({ slides = [], onChange }) {
     onChange(newSlides);
     setCurrentSlide(Math.max(0, Math.min(currentSlide, newSlides.length - 1)));
     toast.success('Slide deleted');
+  };
+
+  const moveSlide = (index, direction) => {
+    const newIndex = direction === 'up' ? index - 1 : index + 1;
+    if (newIndex < 0 || newIndex >= slides.length) return;
+
+    const newSlides = [...slides];
+    [newSlides[index], newSlides[newIndex]] = [newSlides[newIndex], newSlides[index]];
+    newSlides.forEach((slide, i) => {
+      slide.order = i + 1;
+    });
+
+    onChange(newSlides);
+    setCurrentSlide(newIndex);
+    toast.success('Slide moved');
+  };
+
+  const extractCodeFromSlide = (content) => {
+    // Try to extract code from <pre><code> or <code> tags
+    const codeMatch = content.match(/<pre[^>]*><code[^>]*>([\s\S]*?)<\/code><\/pre>/i) ||
+                     content.match(/<code[^>]*>([\s\S]*?)<\/code>/i);
+    if (codeMatch) {
+      const code = codeMatch[1]
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>')
+        .replace(/&amp;/g, '&')
+        .replace(/&quot;/g, '"')
+        .replace(/&#39;/g, "'");
+      return code;
+    }
+    return '';
+  };
+
+  const handleEditCode = () => {
+    const content = currentSlideData?.content || '';
+    const code = extractCodeFromSlide(content);
+    
+    if (!code) {
+      toast.error('No code block found in this slide');
+      return;
+    }
+
+    // Try to detect language from class attribute
+    const langMatch = content.match(/class="language-(\w+)"/i);
+    const detectedLang = langMatch ? langMatch[1] : 'javascript';
+    
+    setCodeLanguage(detectedLang);
+    setInlineCode(code);
+    setShowInlineCodeEditor(true);
+  };
+
+  const handleSaveCode = (newCode) => {
+    const content = currentSlideData?.content || '';
+    const isWebCode = ['html', 'css'].includes(codeLanguage.toLowerCase());
+    
+    let newContent;
+    if (isWebCode) {
+      // For HTML/CSS, create split view
+      newContent = `<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+        <div>
+          <h3 style="color: #4f46e5; margin-bottom: 10px;">Code:</h3>
+          <pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6;"><code class="language-${codeLanguage}">${newCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>
+        </div>
+        <div>
+          <h3 style="color: #4f46e5; margin-bottom: 10px;">Preview:</h3>
+          <div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 20px; background: white; min-height: 200px;">
+            ${newCode}
+          </div>
+        </div>
+      </div>`;
+    } else {
+      // For other languages, just show formatted code
+      newContent = content.replace(
+        /<pre[^>]*><code[^>]*>[\s\S]*?<\/code><\/pre>/i,
+        `<pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6;"><code class="language-${codeLanguage}">${newCode.replace(/</g, '&lt;').replace(/>/g, '&gt;')}</code></pre>`
+      );
+    }
+    
+    updateSlide(currentSlide, 'content', newContent);
+    setShowInlineCodeEditor(false);
   };
 
   const handleDragEnd = (result) => {
@@ -903,6 +989,24 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   <Button
                     variant="outline"
                     size="sm"
+                    onClick={() => setShowInlineTextEditor(true)}
+                    className="bg-blue-50 border-blue-200 text-blue-700 hover:bg-blue-100"
+                  >
+                    <FileText className="w-4 h-4 mr-1" />
+                    Edit Content
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={handleEditCode}
+                    className="bg-orange-50 border-orange-200 text-orange-700 hover:bg-orange-100"
+                  >
+                    <Code className="w-4 h-4 mr-1" />
+                    Edit Code
+                  </Button>
+                  <Button
+                    variant="outline"
+                    size="sm"
                     onClick={() => duplicateSlide(currentSlide)}
                   >
                     <Copy className="w-4 h-4 mr-1" />
@@ -1568,6 +1672,28 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setShowImageEditor(false);
               setImageToEdit(null);
             }}
+          />
+        )}
+
+        {/* Inline Code Editor */}
+        {showInlineCodeEditor && (
+          <InlineCodeEditor
+            initialCode={inlineCode}
+            language={codeLanguage}
+            onSave={handleSaveCode}
+            onCancel={() => setShowInlineCodeEditor(false)}
+          />
+        )}
+
+        {/* Inline Text Editor */}
+        {showInlineTextEditor && (
+          <InlineTextEditor
+            initialContent={currentSlideData?.content || ''}
+            onSave={(newContent) => {
+              updateSlide(currentSlide, 'content', newContent);
+              setShowInlineTextEditor(false);
+            }}
+            onCancel={() => setShowInlineTextEditor(false)}
           />
         )}
         </div>
