@@ -346,37 +346,57 @@ Return ONLY the JSON object, nothing else.`,
       } else if (aiProvider === 'base44-pro') {
         // Use Base44 AI Pro for premium content generation
         const base44ProResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an elite educational content creator with expertise in curriculum design.
+          prompt: `You are an elite educational content creator specializing in modern, visually stunning presentations.
 
-Create a ${slideCount}-slide premium educational presentation about: "${topic}"
-${details ? `\nContext: ${details}` : ''}
+      Create a ${slideCount}-slide premium educational presentation about: "${topic}"
+      ${details ? `\nContext: ${details}` : ''}
 
-TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+      TARGET AUDIENCE: ${levelInstructions[educationLevel]}
 
-PREMIUM QUALITY STANDARDS:
-- Accurate, research-backed information
-- Clear, engaging explanations
-- Professional educational formatting
-- Well-structured learning progression
-- Rich, detailed content with examples
-- Proper HTML formatting with visual hierarchy
+      MODERN FORMATTING REQUIREMENTS:
+      1. Typography: Use clear hierarchy with styled headings
+      2. Layout: Modern card-based design with spacing and visual sections
+      3. Style: Professional gradient accents, rounded elements, subtle shadows
+      4. Structure: Organized content blocks with clear separation
+      5. Visual Appeal: Color-coded sections, modern fonts, breathable white space
 
-CRITICAL: Return ONLY valid JSON in this EXACT format:
-{
-  "slides": [
-    {
+      HTML STRUCTURE - Use this modern template for EVERY slide:
+      <div style="padding: 20px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; margin-bottom: 16px;">
+      <h1 style="color: white; font-size: 32px; font-weight: 700; margin: 0;">{{Main Title}}</h1>
+      </div>
+
+      <div style="background: white; padding: 24px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); margin-bottom: 16px;">
+      <h2 style="color: #1e293b; font-size: 24px; font-weight: 600; margin-bottom: 12px; border-left: 4px solid #667eea; padding-left: 12px;">{{Section Heading}}</h2>
+      <p style="color: #475569; font-size: 16px; line-height: 1.6; margin-bottom: 12px;">{{Content paragraph}}</p>
+      </div>
+
+      <div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 12px; margin-bottom: 16px;">
+      <h3 style="color: white; font-size: 20px; font-weight: 600; margin-bottom: 8px;">💡 Key Insight</h3>
+      <p style="color: white; font-size: 15px; line-height: 1.5;">{{Important point}}</p>
+      </div>
+
+      <ul style="list-style: none; padding: 0;">
+      <li style="background: #f8fafc; padding: 12px 16px; border-radius: 8px; margin-bottom: 8px; border-left: 3px solid #3b82f6;">
+      <strong style="color: #1e40af;">Point Title:</strong> <span style="color: #475569;">Description</span>
+      </li>
+      </ul>
+
+      CRITICAL: Return ONLY valid JSON in this EXACT format:
+      {
+      "slides": [
+      {
       "title": "Clear, engaging title",
-      "content": "Premium educational content with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags. Include detailed explanations, examples, and key insights.",
+      "content": "Modern HTML with gradient headers, card layouts, styled sections. Use the template structure above.",
       "order": 1,
       ${includeImages ? '"image_prompt": "Detailed description for premium educational visual",' : ''}
       "image_description": "What the visual represents"
-    }
-  ]
-}
+      }
+      ]
+      }
 
-${includeImages ? 'Include "image_prompt" (detailed description for high-quality educational diagrams) and "image_description" for EVERY slide.' : ''}
+      ${includeImages ? 'Include "image_prompt" and "image_description" for EVERY slide.' : ''}
 
-Return ONLY the JSON object, nothing else.`,
+      Return ONLY the JSON object, nothing else.`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
