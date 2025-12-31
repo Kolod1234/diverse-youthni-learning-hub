@@ -1114,6 +1114,34 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                       />
                     </div>
 
+                    {/* Preview Image if available */}
+                    {currentSlideData.imageUrl && (
+                      <div className="bg-white rounded-lg border-2 border-gray-200 p-5 mb-4">
+                        <div className="flex items-center gap-2 mb-3">
+                          <ImageIcon className="w-5 h-5 text-indigo-600" />
+                          <Label className="text-base font-semibold">Slide Image</Label>
+                        </div>
+                        <img 
+                          src={currentSlideData.imageUrl} 
+                          alt={currentSlideData.title}
+                          className="w-full h-auto rounded-lg shadow-lg"
+                        />
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="mt-3"
+                          onClick={() => {
+                            const newSlides = [...slides];
+                            delete newSlides[currentSlide].imageUrl;
+                            onChange(newSlides);
+                            toast.success('Image removed');
+                          }}
+                        >
+                          Remove Image
+                        </Button>
+                      </div>
+                    )}
+
                     <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
                       <div className="flex items-center gap-2 mb-4">
                         <FileText className="w-5 h-5 text-indigo-600" />

@@ -25,32 +25,27 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
     setGenerating(true);
     try {
-      toast.info('Generating slides with AI...');
+      toast.info('Generating slide structure...');
 
-      // Step 1: Generate slide structure and content
+      // Step 1: Generate slide structure 
+      // We ask for CLEAN content so we can style it ourselves in React
       const prompt = `Create an educational presentation about "${topic}".
-${description ? `Additional context: ${description}` : ''}
+  ${description ? `Additional context: ${description}` : ''}
 
-Generate exactly ${slideCount} slides with the following structure:
-1. Title slide with compelling main title and subtitle
-2. ${slideCount - 2} content slides with detailed information
-3. Summary/conclusion slide
+  Generate exactly ${slideCount} slides.
 
-CRITICAL FORMATTING REQUIREMENTS:
-- Return ONLY valid HTML content
-- Use HTML tags for formatting: <strong> for bold, <em> for italic, <u> for underline
-- NEVER use markdown syntax like ** or * or _
-- Use <h3> for headings, <p> for paragraphs, <ul><li> for bullet lists
-- Use <br> for line breaks
-- Include inline styles for colors and spacing
-- Make content professional, clear, and educational
+  Format requirements for 'content':
+  - Return semantic HTML (<ul>, <li>, <p>, <strong>)
+  - DO NOT use inline styles (style="...")
+  - DO NOT include <img> tags in the content
+  - Keep text concise (bullet points preferred)
 
-For each slide provide:
-- title: A clear, engaging title (plain text)
-- content: Well-formatted HTML with proper tags and inline styles
-- imagePrompt: ${includeImages ? 'A detailed description of a relevant educational image, diagram, or illustration' : 'null'}
+  For each slide return:
+  - title: string
+  - content: html string
+  - imagePrompt: string (visual description for an image)
 
-Return a JSON object with a "slides" array.`;
+  Return JSON with a "slides" array.`;
 
       const slideData = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -75,52 +70,51 @@ Return a JSON object with a "slides" array.`;
 
       let slides = slideData.slides || [];
 
-      // Step 2: Generate images for slides that need them
-      if (includeImages && slides.some(s => s.imagePrompt)) {
-        toast.info('Generating high-quality images with AI...');
-        
+      // Step 2: Generate images
+      if (includeImages) {
+        toast.info('Generating slide visuals...');
+
         const imagePromises = slides.map(async (slide, idx) => {
-          if (slide.imagePrompt && slide.imagePrompt.trim()) {
-            try {
-              const imageResult = await base44.functions.invoke('generateImageWithManus', {
-                prompt: `Professional educational illustration: ${slide.imagePrompt}. Style: Clear, detailed, suitable for educational presentation. High quality, informative, visually appealing.`,
-                aspect_ratio: '16:9'
-              });
-              
-              if (imageResult.data?.url) {
-                return {
-                  ...slide,
-                  content: `<div style="text-align: center; margin: 20px 0;">
-                    <img src="${imageResult.data.url}" alt="${slide.title}" style="width: 90%; max-width: 800px; height: auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); display: inline-block;" />
-                  </div>
-                  ${slide.content}`,
-                  order: idx + 1
-                };
-              } else {
-                console.error('No URL in image result:', imageResult);
-              }
-            } catch (error) {
-              console.error('Image generation failed for slide:', slide.title, error);
-              toast.error(`Image generation failed for: ${slide.title}`);
+          // If no prompt, just return the slide as is
+          if (!slide.imagePrompt) return { ...slide, order: idx + 1 };
+
+          try {
+            console.log(`Generating image for slide ${idx + 1}:`, slide.imagePrompt);
+
+            const imageResult = await base44.functions.invoke('generateImageWithManus', {
+              prompt: `Educational diagram, flat vector style, white background: ${slide.imagePrompt}`,
+              aspect_ratio: '16:9' // or '4:3' depending on your slide shape
+            });
+
+            console.log(`Result for slide ${idx + 1}:`, imageResult);
+
+            // Check for URL in likely locations (adjust based on your actual API response)
+            const imageUrl = imageResult.data?.url || imageResult?.url || imageResult?.response?.url;
+
+            if (imageUrl) {
+              return { 
+                ...slide, 
+                imageUrl: imageUrl, // Store image SEPARATELY, don't inject into HTML
+                order: idx + 1 
+              };
+            } else {
+              console.warn('Image generated but no URL found in response', imageResult);
+              return { ...slide, order: idx + 1 };
             }
+          } catch (error) {
+            console.error(`Image gen failed for slide ${idx + 1}:`, error);
+            // Return slide without image rather than failing completely
+            return { ...slide, order: idx + 1 };
           }
-          return { ...slide, order: idx + 1 };
         });
 
         slides = await Promise.all(imagePromises);
-        toast.success('Images generated successfully!');
       } else {
         slides = slides.map((slide, idx) => ({ ...slide, order: idx + 1 }));
       }
 
-      // Ensure proper HTML formatting (no wrapping needed - content should already be HTML)
-      slides = slides.map(slide => ({
-        ...slide,
-        content: slide.content || ''
-      }));
-
       onSlidesGenerated(slides);
-      toast.success(`Generated ${slides.length} slides successfully!`);
+      toast.success('Presentation generated!');
     } catch (error) {
       console.error('Generation error:', error);
       toast.error('Failed to generate slides: ' + error.message);

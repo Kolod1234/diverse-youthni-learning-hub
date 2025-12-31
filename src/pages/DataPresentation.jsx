@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Sparkles, BarChart3, Save, BookOpen } from 'lucide-react';
 import AIGenerateMode from '@/components/presentation/AIGenerateMode';
 import SlideEditor from '@/components/editor/SlideEditor';
+import SlidePreview from '@/components/presentation/SlidePreview';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
 import {
@@ -242,10 +243,19 @@ export default function DataPresentation() {
                   <p className="text-sm text-gray-400">Enter a topic to get started</p>
                 </div>
               ) : (
-                <SlideEditor
-                  slides={generatedSlides}
-                  onChange={setGeneratedSlides}
-                />
+                <div className="space-y-4">
+                  {/* Quick Preview */}
+                  <div className="bg-gradient-to-br from-gray-50 to-gray-100 rounded-lg p-4">
+                    <h3 className="text-sm font-semibold text-gray-700 mb-3">Preview</h3>
+                    <SlidePreview slide={generatedSlides[0]} />
+                  </div>
+
+                  {/* Full Editor */}
+                  <SlideEditor
+                    slides={generatedSlides}
+                    onChange={setGeneratedSlides}
+                  />
+                </div>
               )}
             </Card>
           </div>
