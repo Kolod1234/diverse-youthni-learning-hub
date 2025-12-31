@@ -29,9 +29,7 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         prompt: `Generate a high-quality educational image: ${prompt}`,
-        agentProfile: 'manus-1.6',
-        taskMode: 'agent',
-        hideInTaskList: false
+        agentProfile: 'manus-1.6'
       })
     });
 
