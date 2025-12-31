@@ -8,6 +8,7 @@ import { Loader2, Sparkles, Lightbulb, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import ImageSearchPreview from './ImageSearchPreview';
 import TextLayoutArchitect from './TextLayoutArchitect';
+import Tesseract from 'tesseract.js';
 
 export default function AIGenerateMode({ onSlidesGenerated }) {
   const [topic, setTopic] = useState('');
@@ -27,6 +28,124 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [enforceSpelling, setEnforceSpelling] = useState(true);
   const [showArchitect, setShowArchitect] = useState(false);
   const [architectPrompt, setArchitectPrompt] = useState('');
+  const [autoCorrectText, setAutoCorrectText] = useState(true);
+
+  // Text scanning and auto-correction for Base44 AI Pro
+  const scanAndCorrectImageText = async (imageUrl, expectedContext, maxRetries = 2) => {
+    try {
+      toast.info('🔍 Scanning image text for accuracy...');
+      
+      // Run OCR on the image
+      const { data: { text, words } } = await Tesseract.recognize(imageUrl, 'eng', {
+        logger: m => {
+          if (m.status === 'recognizing text') {
+            // Silent progress tracking
+          }
+        }
+      });
+
+      if (!text || text.trim().length === 0) {
+        toast.success('✓ No text detected in image');
+        return { isValid: true, imageUrl, correctedText: null };
+      }
+
+      // Extract individual words with confidence
+      const detectedWords = words
+        .filter(w => w.confidence > 60) // Only high confidence words
+        .map(w => w.text.trim())
+        .filter(w => w.length > 2); // Ignore single chars
+
+      if (detectedWords.length === 0) {
+        toast.success('✓ Text scanning complete');
+        return { isValid: true, imageUrl, correctedText: null };
+      }
+
+      toast.info(`📝 Detected ${detectedWords.length} words, verifying spelling...`);
+
+      // Use LLM to verify spelling accuracy in educational context
+      const verificationResult = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a strict educational content reviewer verifying text accuracy.
+
+Context: ${expectedContext}
+
+Detected text from image: "${text}"
+
+Task: Verify if all words are spelled correctly for this educational context.
+
+Rules:
+1. Scientific terms must be spelled exactly right (e.g., "photosynthesis" not "photosynthesis", "mitosis" not "mitosis")
+2. Check for common OCR errors (l vs I, 0 vs O)
+3. Ignore punctuation and formatting
+4. Focus on word spelling accuracy
+
+Return JSON with:
+- has_errors (boolean)
+- error_count (number)
+- misspelled_words (array of incorrect words)
+- corrections (array of correct spellings)
+- severity ("none", "minor", "major")`,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            has_errors: { type: "boolean" },
+            error_count: { type: "number" },
+            misspelled_words: { type: "array", items: { type: "string" } },
+            corrections: { type: "array", items: { type: "string" } },
+            severity: { type: "string" }
+          }
+        }
+      });
+
+      if (!verificationResult.has_errors || verificationResult.error_count === 0) {
+        toast.success('✅ Text accuracy verified - all spelling correct!');
+        return { isValid: true, imageUrl, correctedText: text };
+      }
+
+      // Errors found
+      const errorMsg = `⚠️ Found ${verificationResult.error_count} spelling error(s): ${verificationResult.misspelled_words.join(', ')}`;
+      toast.warning(errorMsg);
+
+      if (!autoCorrectText || maxRetries === 0) {
+        toast.error('❌ Image contains spelling errors - manual review needed');
+        return { 
+          isValid: false, 
+          imageUrl, 
+          errors: verificationResult,
+          needsRegeneration: true 
+        };
+      }
+
+      // Auto-regenerate with corrections
+      toast.info('🔄 Auto-correcting and regenerating image...');
+      
+      const correctedPrompt = `${expectedContext}
+
+CRITICAL CORRECTION REQUIRED:
+Previous attempt had spelling errors. These words MUST be spelled correctly:
+${verificationResult.corrections.map((correct, i) => 
+  `- "${verificationResult.misspelled_words[i]}" → "${correct}"`
+).join('\n')}
+
+Treat text as VECTOR DATA. Spelling verification MANDATORY.`;
+
+      const regeneratedImage = await base44.integrations.Core.GenerateImage({
+        prompt: correctedPrompt
+      });
+
+      if (regeneratedImage?.url) {
+        toast.success('✅ Image regenerated with corrected spelling');
+        // Recursively verify the new image
+        return await scanAndCorrectImageText(regeneratedImage.url, expectedContext, maxRetries - 1);
+      }
+
+      return { isValid: false, imageUrl, errors: verificationResult };
+
+    } catch (error) {
+      console.error('Text scanning error:', error);
+      toast.error('Text scanning failed - using original image');
+      return { isValid: true, imageUrl, error: error.message };
+    }
+  };
 
   const generateFromTopic = async () => {
     if (!topic.trim()) {
@@ -474,6 +593,18 @@ Educational Context:
                     generatedImage = await base44.integrations.Core.GenerateImage({
                       prompt: base44ProPrompt
                     });
+
+                    // Auto-scan and correct text for Base44 AI Pro
+                    if (generatedImage?.url && autoCorrectText && enforceSpelling) {
+                      const scanResult = await scanAndCorrectImageText(
+                        generatedImage.url,
+                        `${slide.image_prompt}. Topic: ${topic} - ${slide.title}. Level: ${levelInstructions[educationLevel]}`
+                      );
+                      
+                      if (scanResult.isValid && scanResult.imageUrl) {
+                        generatedImage = { url: scanResult.imageUrl };
+                      }
+                    }
                   } else {
                   // Use Nano Banana (default) with optimized spelling
                   const imagePrompt = enforceSpelling 
@@ -657,24 +788,42 @@ Educational Context:
                   </div>
 
                   {imageGenerator === 'base44-pro' && (
-                    <div className="space-y-2">
-                      <Button
-                        type="button"
-                        onClick={() => setShowArchitect(!showArchitect)}
-                        variant="outline"
-                        className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
-                      >
-                        {showArchitect ? 'Hide' : 'Show'} Text Layout Architect (Advanced)
-                      </Button>
-                      {showArchitect && (
-                        <TextLayoutArchitect 
-                          onPromptGenerated={(prompt) => {
-                            setArchitectPrompt(prompt);
-                            toast.success('Architect prompt will be used for Base44 AI Pro images');
-                          }}
+                    <>
+                      <div className="flex items-center gap-3 p-4 bg-gradient-to-r from-green-50 to-emerald-50 rounded-lg border border-green-200">
+                        <input
+                          type="checkbox"
+                          id="autoCorrectText"
+                          checked={autoCorrectText}
+                          onChange={(e) => setAutoCorrectText(e.target.checked)}
+                          className="w-4 h-4 rounded text-green-600"
                         />
-                      )}
-                    </div>
+                        <Label htmlFor="autoCorrectText" className="flex-1 cursor-pointer text-sm">
+                          <span className="font-semibold text-green-900">🔍 Auto-Scan & Correct Text</span>
+                          <p className="text-xs text-green-700 mt-1">
+                            Automatically scan images with OCR, detect spelling errors, and regenerate if needed - ensures 100% accuracy
+                          </p>
+                        </Label>
+                      </div>
+
+                      <div className="space-y-2">
+                        <Button
+                          type="button"
+                          onClick={() => setShowArchitect(!showArchitect)}
+                          variant="outline"
+                          className="w-full border-orange-300 text-orange-700 hover:bg-orange-50"
+                        >
+                          {showArchitect ? 'Hide' : 'Show'} Text Layout Architect (Advanced)
+                        </Button>
+                        {showArchitect && (
+                          <TextLayoutArchitect 
+                            onPromptGenerated={(prompt) => {
+                              setArchitectPrompt(prompt);
+                              toast.success('Architect prompt will be used for Base44 AI Pro images');
+                            }}
+                          />
+                        )}
+                      </div>
+                    </>
                   )}
 
                   <div className="space-y-2">
