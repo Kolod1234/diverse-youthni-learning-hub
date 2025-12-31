@@ -51,24 +51,20 @@ Deno.serve(async (req) => {
     5. Each character must be clearly visible and correctly spelled
     `.trim() : prompt;
 
+    const formData = new FormData();
+    formData.append('prompt', optimizedPrompt);
+    formData.append('mode', 'text-to-image');
+    formData.append('aspect_ratio', aspectRatioMap[aspectRatio] || '1:1');
+    formData.append('model', 'sd3-large');
+    formData.append('output_format', 'png');
+
     const sdResponse = await fetch(endpoint, {
       method: 'POST',
       headers: {
-        'Content-Type': 'application/json',
         'Authorization': `Bearer ${apiKey}`,
-        'Accept': 'application/json'
+        'Accept': 'image/*'
       },
-      body: JSON.stringify({
-        text_prompts: [{
-          text: optimizedPrompt,
-          weight: 1
-        }],
-        cfg_scale: 7,
-        height: aspectRatio === 'portrait' || aspectRatio === '9:16' ? 768 : aspectRatio === 'landscape' || aspectRatio === '16:9' ? 640 : 1024,
-        width: aspectRatio === 'landscape' || aspectRatio === '16:9' ? 1536 : aspectRatio === 'portrait' || aspectRatio === '9:16' ? 640 : 1024,
-        samples: 1,
-        steps: 30
-      })
+      body: formData
     });
 
     if (!sdResponse.ok) {
