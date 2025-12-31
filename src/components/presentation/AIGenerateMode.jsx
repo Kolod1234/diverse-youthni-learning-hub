@@ -31,119 +31,133 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [autoCorrectText, setAutoCorrectText] = useState(true);
 
   // Text scanning and auto-correction for Base44 AI Pro
-  const scanAndCorrectImageText = async (imageUrl, expectedContext, maxRetries = 2) => {
+  const scanAndCorrectImageText = async (imageUrl, slideContext, originalPrompt, maxRetries = 2) => {
+    if (!imageUrl) {
+      console.error('No image URL provided for scanning');
+      return { isValid: false, imageUrl: null };
+    }
+
     try {
-      toast.info('🔍 Scanning image text for accuracy...');
+      console.log('Starting OCR scan on image:', imageUrl);
+      toast.info('🔍 Scanning image for spelling errors...', { duration: 3000 });
       
-      // Run OCR on the image
-      const { data: { text, words } } = await Tesseract.recognize(imageUrl, 'eng', {
-        logger: m => {
-          if (m.status === 'recognizing text') {
-            // Silent progress tracking
-          }
-        }
+      // Load image with CORS handling
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      
+      await new Promise((resolve, reject) => {
+        img.onload = resolve;
+        img.onerror = () => reject(new Error('Failed to load image for OCR'));
+        img.src = imageUrl;
       });
 
-      if (!text || text.trim().length === 0) {
-        toast.success('✓ No text detected in image');
-        return { isValid: true, imageUrl, correctedText: null };
+      // Run OCR with Tesseract
+      const { data: { text, confidence } } = await Tesseract.recognize(imageUrl, 'eng', {
+        logger: () => {} // Suppress logs
+      });
+
+      console.log('OCR detected text:', text, 'Confidence:', confidence);
+
+      if (!text || text.trim().length < 3) {
+        console.log('No significant text detected');
+        toast.success('✓ Image verified (no text detected)');
+        return { isValid: true, imageUrl };
       }
 
-      // Extract individual words with confidence
-      const detectedWords = words
-        .filter(w => w.confidence > 60) // Only high confidence words
-        .map(w => w.text.trim())
-        .filter(w => w.length > 2); // Ignore single chars
+      toast.info(`📝 Analyzing detected text: "${text.slice(0, 50)}..."`, { duration: 3000 });
 
-      if (detectedWords.length === 0) {
-        toast.success('✓ Text scanning complete');
-        return { isValid: true, imageUrl, correctedText: null };
-      }
-
-      toast.info(`📝 Detected ${detectedWords.length} words, verifying spelling...`);
-
-      // Use LLM to verify spelling accuracy in educational context
+      // Verify spelling with LLM
       const verificationResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a strict educational content reviewer verifying text accuracy.
+        prompt: `You are a spelling verification AI for educational content.
 
-Context: ${expectedContext}
+CONTEXT: ${slideContext}
 
-Detected text from image: "${text}"
+DETECTED TEXT FROM IMAGE: "${text}"
 
-Task: Verify if all words are spelled correctly for this educational context.
+TASK: Check if ALL words are spelled correctly. Be STRICT.
 
-Rules:
-1. Scientific terms must be spelled exactly right (e.g., "photosynthesis" not "photosynthesis", "mitosis" not "mitosis")
-2. Check for common OCR errors (l vs I, 0 vs O)
-3. Ignore punctuation and formatting
-4. Focus on word spelling accuracy
+RULES:
+1. Scientific/technical terms must be EXACTLY correct
+2. Common words must be dictionary-correct
+3. Ignore symbols, numbers, punctuation
+4. Report ANY misspelling, no matter how minor
+5. OCR can confuse similar letters (l/I, 0/O, 5/S) - check carefully
 
-Return JSON with:
-- has_errors (boolean)
-- error_count (number)
-- misspelled_words (array of incorrect words)
-- corrections (array of correct spellings)
-- severity ("none", "minor", "major")`,
+Respond with JSON only.`,
         response_json_schema: {
           type: "object",
           properties: {
             has_errors: { type: "boolean" },
-            error_count: { type: "number" },
-            misspelled_words: { type: "array", items: { type: "string" } },
-            corrections: { type: "array", items: { type: "string" } },
-            severity: { type: "string" }
-          }
+            misspelled_words: { 
+              type: "array", 
+              items: { 
+                type: "object",
+                properties: {
+                  wrong: { type: "string" },
+                  correct: { type: "string" }
+                }
+              }
+            },
+            severity: { type: "string", enum: ["none", "minor", "critical"] }
+          },
+          required: ["has_errors", "misspelled_words", "severity"]
         }
       });
 
-      if (!verificationResult.has_errors || verificationResult.error_count === 0) {
-        toast.success('✅ Text accuracy verified - all spelling correct!');
-        return { isValid: true, imageUrl, correctedText: text };
+      console.log('Verification result:', verificationResult);
+
+      if (!verificationResult.has_errors || verificationResult.misspelled_words.length === 0) {
+        toast.success('✅ Spelling verified - all correct!');
+        return { isValid: true, imageUrl };
       }
 
-      // Errors found
-      const errorMsg = `⚠️ Found ${verificationResult.error_count} spelling error(s): ${verificationResult.misspelled_words.join(', ')}`;
-      toast.warning(errorMsg);
+      // ERRORS FOUND
+      const errorList = verificationResult.misspelled_words.map(e => `"${e.wrong}" → "${e.correct}"`).join(', ');
+      toast.error(`❌ Spelling errors found: ${errorList}`, { duration: 5000 });
+      console.error('Spelling errors detected:', verificationResult.misspelled_words);
 
-      if (!autoCorrectText || maxRetries === 0) {
-        toast.error('❌ Image contains spelling errors - manual review needed');
-        return { 
-          isValid: false, 
-          imageUrl, 
-          errors: verificationResult,
-          needsRegeneration: true 
-        };
+      if (maxRetries === 0) {
+        toast.error('❌ Max retries reached - image has spelling errors');
+        return { isValid: false, imageUrl, errors: verificationResult };
       }
 
-      // Auto-regenerate with corrections
-      toast.info('🔄 Auto-correcting and regenerating image...');
-      
-      const correctedPrompt = `${expectedContext}
+      // AUTO-REGENERATE with corrections
+      toast.info('🔄 Regenerating image with correct spelling...', { duration: 4000 });
 
-CRITICAL CORRECTION REQUIRED:
-Previous attempt had spelling errors. These words MUST be spelled correctly:
-${verificationResult.corrections.map((correct, i) => 
-  `- "${verificationResult.misspelled_words[i]}" → "${correct}"`
-).join('\n')}
+      const correctionInstructions = verificationResult.misspelled_words
+        .map(e => `CORRECT: "${e.correct}" (NOT "${e.wrong}")`)
+        .join('\n');
 
-Treat text as VECTOR DATA. Spelling verification MANDATORY.`;
+      const correctedPrompt = `${originalPrompt}
 
-      const regeneratedImage = await base44.integrations.Core.GenerateImage({
+🚨 CRITICAL SPELLING CORRECTIONS 🚨
+Previous generation had these spelling errors:
+${correctionInstructions}
+
+MANDATORY: Use ONLY these exact spellings. Verify each letter.
+Style: Vector text (sharp, clean edges). NO artistic/painted text.
+Quality: Professional educational standard.`;
+
+      console.log('Regenerating with corrected prompt:', correctedPrompt);
+
+      const newImage = await base44.integrations.Core.GenerateImage({
         prompt: correctedPrompt
       });
 
-      if (regeneratedImage?.url) {
-        toast.success('✅ Image regenerated with corrected spelling');
-        // Recursively verify the new image
-        return await scanAndCorrectImageText(regeneratedImage.url, expectedContext, maxRetries - 1);
+      if (!newImage?.url) {
+        toast.error('❌ Regeneration failed');
+        return { isValid: false, imageUrl, errors: verificationResult };
       }
 
-      return { isValid: false, imageUrl, errors: verificationResult };
+      toast.success('✅ Image regenerated - verifying again...');
+      
+      // Recursive verification
+      return await scanAndCorrectImageText(newImage.url, slideContext, originalPrompt, maxRetries - 1);
 
     } catch (error) {
-      console.error('Text scanning error:', error);
-      toast.error('Text scanning failed - using original image');
-      return { isValid: true, imageUrl, error: error.message };
+      console.error('OCR scanning failed:', error);
+      toast.error(`❌ Text scanning error: ${error.message}`);
+      return { isValid: false, imageUrl, error: error.message };
     }
   };
 
@@ -594,15 +608,23 @@ Educational Context:
                       prompt: base44ProPrompt
                     });
 
-                    // Auto-scan and correct text for Base44 AI Pro
-                    if (generatedImage?.url && autoCorrectText && enforceSpelling) {
+                    // CRITICAL: Auto-scan and correct text for Base44 AI Pro
+                    if (generatedImage?.url && autoCorrectText) {
+                      console.log('Starting auto-scan for image:', generatedImage.url);
+                      
                       const scanResult = await scanAndCorrectImageText(
                         generatedImage.url,
-                        `${slide.image_prompt}. Topic: ${topic} - ${slide.title}. Level: ${levelInstructions[educationLevel]}`
+                        `${slide.image_prompt} for ${topic} - ${slide.title}`,
+                        base44ProPrompt,
+                        2 // Max 2 regeneration attempts
                       );
                       
                       if (scanResult.isValid && scanResult.imageUrl) {
                         generatedImage = { url: scanResult.imageUrl };
+                        console.log('✓ Image passed spelling verification');
+                      } else {
+                        console.error('✗ Image failed spelling verification');
+                        toast.error('⚠️ Generated image has uncorrected spelling errors');
                       }
                     }
                   } else {
