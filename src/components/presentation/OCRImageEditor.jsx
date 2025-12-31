@@ -51,6 +51,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   // --- Initialization ---
 
   useEffect(() => {
+    if (!imageUrl) return;
+
     // Check for saved state
     const savedState = localStorage.getItem('ocr_editor_autosave');
     if (savedState) {
@@ -70,15 +72,44 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       localStorage.removeItem('ocr_editor_autosave');
     }
 
-    const img = new Image();
-    img.crossOrigin = 'anonymous';
-    img.onload = () => {
-      imageRef.current = img;
-      setImage(img);
-      drawCanvas(img);
-      performOCR(img);
+    const loadSecureImage = async () => {
+      try {
+        // Fetch image as blob to bypass CORS restrictions
+        const response = await fetch(imageUrl, { 
+          mode: 'cors',
+          cache: 'no-cache'
+        });
+        
+        if (!response.ok) throw new Error('Failed to fetch image');
+
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+
+        const img = new Image();
+        img.crossOrigin = 'anonymous';
+        
+        img.onload = () => {
+          imageRef.current = img;
+          setImage(img);
+          drawCanvas(img);
+          performOCR(img);
+          URL.revokeObjectURL(objectUrl);
+        };
+        
+        img.onerror = () => {
+          URL.revokeObjectURL(objectUrl);
+          toast.error('Failed to load image');
+        };
+        
+        img.src = objectUrl;
+        
+      } catch (error) {
+        console.error('Image loading error:', error);
+        toast.error('Could not load image due to security restrictions');
+      }
     };
-    img.src = imageUrl;
+
+    loadSecureImage();
 
     // Auto-save every 30 seconds
     autoSaveTimerRef.current = setInterval(() => {
