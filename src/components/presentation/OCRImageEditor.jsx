@@ -471,21 +471,52 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   // Save Final Result
   const handleSave = async () => {
      if (!canvasRef.current) return;
-     const dataUrl = canvasRef.current.toDataURL('image/png');
-     const blob = await fetch(dataUrl).then(r => r.blob());
-     const file = new File([blob], 'edited-ocr.png', { type: 'image/png' });
      
-     toast.promise(
-        base44.integrations.Core.UploadFile({ file }),
-        {
-            loading: 'Saving image...',
-            success: (data) => {
-                onSave(data.file_url);
-                return 'Image saved successfully!';
-            },
-            error: 'Failed to save image'
-        }
-     );
+     try {
+       // Try to convert canvas to blob directly
+       const blob = await new Promise((resolve, reject) => {
+         canvasRef.current.toBlob((b) => {
+           if (b) resolve(b);
+           else reject(new Error('Failed to create blob'));
+         }, 'image/png');
+       });
+       
+       const file = new File([blob], 'edited-ocr.png', { type: 'image/png' });
+       
+       toast.promise(
+          base44.integrations.Core.UploadFile({ file }),
+          {
+              loading: 'Saving image...',
+              success: (data) => {
+                  onSave(data.file_url);
+                  return 'Image saved successfully!';
+              },
+              error: 'Failed to save image'
+          }
+       );
+     } catch (error) {
+       // Fallback: if canvas is tainted, use dataURL method
+       try {
+         const dataUrl = canvasRef.current.toDataURL('image/png');
+         const blob = await fetch(dataUrl).then(r => r.blob());
+         const file = new File([blob], 'edited-ocr.png', { type: 'image/png' });
+         
+         toast.promise(
+            base44.integrations.Core.UploadFile({ file }),
+            {
+                loading: 'Saving image...',
+                success: (data) => {
+                    onSave(data.file_url);
+                    return 'Image saved successfully!';
+                },
+                error: 'Failed to save image'
+            }
+         );
+       } catch (e) {
+         console.error('Canvas save error:', e);
+         toast.error('Cannot save edited image due to CORS restrictions. Try uploading the original image again.');
+       }
+     }
   };
 
   return (
