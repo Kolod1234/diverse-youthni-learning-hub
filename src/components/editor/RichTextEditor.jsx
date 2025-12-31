@@ -33,7 +33,7 @@ import {
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
   CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
-  Palette, Type, Space, Clock, ChevronDown, ChevronUp, LayoutTemplate
+  Palette, Type, Space, Clock, ChevronDown, ChevronUp, LayoutTemplate, Video, ExternalLink
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -1103,6 +1103,189 @@ const BranchingScenario = Node.create({
   addCommands() {
     return {
       insertBranchingScenario: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
+// Video Embed Extension
+const VideoEmbed = Node.create({
+  name: 'videoEmbed',
+  group: 'block',
+  atom: true,
+  selectable: true,
+  draggable: true,
+
+  addAttributes() {
+    return {
+      src: {
+        default: '',
+      },
+      platform: {
+        default: 'youtube', // youtube, vimeo, custom
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-video-embed]' }];
+  },
+
+  renderHTML({ node }) {
+    const { src, platform } = node.attrs;
+    
+    // Extract video ID and generate embed URL
+    let embedUrl = src;
+    if (platform === 'youtube') {
+      const youtubeRegex = /(?:youtube\.com\/(?:[^\/]+\/.+\/|(?:v|e(?:mbed)?)\/|.*[?&]v=)|youtu\.be\/)([^"&?\/\s]{11})/;
+      const match = src.match(youtubeRegex);
+      if (match) {
+        embedUrl = `https://www.youtube.com/embed/${match[1]}`;
+      }
+    } else if (platform === 'vimeo') {
+      const vimeoRegex = /vimeo\.com\/(?:channels\/(?:\w+\/)?|groups\/(?:[^\/]*)\/videos\/|album\/(?:\d+)\/video\/|)(\d+)/;
+      const match = src.match(vimeoRegex);
+      if (match) {
+        embedUrl = `https://player.vimeo.com/video/${match[1]}`;
+      }
+    }
+
+    return [
+      'div',
+      {
+        'data-video-embed': platform,
+        style: 'position: relative; background: #000; border-radius: 16px; overflow: hidden; margin: 16px 0; box-shadow: 0 4px 12px rgba(0,0,0,0.15);',
+      },
+      [
+        'button',
+        {
+          onclick: 'this.parentElement.remove()',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 20;',
+        },
+        '✕ Delete'
+      ],
+      [
+        'div',
+        { style: 'position: relative; padding-bottom: 56.25%; height: 0;' },
+        [
+          'iframe',
+          {
+            src: embedUrl,
+            style: 'position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: none;',
+            allow: 'accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture',
+            allowfullscreen: 'true',
+          }
+        ]
+      ]
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertVideoEmbed: (attrs) => ({ commands }) => {
+        return commands.insertContent({
+          type: this.name,
+          attrs,
+        });
+      },
+    };
+  },
+});
+
+// Link Preview Card Extension
+const LinkPreviewCard = Node.create({
+  name: 'linkPreviewCard',
+  group: 'block',
+  atom: true,
+  selectable: true,
+  draggable: true,
+
+  addAttributes() {
+    return {
+      url: {
+        default: '',
+      },
+      title: {
+        default: 'External Link',
+      },
+      description: {
+        default: 'Click to explore this resource',
+      },
+      image: {
+        default: '',
+      },
+    };
+  },
+
+  parseHTML() {
+    return [{ tag: 'div[data-link-preview]' }];
+  },
+
+  renderHTML({ node }) {
+    const { url, title, description, image } = node.attrs;
+
+    return [
+      'div',
+      {
+        'data-link-preview': '',
+        style: 'position: relative; background: white; border: 2px solid #E5E7EB; border-radius: 12px; overflow: hidden; margin: 16px 0; transition: all 0.3s; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.08);',
+        onclick: `window.open('${url}', '_blank')`,
+        onmouseover: "this.style.borderColor='#6366F1'; this.style.transform='translateY(-2px)'; this.style.boxShadow='0 4px 16px rgba(0,0,0,0.12)';",
+        onmouseout: "this.style.borderColor='#E5E7EB'; this.style.transform='translateY(0)'; this.style.boxShadow='0 2px 8px rgba(0,0,0,0.08)';",
+      },
+      [
+        'button',
+        {
+          onclick: 'event.stopPropagation(); this.parentElement.remove();',
+          style: 'position: absolute; top: 8px; right: 8px; background: #EF4444; color: white; border: none; border-radius: 6px; padding: 4px 8px; font-size: 11px; cursor: pointer; font-weight: 600; z-index: 10;',
+        },
+        '✕ Delete'
+      ],
+      [
+        'div',
+        { style: 'display: flex; gap: 16px; padding: 16px;' },
+        image ? [
+          'div',
+          { style: 'flex-shrink: 0;' },
+          [
+            'img',
+            {
+              src: image,
+              style: 'width: 120px; height: 80px; object-fit: cover; border-radius: 8px;',
+            }
+          ]
+        ] : null,
+        [
+          'div',
+          { style: 'flex: 1; min-width: 0;' },
+          [
+            'h4',
+            { style: 'font-size: 16px; font-weight: 600; color: #1F2937; margin: 0 0 8px 0; display: flex; items-center; gap: 8px;' },
+            ['span', { innerHTML: '🔗' }],
+            ['span', {}, title]
+          ],
+          [
+            'p',
+            { style: 'font-size: 14px; color: #6B7280; margin: 0 0 8px 0; line-height: 1.5;' },
+            description
+          ],
+          [
+            'div',
+            { style: 'font-size: 12px; color: #6366F1; font-weight: 500;' },
+            `→ ${new URL(url).hostname}`
+          ]
+        ]
+      ].filter(Boolean)
+    ];
+  },
+
+  addCommands() {
+    return {
+      insertLinkPreviewCard: (attrs) => ({ commands }) => {
         return commands.insertContent({
           type: this.name,
           attrs,
@@ -2429,14 +2612,49 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
                 }).run();
                 setShowInteractive(false);
               }}
-              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-pink-50 transition-colors text-left"
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-pink-50 transition-colors text-left mb-1"
             >
               <Zap className="w-4 h-4 text-pink-600" />
               <span className="text-sm font-medium text-gray-700">Branching Scenario</span>
             </button>
-          </div>
-          )}
-        </div>
+            <button
+              onClick={() => {
+                const url = window.prompt('Enter video URL (YouTube or Vimeo):');
+                if (url) {
+                  const platform = url.includes('youtube.com') || url.includes('youtu.be') ? 'youtube' : 
+                                 url.includes('vimeo.com') ? 'vimeo' : 'custom';
+                  editor.chain().focus().insertVideoEmbed({ src: url, platform }).run();
+                }
+                setShowInteractive(false);
+              }}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-red-50 transition-colors text-left mb-1"
+            >
+              <Video className="w-4 h-4 text-red-600" />
+              <span className="text-sm font-medium text-gray-700">Video Embed</span>
+            </button>
+            <button
+              onClick={() => {
+                const url = window.prompt('Enter link URL:');
+                if (url) {
+                  const title = window.prompt('Link title:', 'External Resource') || 'External Resource';
+                  const description = window.prompt('Description:', 'Click to explore') || 'Click to explore';
+                  editor.chain().focus().insertLinkPreviewCard({ 
+                    url, 
+                    title, 
+                    description,
+                    image: 'https://via.placeholder.com/120x80/6366F1/FFFFFF?text=Link'
+                  }).run();
+                }
+                setShowInteractive(false);
+              }}
+              className="w-full flex items-center gap-2 p-2 rounded-lg hover:bg-blue-50 transition-colors text-left"
+            >
+              <ExternalLink className="w-4 h-4 text-blue-600" />
+              <span className="text-sm font-medium text-gray-700">Link Preview Card</span>
+            </button>
+            </div>
+            )}
+            </div>
 
         <div className="relative">
           <MenuButton
