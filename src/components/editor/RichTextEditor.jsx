@@ -33,7 +33,7 @@ import {
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
   CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
-  Palette, Type, Space, Clock
+  Palette, Type, Space, Clock, ChevronDown, ChevronUp
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -1201,6 +1201,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
   const [showHighlightColor, setShowHighlightColor] = React.useState(false);
   const [showBorder, setShowBorder] = React.useState(false);
   const [showSpacing, setShowSpacing] = React.useState(false);
+  const [toolbarCollapsed, setToolbarCollapsed] = React.useState(false);
+  const [symbolsCollapsed, setSymbolsCollapsed] = React.useState(false);
   
   const editor = useEditor({
     extensions: [
@@ -1505,13 +1507,24 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     <div className="rich-text-editor-wrapper">
       {label && <Label className="mb-2 block">{label}</Label>}
       
+      {/* Toolbar Toggle */}
+      <button
+        onClick={() => setToolbarCollapsed(!toolbarCollapsed)}
+        className="w-full bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-t-lg px-3 py-1 flex items-center justify-between text-xs font-medium text-gray-600 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          <LayoutTemplate className="w-3 h-3" />
+          Format Toolbar
+        </span>
+        {toolbarCollapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+      </button>
+      
       <style>
         {`
           .rich-text-editor-wrapper .ProseMirror {
             background: white;
             border: 1px solid #e5e7eb;
             border-top: none;
-            border-radius: 0 0 0.5rem 0.5rem;
             font-size: 15px;
             line-height: 1.6;
           }
@@ -1766,7 +1779,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       </style>
       
       {/* Toolbar */}
-      <div className="bg-gray-50 border border-gray-200 rounded-t-lg p-2 flex flex-wrap gap-1">
+      {!toolbarCollapsed && (
+      <div className="bg-gray-50 border border-gray-200 border-t-0 p-2 flex flex-wrap gap-1">
         <MenuButton
           onClick={() => editor.chain().focus().undo().run()}
           title="Undo"
@@ -2571,11 +2585,25 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
             )}
         </div>
       </div>
+      )}
       
       {/* Editor */}
       <EditorContent editor={editor} />
       
+      {/* Symbol Picker Toggle */}
+      <button
+        onClick={() => setSymbolsCollapsed(!symbolsCollapsed)}
+        className="w-full bg-gray-100 hover:bg-gray-200 border border-gray-200 border-t-0 px-3 py-1 flex items-center justify-between text-xs font-medium text-gray-600 transition-colors"
+      >
+        <span className="flex items-center gap-2">
+          <Square className="w-3 h-3" />
+          Quick Insert Symbols
+        </span>
+        {symbolsCollapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
+      </button>
+      
       {/* Symbol Picker */}
+      {!symbolsCollapsed && (
       <div className="symbol-picker">
         <div className="symbol-section">
           <div className="symbol-section-title">Quick Insert Symbols</div>
@@ -2689,6 +2717,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           </div>
         </details>
       </div>
+      )}
     </div>
   );
 }
