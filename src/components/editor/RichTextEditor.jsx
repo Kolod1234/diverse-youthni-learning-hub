@@ -33,7 +33,7 @@ import {
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
   CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
-  Palette, Type, Space, Clock, ChevronDown, ChevronUp
+  Palette, Type, Space, Clock, ChevronDown, ChevronUp, LayoutTemplate
 } from 'lucide-react';
 
 const SYMBOLS = {
