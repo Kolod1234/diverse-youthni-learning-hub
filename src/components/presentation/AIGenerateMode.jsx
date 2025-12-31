@@ -66,24 +66,37 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       toast.info(`📝 Analyzing detected text: "${text.slice(0, 50)}..."`, { duration: 3000 });
 
-      // Verify spelling with LLM
+      // Verify spelling with LLM - ULTRA STRICT MODE
       const verificationResult = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are a spelling verification AI for educational content.
+        prompt: `You are an ULTRA-STRICT spelling verification AI for educational content.
 
 CONTEXT: ${slideContext}
 
-DETECTED TEXT FROM IMAGE: "${text}"
+DETECTED TEXT FROM IMAGE (raw OCR output): 
+"${text}"
 
-TASK: Check if ALL words are spelled correctly. Be STRICT.
+🎯 MISSION: Verify EVERY SINGLE WORD is spelled 100% correctly.
 
-RULES:
-1. Scientific/technical terms must be EXACTLY correct
-2. Common words must be dictionary-correct
-3. Ignore symbols, numbers, punctuation
-4. Report ANY misspelling, no matter how minor
-5. OCR can confuse similar letters (l/I, 0/O, 5/S) - check carefully
+📚 VERIFICATION RULES (ZERO TOLERANCE):
+1. ✅ Check against standard English dictionary
+2. ✅ Verify scientific/technical terms (e.g., "photosynthesis", "evaporation", "condensation")
+3. ✅ Flag common OCR errors:
+   - "TRANSIPRATION" → should be "TRANSPIRATION"
+   - "CONDENSTATION" → should be "CONDENSATION"
+   - "PRECIPATION" → should be "PRECIPITATION"
+   - "INFILITRATION" → should be "INFILTRATION"
+   - Letter substitutions: I/L, O/0, S/5, B/8, etc.
+4. ✅ Ignore: numbers, symbols, punctuation
+5. ✅ Case-insensitive comparison (EVAPORATION = evaporation)
+6. ✅ Report EVERY error - no threshold, no mercy
 
-Respond with JSON only.`,
+⚠️ EXAMPLES OF ERRORS TO CATCH:
+- Missing letters: "EVAPORATON" (missing I)
+- Wrong letters: "CONDENSTION" (missing A)
+- Letter swaps: "PRECIPITAION" (I and T swapped)
+- OCR confusion: "COLL3CTION" (3 should be E)
+
+Return JSON with ALL detected errors.`,
         response_json_schema: {
           type: "object",
           properties: {
@@ -94,11 +107,13 @@ Respond with JSON only.`,
                 type: "object",
                 properties: {
                   wrong: { type: "string" },
-                  correct: { type: "string" }
+                  correct: { type: "string" },
+                  position: { type: "string" }
                 }
               }
             },
-            severity: { type: "string", enum: ["none", "minor", "critical"] }
+            severity: { type: "string", enum: ["none", "minor", "critical"] },
+            total_words_checked: { type: "number" }
           },
           required: ["has_errors", "misspelled_words", "severity"]
         }
@@ -128,15 +143,33 @@ Respond with JSON only.`,
         .map(e => `CORRECT: "${e.correct}" (NOT "${e.wrong}")`)
         .join('\n');
 
-      const correctedPrompt = `${originalPrompt}
+      const correctedPrompt = `⚠️ REGENERATION REQUIRED - SPELLING ERRORS DETECTED ⚠️
 
-🚨 CRITICAL SPELLING CORRECTIONS 🚨
-Previous generation had these spelling errors:
+Original request: ${originalPrompt}
+
+🚨 CRITICAL CORRECTIONS (MANDATORY) 🚨
+The previous image had UNACCEPTABLE spelling errors that will MISINFORM students:
+
 ${correctionInstructions}
 
-MANDATORY: Use ONLY these exact spellings. Verify each letter.
-Style: Vector text (sharp, clean edges). NO artistic/painted text.
-Quality: Professional educational standard.`;
+📋 STRICT REQUIREMENTS FOR THIS ATTEMPT:
+1. ✅ Spell each word LETTER BY LETTER correctly
+2. ✅ Use ONLY the correct spellings listed above
+3. ✅ Double-check BEFORE rendering
+4. ✅ Treat text as TYPED DATA, not painted art
+5. ✅ Use clear, readable sans-serif fonts
+6. ✅ High contrast (black text on light background)
+7. ✅ NO artistic distortion of letters
+8. ✅ Each word must match English dictionary EXACTLY
+
+🎯 VERIFICATION CHECKLIST (before submitting):
+- [ ] Compared each word to correct spelling above
+- [ ] Verified letter-by-letter accuracy
+- [ ] Used clear, legible typography
+- [ ] Text is sharp and readable
+
+⚡ THIS IS ATTEMPT ${3 - maxRetries} OF 3. Get it right this time.
+Educational accuracy is NON-NEGOTIABLE.`;
 
       console.log('Regenerating with corrected prompt:', correctedPrompt);
 
@@ -580,48 +613,69 @@ Educational Context:
                       generatedImage = { url: result.data.url };
                     }
                   } else if (imageGenerator === 'base44-pro') {
-                    // Use Base44 AI Pro with advanced spelling optimization
+                    // Use Base44 AI Pro with MAXIMUM spelling enforcement
                     let base44ProPrompt;
-                    
+
+                    // Extract key terms from the prompt for verification
+                    const keyTerms = slide.image_prompt.match(/\b[A-Za-z]{4,}\b/g) || [];
+                    const scientificTerms = keyTerms.filter(term => 
+                      /^[A-Z]|tion|sion|ation|ence|ance|ment|ness/.test(term)
+                    );
+
                     if (architectPrompt) {
                       // Use Text Layout Architect prompt structure
                       base44ProPrompt = `${architectPrompt}
 
-Educational Context:
-- Topic: ${topic} - ${slide.title}
-- Level: ${levelInstructions[educationLevel]}
-- Purpose: ${slide.image_prompt}
+                  Educational Context:
+                  - Topic: ${topic} - ${slide.title}
+                  - Level: ${levelInstructions[educationLevel]}
+                  - Purpose: ${slide.image_prompt}
 
-CRITICAL: All text must be treated as VECTOR DATA, not painted imagery. Spelling errors will mislead students.`;
+                  🚨 ABSOLUTE TEXT ACCURACY REQUIREMENT 🚨
+                  Expected key terms: ${scientificTerms.join(', ')}
+                  VERIFY spelling of EVERY word before rendering.
+                  Treat text as DATABASE ENTRIES - zero tolerance for errors.`;
                     } else if (enforceSpelling) {
-                      // Enhanced prompt using Text Layout Architect methodology
-                      base44ProPrompt = `Request: Create a professional educational diagram showing ${slide.image_prompt}
+                      // MAXIMUM enforcement prompt
+                      base44ProPrompt = `🎯 MISSION: Create educational diagram for "${slide.image_prompt}"
 
-Style: Vector Illustration / High-Contrast Graphic Design. Text must be flat, sharp, and 2D.
+                  ⚠️ TEXT IS MISSION-CRITICAL DATA ⚠️
+                  This is EDUCATIONAL CONTENT. Students will memorize these words.
+                  ONE spelling error = ONE misinformed student = FAILURE.
 
---- TYPOGRAPHY RULES (STRICT) ---
-1. TEXT IS CRITICAL DATA: Treat all text as "Vector Data" distinct from the background
-2. SPELLING VERIFICATION: Use ONLY verified dictionary words. Scientific terms: ${slide.image_prompt.match(/\b[A-Z][a-z]+\b/g)?.join(', ') || 'verify all terms'}
-3. KERNING: Uniform spacing between letters - no irregular gaps
-4. ANTI-ALIASING: Text edges must be sharp and clean, not blurry or painterly
-5. LEGIBILITY: Bold, high-contrast fonts suitable for classroom projection
-6. ERROR CHECK: Do NOT generate "simulated" text (squiggles). If text is too small to read clearly, leave it blank
-7. NO HALLUCINATION: Each letter must be intentional and correct
+                  📋 EXPECTED TERMS (verify each letter):
+                  ${scientificTerms.length > 0 ? scientificTerms.map(t => `• ${t.toUpperCase()}`).join('\n') : '• Verify ALL words in image'}
 
-Educational Context:
-- Topic: ${topic} - ${slide.title}
-- Audience: ${levelInstructions[educationLevel]}
-- Purpose: Students will learn from this - accuracy is MANDATORY
-- Quality Standard: Professional textbook/classroom poster quality
+                  🎨 RENDERING REQUIREMENTS:
+                  1. TEXT TYPE: Vector/Typography layer (NOT painted/artistic text)
+                  2. FONT: Sans-serif, bold, 18pt+ minimum
+                  3. CONTRAST: Black on white OR white on dark (minimum 4.5:1 ratio)
+                  4. SPACING: 120% line height, clear kerning
+                  5. EDGES: Sharp, crisp anti-aliasing (no blur, no artistic effects)
+                  6. PLACEMENT: Horizontal text (no rotation/warping/artistic transforms)
+                  7. QUALITY: Textbook/worksheet standard
 
-REMEMBER: This is educational material. Spelling errors = misinformation = student confusion.`;
+                  🔍 PRE-GENERATION CHECKLIST:
+                  - [ ] Spell-check EVERY word before rendering
+                  - [ ] Verify scientific terminology accuracy
+                  - [ ] Confirm letter-by-letter accuracy
+                  - [ ] No artistic font distortions
+                  - [ ] Text is readable at thumbnail size
+
+                  📚 CONTEXT:
+                  Topic: ${topic} - ${slide.title}
+                  Level: ${levelInstructions[educationLevel]}
+                  Purpose: ${slide.image_prompt}
+
+                  ⚡ REMEMBER: You are creating REFERENCE MATERIAL for students.
+                  Spelling accuracy = 100% mandatory. No exceptions.`;
                     } else {
                       base44ProPrompt = `Create a high-resolution professional educational diagram of: ${slide.image_prompt}
 
-Educational Context:
-- Topic: ${topic} - ${slide.title}
-- Level: ${levelInstructions[educationLevel]}
-- Style: Professional, high-quality educational diagram suitable for classroom use`;
+                  Educational Context:
+                  - Topic: ${topic} - ${slide.title}
+                  - Level: ${levelInstructions[educationLevel]}
+                  - Style: Professional, high-quality educational diagram suitable for classroom use`;
                     }
 
                     generatedImage = await base44.integrations.Core.GenerateImage({
