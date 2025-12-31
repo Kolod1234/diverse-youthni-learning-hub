@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { query, model = 'sonar' } = await req.json();
+    const { query, searchDepth = 'standard' } = await req.json();
 
     if (!query) {
       return Response.json({ error: 'Query is required' }, { status: 400 });
@@ -23,6 +23,14 @@ Deno.serve(async (req) => {
       }, { status: 500 });
     }
 
+    // Map searchDepth to Perplexity models
+    const modelMap = {
+      'basic': 'sonar',
+      'standard': 'sonar-pro',
+      'advanced': 'sonar-pro'
+    };
+    const model = modelMap[searchDepth] || 'sonar-pro';
+
     // Call Perplexity API
     const response = await fetch('https://api.perplexity.ai/chat/completions', {
       method: 'POST',
@@ -35,13 +43,14 @@ Deno.serve(async (req) => {
         messages: [
           {
             role: 'system',
-            content: 'You are a helpful educational assistant that provides accurate, well-researched information with citations.'
+            content: 'You are a precise JSON generator. You MUST return ONLY valid JSON, no markdown, no explanations, no extra text.'
           },
           {
             role: 'user',
             content: query
           }
-        ]
+        ],
+        temperature: 0.2
       })
     });
 
