@@ -283,67 +283,109 @@ ${details ? `Additional Context: ${details}` : ''}
 5. Build logical flow from foundational concepts to advanced insights
 6. Identify key debates, controversies, or evolving understanding in the field
 
-🎨 PREMIUM SLIDE DESIGN STANDARDS:
-- Rich, modern HTML formatting with professional styling
-- Clear visual hierarchy: <h2> for main headings, <h3> for subheadings
-- Styled callout boxes: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: white; margin: 16px 0;">
-- Key points in colored cards: <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; margin: 12px 0;">
-- Statistics in highlight boxes: <div style="background: #fef3c7; padding: 12px; border-radius: 8px; font-weight: 600;">
-- Use <strong> for emphasis, proper <ul>/<li> lists with spacing
-- Add section dividers: <hr style="border: none; height: 2px; background: linear-gradient(to right, #3b82f6, transparent); margin: 24px 0;">
+🎨 PREMIUM SLIDE DESIGN - MANDATORY STYLING ELEMENTS:
+
+TITLE SECTION (Always include at top of each slide):
+<div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 24px; border-radius: 16px; margin-bottom: 24px; box-shadow: 0 8px 16px rgba(102, 126, 234, 0.3);">
+  <h2 style="color: white; font-size: 28px; font-weight: 700; margin: 0;">[Slide Title]</h2>
+</div>
+
+KEY CONCEPTS BOX (Use for main points):
+<div style="background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%); padding: 20px; border-radius: 12px; color: white; margin: 20px 0; box-shadow: 0 4px 12px rgba(245, 87, 108, 0.3);">
+  <h3 style="color: white; font-size: 20px; font-weight: 600; margin: 0 0 12px 0;">✨ Key Concepts</h3>
+  <ul style="margin: 0; padding-left: 20px; line-height: 1.8;">
+    <li>Concept 1</li>
+    <li>Concept 2</li>
+  </ul>
+</div>
+
+INFORMATION CARDS (For detailed explanations):
+<div style="background: linear-gradient(to right, #f8fafc, #e0e7ff); border-left: 5px solid #3b82f6; padding: 20px; margin: 16px 0; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);">
+  <h3 style="color: #1e40af; font-size: 18px; font-weight: 600; margin: 0 0 12px 0;">📌 Section Title</h3>
+  <p style="color: #334155; line-height: 1.7; margin: 0;">[Content here]</p>
+</div>
+
+STATISTICS/FACTS BOX:
+<div style="background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%); padding: 16px; border-radius: 10px; border: 2px solid #fbbf24; margin: 16px 0; box-shadow: 0 2px 8px rgba(251, 191, 36, 0.2);">
+  <strong style="color: #92400e; font-size: 16px;">💡 Did You Know?</strong>
+  <p style="color: #78350f; margin: 8px 0 0 0; line-height: 1.6;">[Interesting fact]</p>
+</div>
+
+EXAMPLE/CASE STUDY BOX:
+<div style="background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%); padding: 18px; border-radius: 10px; border-left: 4px solid #10b981; margin: 16px 0; box-shadow: 0 2px 8px rgba(16, 185, 129, 0.2);">
+  <strong style="color: #065f46; font-size: 16px;">🔬 Real-World Example</strong>
+  <p style="color: #064e3b; margin: 8px 0 0 0; line-height: 1.6;">[Example content]</p>
+</div>
+
+BULLET POINTS (Use styled lists):
+<ul style="list-style: none; padding: 0; margin: 16px 0;">
+  <li style="background: white; padding: 12px 16px; margin: 8px 0; border-radius: 8px; border-left: 3px solid #8b5cf6; box-shadow: 0 2px 4px rgba(0,0,0,0.05);">
+    <strong style="color: #6d28d9;">Point 1:</strong> <span style="color: #4b5563;">Description</span>
+  </li>
+</ul>
+
+DIVIDER (Between sections):
+<hr style="border: none; height: 3px; background: linear-gradient(to right, #3b82f6, #8b5cf6, transparent); margin: 24px 0; border-radius: 2px;">
+
+MANDATORY: Use ALL these styling elements in EVERY slide. Make slides visually stunning with gradients, colors, shadows, and proper spacing.
 
 ${includeImages ? `
-🖼️ IMAGE GENERATION INSTRUCTIONS (CRITICAL):
-For each slide, provide TWO fields:
-1. "image_prompt": Detailed, specific prompt for generating MEANINGFUL educational visual
-   - Describe EXACTLY what should be shown (specific diagram, chart, concept visualization)
-   - Specify style: "Professional educational diagram", "Clean infographic", "Scientific illustration"
-   - Include labels/text that should appear: "Label axes as X and Y", "Show stages: Stage 1, Stage 2, Stage 3"
-   - Context: What concept is being explained
-   - Example: "Educational diagram showing the water cycle with clearly labeled stages: EVAPORATION (from ocean), CONDENSATION (clouds forming), PRECIPITATION (rain falling), COLLECTION (water gathering). Professional style with arrows showing flow. Blue color scheme."
+🖼️ IMAGE GENERATION INSTRUCTIONS (MANDATORY FOR EVERY SLIDE):
 
-2. "image_description": Brief caption for the image (what it represents)
+For EACH slide, you MUST provide:
+1. "image_prompt": Ultra-detailed prompt for Manus AI image generation
+   
+   FORMAT EXAMPLE FOR SCIENTIFIC TOPICS:
+   "Professional educational diagram showing [EXACT CONCEPT]. Include clearly labeled components: [LIST ALL LABELS]. Show [SPECIFIC PROCESS/RELATIONSHIP]. Style: Clean scientific illustration with blue and purple color scheme, white background, clear typography for labels, arrows showing flow/relationships. Educational poster quality."
 
-⚠️ IMAGE QUALITY RULES:
-- Generate ONLY educational, meaningful visuals (NO generic stock photos)
-- Each image must directly support the slide's educational content
-- For processes: show clear step-by-step flow diagrams
-- For comparisons: show side-by-side visual comparisons
-- For data: request specific charts/graphs with labeled axes
-- For concepts: show annotated diagrams with clear labels
+   FORMAT EXAMPLE FOR DATA/PROCESSES:
+   "Infographic illustrating [TOPIC] with [NUMBER] distinct sections. Section 1: [DETAIL], Section 2: [DETAIL]. Use icons, clear headings, color-coded elements (blue for X, green for Y). Modern flat design, professional layout."
+
+   FORMAT EXAMPLE FOR CONCEPTS:
+   "Conceptual diagram explaining [CONCEPT]. Show [VISUAL METAPHOR] with labeled parts: [LABELS]. Include text boxes with key definitions. Visual style: Modern educational graphic with gradient background, clean sans-serif fonts."
+
+2. "image_description": Brief caption (e.g., "Diagram showing DNA structure with labeled components")
+
+⚠️ CRITICAL IMAGE RULES:
+- EVERY slide needs a relevant, educational image
+- NO generic stock photos - only specific educational diagrams
+- Describe EXACT visual elements, labels, colors, layout
+- Specify what text/labels should appear in the image
+- Images must teach something, not just decorate
 ` : ''}
 
-📊 CONTENT DEPTH REQUIREMENTS:
-- Each slide should have 150-300 words of substantive content
-- Include real examples, case studies, or scenarios
-- Add "Did you know?" boxes with interesting facts
-- Include practical applications or real-world relevance
-- For scientific topics: explain mechanisms, not just definitions
-- For historical topics: provide context, causes, effects
-- For abstract concepts: use concrete analogies and examples
+📊 CONTENT STRUCTURE FOR EACH SLIDE:
+1. Gradient header with title
+2. Key concepts box (if applicable)
+3. Main content in styled information cards
+4. Did you know box with interesting fact
+5. Real-world example or case study
+6. Styled bullet points for takeaways
+7. Section dividers between major points
 
-CRITICAL: Return ONLY valid JSON in this EXACT format:
+CRITICAL: Return ONLY valid JSON:
 {
   "slides": [
     {
-      "title": "Compelling, clear title",
-      "content": "RICH HTML content with modern styling, gradients, callout boxes, proper headings, structured lists, and visual hierarchy",
+      "title": "Slide Title",
+      "content": "<div style='background: linear-gradient...'>[FULL RICH HTML WITH ALL STYLING ELEMENTS ABOVE]</div>",
       "order": 1,
-      ${includeImages ? '"image_prompt": "Extremely detailed educational visual description with specific labels and style requirements",' : ''}
-      ${includeImages ? '"image_description": "Brief caption describing what the image shows",' : ''}
-      "key_concepts": ["concept1", "concept2", "concept3"]
+      ${includeImages ? '"image_prompt": "Ultra-detailed educational image description with specific labels, colors, style, and layout requirements",' : ''}
+      ${includeImages ? '"image_description": "Brief caption"' : ''}
     }
   ]
 }
 
-🎯 QUALITY CHECKLIST (verify before submitting):
-✓ Deep research with specific, accurate information
-✓ Logical flow building from fundamentals to complexity
-✓ Modern, visually appealing HTML formatting
-✓ Rich styling with gradients, cards, and callouts
-✓ Meaningful, educational image prompts (no generic visuals)
-✓ Each slide teaches something specific and valuable
-✓ Content is comprehensive yet accessible for target audience`,
+🎯 FINAL CHECKLIST:
+✓ Used gradient header for title
+✓ Included key concepts box
+✓ Added information cards with gradients
+✓ Included "Did you know?" fact box
+✓ Added real-world example box
+✓ Used styled bullet points
+✓ Added section dividers
+✓ Rich colors, gradients, shadows throughout
+${includeImages ? '✓ Detailed image prompt with specific visual requirements' : ''}`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -356,10 +398,6 @@ CRITICAL: Return ONLY valid JSON in this EXACT format:
                     title: { type: "string" },
                     content: { type: "string" },
                     order: { type: "number" },
-                    key_concepts: { 
-                      type: "array",
-                      items: { type: "string" }
-                    },
                     ...(includeImages ? {
                       image_prompt: { type: "string" },
                       image_description: { type: "string" }
@@ -487,40 +525,42 @@ Return ONLY valid JSON.`,
 
       // Add AI-generated images if requested
       if (includeImages && useManusImages) {
-        toast.info('Generating educational diagrams with Manus AI...');
-          
+        toast.info('🎨 Generating high-quality educational images with Manus AI...');
+        
+        let completedCount = 0;
         slides = await Promise.all(
           slides.map(async (slide) => {
             if (slide.image_prompt) {
               try {
-                const manusPrompt = `Educational diagram: ${slide.image_prompt}
-
-Style: Clear, professional educational illustration
-Requirements: High quality, accurate visual representation
-Context: ${topic} - ${slide.title}`;
-
                 const result = await base44.functions.invoke('generateImageWithManus', {
-                  prompt: manusPrompt,
+                  prompt: slide.image_prompt,
                   aspect_ratio: '16:9'
                 });
 
+                completedCount++;
+                toast.info(`Generated image ${completedCount}/${slides.length}`, { duration: 2000 });
+
                 if (result?.data?.url) {
                   const imageDescription = slide.image_description || slide.title;
-                  const contentWithImage = `<div style="text-align: center; margin-bottom: 24px;">
-                    <img src="${result.data.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 16px rgba(0,0,0,0.15);" />
-                    <p style="font-size: 14px; color: #64748b; margin-top: 8px; font-style: italic;">${imageDescription}</p>
-                  </div>${slide.content}`;
+                  const contentWithImage = `
+<div style="text-align: center; margin: 28px 0; padding: 20px; background: linear-gradient(135deg, #f8fafc 0%, #e0e7ff 100%); border-radius: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+  <img src="${result.data.url}" alt="${imageDescription}" style="max-width: 100%; height: auto; border-radius: 12px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); border: 4px solid white;" />
+  <p style="font-size: 15px; color: #475569; margin-top: 16px; font-weight: 500; font-style: italic;">📊 ${imageDescription}</p>
+</div>
+${slide.content}`;
 
                   return { ...slide, content: contentWithImage };
                 }
               } catch (error) {
-                console.error('Failed to generate image:', error);
-                toast.error(`Image generation failed: ${error.message}`);
+                console.error('Failed to generate image for slide:', slide.title, error);
+                toast.error(`Image generation failed for "${slide.title}"`);
               }
             }
             return slide;
           })
         );
+        
+        toast.success(`✅ Generated ${completedCount} educational images!`);
       }
 
       setGeneratedSlides(slides);
