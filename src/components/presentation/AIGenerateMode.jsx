@@ -361,7 +361,13 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
           if (jsonMatch) {
             response = JSON.parse(jsonMatch[0]);
             toast.success('Advanced content generated with Manus AI!');
+          } else {
+            console.error('No JSON found in Manus response:', content);
+            toast.error('Failed to parse Manus response');
           }
+        } else {
+          console.error('No text in Manus response:', manusResult);
+          toast.error('Manus returned no content');
         }
       }
 
