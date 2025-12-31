@@ -4,10 +4,9 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Upload, Database, Sparkles, BarChart3, Download, Save, BookOpen, Plus, Code } from 'lucide-react';
+import { Upload, Database, BarChart3, Save, BookOpen, Code } from 'lucide-react';
 import FileUploadMode from '@/components/presentation/FileUploadMode';
 import EntityDataMode from '@/components/presentation/EntityDataMode';
-import AIGenerateMode from '@/components/presentation/AIGenerateMode';
 import CodeToSlidesMode from '@/components/presentation/CodeToSlidesMode';
 import SlideEditor from '@/components/editor/SlideEditor';
 import { toast } from 'sonner';
@@ -144,7 +143,7 @@ export default function DataPresentation() {
           <div>
             <Card className="p-6">
               <Tabs value={activeMode} onValueChange={setActiveMode}>
-                <TabsList className="grid w-full grid-cols-4 mb-6">
+                <TabsList className="grid w-full grid-cols-3 mb-6">
                   <TabsTrigger value="upload" className="gap-2">
                     <Upload className="w-4 h-4" />
                     Upload File
@@ -152,10 +151,6 @@ export default function DataPresentation() {
                   <TabsTrigger value="entity" className="gap-2">
                     <Database className="w-4 h-4" />
                     From Data
-                  </TabsTrigger>
-                  <TabsTrigger value="ai" className="gap-2">
-                    <Sparkles className="w-4 h-4" />
-                    AI Generate
                   </TabsTrigger>
                   <TabsTrigger value="code" className="gap-2">
                     <Code className="w-4 h-4" />
@@ -169,10 +164,6 @@ export default function DataPresentation() {
 
                 <TabsContent value="entity">
                   <EntityDataMode onSlidesGenerated={setGeneratedSlides} />
-                </TabsContent>
-
-                <TabsContent value="ai">
-                  <AIGenerateMode onSlidesGenerated={setGeneratedSlides} />
                 </TabsContent>
 
                 <TabsContent value="code">
