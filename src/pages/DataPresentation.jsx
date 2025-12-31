@@ -136,120 +136,13 @@ export default function DataPresentation() {
             </Card>
           </div>
         ) : (
-          <div className="h-screen -mt-8 -mx-4">
-            <Card className="h-full rounded-none border-0">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold text-gray-900">
-                  Generated Slides {generatedSlides.length > 0 && `(${generatedSlides.length})`}
-                </h2>
-                {generatedSlides.length > 0 && (
-                  <div className="flex gap-2">
-                    <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
-                      <DialogTrigger asChild>
-                        <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Add to Course
-                        </Button>
-                      </DialogTrigger>
-                      <DialogContent>
-                        <DialogHeader>
-                          <DialogTitle>Add Slides to Course</DialogTitle>
-                        </DialogHeader>
-                        <div className="space-y-4 py-4">
-                          <div>
-                            <Label>Select Course *</Label>
-                            <Select value={selectedCourse} onValueChange={setSelectedCourse}>
-                              <SelectTrigger>
-                                <SelectValue placeholder="Choose a course" />
-                              </SelectTrigger>
-                              <SelectContent>
-                                {courses.map(course => (
-                                  <SelectItem key={course.id} value={course.id}>
-                                    {course.title}
-                                  </SelectItem>
-                                ))}
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          <div>
-                            <Label>Lesson Action</Label>
-                            <Select value={lessonMode} onValueChange={setLessonMode}>
-                              <SelectTrigger>
-                                <SelectValue />
-                              </SelectTrigger>
-                              <SelectContent>
-                                <SelectItem value="new">Create New Lesson</SelectItem>
-                                <SelectItem value="replace">Replace Existing Lesson</SelectItem>
-                              </SelectContent>
-                            </Select>
-                          </div>
-
-                          {lessonMode === 'new' ? (
-                            <div>
-                              <Label>New Lesson Title *</Label>
-                              <Input
-                                value={newLessonTitle}
-                                onChange={(e) => setNewLessonTitle(e.target.value)}
-                                placeholder="Enter lesson title"
-                              />
-                            </div>
-                          ) : (
-                            <div>
-                              <Label>Select Lesson to Replace *</Label>
-                              <Select value={selectedLesson} onValueChange={setSelectedLesson}>
-                                <SelectTrigger>
-                                  <SelectValue placeholder="Choose a lesson" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                  {lessons.map(lesson => (
-                                    <SelectItem key={lesson.id} value={lesson.id}>
-                                      {lesson.title}
-                                    </SelectItem>
-                                  ))}
-                                </SelectContent>
-                              </Select>
-                            </div>
-                          )}
-
-                          <Button
-                            onClick={addToCourse}
-                            disabled={saving}
-                            className="w-full"
-                          >
-                            {saving ? 'Saving...' : lessonMode === 'new' ? 'Create Lesson' : 'Update Lesson'}
-                          </Button>
-                        </div>
-                      </DialogContent>
-                    </Dialog>
-
-                    <Button
-                      onClick={saveAsTemplate}
-                      variant="outline"
-                      size="sm"
-                    >
-                      <Save className="w-4 h-4 mr-2" />
-                      Save as Template
-                    </Button>
-                  </div>
-                )}
-              </div>
-
-              {generatedSlides.length === 0 ? (
-                <div className="text-center py-20 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300">
-                  <BarChart3 className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-500 mb-2">No slides generated yet</p>
-                  <p className="text-sm text-gray-400">Enter a topic to get started</p>
-                </div>
-              ) : (
-                <SlideWorkspace
-                  initialSlides={generatedSlides}
-                  onChange={setGeneratedSlides}
-                />
-              )}
-            </Card>
-            </div>
-            )}
+          <div className="fixed inset-0 z-50 bg-white">
+            <SlideWorkspace
+              initialSlides={generatedSlides}
+              onChange={setGeneratedSlides}
+            />
+          </div>
+        )}
       </div>
     </div>
   );

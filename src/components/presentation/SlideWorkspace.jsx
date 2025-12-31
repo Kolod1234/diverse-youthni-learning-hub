@@ -136,14 +136,15 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10">
           <div className="flex items-center gap-2 text-slate-500">
             <LayoutTemplate className="w-5 h-5" />
-            <span className="text-sm">Editor Mode</span>
+            <span className="text-sm">Slide Editor</span>
           </div>
           <div className="flex items-center gap-3">
-             <Button variant="outline" size="sm">
-               <MonitorPlay className="w-4 h-4 mr-2" /> Present
-             </Button>
-             <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700">
-               <Save className="w-4 h-4 mr-2" /> Save Deck
+             <Button 
+               variant="outline" 
+               size="sm"
+               onClick={() => window.location.reload()}
+             >
+               Exit Editor
              </Button>
           </div>
         </header>
