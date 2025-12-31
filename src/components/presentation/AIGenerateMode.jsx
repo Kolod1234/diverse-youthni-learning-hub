@@ -46,20 +46,29 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       Generate exactly ${slideCount} slides.
 
+      CRITICAL: Create DETAILED, COMPREHENSIVE content for each slide:
+      - Write 4-6 bullet points per slide with DETAILED explanations (not just one-line summaries)
+      - Each bullet point should be 2-3 sentences with specific information, examples, and context
+      - Include relevant facts, statistics, definitions, and real-world applications
+      - For code: Include full working examples with explanations
+      - For math: Show complete solutions with step-by-step reasoning
+      - For history: Provide detailed context, causes, effects, and significance
+
       Format requirements for 'content':
-      - Return semantic HTML (<ul>, <li>, <p>, <strong>, <pre>, <code>)
+      - Return semantic HTML (<ul>, <li>, <p>, <strong>, <em>, <pre>, <code>, <h3>, <h4>)
       - DO NOT use inline styles (style="...")
       - DO NOT include <img> tags in the content
-      - Keep text concise (bullet points preferred)
-      - For code content type: Include practical code examples
+      - Use <strong> for emphasis and key terms
+      - Use subheadings (<h4>) to organize complex information
+      - For code content type: Include practical code examples in <pre><code> blocks
       - For math content type: Include formulas and equations
       - For history content type: Include dates and timelines
 
       For each slide return:
       - title: string
-      - content: html string
+      - content: html string (detailed, not summary)
       - imagePrompt: string (visual description for an image)
-      ${includeSpeakerNotes ? '- speakerNotes: string (detailed talking points for the presenter, 2-3 sentences)' : ''}
+      ${includeSpeakerNotes ? '- speakerNotes: string (detailed talking points for the presenter, 3-4 sentences)' : ''}
 
       Return JSON with a "slides" array.`;
 

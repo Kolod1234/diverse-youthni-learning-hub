@@ -41,7 +41,55 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [newLessonTitle, setNewLessonTitle] = useState('');
   const [templateName, setTemplateName] = useState('');
   const [saving, setSaving] = useState(false);
+  const [theme, setTheme] = useState('modern');
   const activeSlide = slides[currentSlideIndex];
+
+  const themes = {
+    modern: {
+      name: 'Modern',
+      gradient: 'from-indigo-500 via-purple-500 to-pink-500',
+      bg: 'bg-white',
+      text: 'text-slate-800',
+      accent: 'text-indigo-600'
+    },
+    dark: {
+      name: 'Dark',
+      gradient: 'from-slate-700 via-slate-800 to-slate-900',
+      bg: 'bg-slate-900',
+      text: 'text-slate-100',
+      accent: 'text-cyan-400'
+    },
+    ocean: {
+      name: 'Ocean',
+      gradient: 'from-blue-400 via-teal-500 to-cyan-600',
+      bg: 'bg-gradient-to-br from-blue-50 to-cyan-50',
+      text: 'text-blue-900',
+      accent: 'text-blue-600'
+    },
+    sunset: {
+      name: 'Sunset',
+      gradient: 'from-orange-400 via-red-500 to-pink-600',
+      bg: 'bg-gradient-to-br from-orange-50 to-pink-50',
+      text: 'text-orange-900',
+      accent: 'text-orange-600'
+    },
+    forest: {
+      name: 'Forest',
+      gradient: 'from-green-500 via-emerald-600 to-teal-700',
+      bg: 'bg-gradient-to-br from-green-50 to-emerald-50',
+      text: 'text-green-900',
+      accent: 'text-green-600'
+    },
+    minimal: {
+      name: 'Minimal',
+      gradient: 'from-gray-300 via-gray-400 to-gray-500',
+      bg: 'bg-white',
+      text: 'text-gray-900',
+      accent: 'text-gray-700'
+    }
+  };
+
+  const currentTheme = themes[theme];
 
   const { data: courses = [] } = useQuery({
     queryKey: ['courses-for-lesson'],
@@ -248,6 +296,16 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
             <span className="text-sm">Slide Editor</span>
           </div>
           <div className="flex items-center gap-3">
+             <Select value={theme} onValueChange={setTheme}>
+               <SelectTrigger className="w-32">
+                 <SelectValue />
+               </SelectTrigger>
+               <SelectContent>
+                 {Object.entries(themes).map(([key, t]) => (
+                   <SelectItem key={key} value={key}>{t.name}</SelectItem>
+                 ))}
+               </SelectContent>
+             </Select>
              <Button 
                variant="outline" 
                size="sm"
@@ -279,12 +337,12 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           
           {/* THE SLIDE (16:9 Aspect Ratio Container) */}
           <div 
-            className="w-full max-w-5xl aspect-video bg-white rounded-xl shadow-2xl flex flex-col overflow-hidden relative transition-all duration-300"
+            className={`w-full max-w-5xl aspect-video ${currentTheme.bg} rounded-xl shadow-2xl flex flex-col overflow-hidden relative transition-all duration-300`}
             style={{ minHeight: '500px' }}
           >
             
             {/* Slide Header Decoration */}
-            <div className="h-2 w-full bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 flex-shrink-0" />
+            <div className={`h-2 w-full bg-gradient-to-r ${currentTheme.gradient} flex-shrink-0`} />
 
             <div className="flex-1 flex flex-col p-8 gap-4 h-full overflow-y-auto">
               
@@ -292,7 +350,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
               <Input
                 value={activeSlide.title}
                 onChange={(e) => updateSlide('title', e.target.value)}
-                className="text-4xl font-extrabold border-none px-0 shadow-none focus-visible:ring-0 placeholder:text-slate-300 text-slate-800 tracking-tight"
+                className={`text-4xl font-extrabold border-none px-0 shadow-none focus-visible:ring-0 placeholder:opacity-30 ${currentTheme.text} tracking-tight`}
                 placeholder="Click to add title"
               />
 
@@ -396,7 +454,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
               )}
 
               {/* Footer / Slide Number */}
-              <div className="flex justify-between items-end mt-auto pt-4 border-t border-slate-100 text-xs text-slate-400 uppercase tracking-widest font-semibold">
+              <div className={`flex justify-between items-end mt-auto pt-4 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-slate-100'} text-xs opacity-40 ${currentTheme.text} uppercase tracking-widest font-semibold`}>
                 <span>Educational Content</span>
                 <span>{currentSlideIndex + 1} / {slides.length}</span>
               </div>
