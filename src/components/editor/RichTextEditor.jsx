@@ -1201,8 +1201,8 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
   const [showHighlightColor, setShowHighlightColor] = React.useState(false);
   const [showBorder, setShowBorder] = React.useState(false);
   const [showSpacing, setShowSpacing] = React.useState(false);
-  const [toolbarCollapsed, setToolbarCollapsed] = React.useState(false);
-  const [symbolsCollapsed, setSymbolsCollapsed] = React.useState(false);
+  const [showToolbar, setShowToolbar] = React.useState(false);
+  const [showSymbols, setShowSymbols] = React.useState(false);
   
   const editor = useEditor({
     extensions: [
@@ -1507,17 +1507,32 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
     <div className="rich-text-editor-wrapper">
       {label && <Label className="mb-2 block">{label}</Label>}
       
-      {/* Toolbar Toggle */}
-      <button
-        onClick={() => setToolbarCollapsed(!toolbarCollapsed)}
-        className="w-full bg-gray-100 hover:bg-gray-200 border border-gray-200 rounded-t-lg px-3 py-1 flex items-center justify-between text-xs font-medium text-gray-600 transition-colors"
-      >
-        <span className="flex items-center gap-2">
-          <LayoutTemplate className="w-3 h-3" />
-          Format Toolbar
-        </span>
-        {toolbarCollapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-      </button>
+      {/* Breadcrumb Menu */}
+      <div className="bg-white border border-gray-200 rounded-t-lg px-3 py-2 flex items-center gap-2 text-xs">
+        <button
+          onClick={() => {
+            setShowToolbar(!showToolbar);
+            setShowSymbols(false);
+          }}
+          className={`px-3 py-1 rounded-md transition-colors font-medium ${
+            showToolbar ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          Format
+        </button>
+        <span className="text-gray-300">/</span>
+        <button
+          onClick={() => {
+            setShowSymbols(!showSymbols);
+            setShowToolbar(false);
+          }}
+          className={`px-3 py-1 rounded-md transition-colors font-medium ${
+            showSymbols ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          Symbols
+        </button>
+      </div>
       
       <style>
         {`
@@ -1779,7 +1794,7 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       </style>
       
       {/* Toolbar */}
-      {!toolbarCollapsed && (
+      {showToolbar && (
       <div className="bg-gray-50 border border-gray-200 border-t-0 p-2 flex flex-wrap gap-1">
         <MenuButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -2590,21 +2605,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       {/* Editor */}
       <EditorContent editor={editor} />
       
-      {/* Symbol Picker Toggle */}
-      <button
-        onClick={() => setSymbolsCollapsed(!symbolsCollapsed)}
-        className="w-full bg-gray-100 hover:bg-gray-200 border border-gray-200 border-t-0 px-3 py-1 flex items-center justify-between text-xs font-medium text-gray-600 transition-colors"
-      >
-        <span className="flex items-center gap-2">
-          <Square className="w-3 h-3" />
-          Quick Insert Symbols
-        </span>
-        {symbolsCollapsed ? <ChevronDown className="w-3 h-3" /> : <ChevronUp className="w-3 h-3" />}
-      </button>
-      
       {/* Symbol Picker */}
-      {!symbolsCollapsed && (
-      <div className="symbol-picker">
+      {showSymbols && (
+      <div className="symbol-picker border-t-0">
         <div className="symbol-section">
           <div className="symbol-section-title">Quick Insert Symbols</div>
           <div className="symbol-grid">
