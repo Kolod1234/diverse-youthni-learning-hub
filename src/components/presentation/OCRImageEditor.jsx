@@ -407,20 +407,30 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
         if (insertMode === 'math') {
             const encodedMath = encodeURIComponent(mathInput);
             const mathUrl = `https://latex.codecogs.com/png.latex?\\dpi{200}\\huge ${encodedMath}`;
-            const mathImg = new Image();
-            mathImg.crossOrigin = 'anonymous';
-            mathImg.onload = () => {
-                ctx.drawImage(mathImg, x, y);
-                const newImg = new Image();
-                newImg.crossOrigin = 'anonymous';
-                newImg.onload = () => {
-                    imageRef.current = newImg;
-                    setImage(newImg);
-                    toast.success('Equation inserted!');
+            
+            // Proxy the LaTeX image to avoid CORS issues
+            toast.loading('Generating equation...');
+            base44.functions.invoke('proxyImage', { url: mathUrl })
+              .then(result => {
+                const proxiedUrl = result.data.url;
+                const mathImg = new Image();
+                mathImg.crossOrigin = 'anonymous';
+                mathImg.onload = () => {
+                    ctx.drawImage(mathImg, x, y);
+                    const newImg = new Image();
+                    newImg.crossOrigin = 'anonymous';
+                    newImg.onload = () => {
+                        imageRef.current = newImg;
+                        setImage(newImg);
+                        toast.success('Equation inserted!');
+                    };
+                    newImg.src = canvas.toDataURL();
                 };
-                newImg.src = canvas.toDataURL();
-            };
-            mathImg.src = mathUrl;
+                mathImg.src = proxiedUrl;
+              })
+              .catch(error => {
+                toast.error('Failed to load equation');
+              });
         } 
         else if (insertMode === 'text') {
             ctx.font = "bold 24px Arial";
