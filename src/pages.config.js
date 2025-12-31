@@ -13,7 +13,6 @@ import CourseDiscussion from './pages/CourseDiscussion';
 import CourseParticipants from './pages/CourseParticipants';
 import CreateAssignment from './pages/CreateAssignment';
 import Dashboard from './pages/Dashboard';
-import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
@@ -60,7 +59,6 @@ export const PAGES = {
     "CourseParticipants": CourseParticipants,
     "CreateAssignment": CreateAssignment,
     "Dashboard": Dashboard,
-    "DataPresentation": DataPresentation,
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
     "Home": Home,
