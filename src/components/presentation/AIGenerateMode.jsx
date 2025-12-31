@@ -36,19 +36,21 @@ Generate exactly ${slideCount} slides with the following structure:
 2. ${slideCount - 2} content slides with detailed information
 3. Summary/conclusion slide
 
-For each slide:
-- Provide a clear, engaging title
-- Include detailed, well-formatted content with:
-  * Key points in bullet format
-  * Important concepts highlighted
-  * Examples where relevant
-${includeCharts ? '* Data visualization suggestions where appropriate' : ''}
-- Use professional formatting with proper headings and emphasis
-- Make content educational and informative
+CRITICAL FORMATTING REQUIREMENTS:
+- Return ONLY valid HTML content
+- Use HTML tags for formatting: <strong> for bold, <em> for italic, <u> for underline
+- NEVER use markdown syntax like ** or * or _
+- Use <h3> for headings, <p> for paragraphs, <ul><li> for bullet lists
+- Use <br> for line breaks
+- Include inline styles for colors and spacing
+- Make content professional, clear, and educational
 
-${includeImages ? 'For slides that would benefit from visuals, suggest specific, relevant images that would enhance understanding.' : ''}
+For each slide provide:
+- title: A clear, engaging title (plain text)
+- content: Well-formatted HTML with proper tags and inline styles
+- imagePrompt: ${includeImages ? 'A detailed description of a relevant educational image, diagram, or illustration' : 'null'}
 
-Return a JSON array of slides with: title, content (HTML formatted), and imagePrompt (if ${includeImages}).`;
+Return a JSON object with a "slides" array.`;
 
       const slideData = await base44.integrations.Core.InvokeLLM({
         prompt,
@@ -75,47 +77,46 @@ Return a JSON array of slides with: title, content (HTML formatted), and imagePr
 
       // Step 2: Generate images for slides that need them
       if (includeImages && slides.some(s => s.imagePrompt)) {
-        toast.info('Generating images...');
+        toast.info('Generating high-quality images with AI...');
         
         const imagePromises = slides.map(async (slide, idx) => {
-          if (slide.imagePrompt) {
+          if (slide.imagePrompt && slide.imagePrompt.trim()) {
             try {
               const imageResult = await base44.functions.invoke('generateImageWithManus', {
-                prompt: `Educational diagram or illustration: ${slide.imagePrompt}. Professional, clear, suitable for a presentation.`,
+                prompt: `Professional educational illustration: ${slide.imagePrompt}. Style: Clear, detailed, suitable for educational presentation. High quality, informative, visually appealing.`,
                 aspect_ratio: '16:9'
               });
               
               if (imageResult.data?.url) {
                 return {
                   ...slide,
-                  content: `<div style="text-align: center; margin-bottom: 20px;">
-                    <img src="${imageResult.data.url}" alt="${slide.title}" style="max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />
+                  content: `<div style="text-align: center; margin: 20px 0;">
+                    <img src="${imageResult.data.url}" alt="${slide.title}" style="width: 90%; max-width: 800px; height: auto; border-radius: 12px; box-shadow: 0 4px 16px rgba(0,0,0,0.15); display: inline-block;" />
                   </div>
                   ${slide.content}`,
                   order: idx + 1
                 };
+              } else {
+                console.error('No URL in image result:', imageResult);
               }
             } catch (error) {
-              console.error('Image generation failed:', error);
+              console.error('Image generation failed for slide:', slide.title, error);
+              toast.error(`Image generation failed for: ${slide.title}`);
             }
           }
           return { ...slide, order: idx + 1 };
         });
 
         slides = await Promise.all(imagePromises);
+        toast.success('Images generated successfully!');
       } else {
         slides = slides.map((slide, idx) => ({ ...slide, order: idx + 1 }));
       }
 
-      // Format content with proper styling
+      // Ensure proper HTML formatting (no wrapping needed - content should already be HTML)
       slides = slides.map(slide => ({
         ...slide,
-        content: `<div style="padding: 20px;">
-          <h2 style="color: #4F46E5; font-size: 28px; font-weight: bold; margin-bottom: 16px;">${slide.title}</h2>
-          <div style="font-size: 18px; line-height: 1.6; color: #374151;">
-            ${slide.content}
-          </div>
-        </div>`
+        content: slide.content || ''
       }));
 
       onSlidesGenerated(slides);
