@@ -41,15 +41,21 @@ export default function FileUploadMode({ onSlidesGenerated }) {
       toast.info('Converting PowerPoint presentation...');
       const result = await base44.functions.invoke('convertPptxToSlides', { file_url: uploadedFile.url });
       
-      if (result.data.error) {
-        throw new Error(result.data.error);
+      if (result.data?.error) {
+        throw new Error(result.data.details || result.data.error);
       }
       
-      onSlidesGenerated(result.data.slides || []);
-      toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
-      setUploadedFile(null);
+      if (result.data?.slides && result.data.slides.length > 0) {
+        onSlidesGenerated(result.data.slides);
+        toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
+        setUploadedFile(null);
+      } else {
+        throw new Error('No slides were generated from the PowerPoint file');
+      }
     } catch (error) {
-      toast.error('Failed to convert PPTX: ' + error.message);
+      console.error('PPTX conversion error:', error);
+      const errorMsg = error.response?.data?.details || error.message || 'Conversion failed';
+      toast.error('Failed to convert PPTX: ' + errorMsg);
     } finally {
       setProcessing(false);
     }
