@@ -163,15 +163,32 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     try {
       const worker = await createWorker('eng');
       const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
       canvas.width = img.width;
       canvas.height = img.height;
-      canvas.getContext('2d').drawImage(img, 0, 0);
       
-      await worker.setParameters({ tessedit_pageseg_mode: '6' });
-      const { data } = await worker.recognize(canvas);
+      // Preprocess image for better OCR - enhance contrast
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      const data = imageData.data;
+      
+      // Enhance contrast and remove noise
+      for (let i = 0; i < data.length; i += 4) {
+        const avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+        const enhanced = avg > 128 ? 255 : avg < 80 ? 0 : avg * 1.5;
+        data[i] = data[i + 1] = data[i + 2] = enhanced;
+      }
+      ctx.putImageData(imageData, 0, 0);
+      
+      // Use PSM mode 11 for sparse text (better for scattered text in diagrams)
+      await worker.setParameters({ 
+        tessedit_pageseg_mode: '11', // Sparse text mode
+        preserve_interword_spaces: '1'
+      });
+      const { data: ocrData } = await worker.recognize(canvas);
       
       const charData = { words: [], symbols: [] };
-      data.words.forEach(word => {
+      ocrData.words.forEach(word => {
         charData.words.push(word);
         if (word.symbols) {
           word.symbols.forEach(symbol => {
@@ -179,6 +196,10 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
           });
         }
       });
+      
+      // Group words by spatial proximity (cluster nearby words)
+      const groupedWords = groupWordsByProximity(charData.words);
+      charData.words = groupedWords;
       
       setOcrResult(charData);
       await worker.terminate();
@@ -189,6 +210,22 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Group words that are close together
+  const groupWordsByProximity = (words) => {
+    if (!words || words.length === 0) return [];
+    
+    // Sort words by vertical position first, then horizontal
+    const sorted = [...words].sort((a, b) => {
+      const yDiff = a.bbox.y0 - b.bbox.y0;
+      if (Math.abs(yDiff) < 20) { // Same line
+        return a.bbox.x0 - b.bbox.x0;
+      }
+      return yDiff;
+    });
+    
+    return sorted;
   };
 
   // --- Action Handlers ---
