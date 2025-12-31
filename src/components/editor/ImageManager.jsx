@@ -6,6 +6,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, Search, Loader2, X, Link as LinkIcon, Image as ImageIcon, Palette, Ratio } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
+import AutoTagging from './AutoTagging';
 
 export default function ImageManager({ onImageSelected, onClose, slideTitle, slideContent }) {
   const [activeTab, setActiveTab] = useState('search');
@@ -18,6 +19,8 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
   const [aspectRatio, setAspectRatio] = useState('landscape');
   const [reverseSearchFile, setReverseSearchFile] = useState(null);
   const [useStockLibrary, setUseStockLibrary] = useState(false);
+  const [selectedImageForTags, setSelectedImageForTags] = useState(null);
+  const [imageTags, setImageTags] = useState(null);
 
   const handleSearchImage = async () => {
     if (!searchQuery.trim()) {
@@ -91,9 +94,8 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
       const result = await base44.integrations.Core.UploadFile({ file });
       
       if (result?.file_url) {
-        onImageSelected(result.file_url);
-        toast.success('Image uploaded successfully!');
-        onClose();
+        setSelectedImageForTags(result.file_url);
+        toast.success('Image uploaded! Generate tags below.');
       }
     } catch (error) {
       toast.error('Failed to upload image');
@@ -263,6 +265,19 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
                 ))}
               </div>
             )}
+
+            {selectedImageForTags && activeTab === 'search' && (
+              <div className="mt-4 p-4 border rounded-lg bg-purple-50">
+                <AutoTagging 
+                  imageUrl={selectedImageForTags}
+                  context={searchQuery || slideTitle}
+                  onTagsGenerated={(tags) => {
+                    setImageTags(tags);
+                    toast.success('Tags saved with image');
+                  }}
+                />
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="reverse" className="space-y-4">
@@ -408,6 +423,21 @@ export default function ImageManager({ onImageSelected, onClose, slideTitle, sli
                 </Button>
               </div>
             </div>
+
+            {selectedImageForTags && activeTab === 'upload' && (
+              <div className="mt-4 p-4 border rounded-lg bg-purple-50">
+                <AutoTagging 
+                  imageUrl={selectedImageForTags}
+                  context={slideTitle || slideContent}
+                  onTagsGenerated={(tags) => {
+                    setImageTags(tags);
+                    onImageSelected(selectedImageForTags);
+                    toast.success('Image uploaded with tags!');
+                    setTimeout(() => onClose(), 1000);
+                  }}
+                />
+              </div>
+            )}
           </TabsContent>
 
           <TabsContent value="url" className="space-y-4">
