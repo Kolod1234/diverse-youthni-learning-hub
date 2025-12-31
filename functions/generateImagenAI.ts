@@ -33,8 +33,8 @@ Deno.serve(async (req) => {
       '1:1': '1:1'
     };
 
-    // Use Stable Diffusion via Stability AI API
-    const endpoint = 'https://api.stability.ai/v1/generation/stable-diffusion-xl-1024-v1-0/text-to-image';
+    // Use Stable Diffusion via Stability AI API (v2beta endpoint)
+    const endpoint = 'https://api.stability.ai/v2beta/stable-image/generate/sd3';
     
     // Optimize prompt for text spelling accuracy
     const optimizedPrompt = prompt.includes('text:') || prompt.includes('TEXT:') || prompt.includes('spell') || prompt.includes('word') ? `
