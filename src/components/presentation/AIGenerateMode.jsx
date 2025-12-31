@@ -29,6 +29,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [showArchitect, setShowArchitect] = useState(false);
   const [architectPrompt, setArchitectPrompt] = useState('');
   const [autoCorrectText, setAutoCorrectText] = useState(true);
+  const [manusAgentProfile, setManusAgentProfile] = useState('manus-1.6');
+  const [manusTaskMode, setManusTaskMode] = useState('agent');
+  const [manusConnectors, setManusConnectors] = useState([]);
 
   // Text scanning and auto-correction for Base44 AI Pro
   const scanAndCorrectImageText = async (imageUrl, slideContext, originalPrompt, maxRetries = 2) => {
@@ -697,7 +700,10 @@ Educational Context:
                       : `Create a high-resolution educational diagram of: ${slide.image_prompt}. Educational Context: ${topic} - ${slide.title}, Level: ${levelInstructions[educationLevel]}, Style: Professional educational diagram`;
 
                     const result = await base44.functions.invoke('puterImageGeneration', {
-                      prompt: manusPrompt
+                      prompt: manusPrompt,
+                      agentProfile: manusAgentProfile,
+                      taskMode: manusTaskMode,
+                      connectors: manusConnectors
                     });
 
                     if (result.data?.url) {
@@ -955,6 +961,89 @@ Educational Context:
                   </p>
                 </Label>
               </div>
+
+              {imageGenerator === 'manus' && !useWebImages && (
+                <div className="space-y-4 p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg border border-indigo-200">
+                  <h4 className="font-semibold text-indigo-900 text-sm">⚡ Manus Advanced Settings</h4>
+
+                  <div>
+                    <Label>Agent Profile</Label>
+                    <select
+                      value={manusAgentProfile}
+                      onChange={(e) => setManusAgentProfile(e.target.value)}
+                      className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="manus-1.6">Manus 1.6 (Balanced)</option>
+                      <option value="manus-1.6-lite">Manus 1.6 Lite (Fast)</option>
+                      <option value="manus-1.6-max">Manus 1.6 Max (Advanced)</option>
+                    </select>
+                    <p className="text-xs text-indigo-600 mt-1">
+                      {manusAgentProfile === 'manus-1.6-max' ? 'Most powerful for complex tasks' : 
+                       manusAgentProfile === 'manus-1.6-lite' ? 'Faster processing for simple tasks' : 
+                       'Balanced performance and quality'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>Task Mode</Label>
+                    <select
+                      value={manusTaskMode}
+                      onChange={(e) => setManusTaskMode(e.target.value)}
+                      className="w-full h-10 px-3 py-2 text-sm rounded-md border border-gray-300 bg-white focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                    >
+                      <option value="agent">Agent (Autonomous)</option>
+                      <option value="adaptive">Adaptive (Smart)</option>
+                      <option value="chat">Chat (Interactive)</option>
+                    </select>
+                    <p className="text-xs text-indigo-600 mt-1">
+                      {manusTaskMode === 'agent' ? 'Full autonomous execution' : 
+                       manusTaskMode === 'adaptive' ? 'Adapts approach based on task' : 
+                       'Interactive conversation mode'}
+                    </p>
+                  </div>
+
+                  <div>
+                    <Label>Enable Connectors (Optional)</Label>
+                    <div className="space-y-2">
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="manus-web-search"
+                          checked={manusConnectors.includes('web-search')}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setManusConnectors([...manusConnectors, 'web-search']);
+                            } else {
+                              setManusConnectors(manusConnectors.filter(c => c !== 'web-search'));
+                            }
+                          }}
+                          className="w-4 h-4 rounded text-indigo-600"
+                        />
+                        <Label htmlFor="manus-web-search" className="text-sm cursor-pointer">Web Search</Label>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <input
+                          type="checkbox"
+                          id="manus-image-gen"
+                          checked={manusConnectors.includes('image-generation')}
+                          onChange={(e) => {
+                            if (e.target.checked) {
+                              setManusConnectors([...manusConnectors, 'image-generation']);
+                            } else {
+                              setManusConnectors(manusConnectors.filter(c => c !== 'image-generation'));
+                            }
+                          }}
+                          className="w-4 h-4 rounded text-indigo-600"
+                        />
+                        <Label htmlFor="manus-image-gen" className="text-sm cursor-pointer">Image Generation</Label>
+                      </div>
+                    </div>
+                    <p className="text-xs text-indigo-600 mt-1">
+                      Connectors enhance Manus with external capabilities
+                    </p>
+                  </div>
+                </div>
+              )}
 
               {!useWebImages && (
                 <>

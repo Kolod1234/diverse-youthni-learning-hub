@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { prompt } = await req.json();
+    const { prompt, agentProfile = 'manus-1.6', taskMode = 'agent', connectors = [] } = await req.json();
 
     if (!prompt) {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
@@ -29,7 +29,10 @@ Deno.serve(async (req) => {
       },
       body: JSON.stringify({
         prompt: `Generate a high-quality educational image: ${prompt}`,
-        agentProfile: 'manus-1.6'
+        agentProfile,
+        taskMode,
+        ...(connectors.length > 0 && { connectors }),
+        hideInTaskList: false
       })
     });
 
