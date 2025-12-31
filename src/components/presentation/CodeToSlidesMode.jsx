@@ -41,6 +41,7 @@ ${code.slice(0, 500)}
       }
     } catch (error) {
       console.error('Language detection failed:', error);
+      toast.error('Failed to detect language: ' + (error?.message || 'Unknown error'));
     } finally {
       setDetecting(false);
     }
@@ -126,7 +127,8 @@ ${isWebCode ? `- For HTML/CSS code: Show BOTH the source code AND a live rendere
       toast.success(`Generated ${result.slides.length} slides from code!`);
     } catch (error) {
       console.error('Failed to generate slides:', error);
-      toast.error('Failed to generate slides: ' + error.message);
+      const errorMessage = error?.message || error?.error || JSON.stringify(error) || 'Unknown error';
+      toast.error('Failed to generate slides: ' + errorMessage);
     } finally {
       setGenerating(false);
     }
