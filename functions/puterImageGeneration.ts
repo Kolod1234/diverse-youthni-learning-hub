@@ -20,19 +20,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'MANUS_API_KEY not configured' }, { status: 500 });
     }
 
-    // Call Manus API
-    const response = await fetch('https://api.manus.app/v1/images/generations', {
+    // Create task with Manus AI for image generation
+    const response = await fetch('https://api.manus.ai/v1/tasks', {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Bearer ${apiKey}`
+        'API_KEY': apiKey
       },
       body: JSON.stringify({
-        prompt: prompt,
-        model: 'flux-1.1-pro',
-        width: 1024,
-        height: 1024,
-        num_inference_steps: 30
+        prompt: `Generate a high-quality educational image: ${prompt}`,
+        agentProfile: 'manus-1.6',
+        taskMode: 'agent',
+        hideInTaskList: false
       })
     });
 
@@ -40,32 +39,24 @@ Deno.serve(async (req) => {
       const errorText = await response.text();
       console.error('Manus API error:', errorText);
       return Response.json({ 
-        error: 'Failed to generate image with Manus',
+        error: 'Failed to create task with Manus',
         details: errorText 
       }, { status: response.status });
     }
 
     const result = await response.json();
     
-    // Manus returns image URL or base64
-    if (result.url) {
-      return Response.json({ 
-        url: result.url,
-        success: true 
-      });
-    } else if (result.image) {
-      return Response.json({ 
-        url: `data:image/png;base64,${result.image}`,
-        success: true 
-      });
-    }
-
-    return Response.json({ error: 'No image generated' }, { status: 500 });
+    return Response.json({ 
+      task_id: result.task_id,
+      task_url: result.task_url,
+      share_url: result.share_url,
+      message: 'Manus task created - check your Manus console for results'
+    });
 
   } catch (error) {
-    console.error('Error generating image:', error);
+    console.error('Error creating Manus task:', error);
     return Response.json({ 
-      error: 'Failed to generate image',
+      error: 'Failed to create Manus task',
       details: error.message 
     }, { status: 500 });
   }
