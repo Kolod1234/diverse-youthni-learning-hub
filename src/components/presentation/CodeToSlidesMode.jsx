@@ -12,6 +12,46 @@ export default function CodeToSlidesMode({ onSlidesGenerated }) {
   const [language, setLanguage] = useState('javascript');
   const [topic, setTopic] = useState('');
   const [generating, setGenerating] = useState(false);
+  const [detecting, setDetecting] = useState(false);
+
+  const detectLanguage = async (code) => {
+    if (!code.trim() || code.length < 20) return;
+    
+    setDetecting(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Detect the programming language of this code. Return ONLY the language name in lowercase (javascript, python, java, cpp, csharp, go, rust, php, ruby, swift, kotlin, typescript, or other).
+
+Code:
+\`\`\`
+${code.slice(0, 500)}
+\`\`\``,
+        response_json_schema: {
+          type: "object",
+          properties: {
+            language: { type: "string" }
+          },
+          required: ["language"]
+        }
+      });
+      
+      if (result?.language) {
+        setLanguage(result.language);
+        toast.success(`Detected: ${result.language}`);
+      }
+    } catch (error) {
+      console.error('Language detection failed:', error);
+    } finally {
+      setDetecting(false);
+    }
+  };
+
+  const handleCodeChange = (code) => {
+    setSourceCode(code);
+    if (code.trim().length > 50) {
+      detectLanguage(code);
+    }
+  };
 
   const generateSlidesFromCode = async () => {
     if (!sourceCode.trim()) {
@@ -118,11 +158,11 @@ Use this exact format for code in each slide:
           </div>
 
           <div>
-            <Label>Source Code *</Label>
+            <Label>Source Code * {detecting && <span className="text-xs text-indigo-600">(detecting language...)</span>}</Label>
             <Textarea
               value={sourceCode}
-              onChange={(e) => setSourceCode(e.target.value)}
-              placeholder="Paste your source code here..."
+              onChange={(e) => handleCodeChange(e.target.value)}
+              placeholder="Paste your source code here (language will be auto-detected)..."
               rows={15}
               className="font-mono text-sm"
             />
