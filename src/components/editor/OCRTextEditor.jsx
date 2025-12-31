@@ -417,28 +417,57 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
     const canvas = canvasRef.current;
     const ctx = canvas.getContext('2d');
+    const img = imageRef.current;
 
+    // Store edited state
+    const editedItems = itemsToEdit.map(item => ({
+      ...item,
+      originalText: item.text,
+      newText: editingWord
+    }));
+
+    // Redraw entire canvas from image
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(img, 0, 0);
+
+    // Erase all old text locations
     itemsToEdit.forEach(item => {
       const bbox = item.bbox;
-
-      // Erase old text
       ctx.fillStyle = 'white';
-      ctx.fillRect(bbox.x0 - 2, bbox.y0 - 2, bbox.x1 - bbox.x0 + 4, bbox.y1 - bbox.y0 + 4);
+      ctx.fillRect(bbox.x0 - 3, bbox.y0 - 3, bbox.x1 - bbox.x0 + 6, bbox.y1 - bbox.y0 + 6);
     });
 
-    // Draw new text at the first item's position
+    // Draw new text with better styling
     if (itemsToEdit.length > 0) {
-      const bbox = itemsToEdit[0].bbox;
-      const fontSize = Math.max(12, bbox.y1 - bbox.y0);
-      ctx.font = `${fontSize}px Arial`;
-      ctx.fillStyle = 'black';
-      ctx.fillText(editingWord, bbox.x0, bbox.y1 - 2);
+      const firstItem = itemsToEdit[0];
+      const bbox = firstItem.bbox;
+      const fontSize = Math.max(14, Math.floor(bbox.y1 - bbox.y0));
+      
+      ctx.font = `bold ${fontSize}px Arial`;
+      ctx.fillStyle = '#000000';
+      ctx.textBaseline = 'bottom';
+      
+      // Calculate text width and ensure it fits
+      const textMetrics = ctx.measureText(editingWord);
+      const scale = Math.min(1, (bbox.x1 - bbox.x0) / textMetrics.width);
+      
+      ctx.save();
+      ctx.translate(bbox.x0, bbox.y1);
+      ctx.scale(scale, 1);
+      ctx.fillText(editingWord, 0, 0);
+      ctx.restore();
     }
 
-    toast.success(`Replaced ${itemsToEdit.length} item(s)!`);
+    // Update image reference to include edits
+    imageRef.current.src = canvas.toDataURL();
+
+    toast.success(`✓ Text edited: "${editedItems[0].originalText}" → "${editingWord}"`);
     setSelectedWord(null);
     setEditingWord(null);
     setSelectedItems([]);
+    
+    // Redraw with annotations
+    setTimeout(() => drawCanvas(image, highlightedBoxes, false), 100);
   };
 
   const handleWordRemove = () => {
@@ -763,16 +792,16 @@ Return 8-12 concise, specific label suggestions that would be useful for annotat
                 </div>
 
                 {(selectedWord || selectedItems.length > 0) && (
-                  <div className="space-y-4 p-4 bg-white border border-blue-300 rounded-lg">
+                  <div className="space-y-4 p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-300 rounded-lg shadow-sm">
                     <div>
-                      <Label className="text-blue-900">
+                      <Label className="text-blue-900 font-semibold">
                         Selected {selectionMode === 'character' ? 'Character(s)' : 'Word(s)'}
                         {selectedItems.length > 1 && ` (${selectedItems.length})`}
                       </Label>
-                      <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded text-center font-semibold text-blue-900">
-                        {selectedItems.length > 0 
+                      <div className="mt-2 p-3 bg-white border-2 border-blue-300 rounded-lg text-center font-bold text-blue-900 text-lg">
+                        "{selectedItems.length > 0 
                           ? selectedItems.map(item => item.text).join('')
-                          : selectedWord?.text}
+                          : selectedWord?.text}"
                       </div>
                     </div>
 
