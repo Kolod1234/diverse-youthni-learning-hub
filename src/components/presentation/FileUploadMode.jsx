@@ -28,7 +28,23 @@ export default function FileUploadMode({ onSlidesGenerated }) {
   const processFile = async (fileUrl, fileName) => {
     setProcessing(true);
     try {
-      // First, extract structured data from the file
+      const fileExt = fileName.split('.').pop().toLowerCase();
+      
+      // Check if it's a PPTX file
+      if (fileExt === 'pptx') {
+        toast.info('Converting PowerPoint presentation...');
+        const result = await base44.functions.invoke('convertPptxToSlides', { file_url: fileUrl });
+        
+        if (result.data.error) {
+          throw new Error(result.data.error);
+        }
+        
+        onSlidesGenerated(result.data.slides || []);
+        toast.success(`Converted ${result.data.slides.length} slides from PowerPoint!`);
+        return;
+      }
+      
+      // For other file types, extract structured data
       const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
         file_url: fileUrl,
         json_schema: {
@@ -101,7 +117,7 @@ Format each slide with HTML styling for beautiful presentation.`,
       <div>
         <h3 className="font-semibold text-gray-900 mb-3">Upload Your Data File</h3>
         <p className="text-sm text-gray-600 mb-4">
-          Supports CSV, Excel, JSON, PDF, and DOCX files
+          Supports CSV, Excel, JSON, PDF, DOCX, and PowerPoint (PPTX) files
         </p>
 
         <div className="border-2 border-dashed border-gray-300 rounded-lg p-8 text-center hover:border-indigo-400 transition-colors">
@@ -111,7 +127,7 @@ Format each slide with HTML styling for beautiful presentation.`,
             disabled={uploading || processing}
             className="hidden"
             id="file-upload"
-            accept=".csv,.xlsx,.xls,.json,.pdf,.docx,.txt"
+            accept=".csv,.xlsx,.xls,.json,.pdf,.docx,.txt,.pptx"
           />
           <label htmlFor="file-upload" className="cursor-pointer">
             {uploading || processing ? (
@@ -126,7 +142,7 @@ Format each slide with HTML styling for beautiful presentation.`,
               <div>
                 <Upload className="w-12 h-12 text-gray-400 mx-auto mb-3" />
                 <p className="text-gray-900 font-medium mb-1">Click to upload or drag and drop</p>
-                <p className="text-sm text-gray-500">CSV, Excel, JSON, PDF, DOCX</p>
+                <p className="text-sm text-gray-500">CSV, Excel, JSON, PDF, DOCX, PPTX</p>
               </div>
             )}
           </label>
