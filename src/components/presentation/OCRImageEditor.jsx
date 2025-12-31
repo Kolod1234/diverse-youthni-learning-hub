@@ -41,10 +41,35 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [textFormat, setTextFormat] = useState('normal');
   const [insertMode, setInsertMode] = useState(false);
   const [insertText, setInsertText] = useState('');
+  
+  // Auto-save
+  const [lastSaved, setLastSaved] = useState(null);
+  const [autoSaving, setAutoSaving] = useState(false);
+  const autoSaveTimerRef = useRef(null);
+  const inactivityTimerRef = useRef(null);
 
   // --- Initialization ---
 
   useEffect(() => {
+    // Check for saved state
+    const savedState = localStorage.getItem('ocr_editor_autosave');
+    if (savedState) {
+      const shouldRestore = window.confirm('Found auto-saved work. Restore it?');
+      if (shouldRestore) {
+        try {
+          const state = JSON.parse(savedState);
+          if (state.imageUrl === imageUrl) {
+            setAnnotations(state.annotations || []);
+            setOcrResult(state.ocrResult || null);
+            toast.success('Work restored!');
+          }
+        } catch (e) {
+          console.error('Failed to restore state:', e);
+        }
+      }
+      localStorage.removeItem('ocr_editor_autosave');
+    }
+
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
@@ -54,6 +79,16 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       performOCR(img);
     };
     img.src = imageUrl;
+
+    // Auto-save every 30 seconds
+    autoSaveTimerRef.current = setInterval(() => {
+      autoSaveState();
+    }, 30000);
+
+    return () => {
+      if (autoSaveTimerRef.current) clearInterval(autoSaveTimerRef.current);
+      if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+    };
   }, [imageUrl]);
 
   // --- Drawing Logic ---
@@ -390,6 +425,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   // --- Interaction Handlers ---
 
   const handleCanvasClick = (e) => {
+    resetInactivityTimer();
+    
     const canvas = canvasRef.current;
     const rect = canvas.getBoundingClientRect();
     const scaleX = canvas.width / rect.width;
@@ -481,9 +518,41 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
+  // Auto-save state
+  const autoSaveState = () => {
+    if (!canvasRef.current) return;
+    
+    setAutoSaving(true);
+    try {
+      const state = {
+        imageUrl,
+        annotations,
+        ocrResult,
+        timestamp: Date.now()
+      };
+      localStorage.setItem('ocr_editor_autosave', JSON.stringify(state));
+      setLastSaved(new Date());
+      setTimeout(() => setAutoSaving(false), 1000);
+    } catch (e) {
+      console.error('Auto-save failed:', e);
+      setAutoSaving(false);
+    }
+  };
+
+  // Trigger auto-save on inactivity
+  const resetInactivityTimer = () => {
+    if (inactivityTimerRef.current) clearTimeout(inactivityTimerRef.current);
+    inactivityTimerRef.current = setTimeout(() => {
+      autoSaveState();
+    }, 10000); // Save after 10 seconds of inactivity
+  };
+
   // Save Final Result
   const handleSave = async () => {
      if (!canvasRef.current) return;
+     
+     // Clear auto-save when explicitly saving
+     localStorage.removeItem('ocr_editor_autosave');
      
      try {
        // Try to convert canvas to blob directly
@@ -538,7 +607,20 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
         
         {/* Header */}
         <div className="flex items-center justify-between p-4 border-b bg-gray-50">
-          <h3 className="text-xl font-bold">Smart OCR Editor</h3>
+          <div className="flex items-center gap-3">
+            <h3 className="text-xl font-bold">Smart OCR Editor</h3>
+            {autoSaving && (
+              <span className="text-xs text-blue-600 flex items-center gap-1">
+                <Loader2 className="w-3 h-3 animate-spin" />
+                Saving...
+              </span>
+            )}
+            {lastSaved && !autoSaving && (
+              <span className="text-xs text-gray-500">
+                Auto-saved {new Date(lastSaved).toLocaleTimeString()}
+              </span>
+            )}
+          </div>
           <div className="flex gap-2">
             {loading && <Loader2 className="w-5 h-5 animate-spin text-blue-600" />}
             <Button size="sm" onClick={handleSave}>Save</Button>
