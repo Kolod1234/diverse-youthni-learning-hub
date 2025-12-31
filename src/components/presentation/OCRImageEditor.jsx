@@ -229,22 +229,24 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     try {
       const worker = await createWorker('eng');
       
-      // 1. Preprocess the image (Upscale & Binarize)
+      // 1. Preprocess with multiple techniques for colored text/backgrounds
       const processedCanvas = preprocessImage(img);
       
-      // 2. Configure Tesseract for sparse text/diagrams
+      // 2. Configure Tesseract for maximum detection with font info
       await worker.setParameters({ 
-        tessedit_pageseg_mode: '11', // Sparse text mode for scattered text
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.:-(),%<>=/+', 
-        preserve_interword_spaces: '1'
+        tessedit_pageseg_mode: '11', // Sparse text mode
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.:-(),%<>=/+*[]{}#@!?&$€£¥', 
+        preserve_interword_spaces: '1',
+        tessedit_enable_doc_dict: '0',
+        classify_bln_numeric_mode: '0'
       });
 
       const { data: ocrData } = await worker.recognize(processedCanvas);
       
-      const scaleFactor = 2.5;
+      const scaleFactor = 3; // Increased for better accuracy
       const charData = { words: [], symbols: [] };
       
-      // 3. Post-process and scale coordinates back to original size
+      // 3. Extract text with font information
       ocrData.words.forEach(word => {
         const bbox = {
             x0: word.bbox.x0 / scaleFactor,
@@ -253,17 +255,21 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
             y1: word.bbox.y1 / scaleFactor
         };
 
-        // Filter out low confidence noise
-        if (word.confidence > 50) {
+        // Lower threshold to catch more text
+        if (word.confidence > 40) {
             charData.words.push({
                 ...word,
-                bbox: bbox
+                bbox: bbox,
+                font_name: word.font_name || 'Unknown',
+                font_size: Math.round((bbox.y1 - bbox.y0) * 0.9),
+                is_bold: word.is_bold || false,
+                is_italic: word.is_italic || false
             });
         }
 
         if (word.symbols) {
           word.symbols.forEach(symbol => {
-            if (symbol.confidence > 50) {
+            if (symbol.confidence > 40) {
               charData.symbols.push({ 
                   ...symbol, 
                   parentWord: word.text,
@@ -286,7 +292,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       await worker.terminate();
       
       const count = charData.words.length;
-      if (count > 0) toast.success(`Detected ${count} text regions`);
+      if (count > 0) toast.success(`Detected ${count} text regions with fonts`);
       else toast.warning("No text detected. Try a clearer image.");
 
     } catch (error) {
@@ -297,9 +303,9 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
-  // Helper: Advanced Image Preprocessing
+  // Helper: Advanced Image Preprocessing for colored text/backgrounds
   const preprocessImage = (img) => {
-    const scaleFactor = 2.5; // Upscale for better OCR accuracy
+    const scaleFactor = 3; // Higher upscale for colored text
     const canvas = document.createElement('canvas');
     canvas.width = img.width * scaleFactor;
     canvas.height = img.height * scaleFactor;
@@ -310,22 +316,52 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
     
-    // Get pixel data
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     
-    // Adaptive binarization for better text separation
+    // Multi-pass preprocessing for colored text on colored backgrounds
+    
+    // Pass 1: Increase contrast globally
+    const contrastFactor = 1.5;
     for (let i = 0; i < data.length; i += 4) {
-      // Luminosity-based grayscale
-      const avg = (0.299 * data[i]) + (0.587 * data[i + 1]) + (0.114 * data[i + 2]);
-      
-      // Adaptive threshold to separate text from background
-      const threshold = 140; 
-      const color = avg > threshold ? 255 : 0;
-      
-      data[i] = color;
-      data[i + 1] = color;
-      data[i + 2] = color;
+      data[i] = Math.min(255, ((data[i] - 128) * contrastFactor) + 128);
+      data[i + 1] = Math.min(255, ((data[i + 1] - 128) * contrastFactor) + 128);
+      data[i + 2] = Math.min(255, ((data[i + 2] - 128) * contrastFactor) + 128);
+    }
+    
+    // Pass 2: Adaptive local thresholding for colored backgrounds
+    const blockSize = 15;
+    const tempData = new Uint8ClampedArray(data);
+    
+    for (let y = 0; y < canvas.height; y++) {
+      for (let x = 0; x < canvas.width; x++) {
+        const idx = (y * canvas.width + x) * 4;
+        
+        // Calculate local average in neighborhood
+        let sum = 0, count = 0;
+        for (let dy = -blockSize; dy <= blockSize; dy++) {
+          for (let dx = -blockSize; dx <= blockSize; dx++) {
+            const ny = y + dy, nx = x + dx;
+            if (ny >= 0 && ny < canvas.height && nx >= 0 && nx < canvas.width) {
+              const nidx = (ny * canvas.width + nx) * 4;
+              const luminance = (0.299 * tempData[nidx]) + (0.587 * tempData[nidx + 1]) + (0.114 * tempData[nidx + 2]);
+              sum += luminance;
+              count++;
+            }
+          }
+        }
+        
+        const localAvg = sum / count;
+        const currentLum = (0.299 * tempData[idx]) + (0.587 * tempData[idx + 1]) + (0.114 * tempData[idx + 2]);
+        
+        // Adaptive threshold based on local contrast
+        const threshold = localAvg - 10;
+        const color = currentLum > threshold ? 255 : 0;
+        
+        data[idx] = color;
+        data[idx + 1] = color;
+        data[idx + 2] = color;
+      }
     }
     
     ctx.putImageData(imageData, 0, 0);
@@ -687,6 +723,14 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                         <div className="text-lg font-mono bg-white p-2 rounded border">
                             {selectedItems.map(i => i.text).join(' ')}
                         </div>
+                        {selectedItems[0]?.font_name && (
+                          <div className="text-xs text-blue-700 bg-blue-100 p-2 rounded">
+                            Font: {selectedItems[0].font_name} • 
+                            Size: {selectedItems[0].font_size}px
+                            {selectedItems[0].is_bold && ' • Bold'}
+                            {selectedItems[0].is_italic && ' • Italic'}
+                          </div>
+                        )}
                         
                         <div className="flex gap-2">
                              <Button size="sm" variant="secondary" className="flex-1" onClick={handleCopyText}>
