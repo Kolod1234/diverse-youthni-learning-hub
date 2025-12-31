@@ -248,20 +248,22 @@ Return ONLY the JSON object, nothing else.`,
 
         if (researchResult?.data?.content) {
           try {
-            // Try to parse JSON from the response
             const content = researchResult.data.content.trim();
             const jsonMatch = content.match(/\{[\s\S]*\}/);
             if (jsonMatch) {
               response = JSON.parse(jsonMatch[0]);
-              toast.success('Research-based content generated with citations!');
+              toast.success('Research-based content generated with Perplexity!');
             } else {
               throw new Error('No JSON found in response');
             }
           } catch (parseError) {
             console.error('Failed to parse Perplexity response:', parseError);
-            toast.error('Failed to parse AI response, falling back to standard AI');
+            toast.error('Failed to parse Perplexity response');
           }
-          }
+        } else {
+          console.error('No content in Perplexity response:', researchResult);
+          toast.error('Perplexity returned no content');
+        }
           } else if (aiProvider === 'base44-pro') {
             const base44ProResult = await base44.integrations.Core.InvokeLLM({
           prompt: `You are an elite educational content creator for Base44 AI Pro.
