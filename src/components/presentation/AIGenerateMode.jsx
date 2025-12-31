@@ -18,6 +18,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [contentType, setContentType] = useState('general'); // 'general', 'code', 'math', 'history'
   const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
   const [imageProvider, setImageProvider] = useState('base44'); // 'base44', 'manus', 'dalle', 'stability'
+  const [imageAspectRatio, setImageAspectRatio] = useState('16:9'); // '16:9', '1:1', '4:3', '9:16'
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
@@ -139,6 +140,9 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             let imageResult;
             const enhancedPrompt = `Educational diagram, flat vector style, white background: ${slide.imagePrompt}`;
 
+            // Map aspect ratio for different providers
+            const dalleSize = imageAspectRatio === '1:1' ? '1024x1024' : '1792x1024';
+
             // Choose image provider
             if (imageProvider === 'base44') {
               const result = await base44.integrations.Core.GenerateImage({
@@ -148,18 +152,18 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             } else if (imageProvider === 'dalle') {
               imageResult = await base44.functions.invoke('generateImageWithDallE', {
                 prompt: enhancedPrompt,
-                size: '1792x1024'
+                size: dalleSize
               });
             } else if (imageProvider === 'stability') {
               imageResult = await base44.functions.invoke('generateImageWithStability', {
                 prompt: enhancedPrompt,
-                aspect_ratio: '16:9'
+                aspect_ratio: imageAspectRatio
               });
             } else {
               // Default to Manus
               imageResult = await base44.functions.invoke('generateImageWithManus', {
                 prompt: enhancedPrompt,
-                aspect_ratio: '16:9'
+                aspect_ratio: imageAspectRatio
               });
             }
 
@@ -362,53 +366,105 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           </div>
 
             {includeImages && (
-              <div className="ml-6 pt-2">
-                <Label className="text-xs text-gray-600 mb-2 block">Image Generator</Label>
-                <div className="grid grid-cols-2 gap-2">
-                  <button
-                    onClick={() => setImageProvider('base44')}
-                    disabled={generating}
-                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                      imageProvider === 'base44'
-                        ? 'border-indigo-600 bg-indigo-50 font-semibold'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    Base44 AI
-                  </button>
-                  <button
-                    onClick={() => setImageProvider('dalle')}
-                    disabled={generating}
-                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                      imageProvider === 'dalle'
-                        ? 'border-green-600 bg-green-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    DALL-E 3
-                  </button>
-                  <button
-                    onClick={() => setImageProvider('manus')}
-                    disabled={generating}
-                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                      imageProvider === 'manus'
-                        ? 'border-purple-600 bg-purple-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    Manus
-                  </button>
-                  <button
-                    onClick={() => setImageProvider('stability')}
-                    disabled={generating}
-                    className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                      imageProvider === 'stability'
-                        ? 'border-blue-600 bg-blue-50'
-                        : 'border-gray-200 hover:border-gray-300'
-                    }`}
-                  >
-                    Stability AI
-                  </button>
+              <div className="ml-6 pt-2 space-y-3">
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">Image Generator</Label>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => setImageProvider('base44')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageProvider === 'base44'
+                          ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      Base44 AI
+                    </button>
+                    <button
+                      onClick={() => setImageProvider('dalle')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageProvider === 'dalle'
+                          ? 'border-green-600 bg-green-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      DALL-E 3
+                    </button>
+                    <button
+                      onClick={() => setImageProvider('manus')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageProvider === 'manus'
+                          ? 'border-purple-600 bg-purple-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      Manus
+                    </button>
+                    <button
+                      onClick={() => setImageProvider('stability')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageProvider === 'stability'
+                          ? 'border-blue-600 bg-blue-50'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      Stability AI
+                    </button>
+                  </div>
+                </div>
+                
+                <div>
+                  <Label className="text-xs text-gray-600 mb-2 block">Aspect Ratio</Label>
+                  <div className="grid grid-cols-4 gap-2">
+                    <button
+                      onClick={() => setImageAspectRatio('16:9')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageAspectRatio === '16:9'
+                          ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      16:9
+                    </button>
+                    <button
+                      onClick={() => setImageAspectRatio('1:1')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageAspectRatio === '1:1'
+                          ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      1:1
+                    </button>
+                    <button
+                      onClick={() => setImageAspectRatio('4:3')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageAspectRatio === '4:3'
+                          ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      4:3
+                    </button>
+                    <button
+                      onClick={() => setImageAspectRatio('9:16')}
+                      disabled={generating}
+                      className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                        imageAspectRatio === '9:16'
+                          ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                          : 'border-gray-200 hover:border-gray-300'
+                      }`}
+                    >
+                      9:16
+                    </button>
+                  </div>
                 </div>
               </div>
             )}

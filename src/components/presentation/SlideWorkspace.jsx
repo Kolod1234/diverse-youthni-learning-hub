@@ -42,6 +42,11 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [templateName, setTemplateName] = useState('');
   const [saving, setSaving] = useState(false);
   const [theme, setTheme] = useState('modern');
+  const [showImageEditor, setShowImageEditor] = useState(false);
+  const [imageEditPrompt, setImageEditPrompt] = useState('');
+  const [imageProvider, setImageProvider] = useState('base44');
+  const [imageAspectRatio, setImageAspectRatio] = useState('16:9');
+  const [regenerating, setRegenerating] = useState(false);
   const activeSlide = slides[currentSlideIndex];
 
   const themes = {
@@ -234,6 +239,57 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     input.click();
   };
 
+  const regenerateImage = async () => {
+    if (!imageEditPrompt.trim()) {
+      toast.error('Please enter an image description');
+      return;
+    }
+
+    setRegenerating(true);
+    try {
+      const enhancedPrompt = `Educational diagram, flat vector style, white background: ${imageEditPrompt}`;
+      const dalleSize = imageAspectRatio === '1:1' ? '1024x1024' : '1792x1024';
+      
+      let imageResult;
+      if (imageProvider === 'base44') {
+        const result = await base44.integrations.Core.GenerateImage({
+          prompt: enhancedPrompt
+        });
+        imageResult = { data: { url: result.url } };
+      } else if (imageProvider === 'dalle') {
+        imageResult = await base44.functions.invoke('generateImageWithDallE', {
+          prompt: enhancedPrompt,
+          size: dalleSize
+        });
+      } else if (imageProvider === 'stability') {
+        imageResult = await base44.functions.invoke('generateImageWithStability', {
+          prompt: enhancedPrompt,
+          aspect_ratio: imageAspectRatio
+        });
+      } else {
+        imageResult = await base44.functions.invoke('generateImageWithManus', {
+          prompt: enhancedPrompt,
+          aspect_ratio: imageAspectRatio
+        });
+      }
+
+      const imageUrl = imageResult.data?.url || imageResult?.url || imageResult?.response?.url;
+      
+      if (imageUrl) {
+        updateSlide('imageUrl', imageUrl);
+        toast.success('Image regenerated!');
+        setShowImageEditor(false);
+        setImageEditPrompt('');
+      } else {
+        toast.error('Failed to generate image');
+      }
+    } catch (error) {
+      toast.error('Failed to regenerate image: ' + error.message);
+    } finally {
+      setRegenerating(false);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden font-sans">
       
@@ -393,24 +449,37 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                         className="w-full h-full object-contain p-4"
                       />
                       {/* Hover Actions */}
-                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4 backdrop-blur-sm">
+                      <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm">
                         <Button 
-                          variant="secondary" 
+                          variant="secondary"
+                          size="sm"
                           onClick={() => {
-                            const url = window.prompt("Enter new image URL");
-                            if(url) updateSlide('imageUrl', url);
+                            setShowImageEditor(true);
+                            setImageEditPrompt('');
                           }}
                         >
-                          Change Image
+                          AI Regenerate
                         </Button>
                         <Button 
                           variant="secondary"
+                          size="sm"
                           onClick={handleImageUpload}
                         >
-                          Upload New
+                          Upload
                         </Button>
                         <Button 
-                          variant="destructive" 
+                          variant="secondary"
+                          size="sm"
+                          onClick={() => {
+                            const url = window.prompt("Enter image URL");
+                            if(url) updateSlide('imageUrl', url);
+                          }}
+                        >
+                          URL
+                        </Button>
+                        <Button 
+                          variant="destructive"
+                          size="sm"
                           onClick={() => updateSlide('imageUrl', null)}
                         >
                           Remove
@@ -418,13 +487,27 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                       </div>
                     </div>
                   ) : (
-                    <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 hover:border-indigo-400 hover:bg-indigo-50/50 hover:text-indigo-600 transition-all cursor-pointer bg-slate-50"
-                         onClick={handleImageUpload}
-                    >
+                    <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 bg-slate-50">
                       <div className="p-4 bg-white rounded-full shadow-sm">
                         <ImageIcon className="w-8 h-8 opacity-50" />
                       </div>
-                      <span className="font-medium">Click to add Diagram or Image</span>
+                      <span className="font-medium mb-2">Add Image</span>
+                      <div className="flex gap-2">
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowImageEditor(true)}
+                        >
+                          AI Generate
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={handleImageUpload}
+                        >
+                          Upload
+                        </Button>
+                      </div>
                     </div>
                   )}
                 </div>
@@ -587,6 +670,135 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
               </Button>
               <Button onClick={addToCourse} disabled={saving}>
                 {saving ? 'Saving...' : 'Add to Course'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* AI Image Editor Dialog */}
+      <Dialog open={showImageEditor} onOpenChange={setShowImageEditor}>
+        <DialogContent className="max-w-lg">
+          <DialogHeader>
+            <DialogTitle>AI Image Generation</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Image Description</Label>
+              <textarea
+                value={imageEditPrompt}
+                onChange={(e) => setImageEditPrompt(e.target.value)}
+                placeholder="Describe the image you want to generate..."
+                className="w-full min-h-[100px] p-3 border rounded-lg text-sm"
+              />
+            </div>
+
+            <div>
+              <Label className="text-xs text-gray-600 mb-2 block">AI Provider</Label>
+              <div className="grid grid-cols-2 gap-2">
+                <button
+                  onClick={() => setImageProvider('base44')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'base44'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Base44 AI
+                </button>
+                <button
+                  onClick={() => setImageProvider('dalle')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'dalle'
+                      ? 'border-green-600 bg-green-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  DALL-E 3
+                </button>
+                <button
+                  onClick={() => setImageProvider('manus')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'manus'
+                      ? 'border-purple-600 bg-purple-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Manus
+                </button>
+                <button
+                  onClick={() => setImageProvider('stability')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'stability'
+                      ? 'border-blue-600 bg-blue-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Stability AI
+                </button>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs text-gray-600 mb-2 block">Aspect Ratio</Label>
+              <div className="grid grid-cols-4 gap-2">
+                <button
+                  onClick={() => setImageAspectRatio('16:9')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageAspectRatio === '16:9'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  16:9
+                </button>
+                <button
+                  onClick={() => setImageAspectRatio('1:1')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageAspectRatio === '1:1'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  1:1
+                </button>
+                <button
+                  onClick={() => setImageAspectRatio('4:3')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageAspectRatio === '4:3'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  4:3
+                </button>
+                <button
+                  onClick={() => setImageAspectRatio('9:16')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageAspectRatio === '9:16'
+                      ? 'border-indigo-600 bg-indigo-50 font-semibold'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  9:16
+                </button>
+              </div>
+            </div>
+
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowImageEditor(false)}>
+                Cancel
+              </Button>
+              <Button onClick={regenerateImage} disabled={regenerating}>
+                {regenerating ? 'Generating...' : 'Generate Image'}
               </Button>
             </div>
           </div>
