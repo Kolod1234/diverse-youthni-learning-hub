@@ -10,6 +10,7 @@ import { base44 } from '@/api/base44Client';
 
 export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const canvasRef = useRef(null);
+  const imageRef = useRef(null);
   const [image, setImage] = useState(null);
   const [activeTab, setActiveTab] = useState('highlight');
   const [loading, setLoading] = useState(false);
@@ -43,6 +44,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     const img = new Image();
     img.crossOrigin = 'anonymous';
     img.onload = () => {
+      imageRef.current = img;
       setImage(img);
       drawCanvas(img);
       performOCR(img);
@@ -335,11 +337,74 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
-  const handleSave = () => {
-    const canvas = canvasRef.current;
-    const dataUrl = canvas.toDataURL('image/png');
-    onSave(dataUrl);
-    toast.success('Changes saved!');
+  const handleSave = async () => {
+    if (!canvasRef.current) return;
+    
+    try {
+      const canvas = canvasRef.current;
+      const ctx = canvas.getContext('2d');
+      
+      // Create final canvas with all edits and annotations
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = canvas.width;
+      finalCanvas.height = canvas.height;
+      const finalCtx = finalCanvas.getContext('2d');
+      
+      // Draw current canvas state (includes all text edits)
+      finalCtx.drawImage(canvas, 0, 0);
+      
+      // Draw annotations on top
+      annotations.forEach((annotation) => {
+        if (annotation.type === 'box') {
+          finalCtx.fillStyle = 'rgba(34, 197, 94, 0.2)';
+          finalCtx.fillRect(annotation.x, annotation.y, annotation.width, annotation.height);
+          finalCtx.strokeStyle = '#22C55E';
+          finalCtx.lineWidth = 3;
+          finalCtx.strokeRect(annotation.x, annotation.y, annotation.width, annotation.height);
+          
+          if (annotation.label) {
+            finalCtx.fillStyle = '#22C55E';
+            finalCtx.fillRect(annotation.x, annotation.y - 25, finalCtx.measureText(annotation.label).width + 10, 25);
+            finalCtx.fillStyle = 'white';
+            finalCtx.font = 'bold 14px Arial';
+            finalCtx.fillText(annotation.label, annotation.x + 5, annotation.y - 8);
+          }
+        } else if (annotation.type === 'polygon') {
+          finalCtx.fillStyle = 'rgba(168, 85, 247, 0.2)';
+          finalCtx.strokeStyle = '#A855F7';
+          finalCtx.lineWidth = 3;
+          
+          finalCtx.beginPath();
+          annotation.points.forEach((point, i) => {
+            if (i === 0) finalCtx.moveTo(point.x, point.y);
+            else finalCtx.lineTo(point.x, point.y);
+          });
+          finalCtx.closePath();
+          finalCtx.fill();
+          finalCtx.stroke();
+          
+          if (annotation.label && annotation.points.length > 0) {
+            const firstPoint = annotation.points[0];
+            finalCtx.fillStyle = '#A855F7';
+            finalCtx.fillRect(firstPoint.x, firstPoint.y - 25, finalCtx.measureText(annotation.label).width + 10, 25);
+            finalCtx.fillStyle = 'white';
+            finalCtx.font = 'bold 14px Arial';
+            finalCtx.fillText(annotation.label, firstPoint.x + 5, firstPoint.y - 8);
+          }
+        }
+      });
+      
+      const dataUrl = finalCanvas.toDataURL('image/png', 1.0);
+      const blob = await fetch(dataUrl).then(r => r.blob());
+      const file = new File([blob], 'edited-image.png', { type: 'image/png' });
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      
+      onSave(file_url);
+      toast.success('✓ Image saved with all edits and annotations!');
+    } catch (error) {
+      console.error('Failed to save:', error);
+      toast.error('Failed to save image');
+    }
   };
 
   const clearHighlights = () => {
@@ -806,29 +871,39 @@ Return 8-12 concise, specific label suggestions that would be useful for annotat
                     </div>
 
                     <div>
-                      <Label>Edit Word</Label>
+                      <Label>Edit Text</Label>
                       <Input
                         value={editingWord || ''}
                         onChange={(e) => setEditingWord(e.target.value)}
                         placeholder="Enter new text"
                         className="mt-2"
+                        onKeyPress={(e) => {
+                          if (e.key === 'Enter' && editingWord?.trim()) {
+                            handleWordEdit();
+                          }
+                        }}
+                        autoFocus
                       />
+                      <p className="text-xs text-gray-500 mt-1">
+                        Press Enter to apply changes
+                      </p>
                     </div>
 
                     <div className="flex gap-2">
                       <Button 
                         onClick={handleWordEdit} 
-                        className="flex-1 bg-blue-500 hover:bg-blue-600"
+                        className="flex-1 bg-blue-600 hover:bg-blue-700"
                         disabled={!editingWord?.trim()}
                       >
-                        Replace
+                        <Type className="w-4 h-4 mr-1" />
+                        Apply Edit
                       </Button>
                       <Button 
                         onClick={handleWordRemove} 
                         variant="destructive"
                         className="flex-1"
                       >
-                        <Eraser className="w-4 h-4 mr-2" />
+                        <Eraser className="w-4 h-4 mr-1" />
                         Remove
                       </Button>
                     </div>
