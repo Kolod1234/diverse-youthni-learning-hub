@@ -2,12 +2,28 @@ import React, { useState } from 'react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { 
   Plus, Trash2, Image as ImageIcon, 
   LayoutTemplate, ChevronLeft, ChevronRight,
-  MonitorPlay, Save, PanelLeftClose, PanelLeftOpen
+  MonitorPlay, Save, PanelLeftClose, PanelLeftOpen, BookOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
+import { base44 } from '@/api/base44Client';
+import { useQuery } from '@tanstack/react-query';
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 
 export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [slides, setSlides] = useState(initialSlides.length > 0 ? initialSlides : [
@@ -75,6 +91,77 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     updateSlides(newSlides);
     setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1));
     toast.success('Slide deleted');
+  };
+
+  const saveAsTemplate = async () => {
+    if (!templateName.trim()) {
+      toast.error('Please enter a template name');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      await base44.entities.Template.create({
+        name: templateName,
+        description: 'AI Generated Presentation',
+        category: 'slide',
+        content: { slides },
+        is_public: false,
+        tags: ['ai-generated']
+      });
+      toast.success('Saved as template!');
+      setShowSaveTemplate(false);
+      setTemplateName('');
+    } catch (error) {
+      toast.error('Failed to save template');
+    } finally {
+      setSaving(false);
+    }
+  };
+
+  const addToCourse = async () => {
+    if (!selectedCourse) {
+      toast.error('Please select a course');
+      return;
+    }
+
+    if (lessonMode === 'new' && !newLessonTitle.trim()) {
+      toast.error('Please enter a lesson title');
+      return;
+    }
+
+    if (lessonMode === 'replace' && !selectedLesson) {
+      toast.error('Please select a lesson to replace');
+      return;
+    }
+
+    setSaving(true);
+    try {
+      if (lessonMode === 'new') {
+        const maxOrder = lessons.reduce((max, l) => Math.max(max, l.order || 0), 0);
+        await base44.entities.Lesson.create({
+          course_id: selectedCourse,
+          title: newLessonTitle,
+          content_type: 'richtext',
+          slides: slides,
+          order: maxOrder + 1,
+        });
+        toast.success('Lesson created successfully!');
+      } else {
+        await base44.entities.Lesson.update(selectedLesson, {
+          slides: slides,
+        });
+        toast.success('Lesson updated successfully!');
+      }
+      setShowAddDialog(false);
+      setSelectedCourse('');
+      setSelectedLesson('');
+      setNewLessonTitle('');
+    } catch (error) {
+      toast.error('Failed to save lesson');
+    } finally {
+      setSaving(false);
+    }
   };
 
   const handleImageUpload = async () => {
@@ -161,6 +248,22 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
             <span className="text-sm">Slide Editor</span>
           </div>
           <div className="flex items-center gap-3">
+             <Button 
+               variant="outline" 
+               size="sm"
+               onClick={() => setShowSaveTemplate(true)}
+             >
+               <Save className="w-4 h-4 mr-2" />
+               Save Template
+             </Button>
+             <Button 
+               variant="outline" 
+               size="sm"
+               onClick={() => setShowAddDialog(true)}
+             >
+               <BookOpen className="w-4 h-4 mr-2" />
+               Add to Course
+             </Button>
              <Button 
                variant="outline" 
                size="sm"
@@ -325,6 +428,112 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           </Button>
         </div>
       </div>
+
+      {/* Save Template Dialog */}
+      <Dialog open={showSaveTemplate} onOpenChange={setShowSaveTemplate}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Save as Template</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Template Name</Label>
+              <Input
+                value={templateName}
+                onChange={(e) => setTemplateName(e.target.value)}
+                placeholder="e.g., Science Presentation Template"
+              />
+            </div>
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowSaveTemplate(false)}>
+                Cancel
+              </Button>
+              <Button onClick={saveAsTemplate} disabled={saving}>
+                {saving ? 'Saving...' : 'Save Template'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Add to Course Dialog */}
+      <Dialog open={showAddDialog} onOpenChange={setShowAddDialog}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Add to Course</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 py-4">
+            <div>
+              <Label>Select Course</Label>
+              <Select value={selectedCourse} onValueChange={setSelectedCourse}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Choose a course..." />
+                </SelectTrigger>
+                <SelectContent>
+                  {courses.map((course) => (
+                    <SelectItem key={course.id} value={course.id}>
+                      {course.title}
+                    </SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
+            </div>
+
+            {selectedCourse && (
+              <>
+                <div>
+                  <Label>Mode</Label>
+                  <Select value={lessonMode} onValueChange={setLessonMode}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="new">Create New Lesson</SelectItem>
+                      <SelectItem value="replace">Replace Existing Lesson</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {lessonMode === 'new' ? (
+                  <div>
+                    <Label>Lesson Title</Label>
+                    <Input
+                      value={newLessonTitle}
+                      onChange={(e) => setNewLessonTitle(e.target.value)}
+                      placeholder="Enter lesson title..."
+                    />
+                  </div>
+                ) : (
+                  <div>
+                    <Label>Select Lesson to Replace</Label>
+                    <Select value={selectedLesson} onValueChange={setSelectedLesson}>
+                      <SelectTrigger>
+                        <SelectValue placeholder="Choose a lesson..." />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {lessons.map((lesson) => (
+                          <SelectItem key={lesson.id} value={lesson.id}>
+                            {lesson.title}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
+                )}
+              </>
+            )}
+
+            <div className="flex justify-end gap-3">
+              <Button variant="outline" onClick={() => setShowAddDialog(false)}>
+                Cancel
+              </Button>
+              <Button onClick={addToCourse} disabled={saving}>
+                {saving ? 'Saving...' : 'Add to Course'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
