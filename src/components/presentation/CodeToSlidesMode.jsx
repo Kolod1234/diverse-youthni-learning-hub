@@ -63,6 +63,8 @@ ${code.slice(0, 500)}
     try {
       toast.info('Analyzing code and generating slides...');
 
+      const isWebCode = ['html', 'css'].includes(language.toLowerCase());
+      
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `Split this ${language} source code into multiple presentation slides. Each slide should contain a logical chunk of the code.
 
@@ -75,13 +77,26 @@ ${topic ? `Title focus: ${topic}` : ''}
 Instructions:
 - Split the code into 5-10 slides based on logical sections (imports, classes, functions, etc.)
 - Each slide should have a descriptive title indicating what code section it contains
-- Each slide content should ONLY contain the code chunk wrapped in proper HTML with syntax highlighting
-- Do not add explanations, just show the code
-
-Use this exact format for code in each slide:
+${isWebCode ? `- For HTML/CSS code: Show BOTH the source code AND a live rendered preview in each slide
+- Use this format for HTML/CSS slides:
+<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+<div>
+<h3 style="color: #4f46e5; margin-bottom: 10px;">Code:</h3>
+<pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 12px; line-height: 1.6;">
+<code>the actual code chunk here</code>
+</pre>
+</div>
+<div>
+<h3 style="color: #4f46e5; margin-bottom: 10px;">Preview:</h3>
+<div style="border: 2px solid #e5e7eb; border-radius: 8px; padding: 20px; background: white; min-height: 200px;">
+{render the HTML/CSS code here as actual HTML}
+</div>
+</div>
+</div>` : `- Each slide content should ONLY contain the code chunk wrapped in proper HTML with syntax highlighting
+- Use this exact format for code in each slide:
 <pre style="background: #1e1e1e; color: #d4d4d4; padding: 20px; border-radius: 8px; overflow-x: auto; font-family: 'Courier New', monospace; font-size: 14px; line-height: 1.6;">
 <code>the actual code chunk here</code>
-</pre>`,
+</pre>`}`,
         add_context_from_internet: false,
         response_json_schema: {
           type: "object",
