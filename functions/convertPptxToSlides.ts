@@ -1,4 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { pptxToHtml } from 'npm:@jvmr/pptx-to-html';
 
 Deno.serve(async (req) => {
   try {
@@ -15,76 +16,31 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'file_url is required' }, { status: 400 });
     }
 
-    // Extract structured data from PPTX
-    const extractionResult = await base44.integrations.Core.ExtractDataFromUploadedFile({
-      file_url: file_url,
-      json_schema: {
-        type: 'object',
-        properties: {
-          slides: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                title: { type: 'string' },
-                content: { type: 'string' },
-                bullet_points: { type: 'array', items: { type: 'string' } },
-                order: { type: 'number' }
-              }
-            }
-          }
-        }
-      }
-    });
-
-    if (extractionResult.status === 'error') {
-      throw new Error(extractionResult.details || 'Failed to extract PPTX content');
+    // Fetch the PPTX file
+    const fileResponse = await fetch(file_url);
+    if (!fileResponse.ok) {
+      throw new Error('Failed to fetch PPTX file');
     }
 
-    const extractedData = extractionResult.output;
-    
-    // Convert extracted data to HTML slides
-    const response = await base44.integrations.Core.InvokeLLM({
-      prompt: `Convert this PowerPoint data into HTML slides:
+    const arrayBuffer = await fileResponse.arrayBuffer();
 
-${JSON.stringify(extractedData, null, 2)}
-
-For each slide, create rich HTML content with:
-- Proper heading tags (<h2>, <h3>)
-- Formatted paragraphs (<p>)
-- Bullet lists (<ul><li>)
-- Bold text for emphasis (<strong>)
-- Clean, professional styling
-
-Return the slides in the same order.`,
-      response_json_schema: {
-        type: "object",
-        properties: {
-          slides: {
-            type: "array",
-            items: {
-              type: "object",
-              properties: {
-                title: { type: "string" },
-                content: { type: "string" },
-                order: { type: "number" }
-              },
-              required: ["title", "content", "order"]
-            }
-          }
-        },
-        required: ["slides"]
-      }
+    // Convert PPTX to HTML slides
+    const htmlSlides = await pptxToHtml(arrayBuffer, {
+      scaleToFit: true,
+      width: 1000
     });
 
-    if (!response.slides || response.slides.length === 0) {
-      throw new Error('No slides generated from PowerPoint file');
-    }
+    // Transform HTML slides into structured format
+    const slides = htmlSlides.map((htmlContent, index) => ({
+      title: `Slide ${index + 1}`,
+      content: htmlContent,
+      order: index
+    }));
 
     return Response.json({
       success: true,
-      slides: response.slides || [],
-      total_slides: response.slides?.length || 0
+      slides,
+      total_slides: slides.length
     });
 
   } catch (error) {
