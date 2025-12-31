@@ -265,30 +265,85 @@ Return ONLY the JSON object, nothing else.`,
           toast.error('Perplexity returned no content');
         }
       } else if (aiProvider === 'base44-pro') {
+        toast.info('🧠 Deep research mode: Analyzing topic comprehensively...');
+        
         const base44ProResult = await base44.integrations.Core.InvokeLLM({
-          prompt: `You are an elite educational content creator for Base44 AI Pro.
+          prompt: `You are an ELITE educational content architect using Base44 AI Pro's advanced research capabilities.
 
-Create a ${slideCount}-slide premium presentation about: "${topic}"
-${details ? `\nContext: ${details}` : ''}
+🎯 MISSION: Create a ${slideCount}-slide PREMIUM presentation about: "${topic}"
+${details ? `Additional Context: ${details}` : ''}
 
-TARGET AUDIENCE: ${levelInstructions[educationLevel]}
+👥 TARGET AUDIENCE: ${levelInstructions[educationLevel]}
 
-Use modern HTML formatting with styled sections, gradients, and visual hierarchy.
+📚 DEEP RESEARCH REQUIREMENTS:
+1. Conduct COMPREHENSIVE research using multiple reliable sources
+2. THINK DEEPLY about the topic - analyze, synthesize, connect concepts
+3. Include SPECIFIC facts, statistics, real-world examples, case studies
+4. Cite recent developments and current understanding (2024-2025)
+5. Build logical flow from foundational concepts to advanced insights
+6. Identify key debates, controversies, or evolving understanding in the field
 
-CRITICAL: Return ONLY valid JSON:
+🎨 PREMIUM SLIDE DESIGN STANDARDS:
+- Rich, modern HTML formatting with professional styling
+- Clear visual hierarchy: <h2> for main headings, <h3> for subheadings
+- Styled callout boxes: <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); padding: 20px; border-radius: 12px; color: white; margin: 16px 0;">
+- Key points in colored cards: <div style="background: #f8fafc; border-left: 4px solid #3b82f6; padding: 16px; margin: 12px 0;">
+- Statistics in highlight boxes: <div style="background: #fef3c7; padding: 12px; border-radius: 8px; font-weight: 600;">
+- Use <strong> for emphasis, proper <ul>/<li> lists with spacing
+- Add section dividers: <hr style="border: none; height: 2px; background: linear-gradient(to right, #3b82f6, transparent); margin: 24px 0;">
+
+${includeImages ? `
+🖼️ IMAGE GENERATION INSTRUCTIONS (CRITICAL):
+For each slide, provide TWO fields:
+1. "image_prompt": Detailed, specific prompt for generating MEANINGFUL educational visual
+   - Describe EXACTLY what should be shown (specific diagram, chart, concept visualization)
+   - Specify style: "Professional educational diagram", "Clean infographic", "Scientific illustration"
+   - Include labels/text that should appear: "Label axes as X and Y", "Show stages: Stage 1, Stage 2, Stage 3"
+   - Context: What concept is being explained
+   - Example: "Educational diagram showing the water cycle with clearly labeled stages: EVAPORATION (from ocean), CONDENSATION (clouds forming), PRECIPITATION (rain falling), COLLECTION (water gathering). Professional style with arrows showing flow. Blue color scheme."
+
+2. "image_description": Brief caption for the image (what it represents)
+
+⚠️ IMAGE QUALITY RULES:
+- Generate ONLY educational, meaningful visuals (NO generic stock photos)
+- Each image must directly support the slide's educational content
+- For processes: show clear step-by-step flow diagrams
+- For comparisons: show side-by-side visual comparisons
+- For data: request specific charts/graphs with labeled axes
+- For concepts: show annotated diagrams with clear labels
+` : ''}
+
+📊 CONTENT DEPTH REQUIREMENTS:
+- Each slide should have 150-300 words of substantive content
+- Include real examples, case studies, or scenarios
+- Add "Did you know?" boxes with interesting facts
+- Include practical applications or real-world relevance
+- For scientific topics: explain mechanisms, not just definitions
+- For historical topics: provide context, causes, effects
+- For abstract concepts: use concrete analogies and examples
+
+CRITICAL: Return ONLY valid JSON in this EXACT format:
 {
-"slides": [
-{
-"title": "Engaging title",
-"content": "Modern HTML with <h2>, <h3>, <p>, <strong>, <ul>, <li> tags and inline styles",
-"order": 1,
-${includeImages ? '"image_prompt": "Detailed description for AI image generation",' : ''}
-"image_description": "Visual description"
-}
-]
+  "slides": [
+    {
+      "title": "Compelling, clear title",
+      "content": "RICH HTML content with modern styling, gradients, callout boxes, proper headings, structured lists, and visual hierarchy",
+      "order": 1,
+      ${includeImages ? '"image_prompt": "Extremely detailed educational visual description with specific labels and style requirements",' : ''}
+      ${includeImages ? '"image_description": "Brief caption describing what the image shows",' : ''}
+      "key_concepts": ["concept1", "concept2", "concept3"]
+    }
+  ]
 }
 
-${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
+🎯 QUALITY CHECKLIST (verify before submitting):
+✓ Deep research with specific, accurate information
+✓ Logical flow building from fundamentals to complexity
+✓ Modern, visually appealing HTML formatting
+✓ Rich styling with gradients, cards, and callouts
+✓ Meaningful, educational image prompts (no generic visuals)
+✓ Each slide teaches something specific and valuable
+✓ Content is comprehensive yet accessible for target audience`,
           add_context_from_internet: true,
           response_json_schema: {
             type: "object",
@@ -301,6 +356,10 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
                     title: { type: "string" },
                     content: { type: "string" },
                     order: { type: "number" },
+                    key_concepts: { 
+                      type: "array",
+                      items: { type: "string" }
+                    },
                     ...(includeImages ? {
                       image_prompt: { type: "string" },
                       image_description: { type: "string" }
@@ -316,7 +375,7 @@ ${includeImages ? 'Include "image_prompt" for EVERY slide.' : ''}`,
 
         if (base44ProResult?.slides) {
           response = base44ProResult;
-          toast.success('Premium content generated with Base44 AI Pro!');
+          toast.success('✨ Premium content with deep research generated!');
         }
       } else if (aiProvider === 'manus') {
         const manusResult = await base44.functions.invoke('manusTextGeneration', {
@@ -636,29 +695,14 @@ Context: ${topic} - ${slide.title}`;
           {aiProvider === 'base44-pro' && (
             <div className="p-4 bg-orange-50 border border-orange-200 rounded-lg space-y-3">
               <h4 className="font-semibold text-orange-900 text-sm">🚀 Base44 AI Pro Settings</h4>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="base44-spelling"
-                  checked={base44EnforceSpelling}
-                  onChange={(e) => setBase44EnforceSpelling(e.target.checked)}
-                  className="w-4 h-4 rounded text-orange-600"
-                />
-                <Label htmlFor="base44-spelling" className="text-sm cursor-pointer">
-                  Enforce perfect spelling in images
-                </Label>
-              </div>
-              <div className="flex items-center gap-2">
-                <input
-                  type="checkbox"
-                  id="base44-autocorrect"
-                  checked={base44AutoCorrect}
-                  onChange={(e) => setBase44AutoCorrect(e.target.checked)}
-                  className="w-4 h-4 rounded text-orange-600"
-                />
-                <Label htmlFor="base44-autocorrect" className="text-sm cursor-pointer">
-                  Auto-scan & correct text errors
-                </Label>
+              <div className="bg-white/70 rounded-lg p-3 mb-2">
+                <p className="text-xs text-orange-800 font-medium mb-1">✨ Enhanced Features:</p>
+                <ul className="text-xs text-orange-700 space-y-1">
+                  <li>• Deep research with comprehensive analysis</li>
+                  <li>• High-quality educational diagrams & charts</li>
+                  <li>• Modern slide design with rich formatting</li>
+                  <li>• Meaningful, non-generic visuals</li>
+                </ul>
               </div>
             </div>
           )}
