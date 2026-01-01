@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 export default function LabeledIllustration({ data, onImageGenerated }) {
   const [generating, setGenerating] = useState(false);
-  const [imageProvider, setImageProvider] = useState('dalle');
+  const [imageProvider, setImageProvider] = useState(data.imageProvider || 'dalle');
   const imageUrl = data.generatedUrl;
 
   const generateBaseImage = async () => {
