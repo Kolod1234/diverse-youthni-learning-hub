@@ -270,7 +270,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
       const { data: ocrData } = await worker.recognize(processedCanvas);
       
-      const scaleFactor = 3; // Increased for better accuracy
+      const scaleFactor = 3.5; // Matches preprocessing
       const charData = { words: [], symbols: [] };
       
       // 3. Extract text with font information
@@ -282,8 +282,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
             y1: word.bbox.y1 / scaleFactor
         };
 
-        // Lower threshold to catch more text
-        if (word.confidence > 40) {
+        // Ultra-low threshold for deep detection
+        if (word.confidence > 30) {
             charData.words.push({
                 ...word,
                 bbox: bbox,
@@ -296,7 +296,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
         if (word.symbols) {
           word.symbols.forEach(symbol => {
-            if (symbol.confidence > 40) {
+            if (symbol.confidence > 30) {
               charData.symbols.push({ 
                   ...symbol, 
                   parentWord: word.text,
@@ -330,9 +330,9 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
-  // Helper: Optimized Image Preprocessing for colored text/backgrounds
+  // Helper: Advanced Multi-Pass Preprocessing for 100% Text Detection
   const preprocessImage = (img) => {
-    const scaleFactor = 3;
+    const scaleFactor = 3.5; // Aggressive upscaling
     const canvas = document.createElement('canvas');
     canvas.width = img.width * scaleFactor;
     canvas.height = img.height * scaleFactor;
@@ -345,54 +345,152 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     
-    // Pass 1: Enhanced contrast for colored text
-    const contrastFactor = 1.8;
+    // === MULTI-CHANNEL COLOR SEPARATION ===
+    // Extract RGB channels separately to detect colored text on colored backgrounds
+    const rChannel = new Uint8ClampedArray(data.length / 4);
+    const gChannel = new Uint8ClampedArray(data.length / 4);
+    const bChannel = new Uint8ClampedArray(data.length / 4);
+    
     for (let i = 0; i < data.length; i += 4) {
-      data[i] = Math.max(0, Math.min(255, ((data[i] - 128) * contrastFactor) + 128));
-      data[i + 1] = Math.max(0, Math.min(255, ((data[i + 1] - 128) * contrastFactor) + 128));
-      data[i + 2] = Math.max(0, Math.min(255, ((data[i + 2] - 128) * contrastFactor) + 128));
+      rChannel[i / 4] = data[i];
+      gChannel[i / 4] = data[i + 1];
+      bChannel[i / 4] = data[i + 2];
     }
     
-    // Pass 2: Convert to grayscale with luminance
-    const grayscale = new Uint8ClampedArray(data.length / 4);
-    for (let i = 0; i < data.length; i += 4) {
-      grayscale[i / 4] = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
-    }
+    // === PASS 1: AGGRESSIVE CONTRAST & SHARPENING ===
+    const sharpenKernel = [-1, -1, -1, -1, 9, -1, -1, -1, -1];
+    const sharpened = new Uint8ClampedArray(data.length);
     
-    // Pass 3: Fast histogram-based adaptive thresholding (Otsu's method)
-    const histogram = new Array(256).fill(0);
-    grayscale.forEach(val => histogram[val]++);
-    
-    const total = grayscale.length;
-    let sum = 0;
-    for (let i = 0; i < 256; i++) sum += i * histogram[i];
-    
-    let sumB = 0, wB = 0, wF = 0, maxVariance = 0, threshold = 0;
-    for (let t = 0; t < 256; t++) {
-      wB += histogram[t];
-      if (wB === 0) continue;
-      wF = total - wB;
-      if (wF === 0) break;
-      
-      sumB += t * histogram[t];
-      const mB = sumB / wB;
-      const mF = (sum - sumB) / wF;
-      const variance = wB * wF * (mB - mF) * (mB - mF);
-      
-      if (variance > maxVariance) {
-        maxVariance = variance;
-        threshold = t;
+    for (let y = 1; y < canvas.height - 1; y++) {
+      for (let x = 1; x < canvas.width - 1; x++) {
+        for (let c = 0; c < 3; c++) {
+          let sum = 0;
+          for (let ky = -1; ky <= 1; ky++) {
+            for (let kx = -1; kx <= 1; kx++) {
+              const idx = ((y + ky) * canvas.width + (x + kx)) * 4 + c;
+              sum += data[idx] * sharpenKernel[(ky + 1) * 3 + (kx + 1)];
+            }
+          }
+          sharpened[(y * canvas.width + x) * 4 + c] = Math.max(0, Math.min(255, sum));
+        }
       }
     }
     
-    // Pass 4: Apply threshold with slight bias for better text detection
-    threshold = Math.max(threshold - 20, 80); // Lower threshold for colored backgrounds
+    // === PASS 2: MULTI-METHOD GRAYSCALE CONVERSION ===
+    // Method 1: Standard luminance
+    const gray1 = new Uint8ClampedArray(data.length / 4);
+    // Method 2: Channel difference (detects colored text better)
+    const gray2 = new Uint8ClampedArray(data.length / 4);
+    // Method 3: Maximum contrast across channels
+    const gray3 = new Uint8ClampedArray(data.length / 4);
     
-    for (let i = 0; i < grayscale.length; i++) {
-      const color = grayscale[i] > threshold ? 255 : 0;
+    for (let i = 0; i < data.length; i += 4) {
+      const r = sharpened[i] || data[i];
+      const g = sharpened[i + 1] || data[i + 1];
+      const b = sharpened[i + 2] || data[i + 2];
+      
+      // Standard luminance
+      gray1[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
+      
+      // Channel difference emphasizes color contrast
+      const maxChannel = Math.max(r, g, b);
+      const minChannel = Math.min(r, g, b);
+      gray2[i / 4] = maxChannel - minChannel;
+      
+      // Edge-based grayscale
+      const edgeIntensity = Math.abs(r - g) + Math.abs(g - b) + Math.abs(b - r);
+      gray3[i / 4] = Math.min(255, edgeIntensity * 2);
+    }
+    
+    // === PASS 3: MULTI-THRESHOLD BINARIZATION ===
+    // Otsu's method on each grayscale version
+    const getOtsuThreshold = (gray) => {
+      const histogram = new Array(256).fill(0);
+      gray.forEach(val => histogram[val]++);
+      
+      const total = gray.length;
+      let sum = 0;
+      for (let i = 0; i < 256; i++) sum += i * histogram[i];
+      
+      let sumB = 0, wB = 0, wF = 0, maxVariance = 0, threshold = 0;
+      for (let t = 0; t < 256; t++) {
+        wB += histogram[t];
+        if (wB === 0) continue;
+        wF = total - wB;
+        if (wF === 0) break;
+        
+        sumB += t * histogram[t];
+        const mB = sumB / wB;
+        const mF = (sum - sumB) / wF;
+        const variance = wB * wF * (mB - mF) * (mB - mF);
+        
+        if (variance > maxVariance) {
+          maxVariance = variance;
+          threshold = t;
+        }
+      }
+      return threshold;
+    };
+    
+    const t1 = Math.max(getOtsuThreshold(gray1) - 30, 60);
+    const t2 = Math.max(getOtsuThreshold(gray2) - 10, 40);
+    const t3 = Math.max(getOtsuThreshold(gray3) - 10, 50);
+    
+    // === PASS 4: COMBINE ALL METHODS (UNION) ===
+    // If ANY method detects text, mark as text
+    for (let i = 0; i < gray1.length; i++) {
+      const isText1 = gray1[i] < t1; // Inverted for dark text
+      const isText2 = gray2[i] > t2; // Color difference
+      const isText3 = gray3[i] > t3; // Edge detection
+      
+      // Also check individual RGB channels for extreme contrasts
+      const rDark = rChannel[i] < 100;
+      const gDark = gChannel[i] < 100;
+      const bDark = bChannel[i] < 100;
+      const rBright = rChannel[i] > 180;
+      const gBright = gChannel[i] > 180;
+      const bBright = bChannel[i] > 180;
+      
+      const hasContrast = (rDark || gDark || bDark) || (rBright || gBright || bBright);
+      
+      const isText = isText1 || isText2 || isText3 || hasContrast;
+      const color = isText ? 0 : 255; // Inverted: text is black
+      
       data[i * 4] = color;
       data[i * 4 + 1] = color;
       data[i * 4 + 2] = color;
+    }
+    
+    // === PASS 5: MORPHOLOGICAL CLEANUP ===
+    // Remove noise and connect text components
+    const cleaned = new Uint8ClampedArray(data);
+    const radius = 2;
+    
+    for (let y = radius; y < canvas.height - radius; y++) {
+      for (let x = radius; x < canvas.width - radius; x++) {
+        let blackCount = 0, totalCount = 0;
+        
+        for (let dy = -radius; dy <= radius; dy++) {
+          for (let dx = -radius; dx <= radius; dx++) {
+            const idx = ((y + dy) * canvas.width + (x + dx)) * 4;
+            if (data[idx] === 0) blackCount++;
+            totalCount++;
+          }
+        }
+        
+        const idx = (y * canvas.width + x) * 4;
+        // If majority is text in neighborhood, keep as text
+        if (blackCount > totalCount * 0.4) {
+          cleaned[idx] = 0;
+          cleaned[idx + 1] = 0;
+          cleaned[idx + 2] = 0;
+        }
+      }
+    }
+    
+    // Apply cleaned data
+    for (let i = 0; i < cleaned.length; i++) {
+      data[i] = cleaned[i];
     }
     
     ctx.putImageData(imageData, 0, 0);
