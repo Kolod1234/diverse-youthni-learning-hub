@@ -272,35 +272,59 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           <Label htmlFor="speaker-notes">Generate Speaker Notes</Label>
         </div>
 
-        <div className="pt-2">
-           <Label className="text-xs text-muted-foreground mb-2 block">AI Model</Label>
-           <div className="flex gap-2">
-             <Button 
-               variant={aiProvider === 'default' ? "default" : "outline"} 
-               size="sm"
-               onClick={() => setAiProvider('default')}
-               className="text-xs"
-             >
-               Standard
-             </Button>
-             <Button 
-               variant={aiProvider === 'default_research' ? "default" : "outline"} 
-               size="sm"
-               onClick={() => setAiProvider('default_research')}
-               className="text-xs"
-             >
-               Web Research
-             </Button>
-             <Button 
-               variant={aiProvider === 'perplexity' ? "default" : "outline"} 
-               size="sm"
-               onClick={() => setAiProvider('perplexity')}
-               className="text-xs"
-             >
-               <BookOpen className="w-3 h-3 mr-1" />
-               Deep Research
-             </Button>
-           </div>
+        <div className="grid grid-cols-2 gap-4 pt-2">
+          <div>
+            <Label className="text-xs text-muted-foreground mb-2 block">Text AI Model</Label>
+            <div className="flex flex-col gap-2">
+              <Button 
+                variant={aiProvider === 'default' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setAiProvider('default')}
+                className="text-xs w-full"
+              >
+                Standard
+              </Button>
+              <Button 
+                variant={aiProvider === 'default_research' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setAiProvider('default_research')}
+                className="text-xs w-full"
+              >
+                Web Research
+              </Button>
+              <Button 
+                variant={aiProvider === 'perplexity' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setAiProvider('perplexity')}
+                className="text-xs w-full"
+              >
+                <BookOpen className="w-3 h-3 mr-1" />
+                Deep Research
+              </Button>
+            </div>
+          </div>
+
+          <div>
+            <Label className="text-xs text-muted-foreground mb-2 block">Image Generator</Label>
+            <div className="flex flex-col gap-2">
+              <Button 
+                variant={imageProvider === 'dalle' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setImageProvider('dalle')}
+                className="text-xs w-full"
+              >
+                DALL-E 3
+              </Button>
+              <Button 
+                variant={imageProvider === 'flux2' ? "default" : "outline"} 
+                size="sm"
+                onClick={() => setImageProvider('flux2')}
+                className="text-xs w-full"
+              >
+                Flux 2
+              </Button>
+            </div>
+          </div>
         </div>
       </div>
 
