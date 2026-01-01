@@ -17,7 +17,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [includeSpeakerNotes, setIncludeSpeakerNotes] = useState(true);
   const [contentType, setContentType] = useState('general'); // 'general', 'code', 'math', 'history'
   const [aiProvider, setAiProvider] = useState('default'); // 'default' or 'perplexity'
-  const [imageProvider, setImageProvider] = useState('base44'); // 'base44', 'manus', 'dalle', 'stability'
+  const [imageProvider, setImageProvider] = useState('base44'); // 'base44', 'gemini', 'dalle', 'stability'
   const [imageAspectRatio, setImageAspectRatio] = useState('16:9'); // '16:9', '1:1', '4:3', '9:16'
   const [generating, setGenerating] = useState(false);
 
@@ -180,8 +180,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 aspect_ratio: imageAspectRatio
               });
             } else {
-              // Default to Manus
-              imageResult = await base44.functions.invoke('generateImageWithManus', {
+              // Default to Gemini
+              imageResult = await base44.functions.invoke('generateImageWithGemini', {
                 prompt: enhancedPrompt,
                 aspect_ratio: imageAspectRatio
               });
@@ -431,15 +431,15 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                       DALL-E 3
                     </button>
                     <button
-                      onClick={() => setImageProvider('manus')}
+                      onClick={() => setImageProvider('gemini')}
                       disabled={generating}
                       className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                        imageProvider === 'manus'
+                        imageProvider === 'gemini'
                           ? 'border-purple-600 bg-purple-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      Manus
+                      Google Gemini
                     </button>
                     <button
                       onClick={() => setImageProvider('stability')}
