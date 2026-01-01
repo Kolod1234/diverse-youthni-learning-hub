@@ -14,7 +14,8 @@ import {
   X, Search, Type, Eraser, Loader2, Upload, Square, Pentagon, 
   Tag, Sparkles, Copy, Calculator, Subscript, Superscript, Plus,
   Settings, RefreshCw, Globe, LayoutGrid, CheckCircle2, Edit2,
-  Trash2, Filter, List, Check
+  Trash2, Filter, List, Check, Bold, Italic, Underline, Palette,
+  TextCursorInput, Wand2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createWorker } from 'tesseract.js';
@@ -60,6 +61,12 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [textFormat, setTextFormat] = useState('normal');
   const [insertMode, setInsertMode] = useState(false);
   const [insertText, setInsertText] = useState('');
+  const [textBold, setTextBold] = useState(false);
+  const [textItalic, setTextItalic] = useState(false);
+  const [textUnderline, setTextUnderline] = useState(false);
+  const [fontSize, setFontSize] = useState(24);
+  const [textColor, setTextColor] = useState('#000000');
+  const [checkingSpelling, setCheckingSpelling] = useState(false);
   
   // Auto-save
   const [lastSaved, setLastSaved] = useState(null);
@@ -628,7 +635,40 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     boxes.length > 0 ? toast.success(`Found ${boxes.length} matches`) : toast.warning('Text not found');
   };
 
-  // 3. Edit Text (Superscript/Subscript Logic)
+  // Spell Check & Grammar Correction
+  const handleSpellCheck = async () => {
+    if (!editingWord) {
+      toast.error('No text to check');
+      return;
+    }
+
+    setCheckingSpelling(true);
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Check spelling and grammar for this text and return ONLY the corrected version with no explanations: "${editingWord}"`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            corrected: { type: 'string' },
+            changes: { type: 'string' }
+          }
+        }
+      });
+
+      if (result.corrected && result.corrected !== editingWord) {
+        setEditingWord(result.corrected);
+        toast.success(result.changes || 'Text corrected');
+      } else {
+        toast.success('No corrections needed');
+      }
+    } catch (error) {
+      toast.error('Spell check failed');
+    } finally {
+      setCheckingSpelling(false);
+    }
+  };
+
+  // 3. Edit Text with Rich Formatting
   const handleWordEdit = () => {
     const itemsToEdit = selectedItems.length > 0 ? selectedItems : (selectedWord ? [selectedWord] : []);
     if (itemsToEdit.length === 0 || !editingWord) return;
@@ -649,23 +689,39 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
     const firstItem = itemsToEdit[0];
     const bbox = firstItem.bbox;
-    let fontSize = Math.max(14, Math.floor(bbox.y1 - bbox.y0));
+    let baseFontSize = fontSize || Math.max(14, Math.floor(bbox.y1 - bbox.y0));
     let yPos = bbox.y1;
     let xPos = bbox.x0;
 
     // Apply Subscript/Superscript adjustments
     if (textFormat === 'sub') {
-        fontSize = fontSize * 0.6;
-        yPos = yPos + (fontSize * 0.5);
+        baseFontSize = baseFontSize * 0.6;
+        yPos = yPos + (baseFontSize * 0.5);
     } else if (textFormat === 'super') {
-        fontSize = fontSize * 0.6;
-        yPos = yPos - (fontSize * 0.8);
+        baseFontSize = baseFontSize * 0.6;
+        yPos = yPos - (baseFontSize * 0.8);
     }
 
-    ctx.font = `bold ${fontSize}px Arial`;
-    ctx.fillStyle = 'black';
+    // Build font string with formatting
+    let fontStyle = '';
+    if (textItalic) fontStyle += 'italic ';
+    if (textBold) fontStyle += 'bold ';
+    
+    ctx.font = `${fontStyle}${baseFontSize}px Arial`;
+    ctx.fillStyle = textColor;
     ctx.textBaseline = 'bottom';
     ctx.fillText(editingWord, xPos, yPos);
+    
+    // Draw underline if needed
+    if (textUnderline) {
+      const textWidth = ctx.measureText(editingWord).width;
+      ctx.strokeStyle = textColor;
+      ctx.lineWidth = Math.max(1, baseFontSize / 20);
+      ctx.beginPath();
+      ctx.moveTo(xPos, yPos + 2);
+      ctx.lineTo(xPos + textWidth, yPos + 2);
+      ctx.stroke();
+    }
 
     // Update OCR result with corrected text
     if (correctionMode && ocrResult) {
@@ -1120,33 +1176,123 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                         </div>
 
                         <hr className="border-blue-200" />
-                        
-                        <Label>Edit / Replace</Label>
-                        <Input 
-                            value={editingWord} 
-                            onChange={e => setEditingWord(e.target.value)} 
-                            placeholder="Type replacement..." 
-                        />
-                        
-                        <div className="flex gap-1">
-                             <Button 
+
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <Label>Edit / Replace Text</Label>
+                            <Button 
+                              size="sm" 
+                              variant="outline"
+                              onClick={handleSpellCheck}
+                              disabled={checkingSpelling}
+                              className="h-7"
+                            >
+                              {checkingSpelling ? (
+                                <Loader2 className="w-3 h-3 animate-spin" />
+                              ) : (
+                                <Wand2 className="w-3 h-3 mr-1" />
+                              )}
+                              Spell Check
+                            </Button>
+                          </div>
+
+                          <Input 
+                              value={editingWord} 
+                              onChange={e => setEditingWord(e.target.value)} 
+                              placeholder="Type replacement..." 
+                          />
+
+                          <div className="space-y-2">
+                            <Label className="text-xs">Text Style</Label>
+                            <div className="flex gap-1">
+                              <Button 
                                 size="sm" 
-                                variant={textFormat === 'normal' ? 'default' : 'ghost'} 
-                                onClick={() => setTextFormat('normal')} 
-                                className="w-8 h-8 p-0"><Type className="w-4 h-4"/></Button>
-                             <Button 
+                                variant={textBold ? 'default' : 'ghost'} 
+                                onClick={() => setTextBold(!textBold)} 
+                                className="w-8 h-8 p-0"
+                                title="Bold"
+                              >
+                                <Bold className="w-4 h-4"/>
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant={textItalic ? 'default' : 'ghost'} 
+                                onClick={() => setTextItalic(!textItalic)} 
+                                className="w-8 h-8 p-0"
+                                title="Italic"
+                              >
+                                <Italic className="w-4 h-4"/>
+                              </Button>
+                              <Button 
+                                size="sm" 
+                                variant={textUnderline ? 'default' : 'ghost'} 
+                                onClick={() => setTextUnderline(!textUnderline)} 
+                                className="w-8 h-8 p-0"
+                                title="Underline"
+                              >
+                                <Underline className="w-4 h-4"/>
+                              </Button>
+                              <Button 
                                 size="sm" 
                                 variant={textFormat === 'super' ? 'default' : 'ghost'} 
-                                onClick={() => setTextFormat('super')} 
-                                className="w-8 h-8 p-0"><Superscript className="w-4 h-4"/></Button>
-                             <Button 
+                                onClick={() => setTextFormat(textFormat === 'super' ? 'normal' : 'super')} 
+                                className="w-8 h-8 p-0"
+                                title="Superscript"
+                              >
+                                <Superscript className="w-4 h-4"/>
+                              </Button>
+                              <Button 
                                 size="sm" 
                                 variant={textFormat === 'sub' ? 'default' : 'ghost'} 
-                                onClick={() => setTextFormat('sub')} 
-                                className="w-8 h-8 p-0"><Subscript className="w-4 h-4"/></Button>
-                        </div>
+                                onClick={() => setTextFormat(textFormat === 'sub' ? 'normal' : 'sub')} 
+                                className="w-8 h-8 p-0"
+                                title="Subscript"
+                              >
+                                <Subscript className="w-4 h-4"/>
+                              </Button>
+                            </div>
+                          </div>
 
-                        <Button className="w-full" onClick={handleWordEdit}>Apply Edit</Button>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div>
+                              <Label className="text-xs">Font Size</Label>
+                              <Input 
+                                type="number" 
+                                value={fontSize}
+                                onChange={(e) => setFontSize(Math.max(8, Math.min(72, parseInt(e.target.value) || 24)))}
+                                className="h-8"
+                                min="8"
+                                max="72"
+                              />
+                            </div>
+                            <div>
+                              <Label className="text-xs flex items-center gap-1">
+                                <Palette className="w-3 h-3" />
+                                Color
+                              </Label>
+                              <div className="flex gap-1">
+                                <Input 
+                                  type="color" 
+                                  value={textColor}
+                                  onChange={(e) => setTextColor(e.target.value)}
+                                  className="h-8 w-12 p-1 cursor-pointer"
+                                />
+                                <Input 
+                                  type="text" 
+                                  value={textColor}
+                                  onChange={(e) => setTextColor(e.target.value)}
+                                  className="h-8 flex-1 text-xs"
+                                  placeholder="#000000"
+                                />
+                              </div>
+                            </div>
+                          </div>
+
+                          <Button className="w-full" onClick={handleWordEdit}>
+                            <TextCursorInput className="w-4 h-4 mr-2" />
+                            Apply Formatted Text
+                          </Button>
+                        </div>
                     </div>
                 ) : (
                     <div className="space-y-4">
