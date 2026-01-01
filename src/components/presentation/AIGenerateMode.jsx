@@ -554,7 +554,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           <li>• <strong>Deep Content Generation:</strong> 6-8 detailed points per slide with comprehensive explanations</li>
           <li>• <strong>Research Modes:</strong> Standard AI, Web Research, Perplexity Pro, or Academic depth</li>
           <li>• <strong>Specialized Types:</strong> General, Code (with examples), Math (with proofs), History (with analysis)</li>
-          <li>• <strong>Image AI:</strong> Base44, DALL-E 3, Manus, Stability AI with custom aspect ratios</li>
+          <li>• <strong>Image AI:</strong> Base44, DALL-E 3, Google Vertex, Stability AI with custom aspect ratios</li>
           <li>• <strong>Real-Time Data:</strong> Web search integration for current statistics and facts</li>
           <li>• <strong>Speaker Notes:</strong> Detailed 5-6 sentence talking points with teaching tips</li>
           <li>• <strong>Full Customization:</strong> Editable slides with 6 visual themes</li>
