@@ -18,7 +18,7 @@ import {
   TextCursorInput, Wand2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import * as paddleOcr from '@paddlejs-models/ocr';
+import { createWorker } from 'tesseract.js';
 import { base44 } from '@/api/base44Client';
 
 export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
@@ -256,66 +256,82 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.fillText(label, x + 5, y - 8);
   };
 
-  // --- OCR Logic with PaddleOCR ---
+  // --- OCR Logic ---
 
   const performOCR = async (img) => {
     setLoading(true);
     try {
-      // 1. Initialize PaddleOCR (loads models from CDN on first run)
-      toast.info('Loading AI model...');
-      await paddleOcr.init();
+      const worker = await createWorker(ocrLanguage);
       
-      // 2. Run recognition directly on the HTMLImageElement
-      const res = await paddleOcr.recognize(img);
+      // 1. Preprocess with multiple techniques for colored text/backgrounds
+      const processedCanvas = preprocessImage(img);
       
-      // 3. Process results to match editor's format
-      if (!res || !res.text || res.text.length === 0) {
-        toast.warning("No text detected with PaddleOCR");
-        setOcrResult({ words: [], symbols: [] });
-        return;
-      }
-
-      const words = res.text.map((textStr, index) => {
-        // PaddleJS returns coordinates as [x1,y1, x2,y2, x3,y3, x4,y4]
-        const poly = res.points ? res.points[index] : null;
-        
-        let bbox;
-        if (poly && poly.length >= 8) {
-          const xs = [poly[0], poly[2], poly[4], poly[6]];
-          const ys = [poly[1], poly[3], poly[5], poly[7]];
-          bbox = {
-            x0: Math.min(...xs),
-            y0: Math.min(...ys),
-            x1: Math.max(...xs),
-            y1: Math.max(...ys)
-          };
-        } else {
-          // Fallback if coordinates missing
-          bbox = { x0: 0, y0: 0, x1: 0, y1: 0 };
-        }
-
-        return {
-          text: textStr,
-          confidence: 90, // PaddleJS doesn't expose confidence easily
-          bbox: bbox,
-          font_name: 'Unknown',
-          font_size: Math.round(bbox.y1 - bbox.y0),
-          is_bold: false,
-          is_italic: false
-        };
+      // 2. Configure Tesseract with user-selected layout mode
+      await worker.setParameters({ 
+        tessedit_pageseg_mode: layoutMode,
+        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.:-(),%<>=/+*[]{}#@!?&$€£¥', 
+        preserve_interword_spaces: '1',
+        tessedit_enable_doc_dict: '0',
+        classify_bln_numeric_mode: '0'
       });
 
-      const charData = {
-        words: groupWordsByProximity(words),
-        symbols: [] // PaddleOCR is word-level, no character detection
-      };
+      const { data: ocrData } = await worker.recognize(processedCanvas);
+      
+      const scaleFactor = 3.5; // Matches preprocessing
+      const charData = { words: [], symbols: [] };
+      
+      // 3. Extract text with font information
+      ocrData.words.forEach(word => {
+        const bbox = {
+            x0: word.bbox.x0 / scaleFactor,
+            y0: word.bbox.y0 / scaleFactor,
+            x1: word.bbox.x1 / scaleFactor,
+            y1: word.bbox.y1 / scaleFactor
+        };
 
+        // Ultra-low threshold for deep detection
+        if (word.confidence > 30) {
+            charData.words.push({
+                ...word,
+                bbox: bbox,
+                font_name: word.font_name || 'Unknown',
+                font_size: Math.round((bbox.y1 - bbox.y0) * 0.9),
+                is_bold: word.is_bold || false,
+                is_italic: word.is_italic || false
+            });
+        }
+
+        if (word.symbols) {
+          word.symbols.forEach(symbol => {
+            if (symbol.confidence > 30) {
+              charData.symbols.push({ 
+                  ...symbol, 
+                  parentWord: word.text,
+                  bbox: {
+                      x0: symbol.bbox.x0 / scaleFactor,
+                      y0: symbol.bbox.y0 / scaleFactor,
+                      x1: symbol.bbox.x1 / scaleFactor,
+                      y1: symbol.bbox.y1 / scaleFactor
+                  }
+              });
+            }
+          });
+        }
+      });
+      
+      const groupedWords = groupWordsByProximity(charData.words);
+      charData.words = groupedWords;
+      
       setOcrResult(charData);
-      toast.success(`Detected ${words.length} text regions with PaddleOCR`);
+      await worker.terminate();
+      
+      const count = charData.words.length;
+      if (count > 0) toast.success(`Detected ${count} text regions (${ocrLanguage.toUpperCase()})`);
+      else toast.warning("No text detected. Try a clearer image or different settings.");
 
     } catch (error) {
-      console.error('PaddleOCR Error:', error);
-      toast.error('Failed to run AI model. Check console for details.');
+      console.error('OCR error:', error);
+      toast.error('Failed to detect text');
     } finally {
       setLoading(false);
     }
