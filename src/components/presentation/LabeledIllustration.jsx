@@ -68,35 +68,52 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
         className="w-full h-full object-contain p-4"
       />
 
-      {/* Render labels with different styles based on type */}
+      {/* Render labels with professional textbook styling */}
       {data.labels?.map((label, index) => {
         const labelType = label.type || 'pointer';
         
+        // STYLE A: SECTION HEADERS (Large, Bold, Clean - like "Meiosis I")
+        if (labelType === 'header') {
+          return (
+            <div
+              key={index}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2 w-48 text-left"
+              style={{ left: `${label.x}%`, top: `${label.y}%` }}
+            >
+              <h3 className="text-xl font-extrabold text-slate-900 tracking-tight leading-none border-l-4 border-indigo-600 pl-3">
+                {label.text}
+              </h3>
+            </div>
+          );
+        }
+        
+        // STYLE B: STEP TITLES (Medium weight, centered - like "Prophase I")
+        if (labelType === 'subtext') {
+          return (
+            <div
+              key={index}
+              className="absolute transform -translate-x-1/2 -translate-y-1/2"
+              style={{ left: `${label.x}%`, top: `${label.y}%` }}
+            >
+              <p className="text-sm font-bold text-slate-700 uppercase tracking-wide text-center bg-white/50 backdrop-blur-sm px-2 py-1 rounded">
+                {label.text}
+              </p>
+            </div>
+          );
+        }
+        
+        // STYLE C: POINTERS (Small with dot and line - like "Centromere")
         return (
           <div
             key={index}
-            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center"
+            className="absolute transform -translate-x-1/2 -translate-y-1/2 flex flex-col items-center group"
             style={{ left: `${label.x}%`, top: `${label.y}%` }}
           >
-            {labelType === 'header' ? (
-              // Header Style - Main sections
-              <div className="bg-slate-900/90 text-white px-4 py-1.5 rounded-md font-bold text-sm shadow-xl backdrop-blur-md border border-slate-700">
-                {label.text}
-              </div>
-            ) : labelType === 'subtext' ? (
-              // Subtext Style - Additional details
-              <div className="bg-yellow-50/90 text-yellow-800 px-3 py-1 rounded-sm text-xs font-medium border border-yellow-200 shadow-sm">
-                {label.text}
-              </div>
-            ) : (
-              // Default Pointer Style - Specific parts
-              <>
-                <div className="w-3 h-3 bg-indigo-600 rounded-full border-2 border-white shadow-sm z-20 relative ring-2 ring-indigo-600/20" />
-                <div className="absolute top-4 bg-white/95 backdrop-blur text-xs font-semibold text-slate-800 px-3 py-1.5 rounded-md shadow-md border border-slate-200 whitespace-nowrap z-10">
-                  {label.text}
-                </div>
-              </>
-            )}
+            <div className="w-2.5 h-2.5 bg-indigo-600 rounded-full ring-4 ring-indigo-100 z-10" />
+            <div className="h-4 w-0.5 bg-indigo-200" />
+            <div className="bg-white text-xs font-semibold text-slate-700 px-3 py-1 rounded shadow-sm border border-slate-200 whitespace-nowrap">
+              {label.text}
+            </div>
           </div>
         );
       })}

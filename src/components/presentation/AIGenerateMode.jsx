@@ -76,20 +76,25 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       2. LABELED ILLUSTRATIONS (UNIVERSAL - works for ALL domains):
          - For: ANY structure/system that needs pointing labels (anatomy, engines, geography, architecture, chemistry, etc.)
          - Use 'labeledIllustration' object with:
-           * 'baseImagePrompt': "[Subject description], ${styleGuides[visualStyle]}, clean white background, NO TEXT, NO LABELS"
+           * 'baseImagePrompt': Must describe the LAYOUT based on complexity
            * 'labels': Array of 5-12 labels with 'text', 'x', 'y', and 'type' fields
 
-         UNIVERSAL EXAMPLES:
-         1. ENGINEERING: "Cutaway of jet engine" → labels: "Fan Blades" (pointer), "Combustion Chamber" (pointer)
-         2. GEOGRAPHY: "Cross-section of volcano" → labels: "Magma Chamber" (pointer), "Crater" (header)
-         3. ANATOMY: "Human heart" → labels: "Left Ventricle" (pointer), "Aorta" (pointer)
-         4. HISTORY: "Greek temple elevation" → labels: "Pediment" (pointer), "Doric Columns" (pointer)
-         5. CHEMISTRY: "Water molecule structure" → labels: "Oxygen" (pointer), "Hydrogen" (subtext)
+         LAYOUT INSTRUCTIONS:
+         1. SIMPLE OBJECT (e.g. "Mitochondria"): "A single clean 3D cutaway of [Object], ${styleGuides[visualStyle]}, white background, NO TEXT"
 
-         LABEL TYPES:
-         - 'header': Main section titles (bigger, bold)
-         - 'pointer': Specific parts (default, with dot and line)
-         - 'subtext': Additional details (smaller, yellow highlight)
+         2. LINEAR PROCESS (e.g. "Mitosis"): "A horizontal sequence of 4-5 distinct steps showing [Process], connected by arrows, ${styleGuides[visualStyle]}, white background, NO TEXT"
+
+         3. MULTI-STAGE PROCESS (e.g. "Meiosis", "Krebs Cycle"): "A scientific diagram split into TWO HORIZONTAL PANELS. Top panel shows [Stage 1] with 4 steps. Bottom panel shows [Stage 2] with 4 steps. Light gray panel backgrounds to distinguish rows, ${styleGuides[visualStyle]}, white background, NO TEXT"
+
+         LABEL TYPES & USAGE:
+         - 'header': PANEL TITLES (e.g., "Meiosis I") - place at top-left of each major section
+         - 'subtext': STEP NAMES (e.g., "Prophase I") - place above or below each cell/step
+         - 'pointer': TINY DETAILS (e.g., "Centromere") - point to specific features inside diagrams
+
+         UNIVERSAL EXAMPLES:
+         1. ENGINEERING: "Cutaway of jet engine" → labels: "Combustion Chamber" (pointer)
+         2. BIOLOGY PROCESS: "Meiosis stages" → labels: "Meiosis I" (header), "Prophase I" (subtext), "Chromosome" (pointer)
+         3. GEOGRAPHY: "Cross-section of volcano" → labels: "Volcanic Structure" (header), "Magma Chamber" (pointer)
 
          MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations
 
