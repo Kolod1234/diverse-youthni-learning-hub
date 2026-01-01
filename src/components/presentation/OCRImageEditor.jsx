@@ -3,9 +3,17 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { 
   X, Search, Type, Eraser, Loader2, Upload, Square, Pentagon, 
-  Tag, Sparkles, Copy, Calculator, Subscript, Superscript, Plus
+  Tag, Sparkles, Copy, Calculator, Subscript, Superscript, Plus,
+  Settings, RefreshCw, Globe, LayoutGrid, CheckCircle2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createWorker } from 'tesseract.js';
@@ -24,6 +32,12 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [editingWord, setEditingWord] = useState('');
   const [selectionMode, setSelectionMode] = useState('word');
   const [selectedItems, setSelectedItems] = useState([]);
+  
+  // Advanced OCR Settings
+  const [ocrLanguage, setOcrLanguage] = useState('eng');
+  const [layoutMode, setLayoutMode] = useState('11'); // PSM mode
+  const [correctionMode, setCorrectionMode] = useState(false);
+  const [showSettings, setShowSettings] = useState(false);
   
   // Annotations
   const [annotations, setAnnotations] = useState([]);
@@ -159,11 +173,19 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     // 3. Draw Active Selections
     selectedItems.forEach(item => {
       const bbox = item.bbox;
-      ctx.fillStyle = 'rgba(59, 130, 246, 0.3)';
+      const isCorrected = item.corrected;
+      ctx.fillStyle = isCorrected ? 'rgba(34, 197, 94, 0.3)' : 'rgba(59, 130, 246, 0.3)';
       ctx.fillRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
-      ctx.strokeStyle = '#3B82F6';
+      ctx.strokeStyle = isCorrected ? '#22C55E' : '#3B82F6';
       ctx.lineWidth = 2;
       ctx.strokeRect(bbox.x0, bbox.y0, bbox.x1 - bbox.x0, bbox.y1 - bbox.y0);
+      
+      // Draw checkmark for corrected text
+      if (isCorrected) {
+        ctx.fillStyle = '#22C55E';
+        ctx.font = 'bold 12px Arial';
+        ctx.fillText('✓', bbox.x1 - 12, bbox.y0 + 12);
+      }
     });
 
     // 4. Draw Annotations (Boxes/Polygons)
@@ -227,14 +249,14 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const performOCR = async (img) => {
     setLoading(true);
     try {
-      const worker = await createWorker('eng');
+      const worker = await createWorker(ocrLanguage);
       
       // 1. Preprocess with multiple techniques for colored text/backgrounds
       const processedCanvas = preprocessImage(img);
       
-      // 2. Configure Tesseract for maximum detection with font info
+      // 2. Configure Tesseract with user-selected layout mode
       await worker.setParameters({ 
-        tessedit_pageseg_mode: '11', // Sparse text mode
+        tessedit_pageseg_mode: layoutMode,
         tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.:-(),%<>=/+*[]{}#@!?&$€£¥', 
         preserve_interword_spaces: '1',
         tessedit_enable_doc_dict: '0',
@@ -292,8 +314,8 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       await worker.terminate();
       
       const count = charData.words.length;
-      if (count > 0) toast.success(`Detected ${count} text regions with fonts`);
-      else toast.warning("No text detected. Try a clearer image.");
+      if (count > 0) toast.success(`Detected ${count} text regions (${ocrLanguage.toUpperCase()})`);
+      else toast.warning("No text detected. Try a clearer image or different settings.");
 
     } catch (error) {
       console.error('OCR error:', error);
@@ -404,6 +426,13 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     });
   };
 
+  // Re-run OCR with new settings
+  const handleReRunOCR = () => {
+    if (imageRef.current) {
+      performOCR(imageRef.current);
+    }
+  };
+
   // 2. Highlighting
   const handleHighlight = () => {
     if (!searchText.trim() || !ocrResult) return;
@@ -458,6 +487,16 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.textBaseline = 'bottom';
     ctx.fillText(editingWord, xPos, yPos);
 
+    // Update OCR result with corrected text
+    if (correctionMode && ocrResult) {
+      const newOcrResult = { ...ocrResult };
+      newOcrResult.words = newOcrResult.words.map(word => {
+        const match = itemsToEdit.find(item => item === word);
+        return match ? { ...word, text: editingWord, corrected: true } : word;
+      });
+      setOcrResult(newOcrResult);
+    }
+
     // Update main image ref
     const newUrl = canvas.toDataURL();
     const newImg = new Image();
@@ -468,7 +507,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
         setSelectedItems([]);
         setSelectedWord(null);
         setEditingWord('');
-        toast.success('Text edited successfully!');
+        toast.success(correctionMode ? 'Text corrected!' : 'Text edited successfully!');
     };
     newImg.src = newUrl;
   };
@@ -687,13 +726,112 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                 Auto-saved {new Date(lastSaved).toLocaleTimeString()}
               </span>
             )}
+            {correctionMode && (
+              <span className="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full flex items-center gap-1">
+                <CheckCircle2 className="w-3 h-3" />
+                Correction Mode
+              </span>
+            )}
           </div>
           <div className="flex gap-2">
             {loading && <Loader2 className="w-5 h-5 animate-spin text-blue-600" />}
+            <Button 
+              variant="outline" 
+              size="sm" 
+              onClick={() => setShowSettings(!showSettings)}
+            >
+              <Settings className="w-4 h-4 mr-1" />
+              OCR Settings
+            </Button>
             <Button size="sm" onClick={handleSave}>Save</Button>
             <Button variant="ghost" size="sm" onClick={onClose}><X className="w-4 h-4" /></Button>
           </div>
         </div>
+
+        {/* OCR Settings Panel */}
+        {showSettings && (
+          <div className="border-b bg-blue-50 p-4 space-y-4">
+            <div className="grid grid-cols-3 gap-4">
+              <div>
+                <Label className="text-xs font-semibold flex items-center gap-1 mb-2">
+                  <Globe className="w-3 h-3" />
+                  Language
+                </Label>
+                <Select value={ocrLanguage} onValueChange={setOcrLanguage}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="eng">English</SelectItem>
+                    <SelectItem value="spa">Spanish</SelectItem>
+                    <SelectItem value="fra">French</SelectItem>
+                    <SelectItem value="deu">German</SelectItem>
+                    <SelectItem value="chi_sim">Chinese (Simplified)</SelectItem>
+                    <SelectItem value="ara">Arabic</SelectItem>
+                    <SelectItem value="rus">Russian</SelectItem>
+                    <SelectItem value="jpn">Japanese</SelectItem>
+                    <SelectItem value="kor">Korean</SelectItem>
+                    <SelectItem value="por">Portuguese</SelectItem>
+                    <SelectItem value="ita">Italian</SelectItem>
+                    <SelectItem value="hin">Hindi</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label className="text-xs font-semibold flex items-center gap-1 mb-2">
+                  <LayoutGrid className="w-3 h-3" />
+                  Layout Analysis
+                </Label>
+                <Select value={layoutMode} onValueChange={setLayoutMode}>
+                  <SelectTrigger className="h-8">
+                    <SelectValue />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="1">Auto Layout</SelectItem>
+                    <SelectItem value="3">Auto (No OSD)</SelectItem>
+                    <SelectItem value="4">Single Column</SelectItem>
+                    <SelectItem value="5">Vertical Text</SelectItem>
+                    <SelectItem value="6">Uniform Block</SelectItem>
+                    <SelectItem value="11">Sparse Text</SelectItem>
+                    <SelectItem value="12">OSD Only</SelectItem>
+                    <SelectItem value="13">Raw Line</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div className="flex flex-col justify-between">
+                <Label className="text-xs font-semibold mb-2">Actions</Label>
+                <Button 
+                  size="sm" 
+                  onClick={handleReRunOCR}
+                  disabled={loading}
+                  className="h-8"
+                >
+                  <RefreshCw className="w-3 h-3 mr-1" />
+                  Re-run OCR
+                </Button>
+              </div>
+            </div>
+            
+            <div className="flex items-center gap-2 pt-2 border-t">
+              <input 
+                type="checkbox" 
+                id="correctionMode"
+                checked={correctionMode}
+                onChange={(e) => setCorrectionMode(e.target.checked)}
+                className="w-4 h-4 text-blue-600"
+              />
+              <Label htmlFor="correctionMode" className="text-sm cursor-pointer">
+                Enable manual correction mode (track changes for critical text)
+              </Label>
+            </div>
+            
+            <div className="text-xs text-gray-600 bg-white p-2 rounded border">
+              <strong>Layout Modes:</strong> Auto Layout (general docs) • Single Column (articles) • Vertical Text (Asian languages) • Sparse Text (diagrams/images)
+            </div>
+          </div>
+        )}
 
         <div className="flex flex-1 overflow-hidden">
           
@@ -733,6 +871,14 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                             Size: {selectedItems[0].font_size}px
                             {selectedItems[0].is_bold && ' • Bold'}
                             {selectedItems[0].is_italic && ' • Italic'}
+                            {selectedItems[0].corrected && ' • ✓ Corrected'}
+                          </div>
+                        )}
+
+                        {correctionMode && (
+                          <div className="text-xs bg-green-50 text-green-700 p-2 rounded border border-green-200">
+                            <CheckCircle2 className="w-3 h-3 inline mr-1" />
+                            Correction mode: Changes will be tracked
                           </div>
                         )}
                         
