@@ -14,6 +14,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [slideCount, setSlideCount] = useState(5);
   const [includeSpeakerNotes, setIncludeSpeakerNotes] = useState(true);
   const [contentType, setContentType] = useState('general'); 
+  const [visualStyle, setVisualStyle] = useState('modern');
   const [aiProvider, setAiProvider] = useState('default');
   const [generating, setGenerating] = useState(false);
 
@@ -35,12 +36,21 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         history: 'Use "timeline" or "gantt" diagrams for chronological events.'
       };
 
+      const styleGuides = {
+        modern: 'modern textbook style, clean lines, vibrant colors, professional',
+        classic: 'traditional scientific illustration, detailed, neutral colors, academic',
+        minimal: 'minimalist design, simple shapes, limited color palette, clean',
+        colorful: 'bright and engaging, multiple colors, playful yet educational',
+        technical: 'technical blueprint style, precise lines, engineering aesthetic'
+      };
+
       const prompt = `Create a COMPREHENSIVE educational presentation about "${topic}".
       ${description ? `Additional context: ${description}` : ''}
 
       Content Type: ${contentType.toUpperCase()}
-      
-      Generate exactly ${slideCount} slides.
+      Visual Style: ${visualStyle.toUpperCase()} - ${styleGuides[visualStyle]}
+
+      Generate exactly ${slideCount} slides with CONSISTENT visual style throughout.
 
       --- VISUALIZATION STRATEGY (CRITICAL) ---
       Every slide MUST have an educational visual. Choose the appropriate method:
@@ -54,12 +64,13 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       2. LABELED ILLUSTRATIONS (PRIORITY for visual learning):
          - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures, stage/cycle diagrams
          - Use 'labeledIllustration' object with:
-           * 'baseImagePrompt': "Educational scientific diagram of [subject], showing stages/parts/components, colorful but clean, light background, diagram style like textbook illustration, no text labels"
+           * 'baseImagePrompt': "Educational scientific diagram of [subject], ${styleGuides[visualStyle]}, light background, no text labels, no words"
            * 'labels': Array with 5-12 key parts, each with:
              - 'text': Correctly spelled label name
              - 'x': Horizontal position (0-100)
              - 'y': Vertical position (0-100)
          - Examples: "Stages of mitosis diagram", "Plant cell organelles", "Water cycle stages", "Human digestive system", "Photosynthesis process"
+         - MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations in this presentation
 
       CRITICAL: Every slide needs either diagramCode OR labeledIllustration. No slides without visuals.
 
@@ -197,6 +208,21 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
               <option value="history">History / Social Studies</option>
             </select>
           </div>
+        </div>
+
+        <div className="space-y-2">
+          <Label>Visual Style (Applied to All Visuals)</Label>
+          <select
+            className="w-full flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            value={visualStyle}
+            onChange={(e) => setVisualStyle(e.target.value)}
+          >
+            <option value="modern">Modern Textbook</option>
+            <option value="classic">Classic Scientific</option>
+            <option value="minimal">Minimal Clean</option>
+            <option value="colorful">Bright & Engaging</option>
+            <option value="technical">Technical Blueprint</option>
+          </select>
         </div>
 
         <div className="flex items-center space-x-2">
