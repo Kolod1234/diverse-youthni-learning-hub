@@ -179,8 +179,14 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         slides = [];
       }
 
-      // Add order to slides
-      slides = slides.map((slide, idx) => ({ ...slide, order: idx + 1 }));
+      // Add order and imageProvider to slides
+      slides = slides.map((slide, idx) => ({
+        ...slide,
+        order: idx + 1,
+        labeledIllustration: slide.labeledIllustration 
+          ? { ...slide.labeledIllustration, imageProvider }
+          : undefined
+      }));
 
       onSlidesGenerated(slides);
       toast.success('Educational slides generated with diagrams and illustrations!');
