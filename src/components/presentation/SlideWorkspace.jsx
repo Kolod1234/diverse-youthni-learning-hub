@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import OCRImageEditor from '@/components/presentation/OCRImageEditor';
 import MermaidDiagram from '@/components/presentation/MermaidDiagram';
+import LabeledIllustration from '@/components/presentation/LabeledIllustration';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -298,6 +299,14 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     setShowOCREditor(false);
   };
 
+  const handleIllustrationGenerated = (url) => {
+    const newSlides = [...slides];
+    if (newSlides[currentSlideIndex].labeledIllustration) {
+      newSlides[currentSlideIndex].labeledIllustration.generatedUrl = url;
+      updateSlides(newSlides);
+    }
+  };
+
   return (
     <div className="flex h-screen bg-slate-100 overflow-hidden font-sans">
       
@@ -450,9 +459,10 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                     )}
                   </button>
                   
-                  {/* DIAGRAM + IMAGE SECTION */}
-                  {activeSlide.diagramCode || activeSlide.imageUrl ? (
+                  {/* VISUALS SECTION - Diagrams, Labeled Illustrations, or Images */}
+                  {activeSlide.diagramCode || activeSlide.labeledIllustration || activeSlide.imageUrl ? (
                     <div className="w-full h-full flex flex-col gap-4 overflow-y-auto">
+                      {/* Mermaid Diagrams */}
                       {activeSlide.diagramCode && (
                         <div className="flex-shrink-0">
                           <MermaidDiagram code={activeSlide.diagramCode} />
@@ -461,6 +471,21 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                           </p>
                         </div>
                       )}
+                      
+                      {/* Labeled Scientific Illustrations */}
+                      {activeSlide.labeledIllustration && (
+                        <div className="flex-shrink-0">
+                          <LabeledIllustration 
+                            data={activeSlide.labeledIllustration}
+                            onImageGenerated={handleIllustrationGenerated}
+                          />
+                          <p className="text-center text-xs text-gray-400 mt-1">
+                            Labeled Illustration
+                          </p>
+                        </div>
+                      )}
+                      
+                      {/* Regular Images */}
                       {activeSlide.imageUrl && (
                     <div className="relative w-full h-full rounded-xl overflow-hidden group border border-slate-200 bg-slate-50">
                       <img 

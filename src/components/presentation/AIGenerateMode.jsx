@@ -44,18 +44,26 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       --- VISUALIZATION STRATEGY (CRITICAL) ---
       We do NOT want AI to "draw" text, because it misspells words.
-      Instead, we want you to "code" the diagrams using Mermaid.js syntax.
-      
-      For each slide, decide if a diagram is needed:
-      1. IF a process, timeline, hierarchy, or concept map is needed:
+
+      For each slide, choose ONE of these visualization methods:
+
+      1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)
          - Generate valid MERMAID.JS code in the 'diagramCode' field.
          - Ensure ALL labels in the code are spelled correctly.
          - Do not wrap in markdown blocks (no \`\`\`), just raw string.
          - ${diagramInstructions[contentType]}
-         
-      2. IF a background image is needed for mood:
-         - Generate a prompt in 'backgroundImagePrompt'.
-         - CRITICAL: The prompt must specify "NO TEXT, NO LETTERS, Abstract, Artistic style".
+
+      2. LABELED SCIENTIFIC ILLUSTRATIONS (e.g., Cell, Anatomy, Engine parts):
+         - Use 'labeledIllustration' object for diagrams that need pointing labels.
+         - 'baseImagePrompt': Describe the illustration. CRITICAL: Must specify "CLEAN, NO LABELS, NO TEXT".
+           Example: "A clean scientific illustration of an animal cell cross-section, white background, no text, no labels."
+         - 'labels': Array of objects defining where labels appear:
+           * 'text': The accurate label name (correctly spelled).
+           * 'x': Horizontal position percentage (0=left, 50=center, 100=right).
+           * 'y': Vertical position percentage (0=top, 50=center, 100=bottom).
+
+      3. ABSTRACT BACKGROUNDS: Use 'backgroundImagePrompt' for mood/atmosphere.
+         - CRITICAL: Must specify "NO TEXT, NO LETTERS, Abstract, Artistic style".
          - Example: "Abstract geometric gradient representing growth, blue and white, 4k, minimal, no text".
 
       --- CONTENT REQUIREMENTS ---
@@ -82,6 +90,27 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 backgroundImagePrompt: { 
                   type: 'string',
                   description: 'Description for an abstract background image. MUST specify NO TEXT.'
+                },
+                labeledIllustration: {
+                  type: 'object',
+                  description: 'Use for scientific diagrams needing pointing labels (e.g., cell anatomy, parts of a system).',
+                  properties: {
+                    baseImagePrompt: { 
+                      type: 'string',
+                      description: 'A prompt for a CLEAN scientific illustration with NO text or labels.'
+                    },
+                    labels: {
+                      type: 'array',
+                      items: {
+                        type: 'object',
+                        properties: {
+                          text: { type: 'string', description: 'Correct spelling of the label.' },
+                          x: { type: 'number', description: 'X percentage coordinate (0-100) from left.' },
+                          y: { type: 'number', description: 'Y percentage coordinate (0-100) from top.' }
+                        }
+                      }
+                    }
+                  }
                 },
                 speakerNotes: { type: 'string' }
               }
