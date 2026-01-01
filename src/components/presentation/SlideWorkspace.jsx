@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import OCRImageEditor from '@/components/presentation/OCRImageEditor';
+import MermaidDiagram from '@/components/presentation/MermaidDiagram';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -434,7 +435,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                   </div>
                 )}
 
-                {/* RIGHT COL: Image / Visuals */}
+                {/* RIGHT COL: Image / Visuals / Diagrams */}
                 <div className="flex flex-col h-full relative">
                   {/* Toggle Button */}
                   <button
@@ -448,7 +449,16 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                       <PanelLeftClose className="w-4 h-4 text-slate-600" />
                     )}
                   </button>
-                  {activeSlide.imageUrl ? (
+                  
+                  {/* DIAGRAM SECTION (Priority) */}
+                  {activeSlide.diagramCode ? (
+                    <div className="w-full h-full flex flex-col">
+                      <MermaidDiagram code={activeSlide.diagramCode} />
+                      <p className="text-center text-xs text-gray-400 mt-2">
+                        Generated via Code
+                      </p>
+                    </div>
+                  ) : activeSlide.imageUrl ? (
                     <div className="relative w-full h-full rounded-xl overflow-hidden group border border-slate-200 bg-slate-50">
                       <img 
                         src={activeSlide.imageUrl} 
