@@ -16,6 +16,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [contentType, setContentType] = useState('general'); 
   const [visualStyle, setVisualStyle] = useState('modern');
   const [aiProvider, setAiProvider] = useState('default');
+  const [imageProvider, setImageProvider] = useState('dalle');
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
