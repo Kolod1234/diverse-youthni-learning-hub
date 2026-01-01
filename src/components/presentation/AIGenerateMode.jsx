@@ -179,6 +179,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 prompt: enhancedPrompt,
                 aspect_ratio: imageAspectRatio
               });
+            } else if (imageProvider === 'vertex') {
+              imageResult = await base44.functions.invoke('generateImageWithVertex', {
+                prompt: enhancedPrompt,
+                aspect_ratio: imageAspectRatio
+              });
             } else {
               // Default to Manus
               imageResult = await base44.functions.invoke('generateImageWithManus', {
@@ -431,15 +436,15 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                       DALL-E 3
                     </button>
                     <button
-                      onClick={() => setImageProvider('manus')}
+                      onClick={() => setImageProvider('vertex')}
                       disabled={generating}
                       className={`p-2 rounded-lg border-2 transition-all text-xs ${
-                        imageProvider === 'manus'
+                        imageProvider === 'vertex'
                           ? 'border-purple-600 bg-purple-50'
                           : 'border-gray-200 hover:border-gray-300'
                       }`}
                     >
-                      Manus
+                      Google Vertex
                     </button>
                     <button
                       onClick={() => setImageProvider('stability')}
