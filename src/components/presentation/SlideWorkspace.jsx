@@ -621,41 +621,64 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                             />
                             {/* Hover Actions */}
                             {activeSlide.labeledIllustration.generatedUrl && (
-                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm rounded-lg">
-                                <Button 
-                                  variant="secondary"
-                                  size="sm"
-                                  onClick={() => {
-                                    const newPrompt = window.prompt("Edit illustration description:", activeSlide.labeledIllustration.baseImagePrompt);
-                                    if (newPrompt !== null) {
-                                      updateSlide('labeledIllustration', {
-                                        ...activeSlide.labeledIllustration,
-                                        baseImagePrompt: newPrompt,
-                                        generatedUrl: null
-                                      });
-                                    }
-                                  }}
-                                >
-                                  ✏️ Edit
-                                </Button>
-                                <Button 
-                                  variant="secondary"
-                                  size="sm"
-                                  onClick={() => handleIllustrationGenerated(null)}
-                                >
-                                  🔄 Regenerate
-                                </Button>
-                                <Button 
-                                  variant="destructive"
-                                  size="sm"
-                                  onClick={() => {
-                                    if (confirm('Delete this illustration?')) {
-                                      updateSlide('labeledIllustration', null);
-                                    }
-                                  }}
-                                >
-                                  🗑️ Delete
-                                </Button>
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm rounded-lg p-4">
+                                <div className="flex gap-2 flex-wrap justify-center">
+                                  <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => {
+                                      const newPrompt = window.prompt("Edit illustration description:", activeSlide.labeledIllustration.baseImagePrompt);
+                                      if (newPrompt !== null) {
+                                        updateSlide('labeledIllustration', {
+                                          ...activeSlide.labeledIllustration,
+                                          baseImagePrompt: newPrompt,
+                                          generatedUrl: null
+                                        });
+                                      }
+                                    }}
+                                  >
+                                    ✏️ Edit
+                                  </Button>
+                                  <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => handleIllustrationGenerated(null)}
+                                  >
+                                    🔄 Regenerate
+                                  </Button>
+                                  <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => setShowOCREditor(true)}
+                                  >
+                                    ✏️ OCR
+                                  </Button>
+                                  <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={handleImageUpload}
+                                  >
+                                    📤 Upload
+                                  </Button>
+                                  <Button 
+                                    variant="secondary"
+                                    size="sm"
+                                    onClick={() => setShowMediaLibrary(true)}
+                                  >
+                                    📁 Library
+                                  </Button>
+                                  <Button 
+                                    variant="destructive"
+                                    size="sm"
+                                    onClick={() => {
+                                      if (confirm('Delete this illustration?')) {
+                                        updateSlide('labeledIllustration', null);
+                                      }
+                                    }}
+                                  >
+                                    🗑️ Delete
+                                  </Button>
+                                </div>
                               </div>
                             )}
                           </div>
