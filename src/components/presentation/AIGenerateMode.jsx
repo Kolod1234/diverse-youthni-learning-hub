@@ -43,28 +43,25 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       Generate exactly ${slideCount} slides.
 
       --- VISUALIZATION STRATEGY (CRITICAL) ---
-      We do NOT want AI to "draw" text, because it misspells words.
-
-      For each slide, choose ONE visualization method based on content:
+      Every slide MUST have an educational visual. Choose the appropriate method:
 
       1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)
-         - For: workflows, timelines, organizational charts, decision trees
-         - Generate valid MERMAID.JS code in the 'diagramCode' field.
+         - For: workflows, timelines, organizational charts, decision trees, process flows
+         - Generate valid MERMAID.JS code (no markdown blocks, just raw string)
          - ${diagramInstructions[contentType]}
+         - Examples: "graph TD A[Start]-->B[Process]-->C[End]"
 
-      2. LABELED ILLUSTRATIONS (PRIORITY for educational content):
-         - For: anatomy, cell structures, equipment parts, geography, plant/animal parts, system components
-         - Use 'labeledIllustration' with:
-           * 'baseImagePrompt': "Scientific illustration of [subject], clean, white background, no text, no labels"
-           * 'labels': 5-10 key parts with correct spelling and coordinates (x, y as 0-100 percentages)
-         - Examples: "Cell organelles", "Human heart anatomy", "Photosynthesis process", "Engine components"
+      2. LABELED ILLUSTRATIONS (PRIORITY for visual learning):
+         - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures
+         - Use 'labeledIllustration' object with:
+           * 'baseImagePrompt': "Scientific illustration of [subject], educational style, clean, white background, no text, no labels"
+           * 'labels': Array with 5-12 key parts, each with:
+             - 'text': Correctly spelled label name
+             - 'x': Horizontal position (0-100)
+             - 'y': Vertical position (0-100)
+         - Examples: "Plant cell organelles", "Water cycle", "Human skeleton", "Volcano cross-section"
 
-      3. BACKGROUND IMAGES (for variety):
-         - For: title slides, motivational content, abstract concepts, conclusions
-         - Use 'backgroundImagePrompt': "Abstract [theme], artistic, NO TEXT, NO LABELS"
-         - Only use on 20-30% of slides for visual variety
-
-      IMPORTANT: Prioritize labeled illustrations for science/education topics. Use backgrounds sparingly for mood.
+      CRITICAL: Every slide needs either diagramCode OR labeledIllustration. No slides without visuals.
 
       --- CONTENT REQUIREMENTS ---
       1. Write 5-7 detailed bullet points per slide.
@@ -85,19 +82,15 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 content: { type: 'string' },
                 diagramCode: { 
                   type: 'string', 
-                  description: 'Valid Mermaid.js syntax (e.g., graph TD, sequenceDiagram, mindmap). Leave empty if no diagram.' 
-                },
-                backgroundImagePrompt: { 
-                  type: 'string',
-                  description: 'Description for an abstract background image. MUST specify NO TEXT.'
+                  description: 'Valid Mermaid.js syntax (e.g., graph TD, sequenceDiagram, mindmap). Use for flowcharts, processes, timelines.' 
                 },
                 labeledIllustration: {
                   type: 'object',
-                  description: 'Use for scientific diagrams needing pointing labels (e.g., cell anatomy, parts of a system).',
+                  description: 'Use for educational diagrams needing pointing labels (e.g., cell anatomy, parts of a system, geography).',
                   properties: {
                     baseImagePrompt: { 
                       type: 'string',
-                      description: 'A prompt for a CLEAN scientific illustration with NO text or labels.'
+                      description: 'A prompt for a CLEAN educational illustration with NO text or labels. Example: "Scientific illustration of plant cell, clean, white background, no text"'
                     },
                     labels: {
                       type: 'array',
@@ -143,32 +136,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         slides = [];
       }
 
-      // Generate images for slides with backgroundImagePrompt
-      toast.info('Generating images...');
-      const imagePromises = slides.map(async (slide, idx) => {
-        if (!slide.backgroundImagePrompt) return { ...slide, order: idx + 1 };
-
-        try {
-          const result = await base44.functions.invoke('generateImageWithFlux2', {
-            prompt: slide.backgroundImagePrompt,
-            aspect_ratio: '16:9'
-          });
-
-          const imageUrl = result.data?.url;
-          if (imageUrl) {
-            return { ...slide, imageUrl, order: idx + 1 };
-          }
-        } catch (error) {
-          console.error(`Image gen failed for slide ${idx + 1}:`, error);
-        }
-        
-        return { ...slide, order: idx + 1 };
-      });
-
-      slides = await Promise.all(imagePromises);
+      // Add order to slides
+      slides = slides.map((slide, idx) => ({ ...slide, order: idx + 1 }));
 
       onSlidesGenerated(slides);
-      toast.success('Slides generated with diagrams and images!');
+      toast.success('Educational slides generated with diagrams and illustrations!');
     } catch (error) {
       console.error('Generation error:', error);
       toast.error('Failed to generate slides. Please try again.');
