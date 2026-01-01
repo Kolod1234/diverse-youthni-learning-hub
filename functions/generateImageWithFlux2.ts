@@ -22,15 +22,15 @@ Deno.serve(async (req) => {
 
     console.log('Generating image with Flux 2 Pro...');
 
-    // Start prediction
-    const response = await fetch('https://api.replicate.com/v1/predictions', {
+    // Start prediction using Flux Pro (latest version)
+    const response = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
         'Content-Type': 'application/json',
+        'Prefer': 'wait'
       },
       body: JSON.stringify({
-        version: 'f2e8e79a138c6bc3e19a645ac0a40f5a6a5e17c0e2b0cdb3b9c5b3e4e5f6e7f8', // Flux 2 Pro model
         input: {
           prompt: prompt,
           aspect_ratio: aspect_ratio,
