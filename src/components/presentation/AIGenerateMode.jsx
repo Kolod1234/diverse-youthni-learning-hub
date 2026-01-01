@@ -45,26 +45,26 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       --- VISUALIZATION STRATEGY (CRITICAL) ---
       We do NOT want AI to "draw" text, because it misspells words.
 
-      For each slide, choose ONE of these visualization methods:
+      For each slide, choose ONE visualization method based on content:
 
       1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)
+         - For: workflows, timelines, organizational charts, decision trees
          - Generate valid MERMAID.JS code in the 'diagramCode' field.
-         - Ensure ALL labels in the code are spelled correctly.
-         - Do not wrap in markdown blocks (no \`\`\`), just raw string.
          - ${diagramInstructions[contentType]}
 
-      2. LABELED SCIENTIFIC ILLUSTRATIONS (e.g., Cell, Anatomy, Engine parts):
-         - Use 'labeledIllustration' object for diagrams that need pointing labels.
-         - 'baseImagePrompt': Describe the illustration. CRITICAL: Must specify "CLEAN, NO LABELS, NO TEXT".
-           Example: "A clean scientific illustration of an animal cell cross-section, white background, no text, no labels."
-         - 'labels': Array of objects defining where labels appear:
-           * 'text': The accurate label name (correctly spelled).
-           * 'x': Horizontal position percentage (0=left, 50=center, 100=right).
-           * 'y': Vertical position percentage (0=top, 50=center, 100=bottom).
+      2. LABELED ILLUSTRATIONS (PRIORITY for educational content):
+         - For: anatomy, cell structures, equipment parts, geography, plant/animal parts, system components
+         - Use 'labeledIllustration' with:
+           * 'baseImagePrompt': "Scientific illustration of [subject], clean, white background, no text, no labels"
+           * 'labels': 5-10 key parts with correct spelling and coordinates (x, y as 0-100 percentages)
+         - Examples: "Cell organelles", "Human heart anatomy", "Photosynthesis process", "Engine components"
 
-      3. ABSTRACT BACKGROUNDS: Use 'backgroundImagePrompt' for mood/atmosphere.
-         - CRITICAL: Must specify "NO TEXT, NO LETTERS, Abstract, Artistic style".
-         - Example: "Abstract geometric gradient representing growth, blue and white, 4k, minimal, no text".
+      3. BACKGROUND IMAGES (for variety):
+         - For: title slides, motivational content, abstract concepts, conclusions
+         - Use 'backgroundImagePrompt': "Abstract [theme], artistic, NO TEXT, NO LABELS"
+         - Only use on 20-30% of slides for visual variety
+
+      IMPORTANT: Prioritize labeled illustrations for science/education topics. Use backgrounds sparingly for mood.
 
       --- CONTENT REQUIREMENTS ---
       1. Write 5-7 detailed bullet points per slide.
