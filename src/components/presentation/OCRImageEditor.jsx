@@ -1263,32 +1263,33 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                             <Check className="w-4 h-4 mr-2" />
                             Replace Text in Image
                           </Button>
-                          </div>
-                          </div>
-                          ) : (
-                    <div className="space-y-4">
-                         <div className="p-4 border rounded-lg bg-white">
-                            <Label>Paste / Insert Text</Label>
-                            <Input 
-                                className="mt-2"
-                                placeholder="Type text to insert..."
-                                value={insertText}
-                                onChange={(e) => setInsertText(e.target.value)}
-                            />
-                            <Button 
-                                variant="outline" 
-                                className="w-full mt-2"
-                                onClick={handleInsertText}
-                            >
-                                <Plus className="w-4 h-4 mr-2" />
-                                Insert on Click
-                            </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="p-4 border rounded-lg bg-white">
+                          <Label>Paste / Insert Text</Label>
+                          <Input 
+                            className="mt-2"
+                            placeholder="Type text to insert..."
+                            value={insertText}
+                            onChange={(e) => setInsertText(e.target.value)}
+                          />
+                          <Button 
+                            variant="outline" 
+                            className="w-full mt-2"
+                            onClick={handleInsertText}
+                          >
+                            <Plus className="w-4 h-4 mr-2" />
+                            Insert on Click
+                          </Button>
                         </div>
                         <p className="text-xs text-gray-500">👆 Click any text in the image above to select and edit it. Hold Shift for multi-select.</p>
-                        </div>
-                        </div>
-                        )}
-                        </TabsContent>
+                      </div>
+                    )}
+                    </div>
+                    )}
+                    </TabsContent>
 
               {/* 2. MATH TAB */}
               <TabsContent value="math" className="space-y-4">
