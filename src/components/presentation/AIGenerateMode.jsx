@@ -52,14 +52,14 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
          - Examples: "graph TD A[Start]-->B[Process]-->C[End]"
 
       2. LABELED ILLUSTRATIONS (PRIORITY for visual learning):
-         - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures
+         - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures, stage/cycle diagrams
          - Use 'labeledIllustration' object with:
-           * 'baseImagePrompt': "Scientific illustration of [subject], educational style, clean, white background, no text, no labels"
+           * 'baseImagePrompt': "Educational scientific diagram of [subject], showing stages/parts/components, colorful but clean, light background, diagram style like textbook illustration, no text labels"
            * 'labels': Array with 5-12 key parts, each with:
              - 'text': Correctly spelled label name
              - 'x': Horizontal position (0-100)
              - 'y': Vertical position (0-100)
-         - Examples: "Plant cell organelles", "Water cycle", "Human skeleton", "Volcano cross-section"
+         - Examples: "Stages of mitosis diagram", "Plant cell organelles", "Water cycle stages", "Human digestive system", "Photosynthesis process"
 
       CRITICAL: Every slide needs either diagramCode OR labeledIllustration. No slides without visuals.
 
