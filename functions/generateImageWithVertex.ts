@@ -30,27 +30,20 @@ Deno.serve(async (req) => {
 
     const vertexAspectRatio = aspectRatioMap[aspect_ratio] || '1:1';
 
-    // Call Vertex AI Imagen API
+    // Call Google Imagen API via generativelanguage endpoint (supports API key auth)
     const response = await fetch(
-      'https://us-central1-aiplatform.googleapis.com/v1/projects/YOUR_PROJECT_ID/locations/us-central1/publishers/google/models/imagen-3.0-generate-001:predict',
+      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generate?key=${apiKey}`,
       {
         method: 'POST',
         headers: {
-          'Authorization': `Bearer ${apiKey}`,
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          instances: [
-            {
-              prompt: prompt
-            }
-          ],
-          parameters: {
-            sampleCount: 1,
-            aspectRatio: vertexAspectRatio,
-            safetyFilterLevel: 'block_some',
-            personGeneration: 'allow_adult'
-          }
+          prompt: prompt,
+          number_of_images: 1,
+          aspect_ratio: vertexAspectRatio,
+          safety_filter_level: 'block_some',
+          person_generation: 'allow_adult'
         })
       }
     );
@@ -64,7 +57,7 @@ Deno.serve(async (req) => {
     const result = await response.json();
     
     // Extract base64 image from response
-    const imageData = result.predictions?.[0]?.bytesBase64Encoded;
+    const imageData = result.generated_images?.[0]?.image?.image_bytes;
     
     if (!imageData) {
       return Response.json({ error: 'No image data in response' }, { status: 500 });
