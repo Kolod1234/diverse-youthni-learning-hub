@@ -14,14 +14,22 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
     
     setGenerating(true);
     try {
-      toast.info('Generating educational illustration...');
+      toast.info(`Generating with ${imageProvider === 'dalle' ? 'DALL-E 3' : 'Flux 2'}...`);
       
       const finalPrompt = `${data.baseImagePrompt}. High-quality educational illustration, clean, detailed, isolated on white background. IMPORTANT: Do not include any text, letters, numbers, or arrows in the image itself.`;
       
-      const result = await base44.functions.invoke('generateImageWithDallE', {
-        prompt: finalPrompt,
-        size: '1024x1024'
-      });
+      let result;
+      if (imageProvider === 'dalle') {
+        result = await base44.functions.invoke('generateImageWithDallE', {
+          prompt: finalPrompt,
+          size: '1024x1024'
+        });
+      } else {
+        result = await base44.functions.invoke('generateImageWithFlux2', {
+          prompt: finalPrompt,
+          aspect_ratio: '1:1'
+        });
+      }
       
       const url = result.data?.url;
       if (url) {
