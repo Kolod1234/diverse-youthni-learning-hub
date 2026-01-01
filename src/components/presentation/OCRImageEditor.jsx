@@ -18,7 +18,6 @@ import {
   TextCursorInput, Wand2
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { createWorker } from 'tesseract.js';
 import { base44 } from '@/api/base44Client';
 
 export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
@@ -256,82 +255,37 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     ctx.fillText(label, x + 5, y - 8);
   };
 
-  // --- OCR Logic ---
+  // --- Cloud OCR Logic with Google Vision API ---
 
   const performOCR = async (img) => {
     setLoading(true);
     try {
-      const worker = await createWorker(ocrLanguage);
+      toast.info('Processing with Google Vision AI...');
       
-      // 1. Preprocess with multiple techniques for colored text/backgrounds
-      const processedCanvas = preprocessImage(img);
-      
-      // 2. Configure Tesseract with user-selected layout mode
-      await worker.setParameters({ 
-        tessedit_pageseg_mode: layoutMode,
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.:-(),%<>=/+*[]{}#@!?&$€£¥', 
-        preserve_interword_spaces: '1',
-        tessedit_enable_doc_dict: '0',
-        classify_bln_numeric_mode: '0'
+      // Call backend function with the image URL
+      const response = await base44.functions.invoke('performCloudOCR', {
+        imageUrl: imageUrl
       });
 
-      const { data: ocrData } = await worker.recognize(processedCanvas);
+      const charData = response.data;
       
-      const scaleFactor = 3.5; // Matches preprocessing
-      const charData = { words: [], symbols: [] };
-      
-      // 3. Extract text with font information
-      ocrData.words.forEach(word => {
-        const bbox = {
-            x0: word.bbox.x0 / scaleFactor,
-            y0: word.bbox.y0 / scaleFactor,
-            x1: word.bbox.x1 / scaleFactor,
-            y1: word.bbox.y1 / scaleFactor
-        };
+      if (!charData || !charData.words || charData.words.length === 0) {
+        toast.warning("No text detected. Try a clearer image.");
+        setOcrResult({ words: [], symbols: [] });
+        return;
+      }
 
-        // Ultra-low threshold for deep detection
-        if (word.confidence > 30) {
-            charData.words.push({
-                ...word,
-                bbox: bbox,
-                font_name: word.font_name || 'Unknown',
-                font_size: Math.round((bbox.y1 - bbox.y0) * 0.9),
-                is_bold: word.is_bold || false,
-                is_italic: word.is_italic || false
-            });
-        }
-
-        if (word.symbols) {
-          word.symbols.forEach(symbol => {
-            if (symbol.confidence > 30) {
-              charData.symbols.push({ 
-                  ...symbol, 
-                  parentWord: word.text,
-                  bbox: {
-                      x0: symbol.bbox.x0 / scaleFactor,
-                      y0: symbol.bbox.y0 / scaleFactor,
-                      x1: symbol.bbox.x1 / scaleFactor,
-                      y1: symbol.bbox.y1 / scaleFactor
-                  }
-              });
-            }
-          });
-        }
-      });
-      
       const groupedWords = groupWordsByProximity(charData.words);
       charData.words = groupedWords;
       
       setOcrResult(charData);
-      await worker.terminate();
       
       const count = charData.words.length;
-      if (count > 0) toast.success(`Detected ${count} text regions (${ocrLanguage.toUpperCase()})`);
-      else toast.warning("No text detected. Try a clearer image or different settings.");
+      toast.success(`Detected ${count} text regions with Google Vision AI`);
 
     } catch (error) {
-      console.error('OCR error:', error);
-      toast.error('Failed to detect text');
+      console.error('Cloud OCR error:', error);
+      toast.error(error.message || 'Failed to detect text. Please check API key setup.');
     } finally {
       setLoading(false);
     }
