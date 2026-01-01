@@ -1102,7 +1102,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                     </p>
                   </div>
                 ) : (
-                  <>
+                  <div className="space-y-4">
                     <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
                       <strong>✨ {ocrResult.words.length} text regions detected!</strong>
                       <br />Click any text in the image to select and edit it.
@@ -1286,7 +1286,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                         </div>
                         <p className="text-xs text-gray-500">👆 Click any text in the image above to select and edit it. Hold Shift for multi-select.</p>
                         </div>
-                        </>
+                        </div>
                         )}
                         </TabsContent>
 
