@@ -340,6 +340,11 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           prompt: enhancedPrompt,
           aspect_ratio: imageAspectRatio
         });
+      } else if (imageProvider === 'flux2') {
+        imageResult = await base44.functions.invoke('generateImageWithFlux2', {
+          prompt: enhancedPrompt,
+          aspect_ratio: imageAspectRatio
+        });
       } else {
         imageResult = await base44.functions.invoke('generateImageWithManus', {
           prompt: enhancedPrompt,
@@ -1093,6 +1098,17 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                   }`}
                 >
                   Stability AI
+                </button>
+                <button
+                  onClick={() => setImageProvider('flux2')}
+                  disabled={regenerating}
+                  className={`p-2 rounded-lg border-2 transition-all text-xs ${
+                    imageProvider === 'flux2'
+                      ? 'border-orange-600 bg-orange-50'
+                      : 'border-gray-200 hover:border-gray-300'
+                  }`}
+                >
+                  Flux 2
                 </button>
               </div>
             </div>
