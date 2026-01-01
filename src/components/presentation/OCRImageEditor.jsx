@@ -1091,16 +1091,33 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
               {/* 1. SELECTION & EDIT TAB */}
               <TabsContent value="selector" className="space-y-4">
-                <div className="flex gap-2 mb-4">
-                    <Button 
-                        size="sm" variant={selectionMode === 'word' ? 'default' : 'outline'} 
-                        onClick={() => setSelectionMode('word')} className="flex-1">Word</Button>
-                    <Button 
-                        size="sm" variant={selectionMode === 'character' ? 'default' : 'outline'} 
-                        onClick={() => setSelectionMode('character')} className="flex-1">Char</Button>
-                </div>
+                {!ocrResult || ocrResult.words.length === 0 ? (
+                  <div className="p-6 text-center space-y-4">
+                    <div className="text-yellow-600 font-semibold flex items-center justify-center gap-2">
+                      <Loader2 className="w-5 h-5 animate-spin" />
+                      {loading ? 'Detecting text with AI...' : 'Processing image...'}
+                    </div>
+                    <p className="text-xs text-gray-500">
+                      Google Vision AI is analyzing the image. This usually takes 2-5 seconds.
+                    </p>
+                  </div>
+                ) : (
+                  <>
+                    <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 text-xs text-blue-700">
+                      <strong>✨ {ocrResult.words.length} text regions detected!</strong>
+                      <br />Click any text in the image to select and edit it.
+                    </div>
 
-                {selectedItems.length > 0 ? (
+                    <div className="flex gap-2 mb-4">
+                        <Button 
+                            size="sm" variant={selectionMode === 'word' ? 'default' : 'outline'} 
+                            onClick={() => setSelectionMode('word')} className="flex-1">Word</Button>
+                        <Button 
+                            size="sm" variant={selectionMode === 'character' ? 'default' : 'outline'} 
+                            onClick={() => setSelectionMode('character')} className="flex-1">Char</Button>
+                    </div>
+
+                    {selectedItems.length > 0 ? (
                     <div className="p-4 bg-blue-50 rounded-lg border border-blue-200 space-y-3">
                         <Label>Selected: {selectedItems.length} items</Label>
                         <div className="text-lg font-mono bg-white p-2 rounded border">
@@ -1242,13 +1259,13 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                             </div>
                           </div>
 
-                          <Button className="w-full" onClick={handleWordEdit}>
-                            <TextCursorInput className="w-4 h-4 mr-2" />
-                            Apply Formatted Text
+                          <Button className="w-full bg-green-600 hover:bg-green-700 text-white font-semibold py-3" onClick={handleWordEdit}>
+                            <Check className="w-4 h-4 mr-2" />
+                            Replace Text in Image
                           </Button>
-                        </div>
-                    </div>
-                ) : (
+                          </div>
+                          </div>
+                          ) : (
                     <div className="space-y-4">
                          <div className="p-4 border rounded-lg bg-white">
                             <Label>Paste / Insert Text</Label>
@@ -1267,10 +1284,11 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
                                 Insert on Click
                             </Button>
                         </div>
-                        <p className="text-xs text-gray-500">Click words in the image to select them. Hold Shift for multi-select.</p>
-                    </div>
-                )}
-              </TabsContent>
+                        <p className="text-xs text-gray-500">👆 Click any text in the image above to select and edit it. Hold Shift for multi-select.</p>
+                        </div>
+                        </>
+                        )}
+                        </TabsContent>
 
               {/* 2. MATH TAB */}
               <TabsContent value="math" className="space-y-4">
