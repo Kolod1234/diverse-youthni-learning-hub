@@ -17,6 +17,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [visualStyle, setVisualStyle] = useState('modern');
   const [aiProvider, setAiProvider] = useState('default');
   const [imageProvider, setImageProvider] = useState('dalle');
+  const [visualMode, setVisualMode] = useState('both'); // 'images', 'diagrams', 'both'
   const [generating, setGenerating] = useState(false);
 
   const generateSlides = async () => {
@@ -54,9 +55,12 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       Generate exactly ${slideCount} slides with CONSISTENT visual style throughout.
 
       --- VISUALIZATION STRATEGY (CRITICAL) ---
-      Every slide MUST have an educational visual. Choose the appropriate method:
+      Visual Mode: ${visualMode.toUpperCase()}
+      ${visualMode === 'diagrams' ? 'ONLY use diagramCode (Mermaid.js) - NO labeledIllustration' : ''}
+      ${visualMode === 'images' ? 'ONLY use labeledIllustration - NO diagramCode' : ''}
+      ${visualMode === 'both' ? 'Use BOTH diagramCode AND labeledIllustration where appropriate' : ''}
 
-      1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)
+      1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)${visualMode === 'images' ? ' - SKIP THIS if mode is images-only' : ''}
          - For: workflows, timelines, organizational charts, decision trees, process flows
          - CRITICAL: Generate VALID Mermaid.js syntax only (no markdown blocks, no backticks, just raw code)
          - ${diagramInstructions[contentType]}
@@ -74,7 +78,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                System->>Database: Query
          - Test your syntax mentally before outputting
 
-      2. LABELED ILLUSTRATIONS (UNIVERSAL - works for ALL domains):
+      2. LABELED ILLUSTRATIONS (UNIVERSAL - works for ALL domains):${visualMode === 'diagrams' ? ' - SKIP THIS if mode is diagrams-only' : ''}
          - For: ANY structure/system that needs pointing labels (anatomy, engines, geography, architecture, chemistry, etc.)
          - Use 'labeledIllustration' object with:
            * 'baseImagePrompt': Must describe the LAYOUT based on complexity
@@ -99,7 +103,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
          MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations
 
-      CRITICAL: Every slide needs either diagramCode OR labeledIllustration. No slides without visuals.
+         CRITICAL: ${visualMode === 'both' 
+         ? 'Use BOTH diagramCode AND labeledIllustration on slides where both are relevant. Every slide should have at least one visual.' 
+         : visualMode === 'diagrams' 
+          ? 'ONLY use diagramCode. Every slide needs a diagram.'
+          : 'ONLY use labeledIllustration. Every slide needs a labeled illustration.'}
 
       --- CONTENT REQUIREMENTS ---
       1. Write 5-7 detailed bullet points per slide.
@@ -272,57 +280,94 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           <Label htmlFor="speaker-notes">Generate Speaker Notes</Label>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 pt-2">
+        <div className="space-y-4 pt-2">
           <div>
-            <Label className="text-xs text-muted-foreground mb-2 block">Text AI Model</Label>
-            <div className="flex flex-col gap-2">
+            <Label className="text-xs text-muted-foreground mb-2 block">Visual Content Type</Label>
+            <div className="flex gap-2">
               <Button 
-                variant={aiProvider === 'default' ? "default" : "outline"} 
+                variant={visualMode === 'both' ? "default" : "outline"} 
                 size="sm"
-                onClick={() => setAiProvider('default')}
-                className="text-xs w-full"
+                onClick={() => setVisualMode('both')}
+                className="text-xs flex-1"
               >
-                Standard
+                📊 + 🖼️ Both
               </Button>
               <Button 
-                variant={aiProvider === 'default_research' ? "default" : "outline"} 
+                variant={visualMode === 'diagrams' ? "default" : "outline"} 
                 size="sm"
-                onClick={() => setAiProvider('default_research')}
-                className="text-xs w-full"
+                onClick={() => setVisualMode('diagrams')}
+                className="text-xs flex-1"
               >
-                Web Research
+                📊 Diagrams
               </Button>
               <Button 
-                variant={aiProvider === 'perplexity' ? "default" : "outline"} 
+                variant={visualMode === 'images' ? "default" : "outline"} 
                 size="sm"
-                onClick={() => setAiProvider('perplexity')}
-                className="text-xs w-full"
+                onClick={() => setVisualMode('images')}
+                className="text-xs flex-1"
               >
-                <BookOpen className="w-3 h-3 mr-1" />
-                Deep Research
+                🖼️ Images
               </Button>
             </div>
           </div>
 
-          <div>
-            <Label className="text-xs text-muted-foreground mb-2 block">Image Generator</Label>
-            <div className="flex flex-col gap-2">
-              <Button 
-                variant={imageProvider === 'dalle' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setImageProvider('dalle')}
-                className="text-xs w-full"
-              >
-                DALL-E 3
-              </Button>
-              <Button 
-                variant={imageProvider === 'flux2' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setImageProvider('flux2')}
-                className="text-xs w-full"
-              >
-                Flux 2
-              </Button>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label className="text-xs text-muted-foreground mb-2 block">Text AI Model</Label>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  variant={aiProvider === 'default' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setAiProvider('default')}
+                  className="text-xs w-full"
+                >
+                  Standard
+                </Button>
+                <Button 
+                  variant={aiProvider === 'default_research' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setAiProvider('default_research')}
+                  className="text-xs w-full"
+                >
+                  Web Research
+                </Button>
+                <Button 
+                  variant={aiProvider === 'perplexity' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setAiProvider('perplexity')}
+                  className="text-xs w-full"
+                >
+                  <BookOpen className="w-3 h-3 mr-1" />
+                  Deep Research
+                </Button>
+              </div>
+            </div>
+
+            <div>
+              <Label className="text-xs text-muted-foreground mb-2 block">
+                Image Generator
+                {visualMode === 'diagrams' && <span className="text-xs text-gray-400 ml-1">(disabled)</span>}
+              </Label>
+              <div className="flex flex-col gap-2">
+                <Button 
+                  variant={imageProvider === 'dalle' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setImageProvider('dalle')}
+                  className="text-xs w-full"
+                  disabled={visualMode === 'diagrams'}
+                >
+                  DALL-E 3
+                </Button>
+                <Button 
+                  variant={imageProvider === 'flux2' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setImageProvider('flux2')}
+                  className="text-xs w-full"
+                  disabled={visualMode === 'diagrams'}
+                >
+                  Flux 2
+                </Button>
+              </div>
             </div>
           </div>
         </div>
