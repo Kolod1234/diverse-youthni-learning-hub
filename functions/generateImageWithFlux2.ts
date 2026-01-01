@@ -15,72 +15,83 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = Deno.env.get('REPLICATE_API_KEY');
+    const apiKey = Deno.env.get('FLUX2_API_KEY');
     if (!apiKey) {
-      return Response.json({ error: 'Replicate API key not configured' }, { status: 500 });
+      return Response.json({ error: 'Flux 2 API key not configured' }, { status: 500 });
     }
 
     console.log('Generating image with Flux 2 Pro...');
 
-    // Start prediction using Flux Pro (latest version)
-    const response = await fetch('https://api.replicate.com/v1/models/black-forest-labs/flux-pro/predictions', {
+    // Create generation task
+    const response = await fetch('https://flux2api.com/v1/generate', {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${apiKey}`,
-        'Content-Type': 'application/json',
-        'Prefer': 'wait'
+        'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        input: {
-          prompt: prompt,
-          aspect_ratio: aspect_ratio,
-          num_outputs: 1,
-          output_format: 'png',
-          output_quality: 90
-        }
+        model: 'pro-text-to-image',
+        prompt: prompt,
+        aspect_ratio: aspect_ratio,
+        resolution: '1K'
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Replicate API error:', response.status, errorText);
+      console.error('Flux 2 API error:', response.status, errorText);
       return Response.json({ 
         error: 'Image generation failed', 
         details: errorText 
       }, { status: 500 });
     }
 
-    let result = await response.json();
-    const predictionId = result.id;
-
-    // Poll for completion
-    console.log('Polling for completion...');
-    let attempts = 0;
-    while (result.status === 'starting' || result.status === 'processing') {
-      if (attempts > 60) {
-        return Response.json({ error: 'Generation timeout' }, { status: 500 });
-      }
-      
-      await new Promise(resolve => setTimeout(resolve, 1000));
-      
-      const pollResponse = await fetch(`https://api.replicate.com/v1/predictions/${predictionId}`, {
-        headers: {
-          'Authorization': `Bearer ${apiKey}`,
-        }
-      });
-      
-      result = await pollResponse.json();
-      attempts++;
-    }
-
-    if (result.status !== 'succeeded' || !result.output || result.output.length === 0) {
+    const result = await response.json();
+    
+    if (result.code !== 200 || !result.data?.task_id) {
       return Response.json({ 
-        error: 'Image generation failed', 
-        details: result.error || 'No output generated' 
+        error: 'Failed to create task', 
+        details: result.message 
       }, { status: 500 });
     }
 
-    const imageUrl = result.output[0];
+    const taskId = result.data.task_id;
+    console.log('Task created:', taskId);
+
+    // Poll for completion
+    let attempts = 0;
+    let taskResult;
+    
+    while (attempts < 60) {
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      const statusResponse = await fetch(`https://flux2api.com/v1/status?task_id=${taskId}`, {
+        headers: {
+          'Authorization': `Bearer ${apiKey}`
+        }
+      });
+      
+      taskResult = await statusResponse.json();
+      
+      if (taskResult.data?.status === 'SUCCESS') {
+        break;
+      }
+      
+      if (taskResult.data?.status === 'FAILED') {
+        return Response.json({ 
+          error: 'Image generation failed', 
+          details: taskResult.data.error || 'Task failed' 
+        }, { status: 500 });
+      }
+      
+      attempts++;
+    }
+
+    if (attempts >= 60 || taskResult.data?.status !== 'SUCCESS') {
+      return Response.json({ error: 'Generation timeout' }, { status: 500 });
+    }
+
+    const imageUrl = taskResult.data.response[0];
     console.log('Image generated:', imageUrl);
 
     // Download and upload to Base44 storage
