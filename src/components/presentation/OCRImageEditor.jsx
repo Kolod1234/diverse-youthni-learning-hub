@@ -303,15 +303,14 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
-  // Helper: Advanced Image Preprocessing for colored text/backgrounds
+  // Helper: Optimized Image Preprocessing for colored text/backgrounds
   const preprocessImage = (img) => {
-    const scaleFactor = 3; // Higher upscale for colored text
+    const scaleFactor = 3;
     const canvas = document.createElement('canvas');
     canvas.width = img.width * scaleFactor;
     canvas.height = img.height * scaleFactor;
     const ctx = canvas.getContext('2d');
     
-    // High-quality upscaling
     ctx.imageSmoothingEnabled = true;
     ctx.imageSmoothingQuality = 'high';
     ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
@@ -319,49 +318,54 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
     const data = imageData.data;
     
-    // Multi-pass preprocessing for colored text on colored backgrounds
-    
-    // Pass 1: Increase contrast globally
-    const contrastFactor = 1.5;
+    // Pass 1: Enhanced contrast for colored text
+    const contrastFactor = 1.8;
     for (let i = 0; i < data.length; i += 4) {
-      data[i] = Math.min(255, ((data[i] - 128) * contrastFactor) + 128);
-      data[i + 1] = Math.min(255, ((data[i + 1] - 128) * contrastFactor) + 128);
-      data[i + 2] = Math.min(255, ((data[i + 2] - 128) * contrastFactor) + 128);
+      data[i] = Math.max(0, Math.min(255, ((data[i] - 128) * contrastFactor) + 128));
+      data[i + 1] = Math.max(0, Math.min(255, ((data[i + 1] - 128) * contrastFactor) + 128));
+      data[i + 2] = Math.max(0, Math.min(255, ((data[i + 2] - 128) * contrastFactor) + 128));
     }
     
-    // Pass 2: Adaptive local thresholding for colored backgrounds
-    const blockSize = 15;
-    const tempData = new Uint8ClampedArray(data);
+    // Pass 2: Convert to grayscale with luminance
+    const grayscale = new Uint8ClampedArray(data.length / 4);
+    for (let i = 0; i < data.length; i += 4) {
+      grayscale[i / 4] = Math.round(0.299 * data[i] + 0.587 * data[i + 1] + 0.114 * data[i + 2]);
+    }
     
-    for (let y = 0; y < canvas.height; y++) {
-      for (let x = 0; x < canvas.width; x++) {
-        const idx = (y * canvas.width + x) * 4;
-        
-        // Calculate local average in neighborhood
-        let sum = 0, count = 0;
-        for (let dy = -blockSize; dy <= blockSize; dy++) {
-          for (let dx = -blockSize; dx <= blockSize; dx++) {
-            const ny = y + dy, nx = x + dx;
-            if (ny >= 0 && ny < canvas.height && nx >= 0 && nx < canvas.width) {
-              const nidx = (ny * canvas.width + nx) * 4;
-              const luminance = (0.299 * tempData[nidx]) + (0.587 * tempData[nidx + 1]) + (0.114 * tempData[nidx + 2]);
-              sum += luminance;
-              count++;
-            }
-          }
-        }
-        
-        const localAvg = sum / count;
-        const currentLum = (0.299 * tempData[idx]) + (0.587 * tempData[idx + 1]) + (0.114 * tempData[idx + 2]);
-        
-        // Adaptive threshold based on local contrast
-        const threshold = localAvg - 10;
-        const color = currentLum > threshold ? 255 : 0;
-        
-        data[idx] = color;
-        data[idx + 1] = color;
-        data[idx + 2] = color;
+    // Pass 3: Fast histogram-based adaptive thresholding (Otsu's method)
+    const histogram = new Array(256).fill(0);
+    grayscale.forEach(val => histogram[val]++);
+    
+    const total = grayscale.length;
+    let sum = 0;
+    for (let i = 0; i < 256; i++) sum += i * histogram[i];
+    
+    let sumB = 0, wB = 0, wF = 0, maxVariance = 0, threshold = 0;
+    for (let t = 0; t < 256; t++) {
+      wB += histogram[t];
+      if (wB === 0) continue;
+      wF = total - wB;
+      if (wF === 0) break;
+      
+      sumB += t * histogram[t];
+      const mB = sumB / wB;
+      const mF = (sum - sumB) / wF;
+      const variance = wB * wF * (mB - mF) * (mB - mF);
+      
+      if (variance > maxVariance) {
+        maxVariance = variance;
+        threshold = t;
       }
+    }
+    
+    // Pass 4: Apply threshold with slight bias for better text detection
+    threshold = Math.max(threshold - 20, 80); // Lower threshold for colored backgrounds
+    
+    for (let i = 0; i < grayscale.length; i++) {
+      const color = grayscale[i] > threshold ? 255 : 0;
+      data[i * 4] = color;
+      data[i * 4 + 1] = color;
+      data[i * 4 + 2] = color;
     }
     
     ctx.putImageData(imageData, 0, 0);
