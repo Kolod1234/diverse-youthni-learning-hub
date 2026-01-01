@@ -31,30 +31,37 @@ Deno.serve(async (req) => {
     const vertexAspectRatio = aspectRatioMap[aspect_ratio] || '1:1';
 
     // Call Google Imagen API via generativelanguage endpoint (supports API key auth)
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generate?key=${apiKey}`,
-      {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          prompt: prompt,
-          number_of_images: 1,
-          aspect_ratio: vertexAspectRatio,
-          safety_filter_level: 'block_some',
-          person_generation: 'allow_adult'
-        })
-      }
-    );
+    const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/imagen-3.0-generate-001:generate?key=${apiKey}`;
+    console.log('Calling Imagen API...');
+    
+    const response = await fetch(apiUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: prompt,
+        number_of_images: 1,
+        aspect_ratio: vertexAspectRatio,
+        safety_filter_level: 'block_some',
+        person_generation: 'allow_adult'
+      })
+    });
 
+    console.log('Response status:', response.status);
+    
     if (!response.ok) {
       const errorText = await response.text();
-      console.error('Vertex AI error:', errorText);
-      return Response.json({ error: 'Image generation failed', details: errorText }, { status: 500 });
+      console.error('Vertex AI error response:', response.status, errorText);
+      return Response.json({ 
+        error: 'Image generation failed', 
+        status: response.status,
+        details: errorText 
+      }, { status: 500 });
     }
 
     const result = await response.json();
+    console.log('API Response:', JSON.stringify(result).substring(0, 200));
     
     // Extract base64 image from response
     const imageData = result.generated_images?.[0]?.image?.image_bytes;
