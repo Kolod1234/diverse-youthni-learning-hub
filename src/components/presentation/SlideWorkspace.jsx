@@ -245,6 +245,74 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     input.click();
   };
 
+  const handleDiagramUpload = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'image/*';
+    
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      try {
+        const { base44 } = await import('@/api/base44Client');
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        updateSlide('diagramImageUrl', file_url);
+        toast.success('Diagram uploaded!');
+      } catch (error) {
+        toast.error('Failed to upload diagram');
+      }
+    };
+    
+    input.click();
+  };
+
+  const handleVideoUpload = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'video/*';
+    
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      toast.info('Uploading video...');
+      try {
+        const { base44 } = await import('@/api/base44Client');
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        updateSlide('videoUrl', file_url);
+        toast.success('Video uploaded!');
+      } catch (error) {
+        toast.error('Failed to upload video');
+      }
+    };
+    
+    input.click();
+  };
+
+  const handleAudioUpload = async () => {
+    const input = document.createElement('input');
+    input.type = 'file';
+    input.accept = 'audio/*';
+    
+    input.onchange = async () => {
+      const file = input.files?.[0];
+      if (!file) return;
+      
+      toast.info('Uploading audio...');
+      try {
+        const { base44 } = await import('@/api/base44Client');
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        updateSlide('audioUrl', file_url);
+        toast.success('Audio uploaded!');
+      } catch (error) {
+        toast.error('Failed to upload audio');
+      }
+    };
+    
+    input.click();
+  };
+
   const regenerateImage = async () => {
     if (!imageEditPrompt.trim()) {
       toast.error('Please enter an image description');
@@ -475,7 +543,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                   </button>
                   
                   {/* VISUALS SECTION - Diagrams, Labeled Illustrations, or Images */}
-                  {activeSlide.diagramCode || activeSlide.labeledIllustration || activeSlide.imageUrl ? (
+                  {activeSlide.diagramCode || activeSlide.diagramImageUrl || activeSlide.labeledIllustration || activeSlide.imageUrl || activeSlide.videoUrl || activeSlide.audioUrl ? (
                     <div className="w-full h-full flex flex-col gap-4 overflow-y-auto">
                       {/* Mermaid Diagrams */}
                       {activeSlide.diagramCode && (
@@ -483,6 +551,31 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                           <MermaidDiagram code={activeSlide.diagramCode} />
                           <p className="text-center text-xs text-gray-400 mt-1">
                             Generated Diagram
+                          </p>
+                        </div>
+                      )}
+
+                      {/* Uploaded Diagram Image */}
+                      {activeSlide.diagramImageUrl && (
+                        <div className="flex-shrink-0 relative group">
+                          <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                            <img 
+                              src={activeSlide.diagramImageUrl} 
+                              alt="Diagram" 
+                              className="w-full h-auto object-contain p-4"
+                            />
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button 
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => updateSlide('diagramImageUrl', null)}
+                              >
+                                🗑️
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-center text-xs text-gray-400 mt-1">
+                            Uploaded Diagram
                           </p>
                         </div>
                       )}
@@ -565,22 +658,59 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                           <Button 
                             variant="secondary"
                             size="sm"
-                            onClick={() => {
-                              const prompt = window.prompt("Describe the labeled illustration:");
-                              if (prompt) {
-                                updateSlide('labeledIllustration', {
-                                  baseImagePrompt: prompt,
-                                  labels: [],
-                                  generatedUrl: null
-                                });
-                              }
-                            }}
+                            onClick={handleDiagramUpload}
                           >
-                            🏷️ Labeled
+                            📤 Upload
                           </Button>
                         </div>
                         </div>
                       </div>
+                      )}
+
+                      {/* Video */}
+                      {activeSlide.videoUrl && (
+                        <div className="flex-shrink-0 relative group">
+                          <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                            <video 
+                              src={activeSlide.videoUrl} 
+                              controls
+                              className="w-full h-auto"
+                            />
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button 
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => updateSlide('videoUrl', null)}
+                              >
+                                🗑️
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-center text-xs text-gray-400 mt-1">Video</p>
+                        </div>
+                      )}
+
+                      {/* Audio */}
+                      {activeSlide.audioUrl && (
+                        <div className="flex-shrink-0 relative group">
+                          <div className="relative w-full rounded-xl overflow-hidden border border-slate-200 bg-slate-50 p-4">
+                            <audio 
+                              src={activeSlide.audioUrl} 
+                              controls
+                              className="w-full"
+                            />
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                              <Button 
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => updateSlide('audioUrl', null)}
+                              >
+                                🗑️
+                              </Button>
+                            </div>
+                          </div>
+                          <p className="text-center text-xs text-gray-400 mt-1">Audio</p>
+                        </div>
                       )}
                     </div>
                   ) : (
@@ -632,24 +762,36 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                             }}
                             className="flex-1"
                           >
-                            📊 Flowchart
+                            📊 Code
                           </Button>
                           <Button 
                             variant="outline"
                             size="sm"
-                            onClick={() => {
-                              const prompt = window.prompt("Describe the labeled illustration:");
-                              if (prompt) {
-                                updateSlide('labeledIllustration', {
-                                  baseImagePrompt: prompt,
-                                  labels: [],
-                                  generatedUrl: null
-                                });
-                              }
-                            }}
+                            onClick={handleDiagramUpload}
                             className="flex-1"
                           >
-                            🏷️ Labeled
+                            📤 Upload
+                          </Button>
+                        </div>
+
+                        {/* Media Options */}
+                        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider mt-6">Media</div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={handleVideoUpload}
+                            className="flex-1"
+                          >
+                            🎥 Video
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={handleAudioUpload}
+                            className="flex-1"
+                          >
+                            🎵 Audio
                           </Button>
                         </div>
                       </div>
