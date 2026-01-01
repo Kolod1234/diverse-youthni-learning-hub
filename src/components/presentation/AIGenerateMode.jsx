@@ -73,16 +73,25 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                System->>Database: Query
          - Test your syntax mentally before outputting
 
-      2. LABELED ILLUSTRATIONS (PRIORITY for visual learning):
-         - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures, stage/cycle diagrams
+      2. LABELED ILLUSTRATIONS (UNIVERSAL - works for ALL domains):
+         - For: ANY structure/system that needs pointing labels (anatomy, engines, geography, architecture, chemistry, etc.)
          - Use 'labeledIllustration' object with:
-           * 'baseImagePrompt': "Educational scientific diagram of [subject], ${styleGuides[visualStyle]}, light background, no text labels, no words"
-           * 'labels': Array with 5-12 key parts, each with:
-             - 'text': Correctly spelled label name
-             - 'x': Horizontal position (0-100)
-             - 'y': Vertical position (0-100)
-         - Examples: "Stages of mitosis diagram", "Plant cell organelles", "Water cycle stages", "Human digestive system", "Photosynthesis process"
-         - MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations in this presentation
+           * 'baseImagePrompt': "[Subject description], ${styleGuides[visualStyle]}, clean white background, NO TEXT, NO LABELS"
+           * 'labels': Array of 5-12 labels with 'text', 'x', 'y', and 'type' fields
+
+         UNIVERSAL EXAMPLES:
+         1. ENGINEERING: "Cutaway of jet engine" → labels: "Fan Blades" (pointer), "Combustion Chamber" (pointer)
+         2. GEOGRAPHY: "Cross-section of volcano" → labels: "Magma Chamber" (pointer), "Crater" (header)
+         3. ANATOMY: "Human heart" → labels: "Left Ventricle" (pointer), "Aorta" (pointer)
+         4. HISTORY: "Greek temple elevation" → labels: "Pediment" (pointer), "Doric Columns" (pointer)
+         5. CHEMISTRY: "Water molecule structure" → labels: "Oxygen" (pointer), "Hydrogen" (subtext)
+
+         LABEL TYPES:
+         - 'header': Main section titles (bigger, bold)
+         - 'pointer': Specific parts (default, with dot and line)
+         - 'subtext': Additional details (smaller, yellow highlight)
+
+         MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations
 
       CRITICAL: Every slide needs either diagramCode OR labeledIllustration. No slides without visuals.
 
@@ -109,20 +118,25 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 },
                 labeledIllustration: {
                   type: 'object',
-                  description: 'Use for educational diagrams needing pointing labels (e.g., cell anatomy, parts of a system, geography).',
+                  description: 'Use for ANY slide that needs a specific diagram with pointers (Engines, Maps, Anatomy, Architecture, Chemistry, etc.).',
                   properties: {
                     baseImagePrompt: { 
                       type: 'string',
-                      description: 'A prompt for a CLEAN educational illustration with NO text or labels. Example: "Scientific illustration of plant cell, clean, white background, no text"'
+                      description: 'Describe the subject cleanly. CRITICAL: Must end with "clean white background, technical illustration style, NO TEXT, NO LABELS"'
                     },
                     labels: {
                       type: 'array',
                       items: {
                         type: 'object',
                         properties: {
-                          text: { type: 'string', description: 'Correct spelling of the label.' },
-                          x: { type: 'number', description: 'X percentage coordinate (0-100) from left.' },
-                          y: { type: 'number', description: 'Y percentage coordinate (0-100) from top.' }
+                          text: { type: 'string', description: 'Correct spelling of the label' },
+                          x: { type: 'number', description: 'X percentage (0-100) from left' },
+                          y: { type: 'number', description: 'Y percentage (0-100) from top' },
+                          type: {
+                            type: 'string',
+                            enum: ['header', 'pointer', 'subtext'],
+                            description: 'Use "header" for main sections, "pointer" for specific parts, "subtext" for extra details'
+                          }
                         }
                       }
                     }
