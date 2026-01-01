@@ -359,7 +359,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     
     // === PASS 1: AGGRESSIVE CONTRAST & SHARPENING ===
     const sharpenKernel = [-1, -1, -1, -1, 9, -1, -1, -1, -1];
-    const sharpened = new Uint8ClampedArray(data.length);
+    const sharpened = new Uint8ClampedArray(data);
     
     for (let y = 1; y < canvas.height - 1; y++) {
       for (let x = 1; x < canvas.width - 1; x++) {
@@ -385,9 +385,9 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     const gray3 = new Uint8ClampedArray(data.length / 4);
     
     for (let i = 0; i < data.length; i += 4) {
-      const r = sharpened[i] || data[i];
-      const g = sharpened[i + 1] || data[i + 1];
-      const b = sharpened[i + 2] || data[i + 2];
+      const r = sharpened[i];
+      const g = sharpened[i + 1];
+      const b = sharpened[i + 2];
       
       // Standard luminance
       gray1[i / 4] = Math.round(0.299 * r + 0.587 * g + 0.114 * b);
