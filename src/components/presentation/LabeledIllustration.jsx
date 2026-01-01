@@ -26,12 +26,12 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
       if (imageProvider === 'dalle') {
         result = await base44.functions.invoke('generateImageWithDallE', {
           prompt: finalPrompt,
-          size: '1024x1024'
+          size: '1792x1024'
         });
       } else if (imageProvider === 'flux2') {
         result = await base44.functions.invoke('generateImageWithFlux2', {
           prompt: finalPrompt,
-          aspect_ratio: '1:1'
+          aspect_ratio: '16:9'
         });
       } else {
         result = await base44.integrations.Core.GenerateImage({
@@ -106,11 +106,11 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
   }
 
   return (
-    <div className="relative w-full aspect-[4/3] md:aspect-[16/9] bg-white rounded-xl overflow-hidden border shadow-sm">
+    <div className="relative w-full min-h-[500px] bg-white rounded-xl overflow-hidden border shadow-sm">
       <img 
         src={imageUrl} 
         alt="Educational diagram" 
-        className="w-full h-full object-contain p-4"
+        className="w-full h-full object-contain p-2"
       />
     </div>
   );
