@@ -450,15 +450,18 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                     )}
                   </button>
                   
-                  {/* DIAGRAM SECTION (Priority) */}
-                  {activeSlide.diagramCode ? (
-                    <div className="w-full h-full flex flex-col">
-                      <MermaidDiagram code={activeSlide.diagramCode} />
-                      <p className="text-center text-xs text-gray-400 mt-2">
-                        Generated via Code
-                      </p>
-                    </div>
-                  ) : activeSlide.imageUrl ? (
+                  {/* DIAGRAM + IMAGE SECTION */}
+                  {activeSlide.diagramCode || activeSlide.imageUrl ? (
+                    <div className="w-full h-full flex flex-col gap-4 overflow-y-auto">
+                      {activeSlide.diagramCode && (
+                        <div className="flex-shrink-0">
+                          <MermaidDiagram code={activeSlide.diagramCode} />
+                          <p className="text-center text-xs text-gray-400 mt-1">
+                            Generated Diagram
+                          </p>
+                        </div>
+                      )}
+                      {activeSlide.imageUrl && (
                     <div className="relative w-full h-full rounded-xl overflow-hidden group border border-slate-200 bg-slate-50">
                       <img 
                         src={activeSlide.imageUrl} 
@@ -512,7 +515,9 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                             Remove
                           </Button>
                         </div>
+                        </div>
                       </div>
+                      )}
                     </div>
                   ) : (
                     <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 bg-slate-50">

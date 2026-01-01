@@ -114,8 +114,32 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         slides = [];
       }
 
+      // Generate images for slides with backgroundImagePrompt
+      toast.info('Generating images...');
+      const imagePromises = slides.map(async (slide, idx) => {
+        if (!slide.backgroundImagePrompt) return { ...slide, order: idx + 1 };
+
+        try {
+          const result = await base44.functions.invoke('generateImageWithFlux2', {
+            prompt: slide.backgroundImagePrompt,
+            aspect_ratio: '16:9'
+          });
+
+          const imageUrl = result.data?.url;
+          if (imageUrl) {
+            return { ...slide, imageUrl, order: idx + 1 };
+          }
+        } catch (error) {
+          console.error(`Image gen failed for slide ${idx + 1}:`, error);
+        }
+        
+        return { ...slide, order: idx + 1 };
+      });
+
+      slides = await Promise.all(imagePromises);
+
       onSlidesGenerated(slides);
-      toast.success('Slides generated with diagrams!');
+      toast.success('Slides generated with diagrams and images!');
     } catch (error) {
       console.error('Generation error:', error);
       toast.error('Failed to generate slides. Please try again.');
