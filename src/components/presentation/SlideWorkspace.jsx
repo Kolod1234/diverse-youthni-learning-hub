@@ -510,7 +510,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                       />
                       {/* Hover Actions */}
                       <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-4">
-                        <div className="flex gap-2">
+                        <div className="flex gap-2 flex-wrap justify-center">
                           <Button 
                             variant="secondary"
                             size="sm"
@@ -519,40 +519,64 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                               setImageEditPrompt('');
                             }}
                           >
-                            AI Regenerate
+                            🎨 AI
                           </Button>
                           <Button 
                             variant="secondary"
                             size="sm"
                             onClick={() => setShowOCREditor(true)}
                           >
-                            OCR Edit
+                            ✏️ OCR
                           </Button>
-                        </div>
-                        <div className="flex gap-2">
                           <Button 
                             variant="secondary"
                             size="sm"
                             onClick={handleImageUpload}
                           >
-                            Upload
+                            📤 Upload
                           </Button>
                           <Button 
                             variant="secondary"
                             size="sm"
-                            onClick={() => {
-                              const url = window.prompt("Enter image URL");
-                              if(url) updateSlide('imageUrl', url);
-                            }}
+                            onClick={() => setShowMediaLibrary(true)}
                           >
-                            URL
+                            📁 Library
                           </Button>
                           <Button 
                             variant="destructive"
                             size="sm"
                             onClick={() => updateSlide('imageUrl', null)}
                           >
-                            Remove
+                            🗑️ Remove
+                          </Button>
+                        </div>
+                        <div className="text-xs text-white mt-2">Add Diagram:</div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              const code = window.prompt("Enter Mermaid diagram code:");
+                              if (code) updateSlide('diagramCode', code);
+                            }}
+                          >
+                            📊 Flowchart
+                          </Button>
+                          <Button 
+                            variant="secondary"
+                            size="sm"
+                            onClick={() => {
+                              const prompt = window.prompt("Describe the labeled illustration:");
+                              if (prompt) {
+                                updateSlide('labeledIllustration', {
+                                  baseImagePrompt: prompt,
+                                  labels: [],
+                                  generatedUrl: null
+                                });
+                              }
+                            }}
+                          >
+                            🏷️ Labeled
                           </Button>
                         </div>
                         </div>
@@ -560,34 +584,74 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                       )}
                     </div>
                   ) : (
-                    <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 bg-slate-50">
+                    <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-6 text-slate-400 bg-slate-50 p-6">
                       <div className="p-4 bg-white rounded-full shadow-sm">
                         <ImageIcon className="w-8 h-8 opacity-50" />
                       </div>
-                      <span className="font-medium mb-2">Add Image</span>
-                      <div className="flex gap-2">
-                        <Button 
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowImageEditor(true)}
-                        >
-                          AI Generate
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          size="sm"
-                          onClick={handleImageUpload}
-                        >
-                          Upload
-                        </Button>
-                        <Button 
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setShowMediaLibrary(true)}
-                        >
-                          <FolderOpen className="w-4 h-4 mr-1" />
-                          Library
-                        </Button>
+                      <span className="font-medium text-lg">Add Visual Content</span>
+                      
+                      {/* Image Options */}
+                      <div className="w-full max-w-md space-y-3">
+                        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider">Images</div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowImageEditor(true)}
+                            className="flex-1"
+                          >
+                            🎨 AI Generate
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={handleImageUpload}
+                            className="flex-1"
+                          >
+                            📤 Upload
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setShowMediaLibrary(true)}
+                            className="flex-1"
+                          >
+                            📁 Library
+                          </Button>
+                        </div>
+
+                        {/* Diagram Options */}
+                        <div className="text-xs font-semibold text-slate-600 uppercase tracking-wider mt-6">Diagrams</div>
+                        <div className="flex gap-2">
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const code = window.prompt("Enter Mermaid diagram code:");
+                              if (code) updateSlide('diagramCode', code);
+                            }}
+                            className="flex-1"
+                          >
+                            📊 Flowchart
+                          </Button>
+                          <Button 
+                            variant="outline"
+                            size="sm"
+                            onClick={() => {
+                              const prompt = window.prompt("Describe the labeled illustration:");
+                              if (prompt) {
+                                updateSlide('labeledIllustration', {
+                                  baseImagePrompt: prompt,
+                                  labels: [],
+                                  generatedUrl: null
+                                });
+                              }
+                            }}
+                            className="flex-1"
+                          >
+                            🏷️ Labeled
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   )}
