@@ -51,7 +51,7 @@ Deno.serve(async (req) => {
     if (!response.ok) {
       const errorText = await response.text();
       console.error('Vertex AI error:', errorText);
-      return Response.json({ error: 'Image generation failed' }, { status: 500 });
+      return Response.json({ error: 'Image generation failed', details: errorText }, { status: 500 });
     }
 
     const result = await response.json();
