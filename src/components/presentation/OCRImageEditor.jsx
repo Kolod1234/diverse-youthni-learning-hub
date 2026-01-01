@@ -13,7 +13,8 @@ import {
 import { 
   X, Search, Type, Eraser, Loader2, Upload, Square, Pentagon, 
   Tag, Sparkles, Copy, Calculator, Subscript, Superscript, Plus,
-  Settings, RefreshCw, Globe, LayoutGrid, CheckCircle2
+  Settings, RefreshCw, Globe, LayoutGrid, CheckCircle2, Edit2,
+  Trash2, Filter, List, Check
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { createWorker } from 'tesseract.js';
@@ -45,6 +46,10 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   const [drawingStart, setDrawingStart] = useState(null);
   const [currentPolygon, setCurrentPolygon] = useState([]);
   const [labelInput, setLabelInput] = useState('');
+  const [editingAnnotation, setEditingAnnotation] = useState(null);
+  const [annotationFilter, setAnnotationFilter] = useState('');
+  const [annotationTypeFilter, setAnnotationTypeFilter] = useState('all');
+  const [showAnnotationSummary, setShowAnnotationSummary] = useState(false);
   
   // Highlighting & Search
   const [searchText, setSearchText] = useState('');
@@ -433,6 +438,83 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
     }
   };
 
+  // Annotation Management
+  const handleDeleteAnnotation = (id) => {
+    setAnnotations(annotations.filter(a => a.id !== id));
+    drawCanvas(imageRef.current, highlightedBoxes);
+    toast.success('Annotation deleted');
+  };
+
+  const handleEditAnnotation = (annotation) => {
+    setEditingAnnotation(annotation);
+    setLabelInput(annotation.label);
+  };
+
+  const handleUpdateAnnotation = () => {
+    if (!editingAnnotation) return;
+    
+    setAnnotations(annotations.map(a => 
+      a.id === editingAnnotation.id 
+        ? { ...a, label: labelInput, type: editingAnnotation.type }
+        : a
+    ));
+    setEditingAnnotation(null);
+    setLabelInput('');
+    drawCanvas(imageRef.current, highlightedBoxes);
+    toast.success('Annotation updated');
+  };
+
+  const handleFinishPolygon = () => {
+    if (currentPolygon.length < 3) {
+      toast.error('Polygon needs at least 3 points');
+      return;
+    }
+
+    const newAnnotation = {
+      id: Date.now(),
+      type: 'polygon',
+      points: currentPolygon,
+      label: labelInput || 'Annotation'
+    };
+
+    setAnnotations([...annotations, newAnnotation]);
+    setCurrentPolygon([]);
+    setDrawingMode(null);
+    setLabelInput('');
+    drawCanvas(imageRef.current, highlightedBoxes);
+    toast.success('Polygon annotation added');
+  };
+
+  const handleGroupAnnotations = (label) => {
+    const grouped = annotations.filter(a => a.label === label);
+    if (grouped.length < 2) {
+      toast.error('Need at least 2 annotations with this label to group');
+      return;
+    }
+    
+    toast.success(`Grouped ${grouped.length} annotations with label "${label}"`);
+  };
+
+  const getFilteredAnnotations = () => {
+    return annotations.filter(a => {
+      const matchesLabel = !annotationFilter || a.label.toLowerCase().includes(annotationFilter.toLowerCase());
+      const matchesType = annotationTypeFilter === 'all' || a.type === annotationTypeFilter;
+      return matchesLabel && matchesType;
+    });
+  };
+
+  const getAnnotationSummary = () => {
+    const summary = {};
+    annotations.forEach(a => {
+      if (!summary[a.label]) {
+        summary[a.label] = { count: 0, types: {} };
+      }
+      summary[a.label].count++;
+      summary[a.label].types[a.type] = (summary[a.label].types[a.type] || 0) + 1;
+    });
+    return summary;
+  };
+
   // 2. Highlighting
   const handleHighlight = () => {
     if (!searchText.trim() || !ocrResult) return;
@@ -533,6 +615,57 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
   };
 
   // --- Interaction Handlers ---
+
+  const handleCanvasMouseDown = (e) => {
+    resetInactivityTimer();
+    
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const scaleX = canvas.width / rect.width;
+    const scaleY = canvas.height / rect.height;
+    const x = (e.clientX - rect.left) * scaleX;
+    const y = (e.clientY - rect.top) * scaleY;
+
+    // Drawing mode - start shape
+    if (drawingMode === 'box' && activeTab === 'annotate') {
+      setDrawingStart({ x, y });
+      return;
+    }
+
+    if (drawingMode === 'polygon' && activeTab === 'annotate') {
+      setCurrentPolygon([...currentPolygon, { x, y }]);
+      drawCanvas(imageRef.current, highlightedBoxes);
+      return;
+    }
+  };
+
+  const handleCanvasMouseUp = (e) => {
+    if (drawingMode === 'box' && drawingStart && activeTab === 'annotate') {
+      const canvas = canvasRef.current;
+      const rect = canvas.getBoundingClientRect();
+      const scaleX = canvas.width / rect.width;
+      const scaleY = canvas.height / rect.height;
+      const x = (e.clientX - rect.left) * scaleX;
+      const y = (e.clientY - rect.top) * scaleY;
+
+      const newAnnotation = {
+        id: Date.now(),
+        type: 'box',
+        x: Math.min(drawingStart.x, x),
+        y: Math.min(drawingStart.y, y),
+        width: Math.abs(x - drawingStart.x),
+        height: Math.abs(y - drawingStart.y),
+        label: labelInput || 'Annotation'
+      };
+
+      setAnnotations([...annotations, newAnnotation]);
+      setDrawingStart(null);
+      setDrawingMode(null);
+      setLabelInput('');
+      drawCanvas(imageRef.current, highlightedBoxes);
+      toast.success('Box annotation added');
+    }
+  };
 
   const handleCanvasClick = (e) => {
     resetInactivityTimer();
@@ -986,22 +1119,172 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
                {/* 4. ANNOTATE TAB */}
                <TabsContent value="annotate" className="space-y-4">
-                    <Label>Drawing Tools</Label>
-                    <div className="grid grid-cols-2 gap-2">
-                        <Button variant={drawingMode === 'box' ? 'default' : 'outline'} onClick={() => setDrawingMode('box')}>
-                            <Square className="w-4 h-4 mr-2"/> Box
+                    {editingAnnotation ? (
+                      <div className="p-4 bg-amber-50 rounded-lg border border-amber-200 space-y-3">
+                        <Label className="flex items-center gap-2">
+                          <Edit2 className="w-4 h-4" />
+                          Editing Annotation
+                        </Label>
+                        <Input 
+                          value={labelInput} 
+                          onChange={e => setLabelInput(e.target.value)} 
+                          placeholder="Label..."
+                        />
+                        <div className="flex gap-2">
+                          <Button 
+                            size="sm" 
+                            variant={editingAnnotation.type === 'box' ? 'default' : 'outline'}
+                            onClick={() => setEditingAnnotation({...editingAnnotation, type: 'box'})}
+                            className="flex-1"
+                          >
+                            <Square className="w-3 h-3 mr-1"/> Box
+                          </Button>
+                          <Button 
+                            size="sm" 
+                            variant={editingAnnotation.type === 'polygon' ? 'default' : 'outline'}
+                            onClick={() => setEditingAnnotation({...editingAnnotation, type: 'polygon'})}
+                            className="flex-1"
+                          >
+                            <Pentagon className="w-3 h-3 mr-1"/> Polygon
+                          </Button>
+                        </div>
+                        <div className="flex gap-2">
+                          <Button size="sm" className="flex-1" onClick={handleUpdateAnnotation}>
+                            <Check className="w-3 h-3 mr-1" /> Save
+                          </Button>
+                          <Button size="sm" variant="outline" className="flex-1" onClick={() => {
+                            setEditingAnnotation(null);
+                            setLabelInput('');
+                          }}>
+                            Cancel
+                          </Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <>
+                        <Label>Drawing Tools</Label>
+                        <div className="grid grid-cols-2 gap-2">
+                            <Button variant={drawingMode === 'box' ? 'default' : 'outline'} onClick={() => setDrawingMode('box')}>
+                                <Square className="w-4 h-4 mr-2"/> Box
+                            </Button>
+                            <Button variant={drawingMode === 'polygon' ? 'default' : 'outline'} onClick={() => setDrawingMode('polygon')}>
+                                <Pentagon className="w-4 h-4 mr-2"/> Polygon
+                            </Button>
+                        </div>
+                        {drawingMode === 'polygon' && currentPolygon.length > 0 && (
+                          <Button size="sm" className="w-full" onClick={handleFinishPolygon}>
+                            <Check className="w-4 h-4 mr-2" />
+                            Finish Polygon ({currentPolygon.length} points)
+                          </Button>
+                        )}
+                        <Label>Label Text</Label>
+                        <Input 
+                            value={labelInput} 
+                            onChange={e => setLabelInput(e.target.value)} 
+                            placeholder="Annotation label..."
+                        />
+                        {drawingMode === 'box' && <p className="text-xs text-blue-600 bg-blue-50 p-2 rounded">Click and drag to draw a box</p>}
+                        {drawingMode === 'polygon' && <p className="text-xs text-purple-600 bg-purple-50 p-2 rounded">Click points to create polygon, then click "Finish"</p>}
+                      </>
+                    )}
+
+                    <hr className="border-gray-200" />
+
+                    <div className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <Label className="flex items-center gap-2">
+                          <List className="w-4 h-4" />
+                          Annotations ({annotations.length})
+                        </Label>
+                        <Button 
+                          size="sm" 
+                          variant="outline"
+                          onClick={() => setShowAnnotationSummary(!showAnnotationSummary)}
+                        >
+                          <Tag className="w-3 h-3 mr-1" />
+                          Summary
                         </Button>
-                        <Button variant={drawingMode === 'polygon' ? 'default' : 'outline'} onClick={() => setDrawingMode('polygon')}>
-                            <Pentagon className="w-4 h-4 mr-2"/> Polygon
-                        </Button>
+                      </div>
+
+                      {showAnnotationSummary && (
+                        <div className="bg-gray-50 p-3 rounded-lg border space-y-2 text-xs">
+                          {Object.entries(getAnnotationSummary()).map(([label, data]) => (
+                            <div key={label} className="flex justify-between items-center">
+                              <span className="font-semibold">{label}</span>
+                              <div className="flex items-center gap-2">
+                                <span className="text-gray-600">
+                                  {data.count} × ({Object.entries(data.types).map(([t, c]) => `${c} ${t}`).join(', ')})
+                                </span>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-6 px-2"
+                                  onClick={() => handleGroupAnnotations(label)}
+                                >
+                                  Group
+                                </Button>
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
+
+                      <div className="flex gap-2">
+                        <div className="flex-1">
+                          <Input 
+                            placeholder="Filter by label..."
+                            value={annotationFilter}
+                            onChange={(e) => setAnnotationFilter(e.target.value)}
+                            className="h-8 text-xs"
+                          />
+                        </div>
+                        <Select value={annotationTypeFilter} onValueChange={setAnnotationTypeFilter}>
+                          <SelectTrigger className="w-24 h-8 text-xs">
+                            <SelectValue />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="all">All</SelectItem>
+                            <SelectItem value="box">Box</SelectItem>
+                            <SelectItem value="polygon">Polygon</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+
+                      <div className="max-h-64 overflow-y-auto space-y-2">
+                        {getFilteredAnnotations().map((annotation) => (
+                          <div key={annotation.id} className="bg-white p-2 rounded border text-xs space-y-1">
+                            <div className="flex items-center justify-between">
+                              <span className="font-semibold flex items-center gap-1">
+                                {annotation.type === 'box' ? <Square className="w-3 h-3" /> : <Pentagon className="w-3 h-3" />}
+                                {annotation.label}
+                              </span>
+                              <div className="flex gap-1">
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0"
+                                  onClick={() => handleEditAnnotation(annotation)}
+                                >
+                                  <Edit2 className="w-3 h-3" />
+                                </Button>
+                                <Button 
+                                  size="sm" 
+                                  variant="ghost"
+                                  className="h-6 w-6 p-0 text-red-500"
+                                  onClick={() => handleDeleteAnnotation(annotation.id)}
+                                >
+                                  <Trash2 className="w-3 h-3" />
+                                </Button>
+                              </div>
+                            </div>
+                            <div className="text-gray-500">
+                              Type: {annotation.type}
+                              {annotation.type === 'polygon' && ` (${annotation.points.length} points)`}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
                     </div>
-                    <Label>Label Text</Label>
-                    <Input 
-                        value={labelInput} 
-                        onChange={e => setLabelInput(e.target.value)} 
-                        placeholder="Annotation label..."
-                    />
-                    <p className="text-xs text-gray-500">Coming soon: Click and drag to create shapes</p>
                </TabsContent>
             </Tabs>
           </div>
@@ -1009,11 +1292,13 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
           {/* Canvas Area */}
           <div className="flex-1 bg-gray-200 overflow-auto flex items-center justify-center p-8">
              <div className="relative shadow-xl border-4 border-white">
-                <canvas 
-                    ref={canvasRef}
-                    onClick={handleCanvasClick}
-                    className={`bg-white ${insertMode ? 'cursor-crosshair' : 'cursor-default'}`}
-                />
+               <canvas 
+                   ref={canvasRef}
+                   onClick={handleCanvasClick}
+                   onMouseDown={handleCanvasMouseDown}
+                   onMouseUp={handleCanvasMouseUp}
+                   className={`bg-white ${insertMode || drawingMode ? 'cursor-crosshair' : 'cursor-default'}`}
+               />
              </div>
           </div>
 
