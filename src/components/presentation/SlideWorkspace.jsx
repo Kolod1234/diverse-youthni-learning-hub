@@ -3,13 +3,14 @@ import RichTextEditor from '@/components/editor/RichTextEditor';
 import OCRImageEditor from '@/components/presentation/OCRImageEditor';
 import MermaidDiagram from '@/components/presentation/MermaidDiagram';
 import LabeledIllustration from '@/components/presentation/LabeledIllustration';
+import MediaLibrary from '@/components/presentation/MediaLibrary';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { 
   Plus, Trash2, Image as ImageIcon, 
   LayoutTemplate, ChevronLeft, ChevronRight,
-  MonitorPlay, Save, PanelLeftClose, PanelLeftOpen, BookOpen
+  MonitorPlay, Save, PanelLeftClose, PanelLeftOpen, BookOpen, FolderOpen
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
@@ -51,6 +52,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const [imageAspectRatio, setImageAspectRatio] = useState('16:9');
   const [regenerating, setRegenerating] = useState(false);
   const [showOCREditor, setShowOCREditor] = useState(false);
+  const [showMediaLibrary, setShowMediaLibrary] = useState(false);
   const activeSlide = slides[currentSlideIndex];
 
   const themes = {
@@ -304,6 +306,19 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     if (newSlides[currentSlideIndex].labeledIllustration) {
       newSlides[currentSlideIndex].labeledIllustration.generatedUrl = url;
       updateSlides(newSlides);
+    }
+  };
+
+  const handleSelectMedia = (media) => {
+    if (media.file_type === 'image') {
+      updateSlide('imageUrl', media.file_url);
+      toast.success('Image added to slide');
+    } else if (media.file_type === 'video') {
+      updateSlide('videoUrl', media.file_url);
+      toast.success('Video added to slide');
+    } else if (media.file_type === 'audio') {
+      updateSlide('audioUrl', media.file_url);
+      toast.success('Audio added to slide');
     }
   };
 
@@ -564,6 +579,14 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                           onClick={handleImageUpload}
                         >
                           Upload
+                        </Button>
+                        <Button 
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setShowMediaLibrary(true)}
+                        >
+                          <FolderOpen className="w-4 h-4 mr-1" />
+                          Library
                         </Button>
                       </div>
                     </div>
@@ -880,6 +903,13 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           </div>
         </DialogContent>
       </Dialog>
+
+      {/* Media Library */}
+      <MediaLibrary
+        isOpen={showMediaLibrary}
+        onClose={() => setShowMediaLibrary(false)}
+        onSelectMedia={handleSelectMedia}
+      />
     </div>
   );
 }
