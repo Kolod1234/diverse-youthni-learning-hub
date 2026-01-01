@@ -16,7 +16,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [contentType, setContentType] = useState('general'); 
   const [visualStyle, setVisualStyle] = useState('modern');
   const [aiProvider, setAiProvider] = useState('default');
-  const [imageProvider, setImageProvider] = useState('dalle');
+  const [imageProvider, setImageProvider] = useState('base44');
   const [visualMode, setVisualMode] = useState('both'); // 'images', 'diagrams', 'both'
   const [generating, setGenerating] = useState(false);
 
@@ -349,6 +349,15 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 {visualMode === 'diagrams' && <span className="text-xs text-gray-400 ml-1">(disabled)</span>}
               </Label>
               <div className="flex flex-col gap-2">
+                <Button 
+                  variant={imageProvider === 'base44' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setImageProvider('base44')}
+                  className="text-xs w-full"
+                  disabled={visualMode === 'diagrams'}
+                >
+                  Base44 AI
+                </Button>
                 <Button 
                   variant={imageProvider === 'dalle' ? "default" : "outline"} 
                   size="sm"

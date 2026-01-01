@@ -6,7 +6,7 @@ import { toast } from 'sonner';
 
 export default function LabeledIllustration({ data, onImageGenerated }) {
   const [generating, setGenerating] = useState(false);
-  const [imageProvider, setImageProvider] = useState(data.imageProvider || 'dalle');
+  const [imageProvider, setImageProvider] = useState(data.imageProvider || 'base44');
   const imageUrl = data.generatedUrl;
 
   const generateBaseImage = async () => {
@@ -14,7 +14,8 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
     
     setGenerating(true);
     try {
-      toast.info(`Generating with ${imageProvider === 'dalle' ? 'DALL-E 3' : 'Flux 2'}...`);
+      const providerName = imageProvider === 'dalle' ? 'DALL-E 3' : imageProvider === 'flux2' ? 'Flux 2' : 'Base44 AI';
+      toast.info(`Generating with ${providerName}...`);
       
       // Build label text list for the prompt
       const labelTexts = data.labels?.map(l => l.text).join(', ') || '';
@@ -27,14 +28,18 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
           prompt: finalPrompt,
           size: '1024x1024'
         });
-      } else {
+      } else if (imageProvider === 'flux2') {
         result = await base44.functions.invoke('generateImageWithFlux2', {
           prompt: finalPrompt,
           aspect_ratio: '1:1'
         });
+      } else {
+        result = await base44.integrations.Core.GenerateImage({
+          prompt: finalPrompt
+        });
       }
       
-      const url = result.data?.url;
+      const url = result.data?.url || result.url;
       if (url) {
         onImageGenerated(url);
         toast.success('Illustration generated with integrated text!');
@@ -57,6 +62,14 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
         <p className="text-sm text-slate-500 mb-4 max-w-md italic">"{data.baseImagePrompt}"</p>
         
         <div className="flex gap-2 mb-4">
+          <Button 
+            variant={imageProvider === 'base44' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setImageProvider('base44')}
+            disabled={generating}
+          >
+            Base44 AI
+          </Button>
           <Button 
             variant={imageProvider === 'dalle' ? 'default' : 'outline'} 
             size="sm"
