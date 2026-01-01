@@ -5,8 +5,9 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Switch } from '@/components/ui/switch';
-import { Sparkles, Loader2, BookOpen } from 'lucide-react';
+import { Sparkles, Loader2, BookOpen, Brain } from 'lucide-react';
 import { toast } from 'sonner';
+import KnowledgeBaseUploader from '@/components/ai/KnowledgeBaseUploader';
 
 export default function AIGenerateMode({ onSlidesGenerated }) {
   const [topic, setTopic] = useState('');
@@ -19,6 +20,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [imageProvider, setImageProvider] = useState('base44');
   const [visualMode, setVisualMode] = useState('both'); // 'images', 'diagrams', 'both'
   const [generating, setGenerating] = useState(false);
+  const [useAILearning, setUseAILearning] = useState(true);
 
   const generateSlides = async () => {
     if (!topic.trim()) {
@@ -28,7 +30,32 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
     setGenerating(true);
     try {
-      toast.info('Generating slide structure with perfect diagrams...');
+      // Learn from past slides if enabled
+      let learningContext = '';
+      if (useAILearning) {
+        try {
+          toast.info('AI analyzing past presentations...');
+          const learningResult = await base44.functions.invoke('learnFromSlides', {
+            topic,
+            contentType
+          });
+          
+          if (learningResult.data?.patterns) {
+            const p = learningResult.data.patterns;
+            learningContext = `\n\n--- AI LEARNED PATTERNS (from ${learningResult.data.successfulSlidesCount} successful slides) ---
+PREFERRED STRUCTURES: ${p.slideStructures?.join('; ') || 'None yet'}
+VISUAL PATTERNS: ${p.visualPatterns?.join('; ') || 'Standard'}
+CONTENT ORGANIZATION: ${p.contentOrganization?.join('; ') || 'Default'}
+STYLE PREFERENCES: ${p.stylePreferences?.join('; ') || 'Modern'}
+TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
+--- Apply these learned preferences to this presentation ---`;
+          }
+        } catch (err) {
+          console.log('Learning failed, continuing with standard generation');
+        }
+      }
+      
+      toast.info('Generating intelligent slides...');
 
       // Specialized instructions for diagram types based on content
       const diagramInstructions = {
@@ -48,6 +75,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       const prompt = `Create a COMPREHENSIVE educational presentation about "${topic}".
       ${description ? `Additional context: ${description}` : ''}
+      ${learningContext}
 
       Content Type: ${contentType.toUpperCase()}
       Visual Style: ${visualStyle.toUpperCase()} - ${styleGuides[visualStyle]}
@@ -196,6 +224,26 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
           : undefined
       }));
 
+      // Track slides for AI learning
+      if (useAILearning && slides.length > 0) {
+        try {
+          await Promise.all(slides.map(slide => 
+            base44.entities.SlideAnalytics.create({
+              slide_content: slide.content,
+              slide_title: slide.title,
+              topic,
+              visual_type: slide.diagramCode ? (slide.labeledIllustration ? 'both' : 'diagram') : 
+                           (slide.labeledIllustration ? 'image' : 'none'),
+              content_type: contentType,
+              visual_style: visualStyle,
+              success_score: 100
+            })
+          ));
+        } catch (err) {
+          console.log('Analytics tracking failed:', err);
+        }
+      }
+
       onSlidesGenerated(slides);
       toast.success('Educational slides generated with diagrams and illustrations!');
     } catch (error) {
@@ -208,6 +256,14 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
   return (
     <div className="space-y-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
+          <Brain className="w-5 h-5 text-indigo-600" />
+          <span className="text-sm font-medium">Intelligent AI System</span>
+        </div>
+        <KnowledgeBaseUploader />
+      </div>
+      
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="topic">Presentation Topic</Label>
@@ -278,7 +334,19 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
             onCheckedChange={setIncludeSpeakerNotes}
           />
           <Label htmlFor="speaker-notes">Generate Speaker Notes</Label>
-        </div>
+          </div>
+
+          <div className="flex items-center space-x-2">
+          <Switch
+            id="ai-learning"
+            checked={useAILearning}
+            onCheckedChange={setUseAILearning}
+          />
+          <Label htmlFor="ai-learning" className="flex items-center gap-2">
+            <Brain className="w-4 h-4" />
+            Use AI Learning (analyzes your past slides & knowledge base)
+          </Label>
+          </div>
 
         <div className="space-y-4 pt-2">
           <div>
@@ -391,12 +459,12 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
         {generating ? (
           <>
             <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            Generating Diagrams...
+            {useAILearning ? 'AI Learning & Generating...' : 'Generating Diagrams...'}
           </>
         ) : (
           <>
-            <Sparkles className="mr-2 h-4 w-4" />
-            Generate Presentation
+            {useAILearning ? <Brain className="mr-2 h-4 w-4" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            Generate {useAILearning ? 'Intelligent' : ''} Presentation
           </>
         )}
       </Button>

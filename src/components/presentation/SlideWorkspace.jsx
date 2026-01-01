@@ -140,12 +140,31 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     toast.success('Slide added!');
   };
 
-  const deleteSlide = (e) => {
+  const deleteSlide = async (e) => {
     e.stopPropagation();
     if (slides.length === 1) {
       toast.error('You need at least one slide');
       return;
     }
+    
+    // Track deletion for AI learning
+    const deletedSlide = slides[currentSlideIndex];
+    try {
+      const analytics = await base44.entities.SlideAnalytics.filter({
+        slide_title: deletedSlide.title,
+        slide_content: deletedSlide.content
+      }, '-created_date', 1);
+      
+      if (analytics.length > 0) {
+        await base44.entities.SlideAnalytics.update(analytics[0].id, {
+          success_score: 0,
+          was_kept: false
+        });
+      }
+    } catch (err) {
+      console.log('Analytics update failed');
+    }
+    
     const newSlides = slides.filter((_, i) => i !== currentSlideIndex);
     updateSlides(newSlides);
     setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1));
