@@ -547,8 +547,34 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                     <div className="w-full h-full flex flex-col gap-4 overflow-y-auto">
                       {/* Mermaid Diagrams */}
                       {activeSlide.diagramCode && (
-                        <div className="flex-shrink-0">
-                          <MermaidDiagram code={activeSlide.diagramCode} />
+                        <div className="flex-shrink-0 relative group">
+                          <div className="relative">
+                            <MermaidDiagram code={activeSlide.diagramCode} />
+                            {/* Hover Actions */}
+                            <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm rounded-lg">
+                              <Button 
+                                variant="secondary"
+                                size="sm"
+                                onClick={() => {
+                                  const newCode = window.prompt("Edit Mermaid diagram code:", activeSlide.diagramCode);
+                                  if (newCode !== null) updateSlide('diagramCode', newCode);
+                                }}
+                              >
+                                ✏️ Edit
+                              </Button>
+                              <Button 
+                                variant="destructive"
+                                size="sm"
+                                onClick={() => {
+                                  if (confirm('Delete this diagram?')) {
+                                    updateSlide('diagramCode', null);
+                                  }
+                                }}
+                              >
+                                🗑️ Delete
+                              </Button>
+                            </div>
+                          </div>
                           <p className="text-center text-xs text-gray-400 mt-1">
                             Generated Diagram
                           </p>
@@ -582,11 +608,52 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                       
                       {/* Labeled Scientific Illustrations */}
                       {activeSlide.labeledIllustration && (
-                        <div className="flex-shrink-0">
-                          <LabeledIllustration 
-                            data={activeSlide.labeledIllustration}
-                            onImageGenerated={handleIllustrationGenerated}
-                          />
+                        <div className="flex-shrink-0 relative group">
+                          <div className="relative">
+                            <LabeledIllustration 
+                              data={activeSlide.labeledIllustration}
+                              onImageGenerated={handleIllustrationGenerated}
+                            />
+                            {/* Hover Actions */}
+                            {activeSlide.labeledIllustration.generatedUrl && (
+                              <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm rounded-lg">
+                                <Button 
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => {
+                                    const newPrompt = window.prompt("Edit illustration description:", activeSlide.labeledIllustration.baseImagePrompt);
+                                    if (newPrompt !== null) {
+                                      updateSlide('labeledIllustration', {
+                                        ...activeSlide.labeledIllustration,
+                                        baseImagePrompt: newPrompt,
+                                        generatedUrl: null
+                                      });
+                                    }
+                                  }}
+                                >
+                                  ✏️ Edit
+                                </Button>
+                                <Button 
+                                  variant="secondary"
+                                  size="sm"
+                                  onClick={() => handleIllustrationGenerated(null)}
+                                >
+                                  🔄 Regenerate
+                                </Button>
+                                <Button 
+                                  variant="destructive"
+                                  size="sm"
+                                  onClick={() => {
+                                    if (confirm('Delete this illustration?')) {
+                                      updateSlide('labeledIllustration', null);
+                                    }
+                                  }}
+                                >
+                                  🗑️ Delete
+                                </Button>
+                              </div>
+                            )}
+                          </div>
                           <p className="text-center text-xs text-gray-400 mt-1">
                             Labeled Illustration
                           </p>
