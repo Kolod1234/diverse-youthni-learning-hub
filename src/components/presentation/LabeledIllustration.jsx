@@ -16,7 +16,10 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
     try {
       toast.info(`Generating with ${imageProvider === 'dalle' ? 'DALL-E 3' : 'Flux 2'}...`);
       
-      const finalPrompt = `${data.baseImagePrompt}. High-quality educational illustration, clean, detailed, isolated on white background. IMPORTANT: Do not include any text, letters, numbers, or arrows in the image itself.`;
+      // Build label text list for the prompt
+      const labelTexts = data.labels?.map(l => l.text).join(', ') || '';
+      
+      const finalPrompt = `${data.baseImagePrompt}. High-quality educational illustration, clean, detailed, isolated on white background. CRITICAL: Include clear, legible text labels for: ${labelTexts}. The text must be perfectly spelled and clearly visible on the image.`;
       
       let result;
       if (imageProvider === 'dalle') {
@@ -34,7 +37,7 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
       const url = result.data?.url;
       if (url) {
         onImageGenerated(url);
-        toast.success('Illustration generated!');
+        toast.success('Illustration generated with integrated text!');
       } else {
         toast.error('Failed to generate illustration');
       }

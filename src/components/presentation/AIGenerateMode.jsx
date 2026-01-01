@@ -85,11 +85,11 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
            * 'labels': Array of 5-12 labels with 'text', 'x', 'y', and 'type' fields
 
          LAYOUT INSTRUCTIONS:
-         1. SIMPLE OBJECT (e.g. "Mitochondria"): "A single clean 3D cutaway of [Object], ${styleGuides[visualStyle]}, white background, NO TEXT"
+         1. SIMPLE OBJECT (e.g. "Mitochondria"): "A single clean 3D cutaway of [Object], ${styleGuides[visualStyle]}, white background, with text labels"
 
-         2. LINEAR PROCESS (e.g. "Mitosis"): "A horizontal sequence of 4-5 distinct steps showing [Process], connected by arrows, ${styleGuides[visualStyle]}, white background, NO TEXT"
+         2. LINEAR PROCESS (e.g. "Mitosis"): "A horizontal sequence of 4-5 distinct steps showing [Process], connected by arrows, ${styleGuides[visualStyle]}, white background, with text labels"
 
-         3. MULTI-STAGE PROCESS (e.g. "Meiosis", "Krebs Cycle"): "A scientific diagram split into TWO HORIZONTAL PANELS. Top panel shows [Stage 1] with 4 steps. Bottom panel shows [Stage 2] with 4 steps. Light gray panel backgrounds to distinguish rows, ${styleGuides[visualStyle]}, white background, NO TEXT"
+         3. MULTI-STAGE PROCESS (e.g. "Meiosis", "Krebs Cycle"): "A scientific diagram split into TWO HORIZONTAL PANELS. Top panel shows [Stage 1] with 4 steps. Bottom panel shows [Stage 2] with 4 steps. Light gray panel backgrounds to distinguish rows, ${styleGuides[visualStyle]}, white background, with text labels"
 
          LABEL TYPES & USAGE:
          - 'header': PANEL TITLES (e.g., "Meiosis I") - place at top-left of each major section
@@ -136,7 +136,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                   properties: {
                     baseImagePrompt: { 
                       type: 'string',
-                      description: 'Describe the subject cleanly. CRITICAL: Must end with "clean white background, technical illustration style, NO TEXT, NO LABELS"'
+                      description: 'Describe the subject cleanly. CRITICAL: Must end with "clean white background, technical illustration style, with integrated text labels"'
                     },
                     labels: {
                       type: 'array',
