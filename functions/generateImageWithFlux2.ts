@@ -15,7 +15,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Prompt is required' }, { status: 400 });
     }
 
-    const apiKey = Deno.env.get('FLUX2_API_KEY');
+    const apiKey = Deno.env.get('FLUX2API');
     if (!apiKey) {
       return Response.json({ error: 'Flux 2 API key not configured' }, { status: 500 });
     }
