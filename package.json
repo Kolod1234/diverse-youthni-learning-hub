@@ -102,7 +102,8 @@
     "tesseract.js": "^5.0.0",
     "@jvmr/pptx-to-html": "^1.0.0",
     "@kandiforge/pptx-renderer": "^1.0.0",
-    "jszip": "^3.10.1"
+    "jszip": "^3.10.1",
+    "@paddlejs-models/ocr": "^1.0.7"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
