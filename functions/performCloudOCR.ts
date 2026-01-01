@@ -55,19 +55,29 @@ Deno.serve(async (req) => {
     }
 
     const visionData = await visionResponse.json();
+    console.log('Vision API Response:', JSON.stringify(visionData, null, 2));
+    
     const annotations = visionData.responses[0];
 
-    if (!annotations.textAnnotations || annotations.textAnnotations.length === 0) {
+    if (!annotations || !annotations.textAnnotations || annotations.textAnnotations.length === 0) {
+      console.log('No text annotations found');
       return Response.json({ words: [], symbols: [] });
     }
 
+    console.log(`Found ${annotations.textAnnotations.length} text annotations`);
+
     // Skip first annotation (full text) and process individual words
     const words = annotations.textAnnotations.slice(1).map(annotation => {
-      const vertices = annotation.boundingPoly.vertices;
+      const vertices = annotation.boundingPoly?.vertices || [];
+      
+      if (vertices.length === 0) {
+        console.warn('Missing vertices for annotation:', annotation.description);
+        return null;
+      }
       
       return {
         text: annotation.description,
-        confidence: 95, // Google Vision is highly accurate
+        confidence: 95,
         bbox: {
           x0: Math.min(...vertices.map(v => v.x || 0)),
           y0: Math.min(...vertices.map(v => v.y || 0)),
@@ -82,8 +92,9 @@ Deno.serve(async (req) => {
         is_bold: false,
         is_italic: false
       };
-    });
+    }).filter(w => w !== null);
 
+    console.log(`Returning ${words.length} words`);
     return Response.json({ words, symbols: [] });
 
   } catch (error) {
