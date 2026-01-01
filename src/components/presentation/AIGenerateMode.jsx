@@ -57,9 +57,21 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
 
       1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)
          - For: workflows, timelines, organizational charts, decision trees, process flows
-         - Generate valid MERMAID.JS code (no markdown blocks, just raw string)
+         - CRITICAL: Generate VALID Mermaid.js syntax only (no markdown blocks, no backticks, just raw code)
          - ${diagramInstructions[contentType]}
-         - Examples: "graph TD A[Start]-->B[Process]-->C[End]"
+         - IMPORTANT MERMAID RULES:
+           * Node IDs must be simple (A, B, C1, step1) - NO spaces, NO special chars except underscore
+           * Node labels in brackets: A[Label Text]
+           * Connections: A-->B or A---|Label|-->B
+           * Valid examples:
+             - graph TD
+               G1[G1 Phase]-->S[S Phase]
+               S-->G2[G2 Phase]
+               G2-->M[M Phase]
+             - sequenceDiagram
+               User->>System: Request
+               System->>Database: Query
+         - Test your syntax mentally before outputting
 
       2. LABELED ILLUSTRATIONS (PRIORITY for visual learning):
          - For: anatomy, cell structures, equipment parts, geography, biological systems, physics diagrams, chemistry structures, stage/cycle diagrams
@@ -93,7 +105,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
                 content: { type: 'string' },
                 diagramCode: { 
                   type: 'string', 
-                  description: 'Valid Mermaid.js syntax (e.g., graph TD, sequenceDiagram, mindmap). Use for flowcharts, processes, timelines.' 
+                  description: 'RAW Mermaid.js code ONLY (no markdown, no backticks). Must be valid syntax. Node IDs: simple alphanumeric only (A, B, step1). Node labels: in brackets [Text]. Example: graph TD\nA[Start]-->B[Process]-->C[End]' 
                 },
                 labeledIllustration: {
                   type: 'object',
