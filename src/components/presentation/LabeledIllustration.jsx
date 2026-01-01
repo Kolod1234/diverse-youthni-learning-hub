@@ -17,9 +17,9 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
       
       const finalPrompt = `${data.baseImagePrompt}. High-quality educational illustration, clean, detailed, isolated on white background. IMPORTANT: Do not include any text, letters, numbers, or arrows in the image itself.`;
       
-      const result = await base44.functions.invoke('generateImageWithFlux2', {
+      const result = await base44.functions.invoke('generateImageWithDallE', {
         prompt: finalPrompt,
-        aspect_ratio: '1:1'
+        size: '1024x1024'
       });
       
       const url = result.data?.url;
