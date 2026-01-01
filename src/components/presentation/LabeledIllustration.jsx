@@ -51,7 +51,27 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
       <div className="w-full h-[400px] bg-slate-50 rounded-xl border-2 border-dashed border-slate-200 flex flex-col items-center justify-center p-8 text-center">
         <Sparkles className="w-10 h-10 text-indigo-400 mb-4" />
         <h3 className="font-semibold text-slate-700">Visual Diagram Needed</h3>
-        <p className="text-sm text-slate-500 mb-6 max-w-md italic">"{data.baseImagePrompt}"</p>
+        <p className="text-sm text-slate-500 mb-4 max-w-md italic">"{data.baseImagePrompt}"</p>
+        
+        <div className="flex gap-2 mb-4">
+          <Button 
+            variant={imageProvider === 'dalle' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setImageProvider('dalle')}
+            disabled={generating}
+          >
+            DALL-E 3
+          </Button>
+          <Button 
+            variant={imageProvider === 'flux2' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setImageProvider('flux2')}
+            disabled={generating}
+          >
+            Flux 2
+          </Button>
+        </div>
+
         <Button onClick={generateBaseImage} disabled={generating}>
           {generating ? (
             <>
