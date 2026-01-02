@@ -10,7 +10,8 @@ export default function GoogleSlidePlayer({ content, googleSlidesUrl }) {
           <iframe 
             src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`}
             className="absolute top-0 left-0 w-full h-full border-0"
-            allowFullScreen
+            allowFullScreen={true}
+            allow="fullscreen"
           />
         </div>
       );

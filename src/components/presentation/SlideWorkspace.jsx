@@ -142,8 +142,8 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
 
   const deleteSlide = async (e) => {
     e.stopPropagation();
-    if (slides.length === 1) {
-      toast.error('You need at least one slide');
+    if (slides.length <= 1) {
+      toast.error('Cannot delete the last slide');
       return;
     }
     
@@ -456,11 +456,13 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 }`}>
                   {idx + 1}
                 </span>
-                {slides.length > 1 && (
-                  <button onClick={deleteSlide} className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded text-red-500 transition-all">
-                    <Trash2 className="w-3 h-3" />
-                  </button>
-                )}
+                <button 
+                  onClick={deleteSlide} 
+                  className="opacity-0 group-hover:opacity-100 p-1 hover:bg-red-100 rounded text-red-500 transition-all disabled:opacity-0"
+                  disabled={slides.length <= 1}
+                >
+                  <Trash2 className="w-3 h-3" />
+                </button>
               </div>
               {/* Mini Thumbnail Preview */}
               <div className="aspect-video bg-white rounded border border-slate-200 p-2 overflow-hidden text-[6px] text-slate-400 select-none">
