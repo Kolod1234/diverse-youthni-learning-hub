@@ -20,6 +20,7 @@ export default function KnowledgeBaseUploader() {
   const [title, setTitle] = useState('');
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
+  const [wikipediaTopic, setWikipediaTopic] = useState('');
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -44,6 +45,27 @@ export default function KnowledgeBaseUploader() {
       toast.success('Document processed!');
     } catch (error) {
       toast.error('Failed to process document');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleWikipediaImport = async () => {
+    if (!wikipediaTopic.trim()) {
+      toast.error('Enter a Wikipedia topic');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await base44.functions.invoke('importWikipedia', {
+        topic: wikipediaTopic
+      });
+
+      toast.success(`Added "${result.data.title}" from Wikipedia!`);
+      setWikipediaTopic('');
+    } catch (error) {
+      toast.error('Wikipedia import failed: ' + (error.message || 'Topic not found'));
     } finally {
       setUploading(false);
     }
@@ -90,6 +112,38 @@ export default function KnowledgeBaseUploader() {
         </DialogHeader>
         
         <div className="space-y-4 py-4">
+          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
+            <Label className="text-sm font-semibold flex items-center gap-2">
+              <Globe className="w-4 h-4" />
+              Import from Wikipedia
+            </Label>
+            <div className="flex gap-2">
+              <Input
+                value={wikipediaTopic}
+                onChange={(e) => setWikipediaTopic(e.target.value)}
+                placeholder="e.g., Mitochondria, World War II..."
+                disabled={uploading}
+                onKeyPress={(e) => e.key === 'Enter' && handleWikipediaImport()}
+              />
+              <Button
+                onClick={handleWikipediaImport}
+                disabled={uploading || !wikipediaTopic.trim()}
+                size="sm"
+              >
+                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Import'}
+              </Button>
+            </div>
+          </div>
+
+          <div className="relative">
+            <div className="absolute inset-0 flex items-center">
+              <span className="w-full border-t" />
+            </div>
+            <div className="relative flex justify-center text-xs uppercase">
+              <span className="bg-white px-2 text-muted-foreground">Or</span>
+            </div>
+          </div>
+
           <div className="flex gap-2">
             <Button
               variant="outline"
