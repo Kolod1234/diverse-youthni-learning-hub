@@ -20,7 +20,7 @@ import {
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 
-export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
+export default function OCRImageEditor({ imageUrl, onSave, onClose }) {
   const canvasRef = useRef(null);
   const imageRef = useRef(null);
   const [image, setImage] = useState(null);
