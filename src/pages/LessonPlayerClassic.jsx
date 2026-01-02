@@ -300,6 +300,39 @@ export default function LessonPlayerClassic() {
                       className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
                       dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
                     />
+                    
+                    {/* Slide Images */}
+                    {sortedSlides[currentSlideIndex]?.imageUrl && (
+                      <div className="mt-6">
+                        <img 
+                          src={sortedSlides[currentSlideIndex].imageUrl} 
+                          alt="Slide visual" 
+                          className="w-full rounded-xl shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Slide Videos */}
+                    {sortedSlides[currentSlideIndex]?.videoUrl && (
+                      <div className="mt-6">
+                        <video 
+                          src={sortedSlides[currentSlideIndex].videoUrl} 
+                          controls 
+                          className="w-full rounded-xl shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Slide Audio */}
+                    {sortedSlides[currentSlideIndex]?.audioUrl && (
+                      <div className="mt-6">
+                        <audio 
+                          src={sortedSlides[currentSlideIndex].audioUrl} 
+                          controls 
+                          className="w-full"
+                        />
+                      </div>
+                    )}
                   </div>
                   <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
                     <button
