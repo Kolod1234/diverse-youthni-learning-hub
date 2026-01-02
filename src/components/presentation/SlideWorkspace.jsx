@@ -217,7 +217,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
     try {
       if (lessonMode === 'new') {
         const maxOrder = lessons.reduce((max, l) => Math.max(max, l.order || 0), 0);
-        await base44.entities.Lesson.create({
+        const newLesson = await base44.entities.Lesson.create({
           course_id: selectedCourse,
           title: newLessonTitle,
           content_type: 'richtext',
@@ -225,18 +225,29 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           order: maxOrder + 1,
         });
         toast.success('Lesson created successfully!');
+        
+        // Navigate to the lesson player to view the created lesson
+        setTimeout(() => {
+          window.location.href = `/LessonPlayerClassic?lesson=${newLesson.id}&course=${selectedCourse}`;
+        }, 1500);
       } else {
         await base44.entities.Lesson.update(selectedLesson, {
           slides: slides,
         });
         toast.success('Lesson updated successfully!');
+        
+        // Navigate to the updated lesson
+        setTimeout(() => {
+          window.location.href = `/LessonPlayerClassic?lesson=${selectedLesson}&course=${selectedCourse}`;
+        }, 1500);
       }
       setShowAddDialog(false);
       setSelectedCourse('');
       setSelectedLesson('');
       setNewLessonTitle('');
     } catch (error) {
-      toast.error('Failed to save lesson');
+      console.error('Save error:', error);
+      toast.error('Failed to save lesson: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
     }
