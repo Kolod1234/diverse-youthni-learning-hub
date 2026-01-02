@@ -21,6 +21,7 @@ export default function KnowledgeBaseUploader() {
   const [content, setContent] = useState('');
   const [tags, setTags] = useState('');
   const [wikipediaTopic, setWikipediaTopic] = useState('');
+  const [canvaUrl, setCanvaUrl] = useState('');
 
   const handleFileUpload = async (e) => {
     const file = e.target.files?.[0];
@@ -71,6 +72,27 @@ export default function KnowledgeBaseUploader() {
     }
   };
 
+  const handleCanvaImport = async () => {
+    if (!canvaUrl.trim()) {
+      toast.error('Enter a Canva design URL');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const result = await base44.functions.invoke('importCanvaDesign', {
+        canvaUrl
+      });
+
+      toast.success(`Imported Canva design to knowledge base!`);
+      setCanvaUrl('');
+    } catch (error) {
+      toast.error('Canva import failed: ' + (error.message || 'Invalid URL'));
+    } finally {
+      setUploading(false);
+    }
+  };
+
   const handleSave = async () => {
     if (!title || !content) {
       toast.error('Please provide title and content');
@@ -112,26 +134,54 @@ export default function KnowledgeBaseUploader() {
         </DialogHeader>
         
         <div className="space-y-4 py-4">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-3">
-            <Label className="text-sm font-semibold flex items-center gap-2">
-              <Globe className="w-4 h-4" />
-              Import from Wikipedia
-            </Label>
-            <div className="flex gap-2">
-              <Input
-                value={wikipediaTopic}
-                onChange={(e) => setWikipediaTopic(e.target.value)}
-                placeholder="e.g., Mitochondria, World War II..."
-                disabled={uploading}
-                onKeyPress={(e) => e.key === 'Enter' && handleWikipediaImport()}
-              />
-              <Button
-                onClick={handleWikipediaImport}
-                disabled={uploading || !wikipediaTopic.trim()}
-                size="sm"
-              >
-                {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Import'}
-              </Button>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-3 space-y-2">
+              <Label className="text-sm font-semibold flex items-center gap-2">
+                <Globe className="w-4 h-4" />
+                Wikipedia
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={wikipediaTopic}
+                  onChange={(e) => setWikipediaTopic(e.target.value)}
+                  placeholder="Topic name..."
+                  disabled={uploading}
+                  onKeyPress={(e) => e.key === 'Enter' && handleWikipediaImport()}
+                  className="text-sm"
+                />
+                <Button
+                  onClick={handleWikipediaImport}
+                  disabled={uploading || !wikipediaTopic.trim()}
+                  size="sm"
+                >
+                  {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Import'}
+                </Button>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-br from-purple-50 to-blue-50 border border-purple-200 rounded-lg p-3 space-y-2">
+              <Label className="text-sm font-semibold flex items-center gap-2">
+                <FileText className="w-4 h-4" />
+                Canva Design
+              </Label>
+              <div className="flex gap-2">
+                <Input
+                  value={canvaUrl}
+                  onChange={(e) => setCanvaUrl(e.target.value)}
+                  placeholder="Canva URL..."
+                  disabled={uploading}
+                  onKeyPress={(e) => e.key === 'Enter' && handleCanvaImport()}
+                  className="text-sm"
+                />
+                <Button
+                  onClick={handleCanvaImport}
+                  disabled={uploading || !canvaUrl.trim()}
+                  size="sm"
+                  className="bg-gradient-to-r from-purple-600 to-blue-600 text-white"
+                >
+                  {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Import'}
+                </Button>
+              </div>
             </div>
           </div>
 

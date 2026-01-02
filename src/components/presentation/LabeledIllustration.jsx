@@ -33,6 +33,11 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
           prompt: finalPrompt,
           aspect_ratio: '16:9'
         });
+      } else if (imageProvider === 'canva') {
+        result = await base44.functions.invoke('canvaIntegration', {
+          action: 'generate_image',
+          prompt: finalPrompt
+        });
       } else {
         result = await base44.integrations.Core.GenerateImage({
           prompt: finalPrompt
@@ -61,7 +66,7 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
         <h3 className="font-semibold text-slate-700">Visual Diagram Needed</h3>
         <p className="text-sm text-slate-500 mb-4 max-w-md italic">"{data.baseImagePrompt}"</p>
         
-        <div className="flex gap-2 mb-4">
+        <div className="flex gap-2 mb-4 flex-wrap">
           <Button 
             variant={imageProvider === 'base44' ? 'default' : 'outline'} 
             size="sm"
@@ -85,6 +90,15 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
             disabled={generating}
           >
             Flux 2
+          </Button>
+          <Button 
+            variant={imageProvider === 'canva' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setImageProvider('canva')}
+            disabled={generating}
+            className="bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
+          >
+            Canva AI
           </Button>
         </div>
 
