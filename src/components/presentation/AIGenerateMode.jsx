@@ -444,6 +444,15 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
                 >
                   Flux 2
                 </Button>
+                <Button 
+                  variant={imageProvider === 'canva' ? "default" : "outline"} 
+                  size="sm"
+                  onClick={() => setImageProvider('canva')}
+                  className="text-xs w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
+                  disabled={visualMode === 'diagrams'}
+                >
+                  Canva AI
+                </Button>
               </div>
             </div>
           </div>
