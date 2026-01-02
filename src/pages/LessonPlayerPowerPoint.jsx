@@ -199,23 +199,6 @@ export default function LessonPlayerPowerPoint() {
   const hasSlides = lesson.slides && lesson.slides.length > 0;
   const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
-  // Navigate slides with arrow keys
-  useEffect(() => {
-    if (!hasSlides) return;
-    const handleSlideNav = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-      }
-    };
-    window.addEventListener('keydown', handleSlideNav);
-    return () => window.removeEventListener('keydown', handleSlideNav);
-  }, [hasSlides, sortedSlides.length]);
-
   return (
     <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
       
