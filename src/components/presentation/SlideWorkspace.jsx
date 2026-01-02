@@ -226,20 +226,22 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         });
         toast.success('Lesson created successfully!');
         
-        // Navigate to the lesson player to view the created lesson
-        setTimeout(() => {
-          window.location.href = `/LessonPlayerClassic?lesson=${newLesson.id}&course=${selectedCourse}`;
-        }, 1500);
+        // Force reload to show new slides
+        window.location.href = `/LessonPlayerClassic?lesson=${newLesson.id}&course=${selectedCourse}`;
       } else {
+        // Fetch existing lesson first to preserve other fields
+        const existingLessons = await base44.entities.Lesson.filter({ id: selectedLesson });
+        const existingLesson = existingLessons[0];
+        
         await base44.entities.Lesson.update(selectedLesson, {
+          ...existingLesson,
           slides: slides,
+          content_type: 'richtext',
         });
         toast.success('Lesson updated successfully!');
         
-        // Navigate to the updated lesson
-        setTimeout(() => {
-          window.location.href = `/LessonPlayerClassic?lesson=${selectedLesson}&course=${selectedCourse}`;
-        }, 1500);
+        // Force reload to show updated slides
+        window.location.href = `/LessonPlayerClassic?lesson=${selectedLesson}&course=${selectedCourse}`;
       }
       setShowAddDialog(false);
       setSelectedCourse('');
