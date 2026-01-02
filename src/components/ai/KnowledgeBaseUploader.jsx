@@ -59,14 +59,22 @@ export default function KnowledgeBaseUploader() {
 
     setUploading(true);
     try {
+      toast.info('Searching Wikipedia...');
+      
       const result = await base44.functions.invoke('importWikipedia', {
         topic: wikipediaTopic
       });
 
-      toast.success(`Added "${result.data.title}" from Wikipedia!`);
-      setWikipediaTopic('');
+      if (result.data?.title) {
+        toast.success(`✅ Added "${result.data.title}" from Wikipedia to AI knowledge base!`);
+        setWikipediaTopic('');
+        setOpen(false);
+      } else {
+        toast.error('Could not import from Wikipedia');
+      }
     } catch (error) {
-      toast.error('Wikipedia import failed: ' + (error.message || 'Topic not found'));
+      console.error('Wikipedia import error:', error);
+      toast.error('Wikipedia import failed: ' + (error.response?.data?.error || error.message || 'Topic not found'));
     } finally {
       setUploading(false);
     }
