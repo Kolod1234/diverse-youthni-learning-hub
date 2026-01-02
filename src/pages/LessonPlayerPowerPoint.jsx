@@ -108,6 +108,34 @@ export default function LessonPlayerPowerPoint() {
     toast(!isPresenting ? "Presentation Mode: ON (ESC to exit)" : "Presentation Mode: OFF");
   };
 
+  // Keyboard navigation
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, [isPresenting]);
+
+  // Navigate slides with arrow keys
+  useEffect(() => {
+    if (!lesson || !lesson.slides || lesson.slides.length === 0) return;
+    const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
+    
+    const handleSlideNav = (e) => {
+      if (e.key === 'ArrowRight' || e.key === ' ') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.min(slides.length - 1, prev + 1));
+      }
+      if (e.key === 'ArrowLeft') {
+        e.preventDefault();
+        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+      }
+    };
+    window.addEventListener('keydown', handleSlideNav);
+    return () => window.removeEventListener('keydown', handleSlideNav);
+  }, [lesson]);
+
   // Navigation
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
@@ -127,15 +155,6 @@ export default function LessonPlayerPowerPoint() {
   };
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
-
-  // Keyboard navigation
-  useEffect(() => {
-    const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
-    };
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting]);
 
   if (lessonLoading || lessonsLoading) {
     return (
