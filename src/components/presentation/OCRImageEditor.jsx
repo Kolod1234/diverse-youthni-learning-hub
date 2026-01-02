@@ -270,7 +270,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
       const charData = response.data;
       
       if (!charData || !charData.words || charData.words.length === 0) {
-        toast.warning("No text detected. Try a clearer image.");
+        toast.error("No text detected in image. Try a clearer image or check if the image contains readable text.");
         setOcrResult({ words: [], symbols: [] });
         return;
       }
@@ -285,7 +285,7 @@ export default function OCRTextEditor({ imageUrl, onSave, onClose }) {
 
     } catch (error) {
       console.error('Cloud OCR error:', error);
-      toast.error(error.message || 'Failed to detect text. Please check API key setup.');
+      toast.error('OCR failed: ' + (error.message || 'Please try again or check API key setup'));
     } finally {
       setLoading(false);
     }
