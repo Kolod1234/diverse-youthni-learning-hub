@@ -292,14 +292,17 @@ export default function LessonPlayerClassic() {
             <div className="max-w-5xl mx-auto">
               {hasSlides ? (
                 <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-4 ring-purple-50">
-                  <div className="p-4 sm:p-8 min-h-[400px] sm:min-h-[500px]">
-                    <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent mb-3 sm:mb-4">
-                      {sortedSlides[currentSlideIndex]?.title}
+                  <div className="p-4 sm:p-8 min-h-[400px] sm:min-h-[500px] space-y-6">
+                    <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                      {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
                     </h2>
-                    <div 
-                      className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
-                      dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
-                    />
+                    
+                    {sortedSlides[currentSlideIndex]?.content && (
+                      <div 
+                        className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
+                        dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
+                      />
+                    )}
                     
                     {/* Slide Images */}
                     {sortedSlides[currentSlideIndex]?.imageUrl && (
@@ -307,6 +310,24 @@ export default function LessonPlayerClassic() {
                         <img 
                           src={sortedSlides[currentSlideIndex].imageUrl} 
                           alt="Slide visual" 
+                          className="w-full rounded-xl shadow-lg"
+                        />
+                      </div>
+                    )}
+                    
+                    {/* Mermaid Diagrams */}
+                    {sortedSlides[currentSlideIndex]?.diagramCode && (
+                      <div className="mt-6 bg-white p-4 rounded-xl border border-gray-200">
+                        <div dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].diagramCode }} />
+                      </div>
+                    )}
+                    
+                    {/* Labeled Illustrations */}
+                    {sortedSlides[currentSlideIndex]?.labeledIllustration?.generatedUrl && (
+                      <div className="mt-6">
+                        <img 
+                          src={sortedSlides[currentSlideIndex].labeledIllustration.generatedUrl} 
+                          alt="Educational diagram" 
                           className="w-full rounded-xl shadow-lg"
                         />
                       </div>
