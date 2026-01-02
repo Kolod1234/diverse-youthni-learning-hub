@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { Upload, FileText, Brain, Loader2 } from 'lucide-react';
+import { Upload, FileText, Brain, Loader2, Globe } from 'lucide-react';
 import { toast } from 'sonner';
 import {
   Dialog,
