@@ -10,7 +10,7 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { 
   Play, Clock, Users, Star, BookOpen, Award, CheckCircle, 
-  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare, Brain
+  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare, Brain, Settings
 } from 'lucide-react';
 import ModuleProgress from '@/components/interactive/ModuleProgress';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
@@ -18,6 +18,8 @@ import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import CourseLeaderboard from '@/components/gamification/CourseLeaderboard';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
+import CourseSEO from '@/components/seo/CourseSEO';
+import DynamicCourseLanding from '@/components/course/DynamicCourseLanding';
 
 const levelColors = {
   beginner: 'bg-green-100 text-green-700',
@@ -170,9 +172,18 @@ export default function CourseDetails() {
 
   return (
     <CoursePasswordProtection user={user}>
+      <CourseSEO course={course} />
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
+        {(user?.role === 'admin' || user?.is_tutor) && (
+          <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`}>
+            <Button className="absolute top-4 right-4 z-20 bg-white/20 hover:bg-white/30 border-white/30" size="sm">
+              <Settings className="w-4 h-4 mr-2" />
+              Customize Page
+            </Button>
+          </Link>
+        )}
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <nav className="flex items-center gap-2 text-sm text-indigo-100 mb-6">
@@ -683,6 +694,9 @@ export default function CourseDetails() {
             )}
             </div>
         </div>
+
+        {/* Dynamic Landing Page Sections */}
+        <DynamicCourseLanding course={course} enrollment={enrollment} />
       </section>
       </div>
     </CoursePasswordProtection>
