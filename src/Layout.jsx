@@ -340,6 +340,12 @@ export default function Layout({ children, currentPageName }) {
                         Admin Panel
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer">
+                          <Layout className="w-4 h-4 mr-2" />
+                          Page Builder
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer">
                           <User className="w-4 h-4 mr-2" />
                           Manage Coordinators

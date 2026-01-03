@@ -68,6 +68,12 @@ export default function Home() {
     initialData: [],
   });
 
+  const { data: heroSections = [] } = useQuery({
+    queryKey: ['page-sections-home'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true, section_type: 'hero_carousel' }, 'order', 10),
+    initialData: [],
+  });
+
   const defaultHeroBackgroundImages = [
     'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80',
     'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920&q=80',
@@ -178,83 +184,86 @@ export default function Home() {
         </div>
       </section>
 
-      {/* Promotional Hero Banner */}
-      <section className="relative overflow-hidden bg-gradient-to-r from-[#003366] to-[#002244]">
-        {/* Background Image Slideshow */}
-        <div className="absolute inset-0" ref={heroEmblaRef}>
-          <div className="flex h-full">
-            {heroBackgroundImages.map((imgUrl, idx) => (
-              <div key={idx} className="flex-[0_0_100%] min-w-0 h-full">
-                <img
-                  src={imgUrl}
-                  alt={`Educational background ${idx + 1}`}
-                  className="w-full h-full object-cover opacity-50"
-                />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/50 via-transparent to-[#002244]/50" />
-              </div>
-            ))}
+      {/* Dynamic Hero Carousel */}
+      {heroSections.length > 0 && heroSections[0].carousel_items?.length > 0 ? (
+        <HeroCarousel items={heroSections[0].carousel_items} />
+      ) : (
+        <section className="relative overflow-hidden bg-gradient-to-r from-[#003366] to-[#002244]">
+          <div className="absolute inset-0" ref={heroEmblaRef}>
+            <div className="flex h-full">
+              {heroBackgroundImages.map((imgUrl, idx) => (
+                <div key={idx} className="flex-[0_0_100%] min-w-0 h-full">
+                  <img
+                    src={imgUrl}
+                    alt={`Educational background ${idx + 1}`}
+                    className="w-full h-full object-cover opacity-50"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/50 via-transparent to-[#002244]/50" />
+                </div>
+              ))}
+            </div>
           </div>
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            className="text-center"
-          >
-            <motion.div 
-              className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
-              whileHover={{ scale: 1.05 }}
-              transition={{ duration: 0.2 }}
-              style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
+          
+          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8 }}
+              className="text-center"
             >
-              {getContent('hero_online_learning', 'ONLINE LEARNING')}
-            </motion.div>
+              <motion.div 
+                className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
+                whileHover={{ scale: 1.05 }}
+                transition={{ duration: 0.2 }}
+                style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
+              >
+                {getContent('hero_online_learning', 'ONLINE LEARNING')}
+              </motion.div>
 
-            <motion.div 
-              className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1"
-              whileHover={{ scale: 1.05, rotate: 2 }}
-              transition={{ duration: 0.2 }}
-            >
-              <h1 className="text-5xl md:text-7xl font-black text-[#003366] tracking-tight" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.2)' }}>
-                {getContent('hero_afterschool_hours', 'Afterschool Hours')}
-              </h1>
-            </motion.div>
+              <motion.div 
+                className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1"
+                whileHover={{ scale: 1.05, rotate: 2 }}
+                transition={{ duration: 0.2 }}
+              >
+                <h1 className="text-5xl md:text-7xl font-black text-[#003366] tracking-tight" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.2)' }}>
+                  {getContent('hero_afterschool_hours', 'Afterschool Hours')}
+                </h1>
+              </motion.div>
 
-            <motion.h2 
-              className="text-3xl md:text-5xl font-extrabold text-white mb-4"
-              whileHover={{ scale: 1.08, y: -5 }}
-              transition={{ duration: 0.2 }}
-              style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' }}
-            >
-              {getContent('hero_online_quizzes', 'Online Quizzes')}
-            </motion.h2>
+              <motion.h2 
+                className="text-3xl md:text-5xl font-extrabold text-white mb-4"
+                whileHover={{ scale: 1.08, y: -5 }}
+                transition={{ duration: 0.2 }}
+                style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8), 0 0 20px rgba(0,0,0,0.5)' }}
+              >
+                {getContent('hero_online_quizzes', 'Online Quizzes')}
+              </motion.h2>
 
-            <motion.div 
-              className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl"
-              whileHover={{ scale: 1.1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
-              transition={{ duration: 0.2 }}
-            >
-              <p className="text-5xl md:text-7xl font-black text-[#003366]" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.3)' }}>
-                {getContent('hero_free_access', 'FREE ACCESS')}
-                <span className="block text-3xl md:text-4xl mt-2">{getContent('hero_all_courses', 'ALL COURSES')}</span>
+              <motion.div 
+                className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl"
+                whileHover={{ scale: 1.1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
+                transition={{ duration: 0.2 }}
+              >
+                <p className="text-5xl md:text-7xl font-black text-[#003366]" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.3)' }}>
+                  {getContent('hero_free_access', 'FREE ACCESS')}
+                  <span className="block text-3xl md:text-4xl mt-2">{getContent('hero_all_courses', 'ALL COURSES')}</span>
+                </p>
+              </motion.div>
+
+              <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8" style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.6)' }}>
+                {getContent('hero_description', 'Access them at the comfort of your home')}
               </p>
+
+              <Link to={createPageUrl('Explore')}>
+                <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
+                  {getContent('hero_button', 'BROWSE COURSES')}
+                  <ArrowRight className="w-8 h-8 ml-3" />
+                </Button>
+              </Link>
             </motion.div>
-
-            <p className="text-white text-xl md:text-2xl font-bold mt-8 mb-8" style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9), 0 0 15px rgba(0,0,0,0.6)' }}>
-              {getContent('hero_description', 'Access them at the comfort of your home')}
-            </p>
-
-            <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
-                {getContent('hero_button', 'BROWSE COURSES')}
-                <ArrowRight className="w-8 h-8 ml-3" />
-              </Button>
-            </Link>
-          </motion.div>
-        </div>
-      </section>
+          </div>
+        </section>
+      )}
 
       {/* Snap Finance Style Promo Banner */}
       <section className="bg-[#003366] py-16 md:py-20">
@@ -857,6 +866,138 @@ export default function Home() {
         </div>
       </section>
     </div>
+  );
+}
+
+function HeroCarousel({ items }) {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 7000, stopOnInteraction: false })]);
+  const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (!emblaApi) return;
+    emblaApi.on('select', () => {
+      setCurrentIndex(emblaApi.selectedScrollSnap());
+    });
+  }, [emblaApi]);
+
+  return (
+    <section className="relative overflow-hidden">
+      <div ref={emblaRef} className="overflow-hidden">
+        <div className="flex">
+          {items.map((item, idx) => (
+            <div key={idx} className="flex-[0_0_100%] min-w-0">
+              <div className="relative h-[600px] md:h-[700px]">
+                <img
+                  src={item.image_url}
+                  alt={item.title}
+                  className="w-full h-full object-cover"
+                />
+                <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/70 via-[#003366]/50 to-[#002244]/80" />
+                
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                    <motion.div
+                      key={idx}
+                      initial={{ opacity: 0, y: 50 }}
+                      animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
+                      transition={{ duration: 0.8, ease: "easeOut" }}
+                    >
+                      {item.badge && (
+                        <motion.div 
+                          className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
+                          initial={{ scale: 0.9 }}
+                          animate={currentIndex === idx ? { scale: 1 } : { scale: 0.9 }}
+                          transition={{ duration: 0.5, delay: 0.2 }}
+                        >
+                          {item.badge}
+                        </motion.div>
+                      )}
+
+                      {item.title && (
+                        <motion.div 
+                          className="bg-white inline-block px-8 md:px-12 py-6 md:py-8 rounded-3xl shadow-2xl mb-6"
+                          initial={{ scale: 0.95, rotate: 0 }}
+                          animate={currentIndex === idx ? { scale: 1, rotate: 1 } : { scale: 0.95, rotate: 0 }}
+                          transition={{ duration: 0.5, delay: 0.3 }}
+                        >
+                          <h1 className="text-4xl md:text-7xl font-black text-[#003366] tracking-tight">
+                            {item.title}
+                          </h1>
+                        </motion.div>
+                      )}
+
+                      {item.subtitle && (
+                        <motion.h2 
+                          className="text-2xl md:text-5xl font-extrabold text-white mb-4"
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                          transition={{ duration: 0.6, delay: 0.4 }}
+                          style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8)' }}
+                        >
+                          {item.subtitle}
+                        </motion.h2>
+                      )}
+
+                      {item.description && (
+                        <motion.p 
+                          className="text-white text-lg md:text-2xl font-bold mt-6 mb-8 max-w-3xl mx-auto"
+                          initial={{ opacity: 0 }}
+                          animate={currentIndex === idx ? { opacity: 1 } : { opacity: 0 }}
+                          transition={{ duration: 0.6, delay: 0.5 }}
+                          style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}
+                        >
+                          {item.description}
+                        </motion.p>
+                      )}
+
+                      {item.cta_text && item.cta_link && (
+                        <motion.div
+                          initial={{ opacity: 0, y: 20 }}
+                          animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
+                          transition={{ duration: 0.6, delay: 0.6 }}
+                        >
+                          <Link to={item.cta_link}>
+                            <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-xl md:text-2xl px-10 md:px-12 py-6 md:py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
+                              {item.cta_text}
+                              <ArrowRight className="w-6 h-6 md:w-8 md:h-8 ml-3" />
+                            </Button>
+                          </Link>
+                        </motion.div>
+                      )}
+                    </motion.div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      <button
+        onClick={() => emblaApi?.scrollPrev()}
+        className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+      >
+        <ChevronLeft className="w-7 h-7 text-gray-800" />
+      </button>
+      <button
+        onClick={() => emblaApi?.scrollNext()}
+        className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+      >
+        <ChevronRight className="w-7 h-7 text-gray-800" />
+      </button>
+
+      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+        {items.map((_, idx) => (
+          <button
+            key={idx}
+            onClick={() => emblaApi?.scrollTo(idx)}
+            className={`h-3 rounded-full transition-all ${
+              currentIndex === idx ? 'w-12 bg-yellow-400' : 'w-3 bg-white/60 hover:bg-white/80'
+            }`}
+          />
+        ))}
+      </div>
+    </section>
   );
 }
 
