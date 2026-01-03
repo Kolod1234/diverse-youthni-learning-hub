@@ -196,6 +196,20 @@ export default function LessonPlayerPowerPoint() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
+  // Define slide-related variables early
+  const slideUrl = lesson ? (() => {
+    if (lesson.google_slides_url) {
+      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (presentationId) {
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
+      }
+    }
+    return lesson.file_url || null;
+  })() : null;
+  
+  const hasSlides = lesson?.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+
   // Bookmark functionality
   const toggleBookmark = async (slideIndex) => {
     const updatedBookmarks = bookmarkedSlides.includes(slideIndex)
@@ -327,20 +341,7 @@ export default function LessonPlayerPowerPoint() {
     );
   }
 
-  // Get embed URL for Google Slides
-  const getSlideEmbedUrl = () => {
-    if (lesson.google_slides_url) {
-      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (presentationId) {
-        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
-      }
-    }
-    return lesson.file_url || null;
-  };
 
-  const slideUrl = getSlideEmbedUrl();
-  const hasSlides = lesson.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   return (
     <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
