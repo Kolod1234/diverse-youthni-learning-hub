@@ -33,10 +33,13 @@ export default function LessonPlayer() {
         
         if (lesson?.default_player) {
           navigate(`/${lesson.default_player}?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          return;
         } else if (lesson?.google_slides_url) {
           navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          return;
         } else {
           navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          return;
         }
       } catch (error) {
         setLoading(false);
