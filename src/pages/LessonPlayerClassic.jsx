@@ -218,13 +218,13 @@ export default function LessonPlayerClassic() {
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
+              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
+                <Presentation className="w-4 h-4 mr-2" />
+                PowerPoint (Default)
+              </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
                 <Layout className="w-4 h-4 mr-2" />
                 Classic Style (Current)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
-                <Presentation className="w-4 h-4 mr-2" />
-                PowerPoint Style
               </DropdownMenuItem>
               {(user?.role === 'admin' || user?.is_tutor) && lesson && (
                 <>
