@@ -2,9 +2,11 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { createPageUrl } from '@/utils';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck
+  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck, ZoomIn, ZoomOut, Minimize2
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -216,13 +218,13 @@ export default function LessonPlayerPowerPoint() {
       {!isPresenting && (
         <div className="flex-none z-50">
           {/* Top Bar */}
-          <div className="bg-[#FF8C00] text-white h-10 flex items-center justify-between px-4 text-sm">
-            <div className="flex items-center gap-3">
-              <Presentation size={16} />
-              <span className="font-semibold">{lesson?.title || 'Loading...'}</span>
+          <div className="bg-[#FF8C00] text-white h-10 flex items-center justify-between px-2 sm:px-4 text-xs sm:text-sm">
+            <div className="flex items-center gap-2 sm:gap-3 flex-1 min-w-0">
+              <Presentation size={14} className="shrink-0 hidden sm:block" />
+              <span className="font-semibold truncate">{lesson?.title || 'Loading...'}</span>
               {isCompleted && (
-                <span className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded text-xs">
-                  <CheckCircle size={12} /> Completed
+                <span className="flex items-center gap-1 bg-green-500/20 px-2 py-0.5 rounded text-[10px] sm:text-xs shrink-0">
+                  <CheckCircle size={10} className="sm:w-3 sm:h-3" /> <span className="hidden sm:inline">Completed</span>
                 </span>
               )}
             </div>
@@ -235,17 +237,17 @@ export default function LessonPlayerPowerPoint() {
           </div>
           
           {/* Toolbar */}
-          <div className="h-16 bg-white border-b border-gray-200 flex items-center px-5 gap-4">
-            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => navigate(`/CourseDetails?id=${courseId}`)}>
-              <Home size={20} className="text-gray-600" />
-              <span className="text-[11px] mt-1">Exit</span>
+          <div className="h-12 sm:h-16 bg-white border-b border-gray-200 flex items-center px-2 sm:px-5 gap-2 sm:gap-4 overflow-x-auto">
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => navigate(`/CourseDetails?id=${courseId}`)}>
+              <Home size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Exit</span>
             </div>
-            <div className="w-[1px] h-10 bg-gray-200" />
+            <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden sm:block" />
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]">
-                  <Layout size={20} className="text-gray-600" />
-                  <span className="text-[11px] mt-1">Style</span>
+                <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]">
+                  <Layout size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+                  <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Style</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -275,20 +277,20 @@ export default function LessonPlayerPowerPoint() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-            <div className="w-[1px] h-10 bg-gray-200" />
-            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={togglePresentation}>
-              <Presentation size={20} className="text-gray-600" />
-              <span className="text-[11px] mt-1">Present</span>
+            <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={togglePresentation}>
+              <Presentation size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Present</span>
             </div>
-            <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={toggleFullscreen}>
-              {isFullscreen ? <Minimize size={20} className="text-gray-600" /> : <Maximize size={20} className="text-gray-600" />}
-              <span className="text-[11px] mt-1">Fullscreen</span>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={toggleFullscreen}>
+              {isFullscreen ? <Minimize size={16} className="sm:w-5 sm:h-5 text-gray-600" /> : <Maximize size={16} className="sm:w-5 sm:h-5 text-gray-600" />}
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Full</span>
             </div>
-            <div className="w-[1px] h-10 bg-gray-200" />
+            <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
             {!isCompleted && (
-              <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]" onClick={() => markCompleteMutation.mutate()}>
-                <CheckCircle size={20} className="text-green-600" />
-                <span className="text-[11px] mt-1">Complete</span>
+              <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => markCompleteMutation.mutate()}>
+                <CheckCircle size={16} className="sm:w-5 sm:h-5 text-green-600" />
+                <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Done</span>
               </div>
             )}
           </div>
@@ -308,9 +310,9 @@ export default function LessonPlayerPowerPoint() {
       {/* WORKSPACE */}
       <div className="flex flex-1 overflow-hidden relative">
         
-        {/* Filmstrip (Hidden in Presentation) */}
+        {/* Filmstrip (Hidden in Presentation and Mobile) */}
         {!isPresenting && (
-          <aside className="w-52 border-r border-gray-200 bg-white overflow-y-auto flex flex-col p-3 gap-3">
+          <aside className="w-40 sm:w-52 border-r border-gray-200 bg-white overflow-y-auto flex flex-col p-2 sm:p-3 gap-2 sm:gap-3 hidden md:flex">
             {sortedLessons.map((l, idx) => {
               const completed = enrollment?.completed_lessons?.includes(l.id);
               const isCurrent = l.id === lessonId;
@@ -340,7 +342,7 @@ export default function LessonPlayerPowerPoint() {
 
         {/* Stage */}
         <main className={`flex-1 flex flex-col items-center overflow-auto ${
-          isPresenting ? 'p-0 bg-black justify-center' : 'bg-[#edebe9] p-10'
+          isPresenting ? 'p-0 bg-black justify-center' : 'bg-[#edebe9] p-4 sm:p-6 md:p-10'
         }`}>
           {/* Quiz Link (Not in Presentation Mode) */}
           {!isPresenting && quizzes.length > 0 && (
@@ -401,7 +403,7 @@ export default function LessonPlayerPowerPoint() {
           <div className={`bg-white shadow-2xl relative flex flex-col transition-all duration-500 flex-none ${
             isPresenting 
               ? 'w-full h-full aspect-auto m-0 shadow-none' 
-              : 'w-full max-w-[960px] aspect-video mb-10 rounded-lg'
+              : 'w-full max-w-[960px] aspect-video mb-4 sm:mb-10 rounded-lg'
           }`}>
             <div className="flex-1 w-full overflow-hidden relative professional-slide-stage">
               {slideUrl ? (
@@ -411,26 +413,55 @@ export default function LessonPlayerPowerPoint() {
                     className="w-full h-full border-0"
                     style={{ width: '100%', height: '100%' }}
                     allowFullScreen
+                    mozallowfullscreen="true"
+                    webkitallowfullscreen="true"
                     title="Educational Slides"
                   />
                 </div>
               ) : hasSlides ? (
-                <div className="w-full h-full bg-white p-12 overflow-y-auto">
-                  <div className="max-w-4xl mx-auto">
-                    <h2 className="text-3xl font-bold text-gray-900 mb-6">
-                      {sortedSlides[currentSlideIndex]?.title}
-                    </h2>
-                    <div 
-                      className="prose prose-lg max-w-none"
-                      dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
-                    />
-                  </div>
-                  {!isPresenting && (
-                    <div className="absolute bottom-4 right-4 bg-gray-900/80 text-white px-3 py-1 rounded-full text-sm">
-                      {currentSlideIndex + 1} / {sortedSlides.length}
-                    </div>
+                <TransformWrapper
+                  initialScale={1}
+                  minScale={0.5}
+                  maxScale={3}
+                  centerOnInit={true}
+                  disabled={isPresenting}
+                >
+                  {({ zoomIn, zoomOut, resetTransform }) => (
+                    <>
+                      {!isPresenting && (
+                        <div className="absolute top-2 right-2 z-10 flex gap-1 sm:gap-2">
+                          <button onClick={() => zoomIn()} className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded shadow">
+                            <ZoomIn className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </button>
+                          <button onClick={() => zoomOut()} className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded shadow">
+                            <ZoomOut className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </button>
+                          <button onClick={() => resetTransform()} className="p-1.5 sm:p-2 bg-white/90 hover:bg-white rounded shadow">
+                            <Minimize2 className="w-3 h-3 sm:w-4 sm:h-4" />
+                          </button>
+                        </div>
+                      )}
+                      <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
+                        <div className="w-full h-full bg-white p-4 sm:p-8 md:p-12 overflow-y-auto">
+                          <div className="max-w-4xl mx-auto">
+                            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
+                              {sortedSlides[currentSlideIndex]?.title}
+                            </h2>
+                            <div 
+                              className="prose prose-sm sm:prose-base md:prose-lg max-w-none"
+                              dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content || '' }}
+                            />
+                          </div>
+                          {!isPresenting && (
+                            <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 bg-gray-900/80 text-white px-2 py-1 sm:px-3 rounded-full text-xs sm:text-sm">
+                              {currentSlideIndex + 1} / {sortedSlides.length}
+                            </div>
+                          )}
+                        </div>
+                      </TransformComponent>
+                    </>
                   )}
-                </div>
+                </TransformWrapper>
               ) : (
                 <div className="absolute inset-0 flex items-center justify-center bg-gray-100 text-gray-400">
                   <div className="text-center">
@@ -444,9 +475,9 @@ export default function LessonPlayerPowerPoint() {
         </main>
       </div>
 
-      {/* STATUS BAR (Hidden in Presentation) */}
+      {/* STATUS BAR (Hidden in Presentation and Mobile) */}
       {!isPresenting && (
-        <footer className="h-10 bg-white border-t border-gray-200 flex items-center justify-between px-4 text-xs text-gray-600 flex-none">
+        <footer className="h-8 sm:h-10 bg-white border-t border-gray-200 flex items-center justify-between px-2 sm:px-4 text-[10px] sm:text-xs text-gray-600 flex-none hidden md:flex">
           <div className="flex items-center gap-5">
             <span>Lesson {currentLessonIndex + 1} of {sortedLessons.length}</span>
             <span className="flex items-center gap-1 text-[#FF8C00] font-semibold">
