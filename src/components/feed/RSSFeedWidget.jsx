@@ -40,7 +40,7 @@ const getTimeAgo = (dateString) => {
   return format(past, 'MMM d');
 };
 
-export default function RSSFeedWidget({ initialLimit = 6 }) {
+function RSSFeedWidget({ initialLimit = 6 }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(initialLimit);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
@@ -270,3 +270,5 @@ export default function RSSFeedWidget({ initialLimit = 6 }) {
     </div>
   );
 }
+
+export default RSSFeedWidget;
