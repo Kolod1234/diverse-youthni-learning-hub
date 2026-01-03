@@ -263,7 +263,7 @@ export default function LessonPlayerPowerPoint() {
               <DropdownMenuContent>
                 <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
                   <Presentation className="w-4 h-4 mr-2" />
-                  PowerPoint (Current)
+                  PowerPoint (Default)
                 </DropdownMenuItem>
                 <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
                   <Layout className="w-4 h-4 mr-2" />

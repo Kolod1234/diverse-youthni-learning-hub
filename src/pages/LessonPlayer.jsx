@@ -19,7 +19,7 @@ export default function LessonPlayer() {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        // Priority: User preference > Lesson default > Google Slides check > Classic default
+        // Priority: User preference > Lesson default > PowerPoint default
         
         // If user has a preference, use it
         if (userData.player_preference) {
@@ -34,11 +34,9 @@ export default function LessonPlayer() {
         if (lesson?.default_player) {
           navigate(`/${lesson.default_player}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
-        } else if (lesson?.google_slides_url) {
-          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
-          return;
         } else {
-          navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          // Default to PowerPoint style
+          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
         }
       } catch (error) {

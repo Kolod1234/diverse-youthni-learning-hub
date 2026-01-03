@@ -238,7 +238,7 @@ export default function LessonPlayerClassic() {
                     }}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Set Classic as Default
+                    Set Classic as Default (Override)
                   </DropdownMenuItem>
                 </>
               )}
