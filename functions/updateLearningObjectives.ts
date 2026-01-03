@@ -66,20 +66,27 @@ Format as a JSON array of strings.`,
     const lessons = await base44.asServiceRole.entities.Lesson.list('created_date', 500);
 
     const updates = [];
+    let processed = 0;
+    let failed = 0;
 
-    for (const course of courses) {
-      if (course.is_deleted) continue;
+    // Filter lessons that need objectives (empty or missing)
+    const lessonsNeedingObjectives = lessons.filter(l => 
+      !l.is_deleted && 
+      (!l.learning_objectives || l.learning_objectives.length === 0)
+    );
 
-      // Get lessons for this course
-      const courseLessons = lessons.filter(l => l.course_id === course.id);
+    console.log(`Found ${lessonsNeedingObjectives.length} lessons needing objectives`);
 
-      for (const lesson of courseLessons) {
-        try {
-          // Generate appropriate learning objectives for each lesson
-          const response = await base44.integrations.Core.InvokeLLM({
-            prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
+    for (const lesson of lessonsNeedingObjectives) {
+      try {
+        const course = courses.find(c => c.id === lesson.course_id);
+        if (!course) continue;
 
-Course: ${course.title} (${course.category})
+        // Generate appropriate learning objectives for each lesson
+        const response = await base44.integrations.Core.InvokeLLM({
+          prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
+
+Course: ${course.title} (${course.category || 'General'})
 Exam Board: ${course.exam_board || 'CCEA'}
 Lesson Title: ${lesson.title}
 Lesson Description: ${lesson.description || 'Not provided'}
@@ -92,38 +99,43 @@ Create learning objectives that:
 5. Focus on skills and knowledge students will gain
 
 Format as a JSON array of strings.`,
-            response_json_schema: {
-              type: 'object',
-              properties: {
-                learning_objectives: {
-                  type: 'array',
-                  items: { type: 'string' }
-                }
+          response_json_schema: {
+            type: 'object',
+            properties: {
+              learning_objectives: {
+                type: 'array',
+                items: { type: 'string' }
               }
             }
-          });
+          }
+        });
 
-          // Update the lesson with new learning objectives
-          await base44.asServiceRole.entities.Lesson.update(lesson.id, {
-            learning_objectives: response.learning_objectives
-          });
+        // Update the lesson with new learning objectives
+        await base44.asServiceRole.entities.Lesson.update(lesson.id, {
+          learning_objectives: response.learning_objectives
+        });
 
-          updates.push({
-            course: course.title,
-            lesson: lesson.title,
-            objectives: response.learning_objectives
-          });
+        updates.push({
+          course: course.title,
+          lesson: lesson.title,
+          objectives: response.learning_objectives
+        });
+        
+        processed++;
 
-        } catch (error) {
-          console.error(`Failed to update lesson ${lesson.id}:`, error);
-        }
+      } catch (error) {
+        console.error(`Failed to update lesson ${lesson.id}:`, error);
+        failed++;
       }
     }
 
     return Response.json({
       success: true,
-      message: `Updated learning objectives for ${updates.length} lessons`,
-      updates
+      message: `Updated ${processed} lessons successfully, ${failed} failed`,
+      total_lessons: lessonsNeedingObjectives.length,
+      processed,
+      failed,
+      updates: updates.slice(0, 10) // Only return first 10 for brevity
     });
 
   } catch (error) {
