@@ -199,7 +199,7 @@ export default function LessonPlayerPowerPoint() {
     if (lesson.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (presentationId) {
-        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000`;
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
       }
     }
     return lesson.file_url || null;

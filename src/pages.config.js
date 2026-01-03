@@ -1,6 +1,8 @@
 import Achievements from './pages/Achievements';
 import AdminCoordinators from './pages/AdminCoordinators';
+import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminPageBuilder from './pages/AdminPageBuilder';
 import AdminRSSFeed from './pages/AdminRSSFeed';
 import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
@@ -19,6 +21,7 @@ import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
 import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
+import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
 import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
@@ -41,16 +44,15 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import LessonEditor from './pages/LessonEditor';
-import AdminPageBuilder from './pages/AdminPageBuilder';
-import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Achievements": Achievements,
     "AdminCoordinators": AdminCoordinators,
+    "AdminCourseBuilder": AdminCourseBuilder,
     "AdminDashboard": AdminDashboard,
+    "AdminPageBuilder": AdminPageBuilder,
     "AdminRSSFeed": AdminRSSFeed,
     "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
@@ -69,6 +71,7 @@ export const PAGES = {
     "Home": Home,
     "KnowledgeBase": KnowledgeBase,
     "LearningPaths": LearningPaths,
+    "LessonEditor": LessonEditor,
     "LessonPlayer": LessonPlayer,
     "LessonPlayerClassic": LessonPlayerClassic,
     "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
@@ -91,9 +94,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "LessonEditor": LessonEditor,
-    "AdminPageBuilder": AdminPageBuilder,
-    "AdminCourseBuilder": AdminCourseBuilder,
 }
 
 export const pagesConfig = {
