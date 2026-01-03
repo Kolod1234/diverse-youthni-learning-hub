@@ -19,11 +19,20 @@ export default function LessonPlayer() {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        // Auto-redirect based on preference
-        if (!userData.player_preference) {
-          navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
-        } else {
+        // If user has a preference, use it
+        if (userData.player_preference) {
           navigate(`/${userData.player_preference}?lesson=${lessonId}&course=${courseId}`, { replace: true });
+          return;
+        }
+        
+        // Otherwise, check lesson type
+        const lessons = await base44.entities.Lesson.filter({ id: lessonId });
+        const lesson = lessons[0];
+        
+        if (lesson?.google_slides_url) {
+          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        } else {
+          navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
         }
       } catch (error) {
         setLoading(false);
