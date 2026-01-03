@@ -13,7 +13,7 @@ import {
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
   Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
-  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck, GraduationCap, X
+  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck, GraduationCap, X, Sparkles
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
