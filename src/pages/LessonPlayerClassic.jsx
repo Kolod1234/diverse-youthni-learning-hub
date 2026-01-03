@@ -113,6 +113,21 @@ export default function LessonPlayerClassic() {
     }
   });
 
+  const updateObjectivesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await base44.functions.invoke('updateLearningObjectives', { lessonId });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['lesson', lessonId]);
+      toast.success('Learning objectives updated successfully!');
+    },
+    onError: (error) => {
+      toast.error('Failed to update learning objectives');
+      console.error(error);
+    }
+  });
+
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
   const nextLesson = sortedLessons[currentLessonIndex + 1];
