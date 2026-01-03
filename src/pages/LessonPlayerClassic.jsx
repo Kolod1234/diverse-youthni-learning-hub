@@ -376,11 +376,12 @@ export default function LessonPlayerClassic() {
                   </div>
                 </div>
               ) : slideUrl ? (
-                <div className="bg-white rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden aspect-video border-2 border-purple-100 ring-4 ring-purple-50">
+                <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
                   <iframe 
                     src={slideUrl} 
-                    className="w-full h-full"
-                    allowFullScreen
+                    className="absolute top-0 left-0 w-full h-full"
+                    allowFullScreen={true}
+                    allow="fullscreen"
                     title="Lesson Content"
                   />
                 </div>
