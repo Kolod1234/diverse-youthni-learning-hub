@@ -43,10 +43,13 @@ export default function LessonPlayerClassic() {
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
+      if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
+        return [];
+      }
       const lessons = await base44.entities.Lesson.filter({ id: lessonId });
       return lessons;
     },
-    enabled: !!lessonId
+    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined'
   });
 
   const lesson = currentLessonArray[0];
@@ -56,23 +59,36 @@ export default function LessonPlayerClassic() {
 
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
-    enabled: !!courseId
+    queryFn: () => {
+      if (!courseId || courseId === 'null' || courseId === 'undefined') {
+        return [];
+      }
+      return base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
+    },
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
   });
 
   const { data: enrollment } = useQuery({
     queryKey: ['enrollment', courseId],
     queryFn: async () => {
+      if (!courseId || courseId === 'null' || courseId === 'undefined') {
+        return null;
+      }
       const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       return enrollments[0];
     },
-    enabled: !!courseId
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
   });
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['lessonQuizzes', lessonId],
-    queryFn: () => base44.entities.Quiz.filter({ lesson_id: lessonId }),
-    enabled: !!lessonId
+    queryFn: () => {
+      if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
+        return [];
+      }
+      return base44.entities.Quiz.filter({ lesson_id: lessonId });
+    },
+    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined'
   });
 
   const markCompleteMutation = useMutation({
