@@ -1479,6 +1479,8 @@ function BlogManagement() {
 // Lessons Management Component
 function LessonsManagement({ lessons, courses }) {
   const queryClient = useQueryClient();
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCourse, setSelectedCourse] = useState('all');
 
   const deleteLessonMutation = useMutation({
     mutationFn: (id) => base44.entities.Lesson.delete(id),
@@ -1488,49 +1490,170 @@ function LessonsManagement({ lessons, courses }) {
     },
   });
 
+  const updateObjectivesMutation = useMutation({
+    mutationFn: async () => {
+      const response = await base44.functions.invoke('updateLearningObjectives', {});
+      return response.data;
+    },
+    onSuccess: (data) => {
+      queryClient.invalidateQueries(['all-lessons']);
+      toast.success(`Updated ${data.processed} lessons successfully!`);
+    },
+    onError: () => {
+      toast.error('Failed to update learning objectives');
+    }
+  });
+
+  // Filter and search lessons
+  const filteredLessons = lessons.filter(lesson => {
+    const matchesSearch = !searchQuery || 
+      lesson.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lesson.description?.toLowerCase().includes(searchQuery.toLowerCase());
+    const matchesCourse = selectedCourse === 'all' || lesson.course_id === selectedCourse;
+    return matchesSearch && matchesCourse;
+  });
+
+  // Group lessons by course
+  const lessonsByCourse = courses.map(course => ({
+    course,
+    lessons: filteredLessons.filter(l => l.course_id === course.id).sort((a, b) => (a.order || 0) - (b.order || 0))
+  })).filter(group => group.lessons.length > 0);
+
+  const lessonsWithoutObjectives = lessons.filter(l => 
+    !l.learning_objectives || l.learning_objectives.length === 0
+  );
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-xl font-semibold">Lessons Management</h2>
-        <Badge>{lessons.length} lessons</Badge>
+        <div>
+          <h2 className="text-xl font-semibold">Lessons Management</h2>
+          <p className="text-sm text-gray-500 mt-1">{lessons.length} total lessons</p>
+        </div>
+        <div className="flex gap-2">
+          <Link to={createPageUrl('AdminLearningObjectives')}>
+            <Button variant="outline" size="sm">
+              <Sparkles className="w-4 h-4 mr-2" />
+              Objectives Manager
+            </Button>
+          </Link>
+          <Button
+            onClick={() => updateObjectivesMutation.mutate()}
+            disabled={updateObjectivesMutation.isPending || lessonsWithoutObjectives.length === 0}
+            size="sm"
+            className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700"
+          >
+            {updateObjectivesMutation.isPending ? (
+              <>
+                <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                Updating...
+              </>
+            ) : (
+              <>
+                <Sparkles className="w-4 h-4 mr-2" />
+                Update All Objectives ({lessonsWithoutObjectives.length})
+              </>
+            )}
+          </Button>
+        </div>
       </div>
 
-      <div className="space-y-3">
-        {lessons.map((lesson) => {
-          const course = courses.find(c => c.id === lesson.course_id);
-          return (
-            <Card key={lesson.id} className="p-4">
-              <div className="flex justify-between items-start">
-                <div className="flex-1">
-                  <h3 className="font-semibold text-gray-900">{lesson.title}</h3>
-                  <p className="text-sm text-gray-600 mt-1">{lesson.description}</p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="outline">{course?.title || 'Unknown Course'}</Badge>
-                    <Badge variant="outline">{lesson.section}</Badge>
-                    <Badge variant="outline">{lesson.duration_minutes} min</Badge>
+      {/* Search and Filter */}
+      <div className="flex gap-3 mb-6">
+        <div className="flex-1 relative">
+          <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
+          <Input
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            placeholder="Search lessons by title or description..."
+            className="pl-10"
+          />
+        </div>
+        <select
+          value={selectedCourse}
+          onChange={(e) => setSelectedCourse(e.target.value)}
+          className="px-3 py-2 border rounded-lg min-w-[200px]"
+        >
+          <option value="all">All Courses</option>
+          {courses.map(course => (
+            <option key={course.id} value={course.id}>{course.title}</option>
+          ))}
+        </select>
+      </div>
+
+      {/* Lessons Grouped by Course */}
+      <div className="space-y-6">
+        {lessonsByCourse.map(({ course, lessons }) => (
+          <div key={course.id} className="border rounded-xl overflow-hidden">
+            <div className="bg-gradient-to-r from-indigo-50 to-purple-50 p-4 border-b">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <BookOpen className="w-5 h-5 text-indigo-600" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                    <p className="text-sm text-gray-600">{lessons.length} lessons</p>
                   </div>
                 </div>
-                <div className="flex gap-2">
-                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${lesson.course_id}`}>
-                    <Button variant="outline" size="sm">
-                      <Edit className="w-4 h-4" />
-                    </Button>
-                  </Link>
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
-                    }}
-                  >
-                    <Trash2 className="w-4 h-4 text-red-600" />
-                  </Button>
-                </div>
+                <Badge variant="outline">{course.category}</Badge>
               </div>
-            </Card>
-          );
-        })}
+            </div>
+            
+            <div className="divide-y">
+              {lessons.map((lesson, idx) => (
+                <div key={lesson.id} className="p-4 hover:bg-gray-50 transition-colors">
+                  <div className="flex justify-between items-start">
+                    <div className="flex-1">
+                      <div className="flex items-center gap-2 mb-1">
+                        <span className="text-xs font-semibold text-gray-500">#{lesson.order || idx + 1}</span>
+                        <h4 className="font-semibold text-gray-900">{lesson.title}</h4>
+                        {(!lesson.learning_objectives || lesson.learning_objectives.length === 0) && (
+                          <Badge className="bg-orange-100 text-orange-700 text-xs">No Objectives</Badge>
+                        )}
+                      </div>
+                      {lesson.description && (
+                        <p className="text-sm text-gray-600 mt-1">{lesson.description}</p>
+                      )}
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        {lesson.section && <Badge variant="outline" className="text-xs">{lesson.section}</Badge>}
+                        {lesson.duration_minutes && <Badge variant="outline" className="text-xs">{lesson.duration_minutes} min</Badge>}
+                        {lesson.content_type && <Badge variant="outline" className="text-xs capitalize">{lesson.content_type}</Badge>}
+                        {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                          <Badge className="bg-green-100 text-green-700 text-xs">
+                            {lesson.learning_objectives.length} objectives
+                          </Badge>
+                        )}
+                      </div>
+                    </div>
+                    <div className="flex gap-2">
+                      <Link to={createPageUrl('TutorCourseManager') + `?courseId=${lesson.course_id}`}>
+                        <Button variant="outline" size="sm">
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                      </Link>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => {
+                          if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
+                        }}
+                      >
+                        <Trash2 className="w-4 h-4 text-red-600" />
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
       </div>
+
+      {filteredLessons.length === 0 && (
+        <div className="text-center py-12 text-gray-500">
+          <FileText className="w-12 h-12 mx-auto mb-3 text-gray-300" />
+          <p>No lessons found</p>
+        </div>
+      )}
     </Card>
   );
 }
