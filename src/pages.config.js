@@ -43,6 +43,7 @@ import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import LessonEditor from './pages/LessonEditor';
 import AdminPageBuilder from './pages/AdminPageBuilder';
+import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import __Layout from './Layout.jsx';
 
 
@@ -92,6 +93,7 @@ export const PAGES = {
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "LessonEditor": LessonEditor,
     "AdminPageBuilder": AdminPageBuilder,
+    "AdminCourseBuilder": AdminCourseBuilder,
 }
 
 export const pagesConfig = {
