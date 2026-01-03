@@ -295,6 +295,12 @@ export default function Layout({ children, currentPageName }) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer">
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Lesson Editor
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer">
                           <ClipboardList className="w-4 h-4 mr-2" />
                           Templates
