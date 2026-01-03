@@ -19,17 +19,21 @@ export default function LessonPlayer() {
         const userData = await base44.auth.me();
         setUser(userData);
         
+        // Priority: User preference > Lesson default > Google Slides check > Classic default
+        
         // If user has a preference, use it
         if (userData.player_preference) {
           navigate(`/${userData.player_preference}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
         }
         
-        // Otherwise, check lesson type
+        // Check lesson for default player set by tutor/admin
         const lessons = await base44.entities.Lesson.filter({ id: lessonId });
         const lesson = lessons[0];
         
-        if (lesson?.google_slides_url) {
+        if (lesson?.default_player) {
+          navigate(`/${lesson.default_player}?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        } else if (lesson?.google_slides_url) {
           navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
         } else {
           navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });

@@ -3,9 +3,10 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
-  ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-  BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck
-} from 'lucide-react';
+        ChevronLeft, ChevronRight, X, CheckCircle, Target, 
+        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck
+      } from 'lucide-react';
+      import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -26,6 +27,15 @@ export default function LessonPlayerClassic() {
   const [showSidebar, setShowSidebar] = useState(true);
   const [showObjectives, setShowObjectives] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
@@ -172,6 +182,22 @@ export default function LessonPlayerClassic() {
                 <Presentation className="w-4 h-4 mr-2" />
                 PowerPoint Style
               </DropdownMenuItem>
+              {(user?.role === 'admin' || user?.is_tutor) && lesson && (
+                <>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem 
+                    onClick={async () => {
+                      await base44.entities.Lesson.update(lessonId, { 
+                        default_player: 'LessonPlayerClassic' 
+                      });
+                      toast.success('Classic set as default for this lesson');
+                    }}
+                  >
+                    <CheckCircle className="w-4 h-4 mr-2" />
+                    Set Classic as Default
+                  </DropdownMenuItem>
+                </>
+              )}
             </DropdownMenuContent>
           </DropdownMenu>
 
