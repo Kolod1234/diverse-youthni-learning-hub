@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { createPageUrl } from '@/utils';
 import { 
         ChevronLeft, ChevronRight, X, CheckCircle, Target, 
         BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2
@@ -108,6 +109,29 @@ export default function LessonPlayerClassic() {
     }
   };
 
+  const getSlideEmbedUrl = () => {
+    if (lesson.google_slides_url) {
+      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (presentationId) {
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
+      }
+    }
+    return lesson.file_url || null;
+  };
+
+  const handleFullscreen = () => {
+    const elem = document.querySelector('.lesson-content-container');
+    if (elem) {
+      if (elem.requestFullscreen) {
+        elem.requestFullscreen();
+      } else if (elem.webkitRequestFullscreen) {
+        elem.webkitRequestFullscreen();
+      } else if (elem.msRequestFullscreen) {
+        elem.msRequestFullscreen();
+      }
+    }
+  };
+
   if (lessonLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -132,30 +156,6 @@ export default function LessonPlayerClassic() {
   }
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
-
-  const getSlideEmbedUrl = () => {
-    if (lesson.google_slides_url) {
-      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (presentationId) {
-        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
-      }
-    }
-    return lesson.file_url || null;
-  };
-
-  const handleFullscreen = () => {
-    const elem = document.querySelector('.lesson-content-container');
-    if (elem) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
-      }
-    }
-  };
-
   const slideUrl = getSlideEmbedUrl();
   const hasSlides = lesson.slides && lesson.slides.length > 0;
   const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
@@ -365,15 +365,14 @@ export default function LessonPlayerClassic() {
                             <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
                               {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
                             </h2>
-
+                            
                             {sortedSlides[currentSlideIndex]?.content && (
                               <div 
                                 className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
                                 dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
                               />
                             )}
-
-                            {/* Slide Images */}
+                            
                             {sortedSlides[currentSlideIndex]?.imageUrl && (
                               <div className="mt-6">
                                 <img 
@@ -383,15 +382,13 @@ export default function LessonPlayerClassic() {
                                 />
                               </div>
                             )}
-
-                            {/* Mermaid Diagrams */}
+                            
                             {sortedSlides[currentSlideIndex]?.diagramCode && (
                               <div className="mt-6 bg-white p-4 rounded-xl border border-gray-200">
                                 <div dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].diagramCode }} />
                               </div>
                             )}
-
-                            {/* Labeled Illustrations */}
+                            
                             {sortedSlides[currentSlideIndex]?.labeledIllustration?.generatedUrl && (
                               <div className="mt-6">
                                 <img 
@@ -401,8 +398,7 @@ export default function LessonPlayerClassic() {
                                 />
                               </div>
                             )}
-
-                            {/* Slide Videos */}
+                            
                             {sortedSlides[currentSlideIndex]?.videoUrl && (
                               <div className="mt-6">
                                 <video 
@@ -412,8 +408,7 @@ export default function LessonPlayerClassic() {
                                 />
                               </div>
                             )}
-
-                            {/* Slide Audio */}
+                            
                             {sortedSlides[currentSlideIndex]?.audioUrl && (
                               <div className="mt-6">
                                 <audio 
@@ -445,34 +440,21 @@ export default function LessonPlayerClassic() {
                           </div>
                         </div>
                       </TransformComponent>
-                      </>
-                      )}
-                      </TransformWrapper>
-                      ) : slideUrl ? (
-                      <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
-                      <iframe 
-                      src={slideUrl} 
-                      className="absolute top-0 left-0 w-full h-full"
-                      allowFullScreen={true}
-                      allow="fullscreen"
-                      mozallowfullscreen="true"
-                      webkitallowfullscreen="true"
-                      title="Lesson Content"
-                      />
-                      </div>
-              ) : (
-                <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <BookOpen className="w-10 h-10 text-purple-400" />
-                    </div>
-                    <p className="text-gray-600 font-medium">No content available</p>
-                  </div>
+                    </>
+                  )}
+                </TransformWrapper>
+              ) : slideUrl ? (
+                <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
+                  <iframe 
+                    src={slideUrl} 
+                    className="absolute top-0 left-0 w-full h-full"
+                    allowFullScreen={true}
+                    allow="fullscreen"
+                    mozallowfullscreen="true"
+                    webkitallowfullscreen="true"
+                    title="Lesson Content"
+                  />
                 </div>
-              )}
-            </div>
-          </div>
-
               ) : (
                 <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
                   <div className="text-center">
