@@ -297,6 +297,12 @@ export default function LessonPlayerPowerPoint() {
               <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Full</span>
             </div>
             <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
+            {quizzes.length > 0 && (
+              <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}>
+                <ClipboardCheck size={16} className="sm:w-5 sm:h-5 text-purple-600" />
+                <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Quiz</span>
+              </div>
+            )}
             {!isCompleted && (
               <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => markCompleteMutation.mutate()}>
                 <CheckCircle size={16} className="sm:w-5 sm:h-5 text-green-600" />
