@@ -11,24 +11,26 @@ export default function LessonPlayer() {
   const lessonId = params.get('lesson');
   const courseId = params.get('course');
   const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+        
+        // Auto-redirect based on preference
+        if (!userData.player_preference) {
+          navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        } else {
+          navigate(`/${userData.player_preference}?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        }
+      } catch (error) {
+        setLoading(false);
+      }
     };
     loadUser();
   }, []);
-
-  // Auto-redirect to default player if user has no preference yet
-  useEffect(() => {
-    if (user && !user.player_preference) {
-      // Default to Classic for first-time users
-      navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`);
-    } else if (user?.player_preference) {
-      handlePlayerSelect(user.player_preference);
-    }
-  }, [user]);
 
   const handlePlayerSelect = (playerType) => {
     const url = `/${playerType}?lesson=${lessonId}&course=${courseId}`;
@@ -41,6 +43,14 @@ export default function LessonPlayer() {
     }
     handlePlayerSelect(playerType);
   };
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex items-center justify-center">
+        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-indigo-50 to-purple-50 flex items-center justify-center p-6">
