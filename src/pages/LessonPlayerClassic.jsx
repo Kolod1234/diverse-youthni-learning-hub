@@ -362,104 +362,117 @@ export default function LessonPlayerClassic() {
                       <TransformComponent wrapperClass="w-full" contentClass="w-full">
                         <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-4 ring-purple-50">
                           <div className="p-4 sm:p-8 min-h-[300px] sm:min-h-[500px] space-y-6">
-                    <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                      {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
-                    </h2>
-                    
-                    {sortedSlides[currentSlideIndex]?.content && (
-                      <div 
-                        className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
-                        dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
+                            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                              {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
+                            </h2>
+
+                            {sortedSlides[currentSlideIndex]?.content && (
+                              <div 
+                                className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
+                                dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
+                              />
+                            )}
+
+                            {/* Slide Images */}
+                            {sortedSlides[currentSlideIndex]?.imageUrl && (
+                              <div className="mt-6">
+                                <img 
+                                  src={sortedSlides[currentSlideIndex].imageUrl} 
+                                  alt="Slide visual" 
+                                  className="w-full rounded-xl shadow-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Mermaid Diagrams */}
+                            {sortedSlides[currentSlideIndex]?.diagramCode && (
+                              <div className="mt-6 bg-white p-4 rounded-xl border border-gray-200">
+                                <div dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].diagramCode }} />
+                              </div>
+                            )}
+
+                            {/* Labeled Illustrations */}
+                            {sortedSlides[currentSlideIndex]?.labeledIllustration?.generatedUrl && (
+                              <div className="mt-6">
+                                <img 
+                                  src={sortedSlides[currentSlideIndex].labeledIllustration.generatedUrl} 
+                                  alt="Educational diagram" 
+                                  className="w-full rounded-xl shadow-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Slide Videos */}
+                            {sortedSlides[currentSlideIndex]?.videoUrl && (
+                              <div className="mt-6">
+                                <video 
+                                  src={sortedSlides[currentSlideIndex].videoUrl} 
+                                  controls 
+                                  className="w-full rounded-xl shadow-lg"
+                                />
+                              </div>
+                            )}
+
+                            {/* Slide Audio */}
+                            {sortedSlides[currentSlideIndex]?.audioUrl && (
+                              <div className="mt-6">
+                                <audio 
+                                  src={sortedSlides[currentSlideIndex].audioUrl} 
+                                  controls 
+                                  className="w-full"
+                                />
+                              </div>
+                            )}
+                          </div>
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
+                            <button
+                              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+                              disabled={currentSlideIndex === 0}
+                              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
+                            >
+                              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </button>
+                            <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                              Slide {currentSlideIndex + 1} of {sortedSlides.length}
+                            </span>
+                            <button
+                              onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
+                              disabled={currentSlideIndex === sortedSlides.length - 1}
+                              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
+                            >
+                              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                            </button>
+                          </div>
+                        </div>
+                      </TransformComponent>
+                      </>
+                      )}
+                      </TransformWrapper>
+                      ) : slideUrl ? (
+                      <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
+                      <iframe 
+                      src={slideUrl} 
+                      className="absolute top-0 left-0 w-full h-full"
+                      allowFullScreen={true}
+                      allow="fullscreen"
+                      mozallowfullscreen="true"
+                      webkitallowfullscreen="true"
+                      title="Lesson Content"
                       />
-                    )}
-                    
-                    {/* Slide Images */}
-                    {sortedSlides[currentSlideIndex]?.imageUrl && (
-                      <div className="mt-6">
-                        <img 
-                          src={sortedSlides[currentSlideIndex].imageUrl} 
-                          alt="Slide visual" 
-                          className="w-full rounded-xl shadow-lg"
-                        />
                       </div>
-                    )}
-                    
-                    {/* Mermaid Diagrams */}
-                    {sortedSlides[currentSlideIndex]?.diagramCode && (
-                      <div className="mt-6 bg-white p-4 rounded-xl border border-gray-200">
-                        <div dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].diagramCode }} />
-                      </div>
-                    )}
-                    
-                    {/* Labeled Illustrations */}
-                    {sortedSlides[currentSlideIndex]?.labeledIllustration?.generatedUrl && (
-                      <div className="mt-6">
-                        <img 
-                          src={sortedSlides[currentSlideIndex].labeledIllustration.generatedUrl} 
-                          alt="Educational diagram" 
-                          className="w-full rounded-xl shadow-lg"
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Slide Videos */}
-                    {sortedSlides[currentSlideIndex]?.videoUrl && (
-                      <div className="mt-6">
-                        <video 
-                          src={sortedSlides[currentSlideIndex].videoUrl} 
-                          controls 
-                          className="w-full rounded-xl shadow-lg"
-                        />
-                      </div>
-                    )}
-                    
-                    {/* Slide Audio */}
-                    {sortedSlides[currentSlideIndex]?.audioUrl && (
-                      <div className="mt-6">
-                        <audio 
-                          src={sortedSlides[currentSlideIndex].audioUrl} 
-                          controls 
-                          className="w-full"
-                        />
-                      </div>
-                    )}
+              ) : (
+                <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
+                  <div className="text-center">
+                    <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+                      <BookOpen className="w-10 h-10 text-purple-400" />
+                    </div>
+                    <p className="text-gray-600 font-medium">No content available</p>
                   </div>
-                  <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
-                    <button
-                      onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                      disabled={currentSlideIndex === 0}
-                      className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
-                    >
-                      <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
-                    <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                      Slide {currentSlideIndex + 1} of {sortedSlides.length}
-                    </span>
-                    <button
-                      onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
-                      disabled={currentSlideIndex === sortedSlides.length - 1}
-                      className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
-                    >
-                      <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
-                    </button>
-                  </div>
-                  </div>
-                  </TransformComponent>
-                  </>
-                  )}
-                  </TransformWrapper>
-                  ) : slideUrl ? (
-                  <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
-                  <iframe 
-                  src={slideUrl} 
-                  className="absolute top-0 left-0 w-full h-full"
-                  allowFullScreen={true}
-                  allow="fullscreen"
-                  mozallowfullscreen="true"
-                  webkitallowfullscreen="true"
-                  title="Lesson Content"
-                  />
-                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+
               ) : (
                 <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
                   <div className="text-center">
