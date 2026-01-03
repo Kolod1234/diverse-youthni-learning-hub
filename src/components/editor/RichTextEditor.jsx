@@ -33,7 +33,8 @@ import {
   Undo, Redo, Table as TableIcon, Subscript as SubIcon,
   Superscript as SuperIcon, Highlighter, Info, AlertTriangle,
   CheckCircle, CheckCircle2, Lightbulb, Square, BarChart3, HelpCircle, Zap,
-  Palette, Type, Space, Clock, ChevronDown, ChevronUp, LayoutTemplate, Video, ExternalLink
+  Palette, Type, Space, Clock, ChevronDown, ChevronUp, LayoutTemplate, Video, ExternalLink,
+  Sparkles, FileImage, Wand2, FileText, Download, Upload, Globe, Layers
 } from 'lucide-react';
 
 const SYMBOLS = {
@@ -1386,6 +1387,10 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
   const [showSpacing, setShowSpacing] = React.useState(false);
   const [showToolbar, setShowToolbar] = React.useState(false);
   const [showSymbols, setShowSymbols] = React.useState(false);
+  const [showAI, setShowAI] = React.useState(false);
+  const [showMedia, setShowMedia] = React.useState(false);
+  const [showTemplates, setShowTemplates] = React.useState(false);
+  const [aiLoading, setAiLoading] = React.useState(false);
   
   const editor = useEditor({
     extensions: [
@@ -1522,6 +1527,50 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       },
     },
   }, []);
+
+  const handleAIGenerate = useCallback(async (prompt) => {
+    if (!prompt) return;
+    
+    setAiLoading(true);
+    const loadingToast = toast.loading('AI is generating content...');
+    
+    try {
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a professional content writer. Generate well-structured, educational content for: ${prompt}. Format it with HTML tags (use <h2>, <h3>, <p>, <ul>, <li>, <strong>, <em> as needed). Make it engaging and informative.`,
+        add_context_from_internet: false,
+      });
+      
+      editor?.chain().focus().insertContent(result).run();
+      toast.dismiss(loadingToast);
+      toast.success('AI content generated!');
+      setShowAI(false);
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error('Failed to generate content');
+    } finally {
+      setAiLoading(false);
+    }
+  }, [editor]);
+
+  const handleAIImage = useCallback(async () => {
+    const prompt = window.prompt('Describe the image you want to generate:');
+    if (!prompt) return;
+    
+    setAiLoading(true);
+    const loadingToast = toast.loading('AI is creating your image...');
+    
+    try {
+      const { url } = await base44.integrations.Core.GenerateImage({ prompt });
+      editor?.chain().focus().setImage({ src: url }).run();
+      toast.dismiss(loadingToast);
+      toast.success('AI image inserted!');
+    } catch (error) {
+      toast.dismiss(loadingToast);
+      toast.error('Failed to generate image');
+    } finally {
+      setAiLoading(false);
+    }
+  }, [editor]);
 
   const handleImageUpload = useCallback(async () => {
     const input = document.createElement('input');
@@ -1716,6 +1765,51 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
           }`}
         >
           Symbols
+        </button>
+        <span className="text-gray-300">/</span>
+        <button
+          onClick={() => {
+            setShowAI(!showAI);
+            setShowToolbar(false);
+            setShowSymbols(false);
+          }}
+          className={`px-3 py-1 rounded-md transition-colors font-medium flex items-center gap-1 ${
+            showAI ? 'bg-purple-100 text-purple-700' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <Sparkles className="w-3 h-3" />
+          AI Assistant
+        </button>
+        <span className="text-gray-300">/</span>
+        <button
+          onClick={() => {
+            setShowMedia(!showMedia);
+            setShowToolbar(false);
+            setShowSymbols(false);
+            setShowAI(false);
+          }}
+          className={`px-3 py-1 rounded-md transition-colors font-medium flex items-center gap-1 ${
+            showMedia ? 'bg-blue-100 text-blue-700' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <FileImage className="w-3 h-3" />
+          Media
+        </button>
+        <span className="text-gray-300">/</span>
+        <button
+          onClick={() => {
+            setShowTemplates(!showTemplates);
+            setShowToolbar(false);
+            setShowSymbols(false);
+            setShowAI(false);
+            setShowMedia(false);
+          }}
+          className={`px-3 py-1 rounded-md transition-colors font-medium flex items-center gap-1 ${
+            showTemplates ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-100'
+          }`}
+        >
+          <LayoutTemplate className="w-3 h-3" />
+          Templates
         </button>
       </div>
       
@@ -2822,6 +2916,230 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       </div>
       )}
       
+      {/* AI Assistant Panel */}
+      {showAI && (
+        <div className="bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-200 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-purple-700 font-semibold">
+            <Sparkles className="w-5 h-5" />
+            <span>AI-Powered Tools</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => {
+                const prompt = window.prompt('What content would you like AI to write?');
+                if (prompt) handleAIGenerate(prompt);
+              }}
+              disabled={aiLoading}
+              className="flex items-center gap-2 p-3 bg-white rounded-lg border border-purple-200 hover:bg-purple-50 transition-colors disabled:opacity-50"
+            >
+              <Wand2 className="w-4 h-4 text-purple-600" />
+              <div className="text-left text-sm">
+                <div className="font-medium">Generate Text</div>
+                <div className="text-xs text-gray-500">AI writes content</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={handleAIImage}
+              disabled={aiLoading}
+              className="flex items-center gap-2 p-3 bg-white rounded-lg border border-purple-200 hover:bg-purple-50 transition-colors disabled:opacity-50"
+            >
+              <FileImage className="w-4 h-4 text-purple-600" />
+              <div className="text-left text-sm">
+                <div className="font-medium">Generate Image</div>
+                <div className="text-xs text-gray-500">AI creates visuals</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => {
+                const selection = editor.state.doc.textBetween(
+                  editor.state.selection.from,
+                  editor.state.selection.to
+                );
+                if (!selection) {
+                  toast.error('Please select text first');
+                  return;
+                }
+                const prompt = `Improve and enhance this text professionally: ${selection}`;
+                handleAIGenerate(prompt);
+              }}
+              disabled={aiLoading}
+              className="flex items-center gap-2 p-3 bg-white rounded-lg border border-purple-200 hover:bg-purple-50 transition-colors disabled:opacity-50"
+            >
+              <Sparkles className="w-4 h-4 text-purple-600" />
+              <div className="text-left text-sm">
+                <div className="font-medium">Enhance Text</div>
+                <div className="text-xs text-gray-500">Improve selection</div>
+              </div>
+            </button>
+            
+            <button
+              onClick={() => {
+                const topic = window.prompt('Enter a topic for a quiz:');
+                if (topic) {
+                  handleAIGenerate(`Create a multiple choice quiz question about: ${topic}. Format as HTML with the question, 4 options, and indicate the correct answer.`);
+                }
+              }}
+              disabled={aiLoading}
+              className="flex items-center gap-2 p-3 bg-white rounded-lg border border-purple-200 hover:bg-purple-50 transition-colors disabled:opacity-50"
+            >
+              <HelpCircle className="w-4 h-4 text-purple-600" />
+              <div className="text-left text-sm">
+                <div className="font-medium">AI Quiz</div>
+                <div className="text-xs text-gray-500">Auto-generate</div>
+              </div>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Media Library Panel */}
+      {showMedia && (
+        <div className="bg-gradient-to-r from-blue-50 to-cyan-50 border border-blue-200 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-blue-700 font-semibold">
+            <FileImage className="w-5 h-5" />
+            <span>Media Tools</span>
+          </div>
+          
+          <div className="grid grid-cols-3 gap-2">
+            <button
+              onClick={handleImageUpload}
+              className="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors"
+            >
+              <Upload className="w-5 h-5 text-blue-600" />
+              <span className="text-xs font-medium">Upload Image</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                const url = window.prompt('Enter video URL (YouTube/Vimeo):');
+                if (url) {
+                  const platform = url.includes('youtube') || url.includes('youtu.be') ? 'youtube' : 'vimeo';
+                  editor?.chain().focus().insertVideoEmbed({ src: url, platform }).run();
+                }
+              }}
+              className="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors"
+            >
+              <Video className="w-5 h-5 text-blue-600" />
+              <span className="text-xs font-medium">Embed Video</span>
+            </button>
+            
+            <button
+              onClick={() => {
+                const url = window.prompt('Enter link URL:');
+                if (url) {
+                  editor?.chain().focus().insertLinkPreviewCard({
+                    url,
+                    title: 'External Resource',
+                    description: 'Click to explore',
+                  }).run();
+                }
+              }}
+              className="flex flex-col items-center gap-1 p-3 bg-white rounded-lg border border-blue-200 hover:bg-blue-50 transition-colors"
+            >
+              <Globe className="w-5 h-5 text-blue-600" />
+              <span className="text-xs font-medium">Link Card</span>
+            </button>
+          </div>
+        </div>
+      )}
+
+      {/* Templates Panel */}
+      {showTemplates && (
+        <div className="bg-gradient-to-r from-indigo-50 to-violet-50 border border-indigo-200 p-4 space-y-3">
+          <div className="flex items-center gap-2 text-indigo-700 font-semibold">
+            <LayoutTemplate className="w-5 h-5" />
+            <span>Quick Templates</span>
+          </div>
+          
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={() => {
+                editor?.chain().focus().insertContent(`
+                  <h2>Lesson Title</h2>
+                  <h3>Learning Objectives</h3>
+                  <ul><li>Objective 1</li><li>Objective 2</li><li>Objective 3</li></ul>
+                  <h3>Introduction</h3>
+                  <p>Start your lesson content here...</p>
+                  <h3>Main Content</h3>
+                  <p>Detailed explanation...</p>
+                  <h3>Summary</h3>
+                  <p>Key takeaways...</p>
+                `).run();
+                setShowTemplates(false);
+              }}
+              className="p-3 bg-white rounded-lg border border-indigo-200 hover:bg-indigo-50 transition-colors text-left"
+            >
+              <div className="font-medium text-sm">Lesson Plan</div>
+              <div className="text-xs text-gray-500">Structured lesson</div>
+            </button>
+            
+            <button
+              onClick={() => {
+                editor?.chain().focus().insertContent(`
+                  <h2>Study Guide</h2>
+                  <h3>Key Concepts</h3>
+                  <ul><li>Concept 1</li><li>Concept 2</li></ul>
+                  <h3>Important Terms</h3>
+                  <ul><li><strong>Term:</strong> Definition</li></ul>
+                  <h3>Practice Questions</h3>
+                  <ol><li>Question 1</li><li>Question 2</li></ol>
+                `).run();
+                setShowTemplates(false);
+              }}
+              className="p-3 bg-white rounded-lg border border-indigo-200 hover:bg-indigo-50 transition-colors text-left"
+            >
+              <div className="font-medium text-sm">Study Guide</div>
+              <div className="text-xs text-gray-500">Review material</div>
+            </button>
+            
+            <button
+              onClick={() => {
+                editor?.chain().focus().insertContent(`
+                  <h2>Experiment Report</h2>
+                  <h3>Hypothesis</h3>
+                  <p>State your hypothesis...</p>
+                  <h3>Materials</h3>
+                  <ul><li>Material 1</li><li>Material 2</li></ul>
+                  <h3>Procedure</h3>
+                  <ol><li>Step 1</li><li>Step 2</li></ol>
+                  <h3>Results</h3>
+                  <p>Document findings...</p>
+                  <h3>Conclusion</h3>
+                  <p>Analyze results...</p>
+                `).run();
+                setShowTemplates(false);
+              }}
+              className="p-3 bg-white rounded-lg border border-indigo-200 hover:bg-indigo-50 transition-colors text-left"
+            >
+              <div className="font-medium text-sm">Lab Report</div>
+              <div className="text-xs text-gray-500">Science experiment</div>
+            </button>
+            
+            <button
+              onClick={() => {
+                editor?.chain().focus().insertContent(`
+                  <h2>Project Plan</h2>
+                  <h3>Overview</h3>
+                  <p>Project description...</p>
+                  <h3>Timeline</h3>
+                  <ul><li>Week 1: Planning</li><li>Week 2: Research</li><li>Week 3: Execution</li></ul>
+                  <h3>Deliverables</h3>
+                  <ul><li>Deliverable 1</li><li>Deliverable 2</li></ul>
+                `).run();
+                setShowTemplates(false);
+              }}
+              className="p-3 bg-white rounded-lg border border-indigo-200 hover:bg-indigo-50 transition-colors text-left"
+            >
+              <div className="font-medium text-sm">Project Plan</div>
+              <div className="text-xs text-gray-500">Organize work</div>
+            </button>
+          </div>
+        </div>
+      )}
+
       {/* Editor */}
       <EditorContent editor={editor} />
       
