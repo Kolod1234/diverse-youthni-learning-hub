@@ -6,12 +6,12 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
 
     if (!user || (user.role !== 'admin' && !user.is_tutor)) {
-      return Response.json({ error: 'Unauthorized - Admin or Tutor only' }, { status: 403 });
+      return Response.json({ error: 'Unauthorized - Admin or Tutor access required' }, { status: 403 });
     }
 
     const { lessonId } = await req.json();
 
-    // If specific lesson ID provided, update only that lesson
+    // If lessonId is provided, update only that lesson
     if (lessonId) {
       const lessons = await base44.asServiceRole.entities.Lesson.filter({ id: lessonId });
       const lesson = lessons[0];
@@ -56,14 +56,14 @@ Format as a JSON array of strings.`,
 
       return Response.json({
         success: true,
-        message: 'Learning objectives updated successfully',
+        message: 'Learning objectives updated',
         objectives: response.learning_objectives
       });
     }
 
-    // Otherwise, update all lessons
-    const courses = await base44.asServiceRole.entities.Course.list('created_date', 500);
-    const lessons = await base44.asServiceRole.entities.Lesson.list('created_date', 500);
+    // Otherwise, update all lessons that need objectives
+    const courses = await base44.asServiceRole.entities.Course.list('title', 500);
+    const lessons = await base44.asServiceRole.entities.Lesson.list('created_date', 1000);
 
     const updates = [];
     let processed = 0;
@@ -139,6 +139,7 @@ Format as a JSON array of strings.`,
     });
 
   } catch (error) {
+    console.error('Error in updateLearningObjectives:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
