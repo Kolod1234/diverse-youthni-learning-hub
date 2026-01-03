@@ -894,20 +894,20 @@ function HeroCarousel({ items }) {
                 />
                 <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/70 via-[#003366]/50 to-[#002244]/80" />
                 
-                <div className="absolute inset-0 flex items-center justify-center">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
+                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
                     <motion.div
                       key={idx}
-                      initial={{ opacity: 0, y: 50 }}
-                      animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 50 }}
-                      transition={{ duration: 0.8, ease: "easeOut" }}
+                      initial={{ opacity: 0, x: 100 }}
+                      animate={currentIndex === idx ? { opacity: 1, x: 0 } : currentIndex > idx ? { opacity: 0, x: -100 } : { opacity: 0, x: 100 }}
+                      transition={{ duration: 0.7, ease: "easeInOut" }}
                     >
                       {item.badge && (
                         <motion.div 
                           className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
-                          initial={{ scale: 0.9 }}
-                          animate={currentIndex === idx ? { scale: 1 } : { scale: 0.9 }}
-                          transition={{ duration: 0.5, delay: 0.2 }}
+                          initial={{ x: -50, opacity: 0 }}
+                          animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 50, opacity: 0 }}
+                          transition={{ duration: 0.6, delay: 0.1 }}
                         >
                           {item.badge}
                         </motion.div>
@@ -916,9 +916,9 @@ function HeroCarousel({ items }) {
                       {item.title && (
                         <motion.div 
                           className="bg-white inline-block px-8 md:px-12 py-6 md:py-8 rounded-3xl shadow-2xl mb-6"
-                          initial={{ scale: 0.95, rotate: 0 }}
-                          animate={currentIndex === idx ? { scale: 1, rotate: 1 } : { scale: 0.95, rotate: 0 }}
-                          transition={{ duration: 0.5, delay: 0.3 }}
+                          initial={{ x: 80, opacity: 0, rotate: 0 }}
+                          animate={currentIndex === idx ? { x: 0, opacity: 1, rotate: 1 } : { x: -80, opacity: 0, rotate: 0 }}
+                          transition={{ duration: 0.7, delay: 0.15, ease: "easeInOut" }}
                         >
                           <h1 className="text-4xl md:text-7xl font-black text-[#003366] tracking-tight">
                             {item.title}
@@ -929,9 +929,9 @@ function HeroCarousel({ items }) {
                       {item.subtitle && (
                         <motion.h2 
                           className="text-2xl md:text-5xl font-extrabold text-white mb-4"
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                          transition={{ duration: 0.6, delay: 0.4 }}
+                          initial={{ x: -60, opacity: 0 }}
+                          animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 60, opacity: 0 }}
+                          transition={{ duration: 0.7, delay: 0.2, ease: "easeInOut" }}
                           style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8)' }}
                         >
                           {item.subtitle}
@@ -941,9 +941,9 @@ function HeroCarousel({ items }) {
                       {item.description && (
                         <motion.p 
                           className="text-white text-lg md:text-2xl font-bold mt-6 mb-8 max-w-3xl mx-auto"
-                          initial={{ opacity: 0 }}
-                          animate={currentIndex === idx ? { opacity: 1 } : { opacity: 0 }}
-                          transition={{ duration: 0.6, delay: 0.5 }}
+                          initial={{ x: 70, opacity: 0 }}
+                          animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: -70, opacity: 0 }}
+                          transition={{ duration: 0.7, delay: 0.25, ease: "easeInOut" }}
                           style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}
                         >
                           {item.description}
@@ -952,9 +952,9 @@ function HeroCarousel({ items }) {
 
                       {item.cta_text && item.cta_link && (
                         <motion.div
-                          initial={{ opacity: 0, y: 20 }}
-                          animate={currentIndex === idx ? { opacity: 1, y: 0 } : { opacity: 0, y: 20 }}
-                          transition={{ duration: 0.6, delay: 0.6 }}
+                          initial={{ x: -50, opacity: 0 }}
+                          animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 50, opacity: 0 }}
+                          transition={{ duration: 0.7, delay: 0.3, ease: "easeInOut" }}
                         >
                           <Link to={item.cta_link}>
                             <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-xl md:text-2xl px-10 md:px-12 py-6 md:py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
