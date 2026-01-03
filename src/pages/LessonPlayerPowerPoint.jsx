@@ -7,7 +7,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
   CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck, ZoomIn, ZoomOut, Minimize2,
-  Bookmark, BookmarkCheck, Search, Sparkles, Pencil, Eraser, Save
+  Bookmark, BookmarkCheck, Search, Sparkles, Pencil, Eraser, Save, Settings, Volume2, Type, Eye, Brain, List, Plus, Trash2
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -44,6 +44,26 @@ export default function LessonPlayerPowerPoint() {
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawColor, setDrawColor] = useState('#FF0000');
   const [drawings, setDrawings] = useState([]);
+  const [showOutline, setShowOutline] = useState(false);
+  const [showAIHelp, setShowAIHelp] = useState(false);
+  const [aiHelpLoading, setAIHelpLoading] = useState(false);
+  const [aiHelpResponse, setAIHelpResponse] = useState('');
+  const [aiHelpQuery, setAIHelpQuery] = useState('');
+  const [notes, setNotes] = useState([]);
+  const [currentNote, setCurrentNote] = useState('');
+  const [showNotes, setShowNotes] = useState(false);
+  const [showFlashcards, setShowFlashcards] = useState(false);
+  const [flashcards, setFlashcards] = useState([]);
+  const [accessibilityMode, setAccessibilityMode] = useState({
+    fontSize: 100,
+    contrast: 'normal',
+    dyslexiaFont: false,
+    textToSpeech: false
+  });
+  const [showAccessibility, setShowAccessibility] = useState(false);
+  const [progressiveDisclosure, setProgressiveDisclosure] = useState({});
+  const [microLearningMode, setMicroLearningMode] = useState(false);
+  const [selectedText, setSelectedText] = useState('');
   
   const playerRef = useRef(null);
   const canvasRef = useRef(null);
@@ -313,6 +333,110 @@ export default function LessonPlayerPowerPoint() {
     });
   }, [drawings]);
 
+  // AI Contextual Help
+  const askAIAboutSlide = async (query = '') => {
+    setAIHelpLoading(true);
+    setShowAIHelp(true);
+    
+    try {
+      const currentSlide = sortedSlides[currentSlideIndex];
+      const slideContext = currentSlide ? `${currentSlide.title}: ${currentSlide.content}` : 'Current slide content';
+      
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `You are a helpful tutor assistant. The student is viewing a lesson slide with the following content:\n\n${slideContext}\n\nStudent's question: ${query || 'Can you explain this slide in simple terms?'}\n\nProvide a clear, concise, and educational response.`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            answer: { type: 'string' },
+            key_points: { type: 'array', items: { type: 'string' } },
+            related_topics: { type: 'array', items: { type: 'string' } }
+          }
+        }
+      });
+      
+      setAIHelpResponse(response);
+    } catch (error) {
+      toast.error('Failed to get AI help');
+    } finally {
+      setAIHelpLoading(false);
+    }
+  };
+
+  // Note-taking with timestamps
+  const addNote = () => {
+    if (!currentNote.trim()) return;
+    
+    const newNote = {
+      id: Date.now(),
+      content: currentNote,
+      slideIndex: currentSlideIndex,
+      slideTitle: sortedSlides[currentSlideIndex]?.title || 'Slide',
+      timestamp: new Date().toISOString(),
+      slideNumber: currentSlideIndex + 1
+    };
+    
+    setNotes([...notes, newNote]);
+    setCurrentNote('');
+    toast.success('Note saved');
+  };
+
+  // Generate flashcards from current slide
+  const generateFlashcards = async () => {
+    if (!hasSlides) return;
+    
+    try {
+      const currentSlide = sortedSlides[currentSlideIndex];
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate 3-5 flashcard questions and answers from this slide content:\n\nTitle: ${currentSlide.title}\nContent: ${currentSlide.content}\n\nCreate educational flashcards that test understanding of key concepts.`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            flashcards: {
+              type: 'array',
+              items: {
+                type: 'object',
+                properties: {
+                  question: { type: 'string' },
+                  answer: { type: 'string' }
+                }
+              }
+            }
+          }
+        }
+      });
+      
+      setFlashcards([...flashcards, ...response.flashcards]);
+      setShowFlashcards(true);
+      toast.success(`Generated ${response.flashcards.length} flashcards`);
+    } catch (error) {
+      toast.error('Failed to generate flashcards');
+    }
+  };
+
+  // Text-to-speech for accessibility
+  const speakSlideContent = () => {
+    if (!hasSlides || !window.speechSynthesis) return;
+    
+    const currentSlide = sortedSlides[currentSlideIndex];
+    const text = `${currentSlide.title}. ${currentSlide.content?.replace(/<[^>]*>/g, '')}`;
+    
+    const utterance = new SpeechSynthesisUtterance(text);
+    utterance.rate = 0.9;
+    window.speechSynthesis.speak(utterance);
+    toast.success('Reading slide content');
+  };
+
+  // Progressive disclosure toggle
+  const toggleContentBlock = (blockIndex) => {
+    setProgressiveDisclosure(prev => ({
+      ...prev,
+      [currentSlideIndex]: {
+        ...prev[currentSlideIndex],
+        [blockIndex]: !prev[currentSlideIndex]?.[blockIndex]
+      }
+    }));
+  };
+
   if (lessonLoading || lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
@@ -433,6 +557,27 @@ export default function LessonPlayerPowerPoint() {
                 <Bookmark size={16} className="sm:w-5 sm:h-5 text-gray-600" />
               }
               <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Save</span>
+            </div>
+            <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => setShowOutline(!showOutline)}>
+              <Layout size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Outline</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => askAIAboutSlide()}>
+              <Sparkles size={16} className="sm:w-5 sm:h-5 text-purple-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Ask AI</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => setShowNotes(!showNotes)}>
+              <BookOpen size={16} className="sm:w-5 sm:h-5 text-blue-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Notes</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={generateFlashcards}>
+              <Target size={16} className="sm:w-5 sm:h-5 text-green-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Cards</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => setShowAccessibility(!showAccessibility)}>
+              <Settings size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Access</span>
             </div>
             <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
             {quizzes.length > 0 && (
@@ -649,7 +794,14 @@ export default function LessonPlayerPowerPoint() {
                         </div>
                       )}
                       <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                        <div className="w-full h-full bg-white p-4 sm:p-8 md:p-12 overflow-y-auto">
+                        <div 
+                          className="w-full h-full bg-white p-4 sm:p-8 md:p-12 overflow-y-auto"
+                          style={{
+                            fontSize: `${accessibilityMode.fontSize}%`,
+                            filter: accessibilityMode.contrast === 'high' ? 'contrast(1.5)' : accessibilityMode.contrast === 'inverted' ? 'invert(1)' : 'none',
+                            fontFamily: accessibilityMode.dyslexiaFont ? 'Comic Sans MS, cursive' : 'inherit'
+                          }}
+                        >
                           <div className="max-w-4xl mx-auto">
                             <h2 className="text-xl sm:text-2xl md:text-3xl font-bold text-gray-900 mb-4 sm:mb-6">
                               {sortedSlides[currentSlideIndex]?.title}
@@ -774,6 +926,247 @@ export default function LessonPlayerPowerPoint() {
             )}
           </div>
         </DialogContent>
+        </Dialog>
+
+        {/* Outline View Dialog */}
+        <Dialog open={showOutline} onOpenChange={setShowOutline}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <List className="w-5 h-5" />
+                Lesson Outline
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-2">
+              {hasSlides && sortedSlides.map((slide, idx) => (
+                <button
+                  key={idx}
+                  onClick={() => {
+                    setCurrentSlideIndex(idx);
+                    setShowOutline(false);
+                  }}
+                  className={`w-full p-3 rounded-lg text-left transition-all ${
+                    idx === currentSlideIndex
+                      ? 'bg-indigo-50 border-2 border-indigo-600'
+                      : 'bg-gray-50 hover:bg-gray-100 border-2 border-transparent'
+                  }`}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <span className="font-semibold text-gray-900">{idx + 1}</span>
+                      <span className="font-medium text-gray-900">{slide.title}</span>
+                    </div>
+                    {bookmarkedSlides.includes(idx) && (
+                      <BookmarkCheck className="w-4 h-4 text-amber-600" />
+                    )}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* AI Help Dialog */}
+        <Dialog open={showAIHelp} onOpenChange={setShowAIHelp}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Brain className="w-5 h-5 text-purple-600" />
+                AI Tutor Assistant
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Ask a question about this slide..."
+                  value={aiHelpQuery}
+                  onChange={(e) => setAIHelpQuery(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && askAIAboutSlide(aiHelpQuery)}
+                  className="flex-1"
+                />
+                <Button onClick={() => askAIAboutSlide(aiHelpQuery)} disabled={aiHelpLoading}>
+                  Ask
+                </Button>
+              </div>
+
+              {aiHelpLoading ? (
+                <div className="flex items-center justify-center py-12">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+                </div>
+              ) : aiHelpResponse ? (
+                <div className="space-y-4">
+                  <div>
+                    <h3 className="font-semibold text-gray-900 mb-2">Answer</h3>
+                    <p className="text-gray-700">{aiHelpResponse.answer}</p>
+                  </div>
+                  {aiHelpResponse.key_points && aiHelpResponse.key_points.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Key Points</h3>
+                      <ul className="space-y-2">
+                        {aiHelpResponse.key_points.map((point, idx) => (
+                          <li key={idx} className="flex items-start gap-2">
+                            <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                            <span className="text-gray-700">{point}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+                  {aiHelpResponse.related_topics && aiHelpResponse.related_topics.length > 0 && (
+                    <div>
+                      <h3 className="font-semibold text-gray-900 mb-2">Related Topics</h3>
+                      <div className="flex flex-wrap gap-2">
+                        {aiHelpResponse.related_topics.map((topic, idx) => (
+                          <span key={idx} className="px-3 py-1 bg-purple-100 text-purple-700 rounded-full text-sm">
+                            {topic}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              ) : null}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Notes Dialog */}
+        <Dialog open={showNotes} onOpenChange={setShowNotes}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <BookOpen className="w-5 h-5 text-blue-600" />
+                My Notes ({notes.length})
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a note about this slide..."
+                  value={currentNote}
+                  onChange={(e) => setCurrentNote(e.target.value)}
+                  onKeyPress={(e) => e.key === 'Enter' && addNote()}
+                  className="flex-1"
+                />
+                <Button onClick={addNote} className="gap-2">
+                  <Plus className="w-4 h-4" />
+                  Add
+                </Button>
+              </div>
+
+              <div className="space-y-2">
+                {notes.length === 0 ? (
+                  <p className="text-center text-gray-500 py-8">No notes yet. Add your first note!</p>
+                ) : (
+                  notes.map((note) => (
+                    <div key={note.id} className="p-4 bg-gray-50 rounded-lg">
+                      <div className="flex items-start justify-between mb-2">
+                        <div className="flex items-center gap-2">
+                          <span className="text-xs font-semibold text-indigo-600">
+                            Slide {note.slideNumber}: {note.slideTitle}
+                          </span>
+                        </div>
+                        <button
+                          onClick={() => setNotes(notes.filter(n => n.id !== note.id))}
+                          className="text-red-500 hover:text-red-700"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <p className="text-gray-700 text-sm">{note.content}</p>
+                      <p className="text-xs text-gray-500 mt-2">
+                        {new Date(note.timestamp).toLocaleString()}
+                      </p>
+                    </div>
+                  ))
+                )}
+              </div>
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Flashcards Dialog */}
+        <Dialog open={showFlashcards} onOpenChange={setShowFlashcards}>
+          <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Target className="w-5 h-5 text-green-600" />
+                Flashcards ({flashcards.length})
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-3">
+              {flashcards.length === 0 ? (
+                <p className="text-center text-gray-500 py-8">No flashcards yet. Generate some from slides!</p>
+              ) : (
+                flashcards.map((card, idx) => (
+                  <div key={idx} className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded-lg border border-green-200">
+                    <div className="flex items-center gap-2 mb-2">
+                      <span className="text-xs font-bold text-green-700">Q{idx + 1}</span>
+                    </div>
+                    <p className="font-semibold text-gray-900 mb-3">{card.question}</p>
+                    <div className="p-3 bg-white rounded-lg">
+                      <p className="text-sm text-gray-700">{card.answer}</p>
+                    </div>
+                  </div>
+                ))
+              )}
+            </div>
+          </DialogContent>
+        </Dialog>
+
+        {/* Accessibility Toolbar Dialog */}
+        <Dialog open={showAccessibility} onOpenChange={setShowAccessibility}>
+          <DialogContent className="max-w-md">
+            <DialogHeader>
+              <DialogTitle className="flex items-center gap-2">
+                <Eye className="w-5 h-5" />
+                Accessibility Options
+              </DialogTitle>
+            </DialogHeader>
+            <div className="space-y-4">
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">
+                  Font Size: {accessibilityMode.fontSize}%
+                </label>
+                <input
+                  type="range"
+                  min="80"
+                  max="150"
+                  value={accessibilityMode.fontSize}
+                  onChange={(e) => setAccessibilityMode({...accessibilityMode, fontSize: parseInt(e.target.value)})}
+                  className="w-full"
+                />
+              </div>
+
+              <div>
+                <label className="text-sm font-medium text-gray-700 mb-2 block">Contrast Mode</label>
+                <select
+                  value={accessibilityMode.contrast}
+                  onChange={(e) => setAccessibilityMode({...accessibilityMode, contrast: e.target.value})}
+                  className="w-full p-2 border rounded-lg"
+                >
+                  <option value="normal">Normal</option>
+                  <option value="high">High Contrast</option>
+                  <option value="inverted">Inverted</option>
+                </select>
+              </div>
+
+              <div className="flex items-center justify-between">
+                <label className="text-sm font-medium text-gray-700">Dyslexia-Friendly Font</label>
+                <input
+                  type="checkbox"
+                  checked={accessibilityMode.dyslexiaFont}
+                  onChange={(e) => setAccessibilityMode({...accessibilityMode, dyslexiaFont: e.target.checked})}
+                  className="w-5 h-5"
+                />
+              </div>
+
+              <Button onClick={speakSlideContent} className="w-full gap-2">
+                <Volume2 className="w-4 h-4" />
+                Read Slide Aloud
+              </Button>
+            </div>
+          </DialogContent>
         </Dialog>
 
         {/* AI Summary Dialog */}
