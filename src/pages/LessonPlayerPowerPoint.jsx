@@ -6,7 +6,8 @@ import { createPageUrl } from '@/utils';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck, ZoomIn, ZoomOut, Minimize2
+  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck, ZoomIn, ZoomOut, Minimize2,
+  Bookmark, BookmarkCheck, Search, Sparkles, Pencil, Eraser, Save
 } from 'lucide-react';
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -16,6 +17,9 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -31,16 +35,30 @@ export default function LessonPlayerPowerPoint() {
   const [showObjectives, setShowObjectives] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [user, setUser] = useState(null);
+  const [bookmarkedSlides, setBookmarkedSlides] = useState([]);
+  const [showSearch, setShowSearch] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [showAISummary, setShowAISummary] = useState(false);
+  const [aiSummary, setAiSummary] = useState('');
+  const [loadingSummary, setLoadingSummary] = useState(false);
+  const [isDrawing, setIsDrawing] = useState(false);
+  const [drawColor, setDrawColor] = useState('#FF0000');
+  const [drawings, setDrawings] = useState([]);
   
   const playerRef = useRef(null);
+  const canvasRef = useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
+      // Load bookmarks from user preferences
+      if (userData?.lesson_bookmarks) {
+        setBookmarkedSlides(userData.lesson_bookmarks[lessonId] || []);
+      }
     };
     loadUser();
-  }, []);
+  }, [lessonId]);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
@@ -178,6 +196,109 @@ export default function LessonPlayerPowerPoint() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
+  // Bookmark functionality
+  const toggleBookmark = async (slideIndex) => {
+    const updatedBookmarks = bookmarkedSlides.includes(slideIndex)
+      ? bookmarkedSlides.filter(i => i !== slideIndex)
+      : [...bookmarkedSlides, slideIndex];
+    
+    setBookmarkedSlides(updatedBookmarks);
+    
+    const allBookmarks = { ...(user?.lesson_bookmarks || {}), [lessonId]: updatedBookmarks };
+    await base44.auth.updateMe({ lesson_bookmarks: allBookmarks });
+    toast.success(updatedBookmarks.includes(slideIndex) ? 'Bookmark added' : 'Bookmark removed');
+  };
+
+  // AI Summary generation
+  const generateAISummary = async () => {
+    if (!lesson) return;
+    
+    setLoadingSummary(true);
+    setShowAISummary(true);
+    
+    try {
+      const slideContent = hasSlides 
+        ? sortedSlides.map(s => `${s.title}: ${s.content}`).join('\n\n')
+        : 'Google Slides presentation';
+      
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Analyze this lesson content and provide a concise, structured summary with key takeaways:\n\nLesson: ${lesson.title}\n\nContent:\n${slideContent}`,
+        response_json_schema: {
+          type: 'object',
+          properties: {
+            summary: { type: 'string' },
+            key_points: { type: 'array', items: { type: 'string' } },
+            suggested_focus: { type: 'string' }
+          }
+        }
+      });
+      
+      setAiSummary(response);
+    } catch (error) {
+      toast.error('Failed to generate summary');
+      setShowAISummary(false);
+    } finally {
+      setLoadingSummary(false);
+    }
+  };
+
+  // Search functionality
+  const searchResults = hasSlides && searchQuery 
+    ? sortedSlides.map((slide, idx) => ({
+        index: idx,
+        title: slide.title,
+        matches: slide.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                 slide.title?.toLowerCase().includes(searchQuery.toLowerCase())
+      })).filter(s => s.matches)
+    : [];
+
+  // Drawing functionality
+  const startDrawing = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setDrawings([...drawings, { x, y, color: drawColor, type: 'start' }]);
+  };
+
+  const draw = (e) => {
+    if (!isDrawing) return;
+    const canvas = canvasRef.current;
+    const rect = canvas.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const y = e.clientY - rect.top;
+    setDrawings([...drawings, { x, y, color: drawColor, type: 'draw' }]);
+  };
+
+  const clearDrawings = () => {
+    setDrawings([]);
+    toast.success('Drawings cleared');
+  };
+
+  // Render drawings on canvas
+  useEffect(() => {
+    if (!canvasRef.current || drawings.length === 0) return;
+    const canvas = canvasRef.current;
+    const ctx = canvas.getContext('2d');
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    let isDrawingPath = false;
+    drawings.forEach((point, idx) => {
+      if (point.type === 'start') {
+        ctx.beginPath();
+        ctx.moveTo(point.x, point.y);
+        isDrawingPath = true;
+      } else if (isDrawingPath) {
+        ctx.lineTo(point.x, point.y);
+        ctx.strokeStyle = point.color;
+        ctx.lineWidth = 3;
+        ctx.lineCap = 'round';
+        ctx.stroke();
+      }
+    });
+  }, [drawings]);
+
   if (lessonLoading || lessonsLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
@@ -297,6 +418,22 @@ export default function LessonPlayerPowerPoint() {
               <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Full</span>
             </div>
             <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => setShowSearch(!showSearch)}>
+              <Search size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Search</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={generateAISummary}>
+              <Sparkles size={16} className="sm:w-5 sm:h-5 text-purple-600" />
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">AI</span>
+            </div>
+            <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => toggleBookmark(currentSlideIndex)}>
+              {bookmarkedSlides.includes(currentSlideIndex) ? 
+                <BookmarkCheck size={16} className="sm:w-5 sm:h-5 text-amber-600" /> : 
+                <Bookmark size={16} className="sm:w-5 sm:h-5 text-gray-600" />
+              }
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Save</span>
+            </div>
+            <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
             {quizzes.length > 0 && (
               <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}>
                 <ClipboardCheck size={16} className="sm:w-5 sm:h-5 text-purple-600" />
@@ -315,20 +452,52 @@ export default function LessonPlayerPowerPoint() {
 
       {/* Exit Presentation & Back Button */}
       {isPresenting && (
-        <div className="fixed top-6 right-6 z-[100] flex gap-3">
-          <button 
-            onClick={() => navigate(-1)}
-            className="bg-black/70 hover:bg-black/90 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
-          >
-            <ChevronLeft size={18} /> <span className="hidden sm:inline">Back</span>
-          </button>
-          <button 
-            onClick={togglePresentation}
-            className="bg-red-600/80 hover:bg-red-600 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
-          >
-            <X size={18} /> <span className="hidden sm:inline">Exit</span>
-          </button>
-        </div>
+        <>
+          <div className="fixed top-6 right-6 z-[100] flex gap-3">
+            <button 
+              onClick={() => navigate(-1)}
+              className="bg-black/70 hover:bg-black/90 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
+            >
+              <ChevronLeft size={18} /> <span className="hidden sm:inline">Back</span>
+            </button>
+            <button 
+              onClick={togglePresentation}
+              className="bg-red-600/80 hover:bg-red-600 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
+            >
+              <X size={18} /> <span className="hidden sm:inline">Exit</span>
+            </button>
+          </div>
+
+          {/* Drawing Tools in Presentation Mode */}
+          <div className="fixed bottom-6 left-1/2 -translate-x-1/2 z-[100] flex gap-2 bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2">
+            <button
+              onClick={() => setIsDrawing(!isDrawing)}
+              className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium transition-all ${
+                isDrawing ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'
+              }`}
+            >
+              <Pencil size={16} />
+              {isDrawing ? 'Drawing' : 'Draw'}
+            </button>
+            {isDrawing && (
+              <>
+                <input
+                  type="color"
+                  value={drawColor}
+                  onChange={(e) => setDrawColor(e.target.value)}
+                  className="w-10 h-10 rounded cursor-pointer"
+                />
+                <button
+                  onClick={clearDrawings}
+                  className="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 flex items-center gap-2 text-sm font-medium transition-all"
+                >
+                  <Eraser size={16} />
+                  Clear
+                </button>
+              </>
+            )}
+          </div>
+        </>
       )}
 
       {/* WORKSPACE */}
@@ -429,6 +598,19 @@ export default function LessonPlayerPowerPoint() {
               ? 'w-full h-full aspect-auto m-0 shadow-none' 
               : 'w-full max-w-[960px] aspect-video mb-4 sm:mb-10 rounded-lg'
           }`}>
+            {/* Drawing Canvas Overlay */}
+            {isPresenting && (
+              <canvas
+                ref={canvasRef}
+                width={window.innerWidth}
+                height={window.innerHeight}
+                className="absolute inset-0 z-50 pointer-events-auto"
+                style={{ cursor: isDrawing ? 'crosshair' : 'default' }}
+                onMouseDown={startDrawing}
+                onMouseMove={draw}
+                onMouseUp={() => {}}
+              />
+            )}
             <div className="flex-1 w-full overflow-hidden relative professional-slide-stage">
               {slideUrl ? (
                 <div className="w-full h-full bg-black">
@@ -549,9 +731,92 @@ export default function LessonPlayerPowerPoint() {
             </button>
           </div>
         </footer>
-      )}
+        )}
 
-      {/* Mobile Navigation (Only in Presentation Mode) */}
+        {/* Search Dialog */}
+        <Dialog open={showSearch} onOpenChange={setShowSearch}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Search className="w-5 h-5" />
+              Search Lesson Content
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Search for keywords, concepts, or topics..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              className="w-full"
+            />
+            {searchQuery && (
+              <div className="space-y-2">
+                <p className="text-sm text-gray-500">{searchResults.length} results found</p>
+                {searchResults.map((result) => (
+                  <button
+                    key={result.index}
+                    onClick={() => {
+                      setCurrentSlideIndex(result.index);
+                      setShowSearch(false);
+                    }}
+                    className="w-full p-3 bg-gray-50 hover:bg-gray-100 rounded-lg text-left transition-colors"
+                  >
+                    <div className="flex items-center justify-between">
+                      <span className="font-medium text-gray-900">Slide {result.index + 1}: {result.title}</span>
+                      {bookmarkedSlides.includes(result.index) && (
+                        <BookmarkCheck className="w-4 h-4 text-amber-600" />
+                      )}
+                    </div>
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+        </DialogContent>
+        </Dialog>
+
+        {/* AI Summary Dialog */}
+        <Dialog open={showAISummary} onOpenChange={setShowAISummary}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              AI-Generated Lesson Summary
+            </DialogTitle>
+          </DialogHeader>
+          {loadingSummary ? (
+            <div className="flex items-center justify-center py-12">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div>
+            </div>
+          ) : aiSummary ? (
+            <div className="space-y-4">
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">Summary</h3>
+                <p className="text-gray-700">{aiSummary.summary}</p>
+              </div>
+              <div>
+                <h3 className="font-semibold text-gray-900 mb-2">Key Points</h3>
+                <ul className="space-y-2">
+                  {aiSummary.key_points?.map((point, idx) => (
+                    <li key={idx} className="flex items-start gap-2">
+                      <CheckCircle className="w-4 h-4 text-green-600 shrink-0 mt-0.5" />
+                      <span className="text-gray-700">{point}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+              {aiSummary.suggested_focus && (
+                <div>
+                  <h3 className="font-semibold text-gray-900 mb-2">Suggested Focus</h3>
+                  <p className="text-gray-700">{aiSummary.suggested_focus}</p>
+                </div>
+              )}
+            </div>
+          ) : null}
+        </DialogContent>
+        </Dialog>
+
+        {/* Mobile Navigation (Only in Presentation Mode) */}
       {isPresenting && (
         <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-50 md:hidden">
           <button onClick={handlePrevLesson} disabled={!prevLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
