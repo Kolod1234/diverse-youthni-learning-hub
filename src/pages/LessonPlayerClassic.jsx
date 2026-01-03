@@ -81,14 +81,19 @@ export default function LessonPlayerClassic() {
   });
 
   const { data: quizzes = [] } = useQuery({
-    queryKey: ['lessonQuizzes', lessonId],
-    queryFn: () => {
-      if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
+    queryKey: ['lessonQuizzes', lessonId, courseId],
+    queryFn: async () => {
+      if (!courseId || courseId === 'null' || courseId === 'undefined') {
         return [];
       }
-      return base44.entities.Quiz.filter({ lesson_id: lessonId });
+      // Get all quizzes for this course
+      const allQuizzes = await base44.entities.Quiz.filter({ course_id: courseId });
+      // Filter for lesson-specific or course-level quizzes
+      return allQuizzes.filter(q => 
+        q.lesson_id === lessonId || !q.lesson_id || q.lesson_id === 'null'
+      );
     },
-    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined'
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
   });
 
   const markCompleteMutation = useMutation({

@@ -75,9 +75,19 @@ export default function LessonPlayerPowerPoint() {
   });
 
   const { data: quizzes = [] } = useQuery({
-    queryKey: ['lessonQuizzes', lessonId],
-    queryFn: () => base44.entities.Quiz.filter({ lesson_id: lessonId }),
-    enabled: !!lessonId
+    queryKey: ['lessonQuizzes', lessonId, courseId],
+    queryFn: async () => {
+      if (!courseId || courseId === 'null' || courseId === 'undefined') {
+        return [];
+      }
+      // Get all quizzes for this course
+      const allQuizzes = await base44.entities.Quiz.filter({ course_id: courseId });
+      // Filter for lesson-specific or course-level quizzes
+      return allQuizzes.filter(q => 
+        q.lesson_id === lessonId || !q.lesson_id || q.lesson_id === 'null'
+      );
+    },
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
   });
 
   // Mark lesson complete mutation
