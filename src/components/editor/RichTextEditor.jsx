@@ -1477,7 +1477,9 @@ export default function RichTextEditor({ value = '', onChange, placeholder, labe
       DragDropExercise,
       FillInBlanks,
       BranchingScenario,
-      ],
+      VideoEmbed,
+      LinkPreviewCard,
+    ],
     content: value,
     onUpdate: ({ editor }) => {
       onChange(editor.getHTML());
