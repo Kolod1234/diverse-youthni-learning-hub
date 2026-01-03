@@ -42,6 +42,7 @@ import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import LessonEditor from './pages/LessonEditor';
+import AdminPageBuilder from './pages/AdminPageBuilder';
 import __Layout from './Layout.jsx';
 
 
@@ -90,6 +91,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "LessonEditor": LessonEditor,
+    "AdminPageBuilder": AdminPageBuilder,
 }
 
 export const pagesConfig = {
