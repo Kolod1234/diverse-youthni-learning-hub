@@ -176,14 +176,14 @@ export default function CourseDetails() {
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
       <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
-        {(user?.role === 'admin' || user?.is_tutor) && (
-          <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`}>
-            <Button className="absolute top-4 right-4 z-20 bg-white/20 hover:bg-white/30 border-white/30" size="sm">
-              <Settings className="w-4 h-4 mr-2" />
-              Customize Page
-            </Button>
-          </Link>
-        )}
+        {user?.role === 'admin' && (
+            <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`}>
+              <Button className="absolute top-4 right-4 z-20 bg-white/20 hover:bg-white/30 border-white/30" size="sm">
+                <Settings className="w-4 h-4 mr-2" />
+                Customize Page
+              </Button>
+            </Link>
+          )}
         <div className="absolute inset-0 bg-black/20" />
         <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <nav className="flex items-center gap-2 text-sm text-indigo-100 mb-6">
