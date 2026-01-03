@@ -6,7 +6,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { createPageUrl } from '@/utils';
 import { 
         ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2
+        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles
       } from 'lucide-react';
       import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
@@ -327,18 +327,34 @@ export default function LessonPlayerClassic() {
             {/* Learning Objectives */}
             {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
               <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
-                <button
-                  onClick={() => setShowObjectives(!showObjectives)}
-                  className="w-full bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transform hover:scale-[1.02]"
-                >
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                      <Target className="w-4 h-4 sm:w-5 sm:h-5" />
+                <div className="flex gap-2">
+                  <button
+                    onClick={() => setShowObjectives(!showObjectives)}
+                    className="flex-1 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transform hover:scale-[1.02]"
+                  >
+                    <div className="flex items-center gap-2 sm:gap-3">
+                      <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
+                        <Target className="w-4 h-4 sm:w-5 sm:h-5" />
+                      </div>
+                      <span className="font-bold">Learning Objectives</span>
                     </div>
-                    <span className="font-bold">Learning Objectives</span>
-                  </div>
-                  <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
-                </button>
+                    <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
+                  </button>
+                  {(user?.role === 'admin' || user?.is_tutor) && (
+                    <Button
+                      onClick={() => updateObjectivesMutation.mutate()}
+                      disabled={updateObjectivesMutation.isPending}
+                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg"
+                      size="sm"
+                    >
+                      {updateObjectivesMutation.isPending ? (
+                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                      ) : (
+                        <Sparkles className="w-4 h-4" />
+                      )}
+                    </Button>
+                  )}
+                </div>
                 
                 {showObjectives && (
                   <div className="bg-gradient-to-br from-white to-indigo-50/50 rounded-b-2xl border border-t-0 border-indigo-200 p-3 sm:p-4 space-y-3 shadow-lg">
