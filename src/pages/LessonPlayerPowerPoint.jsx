@@ -315,18 +315,18 @@ export default function LessonPlayerPowerPoint() {
 
       {/* Exit Presentation & Back Button */}
       {isPresenting && (
-        <div className="fixed top-5 right-5 z-[100] flex gap-2">
+        <div className="fixed top-6 right-6 z-[100] flex gap-3">
           <button 
             onClick={() => navigate(-1)}
-            className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-4 py-2 rounded flex items-center gap-2 text-sm backdrop-blur-sm"
+            className="bg-black/70 hover:bg-black/90 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
           >
-            <ChevronLeft size={16} /> Back
+            <ChevronLeft size={18} /> <span className="hidden sm:inline">Back</span>
           </button>
           <button 
             onClick={togglePresentation}
-            className="bg-white/10 hover:bg-white/20 text-white border border-white/30 px-4 py-2 rounded flex items-center gap-2 text-sm backdrop-blur-sm"
+            className="bg-red-600/80 hover:bg-red-600 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105"
           >
-            <X size={16} /> Exit Presentation
+            <X size={18} /> <span className="hidden sm:inline">Exit</span>
           </button>
         </div>
       )}
