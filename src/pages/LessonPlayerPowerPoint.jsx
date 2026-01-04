@@ -119,6 +119,12 @@ export default function LessonPlayerPowerPoint() {
   useEffect(() => {
     if (!lesson || !enrollment || !courseLessons.length) return;
     
+    // Admins and tutors can access all lessons
+    if (user && (user.role === 'admin' || user.is_tutor)) {
+      setIsLessonLocked(false);
+      return;
+    }
+    
     const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
     const isFirstLesson = sortedLessons[0]?.id === lessonId;
     
@@ -143,7 +149,7 @@ export default function LessonPlayerPowerPoint() {
     } else {
       setIsLessonLocked(false);
     }
-  }, [lesson, enrollment, courseLessons, lessonId]);
+  }, [lesson, enrollment, courseLessons, lessonId, user]);
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['lessonQuizzes', lessonId, courseId],
