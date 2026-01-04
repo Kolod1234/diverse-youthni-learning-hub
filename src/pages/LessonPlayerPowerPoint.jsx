@@ -20,6 +20,7 @@ import {
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -54,6 +55,8 @@ export default function LessonPlayerPowerPoint() {
   const [showNotes, setShowNotes] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
   const [flashcards, setFlashcards] = useState([]);
+  const [showUnlockDialog, setShowUnlockDialog] = useState(false);
+  const [isLessonLocked, setIsLessonLocked] = useState(false);
   const [accessibilityMode, setAccessibilityMode] = useState({
     fontSize: 100,
     contrast: 'normal',
@@ -103,7 +106,7 @@ export default function LessonPlayerPowerPoint() {
   });
 
   // Fetch enrollment for progress
-  const { data: enrollment } = useQuery({
+  const { data: enrollment, refetch: refetchEnrollment } = useQuery({
     queryKey: ['enrollment', courseId],
     queryFn: async () => {
       const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
@@ -111,6 +114,36 @@ export default function LessonPlayerPowerPoint() {
     },
     enabled: !!courseId
   });
+
+  // Check if lesson is locked
+  useEffect(() => {
+    if (!lesson || !enrollment || !courseLessons.length) return;
+    
+    const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
+    const isFirstLesson = sortedLessons[0]?.id === lessonId;
+    
+    if (isFirstLesson) {
+      setIsLessonLocked(false);
+      return;
+    }
+
+    const unlockedLessons = enrollment.unlocked_lessons || [];
+    const unlockData = unlockedLessons.find(ul => ul.lesson_id === lessonId);
+    
+    if (!unlockData) {
+      setIsLessonLocked(true);
+      return;
+    }
+
+    const now = new Date();
+    const expiryDate = new Date(unlockData.expires_at);
+    
+    if (now > expiryDate) {
+      setIsLessonLocked(true);
+    } else {
+      setIsLessonLocked(false);
+    }
+  }, [lesson, enrollment, courseLessons, lessonId]);
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['lessonQuizzes', lessonId, courseId],
@@ -217,6 +250,13 @@ export default function LessonPlayerPowerPoint() {
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
 
   // Define slide-related variables early
+  // Show unlock dialog if locked
+  useEffect(() => {
+    if (isLessonLocked && !lessonLoading) {
+      setShowUnlockDialog(true);
+    }
+  }, [isLessonLocked, lessonLoading]);
+
   const slideUrl = lesson ? (() => {
     if (lesson.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -467,9 +507,53 @@ export default function LessonPlayerPowerPoint() {
 
 
 
+  // If locked, show lock screen
+  if (isLessonLocked && !lessonLoading) {
+    return (
+      <>
+        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
+          <Card className="max-w-md p-8 text-center">
+            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
+              <Lock className="w-8 h-8 text-orange-600" />
+            </div>
+            <h2 className="text-2xl font-bold text-gray-900 mb-2">Lesson Locked</h2>
+            <p className="text-gray-600 mb-6">
+              This lesson requires an unlock key. Contact your tutor to get access.
+            </p>
+            <Button
+              onClick={() => setShowUnlockDialog(true)}
+              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 gap-2"
+            >
+              <Key className="w-4 h-4" />
+              Enter Unlock Key
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate(-1)}
+              className="w-full mt-3"
+            >
+              Back to Course
+            </Button>
+          </Card>
+        </div>
+        <LessonUnlockDialog
+          open={showUnlockDialog}
+          onOpenChange={setShowUnlockDialog}
+          lessonId={lessonId}
+          courseId={courseId}
+          lessonTitle={lesson?.title}
+          onUnlockSuccess={() => {
+            refetchEnrollment();
+            setIsLessonLocked(false);
+          }}
+        />
+      </>
+    );
+  }
+
   return (
     <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none transition-colors duration-500 ${isPresenting ? 'bg-black' : 'bg-[#f3f2f1]'}`}>
-      
+
       {/* RIBBON HEADER (Hidden in Presentation) */}
       {!isPresenting && (
         <div className="flex-none z-50">
@@ -1211,16 +1295,28 @@ export default function LessonPlayerPowerPoint() {
         </Dialog>
 
         {/* Mobile Navigation (Only in Presentation Mode) */}
-      {isPresenting && (
-        <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-50 md:hidden">
-          <button onClick={handlePrevLesson} disabled={!prevLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
-            <ChevronLeft />
-          </button>
-          <button onClick={handleNextLesson} disabled={!nextLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
-            <ChevronRight />
-          </button>
+        {isPresenting && (
+          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-50 md:hidden">
+            <button onClick={handlePrevLesson} disabled={!prevLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
+              <ChevronLeft />
+            </button>
+            <button onClick={handleNextLesson} disabled={!nextLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
+              <ChevronRight />
+            </button>
+          </div>
+        )}
+
+        <LessonUnlockDialog
+          open={showUnlockDialog}
+          onOpenChange={setShowUnlockDialog}
+          lessonId={lessonId}
+          courseId={courseId}
+          lessonTitle={lesson?.title}
+          onUnlockSuccess={() => {
+            refetchEnrollment();
+            setIsLessonLocked(false);
+          }}
+        />
         </div>
-      )}
-    </div>
-  );
-}
+        );
+        }
