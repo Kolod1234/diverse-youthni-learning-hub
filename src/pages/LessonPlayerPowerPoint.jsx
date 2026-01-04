@@ -58,6 +58,7 @@ export default function LessonPlayerPowerPoint() {
   const [flashcards, setFlashcards] = useState([]);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
+  const [showPresentationControls, setShowPresentationControls] = useState(false);
   const [accessibilityMode, setAccessibilityMode] = useState({
     fontSize: 100,
     contrast: 'normal',
@@ -73,6 +74,7 @@ export default function LessonPlayerPowerPoint() {
   
   const playerRef = useRef(null);
   const canvasRef = useRef(null);
+  const hideControlsTimeoutRef = useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -184,6 +186,31 @@ export default function LessonPlayerPowerPoint() {
       }
     }, 100);
   };
+
+  // Show controls on mouse/touch movement in presentation mode
+  const handleShowControls = () => {
+    if (!isPresenting) return;
+    setShowPresentationControls(true);
+    
+    if (hideControlsTimeoutRef.current) {
+      clearTimeout(hideControlsTimeoutRef.current);
+    }
+    
+    hideControlsTimeoutRef.current = setTimeout(() => {
+      setShowPresentationControls(false);
+    }, 3000);
+  };
+
+  useEffect(() => {
+    if (isPresenting) {
+      handleShowControls();
+    }
+    return () => {
+      if (hideControlsTimeoutRef.current) {
+        clearTimeout(hideControlsTimeoutRef.current);
+      }
+    };
+  }, [isPresenting]);
 
   // Touch/Swipe Logic
   const minSwipeDistance = 50;
@@ -703,6 +730,7 @@ export default function LessonPlayerPowerPoint() {
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          onMouseMove={handleShowControls}
           tabIndex={0}
         >
           {/* MOBILE INFO ACCORDION */}
@@ -889,9 +917,9 @@ export default function LessonPlayerPowerPoint() {
         </footer>
       )}
 
-      {/* Slide Nav in Presentation Mode - Always show for all slide types */}
-      {isPresenting && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-[90] bg-black/80 backdrop-blur-md border-2 border-white/50 rounded-lg p-3 shadow-2xl">
+      {/* Slide Nav in Presentation Mode - Show on hover/interaction */}
+      {isPresenting && showPresentationControls && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-[90] bg-black/80 backdrop-blur-md border-2 border-white/50 rounded-lg p-3 shadow-2xl transition-opacity duration-300">
           {hasSlides && (
             <>
               <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30 transition-all active:scale-95">
@@ -912,9 +940,9 @@ export default function LessonPlayerPowerPoint() {
         </div>
       )}
 
-      {/* Drawing Tools in Presentation */}
-      {isPresenting && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex gap-2 bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2">
+      {/* Drawing Tools in Presentation - Show on hover/interaction */}
+      {isPresenting && showPresentationControls && (
+        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex gap-2 bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2 transition-opacity duration-300">
           <button onClick={() => setIsDrawing(!isDrawing)} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium ${isDrawing ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}>
             <Pencil size={16} />{isDrawing ? 'Drawing' : 'Draw'}
           </button>
