@@ -626,11 +626,11 @@ export default function LessonPlayerPowerPoint() {
             <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
             <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={togglePresentation}>
               <Presentation size={16} className="sm:w-5 sm:h-5 text-gray-600" />
-              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Present</span>
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1">Present</span>
             </div>
             <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={toggleFullscreen}>
               {isFullscreen ? <Minimize size={16} className="sm:w-5 sm:h-5 text-gray-600" /> : <Maximize size={16} className="sm:w-5 sm:h-5 text-gray-600" />}
-              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1 hidden sm:block">Full</span>
+              <span className="text-[9px] sm:text-[11px] mt-0.5 sm:mt-1">Full</span>
             </div>
             <div className="w-[1px] h-8 sm:h-10 bg-gray-200 hidden md:block" />
             <div className="flex flex-col items-center p-1 sm:p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[48px] sm:min-w-[64px]" onClick={() => setShowSearch(!showSearch)}>
@@ -739,9 +739,15 @@ export default function LessonPlayerPowerPoint() {
       {/* WORKSPACE */}
       <div className="flex flex-1 overflow-hidden relative">
         
-        {/* Filmstrip (Hidden in Presentation and Mobile) */}
-        {!isPresenting && (
-          <aside className="w-40 sm:w-52 border-r border-gray-200 bg-white overflow-y-auto flex flex-col p-2 sm:p-3 gap-2 sm:gap-3 hidden md:flex">
+        {/* Filmstrip (Hidden in Presentation) */}
+        {!isPresenting && showOutline && (
+          <aside className="fixed md:relative inset-0 md:inset-auto w-full md:w-52 border-r border-gray-200 bg-white overflow-y-auto flex flex-col p-2 sm:p-3 gap-2 sm:gap-3 z-40">
+            <button 
+              onClick={() => setShowOutline(false)}
+              className="md:hidden absolute top-2 right-2 p-2 bg-gray-100 rounded-lg hover:bg-gray-200"
+            >
+              <X className="w-5 h-5" />
+            </button>
             {sortedLessons.map((l, idx) => {
               const completed = enrollment?.completed_lessons?.includes(l.id);
               const isCurrent = l.id === lessonId;
@@ -924,17 +930,49 @@ export default function LessonPlayerPowerPoint() {
         </main>
       </div>
 
-      {/* STATUS BAR (Hidden in Presentation and Mobile) */}
+      {/* STATUS BAR / MOBILE NAVIGATION */}
       {!isPresenting && (
-        <footer className="h-8 sm:h-10 bg-white border-t border-gray-200 flex items-center justify-between px-2 sm:px-4 text-[10px] sm:text-xs text-gray-600 flex-none hidden md:flex">
-          <div className="flex items-center gap-5">
+        <footer className="h-16 sm:h-10 bg-white border-t border-gray-200 flex items-center justify-between px-2 sm:px-4 text-[10px] sm:text-xs text-gray-600 flex-none">
+          <div className="hidden md:flex items-center gap-5">
             <span>Lesson {currentLessonIndex + 1} of {sortedLessons.length}</span>
             <span className="flex items-center gap-1 text-[#FF8C00] font-semibold">
               <CheckCircle size={12} /> 
               {enrollment?.completed_lessons?.length || 0} completed
             </span>
           </div>
-          <div className="flex items-center gap-5">
+          
+          {/* Mobile Navigation Controls */}
+          <div className="flex md:hidden items-center justify-center gap-4 flex-1">
+            <button onClick={handlePrevLesson} disabled={!prevLesson} className="p-2 bg-gray-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed">
+              <ChevronLeft size={20} />
+            </button>
+            {hasSlides && (
+              <>
+                <button 
+                  onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} 
+                  disabled={currentSlideIndex === 0} 
+                  className="p-2 bg-indigo-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronLeft size={16} className="text-indigo-600" />
+                </button>
+                <span className="text-xs font-semibold min-w-[60px] text-center">
+                  {currentSlideIndex + 1}/{sortedSlides.length}
+                </span>
+                <button 
+                  onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} 
+                  disabled={currentSlideIndex === sortedSlides.length - 1} 
+                  className="p-2 bg-indigo-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed"
+                >
+                  <ChevronRight size={16} className="text-indigo-600" />
+                </button>
+              </>
+            )}
+            <button onClick={handleNextLesson} disabled={!nextLesson} className="p-2 bg-gray-100 rounded-lg disabled:opacity-30 disabled:cursor-not-allowed">
+              <ChevronRight size={20} />
+            </button>
+          </div>
+
+          <div className="hidden md:flex items-center gap-5">
             <div className="flex gap-3">
               {hasSlides ? (
                 <>
@@ -974,7 +1012,7 @@ export default function LessonPlayerPowerPoint() {
             </button>
           </div>
         </footer>
-        )}
+      )}
 
         {/* Search Dialog */}
         <Dialog open={showSearch} onOpenChange={setShowSearch}>
@@ -1300,14 +1338,25 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
         </Dialog>
 
-        {/* Mobile Navigation (Only in Presentation Mode) */}
-        {isPresenting && (
-          <div className="fixed bottom-10 left-1/2 -translate-x-1/2 flex gap-4 z-50 md:hidden">
-            <button onClick={handlePrevLesson} disabled={!prevLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
-              <ChevronLeft />
+        {/* Slide Navigation in Presentation Mode */}
+        {isPresenting && hasSlides && (
+          <div className="fixed bottom-24 left-1/2 -translate-x-1/2 flex gap-3 z-50 bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2">
+            <button 
+              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} 
+              disabled={currentSlideIndex === 0}
+              className="w-10 h-10 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30"
+            >
+              <ChevronLeft size={20} />
             </button>
-            <button onClick={handleNextLesson} disabled={!nextLesson} className="w-12 h-12 bg-black/80 text-white rounded-full flex items-center justify-center disabled:opacity-30">
-              <ChevronRight />
+            <span className="px-4 py-2 text-white text-sm font-medium flex items-center">
+              {currentSlideIndex + 1} / {sortedSlides.length}
+            </span>
+            <button 
+              onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} 
+              disabled={currentSlideIndex === sortedSlides.length - 1}
+              className="w-10 h-10 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30"
+            >
+              <ChevronRight size={20} />
             </button>
           </div>
         )}
