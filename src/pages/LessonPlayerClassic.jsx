@@ -335,7 +335,7 @@ export default function LessonPlayerClassic() {
           </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
+          {lesson?.google_slides_url && !(lesson?.slides && lesson.slides.length > 0) && (user?.role === 'admin' || user?.is_tutor) && (
             <Button
               variant="outline"
               size="sm"
