@@ -6,7 +6,7 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { createPageUrl } from '@/utils';
 import { 
         ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles, Lock, Key
+        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles, Lock, Key, FileText
       } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import { Card } from '@/components/ui/card';
