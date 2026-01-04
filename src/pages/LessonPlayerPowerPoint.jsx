@@ -627,7 +627,7 @@ export default function LessonPlayerPowerPoint() {
       )}
 
       {/* WORKSPACE AREA */}
-      <div className="flex flex-1 overflow-hidden relative flex-col sm:flex-row">
+      <div className="flex flex-1 overflow-hidden relative flex-col sm:flex-row" style={{ minHeight: 0 }}>
         
         {/* SIDEBAR (Desktop Only) */}
         {!isPresenting && showOutline && (
@@ -645,16 +645,17 @@ export default function LessonPlayerPowerPoint() {
           className={`flex-1 flex flex-col items-center overflow-hidden transition-all relative
             ${isPresenting ? 'bg-black justify-center p-0' : 'bg-black sm:bg-[#edebe9] p-0 sm:p-6 md:p-10'}
           `}
+          style={{ minHeight: 0 }}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
         >
           {/* MOBILE INFO ACCORDION */}
           {!isPresenting && (
-             <div className="md:hidden w-full bg-white border-b border-gray-200 shadow-sm z-20 flex-none">
+             <div className="md:hidden w-full bg-white border-b border-gray-200 shadow-sm z-20 flex-none flex-shrink-0">
                 <button 
                   onClick={() => setIsMobileInfoOpen(!isMobileInfoOpen)}
-                  className="w-full flex items-center justify-between px-4 py-3 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
                 >
                   <span className="flex items-center gap-2">
                     <Info size={14} className="text-blue-500"/>
@@ -662,9 +663,9 @@ export default function LessonPlayerPowerPoint() {
                   </span>
                   {isMobileInfoOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
                 </button>
-                
+
                 {isMobileInfoOpen && (
-                  <div className="p-4 bg-gray-100 border-t border-gray-200 max-h-[40vh] overflow-y-auto">
+                  <div className="p-3 bg-gray-100 border-t border-gray-200 max-h-[35vh] overflow-y-auto">
                     <LessonInfoContent />
                   </div>
                 )}
@@ -682,8 +683,10 @@ export default function LessonPlayerPowerPoint() {
           <div className={`relative flex flex-col transition-all duration-500 bg-black
             ${isPresenting 
               ? 'w-full h-full min-h-screen' 
-              : 'flex-grow w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-white' 
-            }`}>
+              : 'flex-1 w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-white' 
+            }`}
+            style={!isPresenting ? { minHeight: 0 } : {}}
+          >
             
             {/* Drawing Canvas */}
             {isPresenting && (
@@ -699,7 +702,7 @@ export default function LessonPlayerPowerPoint() {
             )}
 
             {/* Slide Content */}
-            <div className="flex-1 w-full h-full overflow-hidden bg-black relative">
+            <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
               {slideUrl ? (
                 <iframe 
                   src={slideUrl} 
