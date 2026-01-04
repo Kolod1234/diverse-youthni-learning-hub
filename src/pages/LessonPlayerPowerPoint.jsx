@@ -248,6 +248,9 @@ export default function LessonPlayerPowerPoint() {
   const handlePrevLesson = () => prevLesson && navigate(`/LessonPlayerPowerPoint?lesson=${prevLesson.id}&course=${courseId}`);
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
+  
+  const hasSlides = lesson?.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   const slideUrl = lesson ? (() => {
     if (lesson.google_slides_url) {
@@ -255,10 +258,7 @@ export default function LessonPlayerPowerPoint() {
       if (presentationId) return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
     }
     return lesson.file_url || null;
-  })() : null;
-  
-  const hasSlides = lesson?.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+    })() : null;
   
   // Bookmark functionality
   const toggleBookmark = async (slideIndex) => {
