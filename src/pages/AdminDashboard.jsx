@@ -20,6 +20,7 @@ import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import CurriculumImporter from '@/components/admin/CurriculumImporter';
+import LessonKeyManager from '@/components/admin/LessonKeyManager';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -254,6 +255,10 @@ export default function AdminDashboard() {
               <FileText className="w-4 h-4 mr-2" />
               Site Content
             </TabsTrigger>
+            <TabsTrigger value="unlock-keys" className="rounded-lg">
+              <Key className="w-4 h-4 mr-2" />
+              Unlock Keys
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -342,6 +347,10 @@ export default function AdminDashboard() {
 
           <TabsContent value="content">
             <SiteContentManagement siteContent={siteContent} />
+          </TabsContent>
+
+          <TabsContent value="unlock-keys">
+            <LessonKeyManager />
           </TabsContent>
         </Tabs>
       </div>
