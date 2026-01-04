@@ -24,21 +24,23 @@ Deno.serve(async (req) => {
       const course = courses[0];
 
       const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
-        prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
+        prompt: `You are a CCEA GCSE curriculum expert. Search the CCEA website and official curriculum documents to generate 3-5 specific, measurable learning objectives for this lesson.
 
 Course: ${course?.title || 'Unknown'} (${course?.category || 'General'})
 Exam Board: ${course?.exam_board || 'CCEA'}
 Lesson Title: ${lesson.title}
 Lesson Description: ${lesson.description || 'Not provided'}
 
-Create learning objectives that:
+Search for official CCEA curriculum standards for this subject and create learning objectives that:
 1. Start with action verbs (Explain, Describe, Calculate, Analyze, Evaluate, Apply, etc.)
 2. Are specific and measurable
-3. Align with CCEA GCSE standards
+3. Align with official CCEA GCSE standards and specifications
 4. Are appropriate for the subject and topic
 5. Focus on skills and knowledge students will gain
+6. Reference the official curriculum where possible
 
 Format as a JSON array of strings.`,
+        add_context_from_internet: true,
         response_json_schema: {
           type: 'object',
           properties: {
@@ -87,23 +89,25 @@ Format as a JSON array of strings.`,
 
         console.log(`Processing lesson: ${lesson.title} (${lesson.id})`);
 
-        // Generate appropriate learning objectives for each lesson
+        // Generate appropriate learning objectives for each lesson with web search
         const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
-          prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
+          prompt: `You are a CCEA GCSE curriculum expert. Search the CCEA website and official curriculum documents to generate 3-5 specific, measurable learning objectives for this lesson.
 
 Course: ${course.title} (${course.category || 'General'})
 Exam Board: ${course.exam_board || 'CCEA'}
 Lesson Title: ${lesson.title}
 Lesson Description: ${lesson.description || 'Not provided'}
 
-Create learning objectives that:
+Search for official CCEA curriculum standards for this subject and create learning objectives that:
 1. Start with action verbs (Explain, Describe, Calculate, Analyze, Evaluate, Apply, etc.)
 2. Are specific and measurable
-3. Align with CCEA GCSE standards
+3. Align with official CCEA GCSE standards and specifications
 4. Are appropriate for the subject and topic
 5. Focus on skills and knowledge students will gain
+6. Reference the official curriculum where possible
 
 Format as a JSON array of strings.`,
+          add_context_from_internet: true,
           response_json_schema: {
             type: 'object',
             properties: {

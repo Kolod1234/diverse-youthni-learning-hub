@@ -1,13 +1,19 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { Sparkles, RefreshCw, CheckCircle, AlertCircle } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Sparkles, RefreshCw, CheckCircle, AlertCircle, Plus, Edit, X } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function AdminLearningObjectives() {
   const [updateResult, setUpdateResult] = useState(null);
+  const [editingLesson, setEditingLesson] = useState(null);
+  const [manualObjectives, setManualObjectives] = useState([]);
+  const queryClient = useQueryClient();
 
   const { data: lessons = [], isLoading } = useQuery({
     queryKey: ['all-lessons'],
@@ -25,10 +31,29 @@ export default function AdminLearningObjectives() {
     },
     onSuccess: (data) => {
       setUpdateResult(data);
+      queryClient.invalidateQueries(['all-lessons']);
       toast.success(`Successfully updated ${data.processed} lessons!`);
     },
     onError: (error) => {
       toast.error('Failed to update learning objectives');
+      console.error(error);
+    }
+  });
+
+  const saveManualMutation = useMutation({
+    mutationFn: async ({ lessonId, objectives }) => {
+      await base44.entities.Lesson.update(lessonId, {
+        learning_objectives: objectives
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      setEditingLesson(null);
+      setManualObjectives([]);
+      toast.success('Learning objectives saved!');
+    },
+    onError: (error) => {
+      toast.error('Failed to save objectives');
       console.error(error);
     }
   });
@@ -137,12 +162,98 @@ export default function AdminLearningObjectives() {
                     <p className="font-medium text-gray-900 truncate">{lesson.title}</p>
                     <p className="text-xs text-gray-500 truncate">{lesson.course_id}</p>
                   </div>
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={() => {
+                      setEditingLesson(lesson);
+                      setManualObjectives(lesson.learning_objectives || ['']);
+                    }}
+                  >
+                    <Edit className="w-3 h-3 mr-1" />
+                    Add
+                  </Button>
                 </div>
               ))}
             </div>
           )}
         </Card>
       </div>
+
+      {/* Manual Objectives Editor Dialog */}
+      <Dialog open={!!editingLesson} onOpenChange={() => {
+        setEditingLesson(null);
+        setManualObjectives([]);
+      }}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Add Learning Objectives: {editingLesson?.title}</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            {manualObjectives.map((obj, idx) => (
+              <div key={idx} className="flex gap-2">
+                <Textarea
+                  value={obj}
+                  onChange={(e) => {
+                    const updated = [...manualObjectives];
+                    updated[idx] = e.target.value;
+                    setManualObjectives(updated);
+                  }}
+                  placeholder={`Learning objective ${idx + 1}`}
+                  className="flex-1"
+                  rows={2}
+                />
+                <Button
+                  size="icon"
+                  variant="ghost"
+                  onClick={() => {
+                    setManualObjectives(manualObjectives.filter((_, i) => i !== idx));
+                  }}
+                >
+                  <X className="w-4 h-4" />
+                </Button>
+              </div>
+            ))}
+            <Button
+              variant="outline"
+              onClick={() => setManualObjectives([...manualObjectives, ''])}
+              className="w-full gap-2"
+            >
+              <Plus className="w-4 h-4" />
+              Add Objective
+            </Button>
+            <div className="flex gap-3 pt-4">
+              <Button
+                onClick={() => {
+                  setEditingLesson(null);
+                  setManualObjectives([]);
+                }}
+                variant="outline"
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button
+                onClick={() => {
+                  const filtered = manualObjectives.filter(o => o.trim());
+                  if (filtered.length === 0) {
+                    toast.error('Please add at least one objective');
+                    return;
+                  }
+                  saveManualMutation.mutate({
+                    lessonId: editingLesson.id,
+                    objectives: filtered
+                  });
+                }}
+                disabled={saveManualMutation.isPending}
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+              >
+                {saveManualMutation.isPending ? 'Saving...' : 'Save Objectives'}
+              </Button>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
