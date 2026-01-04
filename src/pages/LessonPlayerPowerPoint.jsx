@@ -544,7 +544,9 @@ export default function LessonPlayerPowerPoint() {
               <Presentation size={16} className="hidden sm:block" />
               <span className="font-semibold text-sm truncate">{lesson?.title}</span>
             </div>
-            <div className="flex gap-3">
+            <div className="flex gap-2">
+                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={togglePresentation}><Presentation size={18}/></button>
+                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={toggleFullscreen}>{isFullscreen ? <Minimize size={18}/> : <Maximize size={18}/>}</button>
                 <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={generateAISummary}><Sparkles size={18}/></button>
                 <button className="hidden sm:block hover:bg-white/10 px-3 py-1 rounded transition-colors text-xs" onClick={() => navigate(-1)}>Exit</button>
             </div>
