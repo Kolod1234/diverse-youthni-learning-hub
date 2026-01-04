@@ -19,6 +19,7 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
+import CurriculumImporter from '@/components/admin/CurriculumImporter';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
@@ -1481,6 +1482,7 @@ function LessonsManagement({ lessons, courses }) {
   const queryClient = useQueryClient();
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCourse, setSelectedCourse] = useState('all');
+  const [showImporter, setShowImporter] = useState(false);
 
   const deleteLessonMutation = useMutation({
     mutationFn: (id) => base44.entities.Lesson.delete(id),
@@ -1556,24 +1558,12 @@ function LessonsManagement({ lessons, courses }) {
             )}
           </Button>
           <Button
-            onClick={async () => {
-              if (!confirm('Import CCEA Physics curriculum? This will fetch lessons from the official CCEA website and create them in the database.')) return;
-              try {
-                toast.info('Fetching CCEA Physics curriculum...');
-                const response = await base44.functions.invoke('importCCEAPhysics', {});
-                toast.success(`Successfully imported ${response.data.total_lessons} physics lessons!`);
-                queryClient.invalidateQueries(['all-lessons']);
-                queryClient.invalidateQueries(['all-courses']);
-              } catch (error) {
-                toast.error('Failed to import physics curriculum');
-                console.error(error);
-              }
-            }}
+            onClick={() => setShowImporter(true)}
             size="sm"
             className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
           >
             <GraduationCap className="w-4 h-4 mr-2" />
-            Import CCEA Physics
+            Import Curriculum
           </Button>
         </div>
       </div>
@@ -1674,6 +1664,8 @@ function LessonsManagement({ lessons, courses }) {
           <p>No lessons found</p>
         </div>
       )}
+
+      <CurriculumImporter open={showImporter} onOpenChange={setShowImporter} />
     </Card>
   );
 }
