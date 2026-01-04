@@ -23,7 +23,7 @@ Deno.serve(async (req) => {
       const courses = await base44.asServiceRole.entities.Course.filter({ id: lesson.course_id });
       const course = courses[0];
 
-      const response = await base44.integrations.Core.InvokeLLM({
+      const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
         prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
 
 Course: ${course?.title || 'Unknown'} (${course?.category || 'General'})
@@ -80,10 +80,15 @@ Format as a JSON array of strings.`,
     for (const lesson of lessonsNeedingObjectives) {
       try {
         const course = courses.find(c => c.id === lesson.course_id);
-        if (!course) continue;
+        if (!course) {
+          console.log(`Skipping lesson ${lesson.id} - course not found`);
+          continue;
+        }
+
+        console.log(`Processing lesson: ${lesson.title} (${lesson.id})`);
 
         // Generate appropriate learning objectives for each lesson
-        const response = await base44.integrations.Core.InvokeLLM({
+        const response = await base44.asServiceRole.integrations.Core.InvokeLLM({
           prompt: `You are a CCEA GCSE curriculum expert. Generate 3-5 specific, measurable learning objectives for this lesson.
 
 Course: ${course.title} (${course.category || 'General'})
@@ -110,6 +115,8 @@ Format as a JSON array of strings.`,
           }
         });
 
+        console.log(`Generated objectives for ${lesson.title}:`, response.learning_objectives);
+
         // Update the lesson with new learning objectives
         await base44.asServiceRole.entities.Lesson.update(lesson.id, {
           learning_objectives: response.learning_objectives
@@ -122,9 +129,10 @@ Format as a JSON array of strings.`,
         });
         
         processed++;
+        console.log(`Successfully updated lesson ${lesson.id} (${processed}/${lessonsNeedingObjectives.length})`);
 
       } catch (error) {
-        console.error(`Failed to update lesson ${lesson.id}:`, error);
+        console.error(`Failed to update lesson ${lesson.id}:`, error.message || error);
         failed++;
       }
     }
