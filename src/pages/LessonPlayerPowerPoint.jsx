@@ -94,6 +94,10 @@ export default function LessonPlayerPowerPoint() {
 
   const lesson = currentLessonArray[0];
   const courseId = urlCourseId || lesson?.course_id;
+  
+  // Define these early so they can be used in event handlers
+  const hasSlides = lesson?.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   const { data: courseLessons = [], isLoading: lessonsLoading } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -248,9 +252,6 @@ export default function LessonPlayerPowerPoint() {
   const handlePrevLesson = () => prevLesson && navigate(`/LessonPlayerPowerPoint?lesson=${prevLesson.id}&course=${courseId}`);
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
-  
-  const hasSlides = lesson?.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   const slideUrl = lesson ? (() => {
     if (lesson.google_slides_url) {
