@@ -175,6 +175,14 @@ export default function LessonPlayerPowerPoint() {
   const togglePresentation = () => {
     setIsPresenting(!isPresenting);
     toast(!isPresenting ? "Presentation Mode: ON" : "Presentation Mode: OFF");
+    
+    // Focus the main element to ensure keyboard events work
+    setTimeout(() => {
+      const mainElement = document.querySelector('main[tabindex="0"]');
+      if (mainElement) {
+        mainElement.focus();
+      }
+    }, 100);
   };
 
   // Touch/Swipe Logic
@@ -695,6 +703,7 @@ export default function LessonPlayerPowerPoint() {
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
+          tabIndex={0}
         >
           {/* MOBILE INFO ACCORDION */}
           {!isPresenting && (
@@ -740,8 +749,11 @@ export default function LessonPlayerPowerPoint() {
                 ref={canvasRef}
                 width={window.innerWidth}
                 height={window.innerHeight}
-                className="absolute inset-0 z-50 pointer-events-auto"
-                style={{ cursor: isDrawing ? 'crosshair' : 'default' }}
+                className="absolute inset-0 z-50"
+                style={{ 
+                  cursor: isDrawing ? 'crosshair' : 'default',
+                  pointerEvents: isDrawing ? 'auto' : 'none'
+                }}
                 onMouseDown={startDrawing}
                 onMouseMove={draw}
               />
