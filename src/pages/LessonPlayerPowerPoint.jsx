@@ -545,6 +545,21 @@ export default function LessonPlayerPowerPoint() {
               <span className="font-semibold text-sm truncate">{lesson?.title}</span>
             </div>
             <div className="flex gap-2">
+                <DropdownMenu>
+                  <DropdownMenuTrigger asChild>
+                    <button className="sm:hidden p-2 active:bg-white/20 rounded"><Layout size={18}/></button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent align="end">
+                    <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
+                      <Presentation className="w-4 h-4 mr-2" />
+                      PowerPoint
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
+                      <Layout className="w-4 h-4 mr-2" />
+                      Classic
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
                 <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={togglePresentation}><Presentation size={18}/></button>
                 <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={toggleFullscreen}>{isFullscreen ? <Minimize size={18}/> : <Maximize size={18}/>}</button>
                 <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={generateAISummary}><Sparkles size={18}/></button>
@@ -666,7 +681,7 @@ export default function LessonPlayerPowerPoint() {
           {/* SLIDE CONTAINER */}
           <div className={`relative flex flex-col transition-all duration-500 bg-black
             ${isPresenting 
-              ? 'w-full h-full' 
+              ? 'w-full h-full min-h-screen' 
               : 'flex-grow w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-white' 
             }`}>
             
@@ -793,16 +808,26 @@ export default function LessonPlayerPowerPoint() {
         </footer>
       )}
 
-      {/* Slide Nav in Presentation Mode */}
-      {isPresenting && hasSlides && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-[90] bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2">
-          <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} className="w-10 h-10 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30">
-            <ChevronLeft size={20} />
-          </button>
-          <span className="px-4 py-2 text-white text-sm font-medium flex items-center">{currentSlideIndex + 1} / {sortedSlides.length}</span>
-          <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} disabled={currentSlideIndex === sortedSlides.length - 1} className="w-10 h-10 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30">
-            <ChevronRight size={20} />
-          </button>
+      {/* Slide Nav in Presentation Mode - Always show for all slide types */}
+      {isPresenting && (
+        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-[90] bg-black/80 backdrop-blur-md border-2 border-white/50 rounded-lg p-3 shadow-2xl">
+          {hasSlides && (
+            <>
+              <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30 transition-all active:scale-95">
+                <ChevronLeft size={24} />
+              </button>
+              <span className="px-6 py-2 text-white text-base font-medium flex items-center bg-white/5 rounded-lg">{currentSlideIndex + 1} / {sortedSlides.length}</span>
+              <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} disabled={currentSlideIndex === sortedSlides.length - 1} className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30 transition-all active:scale-95">
+                <ChevronRight size={24} />
+              </button>
+            </>
+          )}
+          {!hasSlides && slideUrl && (
+            <span className="px-6 py-3 text-white text-sm font-medium flex items-center gap-2">
+              <Presentation size={16} />
+              Presentation Mode
+            </span>
+          )}
         </div>
       )}
 
