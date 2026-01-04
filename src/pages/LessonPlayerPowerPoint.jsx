@@ -190,32 +190,32 @@ export default function LessonPlayerPowerPoint() {
   };
 
   const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
+    if (!touchStart || !touchEnd || !lesson) return;
     const distance = touchStart - touchEnd;
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+
     // For custom slides navigation
-    if (hasSlides) {
-      if (isLeftSwipe && currentSlideIndex < sortedSlides.length - 1) {
+    if (lessonHasSlides) {
+      if (isLeftSwipe && currentSlideIndex < slides.length - 1) {
         setCurrentSlideIndex(curr => curr + 1);
       }
       if (isRightSwipe && currentSlideIndex > 0) {
         setCurrentSlideIndex(curr => curr - 1);
       }
     }
-    
-    // For lesson navigation (Google Slides or any content)
-    if (isLeftSwipe && nextLesson) {
-      handleNextLesson();
-    }
-    if (isRightSwipe && prevLesson) {
-      handlePrevLesson();
-    }
   };
 
-  // Keyboard navigation
+  // Keyboard navigation - FIXED with proper dependencies
   useEffect(() => {
+    if (!lesson) return;
+    
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+    
     const handleKeyDown = (e) => {
       // Escape key to exit presentation mode
       if (e.key === 'Escape' && isPresenting) {
@@ -224,10 +224,10 @@ export default function LessonPlayerPowerPoint() {
       }
 
       // For custom slides (internal content), handle navigation
-      if (hasSlides) {
+      if (lessonHasSlides) {
         if (e.key === 'ArrowRight' || e.key === ' ') {
           e.preventDefault();
-          setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
+          setCurrentSlideIndex(prev => Math.min(slides.length - 1, prev + 1));
         }
         if (e.key === 'ArrowLeft') {
           e.preventDefault();
@@ -235,12 +235,11 @@ export default function LessonPlayerPowerPoint() {
         }
       }
       // For Google Slides/external content: Let the iframe handle its own keyboard events
-      // Don't prevent default so the iframe receives the events naturally
     };
 
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting, hasSlides, sortedSlides, currentSlideIndex]);
+  }, [isPresenting, lesson, currentSlideIndex]);
 
   // Nav Logic
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
@@ -274,7 +273,7 @@ export default function LessonPlayerPowerPoint() {
     toast.success(updatedBookmarks.includes(slideIndex) ? 'Bookmark added' : 'Bookmark removed');
   };
 
-  // AI Summary generation
+  // AI Summary generation - FIXED
   const generateAISummary = async () => {
     if (!lesson) return;
     
@@ -282,8 +281,10 @@ export default function LessonPlayerPowerPoint() {
     setShowAISummary(true);
     
     try {
-      const slideContent = hasSlides 
-        ? sortedSlides.map(s => `${s.title}: ${s.content}`).join('\n\n')
+      const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+      const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+      const slideContent = lessonHasSlides 
+        ? slides.map(s => `${s.title}: ${s.content}`).join('\n\n')
         : 'Google Slides presentation';
       
       const response = await base44.integrations.Core.InvokeLLM({
@@ -307,15 +308,18 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
-  // Search functionality
-  const searchResults = hasSlides && searchQuery 
-    ? sortedSlides.map((slide, idx) => ({
-        index: idx,
-        title: slide.title,
-        matches: slide.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                 slide.title?.toLowerCase().includes(searchQuery.toLowerCase())
-      })).filter(s => s.matches)
-    : [];
+  // Search functionality - FIXED
+  const searchResults = lesson && searchQuery ? (() => {
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    if (!lessonHasSlides) return [];
+    const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
+    return slides.map((slide, idx) => ({
+      index: idx,
+      title: slide.title,
+      matches: slide.content?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+               slide.title?.toLowerCase().includes(searchQuery.toLowerCase())
+    })).filter(s => s.matches);
+  })() : [];
 
   // Drawing functionality
   const startDrawing = (e) => {
@@ -364,13 +368,17 @@ export default function LessonPlayerPowerPoint() {
     });
   }, [drawings]);
 
-  // AI Contextual Help
+  // AI Contextual Help - FIXED
   const askAIAboutSlide = async (query = '') => {
+    if (!lesson) return;
+    
     setAIHelpLoading(true);
     setShowAIHelp(true);
     
     try {
-      const currentSlide = sortedSlides[currentSlideIndex];
+      const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+      const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+      const currentSlide = slides[currentSlideIndex];
       const slideContext = currentSlide ? `${currentSlide.title}: ${currentSlide.content}` : 'Current slide content';
       
       const response = await base44.integrations.Core.InvokeLLM({
@@ -393,15 +401,18 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
-  // Note-taking
+  // Note-taking - FIXED
   const addNote = () => {
-    if (!currentNote.trim()) return;
+    if (!currentNote.trim() || !lesson) return;
+    
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
     
     const newNote = {
       id: Date.now(),
       content: currentNote,
       slideIndex: currentSlideIndex,
-      slideTitle: sortedSlides[currentSlideIndex]?.title || 'Slide',
+      slideTitle: slides[currentSlideIndex]?.title || 'Slide',
       timestamp: new Date().toISOString(),
       slideNumber: currentSlideIndex + 1
     };
@@ -411,12 +422,15 @@ export default function LessonPlayerPowerPoint() {
     toast.success('Note saved');
   };
 
-  // Generate flashcards
+  // Generate flashcards - FIXED
   const generateFlashcards = async () => {
-    if (!hasSlides) return;
+    if (!lesson) return;
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    if (!lessonHasSlides) return;
     
     try {
-      const currentSlide = sortedSlides[currentSlideIndex];
+      const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
+      const currentSlide = slides[currentSlideIndex];
       const response = await base44.integrations.Core.InvokeLLM({
         prompt: `Generate 3-5 flashcard questions and answers from this slide content:\n\nTitle: ${currentSlide.title}\nContent: ${currentSlide.content}\n\nCreate educational flashcards that test understanding of key concepts.`,
         response_json_schema: {
@@ -444,11 +458,14 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
-  // Text-to-speech
+  // Text-to-speech - FIXED
   const speakSlideContent = () => {
-    if (!hasSlides || !window.speechSynthesis) return;
+    if (!lesson || !window.speechSynthesis) return;
+    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
+    if (!lessonHasSlides) return;
     
-    const currentSlide = sortedSlides[currentSlideIndex];
+    const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
+    const currentSlide = slides[currentSlideIndex];
     const text = `${currentSlide.title}. ${currentSlide.content?.replace(/<[^>]*>/g, '')}`;
     
     const utterance = new SpeechSynthesisUtterance(text);
@@ -950,11 +967,14 @@ export default function LessonPlayerPowerPoint() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="flex items-center gap-2"><List className="w-5 h-5"/>Outline</DialogTitle></DialogHeader>
           <div className="space-y-2">
-            {hasSlides && sortedSlides.map((s, i) => (
-              <button key={i} onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} className={`w-full p-3 rounded text-left ${i === currentSlideIndex ? 'bg-indigo-50 border-2 border-indigo-600' : 'bg-gray-50 hover:bg-gray-100'}`}>
-                <span className="font-medium">{i + 1}. {s.title}</span>
-              </button>
-            ))}
+            {lesson?.slides && lesson.slides.length > 0 && (() => {
+              const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
+              return slides.map((s, i) => (
+                <button key={i} onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} className={`w-full p-3 rounded text-left ${i === currentSlideIndex ? 'bg-indigo-50 border-2 border-indigo-600' : 'bg-gray-50 hover:bg-gray-100'}`}>
+                  <span className="font-medium">{i + 1}. {s.title}</span>
+                </button>
+              ));
+            })()}
           </div>
         </DialogContent>
       </Dialog>
