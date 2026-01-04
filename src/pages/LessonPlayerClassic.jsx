@@ -30,6 +30,8 @@ export default function LessonPlayerClassic() {
   const [showObjectives, setShowObjectives] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [user, setUser] = useState(null);
+  const [showUnlockDialog, setShowUnlockDialog] = useState(false);
+  const [isLessonLocked, setIsLessonLocked] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
