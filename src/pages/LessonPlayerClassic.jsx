@@ -64,6 +64,10 @@ export default function LessonPlayerClassic() {
   
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
+  
+  // Define slide-related variables early (before they're used in effects/handlers)
+  const hasSlides = lesson?.slides && lesson.slides.length > 0;
+  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -536,7 +540,7 @@ export default function LessonPlayerClassic() {
 
             {/* Slide Content */}
             <div className="max-w-5xl mx-auto">
-              {hasSlides ? (
+              {lesson?.slides && lesson.slides.length > 0 ? (
                 <TransformWrapper
                   initialScale={1}
                   minScale={0.5}
