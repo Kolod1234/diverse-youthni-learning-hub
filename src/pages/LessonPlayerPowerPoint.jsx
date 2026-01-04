@@ -213,29 +213,30 @@ export default function LessonPlayerPowerPoint() {
   // Keyboard navigation
   useEffect(() => {
     const handleKeyDown = (e) => {
-      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
+      // Escape key to exit presentation mode
+      if (e.key === 'Escape' && isPresenting) {
+        setIsPresenting(false);
+        return;
+      }
+
+      // For custom slides (internal content), handle navigation
+      if (hasSlides) {
+        if (e.key === 'ArrowRight' || e.key === ' ') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
+        }
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+        }
+      }
+      // For Google Slides/external content: Let the iframe handle its own keyboard events
+      // Don't prevent default so the iframe receives the events naturally
     };
+
     window.addEventListener('keydown', handleKeyDown);
     return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting]);
-
-  useEffect(() => {
-    if (!lesson || !lesson.slides || lesson.slides.length === 0) return;
-    const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
-    
-    const handleSlideNav = (e) => {
-      if (e.key === 'ArrowRight' || e.key === ' ') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.min(slides.length - 1, prev + 1));
-      }
-      if (e.key === 'ArrowLeft') {
-        e.preventDefault();
-        setCurrentSlideIndex(prev => Math.max(0, prev - 1));
-      }
-    };
-    window.addEventListener('keydown', handleSlideNav);
-    return () => window.removeEventListener('keydown', handleSlideNav);
-  }, [lesson]);
+  }, [isPresenting, hasSlides, sortedSlides, currentSlideIndex]);
 
   // Nav Logic
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
