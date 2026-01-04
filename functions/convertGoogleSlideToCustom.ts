@@ -50,59 +50,155 @@ Deno.serve(async (req) => {
     const presentation = await presentationResponse.json();
     const customSlides = [];
 
+    // Helper function to convert Google Slides color to hex
+    const rgbToHex = (color) => {
+      if (!color) return null;
+      const r = Math.round((color.red || 0) * 255);
+      const g = Math.round((color.green || 0) * 255);
+      const b = Math.round((color.blue || 0) * 255);
+      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
+    };
+
+    // Helper function to convert EMU to pixels (Google Slides uses EMUs)
+    const emuToPx = (emu) => emu ? Math.round(emu / 9525) : 0;
+
     // Process each slide
     for (let i = 0; i < presentation.slides.length; i++) {
       const slide = presentation.slides[i];
       let title = '';
       let content = '';
       let imageUrl = null;
+      let videoUrl = null;
+      let audioUrl = null;
+      const images = [];
 
-      // Extract text and images from slide elements
+      // Extract text and media from slide elements
       if (slide.pageElements) {
         for (const element of slide.pageElements) {
-          // Extract text
+          // Extract formatted text
           if (element.shape?.text?.textElements) {
-            const textContent = element.shape.text.textElements
-              .filter(te => te.textRun?.content)
-              .map(te => te.textRun.content)
-              .join('');
+            const paragraphStyle = element.shape.text.textElements[0]?.paragraphStyle;
+            const alignment = paragraphStyle?.alignment || 'START';
+            let alignStyle = alignment === 'CENTER' ? 'center' : alignment === 'END' ? 'right' : 'left';
             
-            if (textContent.trim()) {
-              if (!title) {
-                title = textContent.trim().split('\n')[0];
+            let formattedText = '';
+            
+            for (const textElement of element.shape.text.textElements) {
+              if (textElement.textRun?.content) {
+                const text = textElement.textRun.content;
+                const style = textElement.textRun.style || {};
+                
+                let styledText = text;
+                let inlineStyles = [];
+                
+                // Font size
+                if (style.fontSize?.magnitude) {
+                  inlineStyles.push(`font-size: ${style.fontSize.magnitude}pt`);
+                }
+                
+                // Font family
+                if (style.fontFamily) {
+                  inlineStyles.push(`font-family: "${style.fontFamily}"`);
+                }
+                
+                // Text color
+                if (style.foregroundColor?.opaqueColor?.rgbColor) {
+                  const color = rgbToHex(style.foregroundColor.opaqueColor.rgbColor);
+                  if (color) inlineStyles.push(`color: ${color}`);
+                }
+                
+                // Background color
+                if (style.backgroundColor?.opaqueColor?.rgbColor) {
+                  const bgColor = rgbToHex(style.backgroundColor.opaqueColor.rgbColor);
+                  if (bgColor) inlineStyles.push(`background-color: ${bgColor}`);
+                }
+                
+                // Bold
+                if (style.bold) {
+                  styledText = `<strong>${styledText}</strong>`;
+                }
+                
+                // Italic
+                if (style.italic) {
+                  styledText = `<em>${styledText}</em>`;
+                }
+                
+                // Underline
+                if (style.underline) {
+                  styledText = `<u>${styledText}</u>`;
+                }
+                
+                // Strikethrough
+                if (style.strikethrough) {
+                  styledText = `<s>${styledText}</s>`;
+                }
+                
+                // Apply inline styles
+                if (inlineStyles.length > 0) {
+                  styledText = `<span style="${inlineStyles.join('; ')}">${styledText}</span>`;
+                }
+                
+                formattedText += styledText;
               }
-              content += `<p>${textContent.trim().replace(/\n/g, '</p><p>')}</p>`;
+            }
+            
+            if (formattedText.trim()) {
+              const cleanText = formattedText.trim();
+              if (!title) {
+                title = cleanText.replace(/<[^>]*>/g, '').split('\n')[0];
+              }
+              // Wrap in paragraph with alignment
+              const paragraphs = cleanText.split('\n').filter(p => p.trim());
+              paragraphs.forEach(p => {
+                content += `<p style="text-align: ${alignStyle}; margin: 0.5em 0;">${p}</p>`;
+              });
             }
           }
 
           // Extract images
-          if (element.image?.contentUrl && !imageUrl) {
+          if (element.image?.contentUrl) {
             try {
-              // Download image
               const imageResponse = await fetch(element.image.contentUrl);
               const imageBlob = await imageResponse.blob();
+              const imageFile = new File([imageBlob], `slide-${i}-img-${images.length}.png`, { type: imageBlob.type });
+              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: imageFile });
               
-              // Convert blob to File for upload
-              const imageFile = new File([imageBlob], `slide-${i}-image.png`, { type: imageBlob.type });
-              
-              // Upload to Base44 storage
-              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({
-                file: imageFile
-              });
-              
-              imageUrl = uploadResult.file_url;
+              if (!imageUrl) {
+                imageUrl = uploadResult.file_url;
+              }
+              images.push(uploadResult.file_url);
             } catch (error) {
               console.error(`Failed to process image from slide ${i}:`, error);
             }
           }
+
+          // Extract videos (Google Slides videos are usually from YouTube or Drive)
+          if (element.video) {
+            if (element.video.url) {
+              videoUrl = element.video.url;
+            } else if (element.video.source === 'YOUTUBE' && element.video.id) {
+              videoUrl = `https://www.youtube.com/embed/${element.video.id}`;
+            }
+          }
         }
+      }
+
+      // Add all images to content if multiple
+      if (images.length > 1) {
+        content += '<div style="display: grid; gap: 1rem; margin-top: 1rem;">';
+        images.forEach(img => {
+          content += `<img src="${img}" alt="Slide image" style="max-width: 100%; border-radius: 8px;" />`;
+        });
+        content += '</div>';
       }
 
       customSlides.push({
         title: title || `Slide ${i + 1}`,
         content: content || '<p>No content</p>',
         order: i,
-        imageUrl: imageUrl
+        imageUrl: imageUrl,
+        videoUrl: videoUrl,
+        audioUrl: audioUrl
       });
     }
 
