@@ -34,10 +34,13 @@ export default function LessonPlayerClassic() {
   const [user, setUser] = useState(null);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   
   // Touch state for swipe navigation
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  
+  const containerRef = React.useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -45,6 +48,16 @@ export default function LessonPlayerClassic() {
       setUser(userData);
     };
     loadUser();
+  }, []);
+
+  // Fullscreen state listener
+  useEffect(() => {
+    const handleFullscreenChange = () => {
+      setIsFullscreen(!!document.fullscreenElement);
+    };
+    
+    document.addEventListener('fullscreenchange', handleFullscreenChange);
+    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   // First fetch the lesson to get its course_id
@@ -203,16 +216,17 @@ export default function LessonPlayerClassic() {
     return lesson.file_url || null;
   };
 
-  const handleFullscreen = () => {
-    const elem = document.querySelector('.lesson-content-container');
-    if (elem) {
-      if (elem.requestFullscreen) {
-        elem.requestFullscreen();
-      } else if (elem.webkitRequestFullscreen) {
-        elem.webkitRequestFullscreen();
-      } else if (elem.msRequestFullscreen) {
-        elem.msRequestFullscreen();
+  const handleFullscreen = async () => {
+    if (!containerRef.current) return;
+    
+    if (!document.fullscreenElement) {
+      try {
+        await containerRef.current.requestFullscreen();
+      } catch (err) {
+        toast.error('Fullscreen not supported');
       }
+    } else {
+      document.exitFullscreen();
     }
   };
 
@@ -316,7 +330,7 @@ export default function LessonPlayerClassic() {
   const slideUrl = getSlideEmbedUrl();
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+    <div ref={containerRef} className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
       {/* Header */}
       <header className="flex-none bg-white/80 backdrop-blur-xl border-b border-purple-100 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg shadow-purple-100/50 z-30">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
@@ -364,7 +378,7 @@ export default function LessonPlayerClassic() {
             size="sm"
             onClick={handleFullscreen}
             className="hidden sm:flex"
-            title="Fullscreen"
+            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
           >
             <Maximize2 className="w-4 h-4" />
           </Button>
