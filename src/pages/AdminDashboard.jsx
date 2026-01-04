@@ -1530,7 +1530,7 @@ function LessonsManagement({ lessons, courses }) {
           <h2 className="text-xl font-semibold">Lessons Management</h2>
           <p className="text-sm text-gray-500 mt-1">{lessons.length} total lessons</p>
         </div>
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Link to={createPageUrl('AdminLearningObjectives')}>
             <Button variant="outline" size="sm">
               <Sparkles className="w-4 h-4 mr-2" />
@@ -1554,6 +1554,26 @@ function LessonsManagement({ lessons, courses }) {
                 Update All Objectives ({lessonsWithoutObjectives.length})
               </>
             )}
+          </Button>
+          <Button
+            onClick={async () => {
+              if (!confirm('Import CCEA Physics curriculum? This will fetch lessons from the official CCEA website and create them in the database.')) return;
+              try {
+                toast.info('Fetching CCEA Physics curriculum...');
+                const response = await base44.functions.invoke('importCCEAPhysics', {});
+                toast.success(`Successfully imported ${response.data.total_lessons} physics lessons!`);
+                queryClient.invalidateQueries(['all-lessons']);
+                queryClient.invalidateQueries(['all-courses']);
+              } catch (error) {
+                toast.error('Failed to import physics curriculum');
+                console.error(error);
+              }
+            }}
+            size="sm"
+            className="bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-700 hover:to-indigo-700"
+          >
+            <GraduationCap className="w-4 h-4 mr-2" />
+            Import CCEA Physics
           </Button>
         </div>
       </div>
