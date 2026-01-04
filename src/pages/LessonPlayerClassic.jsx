@@ -332,6 +332,30 @@ export default function LessonPlayerClassic() {
           </div>
         </div>
         <div className="flex items-center gap-1 sm:gap-2 shrink-0">
+          {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={async () => {
+                if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
+                toast.loading('Converting Google Slides...');
+                try {
+                  const response = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
+                  if (response.data.success) {
+                    toast.success(`Converted ${response.data.slideCount} slides successfully!`);
+                    queryClient.invalidateQueries(['lesson', lessonId]);
+                    setTimeout(() => window.location.reload(), 1000);
+                  }
+                } catch (error) {
+                  toast.error('Failed to convert Google Slides');
+                }
+              }}
+              className="hidden sm:flex gap-2"
+            >
+              <FileText className="w-4 h-4" />
+              <span className="hidden md:inline">Convert to Custom</span>
+            </Button>
+          )}
           <Button
             variant="outline"
             size="sm"

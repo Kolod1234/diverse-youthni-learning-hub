@@ -615,7 +615,23 @@ export default function LessonPlayerPowerPoint() {
                 )}
               </DropdownMenuContent>
             </DropdownMenu>
-             <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Present</span></div>
+            {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
+              <div onClick={async () => {
+                if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
+                toast.loading('Converting Google Slides...');
+                try {
+                  const response = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
+                  if (response.data.success) {
+                    toast.success(`Converted ${response.data.slideCount} slides successfully!`);
+                    queryClient.invalidateQueries(['lesson', lessonId]);
+                    setTimeout(() => window.location.reload(), 1000);
+                  }
+                } catch (error) {
+                  toast.error('Failed to convert Google Slides');
+                }
+              }} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600"/><span className="text-[11px] mt-1">Convert</span></div>
+            )}
+            <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Present</span></div>
              <div onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-gray-600"/> : <Maximize size={20} className="text-gray-600"/>}<span className="text-[11px] mt-1">Full</span></div>
              <div onClick={() => setShowSearch(!showSearch)} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Search</span></div>
              <div onClick={generateAISummary} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600"/><span className="text-[11px] mt-1">AI</span></div>
