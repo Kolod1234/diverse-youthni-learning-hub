@@ -191,11 +191,22 @@ export default function LessonPlayerPowerPoint() {
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe && hasSlides && currentSlideIndex < sortedSlides.length - 1) {
-      setCurrentSlideIndex(curr => curr + 1);
+    // For custom slides navigation
+    if (hasSlides) {
+      if (isLeftSwipe && currentSlideIndex < sortedSlides.length - 1) {
+        setCurrentSlideIndex(curr => curr + 1);
+      }
+      if (isRightSwipe && currentSlideIndex > 0) {
+        setCurrentSlideIndex(curr => curr - 1);
+      }
     }
-    if (isRightSwipe && hasSlides && currentSlideIndex > 0) {
-      setCurrentSlideIndex(curr => curr - 1);
+    
+    // For lesson navigation (Google Slides or any content)
+    if (isLeftSwipe && nextLesson) {
+      handleNextLesson();
+    }
+    if (isRightSwipe && prevLesson) {
+      handlePrevLesson();
     }
   };
 
@@ -704,12 +715,32 @@ export default function LessonPlayerPowerPoint() {
             {/* Slide Content */}
             <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
               {slideUrl ? (
-                <iframe 
-                  src={slideUrl} 
-                  className="w-full h-full border-0 block"
-                  allowFullScreen
-                  title="Lesson Slides"
-                />
+                <>
+                  <iframe 
+                    src={slideUrl} 
+                    className="w-full h-full border-0 block"
+                    allowFullScreen
+                    title="Lesson Slides"
+                  />
+                  {/* Transparent touch overlay for Google Slides - captures edge swipes only */}
+                  <div 
+                    className="absolute inset-0 pointer-events-none"
+                    style={{ pointerEvents: 'none' }}
+                  >
+                    <div 
+                      className="absolute left-0 top-0 bottom-0 w-16 pointer-events-auto"
+                      onTouchStart={onTouchStart}
+                      onTouchMove={onTouchMove}
+                      onTouchEnd={onTouchEnd}
+                    />
+                    <div 
+                      className="absolute right-0 top-0 bottom-0 w-16 pointer-events-auto"
+                      onTouchStart={onTouchStart}
+                      onTouchMove={onTouchMove}
+                      onTouchEnd={onTouchEnd}
+                    />
+                  </div>
+                </>
               ) : hasSlides ? (
                 <TransformWrapper disabled={isPresenting || window.innerWidth < 640}>
                   {({ zoomIn, zoomOut, resetTransform }) => (
