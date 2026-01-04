@@ -34,6 +34,10 @@ export default function LessonPlayerClassic() {
   const [user, setUser] = useState(null);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
+  
+  // Touch state for swipe navigation
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -208,6 +212,34 @@ export default function LessonPlayerClassic() {
     }
   };
 
+  // Touch/Swipe Logic for mobile
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (hasSlides) {
+      if (isLeftSwipe && currentSlideIndex < sortedSlides.length - 1) {
+        setCurrentSlideIndex(curr => curr + 1);
+      }
+      if (isRightSwipe && currentSlideIndex > 0) {
+        setCurrentSlideIndex(curr => curr - 1);
+      }
+    }
+  };
+
   if (lessonLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center bg-slate-50">
@@ -281,9 +313,9 @@ export default function LessonPlayerClassic() {
   const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   return (
-    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50">
+    <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-purple-100 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg shadow-purple-100/50 z-30">
+      <header className="flex-none bg-white/80 backdrop-blur-xl border-b border-purple-100 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg shadow-purple-100/50 z-30">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
             <X className="w-5 h-5" />
@@ -357,10 +389,10 @@ export default function LessonPlayerClassic() {
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden">
+      <div className="flex flex-1 overflow-hidden" style={{ minHeight: 0 }}>
         {/* Sidebar */}
         {showSidebar && (
-          <aside className="absolute lg:relative z-20 w-full sm:w-80 max-w-sm h-full bg-gradient-to-b from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto shadow-2xl lg:shadow-lg">
+          <aside className="fixed lg:relative z-20 w-full sm:w-80 lg:max-w-sm h-[calc(100vh-4rem)] lg:h-full bg-gradient-to-b from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto shadow-2xl lg:shadow-lg">
             <div className="p-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -406,15 +438,21 @@ export default function LessonPlayerClassic() {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 flex flex-col overflow-hidden lesson-content-container">
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8">
+        <main 
+          className="flex-1 flex flex-col overflow-hidden lesson-content-container"
+          style={{ minHeight: 0 }}
+          onTouchStart={onTouchStart}
+          onTouchMove={onTouchMove}
+          onTouchEnd={onTouchEnd}
+        >
+          <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8" style={{ minHeight: 0 }}>
             {/* Learning Objectives */}
             {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-              <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
+              <div className="max-w-5xl mx-auto mb-3 sm:mb-4">
                 <div className="flex gap-2">
                   <button
                     onClick={() => setShowObjectives(!showObjectives)}
-                    className="flex-1 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 transform hover:scale-[1.02]"
+                    className="flex-1 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex items-center justify-between text-xs sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 active:scale-[0.98] sm:hover:scale-[1.02]"
                   >
                     <div className="flex items-center gap-2 sm:gap-3">
                       <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -441,11 +479,11 @@ export default function LessonPlayerClassic() {
                 </div>
                 
                 {showObjectives && (
-                  <div className="bg-gradient-to-br from-white to-indigo-50/50 rounded-b-2xl border border-t-0 border-indigo-200 p-3 sm:p-4 space-y-3 shadow-lg">
+                  <div className="bg-gradient-to-br from-white to-indigo-50/50 rounded-b-xl sm:rounded-b-2xl border border-t-0 border-indigo-200 p-2.5 sm:p-4 space-y-2 sm:space-y-3 shadow-lg">
                     {lesson.learning_objectives.map((objective, idx) => (
-                      <div key={idx} className="flex items-start gap-2 sm:gap-3 p-2 rounded-lg hover:bg-white/60 transition-colors">
-                        <div className="p-1 bg-green-100 rounded-full">
-                          <CheckCircle className="w-3.5 h-3.5 sm:w-4 sm:h-4 text-green-600 shrink-0" />
+                      <div key={idx} className="flex items-start gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-lg hover:bg-white/60 transition-colors">
+                        <div className="p-0.5 sm:p-1 bg-green-100 rounded-full shrink-0">
+                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
                         </div>
                         <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-medium">{objective}</p>
                       </div>
@@ -457,10 +495,10 @@ export default function LessonPlayerClassic() {
 
             {/* Quiz Link */}
             {quizzes.length > 0 && (
-              <div className="max-w-5xl mx-auto mb-4 sm:mb-6">
+              <div className="max-w-5xl mx-auto mb-3 sm:mb-4">
                 <button
                   onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
-                  className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white rounded-2xl p-3 sm:p-4 flex items-center justify-between text-sm sm:text-base hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 transition-all shadow-xl shadow-purple-200 hover:shadow-2xl hover:shadow-purple-300 transform hover:scale-[1.02]"
+                  className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex items-center justify-between text-xs sm:text-base hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 transition-all shadow-xl shadow-purple-200 hover:shadow-2xl hover:shadow-purple-300 active:scale-[0.98] sm:hover:scale-[1.02]"
                 >
                   <div className="flex items-center gap-2 sm:gap-3">
                     <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
@@ -496,15 +534,15 @@ export default function LessonPlayerClassic() {
                         </Button>
                       </div>
                       <TransformComponent wrapperClass="w-full" contentClass="w-full">
-                        <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-4 ring-purple-50">
-                          <div className="p-4 sm:p-8 min-h-[300px] sm:min-h-[500px] space-y-6">
-                            <h2 className="text-xl sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
+                        <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-2 sm:ring-4 ring-purple-50">
+                          <div className="p-3 sm:p-8 min-h-[250px] sm:min-h-[500px] space-y-4 sm:space-y-6">
+                            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
                               {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
                             </h2>
                             
                             {sortedSlides[currentSlideIndex]?.content && (
                               <div 
-                                className="prose prose-sm sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
+                                className="prose prose-xs sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
                                 dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
                               />
                             )}
@@ -555,23 +593,23 @@ export default function LessonPlayerClassic() {
                               </div>
                             )}
                           </div>
-                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-3 sm:px-8 py-3 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
+                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-2 sm:px-8 py-2.5 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
                             <button
                               onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
                               disabled={currentSlideIndex === 0}
-                              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
+                              className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl transition-all active:scale-90 sm:hover:scale-105"
                             >
-                              <ChevronLeft className="w-5 h-5 sm:w-6 sm:h-6" />
+                              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
                             </button>
-                            <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent">
-                              Slide {currentSlideIndex + 1} of {sortedSlides.length}
+                            <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent px-2">
+                              {currentSlideIndex + 1} / {sortedSlides.length}
                             </span>
                             <button
                               onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
                               disabled={currentSlideIndex === sortedSlides.length - 1}
-                              className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed shadow-xl transition-all active:scale-95 transform hover:scale-105"
+                              className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl transition-all active:scale-90 sm:hover:scale-105"
                             >
-                              <ChevronRight className="w-5 h-5 sm:w-6 sm:h-6" />
+                              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
                             </button>
                           </div>
                         </div>
@@ -580,7 +618,7 @@ export default function LessonPlayerClassic() {
                   )}
                 </TransformWrapper>
               ) : slideUrl ? (
-                <div className="relative w-full overflow-hidden rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-4 ring-purple-50" style={{ paddingTop: '56.25%' }}>
+                <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-2 sm:ring-4 ring-purple-50 bg-black" style={{ paddingTop: '56.25%' }}>
                   <iframe 
                     src={slideUrl} 
                     className="absolute top-0 left-0 w-full h-full"
@@ -605,34 +643,32 @@ export default function LessonPlayerClassic() {
           </div>
 
           {/* Navigation Footer */}
-          <footer className="bg-white/80 backdrop-blur-xl border-t border-purple-100 px-3 sm:px-6 py-3 sm:py-4 shadow-lg shadow-purple-100/50 z-30">
-            <div className="max-w-5xl mx-auto flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-4">
-              <div className="flex items-center gap-2 w-full sm:w-auto">
-                <Button
-                  variant="outline"
-                  onClick={handlePrevLesson}
-                  disabled={!prevLesson}
-                  size="sm"
-                  className="flex-1 sm:flex-none border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-300 font-semibold text-purple-700"
-                >
-                  <ChevronLeft className="w-4 h-4 sm:mr-2" />
-                  <span className="hidden sm:inline">Previous</span>
-                </Button>
+          <footer className="flex-none bg-white/80 backdrop-blur-xl border-t border-purple-100 px-3 sm:px-6 py-2.5 sm:py-4 shadow-lg shadow-purple-100/50 z-30">
+            <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 relative">
+              <Button
+                variant="outline"
+                onClick={handlePrevLesson}
+                disabled={!prevLesson}
+                size="sm"
+                className="border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-300 font-semibold text-purple-700 h-9 px-3 sm:px-4"
+              >
+                <ChevronLeft className="w-4 h-4 sm:mr-2" />
+                <span className="hidden sm:inline">Previous</span>
+              </Button>
 
-                <Button
-                  onClick={handleNextLesson}
-                  disabled={!nextLesson}
-                  size="sm"
-                  className="flex-1 sm:flex-none bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-xl shadow-indigo-200 hover:shadow-2xl hover:shadow-indigo-300 transform hover:scale-105 font-bold"
-                >
-                  <span className="hidden sm:inline">Next</span>
-                  <ChevronRight className="w-4 h-4 sm:ml-2" />
-                </Button>
-              </div>
-
-              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center sm:absolute sm:left-1/2 sm:-translate-x-1/2">
+              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center absolute left-1/2 -translate-x-1/2 hidden sm:block">
                 {enrollment?.completed_lessons?.length || 0} of {sortedLessons.length} completed
               </span>
+
+              <Button
+                onClick={handleNextLesson}
+                disabled={!nextLesson}
+                size="sm"
+                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 active:scale-95 sm:hover:scale-105 font-bold h-9 px-3 sm:px-4"
+              >
+                <span className="hidden sm:inline">Next</span>
+                <ChevronRight className="w-4 h-4 sm:ml-2" />
+              </Button>
             </div>
           </footer>
         </main>
