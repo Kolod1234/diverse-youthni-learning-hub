@@ -230,6 +230,7 @@ export default function LessonPlayerClassic() {
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
+    // Only handle swipe for custom slides, not Google Slides
     if (hasSlides) {
       if (isLeftSwipe && currentSlideIndex < sortedSlides.length - 1) {
         setCurrentSlideIndex(curr => curr + 1);
@@ -309,8 +310,6 @@ export default function LessonPlayerClassic() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
-  const hasSlides = lesson.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
 
   return (
     <div className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
