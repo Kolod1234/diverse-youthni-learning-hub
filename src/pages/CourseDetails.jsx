@@ -17,7 +17,6 @@ import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import CourseLeaderboard from '@/components/gamification/CourseLeaderboard';
-import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import CourseSEO from '@/components/seo/CourseSEO';
 import DynamicCourseLanding from '@/components/course/DynamicCourseLanding';
 
@@ -146,38 +145,34 @@ export default function CourseDetails() {
 
   if (loadingCourse) {
     return (
-      <CoursePasswordProtection user={user}>
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-            <div className="animate-pulse">
-              <div className="h-64 bg-gray-200 rounded-2xl mb-8" />
-              <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
-              <div className="h-4 bg-gray-200 rounded w-1/2" />
-            </div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+          <div className="animate-pulse">
+            <div className="h-64 bg-gray-200 rounded-2xl mb-8" />
+            <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
+            <div className="h-4 bg-gray-200 rounded w-1/2" />
           </div>
         </div>
-      </CoursePasswordProtection>
+      </div>
     );
   }
 
   if (!course) {
     return (
-      <CoursePasswordProtection user={user}>
-        <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
-          <div className="text-center">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h2 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h2>
-            <Link to={createPageUrl('Explore')}>
-              <Button>Browse Courses</Button>
-            </Link>
-          </div>
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center">
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h2 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h2>
+          <Link to={createPageUrl('Explore')}>
+            <Button>Browse Courses</Button>
+          </Link>
         </div>
-      </CoursePasswordProtection>
+      </div>
     );
   }
 
   return (
-    <CoursePasswordProtection user={user}>
+    <>
       <CourseSEO course={course} />
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       {/* Hero Section */}
@@ -707,6 +702,6 @@ export default function CourseDetails() {
         <DynamicCourseLanding course={course} enrollment={enrollment} />
       </section>
       </div>
-    </CoursePasswordProtection>
+    </>
   );
 }
