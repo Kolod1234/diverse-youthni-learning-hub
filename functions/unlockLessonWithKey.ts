@@ -27,19 +27,25 @@ Deno.serve(async (req) => {
 
     const key = keys[0];
 
-    // Check if key is already used
-    if (key.is_used) {
-      return Response.json({ error: 'This key has already been used' }, { status: 400 });
-    }
-
-    // Check if key is assigned to specific student
-    if (key.assigned_to_email && key.assigned_to_email !== user.email) {
-      return Response.json({ error: 'This key is assigned to a different student' }, { status: 403 });
+    // Check if key is active
+    if (!key.is_active) {
+      return Response.json({ error: 'This key has been deactivated' }, { status: 400 });
     }
 
     // Check if key has expired
     if (key.expires_at && new Date(key.expires_at) < new Date()) {
       return Response.json({ error: 'This key has expired' }, { status: 400 });
+    }
+
+    // Check if user already used this key
+    const usedByEmails = key.used_by_emails || [];
+    if (usedByEmails.includes(user.email)) {
+      return Response.json({ error: 'You have already used this key' }, { status: 400 });
+    }
+
+    // Check max uses if set
+    if (key.max_uses && usedByEmails.length >= key.max_uses) {
+      return Response.json({ error: 'This key has reached its maximum number of uses' }, { status: 400 });
     }
 
     // Get or create enrollment
@@ -85,11 +91,10 @@ Deno.serve(async (req) => {
       unlocked_lessons: unlockedLessons
     });
 
-    // Mark key as used
+    // Add user to used_by_emails array
+    const updatedUsedBy = [...usedByEmails, user.email];
     await base44.asServiceRole.entities.LessonUnlockKey.update(key.id, {
-      is_used: true,
-      used_by: user.email,
-      used_date: new Date().toISOString()
+      used_by_emails: updatedUsedBy
     });
 
     return Response.json({

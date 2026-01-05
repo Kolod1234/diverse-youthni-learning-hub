@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized - Admin or Tutor only' }, { status: 403 });
     }
 
-    const { lesson_id, course_id, assigned_to_email, key_count } = await req.json();
+    const { lesson_id, course_id, key_count, max_uses, expires_at } = await req.json();
 
     if (!lesson_id || !course_id) {
       return Response.json({ error: 'lesson_id and course_id are required' }, { status: 400 });
@@ -38,14 +38,19 @@ Deno.serve(async (req) => {
     for (let i = 0; i < count; i++) {
       const keyCode = generateKeyCode();
       
-      const key = await base44.asServiceRole.entities.LessonUnlockKey.create({
+      const keyData = {
         key_code: keyCode,
         lesson_id,
         course_id,
-        assigned_to_email: assigned_to_email || null,
         generated_by: user.email,
-        is_used: false
-      });
+        is_active: true,
+        used_by_emails: []
+      };
+
+      if (max_uses) keyData.max_uses = max_uses;
+      if (expires_at) keyData.expires_at = expires_at;
+
+      const key = await base44.asServiceRole.entities.LessonUnlockKey.create(keyData);
 
       generatedKeys.push(key);
     }
