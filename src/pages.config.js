@@ -48,6 +48,9 @@ import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import Library from './pages/Library';
 import Community from './pages/Community';
 import ArtGallery from './pages/ArtGallery';
+import AdminLibrary from './pages/AdminLibrary';
+import AdminQuotes from './pages/AdminQuotes';
+import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import __Layout from './Layout.jsx';
 
 
@@ -102,6 +105,9 @@ export const PAGES = {
     "Library": Library,
     "Community": Community,
     "ArtGallery": ArtGallery,
+    "AdminLibrary": AdminLibrary,
+    "AdminQuotes": AdminQuotes,
+    "AdminStudentOfMonth": AdminStudentOfMonth,
 }
 
 export const pagesConfig = {

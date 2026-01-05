@@ -13,6 +13,10 @@ import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget
 import RSSFeedWidget from '@/components/feed/RSSFeedWidget';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import WeatherWidget from '@/components/home/WeatherWidget';
+import ClockWidget from '@/components/home/ClockWidget';
+import QuoteWidget from '@/components/home/QuoteWidget';
+import StudentOfMonthWidget from '@/components/home/StudentOfMonthWidget';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -264,6 +268,18 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Home Widgets */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          <WeatherWidget />
+          <ClockWidget />
+          <div className="sm:col-span-2">
+            <QuoteWidget />
+          </div>
+        </div>
+        <StudentOfMonthWidget />
+      </section>
 
       {/* Snap Finance Style Promo Banner */}
       <section className="bg-[#003366] py-16 md:py-20">
