@@ -92,6 +92,12 @@ export default function CourseDetails() {
     enabled: !!courseId && !!course?.instructor,
   });
 
+  const { data: lessonKeys = [] } = useQuery({
+    queryKey: ['lesson-keys', courseId],
+    queryFn: () => base44.entities.LessonUnlockKey.filter({ course_id: courseId }),
+    enabled: !!courseId,
+  });
+
   const enrollMutation = useMutation({
     mutationFn: () => base44.entities.Enrollment.create({
       course_id: courseId,
@@ -378,10 +384,12 @@ export default function CourseDetails() {
                         </AccordionTrigger>
                         <AccordionContent className="pb-0">
                           <div className="divide-y divide-gray-50">
-                           {sectionLessons.map((lesson, index) => {
-                             const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
-                             const canAccess = isEnrolled || lesson.is_preview;
-                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
+                          {sectionLessons.map((lesson, index) => {
+                            const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
+                            const hasActiveKey = lessonKeys.some(k => k.lesson_id === lesson.id && k.is_active);
+                            const isFirstLesson = index === 0 && sectionLessons === Object.values(sections)[0];
+                            const canAccess = (user?.role === 'admin' || user?.is_tutor) || isFirstLesson || hasActiveKey || lesson.is_preview;
+                            const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
 
                              return (
                                <div

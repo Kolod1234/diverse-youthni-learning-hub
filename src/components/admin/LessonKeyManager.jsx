@@ -53,6 +53,26 @@ export default function LessonKeyManager() {
     }
   });
 
+  const toggleKeyStatusMutation = useMutation({
+    mutationFn: async ({ keyId, isActive }) => {
+      await base44.entities.LessonUnlockKey.update(keyId, { is_active: !isActive });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['unlock-keys']);
+      toast.success('Key status updated');
+    }
+  });
+
+  const deleteKeyMutation = useMutation({
+    mutationFn: async (keyId) => {
+      await base44.entities.LessonUnlockKey.delete(keyId);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['unlock-keys']);
+      toast.success('Key deleted');
+    }
+  });
+
   const handleGenerate = () => {
     if (!formData.course_id || !formData.lesson_id) {
       toast.error('Please select course and lesson');
@@ -69,10 +89,10 @@ export default function LessonKeyManager() {
   const filteredKeys = keys.filter(key => {
     const matchesSearch = !searchQuery || 
       key.key_code.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      key.assigned_to_email?.toLowerCase().includes(searchQuery.toLowerCase());
+      key.used_by_emails?.some(email => email.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesStatus = filterStatus === 'all' || 
-      (filterStatus === 'used' && key.is_used) ||
-      (filterStatus === 'unused' && !key.is_used);
+      (filterStatus === 'active' && key.is_active) ||
+      (filterStatus === 'inactive' && !key.is_active);
     return matchesSearch && matchesStatus;
   });
 
@@ -110,8 +130,8 @@ export default function LessonKeyManager() {
             className="px-3 py-2 border rounded-lg"
           >
             <option value="all">All Keys</option>
-            <option value="unused">Unused</option>
-            <option value="used">Used</option>
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
           </select>
         </div>
       </Card>
@@ -123,9 +143,8 @@ export default function LessonKeyManager() {
               <tr>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Key Code</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Lesson</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Assigned To</th>
                 <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Status</th>
-                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Used By</th>
+                <th className="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase">Uses</th>
                 <th className="px-4 py-3 text-right text-xs font-medium text-gray-500 uppercase">Actions</th>
               </tr>
             </thead>
@@ -147,31 +166,55 @@ export default function LessonKeyManager() {
                         <p className="text-xs text-gray-500">{course?.title || 'Unknown Course'}</p>
                       </div>
                     </td>
-                    <td className="px-4 py-3 text-sm">
-                      {key.assigned_to_email ? (
-                        <Badge variant="outline">{key.assigned_to_email}</Badge>
-                      ) : (
-                        <span className="text-gray-400">Anyone</span>
-                      )}
-                    </td>
                     <td className="px-4 py-3">
-                      {key.is_used ? (
-                        <Badge className="bg-green-100 text-green-700">Used</Badge>
+                      {key.is_active ? (
+                        <Badge className="bg-green-100 text-green-700">Active</Badge>
                       ) : (
-                        <Badge className="bg-orange-100 text-orange-700">Unused</Badge>
+                        <Badge className="bg-gray-100 text-gray-700">Suspended</Badge>
                       )}
                     </td>
-                    <td className="px-4 py-3 text-sm text-gray-600">
-                      {key.used_by || '-'}
+                    <td className="px-4 py-3 text-sm">
+                      <div>
+                        <span className="font-medium text-gray-900">
+                          {key.used_by_emails?.length || 0}
+                        </span>
+                        {key.max_uses && <span className="text-gray-500">/{key.max_uses}</span>}
+                        <span className="text-gray-500"> {key.used_by_emails?.length === 1 ? 'use' : 'uses'}</span>
+                      </div>
                     </td>
                     <td className="px-4 py-3 text-right">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => copyToClipboard(key.key_code)}
-                      >
-                        <Copy className="w-4 h-4" />
-                      </Button>
+                      <div className="flex items-center justify-end gap-2">
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => copyToClipboard(key.key_code)}
+                          title="Copy key"
+                        >
+                          <Copy className="w-4 h-4" />
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => toggleKeyStatusMutation.mutate({ keyId: key.id, isActive: key.is_active })}
+                          title={key.is_active ? 'Suspend key' : 'Activate key'}
+                          className={key.is_active ? 'text-orange-600' : 'text-green-600'}
+                        >
+                          {key.is_active ? 'Suspend' : 'Activate'}
+                        </Button>
+                        <Button
+                          variant="ghost"
+                          size="sm"
+                          onClick={() => {
+                            if (confirm('Delete this key? This cannot be undone.')) {
+                              deleteKeyMutation.mutate(key.id);
+                            }
+                          }}
+                          className="text-red-600"
+                          title="Delete key"
+                        >
+                          Delete
+                        </Button>
+                      </div>
                     </td>
                   </tr>
                 );
@@ -221,17 +264,6 @@ export default function LessonKeyManager() {
             </div>
 
             <div>
-              <Label>Assign to Student (optional)</Label>
-              <Input
-                value={formData.assigned_to_email}
-                onChange={(e) => setFormData({ ...formData, assigned_to_email: e.target.value })}
-                placeholder="student@email.com"
-                type="email"
-              />
-              <p className="text-xs text-gray-500 mt-1">Leave blank to create generic keys</p>
-            </div>
-
-            <div>
               <Label>Number of Keys</Label>
               <Input
                 type="number"
@@ -240,6 +272,7 @@ export default function LessonKeyManager() {
                 value={formData.key_count}
                 onChange={(e) => setFormData({ ...formData, key_count: parseInt(e.target.value) || 1 })}
               />
+              <p className="text-xs text-gray-500 mt-1">Keys can be used by multiple students</p>
             </div>
 
             <div className="flex gap-3">
