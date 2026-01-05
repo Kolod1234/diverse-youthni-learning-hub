@@ -360,10 +360,28 @@ export default function Layout({ children, currentPageName }) {
                           Manage RSS Feed
                         </Link>
                       </DropdownMenuItem>
-                    </>
-                  )}
-                </DropdownMenuContent>
-              </DropdownMenu>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer">
+                          <BookOpen className="w-4 h-4 mr-2" />
+                          Manage Library
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Manage Quotes
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer">
+                          <Award className="w-4 h-4 mr-2" />
+                          Student of Month
+                        </Link>
+                      </DropdownMenuItem>
+                      </>
+                      )}
+                      </DropdownMenuContent>
+                      </DropdownMenu>
             </nav>
 
             {/* Right Side */}
