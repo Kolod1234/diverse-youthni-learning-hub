@@ -31,10 +31,10 @@ export default function WeatherWidget() {
 
   if (loading) {
     return (
-      <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50">
+      <Card className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700">
         <div className="animate-pulse">
-          <div className="h-4 bg-gray-200 rounded w-20 mb-2"></div>
-          <div className="h-8 bg-gray-200 rounded w-16"></div>
+          <div className="h-4 bg-slate-700 rounded w-20 mb-2"></div>
+          <div className="h-8 bg-slate-700 rounded w-16"></div>
         </div>
       </Card>
     );
@@ -45,17 +45,17 @@ export default function WeatherWidget() {
   const WeatherIcon = weather.temperature > 20 ? Sun : weather.weathercode > 50 ? CloudRain : Cloud;
 
   return (
-    <Card className="p-4 bg-gradient-to-br from-blue-50 to-indigo-50 border-0 shadow-sm">
+    <Card className="p-4 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700 shadow-lg">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-sm text-gray-600 mb-1">Weather</p>
-          <p className="text-3xl font-bold text-gray-900">{Math.round(weather.temperature)}°C</p>
-          <p className="text-xs text-gray-500 mt-1 flex items-center gap-1">
+          <p className="text-xs text-slate-400 mb-1">Weather</p>
+          <p className="text-3xl font-bold text-white">{Math.round(weather.temperature)}°C</p>
+          <p className="text-xs text-slate-500 mt-1 flex items-center gap-1">
             <Wind className="w-3 h-3" />
             {weather.windspeed} km/h
           </p>
         </div>
-        <WeatherIcon className="w-12 h-12 text-blue-600" />
+        <WeatherIcon className="w-12 h-12 text-blue-400" />
       </div>
     </Card>
   );

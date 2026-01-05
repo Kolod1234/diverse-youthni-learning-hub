@@ -17,6 +17,11 @@ import WeatherWidget from '@/components/home/WeatherWidget';
 import ClockWidget from '@/components/home/ClockWidget';
 import QuoteWidget from '@/components/home/QuoteWidget';
 import StudentOfMonthWidget from '@/components/home/StudentOfMonthWidget';
+import CalendarWidget from '@/components/home/CalendarWidget';
+import UpcomingLessonsWidget from '@/components/home/UpcomingLessonsWidget';
+import FactOfDayWidget from '@/components/home/FactOfDayWidget';
+import RSSNotificationsWidget from '@/components/home/RSSNotificationsWidget';
+import SocialFeedWidget from '@/components/home/SocialFeedWidget';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -270,15 +275,28 @@ export default function Home() {
       )}
 
       {/* Home Widgets */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-          <WeatherWidget />
-          <ClockWidget />
-          <div className="sm:col-span-2">
-            <QuoteWidget />
+      <section className="bg-slate-950 py-12">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+            <WeatherWidget />
+            <ClockWidget />
+            <CalendarWidget />
+            <UpcomingLessonsWidget />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <div className="lg:col-span-2">
+              <QuoteWidget />
+            </div>
+            <FactOfDayWidget />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <StudentOfMonthWidget />
+            <RSSNotificationsWidget />
+          </div>
+          <div className="mt-4">
+            <SocialFeedWidget />
           </div>
         </div>
-        <StudentOfMonthWidget />
       </section>
 
       {/* Snap Finance Style Promo Banner */}

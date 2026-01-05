@@ -15,12 +15,12 @@ export default function QuoteWidget() {
   if (!randomQuote) return null;
 
   return (
-    <Card className="p-6 bg-gradient-to-br from-amber-50 to-orange-50 border-0 shadow-sm">
-      <Quote className="w-8 h-8 text-amber-600 mb-3" />
-      <blockquote className="text-lg font-medium text-gray-900 mb-2">
+    <Card className="p-6 bg-gradient-to-br from-slate-900 to-slate-800 border-slate-700 shadow-lg">
+      <Quote className="w-8 h-8 text-amber-400 mb-3" />
+      <blockquote className="text-base font-medium text-white mb-2 leading-relaxed">
         "{randomQuote.quote}"
       </blockquote>
-      <p className="text-sm text-gray-600">— {randomQuote.author}</p>
+      <p className="text-sm text-slate-400">— {randomQuote.author}</p>
     </Card>
   );
 }

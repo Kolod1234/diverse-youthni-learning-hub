@@ -51,6 +51,7 @@ import ArtGallery from './pages/ArtGallery';
 import AdminLibrary from './pages/AdminLibrary';
 import AdminQuotes from './pages/AdminQuotes';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
+import AdminDailyFacts from './pages/AdminDailyFacts';
 import __Layout from './Layout.jsx';
 
 
@@ -108,6 +109,7 @@ export const PAGES = {
     "AdminLibrary": AdminLibrary,
     "AdminQuotes": AdminQuotes,
     "AdminStudentOfMonth": AdminStudentOfMonth,
+    "AdminDailyFacts": AdminDailyFacts,
 }
 
 export const pagesConfig = {
