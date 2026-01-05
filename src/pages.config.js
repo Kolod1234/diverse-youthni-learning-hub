@@ -45,6 +45,9 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import Library from './pages/Library';
+import Community from './pages/Community';
+import ArtGallery from './pages/ArtGallery';
 import __Layout from './Layout.jsx';
 
 
@@ -96,6 +99,9 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "Library": Library,
+    "Community": Community,
+    "ArtGallery": ArtGallery,
 }
 
 export const pagesConfig = {
