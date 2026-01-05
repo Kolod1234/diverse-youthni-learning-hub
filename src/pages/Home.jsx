@@ -22,6 +22,7 @@ import UpcomingLessonsWidget from '@/components/home/UpcomingLessonsWidget';
 import FactOfDayWidget from '@/components/home/FactOfDayWidget';
 import RSSNotificationsWidget from '@/components/home/RSSNotificationsWidget';
 import SocialFeedWidget from '@/components/home/SocialFeedWidget';
+import DiscoverWidget from '@/components/home/DiscoverWidget';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -281,17 +282,20 @@ export default function Home() {
             <WeatherWidget />
             <ClockWidget />
             <CalendarWidget />
-            <UpcomingLessonsWidget />
+            <div className="sm:col-span-2 lg:col-span-1">
+              <DiscoverWidget />
+            </div>
           </div>
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <div className="lg:col-span-2">
+            <UpcomingLessonsWidget />
+            <FactOfDayWidget />
+            <RSSNotificationsWidget />
+          </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <div className="lg:col-span-1">
               <QuoteWidget />
             </div>
-            <FactOfDayWidget />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <StudentOfMonthWidget />
-            <RSSNotificationsWidget />
           </div>
           <div className="mt-4">
             <SocialFeedWidget />

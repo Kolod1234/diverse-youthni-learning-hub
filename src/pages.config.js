@@ -1,13 +1,19 @@
 import Achievements from './pages/Achievements';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminCourseBuilder from './pages/AdminCourseBuilder';
+import AdminDailyFacts from './pages/AdminDailyFacts';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
+import AdminLibrary from './pages/AdminLibrary';
 import AdminPageBuilder from './pages/AdminPageBuilder';
+import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
+import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
+import ArtGallery from './pages/ArtGallery';
 import BookSession from './pages/BookSession';
+import Community from './pages/Community';
 import ContactUs from './pages/ContactUs';
 import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
 import CourseAnalytics from './pages/CourseAnalytics';
@@ -26,6 +32,7 @@ import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
 import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
+import Library from './pages/Library';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
 import Profile from './pages/Profile';
@@ -45,13 +52,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import Library from './pages/Library';
-import Community from './pages/Community';
-import ArtGallery from './pages/ArtGallery';
-import AdminLibrary from './pages/AdminLibrary';
-import AdminQuotes from './pages/AdminQuotes';
-import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
-import AdminDailyFacts from './pages/AdminDailyFacts';
+import AdminDiscover from './pages/AdminDiscover';
 import __Layout from './Layout.jsx';
 
 
@@ -59,13 +60,19 @@ export const PAGES = {
     "Achievements": Achievements,
     "AdminCoordinators": AdminCoordinators,
     "AdminCourseBuilder": AdminCourseBuilder,
+    "AdminDailyFacts": AdminDailyFacts,
     "AdminDashboard": AdminDashboard,
     "AdminLearningObjectives": AdminLearningObjectives,
+    "AdminLibrary": AdminLibrary,
     "AdminPageBuilder": AdminPageBuilder,
+    "AdminQuotes": AdminQuotes,
     "AdminRSSFeed": AdminRSSFeed,
+    "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
+    "ArtGallery": ArtGallery,
     "BookSession": BookSession,
+    "Community": Community,
     "ContactUs": ContactUs,
     "CoordinatorsDashboard": CoordinatorsDashboard,
     "CourseAnalytics": CourseAnalytics,
@@ -84,6 +91,7 @@ export const PAGES = {
     "LessonPlayer": LessonPlayer,
     "LessonPlayerClassic": LessonPlayerClassic,
     "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
+    "Library": Library,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
     "Profile": Profile,
@@ -103,13 +111,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "Library": Library,
-    "Community": Community,
-    "ArtGallery": ArtGallery,
-    "AdminLibrary": AdminLibrary,
-    "AdminQuotes": AdminQuotes,
-    "AdminStudentOfMonth": AdminStudentOfMonth,
-    "AdminDailyFacts": AdminDailyFacts,
+    "AdminDiscover": AdminDiscover,
 }
 
 export const pagesConfig = {
