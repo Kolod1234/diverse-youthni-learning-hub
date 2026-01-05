@@ -496,6 +496,18 @@ export default function Layout({ children, currentPageName }) {
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage RSS Feed</span>
                         </Link>
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <BookOpen className="w-5 h-5" />
+                          <span>Manage Library</span>
+                        </Link>
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <MessageSquare className="w-5 h-5" />
+                          <span>Manage Quotes</span>
+                        </Link>
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <Award className="w-5 h-5" />
+                          <span>Student of Month</span>
+                        </Link>
                       </>
                       )}
                       </div>
