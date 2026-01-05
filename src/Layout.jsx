@@ -378,6 +378,12 @@ export default function Layout({ children, currentPageName }) {
                           Student of Month
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer">
+                          <MessageSquare className="w-4 h-4 mr-2" />
+                          Manage Facts
+                        </Link>
+                      </DropdownMenuItem>
                       </>
                       )}
                       </DropdownMenuContent>
@@ -507,6 +513,10 @@ export default function Layout({ children, currentPageName }) {
                         <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                           <Award className="w-5 h-5" />
                           <span>Student of Month</span>
+                        </Link>
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <MessageSquare className="w-5 h-5" />
+                          <span>Manage Facts</span>
                         </Link>
                       </>
                       )}
