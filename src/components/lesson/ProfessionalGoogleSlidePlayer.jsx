@@ -6,7 +6,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Input } from '@/components/ui/input';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { ChevronLeft, ChevronRight, Maximize, Minimize, RotateCcw, StickyNote, Sparkles, Keyboard, X, Film, Bookmark, Search, Languages, FileText, BookOpen } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Maximize, Minimize, RotateCcw, StickyNote, Sparkles, Keyboard, X, Film, Bookmark, Search, Languages, FileText, BookOpen, Clock, Play, Pause, Moon, Sun, Download, GitCompare } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
@@ -33,11 +33,46 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
   const [slideSummary, setSlideSummary] = useState('');
   const [translatedContent, setTranslatedContent] = useState('');
   const [targetLanguage, setTargetLanguage] = useState('es');
+  const [viewedSlides, setViewedSlides] = useState([]);
+  const [startTime, setStartTime] = useState(Date.now());
+  const [elapsedTime, setElapsedTime] = useState(0);
+  const [autoAdvance, setAutoAdvance] = useState(false);
+  const [autoAdvanceDelay, setAutoAdvanceDelay] = useState(5);
+  const [darkMode, setDarkMode] = useState(false);
+  const [compareMode, setCompareMode] = useState(false);
+  const [compareSlide, setCompareSlide] = useState(null);
   const iframeRef = useRef(null);
+  const timerRef = useRef(null);
 
   useEffect(() => {
     setCurrentNote(notes[currentSlide] || '');
+    if (!viewedSlides.includes(currentSlide)) {
+      setViewedSlides(prev => [...prev, currentSlide]);
+    }
   }, [currentSlide, notes]);
+
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setElapsedTime(Math.floor((Date.now() - startTime) / 1000));
+    }, 1000);
+    return () => clearInterval(interval);
+  }, [startTime]);
+
+  useEffect(() => {
+    if (autoAdvance && !isLoading) {
+      timerRef.current = setTimeout(() => {
+        if (currentSlide < totalSlides) {
+          setCurrentSlide(prev => prev + 1);
+        } else {
+          setAutoAdvance(false);
+          toast.success('Presentation complete!');
+        }
+      }, autoAdvanceDelay * 1000);
+    }
+    return () => {
+      if (timerRef.current) clearTimeout(timerRef.current);
+    };
+  }, [autoAdvance, currentSlide, autoAdvanceDelay, isLoading, totalSlides]);
 
   useEffect(() => {
     const handleKeyPress = (e) => {
@@ -54,6 +89,9 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
         e.preventDefault();
         setShowSearch(true);
       }
+      if (e.key === 'd' || e.key === 'D') setDarkMode(prev => !prev);
+      if (e.key === 'c' || e.key === 'C') setCompareMode(prev => !prev);
+      if (e.key === 'p' || e.key === 'P') setAutoAdvance(prev => !prev);
       if (e.key === '?' || e.key === '/') setShowKeyboardHelp(true);
       if (e.key === 'Escape') {
         if (isFullscreen) exitFullscreen();
@@ -314,14 +352,24 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
         }
 
         .controls-bar {
-          background: rgba(0,0,0,0.95);
+          background: ${darkMode ? 'rgba(0,0,0,0.98)' : 'rgba(0,0,0,0.95)'};
           backdrop-filter: blur(10px);
-          border-top: 1px solid rgba(255,255,255,0.1);
+          border-top: 1px solid ${darkMode ? 'rgba(255,255,255,0.05)' : 'rgba(255,255,255,0.1)'};
           padding: 0.75rem 1rem;
           display: flex;
           align-items: center;
           justify-content: space-between;
           gap: 0.75rem;
+        }
+
+        .progress-bar {
+          position: absolute;
+          top: 0;
+          left: 0;
+          height: 3px;
+          background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+          transition: width 0.3s;
+          z-index: 10;
         }
 
         @media (max-width: 640px) {
@@ -398,22 +446,50 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
         onTouchMove={onTouchMove}
         onTouchEnd={onTouchEnd}
       >
+        <div className="progress-bar" style={{ width: `${calculateProgress()}%` }} />
+        
         <div className="slide-wrapper">
           {isLoading && (
             <div className="loading-overlay">
               <div className="animate-spin rounded-full h-12 w-12 border-4 border-white border-t-transparent"></div>
             </div>
           )}
-          <iframe 
-            ref={iframeRef}
-            key={iframeKey}
-            src={embedUrl}
-            className={`slide-iframe ${isLoading ? 'loading' : ''}`}
-            allowFullScreen={true}
-            allow="fullscreen"
-            onLoad={() => setIsLoading(false)}
-            aria-label={`Slide ${currentSlide}`}
-          />
+          
+          {compareMode && compareSlide ? (
+            <div className="w-full h-full flex gap-2 p-4">
+              <div className="flex-1 relative">
+                <iframe 
+                  src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&slide=${currentSlide}`}
+                  className="w-full h-full border-2 border-blue-500 rounded"
+                  allowFullScreen={true}
+                />
+                <div className="absolute top-2 left-2 bg-blue-500 text-white px-2 py-1 rounded text-sm">
+                  Slide {currentSlide}
+                </div>
+              </div>
+              <div className="flex-1 relative">
+                <iframe 
+                  src={`https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&slide=${compareSlide}`}
+                  className="w-full h-full border-2 border-purple-500 rounded"
+                  allowFullScreen={true}
+                />
+                <div className="absolute top-2 left-2 bg-purple-500 text-white px-2 py-1 rounded text-sm">
+                  Slide {compareSlide}
+                </div>
+              </div>
+            </div>
+          ) : (
+            <iframe 
+              ref={iframeRef}
+              key={iframeKey}
+              src={embedUrl}
+              className={`slide-iframe ${isLoading ? 'loading' : ''}`}
+              allowFullScreen={true}
+              allow="fullscreen"
+              onLoad={() => setIsLoading(false)}
+              aria-label={`Slide ${currentSlide}`}
+            />
+          )}
         </div>
 
         <div className="controls-bar">
@@ -439,11 +515,31 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
             </button>
           </div>
 
-          <div className="slide-counter" role="status" aria-live="polite">
-            Slide {currentSlide} / {totalSlides}
+          <div className="flex flex-col items-center gap-1">
+            <div className="slide-counter" role="status" aria-live="polite">
+              {currentSlide} / {totalSlides}
+            </div>
+            <div className="flex items-center gap-2 text-xs">
+              <span className="text-white/60 flex items-center gap-1">
+                <Clock className="w-3 h-3" />
+                {formatTime(elapsedTime)}
+              </span>
+              <span className="text-white/60">
+                {calculateProgress()}%
+              </span>
+            </div>
           </div>
 
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setAutoAdvance(prev => !prev)}
+              className={`control-btn ${autoAdvance ? 'bg-green-500/30' : ''}`}
+              title="Auto-advance (P)"
+              aria-label="Toggle auto-advance"
+            >
+              {autoAdvance ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+            </button>
+
             <button 
               onClick={() => setShowThumbnails(prev => !prev)}
               className={`control-btn ${showThumbnails ? 'bg-blue-500/30' : ''}`}
@@ -451,6 +547,20 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               aria-label="Toggle thumbnails"
             >
               <Film className="w-5 h-5" />
+            </button>
+
+            <button 
+              onClick={() => {
+                if (!compareMode) {
+                  setCompareSlide(currentSlide > 1 ? currentSlide - 1 : 2);
+                }
+                setCompareMode(prev => !prev);
+              }}
+              className={`control-btn hidden lg:flex ${compareMode ? 'bg-purple-500/30' : ''}`}
+              title="Compare slides (C)"
+              aria-label="Compare slides"
+            >
+              <GitCompare className="w-5 h-5" />
             </button>
 
             <button 
@@ -487,6 +597,15 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               aria-label="Open AI assistant"
             >
               <Sparkles className="w-5 h-5" />
+            </button>
+
+            <button 
+              onClick={() => setDarkMode(prev => !prev)}
+              className="control-btn hidden md:flex"
+              title="Dark mode (D)"
+              aria-label="Toggle dark mode"
+            >
+              {darkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
             </button>
 
             <button 
@@ -539,9 +658,17 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               className="min-h-[150px]"
               aria-label="Slide notes"
             />
-            <Button onClick={handleSaveNote} className="w-full">
-              Save Note
-            </Button>
+            <div className="flex gap-2">
+              <Button onClick={handleSaveNote} className="flex-1">
+                Save Note
+              </Button>
+              {Object.keys(notes).length > 0 && (
+                <Button onClick={exportNotes} variant="outline" className="flex items-center gap-2">
+                  <Download className="w-4 h-4" />
+                  Export All
+                </Button>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -696,13 +823,32 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
         </DialogContent>
       </Dialog>
 
+      {/* Auto-Advance Settings */}
+      {autoAdvance && (
+        <div className="fixed top-20 right-4 bg-green-500/90 backdrop-blur-lg text-white px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-3">
+          <Play className="w-4 h-4" />
+          <span className="text-sm">Auto-advancing every {autoAdvanceDelay}s</span>
+          <select
+            value={autoAdvanceDelay}
+            onChange={(e) => setAutoAdvanceDelay(Number(e.target.value))}
+            className="bg-white/20 rounded px-2 py-1 text-sm"
+          >
+            <option value="3">3s</option>
+            <option value="5">5s</option>
+            <option value="10">10s</option>
+            <option value="15">15s</option>
+            <option value="30">30s</option>
+          </select>
+        </div>
+      )}
+
       {/* Thumbnails Panel */}
       {showThumbnails && (
         <div className="fixed bottom-20 left-0 right-0 bg-black/95 backdrop-blur-lg border-t border-white/10 z-50">
           <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
             <h3 className="text-white font-semibold flex items-center gap-2">
               <Film className="w-4 h-4" />
-              Slide Thumbnails
+              Slide Thumbnails ({viewedSlides.length}/{totalSlides} viewed)
             </h3>
             <button onClick={() => setShowThumbnails(false)} className="text-white/70 hover:text-white">
               <X className="w-5 h-5" />
@@ -717,9 +863,10 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
                   className={`
                     relative flex-shrink-0 w-40 h-24 rounded border-2 transition-all
                     ${currentSlide === slideNum ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-white/20 hover:border-white/40'}
+                    ${viewedSlides.includes(slideNum) ? 'opacity-100' : 'opacity-50'}
                   `}
                 >
-                  <div className="w-full h-full bg-white/5 rounded flex items-center justify-center">
+                  <div className={`w-full h-full rounded flex items-center justify-center ${viewedSlides.includes(slideNum) ? 'bg-green-500/10' : 'bg-white/5'}`}>
                     <span className="text-white/50 text-sm">Slide {slideNum}</span>
                   </div>
                   {bookmarks.includes(slideNum) && (
@@ -728,6 +875,9 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
                   {notes[slideNum] && (
                     <StickyNote className="absolute bottom-1 right-1 w-4 h-4 text-blue-400" />
                   )}
+                  {viewedSlides.includes(slideNum) && (
+                    <div className="absolute top-1 left-1 w-2 h-2 bg-green-400 rounded-full" />
+                  )}
                   <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white text-xs py-1 text-center">
                     {slideNum}
                   </div>
@@ -735,6 +885,24 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               ))}
             </div>
           </ScrollArea>
+        </div>
+      )}
+
+      {/* Compare Mode Panel */}
+      {compareMode && (
+        <div className="fixed top-20 left-4 bg-purple-500/90 backdrop-blur-lg text-white px-4 py-2 rounded-lg shadow-lg z-50">
+          <div className="flex items-center gap-3">
+            <GitCompare className="w-4 h-4" />
+            <span className="text-sm">Compare with slide:</span>
+            <Input
+              type="number"
+              min="1"
+              max={totalSlides}
+              value={compareSlide}
+              onChange={(e) => setCompareSlide(Number(e.target.value))}
+              className="w-16 h-8 bg-white/20 border-white/30 text-white text-center"
+            />
+          </div>
         </div>
       )}
 
@@ -814,8 +982,11 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
                 { keys: ['←', 'H'], action: 'Previous slide' },
                 { keys: ['→', 'L'], action: 'Next slide' },
                 { keys: ['F'], action: 'Toggle fullscreen' },
+                { keys: ['P'], action: 'Auto-advance play/pause' },
                 { keys: ['T'], action: 'Toggle thumbnails' },
+                { keys: ['C'], action: 'Compare mode' },
                 { keys: ['B'], action: 'Toggle bookmark' },
+                { keys: ['D'], action: 'Toggle dark mode' },
                 { keys: ['N'], action: 'Open notes' },
                 { keys: ['A'], action: 'AI assistant' },
                 { keys: ['Ctrl', 'F'], action: 'Search slides' },
