@@ -241,6 +241,32 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     }
   };
 
+  const formatTime = (seconds) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
+  const calculateProgress = () => {
+    return Math.round((viewedSlides.length / totalSlides) * 100);
+  };
+
+  const exportNotes = () => {
+    const notesText = Object.entries(notes)
+      .sort(([a], [b]) => Number(a) - Number(b))
+      .map(([slide, note]) => `Slide ${slide}:\n${note}\n\n`)
+      .join('---\n\n');
+    
+    const blob = new Blob([notesText], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `lesson-notes-${new Date().toISOString().split('T')[0]}.txt`;
+    a.click();
+    URL.revokeObjectURL(url);
+    toast.success('Notes exported successfully');
+  };
+
   if (!googleSlidesUrl) {
     return (
       <div className="flex items-center justify-center h-96 bg-gray-100 rounded-lg">
