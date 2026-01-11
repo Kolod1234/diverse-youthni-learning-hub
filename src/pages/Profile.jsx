@@ -15,6 +15,9 @@ import {
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
+import AccountSettings from '@/components/profile/AccountSettings';
+import EnrolledCourses from '@/components/profile/EnrolledCourses';
+import ProgressStats from '@/components/profile/ProgressStats';
 
 export default function Profile() {
   const [user, setUser] = useState(null);
@@ -131,9 +134,16 @@ export default function Profile() {
           </Card>
         </motion.div>
 
+        {/* Progress Stats */}
+        <ProgressStats user={user} />
+
         {/* Tabs */}
-        <Tabs defaultValue="overview" className="w-full">
+        <Tabs defaultValue="courses" className="w-full mt-8">
           <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
+            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
+              <BookOpen className="w-4 h-4 mr-2" />
+              My Courses
+            </TabsTrigger>
             <TabsTrigger value="overview" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
               <User className="w-4 h-4 mr-2" />
               Overview
@@ -151,6 +161,11 @@ export default function Profile() {
               Settings
             </TabsTrigger>
           </TabsList>
+
+          {/* My Courses Tab */}
+          <TabsContent value="courses">
+            <EnrolledCourses user={user} />
+          </TabsContent>
 
           {/* Overview Tab */}
           <TabsContent value="overview">
@@ -361,60 +376,64 @@ export default function Profile() {
 
           {/* Settings Tab */}
           <TabsContent value="settings">
-            <div className="grid lg:grid-cols-2 gap-6">
-              <Card className="p-6 border-0 shadow-sm">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <Bell className="w-5 h-5" />
-                  Notifications
-                </h2>
-                <div className="space-y-4">
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">Email Notifications</p>
-                      <p className="text-sm text-gray-500">Receive updates about your courses</p>
+            <div className="space-y-6">
+              <AccountSettings user={user} />
+              
+              <div className="grid lg:grid-cols-2 gap-6">
+                <Card className="p-6 border-0 shadow-sm">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                    <Bell className="w-5 h-5" />
+                    Notifications
+                  </h2>
+                  <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">Email Notifications</p>
+                        <p className="text-sm text-gray-500">Receive updates about your courses</p>
+                      </div>
+                      <input type="checkbox" className="toggle" defaultChecked />
                     </div>
-                    <input type="checkbox" className="toggle" defaultChecked />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">Course Reminders</p>
-                      <p className="text-sm text-gray-500">Get reminded to continue learning</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">Course Reminders</p>
+                        <p className="text-sm text-gray-500">Get reminded to continue learning</p>
+                      </div>
+                      <input type="checkbox" className="toggle" defaultChecked />
                     </div>
-                    <input type="checkbox" className="toggle" defaultChecked />
-                  </div>
-                  <div className="flex items-center justify-between">
-                    <div>
-                      <p className="font-medium text-gray-900">Achievement Alerts</p>
-                      <p className="text-sm text-gray-500">Celebrate your milestones</p>
+                    <div className="flex items-center justify-between">
+                      <div>
+                        <p className="font-medium text-gray-900">Achievement Alerts</p>
+                        <p className="text-sm text-gray-500">Celebrate your milestones</p>
+                      </div>
+                      <input type="checkbox" className="toggle" defaultChecked />
                     </div>
-                    <input type="checkbox" className="toggle" defaultChecked />
                   </div>
-                </div>
-              </Card>
+                </Card>
 
-              <Card className="p-6 border-0 shadow-sm">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
-                  <Shield className="w-5 h-5" />
-                  Privacy & Security
-                </h2>
-                <div className="space-y-4">
-                  <div>
-                    <p className="font-medium text-gray-900 mb-2">Account Email</p>
-                    <Input value={user?.email} disabled />
+                <Card className="p-6 border-0 shadow-sm">
+                  <h2 className="text-xl font-semibold text-gray-900 mb-6 flex items-center gap-2">
+                    <Shield className="w-5 h-5" />
+                    Privacy & Security
+                  </h2>
+                  <div className="space-y-4">
+                    <div>
+                      <p className="font-medium text-gray-900 mb-2">Account Email</p>
+                      <Input value={user?.email} disabled />
+                    </div>
+                    <div>
+                      <p className="font-medium text-gray-900 mb-2">Password</p>
+                      <Button variant="outline" className="w-full">
+                        Change Password
+                      </Button>
+                    </div>
+                    <div className="pt-4 border-t border-gray-200">
+                      <Button variant="destructive" className="w-full">
+                        Delete Account
+                      </Button>
+                    </div>
                   </div>
-                  <div>
-                    <p className="font-medium text-gray-900 mb-2">Password</p>
-                    <Button variant="outline" className="w-full">
-                      Change Password
-                    </Button>
-                  </div>
-                  <div className="pt-4 border-t border-gray-200">
-                    <Button variant="destructive" className="w-full">
-                      Delete Account
-                    </Button>
-                  </div>
-                </div>
-              </Card>
+                </Card>
+              </div>
             </div>
           </TabsContent>
         </Tabs>
