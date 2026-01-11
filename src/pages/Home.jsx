@@ -775,7 +775,7 @@ export default function Home() {
               News & Announcements
             </h2>
             <p className="text-lg text-gray-600">Stay informed with our latest news and updates</p>
-          </div>
+          </motion.div>
           <RSSFeedWidget limit={6} />
         </div>
       </section>
