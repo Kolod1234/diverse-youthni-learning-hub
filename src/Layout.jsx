@@ -22,9 +22,10 @@ import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
+import ThemeProvider from '@/components/theme/ThemeProvider';
 import { motion } from 'framer-motion';
 
-export default function Layout({ children, currentPageName }) {
+function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
@@ -618,5 +619,13 @@ export default function Layout({ children, currentPageName }) {
         </div>
       </footer>
     </div>
-  );
-}
+    );
+    }
+
+    export default function Layout({ children, currentPageName }) {
+    return (
+    <ThemeProvider>
+    <LayoutContent children={children} currentPageName={currentPageName} />
+    </ThemeProvider>
+    );
+    }
