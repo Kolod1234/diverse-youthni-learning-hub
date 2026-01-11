@@ -84,32 +84,7 @@ export default function AdminReviews() {
           <div className="grid md:grid-cols-2 gap-4">
             {reviews.map((review) => (
               <Card key={review.id} className="p-6">
-                <div className="flex items-start justify-between mb-4">
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2 mb-2">
-                      <div className="flex gap-1">
-                        {[...Array(5)].map((_, i) => (
-                          <Star
-                            key={i}
-                            className={`w-4 h-4 ${
-                              i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-xs text-gray-500">
-                        {review.rating_type || 'course'} review
-                      </span>
-                    </div>
-                    <p className="text-sm text-gray-700 mb-3">"{review.comment}"</p>
-                    <div className="flex items-center gap-2 text-xs text-gray-500">
-                      <span className="font-medium">{review.user_name || review.created_by}</span>
-                      <span>•</span>
-                      <span>{new Date(review.created_date).toLocaleDateString()}</span>
-                    </div>
-                  </div>
-                </div>
-                <div className="flex gap-2">
+                <div className="flex items-center justify-between mb-4">
                   <Button
                     size="sm"
                     variant="outline"
@@ -133,6 +108,27 @@ export default function AdminReviews() {
                     <Trash2 className="w-4 h-4 mr-2" />
                     Delete
                   </Button>
+                </div>
+                <div className="flex items-center gap-2 mb-2">
+                  <div className="flex gap-1">
+                    {[...Array(5)].map((_, i) => (
+                      <Star
+                        key={i}
+                        className={`w-4 h-4 ${
+                          i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                  <span className="text-xs text-gray-500">
+                    {review.rating_type || 'course'} review
+                  </span>
+                </div>
+                <p className="text-sm text-gray-700 mb-3">"{review.comment}"</p>
+                <div className="flex items-center gap-2 text-xs text-gray-500">
+                  <span className="font-medium">{review.user_name || review.created_by}</span>
+                  <span>•</span>
+                  <span>{new Date(review.created_date).toLocaleDateString()}</span>
                 </div>
               </Card>
             ))}
