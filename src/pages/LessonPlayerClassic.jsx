@@ -384,19 +384,19 @@ export default function LessonPlayerClassic() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="hidden sm:flex">
+              <Button variant="outline" size="sm">
                 <Layout className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Player Style</span>
+                <span className="hidden md:inline">Style</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">
               <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
                 <Presentation className="w-4 h-4 mr-2" />
-                PowerPoint (Default)
+                PowerPoint
               </DropdownMenuItem>
               <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
                 <Layout className="w-4 h-4 mr-2" />
-                Classic Style (Current)
+                Classic (Current)
               </DropdownMenuItem>
               {(user?.role === 'admin' || user?.is_tutor) && lesson && (
                 <>
@@ -410,7 +410,7 @@ export default function LessonPlayerClassic() {
                     }}
                   >
                     <CheckCircle className="w-4 h-4 mr-2" />
-                    Set Classic as Default (Override)
+                    Set Classic as Default
                   </DropdownMenuItem>
                 </>
               )}

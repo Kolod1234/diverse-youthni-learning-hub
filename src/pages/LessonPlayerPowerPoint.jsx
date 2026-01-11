@@ -609,15 +609,17 @@ export default function LessonPlayerPowerPoint() {
               <Presentation size={16} className="hidden sm:block" />
               <span className="font-semibold text-sm truncate">{lesson?.title}</span>
             </div>
-            <div className="flex gap-2">
+            <div className="flex gap-1 sm:gap-2">
                 <DropdownMenu>
                   <DropdownMenuTrigger asChild>
-                    <button className="sm:hidden p-2 active:bg-white/20 rounded"><Layout size={18}/></button>
+                    <button className="p-2 active:bg-white/20 rounded" title="Change Player Style">
+                      <Layout size={18}/>
+                    </button>
                   </DropdownMenuTrigger>
                   <DropdownMenuContent align="end">
                     <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
                       <Presentation className="w-4 h-4 mr-2" />
-                      PowerPoint
+                      PowerPoint (Current)
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
                       <Layout className="w-4 h-4 mr-2" />
@@ -625,9 +627,9 @@ export default function LessonPlayerPowerPoint() {
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={togglePresentation}><Presentation size={18}/></button>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={toggleFullscreen}>{isFullscreen ? <Minimize size={18}/> : <Maximize size={18}/>}</button>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={generateAISummary}><Sparkles size={18}/></button>
+                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={togglePresentation} title="Present"><Presentation size={18}/></button>
+                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={toggleFullscreen} title="Fullscreen">{isFullscreen ? <Minimize size={18}/> : <Maximize size={18}/>}</button>
+                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={generateAISummary} title="AI Summary"><Sparkles size={18}/></button>
                 <button className="hidden sm:block hover:bg-white/10 px-3 py-1 rounded transition-colors text-xs" onClick={() => navigate(-1)}>Exit</button>
             </div>
           </div>
