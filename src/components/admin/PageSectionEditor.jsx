@@ -86,6 +86,8 @@ export default function PageSectionEditor({ section, onClose }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="hero_carousel">Hero Carousel</SelectItem>
+                <SelectItem value="programs">Programs Section</SelectItem>
+                <SelectItem value="features">Features Section</SelectItem>
                 <SelectItem value="text_block">Text Block</SelectItem>
                 <SelectItem value="card_grid">Card Grid</SelectItem>
                 <SelectItem value="feature_section">Feature Section</SelectItem>
@@ -94,7 +96,91 @@ export default function PageSectionEditor({ section, onClose }) {
             </Select>
           </div>
 
-          {formData.section_type === 'hero_carousel' ? (
+          {formData.section_type === 'programs' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Title"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <div>
+                <Label>Image</Label>
+                {formData.image_url ? (
+                  <div className="relative">
+                    <img src={formData.image_url} alt="" className="w-full h-32 object-cover rounded" />
+                    <Button
+                      variant="destructive"
+                      size="sm"
+                      className="absolute top-2 right-2"
+                      onClick={() => setFormData({ ...formData, image_url: '' })}
+                    >
+                      Remove
+                    </Button>
+                  </div>
+                ) : (
+                  <div>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => handleImageUpload(e, 'image_url')}
+                      className="hidden"
+                      id="program-img"
+                    />
+                    <label htmlFor="program-img">
+                      <Button variant="outline" className="w-full" asChild disabled={uploading}>
+                        <span>
+                          {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                          Upload Image
+                        </span>
+                      </Button>
+                    </label>
+                  </div>
+                )}
+              </div>
+              <Input
+                placeholder="Link URL (e.g., /Explore)"
+                value={formData.link_url || ''}
+                onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
+              />
+            </div>
+          ) : formData.section_type === 'features' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Title"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Icon (emoji or text)"
+                value={formData.icon || ''}
+                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Color From (e.g., blue-500)"
+                  value={formData.color_from || ''}
+                  onChange={(e) => setFormData({ ...formData, color_from: e.target.value })}
+                />
+                <Input
+                  placeholder="Color To (e.g., indigo-600)"
+                  value={formData.color_to || ''}
+                  onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
+                />
+              </div>
+            </div>
+          ) : formData.section_type === 'hero_carousel' ? (
             <div className="space-y-4">
               <div className="flex items-center justify-between">
                 <Label>Carousel Slides</Label>

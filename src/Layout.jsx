@@ -393,9 +393,9 @@ function LayoutContent({ children, currentPageName }) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminHomeContent')} className="flex items-center cursor-pointer">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Home Content
+                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer">
+                          <Award className="w-4 h-4 mr-2" />
+                          Manage Reviews
                         </Link>
                       </DropdownMenuItem>
                       </>
