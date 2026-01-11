@@ -542,136 +542,8 @@ export default function Home() {
         </motion.div>
       </section>
 
-      {/* Programs Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Solutions for every age, stage, and transitional moment
-          </h2>
-          <p className="text-lg text-gray-600 max-w-3xl mx-auto">
-            Explore our comprehensive programs designed to support your educational journey
-          </p>
-        </motion.div>
-
-        <div className="grid md:grid-cols-2 gap-8">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-[16/10] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1200&q=90"
-                alt="GCSE"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">GCSE</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
-                Master your General Certificate of Secondary Education with expert tutors and comprehensive resources.
-              </p>
-              <Link to={createPageUrl('Explore')}>
-                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                  See how →
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-[16/10] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=90"
-                alt="A-Levels"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">A-Levels</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
-                Advance your education with A-Level courses designed to prepare you for university success.
-              </p>
-              <Link to={createPageUrl('Explore')}>
-                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                  See how →
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-[16/10] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=90"
-                alt="Leadership"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">Leadership</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
-                Develop essential leadership skills through our structured empowerment programmes.
-              </p>
-              <Link to={createPageUrl('Programs')}>
-                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                  See how →
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-[16/10] overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=1200&q=90"
-                alt="Youth Work"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">Youth Work</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
-                OCN accredited youth work programs to kickstart your career in community development.
-              </p>
-              <Link to={createPageUrl('YouthWork')}>
-                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                  See how →
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      {/* Programs Section - Dynamic */}
+      <ProgramsSection />
 
       {/* Upcoming Sessions Banner */}
       {user && (
@@ -819,75 +691,8 @@ export default function Home() {
         )}
       </section>
 
-      {/* Why Choose Us Section */}
-      <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            className="text-center mb-16"
-          >
-            <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
-              Why Choose Us
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
-              Why learners love our platform
-            </h2>
-            <p className="text-lg text-gray-600 max-w-2xl mx-auto">
-              Experience the future of education with our innovative features
-            </p>
-          </motion.div>
-          <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
-            {[
-              {
-                icon: Brain,
-                title: 'AI-Powered Learning',
-                description: 'Personalized course recommendations and intelligent quiz generation',
-                color: 'from-blue-500 to-indigo-600'
-              },
-              {
-                icon: Video,
-                title: 'Live Sessions',
-                description: 'Interactive video sessions with expert tutors and real-time collaboration',
-                color: 'from-purple-500 to-pink-600'
-              },
-              {
-                icon: Target,
-                title: 'Gamified Experience',
-                description: 'Earn points, unlock achievements, and track your progress',
-                color: 'from-orange-500 to-red-600'
-              },
-              {
-                icon: Users,
-                title: 'Community-Driven',
-                description: 'Learn together with peers, share knowledge, and grow as a community',
-                color: 'from-emerald-500 to-teal-600'
-              }
-            ].map((feature, idx) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={feature.title}
-                  initial={{ opacity: 0, y: 20 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ delay: idx * 0.1 }}
-                  whileHover={{ y: -8, scale: 1.02 }}
-                  className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
-                >
-                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-                  <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl mb-4 shadow-md`}>
-                    <Icon className="w-7 h-7 text-white" />
-                  </div>
-                  <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-                  <p className="text-gray-600 leading-relaxed">{feature.description}</p>
-                </motion.div>
-              );
-            })}
-          </div>
-        </div>
-      </section>
+      {/* Why Choose Us Section - Dynamic */}
+      <FeaturesSection />
 
       {/* RSS Feed Section */}
       <section id="news" className="py-20 bg-gradient-to-b from-purple-50/30 to-white">
@@ -1211,6 +1016,118 @@ function HeroCarousel({ items }) {
             }`}
           />
         ))}
+      </div>
+    </section>
+  );
+}
+
+function ProgramsSection() {
+  const { data: programs = [] } = useQuery({
+    queryKey: ['page-sections-programs'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'programs', is_active: true }, 'order', 20),
+  });
+
+  if (programs.length === 0) return null;
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          Solutions for every age, stage, and transitional moment
+        </h2>
+        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+          Explore our comprehensive programs designed to support your educational journey
+        </p>
+      </motion.div>
+      
+      <div className="grid md:grid-cols-2 gap-8">
+        {programs.map((program, idx) => (
+          <motion.div
+            key={program.id}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            whileHover={{ y: -8 }}
+            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
+          >
+            <div className="aspect-[16/10] overflow-hidden">
+              <img
+                src={program.image_url}
+                alt={program.title}
+                className="w-full h-full object-cover"
+              />
+            </div>
+            <div className="p-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">{program.title}</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+                {program.description}
+              </p>
+              <Link to={program.link_url}>
+                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
+                  See how →
+                </Button>
+              </Link>
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function FeaturesSection() {
+  const { data: features = [] } = useQuery({
+    queryKey: ['page-sections-features'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'features', is_active: true }, 'order', 20),
+  });
+
+  if (features.length === 0) return null;
+
+  return (
+    <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          className="text-center mb-16"
+        >
+          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+            Why Choose Us
+          </span>
+          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            Why learners love our platform
+          </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Experience the future of education with our innovative features
+          </p>
+        </motion.div>
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+          {features.map((feature, idx) => (
+            <motion.div
+              key={feature.id}
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: idx * 0.1 }}
+              whileHover={{ y: -8, scale: 1.02 }}
+              className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
+            >
+              <div className={`absolute inset-0 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
+              <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} rounded-xl mb-4 shadow-md`}>
+                <span className="text-2xl">{feature.icon}</span>
+              </div>
+              <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
+              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
