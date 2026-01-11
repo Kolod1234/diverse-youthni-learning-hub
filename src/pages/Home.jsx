@@ -278,26 +278,22 @@ export default function Home() {
       {/* Home Widgets */}
       <section className="bg-slate-950 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
             <WeatherWidget />
             <ClockWidget />
             <CalendarWidget />
-            <div className="sm:col-span-2 lg:col-span-1">
-              <DiscoverWidget />
-            </div>
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
             <UpcomingLessonsWidget />
-            <FactOfDayWidget />
             <RSSNotificationsWidget />
           </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <div className="lg:col-span-1">
-              <QuoteWidget />
-            </div>
-            <StudentOfMonthWidget />
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+            <QuoteWidget />
+            <FactOfDayWidget />
+            <DiscoverWidget />
           </div>
-          <div className="mt-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+            <StudentOfMonthWidget />
             <SocialFeedWidget />
           </div>
         </div>
