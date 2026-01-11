@@ -88,6 +88,7 @@ export default function PageSectionEditor({ section, onClose }) {
                 <SelectItem value="hero_carousel">Hero Carousel</SelectItem>
                 <SelectItem value="programs">Programs Section</SelectItem>
                 <SelectItem value="features">Features Section</SelectItem>
+                <SelectItem value="ecosystem">Ecosystem Section</SelectItem>
                 <SelectItem value="text_block">Text Block</SelectItem>
                 <SelectItem value="card_grid">Card Grid</SelectItem>
                 <SelectItem value="feature_section">Feature Section</SelectItem>
@@ -178,6 +179,108 @@ export default function PageSectionEditor({ section, onClose }) {
                   value={formData.color_to || ''}
                   onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
                 />
+              </div>
+            </div>
+          ) : formData.section_type === 'ecosystem' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Main Title (e.g., Explore the Instructure ecosystem)"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Button Text (e.g., Take a look)"
+                value={formData.cta_text || ''}
+                onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+              />
+              <Input
+                placeholder="Button Link"
+                value={formData.cta_link || ''}
+                onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+              />
+
+              <div className="border-t pt-4 mt-4">
+                <Label className="text-base font-semibold mb-3 block">Product 1 (Red)</Label>
+                <div className="space-y-3 pl-4">
+                  <Input
+                    placeholder="Product Name (e.g., Canvas)"
+                    value={formData.product1_name || ''}
+                    onChange={(e) => setFormData({ ...formData, product1_name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Subtitle (e.g., By Instructure)"
+                    value={formData.product1_subtitle || ''}
+                    onChange={(e) => setFormData({ ...formData, product1_subtitle: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 1 (e.g., Teaching)"
+                    value={formData.product1_desc1 || ''}
+                    onChange={(e) => setFormData({ ...formData, product1_desc1: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 2 (e.g., and learning)"
+                    value={formData.product1_desc2 || ''}
+                    onChange={(e) => setFormData({ ...formData, product1_desc2: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <Label className="text-base font-semibold mb-3 block">Product 2 (Green)</Label>
+                <div className="space-y-3 pl-4">
+                  <Input
+                    placeholder="Product Name (e.g., Mastery)"
+                    value={formData.product2_name || ''}
+                    onChange={(e) => setFormData({ ...formData, product2_name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Subtitle (e.g., By Instructure)"
+                    value={formData.product2_subtitle || ''}
+                    onChange={(e) => setFormData({ ...formData, product2_subtitle: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 1 (e.g., Assessment)"
+                    value={formData.product2_desc1 || ''}
+                    onChange={(e) => setFormData({ ...formData, product2_desc1: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 2 (e.g., and growth)"
+                    value={formData.product2_desc2 || ''}
+                    onChange={(e) => setFormData({ ...formData, product2_desc2: e.target.value })}
+                  />
+                </div>
+              </div>
+
+              <div className="border-t pt-4 mt-4">
+                <Label className="text-base font-semibold mb-3 block">Product 3 (Blue)</Label>
+                <div className="space-y-3 pl-4">
+                  <Input
+                    placeholder="Product Name (e.g., Parchment)"
+                    value={formData.product3_name || ''}
+                    onChange={(e) => setFormData({ ...formData, product3_name: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Subtitle (e.g., By Instructure)"
+                    value={formData.product3_subtitle || ''}
+                    onChange={(e) => setFormData({ ...formData, product3_subtitle: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 1 (e.g., Credentials)"
+                    value={formData.product3_desc1 || ''}
+                    onChange={(e) => setFormData({ ...formData, product3_desc1: e.target.value })}
+                  />
+                  <Input
+                    placeholder="Description line 2 (e.g., and opportunity)"
+                    value={formData.product3_desc2 || ''}
+                    onChange={(e) => setFormData({ ...formData, product3_desc2: e.target.value })}
+                  />
+                </div>
               </div>
             </div>
           ) : formData.section_type === 'hero_carousel' ? (

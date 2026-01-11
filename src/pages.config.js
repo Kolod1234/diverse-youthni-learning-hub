@@ -9,6 +9,7 @@ import AdminLibrary from './pages/AdminLibrary';
 import AdminPageBuilder from './pages/AdminPageBuilder';
 import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
+import AdminReviews from './pages/AdminReviews';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
@@ -26,7 +27,6 @@ import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
 import Explore from './pages/Explore';
 import GradeAssignments from './pages/GradeAssignments';
-import Home from './pages/Home';
 import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
@@ -53,7 +53,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminReviews from './pages/AdminReviews';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -69,6 +69,7 @@ export const PAGES = {
     "AdminPageBuilder": AdminPageBuilder,
     "AdminQuotes": AdminQuotes,
     "AdminRSSFeed": AdminRSSFeed,
+    "AdminReviews": AdminReviews,
     "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
@@ -86,7 +87,6 @@ export const PAGES = {
     "DataPresentation": DataPresentation,
     "Explore": Explore,
     "GradeAssignments": GradeAssignments,
-    "Home": Home,
     "KnowledgeBase": KnowledgeBase,
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
@@ -113,7 +113,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminReviews": AdminReviews,
+    "Home": Home,
 }
 
 export const pagesConfig = {
