@@ -44,7 +44,9 @@ Deno.serve(async (req) => {
     );
 
     if (!presentationResponse.ok) {
-      return Response.json({ error: 'Failed to fetch Google Slides presentation' }, { status: 500 });
+      const errorText = await presentationResponse.text();
+      console.error('Google Slides API error:', errorText);
+      return Response.json({ error: 'Failed to fetch Google Slides presentation', details: errorText }, { status: 500 });
     }
 
     const presentation = await presentationResponse.json();
@@ -59,8 +61,15 @@ Deno.serve(async (req) => {
       return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
     };
 
-    // Helper function to convert EMU to pixels (Google Slides uses EMUs)
-    const emuToPx = (emu) => emu ? Math.round(emu / 9525) : 0;
+    // Helper function to convert arrayBuffer to base64
+    const arrayBufferToBase64 = (buffer) => {
+      const bytes = new Uint8Array(buffer);
+      let binary = '';
+      for (let i = 0; i < bytes.byteLength; i++) {
+        binary += String.fromCharCode(bytes[i]);
+      }
+      return btoa(binary);
+    };
 
     // Process each slide
     for (let i = 0; i < presentation.slides.length; i++) {
@@ -158,17 +167,29 @@ Deno.serve(async (req) => {
           // Extract images
           if (element.image?.contentUrl) {
             try {
+              console.log(`Fetching image from slide ${i}:`, element.image.contentUrl);
               const imageResponse = await fetch(element.image.contentUrl);
-              const imageBlob = await imageResponse.blob();
-              const imageFile = new File([imageBlob], `slide-${i}-img-${images.length}.png`, { type: imageBlob.type });
-              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: imageFile });
+              
+              if (!imageResponse.ok) {
+                console.error(`Failed to fetch image: ${imageResponse.status} ${imageResponse.statusText}`);
+                continue;
+              }
+
+              const arrayBuffer = await imageResponse.arrayBuffer();
+              const contentType = imageResponse.headers.get('content-type') || 'image/png';
+              const base64Data = arrayBufferToBase64(arrayBuffer);
+              const dataUrl = `data:${contentType};base64,${base64Data}`;
+              
+              console.log(`Uploading image ${images.length} from slide ${i}, size: ${arrayBuffer.byteLength} bytes`);
+              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: dataUrl });
               
               if (!imageUrl) {
                 imageUrl = uploadResult.file_url;
               }
               images.push(uploadResult.file_url);
+              console.log(`Successfully uploaded image: ${uploadResult.file_url}`);
             } catch (error) {
-              console.error(`Failed to process image from slide ${i}:`, error);
+              console.error(`Failed to process image from slide ${i}:`, error.message);
             }
           }
 
@@ -183,11 +204,11 @@ Deno.serve(async (req) => {
         }
       }
 
-      // Add all images to content if multiple
+      // Add all images to content if multiple - responsive grid layout
       if (images.length > 1) {
-        content += '<div style="display: grid; gap: 1rem; margin-top: 1rem;">';
+        content += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem;">';
         images.forEach(img => {
-          content += `<img src="${img}" alt="Slide image" style="max-width: 100%; border-radius: 8px;" />`;
+          content += `<img src="${img}" alt="Slide image" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />`;
         });
         content += '</div>';
       }
