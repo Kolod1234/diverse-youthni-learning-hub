@@ -786,6 +786,122 @@ export default function Home() {
         </section>
       )}
 
+      {/* Ecosystem Section */}
+      <section className="relative py-20 bg-[#003B5C] overflow-hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
+              Explore the Instructure ecosystem
+            </h2>
+            <p className="text-xl text-gray-300 mb-8 max-w-4xl mx-auto">
+              Our capabilities, partner network, services, and community are here to help you create your ideal edtech environment and deliver on important outcomes.
+            </p>
+            <Link to={createPageUrl('Explore')}>
+              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-[#003B5C] rounded-full px-8 py-6 h-auto text-lg font-semibold">
+                Take a look
+              </Button>
+            </Link>
+          </motion.div>
+
+          <div className="grid md:grid-cols-3 gap-12 mt-20">
+            {/* Canvas - Teaching and learning */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.1 }}
+              className="text-center"
+            >
+              <div className="relative mb-8">
+                <div className="w-full aspect-[2/1] overflow-hidden">
+                  <div className="absolute inset-0 flex items-end justify-center">
+                    <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#E74C3C] via-[#E74C3C]/80 to-[#E74C3C]/40 rounded-t-full"></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
+                    <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#C0392B] via-[#C0392B]/80 to-[#C0392B]/40 rounded-t-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <BookOpen className="w-10 h-10 text-white" />
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-white">Canvas</h3>
+                  <p className="text-sm text-gray-400">By Instructure</p>
+                </div>
+              </div>
+              <p className="text-xl font-semibold text-white">
+                Teaching<br />and learning
+              </p>
+            </motion.div>
+
+            {/* Mastery - Assessment and growth */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.2 }}
+              className="text-center"
+            >
+              <div className="relative mb-8">
+                <div className="w-full aspect-[2/1] overflow-hidden">
+                  <div className="absolute inset-0 flex items-end justify-center">
+                    <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#27AE60] via-[#27AE60]/80 to-[#27AE60]/40 rounded-t-full"></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
+                    <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#1E8449] via-[#1E8449]/80 to-[#1E8449]/40 rounded-t-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Target className="w-10 h-10 text-white" />
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-white">Mastery</h3>
+                  <p className="text-sm text-gray-400">By Instructure</p>
+                </div>
+              </div>
+              <p className="text-xl font-semibold text-white">
+                Assessment<br />and growth
+              </p>
+            </motion.div>
+
+            {/* Parchment - Credentials and opportunity */}
+            <motion.div
+              initial={{ opacity: 0, y: 30 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.3 }}
+              className="text-center"
+            >
+              <div className="relative mb-8">
+                <div className="w-full aspect-[2/1] overflow-hidden">
+                  <div className="absolute inset-0 flex items-end justify-center">
+                    <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#3498DB] via-[#3498DB]/80 to-[#3498DB]/40 rounded-t-full"></div>
+                  </div>
+                  <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
+                    <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#2471A3] via-[#2471A3]/80 to-[#2471A3]/40 rounded-t-full"></div>
+                  </div>
+                </div>
+              </div>
+              <div className="flex items-center justify-center gap-3 mb-4">
+                <Award className="w-10 h-10 text-white" />
+                <div className="text-left">
+                  <h3 className="text-2xl font-bold text-white">Parchment</h3>
+                  <p className="text-sm text-gray-400">By Instructure</p>
+                </div>
+              </div>
+              <p className="text-xl font-semibold text-white">
+                Credentials<br />and opportunity
+              </p>
+            </motion.div>
+          </div>
+        </div>
+      </section>
+
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
         <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
