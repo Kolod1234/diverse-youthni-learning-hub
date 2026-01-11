@@ -203,7 +203,7 @@ export default function Achievements() {
 
 function SuccessStoriesCarousel() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
-  const [selectedIndex, setSelectedIndex] = React.useState(0);
+  const [selectedIndex, setSelectedIndex] = useState(0);
 
   const stories = [
     {
@@ -232,7 +232,7 @@ function SuccessStoriesCarousel() {
     }
   ];
 
-  React.useEffect(() => {
+  useEffect(() => {
     if (!emblaApi) return;
     
     const onSelect = () => {
