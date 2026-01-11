@@ -23,6 +23,8 @@ import FactOfDayWidget from '@/components/home/FactOfDayWidget';
 import RSSNotificationsWidget from '@/components/home/RSSNotificationsWidget';
 import SocialFeedWidget from '@/components/home/SocialFeedWidget';
 import DiscoverWidget from '@/components/home/DiscoverWidget';
+import WidgetCustomizer from '@/components/home/WidgetCustomizer';
+import WidgetSkeleton from '@/components/home/WidgetSkeleton';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -33,17 +35,15 @@ export default function Home() {
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
   const [heroEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
 
+  const { data: currentUser, isLoading: userLoading } = useQuery({
+    queryKey: ['user'],
+    queryFn: () => base44.auth.me(),
+    onSuccess: (data) => setUser(data),
+  });
+
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-      } catch (error) {
-        console.log('User not logged in');
-      }
-    };
-    loadUser();
-  }, []);
+    if (currentUser) setUser(currentUser);
+  }, [currentUser]);
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
@@ -278,24 +278,45 @@ export default function Home() {
       {/* Home Widgets */}
       <section className="bg-slate-950 py-12">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <WeatherWidget />
-            <ClockWidget />
-            <CalendarWidget />
+          <div className="flex items-center justify-between mb-6">
+            <h2 className="text-2xl font-bold text-white">Your Dashboard</h2>
+            {user && <WidgetCustomizer user={user} widgetPreferences={user.widget_preferences || {}} />}
           </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-            <UpcomingLessonsWidget />
-            <RSSNotificationsWidget />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
-            <QuoteWidget />
-            <FactOfDayWidget />
-            <DiscoverWidget />
-          </div>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-            <StudentOfMonthWidget />
-            <SocialFeedWidget />
-          </div>
+          
+          {userLoading ? (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                <WidgetSkeleton />
+                <WidgetSkeleton />
+                <WidgetSkeleton />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                <WidgetSkeleton />
+                <WidgetSkeleton />
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                {(!user?.widget_preferences?.weather || user.widget_preferences.weather.enabled !== false) && <WeatherWidget />}
+                {(!user?.widget_preferences?.clock || user.widget_preferences.clock.enabled !== false) && <ClockWidget />}
+                {(!user?.widget_preferences?.calendar || user.widget_preferences.calendar.enabled !== false) && <CalendarWidget />}
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                {(!user?.widget_preferences?.upcoming_lessons || user.widget_preferences.upcoming_lessons.enabled !== false) && <UpcomingLessonsWidget />}
+                {(!user?.widget_preferences?.rss_notifications || user.widget_preferences.rss_notifications.enabled !== false) && <RSSNotificationsWidget />}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+                {(!user?.widget_preferences?.quote || user.widget_preferences.quote.enabled !== false) && <QuoteWidget />}
+                {(!user?.widget_preferences?.fact || user.widget_preferences.fact.enabled !== false) && <FactOfDayWidget />}
+                {(!user?.widget_preferences?.discover || user.widget_preferences.discover.enabled !== false) && <DiscoverWidget />}
+              </div>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+                {(!user?.widget_preferences?.student_of_month || user.widget_preferences.student_of_month.enabled !== false) && <StudentOfMonthWidget />}
+                {(!user?.widget_preferences?.social_feed || user.widget_preferences.social_feed.enabled !== false) && <SocialFeedWidget />}
+              </div>
+            </>
+          )}
         </div>
       </section>
 
