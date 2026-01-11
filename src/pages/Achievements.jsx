@@ -4,9 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Trophy, Award, Star, Zap, Target, Crown, Flame, Sparkles, Lock } from 'lucide-react';
+import { Trophy, Award, Star, Zap, Target, Crown, Flame, Sparkles, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { Progress } from '@/components/ui/progress';
+import { Button } from '@/components/ui/button';
+import useEmblaCarousel from 'embla-carousel-react';
 
 const ACHIEVEMENT_CONFIGS = {
   first_lesson: { icon: Sparkles, color: 'from-blue-400 to-blue-600', title: 'First Steps', description: 'Complete your first lesson', points: 10 },
@@ -121,6 +123,9 @@ export default function Achievements() {
           </Card>
         </motion.div>
 
+        {/* Success Stories Section */}
+        <SuccessStoriesCarousel />
+
         {/* Milestones */}
         <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
           {milestones.map((milestone, idx) => {
@@ -193,6 +198,131 @@ export default function Achievements() {
         </Tabs>
       </div>
     </div>
+  );
+}
+
+function SuccessStoriesCarousel() {
+  const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
+  const [selectedIndex, setSelectedIndex] = React.useState(0);
+
+  const stories = [
+    {
+      category: 'Instructure',
+      tag: 'Research',
+      tagColor: 'bg-red-600',
+      title: 'The Lifelong Learning Report',
+      description: 'Explore the latest research on continuous education and lifelong learning strategies.',
+      bgColor: 'from-gray-900 via-red-950 to-gray-900'
+    },
+    {
+      category: 'Lifelong Learning Report',
+      tag: 'Case Study',
+      tagColor: 'bg-blue-600',
+      title: 'Trends and Insights from K-12 to Career',
+      description: 'Learning today is a continuous journey. Explore what\'s needed to create an environment where every learner can flourish—no matter where they are in their educational path.',
+      bgColor: 'from-blue-950 via-slate-900 to-blue-950'
+    },
+    {
+      category: 'Instructure',
+      tag: 'Case Study',
+      tagColor: 'bg-orange-600',
+      title: 'Passaic County Technical Vocational Schools',
+      description: 'Discover how technical schools are transforming education and preparing students for real-world careers.',
+      bgColor: 'from-gray-900 via-orange-950 to-gray-900'
+    }
+  ];
+
+  React.useEffect(() => {
+    if (!emblaApi) return;
+    
+    const onSelect = () => {
+      setSelectedIndex(emblaApi.selectedScrollSnap());
+    };
+    
+    emblaApi.on('select', onSelect);
+    onSelect();
+    
+    return () => {
+      emblaApi.off('select', onSelect);
+    };
+  }, [emblaApi]);
+
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ delay: 0.15 }}
+      className="mb-12"
+    >
+      <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Success stories and resources</h2>
+      
+      <div className="relative">
+        <div className="overflow-hidden" ref={emblaRef}>
+          <div className="flex gap-6">
+            {stories.map((story, idx) => (
+              <div key={idx} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
+                <motion.div
+                  whileHover={{ y: -8 }}
+                  className={`relative h-80 rounded-3xl overflow-hidden bg-gradient-to-br ${story.bgColor} p-8 flex flex-col justify-between shadow-2xl`}
+                >
+                  <div>
+                    <div className="flex items-center gap-3 mb-6">
+                      <span className="text-white/90 text-sm font-medium">{story.category}</span>
+                      <span className={`${story.tagColor} text-white px-3 py-1 rounded text-xs font-bold uppercase`}>
+                        {story.tag}
+                      </span>
+                    </div>
+                    
+                    <h3 className="text-3xl font-bold text-white mb-4 leading-tight">
+                      {story.title}
+                    </h3>
+                    
+                    {story.description && (
+                      <p className="text-white/80 text-sm leading-relaxed">
+                        {story.description}
+                      </p>
+                    )}
+                  </div>
+                  
+                  <Button 
+                    variant="outline" 
+                    className="w-fit bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 rounded-full px-6"
+                  >
+                    Learn more
+                  </Button>
+                </motion.div>
+              </div>
+            ))}
+          </div>
+        </div>
+        
+        <button
+          onClick={() => emblaApi?.scrollPrev()}
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+        >
+          <ChevronLeft className="w-6 h-6 text-gray-800" />
+        </button>
+        
+        <button
+          onClick={() => emblaApi?.scrollNext()}
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+        >
+          <ChevronRight className="w-6 h-6 text-gray-800" />
+        </button>
+        
+        <div className="flex justify-center gap-2 mt-6">
+          {stories.map((_, idx) => (
+            <button
+              key={idx}
+              onClick={() => emblaApi?.scrollTo(idx)}
+              className={`h-2 rounded-full transition-all ${
+                selectedIndex === idx ? 'w-8 bg-orange-500' : 'w-2 bg-gray-300'
+              }`}
+            />
+          ))}
+        </div>
+      </div>
+    </motion.div>
   );
 }
 
