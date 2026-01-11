@@ -21,6 +21,7 @@ import {
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
+import ThemeToggle from '@/components/theme/ThemeToggle';
 import { motion } from 'framer-motion';
 
 export default function Layout({ children, currentPageName }) {
@@ -398,6 +399,9 @@ export default function Layout({ children, currentPageName }) {
 
             {/* Right Side */}
             <div className="flex items-center gap-3">
+              {/* Theme Toggle */}
+              <ThemeToggle />
+
               {/* Notifications */}
               <NotificationBell />
 
