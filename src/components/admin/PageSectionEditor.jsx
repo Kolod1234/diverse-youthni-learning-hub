@@ -36,9 +36,9 @@ export default function PageSectionEditor({ section, onClose }) {
 
     setUploading(true);
     try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData({ ...formData, [field]: file_url });
-      toast.success('Image uploaded!');
+      const { data } = await base44.functions.invoke('optimizeAndUploadImage', { file });
+      setFormData({ ...formData, [field]: data.file_url });
+      toast.success('Image uploaded and optimized!');
     } catch (error) {
       toast.error('Upload failed');
     } finally {
@@ -221,14 +221,17 @@ export default function PageSectionEditor({ section, onClose }) {
                         <input
                           type="file"
                           accept="image/*"
-                          onChange={(e) => {
+                          onChange={async (e) => {
                             const file = e.target.files?.[0];
                             if (file) {
                               setUploading(true);
-                              base44.integrations.Core.UploadFile({ file }).then(({ file_url }) => {
-                                updateCarouselItem(index, 'image_url', file_url);
-                                setUploading(false);
-                              });
+                              try {
+                                const { data } = await base44.functions.invoke('optimizeAndUploadImage', { file });
+                                updateCarouselItem(index, 'image_url', data.file_url);
+                              } catch (error) {
+                                toast.error('Upload failed');
+                              }
+                              setUploading(false);
                             }
                           }}
                           className="hidden"
