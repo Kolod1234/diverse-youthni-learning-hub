@@ -3,6 +3,7 @@ import AdminCoordinators from './pages/AdminCoordinators';
 import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import AdminDailyFacts from './pages/AdminDailyFacts';
 import AdminDashboard from './pages/AdminDashboard';
+import AdminDiscover from './pages/AdminDiscover';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
 import AdminLibrary from './pages/AdminLibrary';
 import AdminPageBuilder from './pages/AdminPageBuilder';
@@ -30,8 +31,6 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
-import LessonPlayerClassic from './pages/LessonPlayerClassic';
-import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import Library from './pages/Library';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
@@ -52,7 +51,8 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminDiscover from './pages/AdminDiscover';
+import LessonPlayerClassic from './pages/LessonPlayerClassic';
+import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import __Layout from './Layout.jsx';
 
 
@@ -62,6 +62,7 @@ export const PAGES = {
     "AdminCourseBuilder": AdminCourseBuilder,
     "AdminDailyFacts": AdminDailyFacts,
     "AdminDashboard": AdminDashboard,
+    "AdminDiscover": AdminDiscover,
     "AdminLearningObjectives": AdminLearningObjectives,
     "AdminLibrary": AdminLibrary,
     "AdminPageBuilder": AdminPageBuilder,
@@ -89,8 +90,6 @@ export const PAGES = {
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
     "LessonPlayer": LessonPlayer,
-    "LessonPlayerClassic": LessonPlayerClassic,
-    "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
     "Library": Library,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
@@ -111,7 +110,8 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminDiscover": AdminDiscover,
+    "LessonPlayerClassic": LessonPlayerClassic,
+    "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
 }
 
 export const pagesConfig = {

@@ -384,7 +384,7 @@ export default function LessonPlayerClassic() {
           </Button>
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm" className="hidden sm:flex">
+              <Button variant="outline" size="sm">
                 <Layout className="w-4 h-4 sm:mr-2" />
                 <span className="hidden md:inline">Player Style</span>
               </Button>
