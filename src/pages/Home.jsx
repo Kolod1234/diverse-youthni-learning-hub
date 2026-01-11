@@ -558,7 +558,7 @@ export default function Home() {
           </p>
         </motion.div>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        <div className="grid md:grid-cols-2 gap-8">
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
@@ -567,16 +567,16 @@ export default function Home() {
             whileHover={{ y: -8 }}
             className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
           >
-            <div className="aspect-video overflow-hidden">
+            <div className="aspect-[16/10] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&q=90"
+                src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1200&q=90"
                 alt="GCSE"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">GCSE</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
+            <div className="p-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">GCSE</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                 Master your General Certificate of Secondary Education with expert tutors and comprehensive resources.
               </p>
               <Link to={createPageUrl('Explore')}>
@@ -595,16 +595,16 @@ export default function Home() {
             whileHover={{ y: -8 }}
             className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
           >
-            <div className="aspect-video overflow-hidden">
+            <div className="aspect-[16/10] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=90"
+                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1200&q=90"
                 alt="A-Levels"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">A-Levels</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
+            <div className="p-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">A-Levels</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                 Advance your education with A-Level courses designed to prepare you for university success.
               </p>
               <Link to={createPageUrl('Explore')}>
@@ -623,16 +623,16 @@ export default function Home() {
             whileHover={{ y: -8 }}
             className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
           >
-            <div className="aspect-video overflow-hidden">
+            <div className="aspect-[16/10] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=90"
+                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200&q=90"
                 alt="Leadership"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Leadership</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
+            <div className="p-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Leadership</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                 Develop essential leadership skills through our structured empowerment programmes.
               </p>
               <Link to={createPageUrl('Programs')}>
@@ -651,16 +651,16 @@ export default function Home() {
             whileHover={{ y: -8 }}
             className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
           >
-            <div className="aspect-video overflow-hidden">
+            <div className="aspect-[16/10] overflow-hidden">
               <img
-                src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=800&q=90"
+                src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=1200&q=90"
                 alt="Youth Work"
                 className="w-full h-full object-cover"
               />
             </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Youth Work</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
+            <div className="p-8">
+              <h3 className="text-3xl font-bold text-gray-900 mb-4">Youth Work</h3>
+              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
                 OCN accredited youth work programs to kickstart your career in community development.
               </p>
               <Link to={createPageUrl('YouthWork')}>
@@ -1231,7 +1231,7 @@ function PartnersSection() {
           <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Partners</h2>
           <p className="text-gray-600">Working together to empower youth</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
           {logos.map((logo, idx) => (
             <motion.div
               key={logo.id}
@@ -1247,14 +1247,14 @@ function PartnersSection() {
                   <img
                     src={logo.logo_url}
                     alt={logo.name}
-                    className="h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                    className="h-28 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
                   />
                 </a>
               ) : (
                 <img
                   src={logo.logo_url}
                   alt={logo.name}
-                  className="h-20 w-auto object-contain opacity-70"
+                  className="h-28 w-auto object-contain opacity-70"
                 />
               )}
             </motion.div>
