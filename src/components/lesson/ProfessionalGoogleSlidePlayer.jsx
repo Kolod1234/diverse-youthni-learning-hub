@@ -3,11 +3,14 @@ import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Textarea } from '@/components/ui/textarea';
-import { ChevronLeft, ChevronRight, Maximize, Minimize, RotateCcw, StickyNote, Sparkles, Keyboard, X } from 'lucide-react';
+import { Input } from '@/components/ui/input';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { ChevronLeft, ChevronRight, Maximize, Minimize, RotateCcw, StickyNote, Sparkles, Keyboard, X, Film, Bookmark, Search, Languages, FileText, BookOpen } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonId }) {
+export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonId, totalSlides = 20 }) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(1);
   const [iframeKey, setIframeKey] = useState(0);
@@ -15,6 +18,8 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
   const [showNotes, setShowNotes] = useState(false);
   const [showAI, setShowAI] = useState(false);
   const [showKeyboardHelp, setShowKeyboardHelp] = useState(false);
+  const [showThumbnails, setShowThumbnails] = useState(false);
+  const [showSearch, setShowSearch] = useState(false);
   const [notes, setNotes] = useState({});
   const [currentNote, setCurrentNote] = useState('');
   const [aiQuestion, setAiQuestion] = useState('');
@@ -22,6 +27,12 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
   const [aiLoading, setAiLoading] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+  const [bookmarks, setBookmarks] = useState([]);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [aiTab, setAiTab] = useState('ask');
+  const [slideSummary, setSlideSummary] = useState('');
+  const [translatedContent, setTranslatedContent] = useState('');
+  const [targetLanguage, setTargetLanguage] = useState('es');
   const iframeRef = useRef(null);
 
   useEffect(() => {
@@ -32,23 +43,30 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     const handleKeyPress = (e) => {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
       
-      if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') setCurrentSlide(prev => prev + 1);
+      if (e.key === 'ArrowRight' || e.key === 'l' || e.key === 'L') setCurrentSlide(prev => Math.min(totalSlides, prev + 1));
       if (e.key === 'ArrowLeft' || e.key === 'h' || e.key === 'H') setCurrentSlide(prev => Math.max(1, prev - 1));
       if (e.key === 'f' || e.key === 'F') toggleFullscreen();
       if (e.key === 'n' || e.key === 'N') setShowNotes(true);
       if (e.key === 'a' || e.key === 'A') setShowAI(true);
+      if (e.key === 't' || e.key === 'T') setShowThumbnails(prev => !prev);
+      if (e.key === 'b' || e.key === 'B') toggleBookmark();
+      if ((e.ctrlKey || e.metaKey) && e.key === 'f') {
+        e.preventDefault();
+        setShowSearch(true);
+      }
       if (e.key === '?' || e.key === '/') setShowKeyboardHelp(true);
       if (e.key === 'Escape') {
         if (isFullscreen) exitFullscreen();
         else if (showNotes) setShowNotes(false);
         else if (showAI) setShowAI(false);
         else if (showKeyboardHelp) setShowKeyboardHelp(false);
+        else if (showSearch) setShowSearch(false);
       }
     };
 
     window.addEventListener('keydown', handleKeyPress);
     return () => window.removeEventListener('keydown', handleKeyPress);
-  }, [isFullscreen, showNotes, showAI, showKeyboardHelp]);
+  }, [isFullscreen, showNotes, showAI, showKeyboardHelp, showSearch, totalSlides]);
 
   const toggleFullscreen = () => {
     const elem = document.getElementById('slide-container');
@@ -114,8 +132,75 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     const isLeftSwipe = distance > minSwipeDistance;
     const isRightSwipe = distance < -minSwipeDistance;
 
-    if (isLeftSwipe) setCurrentSlide(prev => prev + 1);
+    if (isLeftSwipe) setCurrentSlide(prev => Math.min(totalSlides, prev + 1));
     if (isRightSwipe) setCurrentSlide(prev => Math.max(1, prev - 1));
+  };
+
+  const toggleBookmark = () => {
+    setBookmarks(prev => {
+      if (prev.includes(currentSlide)) {
+        toast.success('Bookmark removed');
+        return prev.filter(s => s !== currentSlide);
+      } else {
+        toast.success('Slide bookmarked');
+        return [...prev, currentSlide];
+      }
+    });
+  };
+
+  const handleGetSummary = async () => {
+    setAiLoading(true);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Provide a concise summary of the key points from slide ${currentSlide} of this lesson. Focus on the main concepts and learning objectives. Keep it brief and educational.`,
+        add_context_from_internet: false
+      });
+      setSlideSummary(response);
+    } catch (error) {
+      toast.error('Failed to generate summary');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleDefineWord = async (word) => {
+    setAiLoading(true);
+    try {
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Define the term "${word}" in simple, student-friendly language. Include an example if relevant. Keep it concise.`,
+        add_context_from_internet: true
+      });
+      setAiResponse(response);
+      setAiTab('ask');
+    } catch (error) {
+      toast.error('Failed to define word');
+    } finally {
+      setAiLoading(false);
+    }
+  };
+
+  const handleTranslate = async () => {
+    setAiLoading(true);
+    try {
+      const languageNames = {
+        es: 'Spanish',
+        fr: 'French',
+        de: 'German',
+        zh: 'Chinese',
+        ar: 'Arabic',
+        ur: 'Urdu',
+        pl: 'Polish'
+      };
+      const response = await base44.integrations.Core.InvokeLLM({
+        prompt: `Translate the content of slide ${currentSlide} into ${languageNames[targetLanguage]}. Maintain the educational context and clarity.`,
+        add_context_from_internet: false
+      });
+      setTranslatedContent(response);
+    } catch (error) {
+      toast.error('Failed to translate');
+    } finally {
+      setAiLoading(false);
+    }
   };
 
   if (!googleSlidesUrl) {
@@ -344,8 +429,9 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
             </button>
 
             <button 
-              onClick={() => setCurrentSlide(prev => prev + 1)}
+              onClick={() => setCurrentSlide(prev => Math.min(totalSlides, prev + 1))}
               className="control-btn"
+              disabled={currentSlide >= totalSlides}
               aria-label="Next slide"
             >
               <span className="hidden sm:inline mr-1">Next</span>
@@ -354,10 +440,37 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
           </div>
 
           <div className="slide-counter" role="status" aria-live="polite">
-            Slide {currentSlide}
+            Slide {currentSlide} / {totalSlides}
           </div>
 
           <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setShowThumbnails(prev => !prev)}
+              className={`control-btn ${showThumbnails ? 'bg-blue-500/30' : ''}`}
+              title="Thumbnails (T)"
+              aria-label="Toggle thumbnails"
+            >
+              <Film className="w-5 h-5" />
+            </button>
+
+            <button 
+              onClick={toggleBookmark}
+              className={`control-btn ${bookmarks.includes(currentSlide) ? 'bg-yellow-500/30 text-yellow-300' : ''}`}
+              title="Bookmark (B)"
+              aria-label="Toggle bookmark"
+            >
+              <Bookmark className={`w-5 h-5 ${bookmarks.includes(currentSlide) ? 'fill-current' : ''}`} />
+            </button>
+
+            <button 
+              onClick={() => setShowSearch(true)}
+              className="control-btn hidden md:flex"
+              title="Search (Ctrl+F)"
+              aria-label="Search slides"
+            >
+              <Search className="w-5 h-5" />
+            </button>
+
             <button 
               onClick={() => setShowNotes(true)}
               className="control-btn"
@@ -378,7 +491,7 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
 
             <button 
               onClick={handleReload}
-              className="control-btn"
+              className="control-btn hidden lg:flex"
               title="Reload slide (R)"
               aria-label="Reload slide"
             >
@@ -387,7 +500,7 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
 
             <button 
               onClick={() => setShowKeyboardHelp(true)}
-              className="control-btn hidden md:flex"
+              className="control-btn hidden lg:flex"
               title="Keyboard shortcuts (?)"
               aria-label="Show keyboard shortcuts"
             >
@@ -401,7 +514,7 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
             >
               {isFullscreen ? <Minimize className="w-5 h-5" /> : <Maximize className="w-5 h-5" />}
-              <span className="hidden lg:inline ml-1">
+              <span className="hidden xl:inline ml-1">
                 {isFullscreen ? 'Exit' : 'Full'}
               </span>
             </button>
@@ -435,20 +548,27 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
 
       {/* AI Assistant Dialog */}
       <Dialog open={showAI} onOpenChange={setShowAI}>
-        <DialogContent className="sm:max-w-lg">
+        <DialogContent className="sm:max-w-2xl max-h-[90vh]">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2">
               <Sparkles className="w-5 h-5 text-purple-500" />
               AI Assistant - Slide {currentSlide}
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-4">
-            <div className="flex gap-2">
+          <Tabs value={aiTab} onValueChange={setAiTab} className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="ask">Ask</TabsTrigger>
+              <TabsTrigger value="summary">Summary</TabsTrigger>
+              <TabsTrigger value="define">Define</TabsTrigger>
+              <TabsTrigger value="translate">Translate</TabsTrigger>
+            </TabsList>
+            
+            <TabsContent value="ask" className="space-y-4 mt-4">
               <Textarea
                 value={aiQuestion}
                 onChange={(e) => setAiQuestion(e.target.value)}
                 placeholder="Ask a question about this slide..."
-                className="flex-1"
+                className="min-h-[100px]"
                 aria-label="AI question"
                 onKeyDown={(e) => {
                   if (e.key === 'Enter' && !e.shiftKey) {
@@ -457,26 +577,224 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
                   }
                 }}
               />
-            </div>
-            <Button 
-              onClick={handleAskAI} 
-              disabled={aiLoading || !aiQuestion.trim()}
-              className="w-full"
-            >
-              {aiLoading ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
-                  Thinking...
-                </>
-              ) : (
-                'Ask AI'
+              <Button 
+                onClick={handleAskAI} 
+                disabled={aiLoading || !aiQuestion.trim()}
+                className="w-full"
+              >
+                {aiLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                    Thinking...
+                  </>
+                ) : (
+                  'Ask AI'
+                )}
+              </Button>
+              {aiResponse && (
+                <ScrollArea className="h-[200px] w-full rounded-md border p-4 bg-purple-50">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{aiResponse}</p>
+                </ScrollArea>
               )}
-            </Button>
-            {aiResponse && (
-              <div className="mt-4 p-4 bg-purple-50 rounded-lg border border-purple-200">
-                <p className="text-sm text-gray-700 whitespace-pre-wrap">{aiResponse}</p>
+            </TabsContent>
+            
+            <TabsContent value="summary" className="space-y-4 mt-4">
+              <Button 
+                onClick={handleGetSummary} 
+                disabled={aiLoading}
+                className="w-full"
+              >
+                {aiLoading ? (
+                  <>
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent mr-2" />
+                    Generating...
+                  </>
+                ) : (
+                  <>
+                    <FileText className="w-4 h-4 mr-2" />
+                    Generate Summary
+                  </>
+                )}
+              </Button>
+              {slideSummary && (
+                <ScrollArea className="h-[250px] w-full rounded-md border p-4 bg-blue-50">
+                  <h4 className="font-semibold mb-2">Slide Summary:</h4>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{slideSummary}</p>
+                </ScrollArea>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="define" className="space-y-4 mt-4">
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Enter a word to define..."
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter' && e.target.value.trim()) {
+                      handleDefineWord(e.target.value.trim());
+                    }
+                  }}
+                />
+                <Button 
+                  onClick={(e) => {
+                    const input = e.target.closest('.space-y-4').querySelector('input');
+                    if (input?.value.trim()) handleDefineWord(input.value.trim());
+                  }}
+                  disabled={aiLoading}
+                >
+                  {aiLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                  ) : (
+                    <BookOpen className="w-4 h-4" />
+                  )}
+                </Button>
               </div>
-            )}
+              {aiResponse && aiTab === 'define' && (
+                <ScrollArea className="h-[250px] w-full rounded-md border p-4 bg-green-50">
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{aiResponse}</p>
+                </ScrollArea>
+              )}
+            </TabsContent>
+            
+            <TabsContent value="translate" className="space-y-4 mt-4">
+              <div className="flex gap-2">
+                <select 
+                  value={targetLanguage}
+                  onChange={(e) => setTargetLanguage(e.target.value)}
+                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                >
+                  <option value="es">Spanish</option>
+                  <option value="fr">French</option>
+                  <option value="de">German</option>
+                  <option value="zh">Chinese</option>
+                  <option value="ar">Arabic</option>
+                  <option value="ur">Urdu</option>
+                  <option value="pl">Polish</option>
+                </select>
+                <Button 
+                  onClick={handleTranslate} 
+                  disabled={aiLoading}
+                  className="whitespace-nowrap"
+                >
+                  {aiLoading ? (
+                    <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
+                  ) : (
+                    <>
+                      <Languages className="w-4 h-4 mr-2" />
+                      Translate
+                    </>
+                  )}
+                </Button>
+              </div>
+              {translatedContent && (
+                <ScrollArea className="h-[250px] w-full rounded-md border p-4 bg-orange-50">
+                  <h4 className="font-semibold mb-2">Translation:</h4>
+                  <p className="text-sm text-gray-700 whitespace-pre-wrap">{translatedContent}</p>
+                </ScrollArea>
+              )}
+            </TabsContent>
+          </Tabs>
+        </DialogContent>
+      </Dialog>
+
+      {/* Thumbnails Panel */}
+      {showThumbnails && (
+        <div className="fixed bottom-20 left-0 right-0 bg-black/95 backdrop-blur-lg border-t border-white/10 z-50">
+          <div className="flex items-center justify-between px-4 py-2 border-b border-white/10">
+            <h3 className="text-white font-semibold flex items-center gap-2">
+              <Film className="w-4 h-4" />
+              Slide Thumbnails
+            </h3>
+            <button onClick={() => setShowThumbnails(false)} className="text-white/70 hover:text-white">
+              <X className="w-5 h-5" />
+            </button>
+          </div>
+          <ScrollArea className="h-32">
+            <div className="flex gap-2 p-4">
+              {Array.from({ length: totalSlides }, (_, i) => i + 1).map(slideNum => (
+                <button
+                  key={slideNum}
+                  onClick={() => setCurrentSlide(slideNum)}
+                  className={`
+                    relative flex-shrink-0 w-40 h-24 rounded border-2 transition-all
+                    ${currentSlide === slideNum ? 'border-blue-500 ring-2 ring-blue-500/50' : 'border-white/20 hover:border-white/40'}
+                  `}
+                >
+                  <div className="w-full h-full bg-white/5 rounded flex items-center justify-center">
+                    <span className="text-white/50 text-sm">Slide {slideNum}</span>
+                  </div>
+                  {bookmarks.includes(slideNum) && (
+                    <Bookmark className="absolute top-1 right-1 w-4 h-4 fill-yellow-400 text-yellow-400" />
+                  )}
+                  {notes[slideNum] && (
+                    <StickyNote className="absolute bottom-1 right-1 w-4 h-4 text-blue-400" />
+                  )}
+                  <div className="absolute bottom-0 left-0 right-0 bg-black/80 text-white text-xs py-1 text-center">
+                    {slideNum}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </ScrollArea>
+        </div>
+      )}
+
+      {/* Search Dialog */}
+      <Dialog open={showSearch} onOpenChange={setShowSearch}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Search className="w-5 h-5 text-blue-500" />
+              Search Slides
+            </DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <Input
+              placeholder="Search for keywords..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              autoFocus
+            />
+            <div className="text-sm text-gray-500">
+              <p className="mb-2">Quick navigation:</p>
+              {bookmarks.length > 0 && (
+                <div className="space-y-1">
+                  <p className="font-semibold text-gray-700">Bookmarked Slides:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {bookmarks.sort((a, b) => a - b).map(slide => (
+                      <button
+                        key={slide}
+                        onClick={() => {
+                          setCurrentSlide(slide);
+                          setShowSearch(false);
+                        }}
+                        className="px-3 py-1 bg-yellow-100 text-yellow-800 rounded hover:bg-yellow-200 transition-colors"
+                      >
+                        Slide {slide}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {Object.keys(notes).length > 0 && (
+                <div className="space-y-1 mt-3">
+                  <p className="font-semibold text-gray-700">Slides with Notes:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {Object.keys(notes).sort((a, b) => Number(a) - Number(b)).map(slide => (
+                      <button
+                        key={slide}
+                        onClick={() => {
+                          setCurrentSlide(Number(slide));
+                          setShowSearch(false);
+                        }}
+                        className="px-3 py-1 bg-blue-100 text-blue-800 rounded hover:bg-blue-200 transition-colors"
+                      >
+                        Slide {slide}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
         </DialogContent>
       </Dialog>
@@ -490,28 +808,33 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
               Keyboard Shortcuts
             </DialogTitle>
           </DialogHeader>
-          <div className="space-y-3">
-            {[
-              { keys: ['←', 'H'], action: 'Previous slide' },
-              { keys: ['→', 'L'], action: 'Next slide' },
-              { keys: ['F'], action: 'Toggle fullscreen' },
-              { keys: ['N'], action: 'Open notes' },
-              { keys: ['A'], action: 'AI assistant' },
-              { keys: ['?', '/'], action: 'Show shortcuts' },
-              { keys: ['Esc'], action: 'Close/Exit' }
-            ].map((shortcut, idx) => (
-              <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
-                <div className="flex gap-2">
-                  {shortcut.keys.map((key, i) => (
-                    <kbd key={i} className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
-                      {key}
-                    </kbd>
-                  ))}
+          <ScrollArea className="max-h-[60vh]">
+            <div className="space-y-3 pr-4">
+              {[
+                { keys: ['←', 'H'], action: 'Previous slide' },
+                { keys: ['→', 'L'], action: 'Next slide' },
+                { keys: ['F'], action: 'Toggle fullscreen' },
+                { keys: ['T'], action: 'Toggle thumbnails' },
+                { keys: ['B'], action: 'Toggle bookmark' },
+                { keys: ['N'], action: 'Open notes' },
+                { keys: ['A'], action: 'AI assistant' },
+                { keys: ['Ctrl', 'F'], action: 'Search slides' },
+                { keys: ['?', '/'], action: 'Show shortcuts' },
+                { keys: ['Esc'], action: 'Close/Exit' }
+              ].map((shortcut, idx) => (
+                <div key={idx} className="flex items-center justify-between p-2 bg-gray-50 rounded">
+                  <div className="flex gap-2">
+                    {shortcut.keys.map((key, i) => (
+                      <kbd key={i} className="px-2 py-1 bg-white border border-gray-300 rounded text-xs font-mono">
+                        {key}
+                      </kbd>
+                    ))}
+                  </div>
+                  <span className="text-sm text-gray-600">{shortcut.action}</span>
                 </div>
-                <span className="text-sm text-gray-600">{shortcut.action}</span>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+          </ScrollArea>
         </DialogContent>
       </Dialog>
     </div>
