@@ -67,6 +67,27 @@ export default function PageSectionEditor({ section, onClose }) {
     setFormData({ ...formData, carousel_items: items });
   };
 
+  const addEcosystemItem = () => {
+    setFormData({
+      ...formData,
+      ecosystem_items: [
+        ...(formData.ecosystem_items || []),
+        { name: '', subtitle: '', description: '', icon: '', color_primary: '', color_secondary: '' }
+      ]
+    });
+  };
+
+  const updateEcosystemItem = (index, field, value) => {
+    const items = [...(formData.ecosystem_items || [])];
+    items[index] = { ...items[index], [field]: value };
+    setFormData({ ...formData, ecosystem_items: items });
+  };
+
+  const deleteEcosystemItem = (index) => {
+    const items = (formData.ecosystem_items || []).filter((_, i) => i !== index);
+    setFormData({ ...formData, ecosystem_items: items });
+  };
+
   return (
     <Dialog open onOpenChange={onClose}>
       <DialogContent className="max-w-3xl max-h-[90vh] overflow-y-auto">
@@ -86,6 +107,7 @@ export default function PageSectionEditor({ section, onClose }) {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="hero_carousel">Hero Carousel</SelectItem>
+                <SelectItem value="ecosystem">Ecosystem Section</SelectItem>
                 <SelectItem value="programs">Programs Section</SelectItem>
                 <SelectItem value="features">Features Section</SelectItem>
                 <SelectItem value="text_block">Text Block</SelectItem>
@@ -179,6 +201,87 @@ export default function PageSectionEditor({ section, onClose }) {
                   onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
                 />
               </div>
+            </div>
+          ) : formData.section_type === 'ecosystem' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Title (e.g., Explore the Instructure ecosystem)"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Button Text (e.g., Take a look)"
+                value={formData.cta_text || ''}
+                onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+              />
+              <Input
+                placeholder="Button Link"
+                value={formData.cta_link || ''}
+                onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+              />
+              
+              <div className="flex items-center justify-between mt-6">
+                <Label>Ecosystem Items</Label>
+                <Button onClick={addEcosystemItem} size="sm">
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Item
+                </Button>
+              </div>
+              
+              {(formData.ecosystem_items || []).map((item, index) => (
+                <div key={index} className="p-4 border rounded-lg space-y-3">
+                  <div className="flex justify-between items-center mb-2">
+                    <span className="font-medium">Item {index + 1}</span>
+                    <Button 
+                      variant="ghost" 
+                      size="sm"
+                      onClick={() => deleteEcosystemItem(index)}
+                    >
+                      <Trash2 className="w-4 h-4 text-red-500" />
+                    </Button>
+                  </div>
+                  
+                  <Input
+                    placeholder="Name (e.g., Canvas)"
+                    value={item.name || ''}
+                    onChange={(e) => updateEcosystemItem(index, 'name', e.target.value)}
+                  />
+                  <Input
+                    placeholder="Subtitle (e.g., By Instructure)"
+                    value={item.subtitle || ''}
+                    onChange={(e) => updateEcosystemItem(index, 'subtitle', e.target.value)}
+                  />
+                  <Textarea
+                    placeholder="Description (e.g., Teaching and learning)"
+                    value={item.description || ''}
+                    onChange={(e) => updateEcosystemItem(index, 'description', e.target.value)}
+                    rows={2}
+                  />
+                  <Input
+                    placeholder="Icon (lucide icon name, e.g., BookOpen)"
+                    value={item.icon || ''}
+                    onChange={(e) => updateEcosystemItem(index, 'icon', e.target.value)}
+                  />
+                  <div className="grid grid-cols-2 gap-4">
+                    <Input
+                      placeholder="Primary Color (e.g., #E74C3C)"
+                      value={item.color_primary || ''}
+                      onChange={(e) => updateEcosystemItem(index, 'color_primary', e.target.value)}
+                    />
+                    <Input
+                      placeholder="Secondary Color (e.g., #C0392B)"
+                      value={item.color_secondary || ''}
+                      onChange={(e) => updateEcosystemItem(index, 'color_secondary', e.target.value)}
+                    />
+                  </div>
+                </div>
+              ))}
             </div>
           ) : formData.section_type === 'hero_carousel' ? (
             <div className="space-y-4">
