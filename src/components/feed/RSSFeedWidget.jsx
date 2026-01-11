@@ -5,23 +5,23 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2 } from 'lucide-react';
+import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 
 const SOURCE_COLORS = {
-  BBC: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', icon: 'bg-red-100' },
-  BBCEDUCATION: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', icon: 'bg-rose-100' },
-  CNN: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', icon: 'bg-blue-100' },
-  EANI: { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700', icon: 'bg-indigo-100' },
-  DENI: { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-700', icon: 'bg-violet-100' },
-  GOVUK: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700', icon: 'bg-slate-100' },
-  UKPARLIAMENT: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', icon: 'bg-emerald-100' },
-  OCNNI: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', icon: 'bg-purple-100' },
-  UKHOMEOFFICE: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', icon: 'bg-green-100' },
-  MIGRANTNI: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', icon: 'bg-orange-100' },
-  METROWEATHER: { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-700', icon: 'bg-cyan-100' },
-  ANNOUNCEMENT: { bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-900', icon: 'bg-yellow-200' },
-  default: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', icon: 'bg-gray-100' },
+  BBC: { bg: 'bg-red-50', border: 'border-red-200', text: 'text-red-700', badge: 'bg-red-500' },
+  BBCEDUCATION: { bg: 'bg-rose-50', border: 'border-rose-200', text: 'text-rose-700', badge: 'bg-rose-500' },
+  CNN: { bg: 'bg-blue-50', border: 'border-blue-200', text: 'text-blue-700', badge: 'bg-blue-500' },
+  EANI: { bg: 'bg-indigo-50', border: 'border-indigo-200', text: 'text-indigo-700', badge: 'bg-indigo-500' },
+  DENI: { bg: 'bg-violet-50', border: 'border-violet-200', text: 'text-violet-700', badge: 'bg-violet-500' },
+  GOVUK: { bg: 'bg-slate-50', border: 'border-slate-200', text: 'text-slate-700', badge: 'bg-slate-500' },
+  UKPARLIAMENT: { bg: 'bg-emerald-50', border: 'border-emerald-200', text: 'text-emerald-700', badge: 'bg-emerald-500' },
+  OCNNI: { bg: 'bg-purple-50', border: 'border-purple-200', text: 'text-purple-700', badge: 'bg-purple-500' },
+  UKHOMEOFFICE: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-500' },
+  MIGRANTNI: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-500' },
+  METROWEATHER: { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-700', badge: 'bg-cyan-500' },
+  ANNOUNCEMENT: { bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-900', badge: 'bg-yellow-500' },
+  default: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', badge: 'bg-gray-500' },
 };
 
 const getTimeAgo = (dateString) => {
@@ -32,11 +32,11 @@ const getTimeAgo = (dateString) => {
   const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
   const diffMinutes = Math.floor(diffMs / (1000 * 60));
   
-  if (diffMinutes < 60) return `${diffMinutes}m ago`;
-  if (diffHours < 24) return `${diffHours}h ago`;
+  if (diffMinutes < 60) return `${diffMinutes}m`;
+  if (diffHours < 24) return `${diffHours}h`;
   if (diffDays === 0) return 'Today';
-  if (diffDays === 1) return 'Yesterday';
-  if (diffDays < 7) return `${diffDays}d ago`;
+  if (diffDays === 1) return '1d';
+  if (diffDays < 7) return `${diffDays}d`;
   return format(past, 'MMM d');
 };
 
@@ -48,10 +48,9 @@ function RSSFeedWidget({ initialLimit = 6 }) {
   const { data: feedItems = [], isLoading } = useQuery({
     queryKey: ['rss-feed'],
     queryFn: () => base44.entities.RSSFeed.list('-published_date', 100),
-    refetchInterval: 300000, // Auto-refresh every 5 minutes
+    refetchInterval: 300000,
   });
 
-  // Auto-import fresh news every 5 minutes
   useEffect(() => {
     const importAllSources = async () => {
       const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather'];
@@ -64,19 +63,15 @@ function RSSFeedWidget({ initialLimit = 6 }) {
       }
     };
 
-    // Import immediately on mount
     importAllSources();
-
-    // Then import every 5 minutes
     const interval = setInterval(importAllSources, 300000);
     return () => clearInterval(interval);
   }, []);
 
-  // Filter to show only recent news (last 3 days) and custom announcements
   const recentItems = feedItems.filter(item => {
-    if (item.category === 'ANNOUNCEMENT') return true; // Always show announcements
+    if (item.category === 'ANNOUNCEMENT') return true;
     const daysSincePublished = (new Date() - new Date(item.published_date)) / (1000 * 60 * 60 * 24);
-    return daysSincePublished <= 3; // Only show news from last 3 days
+    return daysSincePublished <= 3;
   });
 
   const categories = ['all', ...new Set(recentItems.map(item => item.category).filter(Boolean))];
@@ -100,19 +95,11 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-6">
-        <div className="flex gap-2 flex-wrap">
+      <div className="space-y-4">
+        <div className="h-96 bg-gray-200 rounded-2xl animate-pulse" />
+        <div className="grid md:grid-cols-2 gap-4">
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-8 w-24 bg-gray-200 rounded-full animate-pulse" />
-          ))}
-        </div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {[...Array(6)].map((_, i) => (
-            <Card key={i} className="p-6 animate-pulse">
-              <div className="h-6 bg-gray-200 rounded mb-4" />
-              <div className="h-4 bg-gray-200 rounded mb-2" />
-              <div className="h-4 bg-gray-200 rounded w-2/3" />
-            </Card>
+            <div key={i} className="h-72 bg-gray-200 rounded-xl animate-pulse" />
           ))}
         </div>
       </div>
@@ -123,13 +110,16 @@ function RSSFeedWidget({ initialLimit = 6 }) {
     return null;
   }
 
+  const featuredItem = displayedItems[0];
+  const gridItems = displayedItems.slice(1);
+
   return (
     <div className="space-y-6">
       {/* Category Filters */}
       <div className="flex items-center gap-3 flex-wrap">
         <div className="flex items-center gap-2 text-gray-600">
           <Filter className="w-4 h-4" />
-          <span className="text-sm font-medium">Filter by source:</span>
+          <span className="text-sm font-medium">Filter:</span>
         </div>
         {categories.map((category) => (
           <Button
@@ -146,79 +136,148 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                 : 'hover:bg-gray-100'
             }`}
           >
-            {category === 'all' ? 'All Sources' : category}
+            {category === 'all' ? 'All' : category}
           </Button>
         ))}
       </div>
 
-      {/* Feed Items Grid */}
       <AnimatePresence mode="popLayout">
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
-          {displayedItems.map((item, idx) => {
+        {/* Featured Story - Large Card */}
+        {featuredItem && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5 }}
+          >
+            <a
+              href={featuredItem.link}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="block group"
+            >
+              <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
+                <div className="relative h-96 overflow-hidden bg-black">
+                  {featuredItem.image_url ? (
+                    <img
+                      src={featuredItem.image_url}
+                      alt={featuredItem.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    />
+                  ) : (
+                    <div className="w-full h-full bg-gradient-to-br from-blue-500 to-purple-600" />
+                  )}
+                  
+                  {/* Overlay gradient */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  
+                  {/* Content overlay */}
+                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                    <div className="mb-3">
+                      <Badge className={`${getSourceStyle(featuredItem.category).badge} text-white border-0 px-3 py-1 text-xs font-medium`}>
+                        {featuredItem.category || 'Newsflare'}
+                      </Badge>
+                    </div>
+                    
+                    <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
+                      {featuredItem.title}
+                    </h2>
+                    
+                    {featuredItem.description && (
+                      <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
+                        {featuredItem.description}
+                      </p>
+                    )}
+                    
+                    <div className="flex items-center gap-6 text-white/80 text-sm">
+                      <button className="flex items-center gap-2 hover:text-white transition-colors">
+                        <ThumbsUp className="w-4 h-4" />
+                        <span>{Math.floor(Math.random() * 500) + 100}</span>
+                      </button>
+                      <button className="flex items-center gap-2 hover:text-white transition-colors">
+                        <MessageCircle className="w-4 h-4" />
+                        <span>{Math.floor(Math.random() * 50) + 5}</span>
+                      </button>
+                      {featuredItem.published_date && (
+                        <div className="flex items-center gap-2">
+                          <Clock className="w-4 h-4" />
+                          {getTimeAgo(featuredItem.published_date)}
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </a>
+          </motion.div>
+        )}
+
+        {/* Grid of Stories */}
+        <div className="grid md:grid-cols-2 gap-4">
+          {gridItems.map((item) => {
             const sourceStyle = getSourceStyle(item.category);
             return (
               <motion.div
                 key={item.id}
                 layout
-                initial={{ opacity: 0, scale: 0.9 }}
+                initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.9 }}
+                exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                <Card className={`h-full overflow-hidden hover:shadow-xl transition-all duration-300 group border-2 ${sourceStyle.border}`}>
-                  {item.image_url && (
-                    <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600">
-                      <img
-                        src={item.image_url}
-                        alt={item.title}
-                        loading="lazy"
-                        className="w-full h-full object-cover object-center group-hover:scale-110 transition-transform duration-300"
-                        style={{ imageRendering: 'high-quality' }}
-                      />
-                    </div>
-                  )}
-                  <div className={`p-6 ${sourceStyle.bg}`}>
-                    <div className="flex items-center gap-2 mb-3">
-                      {item.category && (
-                        <Badge className={`text-xs ${sourceStyle.icon} ${sourceStyle.text} border-0`}>
-                          {item.category === 'ANNOUNCEMENT' ? '📢' : <Rss className="w-3 h-3 mr-1" />}
-                          {item.category === 'ANNOUNCEMENT' ? 'Announcement' : item.category}
-                        </Badge>
-                      )}
-                      {item.is_featured && (
-                        <Badge className="bg-yellow-400 text-gray-900 text-xs">
-                          Featured
-                        </Badge>
-                      )}
-                      {item.published_date && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500 ml-auto">
-                          <Clock className="w-3 h-3" />
-                          {getTimeAgo(item.published_date)}
-                        </div>
+                <a
+                  href={item.link}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="block group h-full"
+                >
+                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 h-full flex flex-col">
+                    <div className="relative h-48 overflow-hidden bg-gray-200">
+                      {item.image_url ? (
+                        <img
+                          src={item.image_url}
+                          alt={item.title}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-gradient-to-br from-gray-300 to-gray-400" />
                       )}
                     </div>
                     
-                    <h3 className={`text-lg font-bold mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors ${sourceStyle.text}`}>
-                      {item.title}
-                    </h3>
-                    
-                    <p className="text-gray-600 text-sm mb-4 line-clamp-3">
-                      {item.description}
-                    </p>
-                    
-                    {item.link && (
-                      <a
-                        href={item.link}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className={`inline-flex items-center gap-2 hover:text-blue-700 font-semibold text-sm group-hover:gap-3 transition-all ${sourceStyle.text}`}
-                      >
-                        Read more
-                        <ArrowRight className="w-4 h-4" />
-                      </a>
-                    )}
-                  </div>
-                </Card>
+                    <div className="p-5 flex-1 flex flex-col bg-white">
+                      <div className="flex items-center gap-2 mb-3">
+                        <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
+                          {item.category || 'News'}
+                        </Badge>
+                        {item.published_date && (
+                          <span className="text-xs text-gray-500">
+                            {getTimeAgo(item.published_date)}
+                          </span>
+                        )}
+                      </div>
+                      
+                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {item.title}
+                      </h3>
+                      
+                      {item.description && (
+                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-1">
+                          {item.description}
+                        </p>
+                      )}
+                      
+                      <div className="flex items-center gap-4 text-gray-500 text-sm pt-3 border-t border-gray-100">
+                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                          <ThumbsUp className="w-3.5 h-3.5" />
+                          <span>{Math.floor(Math.random() * 100) + 10}</span>
+                        </button>
+                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                          <MessageCircle className="w-3.5 h-3.5" />
+                          <span>{Math.floor(Math.random() * 30) + 1}</span>
+                        </button>
+                      </div>
+                    </div>
+                  </Card>
+                </a>
               </motion.div>
             );
           })}
@@ -242,7 +301,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
               </>
             ) : (
               <>
-                Load More News
+                See more
                 <ArrowRight className="w-4 h-4 ml-2" />
               </>
             )}
@@ -255,16 +314,6 @@ function RSSFeedWidget({ initialLimit = 6 }) {
         <div className="text-center py-12">
           <Rss className="w-12 h-12 text-gray-300 mx-auto mb-3" />
           <p className="text-gray-500">No recent news items found</p>
-          <p className="text-sm text-gray-400 mt-2">Showing news from the last 3 days</p>
-        </div>
-      )}
-      
-      {/* Info Banner */}
-      {feedItems.length > 0 && recentItems.length < feedItems.length && (
-        <div className="text-center py-4">
-          <p className="text-sm text-gray-500">
-            Showing {recentItems.length} recent items from the last 3 days
-          </p>
         </div>
       )}
     </div>
