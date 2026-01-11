@@ -85,11 +85,11 @@ export default function Home() {
   });
 
   const defaultHeroBackgroundImages = [
-    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=1920&q=80',
-    'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=1920&q=80',
-    'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=1920&q=80',
-    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80',
-    'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=1920&q=80'
+    'https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=2400&q=95&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=2400&q=95&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1509062522246-3755977927d7?w=2400&q=95&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=2400&q=95&auto=format&fit=crop',
+    'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?w=2400&q=95&auto=format&fit=crop'
   ];
   
   const heroBackgroundImages = heroCarouselImages.length > 0 
@@ -198,7 +198,7 @@ export default function Home() {
       {heroSections.length > 0 && heroSections[0].carousel_items?.length > 0 ? (
         <HeroCarousel items={heroSections[0].carousel_items} />
       ) : (
-        <section className="relative overflow-hidden bg-gradient-to-r from-[#003366] to-[#002244]">
+        <section className="relative overflow-hidden bg-gradient-to-br from-[#003366] via-[#004488] to-[#0055aa]">
           <div className="absolute inset-0" ref={heroEmblaRef}>
             <div className="flex h-full">
               {heroBackgroundImages.map((imgUrl, idx) => (
@@ -206,9 +206,11 @@ export default function Home() {
                   <img
                     src={imgUrl}
                     alt={`Educational background ${idx + 1}`}
-                    className="w-full h-full object-cover opacity-50"
+                    className="w-full h-full object-cover opacity-40"
+                    loading="eager"
+                    fetchpriority="high"
                   />
-                  <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/50 via-transparent to-[#002244]/50" />
+                  <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/60 via-[#003366]/30 to-[#002244]/70" />
                 </div>
               ))}
             </div>
@@ -321,8 +323,10 @@ export default function Home() {
       </section>
 
       {/* Snap Finance Style Promo Banner */}
-      <section className="bg-[#003366] py-16 md:py-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <section className="relative bg-gradient-to-br from-[#003366] via-[#004488] to-[#0055aa] py-16 md:py-20 overflow-hidden">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="grid md:grid-cols-2 gap-12 items-center">
             <motion.div
               initial={{ opacity: 0, x: -30 }}
@@ -349,17 +353,18 @@ export default function Home() {
               <div className="overflow-hidden rounded-2xl shadow-2xl" ref={leadershipEmblaRef}>
                 <div className="flex">
                   {(leadershipCarouselImages.length > 0 ? leadershipCarouselImages : [
-                    { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=800&q=80' },
-                    { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=80' },
-                    { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=800&q=80' },
-                    { image_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=800&q=80' }
+                    { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=95&auto=format&fit=crop' },
+                    { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&q=95&auto=format&fit=crop' },
+                    { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&q=95&auto=format&fit=crop' },
+                    { image_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1600&q=95&auto=format&fit=crop' }
                   ]).map((img, idx) => (
                     <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                      <div className="relative aspect-[4/3]">
+                      <div className="relative aspect-[4/3] overflow-hidden">
                         <img
                           src={img.image_url}
                           alt={`Leadership programme ${idx + 1}`}
-                          className="w-full h-full object-cover"
+                          className="w-full h-full object-cover transform transition-transform duration-700"
+                          loading="lazy"
                         />
                       </div>
                     </div>
@@ -465,18 +470,19 @@ export default function Home() {
           <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
             <div className="flex">
               {(carouselImages.length > 0 ? carouselImages : [
-                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1920&q=80' },
-                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1920&q=80' },
-                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1920&q=80' },
+                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=2400&q=95&auto=format&fit=crop' },
+                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=2400&q=95&auto=format&fit=crop' },
+                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=2400&q=95&auto=format&fit=crop' },
               ]).map((img, idx) => (
                 <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[16/9]">
+                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[16/9] overflow-hidden">
                     <img
                       src={img.image_url}
                       alt={`Community ${idx + 1}`}
-                      className="w-full h-full object-cover object-center"
+                      className="w-full h-full object-cover object-center transform transition-transform duration-700"
+                      loading="lazy"
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent" />
+                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
                   </div>
                 </div>
               ))}
@@ -578,7 +584,7 @@ export default function Home() {
       )}
 
       {/* Explore Online Courses - LeanDirect Style */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gradient-to-b from-white to-gray-50">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -586,9 +592,15 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
+          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-pink-100 text-orange-600 text-sm font-semibold mb-4 border border-orange-200">
+            Popular Courses
+          </span>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
             Explore Our Online Courses
           </h2>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+            Start learning today with our expert-led courses
+          </p>
         </motion.div>
         
         {isLoading ? (
@@ -613,14 +625,16 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300"
-              >
+                whileHover={{ y: -8 }}
+                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+                >
                 <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
                   {course.thumbnail ? (
                     <img
                       src={course.thumbnail}
                       alt={course.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      loading="lazy"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
@@ -675,16 +689,24 @@ export default function Home() {
       </section>
 
       {/* Why Choose Us Section */}
-      <section className="py-20 bg-white">
+      <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-16">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-16"
+          >
+            <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+              Why Choose Us
+            </span>
             <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
               Why learners love our platform
             </h2>
             <p className="text-lg text-gray-600 max-w-2xl mx-auto">
               Experience the future of education with our innovative features
             </p>
-          </div>
+          </motion.div>
           <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
             {[
               {
@@ -720,8 +742,10 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-gradient-to-br from-gray-50 to-white rounded-2xl p-8 hover:shadow-xl transition-all duration-300 border border-gray-100"
+                  whileHover={{ y: -8, scale: 1.02 }}
+                  className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
                 >
+                  <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
                   <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br ${feature.color} rounded-xl mb-4 shadow-md`}>
                     <Icon className="w-7 h-7 text-white" />
                   </div>
@@ -735,9 +759,14 @@ export default function Home() {
       </section>
 
       {/* RSS Feed Section */}
-      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+      <section id="news" className="py-20 bg-gradient-to-b from-purple-50/30 to-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="text-center mb-12">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="text-center mb-12"
+          >
             <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
               <Rss className="w-4 h-4 inline-block mr-2" />
               Latest Updates
