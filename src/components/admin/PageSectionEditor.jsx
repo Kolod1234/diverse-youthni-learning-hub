@@ -7,7 +7,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Switch } from '@/components/ui/switch';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Loader2 } from 'lucide-react';
+import ABTestManager from '@/components/ab-testing/ABTestManager';
 
 export default function PageSectionEditor({ section, onSave, isSaving, onClose }) {
   // Extract data properly - handle nested data structure
@@ -63,7 +65,13 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
           <DialogTitle>{section?.id ? 'Edit Section' : 'Add Section'}</DialogTitle>
         </DialogHeader>
 
-        <div className="space-y-4">
+        <Tabs defaultValue="content" className="w-full">
+          <TabsList className="grid w-full grid-cols-2">
+            <TabsTrigger value="content">Content</TabsTrigger>
+            {section?.id && <TabsTrigger value="ab-testing">A/B Testing</TabsTrigger>}
+          </TabsList>
+
+          <TabsContent value="content" className="space-y-4 mt-4">
           <div>
             <Label>Section Type</Label>
             <Select 
@@ -419,8 +427,16 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
               </Button>
             </div>
           </div>
-        </div>
-      </DialogContent>
-    </Dialog>
-  );
-}
+          </div>
+          </TabsContent>
+
+          {section?.id && (
+          <TabsContent value="ab-testing" className="mt-4">
+          <ABTestManager section={section} />
+          </TabsContent>
+          )}
+          </Tabs>
+          </DialogContent>
+          </Dialog>
+          );
+          }
