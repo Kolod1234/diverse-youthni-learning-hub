@@ -856,7 +856,12 @@ export default function PageSectionEditor({ section, onClose }) {
 
           <div className="flex justify-end gap-2 pt-4">
             <Button variant="outline" onClick={onClose}>Cancel</Button>
-            <Button onClick={() => saveMutation.mutate(formData)}>Save Section</Button>
+            <Button 
+              onClick={() => saveMutation.mutate(formData)} 
+              disabled={saveMutation.isPending}
+            >
+              {saveMutation.isPending ? 'Saving...' : 'Save Section'}
+            </Button>
           </div>
         </div>
       </DialogContent>
