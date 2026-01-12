@@ -508,165 +508,10 @@ export default function Home() {
       </section>
 
       {/* Leadership Programmes CTA */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true }}
-          className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50"
-        >
-          <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-
-          <div className="relative z-10 max-w-3xl">
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-6">
-              <ClipboardList className="w-4 h-4" />
-              <span>Leadership Development</span>
-            </div>
-
-            <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
-              Join Our Leadership Empowerment Programmes
-            </h2>
-
-            <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-              Develop essential leadership skills, gain real-world experience, and unlock your potential through our structured mentorship and empowerment programmes.
-            </p>
-
-            <div className="flex flex-wrap gap-4">
-              <Link to={createPageUrl('Programs')}>
-                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-white/40 hover:shadow-violet-400/70 hover:scale-105 transition-all">
-                  Explore Programmes
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </div>
-        </motion.div>
-      </section>
+      <LeadershipCTASection />
 
       {/* Solutions Section */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          className="text-center mb-12"
-        >
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">
-            Solutions for every age, stage, and transitional moment
-          </h2>
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto">
-            Explore our comprehensive programs designed to support your educational journey
-          </p>
-        </motion.div>
-        
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.1 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-video overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1427504494785-3a9ca7044f45?w=800&q=90"
-                alt="GCSE"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">GCSE</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
-                Master your General Certificate of Secondary Education with expert tutors and comprehensive resources.
-              </p>
-              <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                See how →
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.2 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-video overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=800&q=90"
-                alt="A-Levels"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">A-Levels</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
-                Advance your education with A-Level courses designed to prepare you for university success.
-              </p>
-              <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                See how →
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-video overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=800&q=90"
-                alt="Leadership"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Leadership</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
-                Develop essential leadership skills through our structured empowerment programmes.
-              </p>
-              <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                See how →
-              </Button>
-            </div>
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.4 }}
-            whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
-          >
-            <div className="aspect-video overflow-hidden">
-              <img
-                src="https://images.unsplash.com/photo-1529390079861-591de354faf5?w=800&q=90"
-                alt="Youth Work"
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">Youth Work</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">
-                OCN accredited youth work programs to kickstart your career in community development.
-              </p>
-              <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                See how →
-              </Button>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <SolutionsSection />
 
       {/* Programs Section - Dynamic */}
       <ProgramsSection />
@@ -968,52 +813,7 @@ export default function Home() {
       )}
 
       {/* CTA Section */}
-      <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-24">
-        <div className="absolute inset-0">
-          <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
-        </div>
-        
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-            viewport={{ once: true }}
-          >
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8">
-              <Zap className="w-4 h-4 text-yellow-300" />
-              <span>Join Thousands of Successful Learners</span>
-            </div>
-            
-            <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
-              Ready to Transform
-              <span className="block mt-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
-                Your Future?
-              </span>
-            </h2>
-            
-            <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
-              Start your learning journey today and unlock endless possibilities with our expert-led courses
-            </p>
-            
-            <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-              <Link to={createPageUrl('Dashboard')}>
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
-                  Get Started for Free
-                  <ArrowRight className="w-6 h-6 ml-2" />
-                </Button>
-              </Link>
-              <Link to={createPageUrl('Explore')}>
-                <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
-                  Browse Courses
-                  <TrendingUp className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
-          </motion.div>
-        </div>
-      </section>
+      <FinalCTASection />
     </div>
   );
 }
@@ -1263,35 +1063,25 @@ function FeaturesSection() {
 }
 
 function SuccessStoriesCarousel() {
+  const { data: sections = [] } = useQuery({
+    queryKey: ['page-sections-success-stories'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'success_stories', is_active: true }, 'order', 1),
+  });
+
+  if (sections.length === 0) return null;
+
+  const section = sections[0];
+  const stories = [1, 2, 3].map(num => ({
+    category: section[`story${num}_category`] || '',
+    tag: section[`story${num}_tag`] || '',
+    tagColor: section[`story${num}_tag_color`] || 'bg-red-600',
+    title: section[`story${num}_title`] || '',
+    description: section[`story${num}_description`] || '',
+    bgColor: section[`story${num}_bg_color`] || 'from-gray-900 via-red-950 to-gray-900'
+  })).filter(s => s.title);
+
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true, align: 'start' });
   const [selectedIndex, setSelectedIndex] = useState(0);
-
-  const stories = [
-    {
-      category: 'Instructure',
-      tag: 'Research',
-      tagColor: 'bg-red-600',
-      title: 'The Lifelong Learning Report',
-      description: 'Explore the latest research on continuous education and lifelong learning strategies.',
-      bgColor: 'from-gray-900 via-red-950 to-gray-900'
-    },
-    {
-      category: 'Lifelong Learning Report',
-      tag: 'Case Study',
-      tagColor: 'bg-blue-600',
-      title: 'Trends and Insights from K-12 to Career',
-      description: 'Learning today is a continuous journey. Explore what\'s needed to create an environment where every learner can flourish—no matter where they are in their educational path.',
-      bgColor: 'from-blue-950 via-slate-900 to-blue-950'
-    },
-    {
-      category: 'Instructure',
-      tag: 'Case Study',
-      tagColor: 'bg-orange-600',
-      title: 'Passaic County Technical Vocational Schools',
-      description: 'Discover how technical schools are transforming education and preparing students for real-world careers.',
-      bgColor: 'from-gray-900 via-orange-950 to-gray-900'
-    }
-  ];
 
   useEffect(() => {
     if (!emblaApi) return;
@@ -1316,10 +1106,10 @@ function SuccessStoriesCarousel() {
         viewport={{ once: true }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">Success stories and resources</h2>
-        <p className="text-gray-600 text-lg">
-          Real-world impact from our learning community
-        </p>
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">{section.title || 'Success stories and resources'}</h2>
+        {section.description && (
+          <p className="text-gray-600 text-lg">{section.description}</p>
+        )}
       </motion.div>
       
       <div className="relative">
@@ -1387,6 +1177,202 @@ function SuccessStoriesCarousel() {
             />
           ))}
         </div>
+      </div>
+    </section>
+  );
+}
+
+function SolutionsSection() {
+  const { data: sections = [] } = useQuery({
+    queryKey: ['page-sections-solutions'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'solutions', is_active: true }, 'order', 1),
+  });
+
+  if (sections.length === 0) return null;
+
+  const section = sections[0];
+  const cards = [1, 2, 3, 4].map(num => ({
+    image: section[`card${num}_image`],
+    title: section[`card${num}_title`],
+    description: section[`card${num}_description`],
+    link: section[`card${num}_link`]
+  })).filter(c => c.title);
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        className="text-center mb-12"
+      >
+        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+          {section.title || 'Solutions for every age, stage, and transitional moment'}
+        </h2>
+        {section.description && (
+          <p className="text-gray-600 text-lg max-w-3xl mx-auto">{section.description}</p>
+        )}
+      </motion.div>
+      
+      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+        {cards.map((card, idx) => (
+          <motion.div
+            key={idx}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            transition={{ delay: idx * 0.1 }}
+            whileHover={{ y: -8 }}
+            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
+          >
+            {card.image && (
+              <div className="aspect-video overflow-hidden">
+                <img
+                  src={card.image}
+                  alt={card.title}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            )}
+            <div className="p-6">
+              <h3 className="text-2xl font-bold text-gray-900 mb-3">{card.title}</h3>
+              <p className="text-gray-600 mb-4 leading-relaxed">{card.description}</p>
+              {card.link && (
+                <Link to={card.link}>
+                  <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
+                    See how →
+                  </Button>
+                </Link>
+              )}
+            </div>
+          </motion.div>
+        ))}
+      </div>
+    </section>
+  );
+}
+
+function LeadershipCTASection() {
+  const { data: sections = [] } = useQuery({
+    queryKey: ['page-sections-leadership-cta'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'leadership_cta', is_active: true }, 'order', 1),
+  });
+
+  if (sections.length === 0) return null;
+
+  const section = sections[0];
+
+  return (
+    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <motion.div
+        initial={{ opacity: 0, y: 30 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.8 }}
+        viewport={{ once: true }}
+        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50"
+      >
+        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
+
+        <div className="relative z-10 max-w-3xl">
+          {section.badge_text && (
+            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-6">
+              <ClipboardList className="w-4 h-4" />
+              <span>{section.badge_text}</span>
+            </div>
+          )}
+
+          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
+            {section.title || 'Join Our Leadership Empowerment Programmes'}
+          </h2>
+
+          {section.description && (
+            <p className="text-xl text-purple-100 mb-8 leading-relaxed">
+              {section.description}
+            </p>
+          )}
+
+          {section.cta_text && section.cta_link && (
+            <div className="flex flex-wrap gap-4">
+              <Link to={section.cta_link}>
+                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-white/40 hover:shadow-violet-400/70 hover:scale-105 transition-all">
+                  {section.cta_text}
+                  <ArrowRight className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            </div>
+          )}
+        </div>
+      </motion.div>
+    </section>
+  );
+}
+
+function FinalCTASection() {
+  const { data: sections = [] } = useQuery({
+    queryKey: ['page-sections-cta'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'cta_section', is_active: true }, 'order', 1),
+  });
+
+  if (sections.length === 0) return null;
+
+  const section = sections[0];
+
+  return (
+    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-24">
+      <div className="absolute inset-0">
+        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
+      </div>
+      
+      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+        <motion.div
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.8 }}
+          viewport={{ once: true }}
+        >
+          {section.badge_text && (
+            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8">
+              <Zap className="w-4 h-4 text-yellow-300" />
+              <span>{section.badge_text}</span>
+            </div>
+          )}
+          
+          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+            {section.title || 'Ready to Transform'}
+            {section.subtitle && (
+              <span className="block mt-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+                {section.subtitle}
+              </span>
+            )}
+          </h2>
+          
+          {section.description && (
+            <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+              {section.description}
+            </p>
+          )}
+          
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+            {section.cta1_text && section.cta1_link && (
+              <Link to={section.cta1_link}>
+                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
+                  {section.cta1_text}
+                  <ArrowRight className="w-6 h-6 ml-2" />
+                </Button>
+              </Link>
+            )}
+            {section.cta2_text && section.cta2_link && (
+              <Link to={section.cta2_link}>
+                <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
+                  {section.cta2_text}
+                  <TrendingUp className="w-5 h-5 ml-2" />
+                </Button>
+              </Link>
+            )}
+          </div>
+        </motion.div>
       </div>
     </section>
   );

@@ -89,6 +89,10 @@ export default function PageSectionEditor({ section, onClose }) {
                 <SelectItem value="programs">Programs Section</SelectItem>
                 <SelectItem value="features">Features Section</SelectItem>
                 <SelectItem value="ecosystem">Ecosystem Section</SelectItem>
+                <SelectItem value="success_stories">Success Stories</SelectItem>
+                <SelectItem value="solutions">Solutions Cards</SelectItem>
+                <SelectItem value="cta_section">CTA Section</SelectItem>
+                <SelectItem value="leadership_cta">Leadership CTA</SelectItem>
                 <SelectItem value="text_block">Text Block</SelectItem>
                 <SelectItem value="card_grid">Card Grid</SelectItem>
                 <SelectItem value="feature_section">Feature Section</SelectItem>
@@ -180,6 +184,243 @@ export default function PageSectionEditor({ section, onClose }) {
                   onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
                 />
               </div>
+            </div>
+          ) : formData.section_type === 'success_stories' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Section Title (e.g., Success stories and resources)"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={2}
+              />
+              <div className="border-t pt-4">
+                <Label className="text-base font-semibold mb-3 block">Story Cards</Label>
+                {[1, 2, 3].map((num) => (
+                  <div key={num} className="border rounded-lg p-4 mb-4">
+                    <Label className="font-medium mb-2 block">Story {num}</Label>
+                    <div className="space-y-3 pl-2">
+                      <Input
+                        placeholder="Category (e.g., Instructure)"
+                        value={formData[`story${num}_category`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`story${num}_category`]: e.target.value })}
+                      />
+                      <Input
+                        placeholder="Tag (e.g., Research)"
+                        value={formData[`story${num}_tag`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`story${num}_tag`]: e.target.value })}
+                      />
+                      <Select
+                        value={formData[`story${num}_tag_color`] || 'bg-red-600'}
+                        onValueChange={(v) => setFormData({ ...formData, [`story${num}_tag_color`]: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Tag Color" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="bg-red-600">Red</SelectItem>
+                          <SelectItem value="bg-blue-600">Blue</SelectItem>
+                          <SelectItem value="bg-orange-600">Orange</SelectItem>
+                          <SelectItem value="bg-green-600">Green</SelectItem>
+                          <SelectItem value="bg-purple-600">Purple</SelectItem>
+                        </SelectContent>
+                      </Select>
+                      <Input
+                        placeholder="Title"
+                        value={formData[`story${num}_title`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`story${num}_title`]: e.target.value })}
+                      />
+                      <Textarea
+                        placeholder="Description"
+                        value={formData[`story${num}_description`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`story${num}_description`]: e.target.value })}
+                        rows={2}
+                      />
+                      <Select
+                        value={formData[`story${num}_bg_color`] || 'from-gray-900 via-red-950 to-gray-900'}
+                        onValueChange={(v) => setFormData({ ...formData, [`story${num}_bg_color`]: v })}
+                      >
+                        <SelectTrigger>
+                          <SelectValue placeholder="Background Gradient" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="from-gray-900 via-red-950 to-gray-900">Red Dark</SelectItem>
+                          <SelectItem value="from-blue-950 via-slate-900 to-blue-950">Blue Dark</SelectItem>
+                          <SelectItem value="from-gray-900 via-orange-950 to-gray-900">Orange Dark</SelectItem>
+                          <SelectItem value="from-purple-950 via-slate-900 to-purple-950">Purple Dark</SelectItem>
+                        </SelectContent>
+                      </Select>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : formData.section_type === 'solutions' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Section Title (e.g., Solutions for every age...)"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={2}
+              />
+              <div className="border-t pt-4">
+                <Label className="text-base font-semibold mb-3 block">Solution Cards (4)</Label>
+                {[1, 2, 3, 4].map((num) => (
+                  <div key={num} className="border rounded-lg p-4 mb-4">
+                    <Label className="font-medium mb-2 block">Card {num}</Label>
+                    <div className="space-y-3 pl-2">
+                      <div>
+                        <Label>Image</Label>
+                        {formData[`card${num}_image`] ? (
+                          <div className="relative">
+                            <img src={formData[`card${num}_image`]} alt="" className="w-full h-32 object-cover rounded" />
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              className="absolute top-2 right-2"
+                              onClick={() => setFormData({ ...formData, [`card${num}_image`]: '' })}
+                            >
+                              Remove
+                            </Button>
+                          </div>
+                        ) : (
+                          <div>
+                            <input
+                              type="file"
+                              accept="image/*"
+                              onChange={(e) => handleImageUpload(e, `card${num}_image`)}
+                              className="hidden"
+                              id={`card${num}-img`}
+                            />
+                            <label htmlFor={`card${num}-img`}>
+                              <Button variant="outline" className="w-full" asChild disabled={uploading}>
+                                <span>
+                                  {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
+                                  Upload Image
+                                </span>
+                              </Button>
+                            </label>
+                          </div>
+                        )}
+                      </div>
+                      <Input
+                        placeholder="Title (e.g., GCSE)"
+                        value={formData[`card${num}_title`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`card${num}_title`]: e.target.value })}
+                      />
+                      <Textarea
+                        placeholder="Description"
+                        value={formData[`card${num}_description`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`card${num}_description`]: e.target.value })}
+                        rows={2}
+                      />
+                      <Input
+                        placeholder="Link URL"
+                        value={formData[`card${num}_link`] || ''}
+                        onChange={(e) => setFormData({ ...formData, [`card${num}_link`]: e.target.value })}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ) : formData.section_type === 'cta_section' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Badge Text (e.g., Join Thousands of...)"
+                value={formData.badge_text || ''}
+                onChange={(e) => setFormData({ ...formData, badge_text: e.target.value })}
+              />
+              <Input
+                placeholder="Main Title (e.g., Ready to Transform)"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Input
+                placeholder="Highlighted Title (e.g., Your Future?)"
+                value={formData.subtitle || ''}
+                onChange={(e) => setFormData({ ...formData, subtitle: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={2}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Primary Button Text</Label>
+                  <Input
+                    placeholder="Get Started for Free"
+                    value={formData.cta1_text || ''}
+                    onChange={(e) => setFormData({ ...formData, cta1_text: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Primary Button Link</Label>
+                  <Input
+                    placeholder="/Dashboard"
+                    value={formData.cta1_link || ''}
+                    onChange={(e) => setFormData({ ...formData, cta1_link: e.target.value })}
+                  />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div>
+                  <Label>Secondary Button Text</Label>
+                  <Input
+                    placeholder="Browse Courses"
+                    value={formData.cta2_text || ''}
+                    onChange={(e) => setFormData({ ...formData, cta2_text: e.target.value })}
+                  />
+                </div>
+                <div>
+                  <Label>Secondary Button Link</Label>
+                  <Input
+                    placeholder="/Explore"
+                    value={formData.cta2_link || ''}
+                    onChange={(e) => setFormData({ ...formData, cta2_link: e.target.value })}
+                  />
+                </div>
+              </div>
+            </div>
+          ) : formData.section_type === 'leadership_cta' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Badge Text (e.g., Leadership Development)"
+                value={formData.badge_text || ''}
+                onChange={(e) => setFormData({ ...formData, badge_text: e.target.value })}
+              />
+              <Input
+                placeholder="Title"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Button Text"
+                value={formData.cta_text || ''}
+                onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
+              />
+              <Input
+                placeholder="Button Link"
+                value={formData.cta_link || ''}
+                onChange={(e) => setFormData({ ...formData, cta_link: e.target.value })}
+              />
             </div>
           ) : formData.section_type === 'ecosystem' ? (
             <div className="space-y-4">
