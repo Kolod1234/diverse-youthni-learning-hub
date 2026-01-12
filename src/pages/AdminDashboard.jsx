@@ -1854,7 +1854,7 @@ function EnrollmentsManagement({ enrollments, courses, users }) {
             <Card key={enrollment.id} className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{student?.full_name || 'Unknown Student'}</p>
+                  <p className="font-semibold text-gray-900">{student?.full_name || enrollment.created_by}</p>
                   <p className="text-sm text-gray-600">{course?.title || 'Unknown Course'}</p>
                   <div className="flex gap-2 mt-2">
                     <Badge variant="outline">Progress: {enrollment.progress_percent}%</Badge>
