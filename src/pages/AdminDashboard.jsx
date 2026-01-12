@@ -62,7 +62,7 @@ export default function AdminDashboard() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+    queryFn: () => base44.asServiceRole.entities.Enrollment.list('-created_date', 1000),
   });
 
   const { data: lessons = [] } = useQuery({
