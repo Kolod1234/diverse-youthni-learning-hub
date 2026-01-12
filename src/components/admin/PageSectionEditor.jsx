@@ -12,24 +12,35 @@ import { Plus, Trash2, Upload, Loader2, Palette } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function PageSectionEditor({ section, onClose }) {
-  const [formData, setFormData] = useState(section || { is_active: true });
+  // Initialize form data properly - flatten if needed
+  const initialData = section ? {
+    ...section,
+    ...(section.data || {}),
+    is_active: section.is_active !== undefined ? section.is_active : (section.data?.is_active !== undefined ? section.data.is_active : true)
+  } : { is_active: true };
+  
+  const [formData, setFormData] = useState(initialData);
   const [uploading, setUploading] = useState(false);
   const queryClient = useQueryClient();
 
   const saveMutation = useMutation({
     mutationFn: async (data) => {
+      // Remove the nested data property and id if present
+      const { id, data: nestedData, entity_name, app_id, created_date, updated_date, created_by, created_by_id, is_sample, is_deleted, deleted_date, ...cleanData } = data;
+      
       if (section?.id) {
-        await base44.entities.PageSection.update(section.id, data);
+        await base44.entities.PageSection.update(section.id, cleanData);
       } else {
-        await base44.entities.PageSection.create({ ...data, order: 0 });
+        await base44.entities.PageSection.create({ ...cleanData, order: 0 });
       }
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['page-sections']);
-      toast.success('Section saved!');
+      toast.success('Section saved successfully!');
       onClose();
     },
     onError: (error) => {
+      console.error('Save error:', error);
       toast.error('Failed to save: ' + error.message);
     }
   });
@@ -48,27 +59,6 @@ export default function PageSectionEditor({ section, onClose }) {
     } finally {
       setUploading(false);
     }
-  };
-
-  const addCarouselItem = () => {
-    setFormData({
-      ...formData,
-      carousel_items: [
-        ...(formData.carousel_items || []),
-        { image_url: '', badge: '', title: '', subtitle: '', description: '', cta_text: '', cta_link: '' }
-      ]
-    });
-  };
-
-  const updateCarouselItem = (index, field, value) => {
-    const items = [...(formData.carousel_items || [])];
-    items[index] = { ...items[index], [field]: value };
-    setFormData({ ...formData, carousel_items: items });
-  };
-
-  const deleteCarouselItem = (index) => {
-    const items = (formData.carousel_items || []).filter((_, i) => i !== index);
-    setFormData({ ...formData, carousel_items: items });
   };
 
   return (
@@ -116,63 +106,10 @@ export default function PageSectionEditor({ section, onClose }) {
             </Label>
           </div>
 
-          {formData.section_type === 'programs' ? (
+          {formData.section_type === 'ecosystem' ? (
             <div className="space-y-4">
               <Input
-                placeholder="Title"
-                value={formData.title || ''}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              />
-              <Textarea
-                placeholder="Description"
-                value={formData.description || ''}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
-              <div>
-                <Label>Image</Label>
-                {formData.image_url ? (
-                  <div className="relative">
-                    <img src={formData.image_url} alt="" className="w-full h-32 object-cover rounded" />
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      className="absolute top-2 right-2"
-                      onClick={() => setFormData({ ...formData, image_url: '' })}
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                ) : (
-                  <div>
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={(e) => handleImageUpload(e, 'image_url')}
-                      className="hidden"
-                      id="program-img"
-                    />
-                    <label htmlFor="program-img">
-                      <Button variant="outline" className="w-full" asChild disabled={uploading}>
-                        <span>
-                          {uploading ? <Loader2 className="w-4 h-4 mr-2 animate-spin" /> : <Upload className="w-4 h-4 mr-2" />}
-                          Upload Image
-                        </span>
-                      </Button>
-                    </label>
-                  </div>
-                )}
-              </div>
-              <Input
-                placeholder="Link URL (e.g., /Explore)"
-                value={formData.link_url || ''}
-                onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
-              />
-            </div>
-          ) : formData.section_type === 'features' ? (
-            <div className="space-y-4">
-              <Input
-                placeholder="Title"
+                placeholder="Main Title (e.g., Explore Our Platform)"
                 value={formData.title || ''}
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })}
               />
@@ -183,38 +120,7 @@ export default function PageSectionEditor({ section, onClose }) {
                 rows={3}
               />
               <Input
-                placeholder="Icon (emoji or text)"
-                value={formData.icon || ''}
-                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
-              />
-              <div className="grid grid-cols-2 gap-4">
-                <Input
-                  placeholder="Color From (e.g., blue-500)"
-                  value={formData.color_from || ''}
-                  onChange={(e) => setFormData({ ...formData, color_from: e.target.value })}
-                />
-                <Input
-                  placeholder="Color To (e.g., indigo-600)"
-                  value={formData.color_to || ''}
-                  onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
-                />
-              </div>
-            </div>
-          ) : formData.section_type === 'ecosystem' ? (
-            <div className="space-y-4">
-              <Input
-                placeholder="Main Title (e.g., Explore the Instructure ecosystem)"
-                value={formData.title || ''}
-                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
-              />
-              <Textarea
-                placeholder="Description"
-                value={formData.description || ''}
-                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                rows={3}
-              />
-              <Input
-                placeholder="Button Text (e.g., Take a look)"
+                placeholder="Button Text (e.g., Learn More)"
                 value={formData.cta_text || ''}
                 onChange={(e) => setFormData({ ...formData, cta_text: e.target.value })}
               />
@@ -300,6 +206,56 @@ export default function PageSectionEditor({ section, onClose }) {
                     onChange={(e) => setFormData({ ...formData, product3_desc2: e.target.value })}
                   />
                 </div>
+              </div>
+            </div>
+          ) : formData.section_type === 'programs' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Title"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Link URL (e.g., /Explore)"
+                value={formData.link_url || ''}
+                onChange={(e) => setFormData({ ...formData, link_url: e.target.value })}
+              />
+            </div>
+          ) : formData.section_type === 'features' ? (
+            <div className="space-y-4">
+              <Input
+                placeholder="Title"
+                value={formData.title || ''}
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })}
+              />
+              <Textarea
+                placeholder="Description"
+                value={formData.description || ''}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
+                rows={3}
+              />
+              <Input
+                placeholder="Icon (emoji or text)"
+                value={formData.icon || ''}
+                onChange={(e) => setFormData({ ...formData, icon: e.target.value })}
+              />
+              <div className="grid grid-cols-2 gap-4">
+                <Input
+                  placeholder="Color From (e.g., blue-500)"
+                  value={formData.color_from || ''}
+                  onChange={(e) => setFormData({ ...formData, color_from: e.target.value })}
+                />
+                <Input
+                  placeholder="Color To (e.g., indigo-600)"
+                  value={formData.color_to || ''}
+                  onChange={(e) => setFormData({ ...formData, color_to: e.target.value })}
+                />
               </div>
             </div>
           ) : (
