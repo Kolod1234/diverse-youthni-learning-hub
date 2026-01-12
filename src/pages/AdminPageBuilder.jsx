@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Info, Mail, FileText, Star } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Info, Mail, FileText, Star, Video } from 'lucide-react';
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
