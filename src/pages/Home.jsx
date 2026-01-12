@@ -1142,25 +1142,9 @@ function EcosystemSection() {
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'ecosystem', is_active: true }, 'order', 1),
   });
 
-  // Use admin content if available, otherwise use defaults
-  const section = ecosystem.length > 0 ? ecosystem[0] : {
-    title: 'Explore the Instructure ecosystem',
-    description: 'Our capabilities, partner network, services, and community are here to help you create your ideal edtech environment and deliver on important outcomes.',
-    cta_text: 'Take a look',
-    cta_link: createPageUrl('Explore'),
-    product1_name: 'Canvas',
-    product1_subtitle: 'By Instructure',
-    product1_desc1: 'Teaching',
-    product1_desc2: 'and learning',
-    product2_name: 'Mastery',
-    product2_subtitle: 'By Instructure',
-    product2_desc1: 'Assessment',
-    product2_desc2: 'and growth',
-    product3_name: 'Parchment',
-    product3_subtitle: 'By Instructure',
-    product3_desc1: 'Credentials',
-    product3_desc2: 'and opportunity',
-  };
+  if (ecosystem.length === 0) return null;
+
+  const section = ecosystem[0];
 
   return (
     <section className="relative py-20 bg-[#003B5C] overflow-hidden">

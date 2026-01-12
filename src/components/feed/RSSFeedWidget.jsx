@@ -213,11 +213,11 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
         {/* Grid of Stories */}
         <div className="grid md:grid-cols-2 gap-4">
-          {gridItems.map((item) => {
+          {gridItems.map((item, index) => {
             const sourceStyle = getSourceStyle(item.category);
             return (
               <motion.div
-                key={item.id}
+                key={item.id || `item-${index}`}
                 layout
                 initial={{ opacity: 0, scale: 0.95 }}
                 animate={{ opacity: 1, scale: 1 }}

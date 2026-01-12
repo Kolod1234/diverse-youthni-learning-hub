@@ -171,11 +171,6 @@ async function parseRSSFeed(xmlText) {
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    const user = await base44.auth.me();
-    
-    if (!user || user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized - Admin only' }, { status: 401 });
-    }
     
     const { source } = await req.json();
     
