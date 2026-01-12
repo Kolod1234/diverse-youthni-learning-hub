@@ -259,6 +259,10 @@ export default function AdminDashboard() {
               <Key className="w-4 h-4 mr-2" />
               Unlock Keys
             </TabsTrigger>
+            <TabsTrigger value="page-builder" className="rounded-lg">
+              <Settings className="w-4 h-4 mr-2" />
+              Page Builder
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -351,6 +355,19 @@ export default function AdminDashboard() {
 
           <TabsContent value="unlock-keys">
             <LessonKeyManager />
+          </TabsContent>
+
+          <TabsContent value="page-builder">
+            <Card className="p-6">
+              <h2 className="text-xl font-semibold mb-4">Page Builder</h2>
+              <p className="text-gray-600 mb-6">Manage dynamic page sections for the homepage</p>
+              <Link to={createPageUrl('AdminPageBuilder')}>
+                <Button className="bg-indigo-600">
+                  <Settings className="w-4 h-4 mr-2" />
+                  Open Page Builder
+                </Button>
+              </Link>
+            </Card>
           </TabsContent>
         </Tabs>
       </div>
