@@ -345,7 +345,7 @@ export default function AdminPageBuilder() {
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.PageSection.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['page-sections']);
+      queryClient.invalidateQueries({ predicate: (query) => typeof query.queryKey[0] === 'string' && query.queryKey[0].startsWith('page-sections') });
       toast.success('Section deleted');
     }
   });
@@ -353,7 +353,7 @@ export default function AdminPageBuilder() {
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, is_active }) => base44.entities.PageSection.update(id, { is_active }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['page-sections']);
+      queryClient.invalidateQueries({ predicate: (query) => typeof query.queryKey[0] === 'string' && query.queryKey[0].startsWith('page-sections') });
       toast.success('Section updated');
     }
   });
@@ -367,7 +367,7 @@ export default function AdminPageBuilder() {
       );
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['page-sections']);
+      queryClient.invalidateQueries({ predicate: (query) => typeof query.queryKey[0] === 'string' && query.queryKey[0].startsWith('page-sections') });
       toast.success('Order updated');
     }
   });
