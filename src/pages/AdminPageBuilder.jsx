@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Info, Mail, FileText, Star } from 'lucide-react';
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
@@ -209,6 +209,123 @@ const SECTION_TEMPLATES = [
       description: 'Comprehensive learning paths for everyone',
       image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1200',
       link_url: '/programs',
+      is_active: true
+    }
+  },
+  {
+    id: 'about_us',
+    name: 'About Us',
+    icon: Info,
+    color: 'from-slate-500 to-gray-600',
+    description: 'Tell your story with mission, vision, and team',
+    default: {
+      section_type: 'about_us',
+      title: 'About Us',
+      subtitle: 'Our Story',
+      description: 'We are dedicated to transforming education through innovative learning experiences. Our platform connects students with expert instructors worldwide.',
+      mission_title: 'Our Mission',
+      mission_text: 'To make quality education accessible to everyone, everywhere.',
+      vision_title: 'Our Vision',
+      vision_text: 'A world where learning has no boundaries.',
+      image_url: 'https://images.unsplash.com/photo-1522071820081-009f0129c71c?w=1200',
+      bg_color: '#ffffff',
+      text_color: '#1f2937',
+      accent_color: '#4f46e5',
+      font_family: 'system',
+      is_active: true
+    }
+  },
+  {
+    id: 'contact_form',
+    name: 'Contact Form',
+    icon: Mail,
+    color: 'from-red-500 to-rose-600',
+    description: 'Contact form with custom fields',
+    default: {
+      section_type: 'contact_form',
+      title: 'Get In Touch',
+      subtitle: 'Contact Us',
+      description: 'Have questions? We\'d love to hear from you. Send us a message and we\'ll respond as soon as possible.',
+      form_fields: ['name', 'email', 'subject', 'message'],
+      submit_text: 'Send Message',
+      success_message: 'Thank you! We\'ll get back to you soon.',
+      bg_color: '#f9fafb',
+      text_color: '#1f2937',
+      button_color: '#4f46e5',
+      font_family: 'system',
+      show_info: true,
+      info_email: 'contact@example.com',
+      info_phone: '+1 234 567 890',
+      info_address: '123 Education Street, Learning City',
+      is_active: true
+    }
+  },
+  {
+    id: 'blog_listing',
+    name: 'Blog Listing',
+    icon: FileText,
+    color: 'from-yellow-500 to-amber-600',
+    description: 'Display blog posts in grid or list layout',
+    default: {
+      section_type: 'blog_listing',
+      title: 'Latest From Our Blog',
+      subtitle: 'News & Updates',
+      description: 'Stay updated with the latest news, tips, and insights from our community.',
+      layout: 'grid',
+      posts_per_page: 6,
+      show_categories: true,
+      show_author: true,
+      show_date: true,
+      show_excerpt: true,
+      bg_color: '#ffffff',
+      text_color: '#1f2937',
+      accent_color: '#f59e0b',
+      font_family: 'system',
+      is_active: true
+    }
+  },
+  {
+    id: 'testimonials',
+    name: 'Testimonials',
+    icon: Star,
+    color: 'from-pink-500 to-fuchsia-600',
+    description: 'Showcase customer reviews and testimonials',
+    default: {
+      section_type: 'testimonials',
+      title: 'What Our Students Say',
+      subtitle: 'Testimonials',
+      description: 'Real feedback from our community',
+      layout: 'carousel',
+      bg_color: '#faf5ff',
+      text_color: '#1f2937',
+      accent_color: '#d946ef',
+      font_family: 'system',
+      testimonials: [
+        {
+          name: 'Sarah Johnson',
+          role: 'Marketing Manager',
+          avatar: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+          rating: 5,
+          text: 'This platform transformed my career. The courses are engaging and the instructors are top-notch!',
+          company: 'Tech Corp'
+        },
+        {
+          name: 'Michael Chen',
+          role: 'Software Engineer',
+          avatar: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+          rating: 5,
+          text: 'Best investment I\'ve made in my professional development. Highly recommend!',
+          company: 'StartupXYZ'
+        },
+        {
+          name: 'Emily Rodriguez',
+          role: 'UX Designer',
+          avatar: 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=150',
+          rating: 5,
+          text: 'The learning experience is exceptional. I\'ve gained skills that directly apply to my work.',
+          company: 'Design Studio'
+        }
+      ],
       is_active: true
     }
   }
