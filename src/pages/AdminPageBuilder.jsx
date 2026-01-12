@@ -38,9 +38,66 @@ const SECTION_TEMPLATES = [
     }
   },
   {
+    id: 'image_gallery',
+    name: 'Image Gallery',
+    icon: LayoutGrid,
+    color: 'from-pink-500 to-rose-600',
+    description: 'Display images in grid, masonry or carousel',
+    default: {
+      section_type: 'image_gallery',
+      title: 'Our Gallery',
+      description: 'Explore our moments',
+      gallery_layout: 'grid',
+      gallery_images: [],
+      is_active: true
+    }
+  },
+  {
+    id: 'video_embed',
+    name: 'Video Embed',
+    icon: Video,
+    color: 'from-red-500 to-orange-600',
+    description: 'Embed YouTube or Vimeo videos',
+    default: {
+      section_type: 'video_embed',
+      video_title: 'Watch Our Story',
+      video_url: '',
+      video_description: '',
+      is_active: true
+    }
+  },
+  {
+    id: 'team_members',
+    name: 'Team Members',
+    icon: Users,
+    color: 'from-indigo-500 to-purple-600',
+    description: 'Showcase your team with bios and social links',
+    default: {
+      section_type: 'team_members',
+      title: 'Meet Our Team',
+      description: 'The people behind our success',
+      team_members: [],
+      is_active: true
+    }
+  },
+  {
+    id: 'faq_section',
+    name: 'FAQ Section',
+    icon: MessageCircle,
+    color: 'from-yellow-500 to-amber-600',
+    description: 'Frequently asked questions with answers',
+    default: {
+      section_type: 'faq_section',
+      title: 'Frequently Asked Questions',
+      description: 'Find answers to common questions',
+      faqs: [],
+      is_active: true
+    }
+  },
+  {
     id: 'hero_carousel',
     name: 'Hero Carousel',
-    icon: LayoutGrid,
+    icon: Sparkles,
     color: 'from-blue-500 to-purple-600',
     description: 'Full-width hero section with animated carousel',
     default: {
@@ -52,7 +109,7 @@ const SECTION_TEMPLATES = [
   {
     id: 'features',
     name: 'Features Grid',
-    icon: Sparkles,
+    icon: Award,
     color: 'from-green-500 to-teal-600',
     description: 'Highlight key platform features',
     default: {

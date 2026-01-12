@@ -26,6 +26,10 @@ import DiscoverWidget from '@/components/home/DiscoverWidget';
 import WidgetCustomizer from '@/components/home/WidgetCustomizer';
 import WidgetSkeleton from '@/components/home/WidgetSkeleton';
 import PageSEO from '@/components/seo/PageSEO';
+import ImageGallerySection from '@/components/sections/ImageGallerySection';
+import VideoEmbedSection from '@/components/sections/VideoEmbedSection';
+import TeamMembersSection from '@/components/sections/TeamMembersSection';
+import FAQSection from '@/components/sections/FAQSection';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -122,6 +126,30 @@ export default function Home() {
   const { data: funderLogos = [] } = useQuery({
     queryKey: ['funder-logos'],
     queryFn: () => base44.entities.PartnerLogo.filter({ type: 'funder', is_active: true }, 'order', 50),
+    initialData: [],
+  });
+
+  const { data: gallerySection = [] } = useQuery({
+    queryKey: ['page-sections-gallery'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'image_gallery', is_active: true }, 'order', 1),
+    initialData: [],
+  });
+
+  const { data: videoSection = [] } = useQuery({
+    queryKey: ['page-sections-video'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'video_embed', is_active: true }, 'order', 1),
+    initialData: [],
+  });
+
+  const { data: teamSection = [] } = useQuery({
+    queryKey: ['page-sections-team'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'team_members', is_active: true }, 'order', 1),
+    initialData: [],
+  });
+
+  const { data: faqSection = [] } = useQuery({
+    queryKey: ['page-sections-faq'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'faq_section', is_active: true }, 'order', 1),
     initialData: [],
   });
 
@@ -767,6 +795,12 @@ export default function Home() {
 
       {/* Ecosystem Section - Dynamic */}
       <EcosystemSection />
+
+      {/* New Dynamic Sections */}
+      {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
+      {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
+      {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
+      {faqSection[0] && <FAQSection section={faqSection[0]} />}
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (

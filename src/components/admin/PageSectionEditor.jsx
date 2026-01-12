@@ -40,6 +40,14 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
     product3_subtitle: extractedData.product3_subtitle || '',
     product3_desc1: extractedData.product3_desc1 || '',
     product3_desc2: extractedData.product3_desc2 || '',
+    // New section types
+    gallery_images: extractedData.gallery_images || [],
+    gallery_layout: extractedData.gallery_layout || 'grid',
+    video_url: extractedData.video_url || '',
+    video_title: extractedData.video_title || '',
+    video_description: extractedData.video_description || '',
+    team_members: extractedData.team_members || [],
+    faqs: extractedData.faqs || []
   });
 
   const handleSave = () => {
@@ -70,6 +78,10 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
                 <SelectItem value="hero_carousel">Hero Carousel</SelectItem>
                 <SelectItem value="programs">Programs Section</SelectItem>
                 <SelectItem value="features">Features Section</SelectItem>
+                <SelectItem value="image_gallery">Image Gallery</SelectItem>
+                <SelectItem value="video_embed">Video Embed</SelectItem>
+                <SelectItem value="team_members">Team Members</SelectItem>
+                <SelectItem value="faq_section">FAQ Section</SelectItem>
                 <SelectItem value="success_stories">Success Stories</SelectItem>
                 <SelectItem value="solutions">Solutions Cards</SelectItem>
                 <SelectItem value="cta_section">CTA Section</SelectItem>
@@ -251,6 +263,143 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
                     onChange={(e) => setFormData({ ...formData, product3_desc2: e.target.value })}
                   />
                 </div>
+              </div>
+            </div>
+          )}
+
+          {formData.section_type === 'image_gallery' && (
+            <div className="space-y-4">
+              <Input placeholder="Gallery Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+              <Textarea placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
+              
+              <div>
+                <Label>Layout Style</Label>
+                <Select value={formData.gallery_layout} onValueChange={(v) => setFormData({ ...formData, gallery_layout: v })}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="grid">Grid</SelectItem>
+                    <SelectItem value="masonry">Masonry</SelectItem>
+                    <SelectItem value="carousel">Carousel</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div className="border p-4 rounded">
+                <Label className="mb-2 block">Images</Label>
+                {formData.gallery_images.map((img, idx) => (
+                  <div key={idx} className="flex gap-2 mb-2">
+                    <Input placeholder="Image URL" value={img.url} onChange={(e) => {
+                      const imgs = [...formData.gallery_images];
+                      imgs[idx].url = e.target.value;
+                      setFormData({ ...formData, gallery_images: imgs });
+                    }} />
+                    <Input placeholder="Caption" value={img.caption} onChange={(e) => {
+                      const imgs = [...formData.gallery_images];
+                      imgs[idx].caption = e.target.value;
+                      setFormData({ ...formData, gallery_images: imgs });
+                    }} />
+                    <Button variant="ghost" size="sm" onClick={() => setFormData({ ...formData, gallery_images: formData.gallery_images.filter((_, i) => i !== idx) })}>
+                      ✕
+                    </Button>
+                  </div>
+                ))}
+                <Button size="sm" onClick={() => setFormData({ ...formData, gallery_images: [...formData.gallery_images, { url: '', caption: '', alt: '' }] })}>
+                  + Add Image
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {formData.section_type === 'video_embed' && (
+            <div className="space-y-4">
+              <Input placeholder="Video Title" value={formData.video_title} onChange={(e) => setFormData({ ...formData, video_title: e.target.value })} />
+              <Input placeholder="YouTube/Vimeo Embed URL" value={formData.video_url} onChange={(e) => setFormData({ ...formData, video_url: e.target.value })} />
+              <Textarea placeholder="Video Description" value={formData.video_description} onChange={(e) => setFormData({ ...formData, video_description: e.target.value })} rows={3} />
+            </div>
+          )}
+
+          {formData.section_type === 'team_members' && (
+            <div className="space-y-4">
+              <Input placeholder="Section Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+              <Textarea placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
+              
+              <div className="border p-4 rounded">
+                <Label className="mb-2 block">Team Members</Label>
+                {formData.team_members.map((member, idx) => (
+                  <div key={idx} className="border p-3 mb-3 rounded bg-gray-50">
+                    <div className="grid grid-cols-2 gap-2 mb-2">
+                      <Input placeholder="Name" value={member.name} onChange={(e) => {
+                        const members = [...formData.team_members];
+                        members[idx].name = e.target.value;
+                        setFormData({ ...formData, team_members: members });
+                      }} />
+                      <Input placeholder="Role" value={member.role} onChange={(e) => {
+                        const members = [...formData.team_members];
+                        members[idx].role = e.target.value;
+                        setFormData({ ...formData, team_members: members });
+                      }} />
+                    </div>
+                    <Input placeholder="Image URL" value={member.image} onChange={(e) => {
+                      const members = [...formData.team_members];
+                      members[idx].image = e.target.value;
+                      setFormData({ ...formData, team_members: members });
+                    }} className="mb-2" />
+                    <Textarea placeholder="Bio" value={member.bio} onChange={(e) => {
+                      const members = [...formData.team_members];
+                      members[idx].bio = e.target.value;
+                      setFormData({ ...formData, team_members: members });
+                    }} rows={2} className="mb-2" />
+                    <div className="grid grid-cols-2 gap-2">
+                      <Input placeholder="Email" value={member.email} onChange={(e) => {
+                        const members = [...formData.team_members];
+                        members[idx].email = e.target.value;
+                        setFormData({ ...formData, team_members: members });
+                      }} />
+                      <Input placeholder="LinkedIn" value={member.linkedin} onChange={(e) => {
+                        const members = [...formData.team_members];
+                        members[idx].linkedin = e.target.value;
+                        setFormData({ ...formData, team_members: members });
+                      }} />
+                    </div>
+                    <Button variant="ghost" size="sm" onClick={() => setFormData({ ...formData, team_members: formData.team_members.filter((_, i) => i !== idx) })} className="mt-2">
+                      Remove Member
+                    </Button>
+                  </div>
+                ))}
+                <Button size="sm" onClick={() => setFormData({ ...formData, team_members: [...formData.team_members, { name: '', role: '', bio: '', image: '', email: '', linkedin: '', twitter: '' }] })}>
+                  + Add Member
+                </Button>
+              </div>
+            </div>
+          )}
+
+          {formData.section_type === 'faq_section' && (
+            <div className="space-y-4">
+              <Input placeholder="Section Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
+              <Textarea placeholder="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={2} />
+              
+              <div className="border p-4 rounded">
+                <Label className="mb-2 block">FAQ Items</Label>
+                {formData.faqs.map((faq, idx) => (
+                  <div key={idx} className="border p-3 mb-3 rounded bg-gray-50">
+                    <Input placeholder="Question" value={faq.question} onChange={(e) => {
+                      const faqs = [...formData.faqs];
+                      faqs[idx].question = e.target.value;
+                      setFormData({ ...formData, faqs });
+                    }} className="mb-2" />
+                    <Textarea placeholder="Answer" value={faq.answer} onChange={(e) => {
+                      const faqs = [...formData.faqs];
+                      faqs[idx].answer = e.target.value;
+                      setFormData({ ...formData, faqs });
+                    }} rows={3} />
+                    <Button variant="ghost" size="sm" onClick={() => setFormData({ ...formData, faqs: formData.faqs.filter((_, i) => i !== idx) })} className="mt-2">
+                      Remove FAQ
+                    </Button>
+                  </div>
+                ))}
+                <Button size="sm" onClick={() => setFormData({ ...formData, faqs: [...formData.faqs, { question: '', answer: '' }] })}>
+                  + Add FAQ
+                </Button>
               </div>
             </div>
           )}
