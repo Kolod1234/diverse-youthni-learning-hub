@@ -24,7 +24,7 @@ export default function PageSectionEditor({ section, onClose }) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries(['page-sections']);
+      queryClient.invalidateQueries({ predicate: (query) => query.queryKey[0] === 'page-sections-ecosystem' || query.queryKey[0] === 'page-sections' });
       toast.success('Section saved!');
       onClose();
     }
