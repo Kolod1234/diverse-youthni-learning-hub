@@ -1424,10 +1424,13 @@ function EcosystemSection() {
             <div className="relative mb-8">
               <div className="w-full aspect-[2/1] overflow-hidden">
                 <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#E74C3C] via-[#E74C3C]/80 to-[#E74C3C]/40 rounded-t-full"></div>
+                  <div className="w-[300px] h-[150px] bg-[#FF6B6B] rounded-t-full"></div>
                 </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
-                  <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#C0392B] via-[#C0392B]/80 to-[#C0392B]/40 rounded-t-full"></div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
+                  <div className="w-[240px] h-[120px] bg-[#EE5A5A] rounded-t-full"></div>
+                </div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
+                  <div className="w-[180px] h-[90px] bg-[#D84848] rounded-t-full"></div>
                 </div>
               </div>
             </div>
@@ -1454,10 +1457,13 @@ function EcosystemSection() {
             <div className="relative mb-8">
               <div className="w-full aspect-[2/1] overflow-hidden">
                 <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#27AE60] via-[#27AE60]/80 to-[#27AE60]/40 rounded-t-full"></div>
+                  <div className="w-[300px] h-[150px] bg-[#51CF66] rounded-t-full"></div>
                 </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
-                  <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#1E8449] via-[#1E8449]/80 to-[#1E8449]/40 rounded-t-full"></div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
+                  <div className="w-[240px] h-[120px] bg-[#40C057] rounded-t-full"></div>
+                </div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
+                  <div className="w-[180px] h-[90px] bg-[#2F9E44] rounded-t-full"></div>
                 </div>
               </div>
             </div>
@@ -1484,10 +1490,13 @@ function EcosystemSection() {
             <div className="relative mb-8">
               <div className="w-full aspect-[2/1] overflow-hidden">
                 <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[280px] h-[140px] bg-gradient-to-t from-[#3498DB] via-[#3498DB]/80 to-[#3498DB]/40 rounded-t-full"></div>
+                  <div className="w-[300px] h-[150px] bg-[#74C0FC] rounded-t-full"></div>
                 </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '20px' }}>
-                  <div className="w-[200px] h-[100px] bg-gradient-to-t from-[#2471A3] via-[#2471A3]/80 to-[#2471A3]/40 rounded-t-full"></div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
+                  <div className="w-[240px] h-[120px] bg-[#4DABF7] rounded-t-full"></div>
+                </div>
+                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
+                  <div className="w-[180px] h-[90px] bg-[#339AF0] rounded-t-full"></div>
                 </div>
               </div>
             </div>
