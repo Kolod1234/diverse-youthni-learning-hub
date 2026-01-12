@@ -25,6 +25,7 @@ import SocialFeedWidget from '@/components/home/SocialFeedWidget';
 import DiscoverWidget from '@/components/home/DiscoverWidget';
 import WidgetCustomizer from '@/components/home/WidgetCustomizer';
 import WidgetSkeleton from '@/components/home/WidgetSkeleton';
+import PageSEO from '@/components/seo/PageSEO';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -81,6 +82,12 @@ export default function Home() {
   const { data: heroSections = [] } = useQuery({
     queryKey: ['page-sections-home'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true, section_type: 'hero_carousel' }, 'order', 10),
+    initialData: [],
+  });
+
+  const { data: allPageSections = [] } = useQuery({
+    queryKey: ['page-sections-home-all'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true }, 'order', 100),
     initialData: [],
   });
 
@@ -180,6 +187,7 @@ export default function Home() {
 
   return (
     <div className="bg-white">
+      <PageSEO pageName="Home" sections={allPageSections} />
       {/* Search Bar - Sticky at top */}
       <section className="sticky top-16 z-40 bg-[#003366] shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">

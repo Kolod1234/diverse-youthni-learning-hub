@@ -23,6 +23,10 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
     cta_link: extractedData.cta_link || '',
     is_active: extractedData.is_active !== false,
     order: extractedData.order || 0,
+    // SEO fields
+    seo_title: extractedData.seo_title || '',
+    seo_description: extractedData.seo_description || '',
+    seo_keywords: extractedData.seo_keywords || '',
     // Ecosystem products
     product1_name: extractedData.product1_name || '',
     product1_subtitle: extractedData.product1_subtitle || '',
@@ -83,6 +87,52 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
             <Label htmlFor="is-active" className="cursor-pointer font-semibold">
               {formData.is_active ? '✅ Active (Visible on page)' : '❌ Inactive (Hidden)'}
             </Label>
+          </div>
+
+          {/* SEO Fields */}
+          <div className="border rounded-lg p-4 bg-blue-50 space-y-4">
+            <div className="flex items-center gap-2 mb-3">
+              <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center">
+                <span className="text-white text-sm font-bold">SEO</span>
+              </div>
+              <div>
+                <h3 className="font-semibold text-sm">Search Engine Optimization</h3>
+                <p className="text-xs text-gray-600">Optimize this page for search engines</p>
+              </div>
+            </div>
+            
+            <div>
+              <Label>SEO Title (Page Title)</Label>
+              <Input
+                placeholder="e.g., Best Online Learning Platform - Diverse Youth NI"
+                value={formData.seo_title}
+                onChange={(e) => setFormData({ ...formData, seo_title: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">Recommended: 50-60 characters</p>
+            </div>
+
+            <div>
+              <Label>Meta Description</Label>
+              <Textarea
+                placeholder="Brief description that appears in search results (150-160 characters)"
+                value={formData.seo_description}
+                onChange={(e) => setFormData({ ...formData, seo_description: e.target.value })}
+                rows={3}
+              />
+              <p className="text-xs text-gray-500 mt-1">
+                {formData.seo_description.length}/160 characters
+              </p>
+            </div>
+
+            <div>
+              <Label>Keywords</Label>
+              <Input
+                placeholder="e.g., online learning, education, courses, youth"
+                value={formData.seo_keywords}
+                onChange={(e) => setFormData({ ...formData, seo_keywords: e.target.value })}
+              />
+              <p className="text-xs text-gray-500 mt-1">Comma-separated keywords</p>
+            </div>
           </div>
 
           {formData.section_type === 'ecosystem' && (
