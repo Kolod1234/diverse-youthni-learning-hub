@@ -24,7 +24,12 @@ export default function PageSectionEditor({ section, onClose }) {
       }
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ predicate: (query) => typeof query.queryKey[0] === 'string' && query.queryKey[0].startsWith('page-sections') });
+      queryClient.invalidateQueries({ 
+        predicate: (query) => {
+          const key = Array.isArray(query.queryKey) ? query.queryKey[0] : query.queryKey;
+          return typeof key === 'string' && key.includes('page-section');
+        }
+      });
       toast.success('Section saved!');
       onClose();
     }
