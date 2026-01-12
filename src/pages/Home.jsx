@@ -757,7 +757,7 @@ export default function Home() {
         </section>
       )}
 
-      {/* Ecosystem Section */}
+      {/* Ecosystem Section - Dynamic */}
       <EcosystemSection />
 
       {/* Real User Reviews Section */}
@@ -1382,6 +1382,7 @@ function EcosystemSection() {
   const { data: ecosystem = [] } = useQuery({
     queryKey: ['page-sections-ecosystem'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'ecosystem', is_active: true }, 'order', 1),
+    initialData: []
   });
 
   if (ecosystem.length === 0) return null;
