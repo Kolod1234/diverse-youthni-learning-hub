@@ -1850,14 +1850,26 @@ function EnrollmentsManagement({ enrollments, courses, users }) {
         {enrollments.map((enrollment) => {
           const course = courses.find(c => c.id === enrollment.course_id);
           const student = users.find(u => u.email === enrollment.created_by);
+          
           return (
             <Card key={enrollment.id} className="p-4">
               <div className="flex justify-between items-start">
                 <div className="flex-1">
-                  <p className="font-semibold text-gray-900">{student?.full_name || enrollment.created_by}</p>
-                  <p className="text-sm text-gray-600">{course?.title || 'Unknown Course'}</p>
-                  <div className="flex gap-2 mt-2">
-                    <Badge variant="outline">Progress: {enrollment.progress_percent}%</Badge>
+                  <div className="flex items-center gap-3 mb-2">
+                    <Avatar className="w-10 h-10">
+                      <AvatarImage src={student?.avatar} />
+                      <AvatarFallback className="bg-indigo-100 text-indigo-600">
+                        {student?.full_name?.charAt(0) || enrollment.created_by?.charAt(0) || 'U'}
+                      </AvatarFallback>
+                    </Avatar>
+                    <div>
+                      <p className="font-semibold text-gray-900">{student?.full_name || enrollment.created_by || 'Unknown Student'}</p>
+                      <p className="text-sm text-gray-500">{student?.email || enrollment.created_by}</p>
+                    </div>
+                  </div>
+                  <p className="text-sm text-gray-700 font-medium mb-2">{course?.title || 'Unknown Course'}</p>
+                  <div className="flex gap-2 flex-wrap">
+                    <Badge variant="outline">Progress: {enrollment.progress_percent || 0}%</Badge>
                     <Badge variant="outline">{enrollment.completed_lessons?.length || 0} lessons completed</Badge>
                     {enrollment.is_completed && (
                       <Badge className="bg-green-100 text-green-700">Completed</Badge>
