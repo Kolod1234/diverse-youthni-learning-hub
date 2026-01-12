@@ -172,60 +172,89 @@ Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
     
-    const { source } = await req.json();
-    
-    if (!source || !RSS_FEEDS[source]) {
-      return Response.json({ 
-        error: 'Invalid source',
-        availableSources: Object.keys(RSS_FEEDS)
-      }, { status: 400 });
+    let source;
+    try {
+      const body = await req.json();
+      source = body.source;
+    } catch (e) {
+      // If no body provided, import all sources
+      source = null;
     }
     
-    const feedUrl = RSS_FEEDS[source];
+    // If no source specified, import from all sources
+    const sourcesToImport = source && RSS_FEEDS[source] ? [source] : Object.keys(RSS_FEEDS);
     
-    // Fetch RSS feed
-    const response = await fetch(feedUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (compatible; RSSImporter/1.0)',
-      },
-    });
+    const results = [];
+    let totalImported = 0;
     
-    if (!response.ok) {
-      return Response.json({ 
-        error: `Failed to fetch RSS feed: ${response.statusText}` 
-      }, { status: 500 });
-    }
-    
-    const xmlText = await response.text();
-    const items = await parseRSSFeed(xmlText);
-    
-    // Import items to database
-    const imported = [];
-    for (const item of items.slice(0, 10)) { // Limit to 10 most recent items
+    for (const currentSource of sourcesToImport) {
       try {
-        // Check if item already exists
-        const existing = await base44.asServiceRole.entities.RSSFeed.filter({
-          link: item.link
+        const feedUrl = RSS_FEEDS[currentSource];
+        
+        // Fetch RSS feed with timeout
+        const controller = new AbortController();
+        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10s timeout
+        
+        const response = await fetch(feedUrl, {
+          headers: {
+            'User-Agent': 'Mozilla/5.0 (compatible; RSSImporter/1.0)',
+          },
+          signal: controller.signal,
         });
         
-        if (existing.length === 0) {
-          const created = await base44.asServiceRole.entities.RSSFeed.create({
-            ...item,
-            category: source.toUpperCase(),
+        clearTimeout(timeoutId);
+        
+        if (!response.ok) {
+          results.push({ 
+            source: currentSource.toUpperCase(), 
+            error: `Failed to fetch: ${response.statusText}` 
           });
-          imported.push(created);
+          continue;
         }
+        
+        const xmlText = await response.text();
+        const items = await parseRSSFeed(xmlText);
+        
+        // Import items to database
+        const imported = [];
+        for (const item of items.slice(0, 10)) {
+          try {
+            const existing = await base44.asServiceRole.entities.RSSFeed.filter({
+              link: item.link
+            });
+            
+            if (existing.length === 0) {
+              const created = await base44.asServiceRole.entities.RSSFeed.create({
+                ...item,
+                category: currentSource.toUpperCase(),
+              });
+              imported.push(created);
+            }
+          } catch (error) {
+            console.error(`Error importing item from ${currentSource}:`, error.message);
+          }
+        }
+        
+        totalImported += imported.length;
+        results.push({
+          source: currentSource.toUpperCase(),
+          itemsFound: items.length,
+          itemsImported: imported.length,
+        });
+        
       } catch (error) {
-        console.error('Error importing item:', error);
+        results.push({ 
+          source: currentSource.toUpperCase(), 
+          error: error.message 
+        });
       }
     }
     
     return Response.json({
       success: true,
-      source: source.toUpperCase(),
-      itemsFound: items.length,
-      itemsImported: imported.length,
-      message: `Imported ${imported.length} new items from ${source.toUpperCase()}`,
+      totalImported,
+      results,
+      message: `Imported ${totalImported} new items from ${results.length} sources`,
     });
     
   } catch (error) {
