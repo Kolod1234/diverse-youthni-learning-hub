@@ -72,7 +72,6 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
           </TabsList>
 
           <TabsContent value="content" className="space-y-4 mt-4">
-          <div>
             <Label>Section Type</Label>
             <Select 
               value={formData.section_type} 
@@ -426,7 +425,6 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
                 {isSaving ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Saving...</> : 'Save Section'}
               </Button>
             </div>
-          </div>
           </div>
           </TabsContent>
 
