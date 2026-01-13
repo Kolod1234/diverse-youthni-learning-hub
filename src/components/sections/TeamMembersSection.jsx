@@ -61,5 +61,6 @@ export default function TeamMembersSection({ section }) {
         </div>
       </div>
     </section>
+    </>
   );
 }

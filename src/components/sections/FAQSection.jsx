@@ -56,5 +56,6 @@ export default function FAQSection({ section }) {
         </div>
       </div>
     </section>
+    </>
   );
 }
