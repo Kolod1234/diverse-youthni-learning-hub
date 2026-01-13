@@ -129,6 +129,101 @@ export default function AdminDashboard() {
           </div>
         </motion.div>
 
+        {/* Quick Access Widgets */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Tutor Requests Widget */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
+                  <GraduationCap className="w-5 h-5 text-orange-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">New Tutor Requests</h3>
+                  <p className="text-sm text-gray-500">Pending approval</p>
+                </div>
+              </div>
+              {tutorRequests.length > 0 && (
+                <Badge className="bg-orange-500">{tutorRequests.length}</Badge>
+              )}
+            </div>
+            {tutorRequests.length > 0 ? (
+              <div className="space-y-2">
+                {tutorRequests.slice(0, 3).map((request) => (
+                  <div key={request.id} className="flex items-center justify-between p-2 bg-gray-50 rounded-lg">
+                    <div className="flex items-center gap-2">
+                      <Avatar className="w-8 h-8">
+                        <AvatarFallback className="text-xs">{request.user_name?.charAt(0)}</AvatarFallback>
+                      </Avatar>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">{request.user_name}</p>
+                        <p className="text-xs text-gray-500">{request.user_email}</p>
+                      </div>
+                    </div>
+                  </div>
+                ))}
+                {tutorRequests.length > 3 && (
+                  <p className="text-xs text-gray-500 text-center mt-2">+{tutorRequests.length - 3} more requests</p>
+                )}
+                <button 
+                  onClick={() => setSelectedTab('tutor-requests')}
+                  className="w-full text-sm text-orange-600 hover:text-orange-700 font-medium mt-3"
+                >
+                  View All Requests →
+                </button>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <GraduationCap className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No pending requests</p>
+              </div>
+            )}
+          </Card>
+
+          {/* Recent Messages Widget */}
+          <Card className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-lg bg-blue-100 flex items-center justify-center">
+                  <MessageSquare className="w-5 h-5 text-blue-600" />
+                </div>
+                <div>
+                  <h3 className="font-semibold text-gray-900">Recent Messages</h3>
+                  <p className="text-sm text-gray-500">Platform activity</p>
+                </div>
+              </div>
+              <Badge variant="outline">{messages.slice(0, 10).length}</Badge>
+            </div>
+            {messages.length > 0 ? (
+              <div className="space-y-2">
+                {messages.slice(0, 3).map((msg) => (
+                  <div key={msg.id} className="p-2 bg-gray-50 rounded-lg">
+                    <div className="flex items-start justify-between mb-1">
+                      <p className="text-sm font-medium text-gray-900">{msg.sender_name}</p>
+                      <span className="text-xs text-gray-500">{new Date(msg.created_date).toLocaleDateString()}</span>
+                    </div>
+                    <p className="text-xs text-gray-600 line-clamp-1">{msg.content}</p>
+                  </div>
+                ))}
+                {messages.length > 3 && (
+                  <p className="text-xs text-gray-500 text-center mt-2">+{messages.length - 3} more messages</p>
+                )}
+                <button 
+                  onClick={() => setSelectedTab('messages')}
+                  className="w-full text-sm text-blue-600 hover:text-blue-700 font-medium mt-3"
+                >
+                  View All Messages →
+                </button>
+              </div>
+            ) : (
+              <div className="text-center py-4">
+                <MessageSquare className="w-8 h-8 text-gray-300 mx-auto mb-2" />
+                <p className="text-sm text-gray-500">No recent messages</p>
+              </div>
+            )}
+          </Card>
+        </div>
+
         {/* Stats Overview */}
         <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
           {[

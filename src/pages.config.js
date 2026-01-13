@@ -11,6 +11,7 @@ import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
 import AdminReviews from './pages/AdminReviews';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
+import AdminUsers from './pages/AdminUsers';
 import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
 import ArtGallery from './pages/ArtGallery';
@@ -54,7 +55,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminUsers from './pages/AdminUsers';
+import AdminUserProfile from './pages/AdminUserProfile';
 import __Layout from './Layout.jsx';
 
 
@@ -72,6 +73,7 @@ export const PAGES = {
     "AdminRSSFeed": AdminRSSFeed,
     "AdminReviews": AdminReviews,
     "AdminStudentOfMonth": AdminStudentOfMonth,
+    "AdminUsers": AdminUsers,
     "AdminYouthWork": AdminYouthWork,
     "Analytics": Analytics,
     "ArtGallery": ArtGallery,
@@ -115,7 +117,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminUsers": AdminUsers,
+    "AdminUserProfile": AdminUserProfile,
 }
 
 export const pagesConfig = {

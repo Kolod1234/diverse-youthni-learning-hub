@@ -7,7 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, UserPlus, Shield, User, Mail, Calendar, Loader2, Send } from 'lucide-react';
+import { Search, UserPlus, Shield, User, Mail, Calendar, Loader2, Send, Eye, Users } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AdminUsers() {
@@ -19,6 +19,8 @@ export default function AdminUsers() {
   const [messageUser, setMessageUser] = useState(null);
   const [emailSubject, setEmailSubject] = useState('');
   const [emailBody, setEmailBody] = useState('');
+  const [selectedUsers, setSelectedUsers] = useState([]);
+  const [showBulkEmail, setShowBulkEmail] = useState(false);
 
   const queryClient = useQueryClient();
 
@@ -78,6 +80,47 @@ export default function AdminUsers() {
       subject: emailSubject,
       body: emailBody
     });
+  };
+
+  const handleBulkEmail = async () => {
+    if (!emailSubject || !emailBody || selectedUsers.length === 0) {
+      alert('Please select users and enter subject and message');
+      return;
+    }
+    
+    try {
+      for (const user of selectedUsers) {
+        await base44.integrations.Core.SendEmail({
+          to: user.email,
+          subject: emailSubject,
+          body: emailBody,
+          from_name: 'Diverse Youth NI Admin'
+        });
+      }
+      setShowBulkEmail(false);
+      setSelectedUsers([]);
+      setEmailSubject('');
+      setEmailBody('');
+      alert(`Email sent to ${selectedUsers.length} users!`);
+    } catch (error) {
+      alert(`Failed to send bulk email: ${error.message}`);
+    }
+  };
+
+  const toggleUserSelection = (user) => {
+    setSelectedUsers(prev => 
+      prev.find(u => u.id === user.id)
+        ? prev.filter(u => u.id !== user.id)
+        : [...prev, user]
+    );
+  };
+
+  const selectAllFiltered = () => {
+    if (selectedUsers.length === filteredUsers.length) {
+      setSelectedUsers([]);
+    } else {
+      setSelectedUsers([...filteredUsers]);
+    }
   };
 
   const filteredUsers = users.filter(user => {
@@ -288,14 +331,21 @@ export default function AdminUsers() {
                         </div>
                       </td>
                       <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => setMessageUser(user)}
-                        >
-                          <Send className="w-4 h-4 mr-2" />
-                          Send Email
-                        </Button>
+                        <div className="flex gap-2 justify-end">
+                          <Link to={createPageUrl('AdminUserProfile') + `?userId=${user.id}`}>
+                            <Button variant="outline" size="sm">
+                              <Eye className="w-4 h-4 mr-2" />
+                              View Profile
+                            </Button>
+                          </Link>
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => setMessageUser(user)}
+                          >
+                            <Send className="w-4 h-4" />
+                          </Button>
+                        </div>
                       </td>
                     </tr>
                   ))}
@@ -360,6 +410,81 @@ export default function AdminUsers() {
                   variant="outline"
                   onClick={() => {
                     setMessageUser(null);
+                    setEmailSubject('');
+                    setEmailBody('');
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Bulk Email Dialog */}
+      {showBulkEmail && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowBulkEmail(false)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl m-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <Users className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Send Bulk Email</h3>
+                <p className="text-sm text-gray-500">To {selectedUsers.length} selected users</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Subject</label>
+                <Input
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Email subject..."
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Message</label>
+                <Textarea
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  placeholder="Type your announcement or message..."
+                  rows={8}
+                />
+              </div>
+
+              <div className="bg-gray-50 rounded-lg p-3">
+                <p className="text-xs font-medium text-gray-700 mb-2">Recipients ({selectedUsers.length}):</p>
+                <div className="flex flex-wrap gap-1">
+                  {selectedUsers.slice(0, 10).map((user) => (
+                    <Badge key={user.id} variant="outline" className="text-xs">
+                      {user.full_name}
+                    </Badge>
+                  ))}
+                  {selectedUsers.length > 10 && (
+                    <Badge variant="outline" className="text-xs">
+                      +{selectedUsers.length - 10} more
+                    </Badge>
+                  )}
+                </div>
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleBulkEmail}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700"
+                >
+                  <Send className="w-4 h-4 mr-2" />
+                  Send to All
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setShowBulkEmail(false);
                     setEmailSubject('');
                     setEmailBody('');
                   }}
