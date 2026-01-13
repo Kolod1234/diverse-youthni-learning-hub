@@ -1,6 +1,7 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Linkedin, Twitter } from 'lucide-react';
+import SchemaMarkup from '../seo/SchemaMarkup';
 
 export default function TeamMembersSection({ section }) {
   const { team_members = [], title, description } = section;
@@ -8,7 +9,9 @@ export default function TeamMembersSection({ section }) {
   if (!team_members.length) return null;
 
   return (
-    <section className="py-20 bg-white">
+    <>
+      <SchemaMarkup type="team" data={{ members: team_members }} />
+      <section className="py-20 bg-white">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {title && (
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-16">
@@ -61,6 +64,6 @@ export default function TeamMembersSection({ section }) {
         </div>
       </div>
     </section>
-    </>
+  </>
   );
 }
