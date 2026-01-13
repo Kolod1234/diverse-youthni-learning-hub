@@ -3,10 +3,11 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
 import { Badge } from '@/components/ui/badge';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, UserPlus, Shield, User, Mail, Calendar, Loader2 } from 'lucide-react';
+import { Search, UserPlus, Shield, User, Mail, Calendar, Loader2, Send } from 'lucide-react';
 import { format } from 'date-fns';
 
 export default function AdminUsers() {
@@ -15,6 +16,9 @@ export default function AdminUsers() {
   const [inviteEmail, setInviteEmail] = useState('');
   const [inviteRole, setInviteRole] = useState('user');
   const [showInvite, setShowInvite] = useState(false);
+  const [messageUser, setMessageUser] = useState(null);
+  const [emailSubject, setEmailSubject] = useState('');
+  const [emailBody, setEmailBody] = useState('');
 
   const queryClient = useQueryClient();
 
@@ -36,12 +40,44 @@ export default function AdminUsers() {
     },
   });
 
+  const sendEmailMutation = useMutation({
+    mutationFn: async (data) => {
+      await base44.integrations.Core.SendEmail({
+        to: data.email,
+        subject: data.subject,
+        body: data.body,
+        from_name: 'Diverse Youth NI Admin'
+      });
+    },
+    onSuccess: () => {
+      setMessageUser(null);
+      setEmailSubject('');
+      setEmailBody('');
+      alert('Email sent successfully!');
+    },
+    onError: (error) => {
+      alert(`Failed to send email: ${error.message}`);
+    },
+  });
+
   const handleInvite = () => {
     if (!inviteEmail) {
       alert('Please enter an email address');
       return;
     }
     inviteMutation.mutate({ email: inviteEmail, role: inviteRole });
+  };
+
+  const handleSendEmail = () => {
+    if (!emailSubject || !emailBody) {
+      alert('Please enter subject and message');
+      return;
+    }
+    sendEmailMutation.mutate({
+      email: messageUser.email,
+      subject: emailSubject,
+      body: emailBody
+    });
   };
 
   const filteredUsers = users.filter(user => {
@@ -197,6 +233,9 @@ export default function AdminUsers() {
                     <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
                       Status
                     </th>
+                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
+                      Actions
+                    </th>
                   </tr>
                 </thead>
                 <tbody className="bg-white divide-y divide-gray-200">
@@ -248,6 +287,16 @@ export default function AdminUsers() {
                           )}
                         </div>
                       </td>
+                      <td className="px-6 py-4 whitespace-nowrap text-right">
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          onClick={() => setMessageUser(user)}
+                        >
+                          <Send className="w-4 h-4 mr-2" />
+                          Send Email
+                        </Button>
+                      </td>
                     </tr>
                   ))}
                 </tbody>
@@ -260,6 +309,69 @@ export default function AdminUsers() {
           Showing {filteredUsers.length} of {users.length} users
         </div>
       </div>
+
+      {/* Email Dialog */}
+      {messageUser && (
+        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setMessageUser(null)}>
+          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl m-4" onClick={(e) => e.stopPropagation()}>
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
+                <Send className="w-5 h-5 text-orange-600" />
+              </div>
+              <div>
+                <h3 className="text-xl font-bold">Send Email</h3>
+                <p className="text-sm text-gray-500">To: {messageUser.full_name} ({messageUser.email})</p>
+              </div>
+            </div>
+            
+            <div className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium mb-2">Subject</label>
+                <Input
+                  value={emailSubject}
+                  onChange={(e) => setEmailSubject(e.target.value)}
+                  placeholder="Email subject..."
+                />
+              </div>
+              
+              <div>
+                <label className="block text-sm font-medium mb-2">Message</label>
+                <Textarea
+                  value={emailBody}
+                  onChange={(e) => setEmailBody(e.target.value)}
+                  placeholder="Type your message..."
+                  rows={8}
+                />
+              </div>
+              
+              <div className="flex gap-3">
+                <Button
+                  onClick={handleSendEmail}
+                  disabled={sendEmailMutation.isPending}
+                  className="flex-1 bg-orange-600 hover:bg-orange-700"
+                >
+                  {sendEmailMutation.isPending ? (
+                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
+                  ) : (
+                    <><Send className="w-4 h-4 mr-2" /> Send Email</>
+                  )}
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() => {
+                    setMessageUser(null);
+                    setEmailSubject('');
+                    setEmailBody('');
+                  }}
+                  className="flex-1"
+                >
+                  Cancel
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 }
