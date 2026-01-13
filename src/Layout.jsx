@@ -345,12 +345,6 @@ function LayoutContent({ children, currentPageName }) {
                         Admin Panel
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminUsers')} className="flex items-center cursor-pointer">
-                          <User className="w-4 h-4 mr-2" />
-                          Manage Users
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
                         <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer">
                           <Layout className="w-4 h-4 mr-2" />
                           Page Builder
@@ -517,10 +511,6 @@ function LayoutContent({ children, currentPageName }) {
                           <Settings className="w-5 h-5" />
                           <span>Admin Panel</span>
                         </button>
-                        <Link to={createPageUrl('AdminUsers')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
-                          <User className="w-5 h-5" />
-                          <span>Manage Users</span>
-                        </Link>
                         <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                           <User className="w-5 h-5" />
                           <span>Manage Coordinators</span>
