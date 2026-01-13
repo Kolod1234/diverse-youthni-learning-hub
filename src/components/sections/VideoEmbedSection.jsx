@@ -51,6 +51,6 @@ export default function VideoEmbedSection({ section }) {
         </motion.div>
       </div>
     </section>
-    </>
+  </>
   );
 }
