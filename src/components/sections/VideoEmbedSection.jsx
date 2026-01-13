@@ -1,5 +1,6 @@
 import React from 'react';
 import { motion } from 'framer-motion';
+import SchemaMarkup from '../seo/SchemaMarkup';
 
 export default function VideoEmbedSection({ section }) {
   const { video_url, video_title, video_description } = section;
@@ -19,7 +20,17 @@ export default function VideoEmbedSection({ section }) {
   };
 
   return (
-    <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
+    <>
+      <SchemaMarkup 
+        type="video" 
+        data={{ 
+          title: video_title, 
+          description: video_description,
+          url: video_url,
+          uploadDate: section.created_date
+        }} 
+      />
+      <section className="py-20 bg-gradient-to-b from-gray-900 to-gray-800">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }}>
           {video_title && (

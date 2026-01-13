@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ChevronDown } from 'lucide-react';
+import SchemaMarkup from '../seo/SchemaMarkup';
 
 export default function FAQSection({ section }) {
   const { faqs = [], title, description } = section;
@@ -9,7 +10,9 @@ export default function FAQSection({ section }) {
   if (!faqs.length) return null;
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white to-gray-50">
+    <>
+      <SchemaMarkup type="faq" data={{ faqs }} />
+      <section className="py-20 bg-gradient-to-b from-white to-gray-50">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         {title && (
           <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} className="text-center mb-12">
