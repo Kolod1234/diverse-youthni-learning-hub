@@ -1688,9 +1688,27 @@ function LessonsManagement({ lessons, courses }) {
             )}
           </Button>
           {physicsWithoutObjectives.length > 0 && (
-            <div className="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium">
-              ⚠️ {physicsWithoutObjectives.length} Physics lessons missing objectives
-            </div>
+            <>
+              <div className="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium">
+                ⚠️ {physicsWithoutObjectives.length} Physics lessons missing objectives
+              </div>
+              <Button
+                onClick={async () => {
+                  try {
+                    const response = await base44.functions.invoke('updatePhysicsObjectives', {});
+                    queryClient.invalidateQueries({ queryKey: ['all-lessons'] });
+                    toast.success(response.data.message);
+                  } catch (error) {
+                    toast.error('Failed to update physics objectives');
+                  }
+                }}
+                size="sm"
+                className="bg-gradient-to-r from-blue-600 to-cyan-600 hover:from-blue-700 hover:to-cyan-700"
+              >
+                <GraduationCap className="w-4 h-4 mr-2" />
+                Update from CCEA
+              </Button>
+            </>
           )}
           <Button
             onClick={() => setShowImporter(true)}
