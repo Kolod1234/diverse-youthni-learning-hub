@@ -1646,6 +1646,15 @@ function LessonsManagement({ lessons, courses }) {
     !l.learning_objectives || l.learning_objectives.length === 0
   );
 
+  const physicsLessons = lessons.filter(l => {
+    const course = courses.find(c => c.id === l.course_id);
+    return course?.category === 'physics';
+  });
+
+  const physicsWithoutObjectives = physicsLessons.filter(l => 
+    !l.learning_objectives || l.learning_objectives.length === 0
+  );
+
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -1674,10 +1683,15 @@ function LessonsManagement({ lessons, courses }) {
             ) : (
               <>
                 <Sparkles className="w-4 h-4 mr-2" />
-                Update All Objectives ({lessonsWithoutObjectives.length})
+                Update All ({lessonsWithoutObjectives.length})
               </>
             )}
           </Button>
+          {physicsWithoutObjectives.length > 0 && (
+            <div className="px-3 py-1.5 bg-amber-100 text-amber-800 rounded-lg text-sm font-medium">
+              ⚠️ {physicsWithoutObjectives.length} Physics lessons missing objectives
+            </div>
+          )}
           <Button
             onClick={() => setShowImporter(true)}
             size="sm"
@@ -1707,7 +1721,10 @@ function LessonsManagement({ lessons, courses }) {
         >
           <option value="all">All Courses</option>
           {courses.map(course => (
-            <option key={course.id} value={course.id}>{course.title}</option>
+            <option key={course.id} value={course.id}>
+              {course.title}
+              {course.category === 'physics' && physicsLessons.filter(l => l.course_id === course.id && (!l.learning_objectives || l.learning_objectives.length === 0)).length > 0 && ' ⚠️'}
+            </option>
           ))}
         </select>
       </div>
