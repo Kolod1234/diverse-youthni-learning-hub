@@ -49,6 +49,7 @@ import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
+import TutorDashboardCanvas from './pages/TutorDashboardCanvas';
 import TutorDashboardOverview from './pages/TutorDashboardOverview';
 import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
@@ -56,7 +57,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import TutorDashboardCanvas from './pages/TutorDashboardCanvas';
 import __Layout from './Layout.jsx';
 
 
@@ -112,6 +112,7 @@ export const PAGES = {
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
+    "TutorDashboardCanvas": TutorDashboardCanvas,
     "TutorDashboardOverview": TutorDashboardOverview,
     "TutorSessionsDashboard": TutorSessionsDashboard,
     "TutorSetup": TutorSetup,
@@ -119,7 +120,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "TutorDashboardCanvas": TutorDashboardCanvas,
 }
 
 export const pagesConfig = {

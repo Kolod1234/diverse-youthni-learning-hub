@@ -891,19 +891,66 @@ function GradesView({ course }) {
 }
 
 function AnalyticsView({ course }) {
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['course-enrollments-analytics', course?.id],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: course?.id }, '-created_date', 500),
+    enabled: !!course?.id,
+  });
+
+  const { data: quizAttempts = [] } = useQuery({
+    queryKey: ['course-quiz-attempts', course?.id],
+    queryFn: () => base44.entities.QuizAttempt.filter({ course_id: course?.id }, '-created_date', 1000),
+    enabled: !!course?.id,
+  });
+
+  // Calculate completion rate
+  const completionRate = enrollments.length > 0
+    ? Math.round((enrollments.filter(e => e.is_completed).length / enrollments.length) * 100)
+    : 0;
+
+  // Calculate engagement rate (students with >0% progress)
+  const engagementRate = enrollments.length > 0
+    ? Math.round((enrollments.filter(e => (e.progress_percent || 0) > 0).length / enrollments.length) * 100)
+    : 0;
+
+  // Average progress
+  const avgProgress = enrollments.length > 0
+    ? Math.round(enrollments.reduce((sum, e) => sum + (e.progress_percent || 0), 0) / enrollments.length)
+    : 0;
+
+  // Quiz performance
+  const avgQuizScore = quizAttempts.length > 0
+    ? Math.round(quizAttempts.reduce((sum, a) => sum + (a.score || 0), 0) / quizAttempts.length)
+    : 0;
+
   return (
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Analytics</h1>
-      <div className="grid grid-cols-2 gap-6">
+      <div className="grid grid-cols-2 gap-6 mb-6">
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="font-semibold mb-4">Engagement</h3>
-          <div className="text-3xl font-bold text-blue-600">85%</div>
-          <div className="text-sm text-gray-500">Average engagement rate</div>
+          <div className="text-3xl font-bold text-blue-600">{engagementRate}%</div>
+          <div className="text-sm text-gray-500">Students who started the course</div>
+          <div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => (e.progress_percent || 0) > 0).length} of {enrollments.length} students</div>
         </div>
         <div className="bg-white border border-gray-200 rounded-lg p-6">
           <h3 className="font-semibold mb-4">Completion</h3>
-          <div className="text-3xl font-bold text-green-600">72%</div>
+          <div className="text-3xl font-bold text-green-600">{completionRate}%</div>
           <div className="text-sm text-gray-500">Course completion rate</div>
+          <div className="text-xs text-gray-400 mt-2">{enrollments.filter(e => e.is_completed).length} of {enrollments.length} completed</div>
+        </div>
+      </div>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="font-semibold mb-4">Average Progress</h3>
+          <div className="text-3xl font-bold text-purple-600">{avgProgress}%</div>
+          <div className="text-sm text-gray-500">Across all students</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="font-semibold mb-4">Quiz Performance</h3>
+          <div className="text-3xl font-bold text-amber-600">{avgQuizScore}%</div>
+          <div className="text-sm text-gray-500">Average quiz score</div>
+          <div className="text-xs text-gray-400 mt-2">{quizAttempts.length} total attempts</div>
         </div>
       </div>
     </div>
