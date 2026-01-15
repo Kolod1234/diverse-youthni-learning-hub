@@ -52,7 +52,6 @@ export default function TutorDashboard() {
 
   const navItems = [
     { icon: Home, label: 'Home', view: 'home' },
-    { icon: BookOpen, label: 'My Courses', view: 'courses' },
     { icon: BookOpen, label: 'Modules', view: 'modules' },
     { icon: Bell, label: 'Announcements', view: 'announcements' },
     { icon: ClipboardList, label: 'Assignments', view: 'assignments' },
@@ -160,8 +159,7 @@ export default function TutorDashboard() {
           <div className="flex h-full">
             {/* Main Section */}
             <div className="flex-1 p-8 overflow-y-auto">
-              {currentView === 'courses' && <CoursesView courses={courses} user={user} />}
-              {currentView === 'modules' && <ModulesView courses={courses} />}
+              {currentView === 'modules' && <ModulesView courses={courses} user={user} />}
               {currentView === 'home' && <HomeView courses={courses} />}
               {currentView === 'assignments' && <AssignmentsView course={selectedCourse} />}
               {currentView === 'people' && <PeopleView course={selectedCourse} />}
@@ -192,26 +190,61 @@ export default function TutorDashboard() {
   );
 }
 
-function ModulesView({ courses }) {
+function ModulesView({ courses, user }) {
   const queryClient = useQueryClient();
-  const [selectedCourseId, setSelectedCourseId] = React.useState(courses[0]?.id);
+  const [expandedCourseId, setExpandedCourseId] = React.useState(null);
+  const [showCreateCourse, setShowCreateCourse] = React.useState(false);
+  const [courseForm, setCourseForm] = React.useState({});
+  const [editingCourse, setEditingCourse] = React.useState(null);
   const [showCreateLesson, setShowCreateLesson] = React.useState(false);
   const [lessonForm, setLessonForm] = React.useState({});
   const [editingLesson, setEditingLesson] = React.useState(null);
   const [uploading, setUploading] = React.useState(false);
 
   const { data: allLessons = [] } = useQuery({
-    queryKey: ['course-lessons', selectedCourseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: selectedCourseId }, 'order', 200),
-    enabled: !!selectedCourseId,
+    queryKey: ['all-lessons'],
+    queryFn: async () => {
+      const allLessons = [];
+      for (const course of courses) {
+        const lessons = await base44.entities.Lesson.filter({ course_id: course.id }, 'order', 200);
+        allLessons.push(...lessons);
+      }
+      return allLessons;
+    },
+    enabled: courses.length > 0,
   });
 
-  const selectedCourse = courses.find(c => c.id === selectedCourseId);
+  const createCourseMutation = useMutation({
+    mutationFn: (data) => base44.entities.Course.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      setShowCreateCourse(false);
+      setCourseForm({});
+      toast.success('Course created!');
+    },
+  });
+
+  const updateCourseMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Course.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      setEditingCourse(null);
+      toast.success('Course updated!');
+    },
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: (id) => base44.entities.Course.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      toast.success('Course deleted!');
+    },
+  });
 
   const createLessonMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create(data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['course-lessons']);
+      queryClient.invalidateQueries(['all-lessons']);
       queryClient.invalidateQueries(['tutor-courses']);
       setShowCreateLesson(false);
       setLessonForm({});
@@ -222,7 +255,7 @@ function ModulesView({ courses }) {
   const updateLessonMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(['course-lessons']);
+      queryClient.invalidateQueries(['all-lessons']);
       setEditingLesson(null);
       toast.success('Lesson updated!');
     },
@@ -231,17 +264,30 @@ function ModulesView({ courses }) {
   const deleteLessonMutation = useMutation({
     mutationFn: (id) => base44.entities.Lesson.delete(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(['course-lessons']);
+      queryClient.invalidateQueries(['all-lessons']);
       queryClient.invalidateQueries(['tutor-courses']);
       toast.success('Lesson deleted!');
     },
   });
 
+  const handleCreateCourse = () => {
+    createCourseMutation.mutate({
+      ...courseForm,
+      instructor: user?.full_name || 'Instructor',
+      instructor_avatar: user?.avatar,
+      rating: 4.5,
+      enrolled_count: 0,
+      price: parseFloat(courseForm.price) || 0,
+      duration_hours: parseFloat(courseForm.duration_hours) || 0,
+      total_lessons: 0,
+    });
+  };
+
   const handleCreateLesson = () => {
+    const courseLessons = allLessons.filter(l => l.course_id === lessonForm.course_id);
     createLessonMutation.mutate({
       ...lessonForm,
-      course_id: selectedCourseId,
-      order: allLessons.length + 1,
+      order: courseLessons.length + 1,
       duration_minutes: parseInt(lessonForm.duration_minutes) || 10,
     });
   };
@@ -288,32 +334,86 @@ function ModulesView({ courses }) {
     }
   };
 
-  // Group lessons by section
-  const sections = {};
-  allLessons.forEach(lesson => {
-    const section = lesson.section || 'General';
-    if (!sections[section]) sections[section] = [];
-    sections[section].push(lesson);
-  });
-
   return (
     <div className="max-w-5xl">
-      {/* Course Selector */}
-      <div className="mb-6 flex items-center justify-between">
-        <select
-          value={selectedCourseId}
-          onChange={(e) => setSelectedCourseId(e.target.value)}
-          className="px-4 py-2 border rounded-lg font-medium"
-        >
-          {courses.map(c => (
-            <option key={c.id} value={c.id}>{c.title}</option>
-          ))}
-        </select>
-        <Button onClick={() => setShowCreateLesson(true)} className="bg-blue-600 hover:bg-blue-700">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Modules</h1>
+        <Button onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
           <Plus className="w-4 h-4 mr-2" />
-          Add Lesson
+          Create Course
         </Button>
       </div>
+
+      {/* Create Course Form */}
+      {showCreateCourse && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Create New Course</h3>
+            <Button variant="ghost" size="icon" onClick={() => setShowCreateCourse(false)}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Title *</label>
+              <input
+                type="text"
+                value={courseForm.title || ''}
+                onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="Course title"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea
+                value={courseForm.description || ''}
+                onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                rows={3}
+                placeholder="Course description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={courseForm.category || ''}
+                  onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="english">English</option>
+                  <option value="biology">Biology</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="physics">Physics</option>
+                  <option value="history">History</option>
+                  <option value="geography">Geography</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Level</label>
+                <select
+                  value={courseForm.level || 'beginner'}
+                  onChange={(e) => setCourseForm({ ...courseForm, level: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={handleCreateCourse} disabled={!courseForm.title || createCourseMutation.isPending}>
+                {createCourseMutation.isPending ? 'Creating...' : 'Create Course'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowCreateCourse(false)}>Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Create Lesson Form */}
       {showCreateLesson && (
@@ -326,6 +426,19 @@ function ModulesView({ courses }) {
           </div>
 
           <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Course *</label>
+              <select
+                value={lessonForm.course_id || ''}
+                onChange={(e) => setLessonForm({ ...lessonForm, course_id: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+              >
+                <option value="">Select a course</option>
+                {courses.map(c => (
+                  <option key={c.id} value={c.id}>{c.title}</option>
+                ))}
+              </select>
+            </div>
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium mb-1">Title *</label>
@@ -428,7 +541,7 @@ function ModulesView({ courses }) {
             </div>
 
             <div className="flex gap-3">
-              <Button onClick={handleCreateLesson} disabled={!lessonForm.title || createLessonMutation.isPending}>
+              <Button onClick={handleCreateLesson} disabled={!lessonForm.title || !lessonForm.course_id || createLessonMutation.isPending}>
                 {createLessonMutation.isPending ? 'Creating...' : 'Create Lesson'}
               </Button>
               <Button variant="outline" onClick={() => setShowCreateLesson(false)}>Cancel</Button>
@@ -437,81 +550,176 @@ function ModulesView({ courses }) {
         </div>
       )}
 
-      {/* Lessons by Section */}
-      {Object.keys(sections).length === 0 ? (
+      {/* All Courses with Lessons */}
+      {courses.length === 0 ? (
         <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No lessons yet</h3>
-          <p className="text-gray-500 mb-6">Add your first lesson to {selectedCourse?.title}</p>
-          <Button onClick={() => setShowCreateLesson(true)}>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No courses yet</h3>
+          <p className="text-gray-500 mb-6">Create your first course to get started</p>
+          <Button onClick={() => setShowCreateCourse(true)}>
             <Plus className="w-4 h-4 mr-2" />
-            Add First Lesson
+            Create First Course
           </Button>
         </div>
       ) : (
         <div className="space-y-4">
-          {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-            <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
-                <h3 className="font-semibold text-gray-900">{sectionName}</h3>
-                <span className="text-sm text-gray-500">{sectionLessons.length} lessons</span>
-              </div>
-              <div className="divide-y divide-gray-200">
-                {sectionLessons.map(lesson => (
-                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 group">
-                    {editingLesson?.id === lesson.id ? (
-                      <div className="space-y-4">
-                        <input
-                          type="text"
-                          value={lessonForm.title || ''}
-                          onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-lg"
-                        />
-                        <textarea
-                          value={lessonForm.description || ''}
-                          onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-                          className="w-full px-3 py-2 border rounded-lg"
-                          rows={2}
-                        />
-                        <div className="flex gap-2">
-                          <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
-                            Save
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
-                        </div>
+          {courses.map((course) => {
+            const courseLessons = allLessons.filter(l => l.course_id === course.id);
+            const sections = {};
+            courseLessons.forEach(lesson => {
+              const section = lesson.section || 'General';
+              if (!sections[section]) sections[section] = [];
+              sections[section].push(lesson);
+            });
+            const isExpanded = expandedCourseId === course.id;
+
+            return (
+              <div key={course.id} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                {/* Course Header */}
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 px-6 py-4 border-b border-gray-200">
+                  {editingCourse?.id === course.id ? (
+                    <div className="space-y-4">
+                      <input
+                        type="text"
+                        value={courseForm.title || ''}
+                        onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                        className="w-full px-3 py-2 border rounded-lg"
+                      />
+                      <textarea
+                        value={courseForm.description || ''}
+                        onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                        className="w-full px-3 py-2 border rounded-lg"
+                        rows={2}
+                      />
+                      <div className="flex gap-3">
+                        <Button size="sm" onClick={() => {
+                          updateCourseMutation.mutate({ id: course.id, data: courseForm });
+                        }}>Save</Button>
+                        <Button variant="outline" size="sm" onClick={() => setEditingCourse(null)}>Cancel</Button>
                       </div>
-                    ) : (
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-3">
-                          <BookOpen className="w-5 h-5 text-gray-400" />
-                          <div>
-                            <div className="font-medium text-gray-900">{lesson.title}</div>
-                            <div className="text-sm text-gray-500">{lesson.duration_minutes || 10} min • {lesson.section}</div>
+                    </div>
+                  ) : (
+                    <div className="flex items-center justify-between">
+                      <div className="flex items-center gap-4 flex-1">
+                        <button
+                          onClick={() => setExpandedCourseId(isExpanded ? null : course.id)}
+                          className="hover:bg-blue-100 p-2 rounded transition-colors"
+                        >
+                          <ChevronRight className={`w-5 h-5 text-blue-600 transition-transform ${isExpanded ? 'rotate-90' : ''}`} />
+                        </button>
+                        <div className="flex-1">
+                          <h3 className="font-bold text-gray-900 text-lg">{course.title}</h3>
+                          <div className="flex items-center gap-3 text-sm text-gray-600 mt-1">
+                            <span className="px-2 py-0.5 bg-blue-100 rounded text-blue-700">{course.category}</span>
+                            <span>•</span>
+                            <span>{courseLessons.length} lessons</span>
+                            <span>•</span>
+                            <span>{course.enrolled_count || 0} students</span>
                           </div>
                         </div>
-                        <div className="flex gap-2 opacity-0 group-hover:opacity-100">
-                          <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
-                            <Button variant="outline" size="sm">Full Editor</Button>
-                          </Link>
-                          <Button variant="outline" size="sm" onClick={() => {
-                            setEditingLesson(lesson);
-                            setLessonForm(lesson);
-                          }}>
-                            <Edit className="w-4 h-4" />
-                          </Button>
-                          <Button variant="outline" size="sm" onClick={() => {
-                            if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
-                          }}>
-                            <Trash2 className="w-4 h-4 text-red-600" />
-                          </Button>
-                        </div>
+                      </div>
+                      <div className="flex gap-2">
+                        <Button variant="outline" size="sm" onClick={() => {
+                          setLessonForm({ course_id: course.id });
+                          setShowCreateLesson(true);
+                        }}>
+                          <Plus className="w-4 h-4 mr-1" />
+                          Add Lesson
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          setEditingCourse(course);
+                          setCourseForm(course);
+                        }}>
+                          <Edit className="w-4 h-4" />
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => {
+                          if (confirm('Delete this course and all its lessons?')) deleteCourseMutation.mutate(course.id);
+                        }}>
+                          <Trash2 className="w-4 h-4 text-red-600" />
+                        </Button>
+                      </div>
+                    </div>
+                  )}
+                </div>
+
+                {/* Course Lessons */}
+                {isExpanded && (
+                  <div className="p-4">
+                    {Object.keys(sections).length === 0 ? (
+                      <div className="text-center py-8 text-gray-500">
+                        <p>No lessons yet. Click "Add Lesson" to create one.</p>
+                      </div>
+                    ) : (
+                      <div className="space-y-3">
+                        {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+                          <div key={sectionName} className="border border-gray-200 rounded-lg overflow-hidden">
+                            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
+                              <h4 className="font-semibold text-gray-900 text-sm">{sectionName}</h4>
+                              <span className="text-xs text-gray-500">{sectionLessons.length} lessons</span>
+                            </div>
+                            <div className="divide-y divide-gray-200">
+                              {sectionLessons.map(lesson => (
+                                <div key={lesson.id} className="px-4 py-3 hover:bg-gray-50 group">
+                                  {editingLesson?.id === lesson.id ? (
+                                    <div className="space-y-3">
+                                      <input
+                                        type="text"
+                                        value={lessonForm.title || ''}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                                      />
+                                      <textarea
+                                        value={lessonForm.description || ''}
+                                        onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                                        className="w-full px-3 py-2 border rounded-lg text-sm"
+                                        rows={2}
+                                      />
+                                      <div className="flex gap-2">
+                                        <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
+                                          Save
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
+                                      </div>
+                                    </div>
+                                  ) : (
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-3">
+                                        <FileText className="w-4 h-4 text-gray-400" />
+                                        <div>
+                                          <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
+                                          <div className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</div>
+                                        </div>
+                                      </div>
+                                      <div className="flex gap-2 opacity-0 group-hover:opacity-100">
+                                        <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                                          <Button variant="outline" size="sm">Edit</Button>
+                                        </Link>
+                                        <Button variant="outline" size="sm" onClick={() => {
+                                          setEditingLesson(lesson);
+                                          setLessonForm(lesson);
+                                        }}>
+                                          <Edit className="w-3 h-3" />
+                                        </Button>
+                                        <Button variant="outline" size="sm" onClick={() => {
+                                          if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
+                                        }}>
+                                          <Trash2 className="w-3 h-3 text-red-600" />
+                                        </Button>
+                                      </div>
+                                    </div>
+                                  )}
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        ))}
                       </div>
                     )}
                   </div>
-                ))}
+                )}
               </div>
-            </div>
-          ))}
+            );
+          })}
         </div>
       )}
     </div>
@@ -1248,13 +1456,14 @@ function RightSidebarContent({ currentView, course }) {
     },
     modules: {
       title: 'Modules',
-      description: 'Organize your content and create a linear flow for what students should do in the course. Modules can be organized by weeks, units, or topics.',
+      description: 'All your courses, lessons, and content in one place. Create courses, add lessons with slides/videos, and organize everything by sections. No more switching between tabs!',
       tips: [
-        'Click "Add Lesson" to create new content',
-        'Upload slides (PPT, PDF) directly',
-        'Add videos and Google Slides presentations',
-        'Lessons appear to students immediately',
-        'Use sections/topics to organize content'
+        'Create courses first, then add lessons',
+        'Click course name to expand and see lessons',
+        'Upload slides (PPT, PDF), videos, Google Slides',
+        'Organize lessons by sections/topics',
+        'Edit or delete courses and lessons inline',
+        'All changes appear to students immediately'
       ]
     },
     announcements: {
