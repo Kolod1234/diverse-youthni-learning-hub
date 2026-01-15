@@ -683,16 +683,42 @@ function ModulesView({ courses, user }) {
                                     </div>
                                   ) : (
                                     <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-3">
+                                      <div className="flex items-center gap-3 flex-1">
                                         <FileText className="w-4 h-4 text-gray-400" />
-                                        <div>
+                                        <div className="flex-1">
                                           <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
-                                          <div className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</div>
+                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                            <span className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</span>
+                                            {lesson.video_url && (
+                                              <>
+                                                <span className="text-gray-300">•</span>
+                                                <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Video</span>
+                                              </>
+                                            )}
+                                            {lesson.google_slides_url && (
+                                              <>
+                                                <span className="text-gray-300">•</span>
+                                                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Google Slides</span>
+                                              </>
+                                            )}
+                                            {lesson.file_url && (
+                                              <>
+                                                <span className="text-gray-300">•</span>
+                                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Document'}</span>
+                                              </>
+                                            )}
+                                            {lesson.slides && lesson.slides.length > 0 && (
+                                              <>
+                                                <span className="text-gray-300">•</span>
+                                                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span>
+                                              </>
+                                            )}
+                                          </div>
                                         </div>
                                       </div>
                                       <div className="flex gap-2 opacity-0 group-hover:opacity-100">
                                         <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
-                                          <Button variant="outline" size="sm">Edit</Button>
+                                          <Button variant="outline" size="sm">Edit Content</Button>
                                         </Link>
                                         <Button variant="outline" size="sm" onClick={() => {
                                           setEditingLesson(lesson);
