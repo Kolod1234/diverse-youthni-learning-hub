@@ -659,84 +659,188 @@ function ModulesView({ courses, user }) {
                               <span className="text-xs text-gray-500">{sectionLessons.length} lessons</span>
                             </div>
                             <div className="divide-y divide-gray-200">
-                              {sectionLessons.map(lesson => (
-                                <div key={lesson.id} className="px-4 py-3 hover:bg-gray-50 group">
-                                  {editingLesson?.id === lesson.id ? (
-                                    <div className="space-y-3">
-                                      <input
-                                        type="text"
-                                        value={lessonForm.title || ''}
-                                        onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                                        className="w-full px-3 py-2 border rounded-lg text-sm"
-                                      />
-                                      <textarea
-                                        value={lessonForm.description || ''}
-                                        onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-                                        className="w-full px-3 py-2 border rounded-lg text-sm"
-                                        rows={2}
-                                      />
-                                      <div className="flex gap-2">
-                                        <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
-                                          Save
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
-                                      </div>
+                              {sectionLessons.map(lesson => {
+                                const isLessonExpanded = expandedLessonId === lesson.id;
+                                return (
+                                  <div key={lesson.id}>
+                                    <div className="px-4 py-3 hover:bg-gray-50 group">
+                                      {editingLesson?.id === lesson.id ? (
+                                        <div className="space-y-3">
+                                          <input
+                                            type="text"
+                                            value={lessonForm.title || ''}
+                                            onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                                          />
+                                          <textarea
+                                            value={lessonForm.description || ''}
+                                            onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                                            className="w-full px-3 py-2 border rounded-lg text-sm"
+                                            rows={2}
+                                          />
+                                          <div className="flex gap-2">
+                                            <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
+                                              Save
+                                            </Button>
+                                            <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
+                                          </div>
+                                        </div>
+                                      ) : (
+                                        <div className="flex items-center justify-between">
+                                          <div className="flex items-center gap-3 flex-1">
+                                            <button
+                                              onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)}
+                                              className="hover:bg-gray-200 p-1 rounded"
+                                            >
+                                              <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform ${isLessonExpanded ? 'rotate-90' : ''}`} />
+                                            </button>
+                                            <FileText className="w-4 h-4 text-gray-400" />
+                                            <div className="flex-1">
+                                              <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
+                                              <div className="flex items-center gap-2 mt-1 flex-wrap">
+                                                <span className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</span>
+                                                {lesson.video_url && (
+                                                  <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Video</span>
+                                                  </>
+                                                )}
+                                                {lesson.google_slides_url && (
+                                                  <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Google Slides</span>
+                                                  </>
+                                                )}
+                                                {lesson.file_url && (
+                                                  <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Doc'}</span>
+                                                  </>
+                                                )}
+                                                {lesson.slides && lesson.slides.length > 0 && (
+                                                  <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span>
+                                                  </>
+                                                )}
+                                                {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                                                  <>
+                                                    <span className="text-gray-300">•</span>
+                                                    <span className="text-xs bg-green-100 text-green-700 px-2 py-0.5 rounded">{lesson.learning_objectives.length} Objectives</span>
+                                                  </>
+                                                )}
+                                              </div>
+                                            </div>
+                                          </div>
+                                          <div className="flex gap-2 opacity-0 group-hover:opacity-100">
+                                            <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                                              <Button variant="outline" size="sm">Full Editor</Button>
+                                            </Link>
+                                            <Button variant="outline" size="sm" onClick={() => {
+                                              if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
+                                            }}>
+                                              <Trash2 className="w-3 h-3 text-red-600" />
+                                            </Button>
+                                          </div>
+                                        </div>
+                                      )}
                                     </div>
-                                  ) : (
-                                    <div className="flex items-center justify-between">
-                                      <div className="flex items-center gap-3 flex-1">
-                                        <FileText className="w-4 h-4 text-gray-400" />
-                                        <div className="flex-1">
-                                          <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
-                                          <div className="flex items-center gap-2 mt-1 flex-wrap">
-                                            <span className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</span>
-                                            {lesson.video_url && (
-                                              <>
-                                                <span className="text-gray-300">•</span>
-                                                <span className="text-xs bg-red-100 text-red-700 px-2 py-0.5 rounded">Video</span>
-                                              </>
-                                            )}
-                                            {lesson.google_slides_url && (
-                                              <>
-                                                <span className="text-gray-300">•</span>
-                                                <span className="text-xs bg-yellow-100 text-yellow-700 px-2 py-0.5 rounded">Google Slides</span>
-                                              </>
-                                            )}
-                                            {lesson.file_url && (
-                                              <>
-                                                <span className="text-gray-300">•</span>
-                                                <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">{lesson.file_type?.toUpperCase() || 'Document'}</span>
-                                              </>
-                                            )}
-                                            {lesson.slides && lesson.slides.length > 0 && (
-                                              <>
-                                                <span className="text-gray-300">•</span>
-                                                <span className="text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded">{lesson.slides.length} Slides</span>
-                                              </>
-                                            )}
+
+                                    {/* Expanded Lesson Details */}
+                                    {isLessonExpanded && (
+                                      <div className="px-4 pb-4 pt-2 ml-8 border-l-2 border-blue-300 bg-blue-50/50">
+                                        <div className="space-y-3 text-sm">
+                                          {lesson.description && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Description:</span>
+                                              <p className="text-gray-600 mt-1">{lesson.description}</p>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.video_url && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Video URL:</span>
+                                              <a href={lesson.video_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">
+                                                {lesson.video_url}
+                                              </a>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.google_slides_url && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Google Slides:</span>
+                                              <a href={lesson.google_slides_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1 truncate">
+                                                {lesson.google_slides_url}
+                                              </a>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.file_url && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Uploaded Document:</span>
+                                              <a href={lesson.file_url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline block mt-1">
+                                                {lesson.file_type?.toUpperCase() || 'Document'} File
+                                              </a>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Learning Objectives:</span>
+                                              <ul className="list-disc list-inside mt-1 space-y-1 text-gray-600">
+                                                {lesson.learning_objectives.map((obj, idx) => (
+                                                  <li key={idx}>{obj}</li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.slides && lesson.slides.length > 0 && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Custom Slides ({lesson.slides.length}):</span>
+                                              <div className="mt-2 space-y-2 max-h-48 overflow-y-auto">
+                                                {lesson.slides.slice(0, 5).map((slide, idx) => (
+                                                  <div key={idx} className="bg-white border border-gray-200 rounded p-2">
+                                                    <div className="font-medium text-gray-800 text-xs">Slide {slide.order || idx + 1}: {slide.title}</div>
+                                                    <div className="text-xs text-gray-500 line-clamp-1 mt-1" dangerouslySetInnerHTML={{ __html: slide.content }} />
+                                                  </div>
+                                                ))}
+                                                {lesson.slides.length > 5 && (
+                                                  <p className="text-xs text-gray-500 italic">+ {lesson.slides.length - 5} more slides</p>
+                                                )}
+                                              </div>
+                                            </div>
+                                          )}
+                                          
+                                          {lesson.resources && lesson.resources.length > 0 && (
+                                            <div>
+                                              <span className="font-semibold text-gray-700">Resources:</span>
+                                              <ul className="mt-1 space-y-1">
+                                                {lesson.resources.map((res, idx) => (
+                                                  <li key={idx}>
+                                                    <a href={res.url} target="_blank" rel="noopener noreferrer" className="text-blue-600 hover:underline text-xs">
+                                                      {res.name}
+                                                    </a>
+                                                  </li>
+                                                ))}
+                                              </ul>
+                                            </div>
+                                          )}
+
+                                          <div className="pt-2 border-t border-gray-200 mt-3">
+                                            <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                                              <Button variant="outline" size="sm" className="w-full">
+                                                <Edit className="w-3 h-3 mr-2" />
+                                                Edit All Lesson Content
+                                              </Button>
+                                            </Link>
                                           </div>
                                         </div>
                                       </div>
-                                      <div className="flex gap-2 opacity-0 group-hover:opacity-100">
-                                        <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
-                                          <Button variant="outline" size="sm">Edit Content</Button>
-                                        </Link>
-                                        <Button variant="outline" size="sm" onClick={() => {
-                                          setEditingLesson(lesson);
-                                          setLessonForm(lesson);
-                                        }}>
-                                          <Edit className="w-3 h-3" />
-                                        </Button>
-                                        <Button variant="outline" size="sm" onClick={() => {
-                                          if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
-                                        }}>
-                                          <Trash2 className="w-3 h-3 text-red-600" />
-                                        </Button>
-                                      </div>
-                                    </div>
-                                  )}
-                                </div>
-                              ))}
+                                    )}
+                                  </div>
+                                );
+                              })}
                             </div>
                           </div>
                         ))}
