@@ -16,7 +16,7 @@ export default function TutorDashboard() {
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCourseId, setSelectedCourseId] = useState(searchParams.get('courseId'));
   const currentView = searchParams.get('view') || 'modules';
-  const [sidebarOpen, setSidebarOpen] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -76,7 +76,7 @@ export default function TutorDashboard() {
   return (
     <div className="flex h-screen bg-white overflow-hidden">
       {/* Left Sidebar */}
-      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden`}>
+      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden md:relative absolute md:static z-20 h-full`}>
         {/* Course Selector */}
         <div className="p-4 border-b border-gray-200">
           <div className="flex items-center gap-2 mb-3">
@@ -125,7 +125,7 @@ export default function TutorDashboard() {
       {/* Main Content */}
       <div className="flex-1 flex flex-col overflow-hidden">
         {/* Top Bar */}
-        <div className="h-14 bg-gray-800 text-white flex items-center px-4 gap-4">
+        <div className="h-14 bg-gray-800 text-white flex items-center px-4 gap-4 relative z-10">
           <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hover:bg-gray-700 p-2 rounded">
             <Menu className="w-5 h-5" />
           </button>
@@ -179,8 +179,8 @@ export default function TutorDashboard() {
               {currentView === 'whiteboard' && <WhiteboardView course={selectedCourse} />}
             </div>
 
-            {/* Right Sidebar - Context Sensitive */}
-            <div className="w-80 border-l border-gray-200 p-6 bg-gray-50 overflow-y-auto">
+            {/* Right Sidebar - Context Sensitive (Hidden on mobile) */}
+            <div className="hidden lg:block w-80 border-l border-gray-200 p-6 bg-gray-50 overflow-y-auto">
               <RightSidebarContent currentView={currentView} course={selectedCourse} />
             </div>
           </div>
