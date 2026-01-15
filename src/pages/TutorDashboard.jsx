@@ -181,54 +181,9 @@ export default function TutorDashboard() {
               {currentView === 'whiteboard' && <WhiteboardView course={selectedCourse} />}
             </div>
 
-            {/* Right Sidebar */}
+            {/* Right Sidebar - Context Sensitive */}
             <div className="w-80 border-l border-gray-200 p-6 bg-gray-50 overflow-y-auto">
-              <h3 className="text-xl font-bold text-gray-900 mb-4">Modules</h3>
-              <div className="space-y-4">
-                <div>
-                  <h4 className="font-semibold text-gray-900 mb-2">Organize course content</h4>
-                  <p className="text-sm text-gray-600 leading-relaxed">
-                    Use modules to organize your content and create a linear flow for what students should do in the course. 
-                    Modules can be used to organize content by weeks, units, or a different organizational structure. 
-                    Add files, discussions, assignments, quizzes, and other learning materials. 
-                    Require prerequisites to be completed before moving to a module or next module item, or lock an entire 
-                    module until a specific date.
-                  </p>
-                </div>
-
-                <div className="space-y-2">
-                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-                    <HelpCircle className="w-4 h-4" />
-                    How do I add a module?
-                  </button>
-                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-                    <HelpCircle className="w-4 h-4" />
-                    How do I publish or unpublish a module as an instructor?
-                  </button>
-                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-                    <HelpCircle className="w-4 h-4" />
-                    How do I add assignment types, pages, and files as module items?
-                  </button>
-                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
-                    <HelpCircle className="w-4 h-4" />
-                    How do I move or reorder a module?
-                  </button>
-                </div>
-
-                <div className="pt-4">
-                  <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
-                    See more in Canvas Guides
-                  </a>
-                </div>
-
-                <div className="pt-6">
-                  <img 
-                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400" 
-                    alt="Panda mascot"
-                    className="w-32 mx-auto"
-                  />
-                </div>
-              </div>
+              <RightSidebarContent currentView={currentView} course={selectedCourse} />
             </div>
           </div>
         </div>
@@ -1267,6 +1222,173 @@ function WhiteboardView({ course }) {
         <p className="text-gray-500">Create collaborative whiteboards for visual learning</p>
       </div>
     </div>
+  );
+}
+
+function RightSidebarContent({ currentView, course }) {
+  const sidebarContent = {
+    home: {
+      title: 'Dashboard Home',
+      description: 'Your central hub for managing all courses, viewing stats, and tracking student progress. Access quick links to all your teaching tools.',
+      tips: [
+        'View total course and student statistics',
+        'Quick access to recent courses',
+        'Monitor overall teaching activity'
+      ]
+    },
+    courses: {
+      title: 'My Courses',
+      description: 'Create and manage all your courses. Set course details, categories, and descriptions. Control course visibility and enrollment.',
+      tips: [
+        'Click "Create Course" to add a new course',
+        'Use "Manage Content" to add lessons and materials',
+        'Edit course details anytime',
+        'Delete courses you no longer need'
+      ]
+    },
+    modules: {
+      title: 'Modules',
+      description: 'Organize your content and create a linear flow for what students should do in the course. Modules can be organized by weeks, units, or topics.',
+      tips: [
+        'Click "Add Lesson" to create new content',
+        'Upload slides (PPT, PDF) directly',
+        'Add videos and Google Slides presentations',
+        'Lessons appear to students immediately',
+        'Use sections/topics to organize content'
+      ]
+    },
+    announcements: {
+      title: 'Announcements',
+      description: 'Communicate important updates and information to all students in your course. Announcements appear on student dashboards.',
+      tips: [
+        'Create announcements for course updates',
+        'Notify students of important deadlines',
+        'Share news and reminders'
+      ]
+    },
+    assignments: {
+      title: 'Assignments',
+      description: 'Create assignments for students to submit work. Set due dates, point values, and grading rubrics.',
+      tips: [
+        'Click "Add Assignment" to create new tasks',
+        'Set due dates and point values',
+        'Grade submissions from students',
+        'Track assignment completion rates'
+      ]
+    },
+    discussions: {
+      title: 'Discussions',
+      description: 'Foster student engagement through course discussions. Students can ask questions, share insights, and collaborate.',
+      tips: [
+        'Start discussion topics for students',
+        'Pin important discussions',
+        'Monitor student participation',
+        'Reply to student questions'
+      ]
+    },
+    grades: {
+      title: 'Grades',
+      description: 'View and manage all student grades in one place. Track assignment scores, quiz results, and overall performance.',
+      tips: [
+        'View complete gradebook',
+        'Export grades for reporting',
+        'Track individual student progress'
+      ]
+    },
+    people: {
+      title: 'People',
+      description: 'Manage all students enrolled in your course. View their progress, send messages, and track engagement.',
+      tips: [
+        'See all enrolled students',
+        'View individual progress percentages',
+        'Access student profiles',
+        'Monitor enrollment numbers'
+      ]
+    },
+    quizzes: {
+      title: 'Quizzes',
+      description: 'Create and manage quizzes to assess student learning. Set time limits, point values, and question types.',
+      tips: [
+        'Use "Create Quiz" to add assessments',
+        'Published quizzes appear to students',
+        'Track quiz attempts and scores',
+        'Link quizzes to specific lessons'
+      ]
+    },
+    analytics: {
+      title: 'Course Analytics',
+      description: 'Track detailed course performance metrics. View engagement rates, completion statistics, and student activity.',
+      tips: [
+        'Monitor real-time enrollment data',
+        'Track completion and engagement rates',
+        'View average quiz performance',
+        'Identify areas for improvement'
+      ]
+    },
+    video: {
+      title: 'Live Sessions',
+      description: 'Schedule and manage live video sessions with students. Use Google Meet or built-in video calls.',
+      tips: [
+        'Schedule sessions for specific dates/times',
+        'Invite students to join',
+        'Start sessions when ready',
+        'View past session recordings'
+      ]
+    },
+    syllabus: {
+      title: 'Course Syllabus',
+      description: 'Display course information, policies, and structure. Help students understand course requirements and expectations.',
+      tips: [
+        'Shows course overview information',
+        'Displays category and level',
+        'Shows total lessons and duration'
+      ]
+    },
+    outcomes: {
+      title: 'Learning Outcomes',
+      description: 'Define and track learning objectives for your course. Align with curriculum standards like CCEA.',
+      tips: [
+        'Add objectives to individual lessons',
+        'View all outcomes in one place',
+        'Ensure CCEA alignment'
+      ]
+    }
+  };
+
+  const content = sidebarContent[currentView] || sidebarContent.modules;
+
+  return (
+    <>
+      <h3 className="text-xl font-bold text-gray-900 mb-4">{content.title}</h3>
+      <div className="space-y-4">
+        <div>
+          <h4 className="font-semibold text-gray-900 mb-2">About this section</h4>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            {content.description}
+          </p>
+        </div>
+
+        {content.tips && (
+          <div className="space-y-2">
+            <h4 className="font-semibold text-gray-900 text-sm mb-2">Quick Tips</h4>
+            {content.tips.map((tip, idx) => (
+              <div key={idx} className="flex items-start gap-2 text-sm text-gray-600">
+                <ChevronRight className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
+                <span>{tip}</span>
+              </div>
+            ))}
+          </div>
+        )}
+
+        <div className="pt-6">
+          <img 
+            src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400" 
+            alt="Teaching"
+            className="w-32 mx-auto rounded-lg opacity-70"
+          />
+        </div>
+      </div>
+    </>
   );
 }
 
