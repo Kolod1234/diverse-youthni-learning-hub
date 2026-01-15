@@ -6,7 +6,7 @@ import { createPageUrl } from '@/utils';
 import { 
   Home, Bell, ClipboardList, MessageSquare, Award, Users, FileText, 
   BookOpen, Target, BarChart, FileCheck, HelpCircle, Calendar,
-  Video, Menu, Plus, Search, ChevronRight
+  Video, Menu, Plus, Search, ChevronRight, Edit, Trash2, X
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
@@ -238,90 +238,323 @@ export default function TutorDashboard() {
 }
 
 function ModulesView({ courses }) {
+  const queryClient = useQueryClient();
+  const [selectedCourseId, setSelectedCourseId] = React.useState(courses[0]?.id);
+  const [showCreateLesson, setShowCreateLesson] = React.useState(false);
+  const [lessonForm, setLessonForm] = React.useState({});
+  const [editingLesson, setEditingLesson] = React.useState(null);
+  const [uploading, setUploading] = React.useState(false);
+
   const { data: allLessons = [] } = useQuery({
-    queryKey: ['all-tutor-lessons'],
-    queryFn: async () => {
-      const lessons = [];
-      for (const course of courses) {
-        const courseLessons = await base44.entities.Lesson.filter({ course_id: course.id }, 'order', 200);
-        lessons.push(...courseLessons.map(l => ({ ...l, course_title: course.title, course_category: course.category })));
-      }
-      return lessons;
-    },
-    enabled: courses.length > 0,
+    queryKey: ['course-lessons', selectedCourseId],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: selectedCourseId }, 'order', 200),
+    enabled: !!selectedCourseId,
   });
 
-  // Group by course, then by section
-  const courseGroups = {};
+  const selectedCourse = courses.find(c => c.id === selectedCourseId);
+
+  const createLessonMutation = useMutation({
+    mutationFn: (data) => base44.entities.Lesson.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['course-lessons']);
+      queryClient.invalidateQueries(['tutor-courses']);
+      setShowCreateLesson(false);
+      setLessonForm({});
+      toast.success('Lesson created!');
+    },
+  });
+
+  const updateLessonMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['course-lessons']);
+      setEditingLesson(null);
+      toast.success('Lesson updated!');
+    },
+  });
+
+  const deleteLessonMutation = useMutation({
+    mutationFn: (id) => base44.entities.Lesson.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['course-lessons']);
+      queryClient.invalidateQueries(['tutor-courses']);
+      toast.success('Lesson deleted!');
+    },
+  });
+
+  const handleCreateLesson = () => {
+    createLessonMutation.mutate({
+      ...lessonForm,
+      course_id: selectedCourseId,
+      order: allLessons.length + 1,
+      duration_minutes: parseInt(lessonForm.duration_minutes) || 10,
+    });
+  };
+
+  const handleVideoUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (!file.type.startsWith('video/')) {
+      toast.error('Please upload a video file');
+      return;
+    }
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setLessonForm({ ...lessonForm, video_url: file_url });
+      toast.success('Video uploaded!');
+    } catch (error) {
+      toast.error('Failed to upload video');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  const handleDocumentUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setLessonForm({ 
+        ...lessonForm, 
+        file_url,
+        file_type: file.name.split('.').pop(),
+        content_type: 'document'
+      });
+      toast.success('Document uploaded!');
+    } catch (error) {
+      toast.error('Failed to upload document');
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  // Group lessons by section
+  const sections = {};
   allLessons.forEach(lesson => {
-    const courseKey = lesson.course_title || 'Unknown Course';
-    if (!courseGroups[courseKey]) {
-      courseGroups[courseKey] = { category: lesson.course_category, sections: {} };
-    }
     const section = lesson.section || 'General';
-    if (!courseGroups[courseKey].sections[section]) {
-      courseGroups[courseKey].sections[section] = [];
-    }
-    courseGroups[courseKey].sections[section].push(lesson);
+    if (!sections[section]) sections[section] = [];
+    sections[section].push(lesson);
   });
 
   return (
     <div className="max-w-5xl">
-      <div className="mb-6">
-        <Link to={createPageUrl('TutorCourseManager')}>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Manage Courses & Modules
-          </Button>
-        </Link>
+      {/* Course Selector */}
+      <div className="mb-6 flex items-center justify-between">
+        <select
+          value={selectedCourseId}
+          onChange={(e) => setSelectedCourseId(e.target.value)}
+          className="px-4 py-2 border rounded-lg font-medium"
+        >
+          {courses.map(c => (
+            <option key={c.id} value={c.id}>{c.title}</option>
+          ))}
+        </select>
+        <Button onClick={() => setShowCreateLesson(true)} className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Lesson
+        </Button>
       </div>
 
-      {Object.keys(courseGroups).length === 0 ? (
+      {/* Create Lesson Form */}
+      {showCreateLesson && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <div className="flex items-center justify-between mb-4">
+            <h3 className="text-lg font-semibold">Create New Lesson</h3>
+            <Button variant="ghost" size="icon" onClick={() => setShowCreateLesson(false)}>
+              <X className="w-4 h-4" />
+            </Button>
+          </div>
+
+          <div className="space-y-4">
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Title *</label>
+                <input
+                  type="text"
+                  value={lessonForm.title || ''}
+                  onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                  placeholder="Lesson title"
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Section/Topic *</label>
+                <input
+                  type="text"
+                  value={lessonForm.section || ''}
+                  onChange={(e) => setLessonForm({ ...lessonForm, section: e.target.value })}
+                  placeholder="e.g., Introduction, Module 1"
+                  className="w-full px-3 py-2 border rounded-lg"
+                />
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea
+                value={lessonForm.description || ''}
+                onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                placeholder="What will students learn?"
+                rows={3}
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Video URL or Upload</label>
+                <input
+                  type="text"
+                  value={lessonForm.video_url || ''}
+                  onChange={(e) => setLessonForm({ ...lessonForm, video_url: e.target.value })}
+                  placeholder="https://youtube.com/embed/..."
+                  className="w-full px-3 py-2 border rounded-lg mb-2"
+                />
+                <input
+                  type="file"
+                  accept="video/*"
+                  onChange={handleVideoUpload}
+                  disabled={uploading}
+                  id="video-upload-inline"
+                  className="hidden"
+                />
+                <label htmlFor="video-upload-inline">
+                  <Button type="button" variant="outline" size="sm" disabled={uploading} className="w-full" onClick={() => document.getElementById('video-upload-inline').click()}>
+                    {uploading ? 'Uploading...' : 'Upload Video'}
+                  </Button>
+                </label>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Upload Slides (PPT/PDF)</label>
+                <input
+                  type="file"
+                  accept=".pdf,.ppt,.pptx"
+                  onChange={handleDocumentUpload}
+                  disabled={uploading}
+                  id="doc-upload-inline"
+                  className="hidden"
+                />
+                <label htmlFor="doc-upload-inline">
+                  <Button type="button" variant="outline" disabled={uploading} className="w-full" onClick={() => document.getElementById('doc-upload-inline').click()}>
+                    {uploading ? 'Uploading...' : 'Upload Document'}
+                  </Button>
+                </label>
+                {lessonForm.file_url && (
+                  <p className="text-xs text-green-600 mt-1">✓ Document uploaded</p>
+                )}
+              </div>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium mb-1">Google Slides URL</label>
+              <input
+                type="text"
+                value={lessonForm.google_slides_url || ''}
+                onChange={(e) => setLessonForm({ ...lessonForm, google_slides_url: e.target.value, content_type: 'googleslides' })}
+                placeholder="https://docs.google.com/presentation/d/..."
+                className="w-full px-3 py-2 border rounded-lg"
+              />
+            </div>
+
+            <div className="flex items-center gap-2">
+              <input
+                type="checkbox"
+                id="preview-check"
+                checked={lessonForm.is_preview || false}
+                onChange={(e) => setLessonForm({ ...lessonForm, is_preview: e.target.checked })}
+                className="w-4 h-4 text-blue-600 rounded"
+              />
+              <label htmlFor="preview-check" className="text-sm">Allow free preview</label>
+            </div>
+
+            <div className="flex gap-3">
+              <Button onClick={handleCreateLesson} disabled={!lessonForm.title || createLessonMutation.isPending}>
+                {createLessonMutation.isPending ? 'Creating...' : 'Create Lesson'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowCreateLesson(false)}>Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Lessons by Section */}
+      {Object.keys(sections).length === 0 ? (
         <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No modules yet</h3>
-          <p className="text-gray-500 mb-6 max-w-md mx-auto">
-            Create courses and add lessons to see them organized here
-          </p>
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No lessons yet</h3>
+          <p className="text-gray-500 mb-6">Add your first lesson to {selectedCourse?.title}</p>
+          <Button onClick={() => setShowCreateLesson(true)}>
+            <Plus className="w-4 h-4 mr-2" />
+            Add First Lesson
+          </Button>
         </div>
       ) : (
-        <div className="space-y-6">
-          {Object.entries(courseGroups).map(([courseName, courseData]) => (
-            <div key={courseName} className="space-y-3">
-              <div className="flex items-center gap-3 mb-3">
-                <div className="w-10 h-10 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-sm">
-                  {courseData.category?.substring(0, 2).toUpperCase() || 'CO'}
-                </div>
-                <h2 className="text-2xl font-bold text-gray-900">{courseName}</h2>
+        <div className="space-y-4">
+          {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+            <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200 flex items-center justify-between">
+                <h3 className="font-semibold text-gray-900">{sectionName}</h3>
+                <span className="text-sm text-gray-500">{sectionLessons.length} lessons</span>
               </div>
-              
-              {Object.entries(courseData.sections).map(([sectionName, sectionLessons]) => (
-                <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                    <h3 className="font-semibold text-gray-900">{sectionName}</h3>
-                  </div>
-                  <div className="divide-y divide-gray-200">
-                    {sectionLessons.map(lesson => (
-                      <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between group">
+              <div className="divide-y divide-gray-200">
+                {sectionLessons.map(lesson => (
+                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 group">
+                    {editingLesson?.id === lesson.id ? (
+                      <div className="space-y-4">
+                        <input
+                          type="text"
+                          value={lessonForm.title || ''}
+                          onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                          className="w-full px-3 py-2 border rounded-lg"
+                        />
+                        <textarea
+                          value={lessonForm.description || ''}
+                          onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                          className="w-full px-3 py-2 border rounded-lg"
+                          rows={2}
+                        />
+                        <div className="flex gap-2">
+                          <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
+                            Save
+                          </Button>
+                          <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="flex items-center justify-between">
                         <div className="flex items-center gap-3">
                           <BookOpen className="w-5 h-5 text-gray-400" />
                           <div>
                             <div className="font-medium text-gray-900">{lesson.title}</div>
-                            {lesson.description && (
-                              <div className="text-sm text-gray-500 line-clamp-1">{lesson.description}</div>
-                            )}
+                            <div className="text-sm text-gray-500">{lesson.duration_minutes || 10} min • {lesson.section}</div>
                           </div>
                         </div>
-                        <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
-                          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
-                            Edit
+                        <div className="flex gap-2 opacity-0 group-hover:opacity-100">
+                          <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                            <Button variant="outline" size="sm">Full Editor</Button>
+                          </Link>
+                          <Button variant="outline" size="sm" onClick={() => {
+                            setEditingLesson(lesson);
+                            setLessonForm(lesson);
+                          }}>
+                            <Edit className="w-4 h-4" />
                           </Button>
-                        </Link>
+                          <Button variant="outline" size="sm" onClick={() => {
+                            if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
+                          }}>
+                            <Trash2 className="w-4 h-4 text-red-600" />
+                          </Button>
+                        </div>
                       </div>
-                    ))}
+                    )}
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           ))}
         </div>
