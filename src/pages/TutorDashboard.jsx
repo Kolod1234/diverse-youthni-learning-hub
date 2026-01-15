@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
@@ -9,6 +9,7 @@ import {
   Video, Menu, Plus, Search, ChevronRight
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { toast } from 'sonner';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -51,6 +52,8 @@ export default function TutorDashboard() {
 
   const navItems = [
     { icon: Home, label: 'Home', view: 'home' },
+    { icon: BookOpen, label: 'My Courses', view: 'courses' },
+    { icon: BookOpen, label: 'Modules', view: 'modules' },
     { icon: Bell, label: 'Announcements', view: 'announcements' },
     { icon: ClipboardList, label: 'Assignments', view: 'assignments' },
     { icon: MessageSquare, label: 'Discussions', view: 'discussions' },
@@ -62,7 +65,6 @@ export default function TutorDashboard() {
     { icon: Target, label: 'Outcomes', view: 'outcomes' },
     { icon: FileCheck, label: 'Rubrics', view: 'rubrics' },
     { icon: HelpCircle, label: 'Quizzes', view: 'quizzes' },
-    { icon: BookOpen, label: 'Modules', view: 'modules', active: true },
     { icon: Video, label: 'BigBlueButton', view: 'video' },
     { icon: Users, label: 'Collaborations', view: 'collaborations' },
     { icon: Calendar, label: 'Attendance', view: 'attendance' },
@@ -158,8 +160,9 @@ export default function TutorDashboard() {
           <div className="flex h-full">
             {/* Main Section */}
             <div className="flex-1 p-8 overflow-y-auto">
+              {currentView === 'courses' && <CoursesView courses={courses} user={user} />}
               {currentView === 'modules' && <ModulesView courses={courses} />}
-              {currentView === 'home' && <HomeView course={selectedCourse} />}
+              {currentView === 'home' && <HomeView courses={courses} />}
               {currentView === 'assignments' && <AssignmentsView course={selectedCourse} />}
               {currentView === 'people' && <PeopleView course={selectedCourse} />}
               {currentView === 'grades' && <GradesView course={selectedCourse} />}
@@ -327,22 +330,244 @@ function ModulesView({ courses }) {
   );
 }
 
-function HomeView({ course }) {
+function CoursesView({ courses, user }) {
+  const [showCreateCourse, setShowCreateCourse] = React.useState(false);
+  const [courseForm, setCourseForm] = React.useState({});
+  const [editingCourse, setEditingCourse] = React.useState(null);
+  const queryClient = useQueryClient();
+
+  const createCourseMutation = useMutation({
+    mutationFn: (data) => base44.entities.Course.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      setShowCreateCourse(false);
+      setCourseForm({});
+      toast.success('Course created!');
+    },
+  });
+
+  const updateCourseMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Course.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      setEditingCourse(null);
+      toast.success('Course updated!');
+    },
+  });
+
+  const deleteCourseMutation = useMutation({
+    mutationFn: (id) => base44.entities.Course.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-courses']);
+      toast.success('Course deleted!');
+    },
+  });
+
+  const handleCreateCourse = () => {
+    createCourseMutation.mutate({
+      ...courseForm,
+      instructor: user?.full_name || 'Instructor',
+      instructor_avatar: user?.avatar,
+      rating: 4.5,
+      enrolled_count: 0,
+      price: parseFloat(courseForm.price) || 0,
+      duration_hours: parseFloat(courseForm.duration_hours) || 0,
+      total_lessons: 0,
+    });
+  };
+
   return (
-    <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Home</h1>
+    <div className="max-w-5xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">My Courses</h1>
+        <Button onClick={() => setShowCreateCourse(true)} className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Course
+        </Button>
+      </div>
+
+      {showCreateCourse && (
+        <div className="bg-white border border-gray-200 rounded-lg p-6 mb-6">
+          <h3 className="text-lg font-semibold mb-4">Create New Course</h3>
+          <div className="space-y-4">
+            <div>
+              <label className="block text-sm font-medium mb-1">Title</label>
+              <input
+                type="text"
+                value={courseForm.title || ''}
+                onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                placeholder="Course title"
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium mb-1">Description</label>
+              <textarea
+                value={courseForm.description || ''}
+                onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                className="w-full px-3 py-2 border rounded-lg"
+                rows={3}
+                placeholder="Course description"
+              />
+            </div>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium mb-1">Category</label>
+                <select
+                  value={courseForm.category || ''}
+                  onChange={(e) => setCourseForm({ ...courseForm, category: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="">Select</option>
+                  <option value="mathematics">Mathematics</option>
+                  <option value="english">English</option>
+                  <option value="biology">Biology</option>
+                  <option value="chemistry">Chemistry</option>
+                  <option value="physics">Physics</option>
+                  <option value="history">History</option>
+                  <option value="geography">Geography</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium mb-1">Level</label>
+                <select
+                  value={courseForm.level || 'beginner'}
+                  onChange={(e) => setCourseForm({ ...courseForm, level: e.target.value })}
+                  className="w-full px-3 py-2 border rounded-lg"
+                >
+                  <option value="beginner">Beginner</option>
+                  <option value="intermediate">Intermediate</option>
+                  <option value="advanced">Advanced</option>
+                </select>
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button onClick={handleCreateCourse} disabled={createCourseMutation.isPending}>
+                {createCourseMutation.isPending ? 'Creating...' : 'Create'}
+              </Button>
+              <Button variant="outline" onClick={() => setShowCreateCourse(false)}>Cancel</Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="space-y-3">
+        {courses.map((course) => (
+          <div key={course.id} className="bg-white border border-gray-200 rounded-lg p-4">
+            {editingCourse?.id === course.id ? (
+              <div>
+                <div className="space-y-4">
+                  <input
+                    type="text"
+                    value={courseForm.title || ''}
+                    onChange={(e) => setCourseForm({ ...courseForm, title: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  />
+                  <textarea
+                    value={courseForm.description || ''}
+                    onChange={(e) => setCourseForm({ ...courseForm, description: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                    rows={2}
+                  />
+                </div>
+                <div className="flex gap-3 mt-4">
+                  <Button onClick={() => {
+                    updateCourseMutation.mutate({ id: course.id, data: courseForm });
+                  }} size="sm">Save</Button>
+                  <Button variant="outline" size="sm" onClick={() => setEditingCourse(null)}>Cancel</Button>
+                </div>
+              </div>
+            ) : (
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <img src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=200'} 
+                    alt={course.title} className="w-20 h-14 object-cover rounded-lg" />
+                  <div>
+                    <h3 className="font-semibold text-gray-900">{course.title}</h3>
+                    <div className="flex items-center gap-2 text-sm text-gray-500">
+                      <span className="px-2 py-0.5 bg-gray-100 rounded">{course.category}</span>
+                      <span>•</span>
+                      <span>{course.total_lessons || 0} lessons</span>
+                      <span>•</span>
+                      <span>{course.enrolled_count || 0} students</span>
+                    </div>
+                  </div>
+                </div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
+                    <Button variant="outline" size="sm">
+                      Manage Content
+                    </Button>
+                  </Link>
+                  <Link to={createPageUrl('LessonEditor') + `?courseId=${course.id}`}>
+                    <Button variant="outline" size="sm">
+                      Add Lesson
+                    </Button>
+                  </Link>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    setEditingCourse(course);
+                    setCourseForm(course);
+                  }}>
+                    Edit
+                  </Button>
+                  <Button variant="outline" size="sm" onClick={() => {
+                    if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id);
+                  }}>
+                    Delete
+                  </Button>
+                </div>
+              </div>
+            )}
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function HomeView({ courses }) {
+  const { data: allEnrollments = [] } = useQuery({
+    queryKey: ['tutor-enrollments'],
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
+  });
+
+  const totalStudents = new Set(
+    allEnrollments.filter(e => courses.some(c => c.id === e.course_id)).map(e => e.created_by)
+  ).size;
+
+  return (
+    <div className="max-w-5xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard Home</h1>
+      <div className="grid grid-cols-3 gap-6 mb-8">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="text-3xl font-bold text-blue-600">{courses.length}</div>
+          <div className="text-sm text-gray-600 mt-1">Total Courses</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="text-3xl font-bold text-green-600">{totalStudents}</div>
+          <div className="text-sm text-gray-600 mt-1">Total Students</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <div className="text-3xl font-bold text-purple-600">
+            {courses.reduce((sum, c) => sum + (c.total_lessons || 0), 0)}
+          </div>
+          <div className="text-sm text-gray-600 mt-1">Total Lessons</div>
+        </div>
+      </div>
       <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">{course?.title}</h2>
-        <p className="text-gray-600">{course?.description}</p>
-        <div className="mt-6 grid grid-cols-2 gap-4">
-          <div className="p-4 bg-blue-50 rounded-lg">
-            <div className="text-2xl font-bold text-blue-600">{course?.total_lessons || 0}</div>
-            <div className="text-sm text-gray-600">Total Lessons</div>
-          </div>
-          <div className="p-4 bg-green-50 rounded-lg">
-            <div className="text-2xl font-bold text-green-600">{course?.enrolled_count || 0}</div>
-            <div className="text-sm text-gray-600">Enrolled Students</div>
-          </div>
+        <h2 className="text-xl font-semibold mb-4">Recent Courses</h2>
+        <div className="space-y-3">
+          {courses.slice(0, 5).map(course => (
+            <div key={course.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+              <div>
+                <div className="font-medium text-gray-900">{course.title}</div>
+                <div className="text-sm text-gray-500">{course.category}</div>
+              </div>
+              <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
+                <Button variant="outline" size="sm">Manage</Button>
+              </Link>
+            </div>
+          ))}
         </div>
       </div>
     </div>
