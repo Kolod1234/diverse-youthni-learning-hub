@@ -1,407 +1,440 @@
 import React, { useState, useEffect } from 'react';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, BookOpen, Users, MessageSquare, ClipboardList, 
-  Edit, Trash2, Save, X, TrendingUp, Ban, BarChart, Award, Video, Calendar, Clock, PlayCircle
-} from 'lucide-react';
-import { motion } from 'framer-motion';
-import { toast } from 'sonner';
-import { Link } from 'react-router-dom';
+import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import AICourseAssistant from '@/components/tutor/AICourseAssistant';
-import AwardPointsDialog from '@/components/tutor/AwardPointsDialog';
-import MessageStudentsDialog from '@/components/tutor/MessageStudentsDialog';
-import TutorOnboardingFlow from '@/components/onboarding/TutorOnboardingFlow';
+import { 
+  Home, Bell, ClipboardList, MessageSquare, Award, Users, FileText, 
+  BookOpen, Target, BarChart, FileCheck, HelpCircle, Calendar,
+  Video, Menu, Plus, Search, ChevronRight
+} from 'lucide-react';
+import { Button } from '@/components/ui/button';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
-  const [selectedCourse, setSelectedCourse] = useState(null);
-  const [showCreateCourse, setShowCreateCourse] = useState(false);
-  const [courseForm, setCourseForm] = useState({});
-  const [isUnlocked, setIsUnlocked] = useState(() => localStorage.getItem('tutorsUnlocked') === 'true');
-  const [accessCode, setAccessCode] = useState('');
-  const [error, setError] = useState('');
-  const [showAwardPoints, setShowAwardPoints] = useState(false);
-  const [selectedCourseForPoints, setSelectedCourseForPoints] = useState(null);
-  const [showMessageDialog, setShowMessageDialog] = useState(false);
-  const [selectedCourseForMessage, setSelectedCourseForMessage] = useState(null);
-  const [showOnboarding, setShowOnboarding] = useState(false);
-  const [editingName, setEditingName] = useState(false);
-  const [newName, setNewName] = useState('');
-  const queryClient = useQueryClient();
-
-  const { data: videoSessions = [] } = useQuery({
-    queryKey: ['video-sessions', user?.email],
-    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 50),
-    enabled: !!user?.email,
-  });
-
-  const { data: onboardingStatus } = useQuery({
-    queryKey: ['tutor-onboarding', user?.email],
-    queryFn: async () => {
-      const status = await base44.entities.TutorOnboarding.filter({ tutor_email: user?.email });
-      return status[0];
-    },
-    enabled: !!user?.email,
-  });
-
-  useEffect(() => {
-    if (user?.email && onboardingStatus === undefined) return;
-    if (!onboardingStatus && user?.is_tutor) {
-      setShowOnboarding(true);
-    }
-  }, [onboardingStatus, user]);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [selectedCourseId, setSelectedCourseId] = useState(searchParams.get('courseId'));
+  const currentView = searchParams.get('view') || 'modules';
+  const [sidebarOpen, setSidebarOpen] = useState(true);
 
   useEffect(() => {
     const loadUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-        
-        if (!userData.is_tutor && userData.role !== 'admin') {
-          window.location.href = createPageUrl('Home');
-        }
-      } catch (error) {
-        console.error('Failed to load user:', error);
+      const userData = await base44.auth.me();
+      setUser(userData);
+      if (!userData.is_tutor && userData.role !== 'admin') {
+        window.location.href = createPageUrl('Home');
       }
     };
     loadUser();
   }, []);
 
-  const { data: courses = [], isLoading: loadingCourses } = useQuery({
+  const { data: courses = [] } = useQuery({
     queryKey: ['tutor-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email, is_deleted: { $ne: true } }, '-created_date', 100),
+    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
     enabled: !!user?.email,
-    staleTime: 5 * 60 * 1000, // Cache for 5 minutes
   });
 
-  const { data: allEnrollments = [] } = useQuery({
-    queryKey: ['tutor-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
-    staleTime: 3 * 60 * 1000, // Cache for 3 minutes
-  });
+  const selectedCourse = courses.find(c => c.id === selectedCourseId) || courses[0];
 
-  const { data: assignments = [] } = useQuery({
-    queryKey: ['tutor-assignments'],
-    queryFn: () => base44.entities.Assignment.list('-created_date', 200),
-  });
-
-  const { data: submissions = [] } = useQuery({
-    queryKey: ['tutor-submissions'],
-    queryFn: () => base44.entities.Submission.list('-created_date', 500),
-  });
-
-  const createCourseMutation = useMutation({
-    mutationFn: (data) => base44.entities.Course.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tutor-courses']);
-      setShowCreateCourse(false);
-      setCourseForm({});
-      toast.success('Course created!');
-    },
-  });
-
-  const updateCourseMutation = useMutation({
-    mutationFn: ({ id, data }) => base44.entities.Course.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tutor-courses']);
-      toast.success('Course updated!');
-    },
-  });
-
-  const deleteCourseMutation = useMutation({
-    mutationFn: (id) => base44.entities.Course.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['tutor-courses']);
-      toast.success('Course deleted!');
-    },
-  });
-
-  const handleCreateCourse = () => {
-    createCourseMutation.mutate({
-      ...courseForm,
-      instructor: user?.full_name || 'Instructor',
-      instructor_avatar: user?.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(user?.full_name || 'Instructor')}&background=6366f1&color=fff`,
-      rating: 4.5,
-      enrolled_count: 0,
-      price: parseFloat(courseForm.price) || 0,
-      duration_hours: parseFloat(courseForm.duration_hours) || 0,
-      total_lessons: 0,
-    });
-  };
-
-  const courseEnrollments = selectedCourse 
-    ? allEnrollments.filter(e => e.course_id === selectedCourse.id)
-    : [];
-
-  const totalStudents = new Set(
-    allEnrollments.filter(e => courses.some(c => c.id === e.course_id)).map(e => e.created_by)
-  ).size;
-
-  const handleUnlock = (e) => {
-    e.preventDefault();
-    if (accessCode === 'DYNI26') {
-      setIsUnlocked(true);
-      localStorage.setItem('tutorsUnlocked', 'true');
-      setError('');
-    } else {
-      setError('Invalid access code');
+  useEffect(() => {
+    if (selectedCourse && !selectedCourseId) {
+      setSelectedCourseId(selectedCourse.id);
+      setSearchParams({ courseId: selectedCourse.id, view: currentView });
     }
-  };
+  }, [selectedCourse, selectedCourseId]);
 
-  if (!isUnlocked) {
-    return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="w-full max-w-md"
-        >
-          <div className="bg-white rounded-2xl shadow-xl p-8 border border-gray-100">
-            <div className="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mx-auto mb-6">
-              <BookOpen className="w-8 h-8 text-indigo-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 text-center mb-2">Tutor Dashboard Access</h2>
-            <p className="text-gray-500 text-center mb-6">Enter the access code to continue</p>
-            
-            <form onSubmit={handleUnlock} className="space-y-4">
-              <div>
-                <input
-                  type="text"
-                  value={accessCode}
-                  onChange={(e) => {
-                    setAccessCode(e.target.value);
-                    setError('');
-                  }}
-                  placeholder="Enter access code"
-                  className="w-full px-4 py-3 rounded-lg border border-gray-300 focus:ring-2 focus:ring-indigo-500 focus:border-transparent text-center text-lg"
-                  autoFocus
-                />
-                {error && (
-                  <p className="text-red-600 text-sm mt-2 text-center">{error}</p>
-                )}
-              </div>
-              <Button type="submit" className="w-full bg-indigo-600 hover:bg-indigo-700 h-12">
-                Unlock
-              </Button>
-            </form>
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['course-lessons', selectedCourse?.id],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: selectedCourse?.id }, 'order', 200),
+    enabled: !!selectedCourse?.id,
+  });
 
-  if (!user || (!user.is_tutor && user.role !== 'admin')) {
-    return null;
-  }
+  const navItems = [
+    { icon: Home, label: 'Home', view: 'home' },
+    { icon: Bell, label: 'Announcements', view: 'announcements' },
+    { icon: ClipboardList, label: 'Assignments', view: 'assignments' },
+    { icon: MessageSquare, label: 'Discussions', view: 'discussions' },
+    { icon: Award, label: 'Grades', view: 'grades' },
+    { icon: Users, label: 'People', view: 'people' },
+    { icon: FileText, label: 'Pages', view: 'pages' },
+    { icon: FileText, label: 'Files', view: 'files' },
+    { icon: BookOpen, label: 'Syllabus', view: 'syllabus' },
+    { icon: Target, label: 'Outcomes', view: 'outcomes' },
+    { icon: FileCheck, label: 'Rubrics', view: 'rubrics' },
+    { icon: HelpCircle, label: 'Quizzes', view: 'quizzes' },
+    { icon: BookOpen, label: 'Modules', view: 'modules', active: true },
+    { icon: Video, label: 'BigBlueButton', view: 'video' },
+    { icon: Users, label: 'Collaborations', view: 'collaborations' },
+    { icon: Calendar, label: 'Attendance', view: 'attendance' },
+    { icon: BarChart, label: 'Course Analytics', view: 'analytics' },
+    { icon: FileText, label: 'Lucid (Whiteboard)', view: 'whiteboard' },
+  ];
+
+  if (!user) return null;
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-3 mb-2">
-            {editingName ? (
-              <div className="flex items-center gap-2">
-                <Input
-                  value={newName}
-                  onChange={(e) => setNewName(e.target.value)}
-                  placeholder="Your name"
-                  className="text-3xl font-bold h-12"
-                  autoFocus
-                />
-                <Button
-                  onClick={async () => {
-                    if (newName.trim()) {
-                      await base44.auth.updateMe({ full_name: newName.trim() });
-                      setUser({ ...user, full_name: newName.trim() });
-                      setEditingName(false);
-                      toast.success('Name updated!');
-                    }
-                  }}
-                  size="sm"
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Save className="w-4 h-4" />
-                </Button>
-                <Button
-                  onClick={() => {
-                    setEditingName(false);
-                    setNewName('');
-                  }}
-                  size="sm"
-                  variant="outline"
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
-            ) : (
-              <>
-                <h1 className="text-3xl font-bold text-gray-900">Tutor Dashboard</h1>
-                <Button
-                  onClick={() => {
-                    setNewName(user?.full_name || '');
-                    setEditingName(true);
-                  }}
-                  size="sm"
-                  variant="ghost"
-                  className="h-8 w-8 p-0"
-                >
-                  <Edit className="w-4 h-4" />
-                </Button>
-              </>
-            )}
+    <div className="flex h-screen bg-white overflow-hidden">
+      {/* Left Sidebar */}
+      <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden`}>
+        {/* Course Selector */}
+        <div className="p-4 border-b border-gray-200">
+          <div className="flex items-center gap-2 mb-3">
+            <div className="w-10 h-10 bg-indigo-600 rounded flex items-center justify-center text-white font-bold">
+              {selectedCourse?.category?.substring(0, 2).toUpperCase() || 'CO'}
+            </div>
+            <div className="flex-1 min-w-0">
+              <select
+                value={selectedCourse?.id || ''}
+                onChange={(e) => {
+                  setSelectedCourseId(e.target.value);
+                  setSearchParams({ courseId: e.target.value, view: currentView });
+                }}
+                className="w-full text-sm font-medium text-gray-900 bg-transparent border-none focus:outline-none cursor-pointer"
+              >
+                {courses.map(c => (
+                  <option key={c.id} value={c.id}>{c.title}</option>
+                ))}
+              </select>
+              <div className="text-xs text-gray-500">› Modules</div>
+            </div>
           </div>
-          <p className="text-gray-500">Manage your courses and students</p>
         </div>
 
-        {/* Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
-          {[
-            { label: 'My Courses', value: courses.length, icon: BookOpen, color: 'bg-blue-50', iconColor: 'text-blue-600' },
-            { label: 'Total Students', value: totalStudents, icon: Users, color: 'bg-purple-50', iconColor: 'text-purple-600' },
-            { label: 'Assignments', value: assignments.length, icon: ClipboardList, color: 'bg-emerald-50', iconColor: 'text-emerald-600' },
-            { label: 'Pending Grades', value: submissions.filter(s => !s.is_graded).length, icon: TrendingUp, color: 'bg-orange-50', iconColor: 'text-orange-600' },
-          ].map((stat, idx) => {
-            const Icon = stat.icon;
+        {/* Navigation */}
+        <nav className="flex-1 overflow-y-auto py-2">
+          {navItems.map((item) => {
+            const Icon = item.icon;
+            const isActive = currentView === item.view;
             return (
-              <motion.div
-                key={stat.label}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: idx * 0.1 }}
+              <button
+                key={item.view}
+                onClick={() => setSearchParams({ courseId: selectedCourseId, view: item.view })}
+                className={`w-full flex items-center gap-3 px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors ${
+                  isActive ? 'bg-blue-50 border-l-4 border-blue-600 text-blue-700 font-medium' : 'text-gray-700'
+                }`}
               >
-                <Card className="p-5">
-                  <div className={`w-12 h-12 rounded-xl ${stat.color} flex items-center justify-center mb-3`}>
-                    <Icon className={`w-6 h-6 ${stat.iconColor}`} />
-                  </div>
-                  <p className="text-2xl font-bold text-gray-900">{stat.value}</p>
-                  <p className="text-sm text-gray-500">{stat.label}</p>
-                </Card>
-              </motion.div>
+                <Icon className="w-4 h-4 flex-shrink-0" />
+                <span className="truncate">{item.label}</span>
+              </button>
             );
           })}
+        </nav>
+      </div>
+
+      {/* Main Content */}
+      <div className="flex-1 flex flex-col overflow-hidden">
+        {/* Top Bar */}
+        <div className="h-14 bg-gray-800 text-white flex items-center px-4 gap-4">
+          <button onClick={() => setSidebarOpen(!sidebarOpen)} className="hover:bg-gray-700 p-2 rounded">
+            <Menu className="w-5 h-5" />
+          </button>
+          <div className="flex-1 flex items-center gap-4">
+            <div className="relative flex-1 max-w-md">
+              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search..."
+                className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
+            </div>
+          </div>
+          <div className="flex items-center gap-3">
+            <Link to={createPageUrl('Home')}>
+              <button className="hover:bg-gray-700 p-2 rounded">
+                <Home className="w-5 h-5" />
+              </button>
+            </Link>
+            <button className="hover:bg-gray-700 p-2 rounded">
+              <Bell className="w-5 h-5" />
+            </button>
+            <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+              {user?.full_name?.charAt(0) || 'T'}
+            </div>
+          </div>
         </div>
 
-        <Tabs defaultValue="courses" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6 overflow-x-auto flex-nowrap">
-            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <BookOpen className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Courses</span>
-              <span className="sm:hidden">Courses</span>
-            </TabsTrigger>
-            <TabsTrigger value="sessions" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <Video className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Live Sessions</span>
-              <span className="sm:hidden">Live</span>
-            </TabsTrigger>
-            <TabsTrigger value="students" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <Users className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Students</span>
-              <span className="sm:hidden">Students</span>
-            </TabsTrigger>
-            <TabsTrigger value="assignments" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <ClipboardList className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Assignments</span>
-              <span className="sm:hidden">Tasks</span>
-            </TabsTrigger>
-            <TabsTrigger value="messages" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <MessageSquare className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Messages</span>
-              <span className="sm:hidden">Chat</span>
-            </TabsTrigger>
-            <TabsTrigger value="analytics" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white whitespace-nowrap">
-              <BarChart className="w-4 h-4 mr-2" />
-              <span className="hidden sm:inline">Analytics</span>
-              <span className="sm:hidden">Stats</span>
-            </TabsTrigger>
-          </TabsList>
+        {/* Content Area */}
+        <div className="flex-1 overflow-y-auto">
+          <div className="flex h-full">
+            {/* Main Section */}
+            <div className="flex-1 p-8 overflow-y-auto">
+              {currentView === 'modules' && <ModulesView course={selectedCourse} lessons={lessons} />}
+              {currentView === 'home' && <HomeView course={selectedCourse} />}
+              {currentView === 'assignments' && <AssignmentsView course={selectedCourse} />}
+              {currentView === 'people' && <PeopleView course={selectedCourse} />}
+              {currentView === 'grades' && <GradesView course={selectedCourse} />}
+              {currentView === 'analytics' && <AnalyticsView course={selectedCourse} />}
+              {!['modules', 'home', 'assignments', 'people', 'grades', 'analytics'].includes(currentView) && (
+                <ComingSoonView viewName={navItems.find(n => n.view === currentView)?.label || currentView} />
+              )}
+            </div>
 
-          <TabsContent value="courses">
-            <CoursesTab
-              courses={courses}
-              showCreateCourse={showCreateCourse}
-              setShowCreateCourse={setShowCreateCourse}
-              courseForm={courseForm}
-              setCourseForm={setCourseForm}
-              handleCreateCourse={handleCreateCourse}
-              updateCourseMutation={updateCourseMutation}
-              deleteCourseMutation={deleteCourseMutation}
-              createCourseMutation={createCourseMutation}
-              setSelectedCourse={setSelectedCourse}
-              setShowAwardPoints={setShowAwardPoints}
-              setSelectedCourseForPoints={setSelectedCourseForPoints}
-              setShowMessageDialog={setShowMessageDialog}
-              setSelectedCourseForMessage={setSelectedCourseForMessage}
-            />
-          </TabsContent>
+            {/* Right Sidebar */}
+            <div className="w-80 border-l border-gray-200 p-6 bg-gray-50 overflow-y-auto">
+              <h3 className="text-xl font-bold text-gray-900 mb-4">Modules</h3>
+              <div className="space-y-4">
+                <div>
+                  <h4 className="font-semibold text-gray-900 mb-2">Organize course content</h4>
+                  <p className="text-sm text-gray-600 leading-relaxed">
+                    Use modules to organize your content and create a linear flow for what students should do in the course. 
+                    Modules can be used to organize content by weeks, units, or a different organizational structure. 
+                    Add files, discussions, assignments, quizzes, and other learning materials. 
+                    Require prerequisites to be completed before moving to a module or next module item, or lock an entire 
+                    module until a specific date.
+                  </p>
+                </div>
 
-          <TabsContent value="sessions">
-            <LiveSessionsTab videoSessions={videoSessions} courses={courses} />
-          </TabsContent>
+                <div className="space-y-2">
+                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
+                    <HelpCircle className="w-4 h-4" />
+                    How do I add a module?
+                  </button>
+                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
+                    <HelpCircle className="w-4 h-4" />
+                    How do I publish or unpublish a module as an instructor?
+                  </button>
+                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
+                    <HelpCircle className="w-4 h-4" />
+                    How do I add assignment types, pages, and files as module items?
+                  </button>
+                  <button className="flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700">
+                    <HelpCircle className="w-4 h-4" />
+                    How do I move or reorder a module?
+                  </button>
+                </div>
 
-          <TabsContent value="students">
-            <StudentsTab 
-              courses={courses} 
-              enrollments={allEnrollments}
-              selectedCourse={selectedCourse}
-              setSelectedCourse={setSelectedCourse}
-            />
-          </TabsContent>
+                <div className="pt-4">
+                  <a href="#" className="text-sm text-blue-600 hover:text-blue-700">
+                    See more in Canvas Guides
+                  </a>
+                </div>
 
-          <TabsContent value="assignments">
-            <AssignmentsTab 
-              courses={courses}
-              assignments={assignments}
-              submissions={submissions}
-            />
-          </TabsContent>
-
-          <TabsContent value="messages">
-            <MessagesTab userEmail={user?.email} />
-          </TabsContent>
-
-          <TabsContent value="analytics">
-            <AnalyticsTab 
-              courses={courses}
-              enrollments={allEnrollments}
-            />
-          </TabsContent>
-        </Tabs>
-        
-        <AwardPointsDialog
-          open={showAwardPoints}
-          onOpenChange={setShowAwardPoints}
-          courseId={selectedCourseForPoints}
-        />
-
-        <MessageStudentsDialog
-          open={showMessageDialog}
-          onOpenChange={setShowMessageDialog}
-          courseId={selectedCourseForMessage}
-          courseName={courses.find(c => c.id === selectedCourseForMessage)?.title}
-        />
-
-        {showOnboarding && (
-          <TutorOnboardingFlow
-            user={user}
-            onComplete={() => setShowOnboarding(false)}
-            onSkip={() => setShowOnboarding(false)}
-          />
-        )}
+                <div className="pt-6">
+                  <img 
+                    src="https://images.unsplash.com/photo-1503676260728-1c00da094a0b?w=400" 
+                    alt="Panda mascot"
+                    className="w-32 mx-auto"
+                  />
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
 }
 
-function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse, setShowAwardPoints, setSelectedCourseForPoints, setShowMessageDialog, setSelectedCourseForMessage }) {
+function ModulesView({ course, lessons }) {
+  // Group lessons by section
+  const sections = {};
+  lessons.forEach(lesson => {
+    const section = lesson.section || 'General';
+    if (!sections[section]) {
+      sections[section] = [];
+    }
+    sections[section].push(lesson);
+  });
+
+  return (
+    <div className="max-w-5xl">
+      <div className="mb-6">
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Create a new Module
+        </Button>
+      </div>
+
+      {Object.keys(sections).length === 0 ? (
+        <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+          <h3 className="text-xl font-semibold text-gray-700 mb-2">No modules yet</h3>
+          <p className="text-gray-500 mb-6 max-w-md mx-auto">
+            Add your first module to organize course content and create a learning pathway for students
+          </p>
+          <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course?.id}`}>
+            <Button className="bg-blue-600 hover:bg-blue-700">
+              <Plus className="w-4 h-4 mr-2" />
+              Add Module
+            </Button>
+          </Link>
+        </div>
+      ) : (
+        <div className="space-y-4">
+          {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+            <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <h3 className="font-semibold text-gray-900">{sectionName}</h3>
+              </div>
+              <div className="divide-y divide-gray-200">
+                {sectionLessons.map(lesson => (
+                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between group">
+                    <div className="flex items-center gap-3">
+                      <BookOpen className="w-5 h-5 text-gray-400" />
+                      <div>
+                        <div className="font-medium text-gray-900">{lesson.title}</div>
+                        {lesson.description && (
+                          <div className="text-sm text-gray-500 line-clamp-1">{lesson.description}</div>
+                        )}
+                      </div>
+                    </div>
+                    <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
+                        Edit
+                      </Button>
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  );
+}
+
+function HomeView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Home</h1>
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-4">{course?.title}</h2>
+        <p className="text-gray-600">{course?.description}</p>
+        <div className="mt-6 grid grid-cols-2 gap-4">
+          <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="text-2xl font-bold text-blue-600">{course?.total_lessons || 0}</div>
+            <div className="text-sm text-gray-600">Total Lessons</div>
+          </div>
+          <div className="p-4 bg-green-50 rounded-lg">
+            <div className="text-2xl font-bold text-green-600">{course?.enrolled_count || 0}</div>
+            <div className="text-sm text-gray-600">Enrolled Students</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function AssignmentsView({ course }) {
+  const { data: assignments = [] } = useQuery({
+    queryKey: ['course-assignments', course?.id],
+    queryFn: () => base44.entities.Assignment.filter({ course_id: course?.id }, '-created_date', 100),
+    enabled: !!course?.id,
+  });
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Assignments</h1>
+        <Link to={createPageUrl('CreateAssignment') + `?courseId=${course?.id}`}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Add Assignment
+          </Button>
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {assignments.map(assignment => (
+          <div key={assignment.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-gray-900">{assignment.title}</h3>
+            <p className="text-sm text-gray-500 mt-1">{assignment.description}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+              <span>Due: {assignment.due_date ? new Date(assignment.due_date).toLocaleDateString() : 'No due date'}</span>
+              <span>•</span>
+              <span>{assignment.total_points || 100} points</span>
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  );
+}
+
+function PeopleView({ course }) {
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['course-enrollments', course?.id],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: course?.id }, '-created_date', 200),
+    enabled: !!course?.id,
+  });
+
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">People</h1>
+      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
+          <h3 className="font-semibold">Students ({enrollments.length})</h3>
+        </div>
+        <div className="divide-y divide-gray-200">
+          {enrollments.map(enrollment => (
+            <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
+                  {enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}
+                </div>
+                <div>
+                  <div className="font-medium text-gray-900">{enrollment.created_by}</div>
+                  <div className="text-sm text-gray-500">{enrollment.progress_percent || 0}% complete</div>
+                </div>
+              </div>
+              <Button variant="outline" size="sm">View Profile</Button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function GradesView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Grades</h1>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Grade Book</h3>
+        <p className="text-gray-500">View and manage student grades</p>
+      </div>
+    </div>
+  );
+}
+
+function AnalyticsView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Analytics</h1>
+      <div className="grid grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="font-semibold mb-4">Engagement</h3>
+          <div className="text-3xl font-bold text-blue-600">85%</div>
+          <div className="text-sm text-gray-500">Average engagement rate</div>
+        </div>
+        <div className="bg-white border border-gray-200 rounded-lg p-6">
+          <h3 className="font-semibold mb-4">Completion</h3>
+          <div className="text-3xl font-bold text-green-600">72%</div>
+          <div className="text-sm text-gray-500">Course completion rate</div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function ComingSoonView({ viewName }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">{viewName}</h1>
+      <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
+        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
+          <ChevronRight className="w-8 h-8 text-gray-400" />
+        </div>
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Coming Soon</h3>
+        <p className="text-gray-500">This feature is under development</p>
+      </div>
+    </div>
+  );
+}
+
+function OldCoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm, setCourseForm, handleCreateCourse, updateCourseMutation, deleteCourseMutation, createCourseMutation, setSelectedCourse, setShowAwardPoints, setSelectedCourseForPoints, setShowMessageDialog, setSelectedCourseForMessage }) {
   const [editingCourse, setEditingCourse] = useState(null);
 
   return (
@@ -593,7 +626,7 @@ function CoursesTab({ courses, showCreateCourse, setShowCreateCourse, courseForm
   );
 }
 
-function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }) {
+function OldStudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }) {
   const queryClient = useQueryClient();
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -729,7 +762,7 @@ function StudentsTab({ courses, enrollments, selectedCourse, setSelectedCourse }
   );
 }
 
-function AssignmentsTab({ courses, assignments, submissions }) {
+function OldAssignmentsTab({ courses, assignments, submissions }) {
   return (
     <Card className="p-6">
       <div className="flex items-center justify-between mb-6">
@@ -775,7 +808,7 @@ function AssignmentsTab({ courses, assignments, submissions }) {
   );
 }
 
-function MessagesTab({ userEmail }) {
+function OldMessagesTab({ userEmail }) {
   const { data: messages = [] } = useQuery({
     queryKey: ['tutor-messages', userEmail],
     queryFn: () => base44.entities.Message.filter({ recipient_email: userEmail }, '-created_date', 100),
@@ -807,7 +840,7 @@ function MessagesTab({ userEmail }) {
   );
 }
 
-function AnalyticsTab({ courses, enrollments }) {
+function OldAnalyticsTab({ courses, enrollments }) {
   const completionData = courses.map(course => {
     const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
     const completed = courseEnrollments.filter(e => e.is_completed).length;
@@ -864,7 +897,7 @@ function AnalyticsTab({ courses, enrollments }) {
   );
 }
 
-function LiveSessionsTab({ videoSessions, courses }) {
+function OldLiveSessionsTab({ videoSessions, courses }) {
   const queryClient = useQueryClient();
   const upcomingSessions = videoSessions.filter(s => s.status === 'scheduled');
   const liveSessions = videoSessions.filter(s => s.status === 'live');
@@ -1053,7 +1086,7 @@ function LiveSessionsTab({ videoSessions, courses }) {
   );
 }
 
-function CourseFormFields({ formData, setFormData }) {
+function OldCourseFormFields({ formData, setFormData }) {
   return (
     <div className="space-y-6">
       <div className="bg-white rounded-lg border border-gray-200 p-4">
