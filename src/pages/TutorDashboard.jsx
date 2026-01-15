@@ -193,6 +193,7 @@ export default function TutorDashboard() {
 function ModulesView({ courses, user }) {
   const queryClient = useQueryClient();
   const [expandedCourseId, setExpandedCourseId] = React.useState(null);
+  const [expandedLessonId, setExpandedLessonId] = React.useState(null);
   const [showCreateCourse, setShowCreateCourse] = React.useState(false);
   const [courseForm, setCourseForm] = React.useState({});
   const [editingCourse, setEditingCourse] = React.useState(null);
