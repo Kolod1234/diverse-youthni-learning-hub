@@ -158,15 +158,24 @@ export default function TutorDashboard() {
           <div className="flex h-full">
             {/* Main Section */}
             <div className="flex-1 p-8 overflow-y-auto">
-              {currentView === 'modules' && <ModulesView course={selectedCourse} lessons={lessons} />}
+              {currentView === 'modules' && <ModulesView courses={courses} />}
               {currentView === 'home' && <HomeView course={selectedCourse} />}
               {currentView === 'assignments' && <AssignmentsView course={selectedCourse} />}
               {currentView === 'people' && <PeopleView course={selectedCourse} />}
               {currentView === 'grades' && <GradesView course={selectedCourse} />}
               {currentView === 'analytics' && <AnalyticsView course={selectedCourse} />}
-              {!['modules', 'home', 'assignments', 'people', 'grades', 'analytics'].includes(currentView) && (
-                <ComingSoonView viewName={navItems.find(n => n.view === currentView)?.label || currentView} />
-              )}
+              {currentView === 'announcements' && <AnnouncementsView course={selectedCourse} />}
+              {currentView === 'discussions' && <DiscussionsView course={selectedCourse} />}
+              {currentView === 'pages' && <PagesView course={selectedCourse} />}
+              {currentView === 'files' && <FilesView course={selectedCourse} />}
+              {currentView === 'syllabus' && <SyllabusView course={selectedCourse} />}
+              {currentView === 'outcomes' && <OutcomesView course={selectedCourse} />}
+              {currentView === 'rubrics' && <RubricsView course={selectedCourse} />}
+              {currentView === 'quizzes' && <QuizzesView course={selectedCourse} />}
+              {currentView === 'video' && <VideoView course={selectedCourse} />}
+              {currentView === 'collaborations' && <CollaborationsView course={selectedCourse} />}
+              {currentView === 'attendance' && <AttendanceView course={selectedCourse} />}
+              {currentView === 'whiteboard' && <WhiteboardView course={selectedCourse} />}
             </div>
 
             {/* Right Sidebar */}
@@ -225,67 +234,91 @@ export default function TutorDashboard() {
   );
 }
 
-function ModulesView({ course, lessons }) {
-  // Group lessons by section
-  const sections = {};
-  lessons.forEach(lesson => {
-    const section = lesson.section || 'General';
-    if (!sections[section]) {
-      sections[section] = [];
+function ModulesView({ courses }) {
+  const { data: allLessons = [] } = useQuery({
+    queryKey: ['all-tutor-lessons'],
+    queryFn: async () => {
+      const lessons = [];
+      for (const course of courses) {
+        const courseLessons = await base44.entities.Lesson.filter({ course_id: course.id }, 'order', 200);
+        lessons.push(...courseLessons.map(l => ({ ...l, course_title: course.title, course_category: course.category })));
+      }
+      return lessons;
+    },
+    enabled: courses.length > 0,
+  });
+
+  // Group by course, then by section
+  const courseGroups = {};
+  allLessons.forEach(lesson => {
+    const courseKey = lesson.course_title || 'Unknown Course';
+    if (!courseGroups[courseKey]) {
+      courseGroups[courseKey] = { category: lesson.course_category, sections: {} };
     }
-    sections[section].push(lesson);
+    const section = lesson.section || 'General';
+    if (!courseGroups[courseKey].sections[section]) {
+      courseGroups[courseKey].sections[section] = [];
+    }
+    courseGroups[courseKey].sections[section].push(lesson);
   });
 
   return (
     <div className="max-w-5xl">
       <div className="mb-6">
-        <Button className="bg-blue-600 hover:bg-blue-700">
-          <Plus className="w-4 h-4 mr-2" />
-          Create a new Module
-        </Button>
+        <Link to={createPageUrl('TutorCourseManager')}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Manage Courses & Modules
+          </Button>
+        </Link>
       </div>
 
-      {Object.keys(sections).length === 0 ? (
+      {Object.keys(courseGroups).length === 0 ? (
         <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
           <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
           <h3 className="text-xl font-semibold text-gray-700 mb-2">No modules yet</h3>
           <p className="text-gray-500 mb-6 max-w-md mx-auto">
-            Add your first module to organize course content and create a learning pathway for students
+            Create courses and add lessons to see them organized here
           </p>
-          <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course?.id}`}>
-            <Button className="bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Module
-            </Button>
-          </Link>
         </div>
       ) : (
-        <div className="space-y-4">
-          {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-            <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
-                <h3 className="font-semibold text-gray-900">{sectionName}</h3>
+        <div className="space-y-6">
+          {Object.entries(courseGroups).map(([courseName, courseData]) => (
+            <div key={courseName} className="space-y-3">
+              <div className="flex items-center gap-3 mb-3">
+                <div className="w-10 h-10 bg-indigo-600 rounded flex items-center justify-center text-white font-bold text-sm">
+                  {courseData.category?.substring(0, 2).toUpperCase() || 'CO'}
+                </div>
+                <h2 className="text-2xl font-bold text-gray-900">{courseName}</h2>
               </div>
-              <div className="divide-y divide-gray-200">
-                {sectionLessons.map(lesson => (
-                  <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between group">
-                    <div className="flex items-center gap-3">
-                      <BookOpen className="w-5 h-5 text-gray-400" />
-                      <div>
-                        <div className="font-medium text-gray-900">{lesson.title}</div>
-                        {lesson.description && (
-                          <div className="text-sm text-gray-500 line-clamp-1">{lesson.description}</div>
-                        )}
-                      </div>
-                    </div>
-                    <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
-                      <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
-                        Edit
-                      </Button>
-                    </Link>
+              
+              {Object.entries(courseData.sections).map(([sectionName, sectionLessons]) => (
+                <div key={sectionName} className="bg-white border border-gray-200 rounded-lg overflow-hidden">
+                  <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                    <h3 className="font-semibold text-gray-900">{sectionName}</h3>
                   </div>
-                ))}
-              </div>
+                  <div className="divide-y divide-gray-200">
+                    {sectionLessons.map(lesson => (
+                      <div key={lesson.id} className="px-6 py-4 hover:bg-gray-50 flex items-center justify-between group">
+                        <div className="flex items-center gap-3">
+                          <BookOpen className="w-5 h-5 text-gray-400" />
+                          <div>
+                            <div className="font-medium text-gray-900">{lesson.title}</div>
+                            {lesson.description && (
+                              <div className="text-sm text-gray-500 line-clamp-1">{lesson.description}</div>
+                            )}
+                          </div>
+                        </div>
+                        <Link to={createPageUrl('LessonEditor') + `?id=${lesson.id}`}>
+                          <Button variant="ghost" size="sm" className="opacity-0 group-hover:opacity-100">
+                            Edit
+                          </Button>
+                        </Link>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              ))}
             </div>
           ))}
         </div>
@@ -419,16 +452,314 @@ function AnalyticsView({ course }) {
   );
 }
 
-function ComingSoonView({ viewName }) {
+function AnnouncementsView({ course }) {
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">{viewName}</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-12 text-center">
-        <div className="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-4">
-          <ChevronRight className="w-8 h-8 text-gray-400" />
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Announcements</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Add Announcement
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No announcements yet</h3>
+        <p className="text-gray-500">Create announcements to communicate with your students</p>
+      </div>
+    </div>
+  );
+}
+
+function DiscussionsView({ course }) {
+  const { data: discussions = [] } = useQuery({
+    queryKey: ['course-discussions', course?.id],
+    queryFn: () => base44.entities.Discussion.filter({ course_id: course?.id }, '-created_date', 100),
+    enabled: !!course?.id,
+  });
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Discussions</h1>
+        <Link to={createPageUrl('CourseDiscussion') + `?courseId=${course?.id}`}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            New Discussion
+          </Button>
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {discussions.length > 0 ? discussions.map(discussion => (
+          <div key={discussion.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-gray-900">{discussion.title}</h3>
+            <p className="text-sm text-gray-500 mt-1 line-clamp-2">{discussion.content}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+              <span>{discussion.replies_count || 0} replies</span>
+              <span>•</span>
+              <span>{discussion.likes_count || 0} likes</span>
+            </div>
+          </div>
+        )) : (
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <MessageSquare className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No discussions yet</h3>
+            <p className="text-gray-500">Start a discussion to engage with students</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function PagesView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Pages</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          New Page
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No pages yet</h3>
+        <p className="text-gray-500">Create pages with course content and resources</p>
+      </div>
+    </div>
+  );
+}
+
+function FilesView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Files</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Upload File
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No files yet</h3>
+        <p className="text-gray-500">Upload course materials and resources</p>
+      </div>
+    </div>
+  );
+}
+
+function SyllabusView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Course Syllabus</h1>
+      <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <h2 className="text-xl font-semibold mb-4">{course?.title}</h2>
+        <div className="prose max-w-none">
+          <p className="text-gray-600 mb-4">{course?.description}</p>
+          <h3 className="text-lg font-semibold mt-6 mb-2">Course Information</h3>
+          <ul className="list-disc list-inside space-y-2 text-gray-600">
+            <li>Category: {course?.category || 'Not specified'}</li>
+            <li>Level: {course?.level || 'Not specified'}</li>
+            <li>Duration: {course?.duration_hours || 0} hours</li>
+            <li>Total Lessons: {course?.total_lessons || 0}</li>
+          </ul>
         </div>
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Coming Soon</h3>
-        <p className="text-gray-500">This feature is under development</p>
+        <div className="mt-6">
+          <Button variant="outline">
+            Edit Syllabus
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function OutcomesView({ course }) {
+  const { data: lessons = [] } = useQuery({
+    queryKey: ['course-lessons-outcomes', course?.id],
+    queryFn: () => base44.entities.Lesson.filter({ course_id: course?.id }, 'order', 200),
+    enabled: !!course?.id,
+  });
+
+  const lessonsWithObjectives = lessons.filter(l => l.learning_objectives?.length > 0);
+
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Learning Outcomes</h1>
+      <div className="space-y-4">
+        {lessonsWithObjectives.length > 0 ? lessonsWithObjectives.map(lesson => (
+          <div key={lesson.id} className="bg-white border border-gray-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900 mb-2">{lesson.title}</h3>
+            <ul className="list-disc list-inside space-y-1">
+              {lesson.learning_objectives.map((obj, idx) => (
+                <li key={idx} className="text-sm text-gray-600">{obj}</li>
+              ))}
+            </ul>
+          </div>
+        )) : (
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <Target className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No learning outcomes yet</h3>
+            <p className="text-gray-500">Add learning objectives to your lessons</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function RubricsView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Rubrics</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          Create Rubric
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <FileCheck className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No rubrics yet</h3>
+        <p className="text-gray-500">Create rubrics to standardize grading</p>
+      </div>
+    </div>
+  );
+}
+
+function QuizzesView({ course }) {
+  const { data: quizzes = [] } = useQuery({
+    queryKey: ['course-quizzes', course?.id],
+    queryFn: () => base44.entities.Quiz.filter({ course_id: course?.id }, '-created_date', 100),
+    enabled: !!course?.id,
+  });
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Quizzes</h1>
+        <Link to={createPageUrl('QuizGenerator') + `?courseId=${course?.id}`}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Create Quiz
+          </Button>
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {quizzes.length > 0 ? quizzes.map(quiz => (
+          <div key={quiz.id} className="bg-white border border-gray-200 rounded-lg p-4 hover:shadow-md transition-shadow">
+            <h3 className="font-semibold text-gray-900">{quiz.title}</h3>
+            <p className="text-sm text-gray-500 mt-1">{quiz.description}</p>
+            <div className="mt-3 flex items-center gap-4 text-sm text-gray-600">
+              <span>{quiz.questions?.length || 0} questions</span>
+              <span>•</span>
+              <span>{quiz.total_marks || 0} points</span>
+              <span>•</span>
+              <span>{quiz.is_published ? 'Published' : 'Draft'}</span>
+            </div>
+          </div>
+        )) : (
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <HelpCircle className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No quizzes yet</h3>
+            <p className="text-gray-500">Create quizzes to assess student learning</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function VideoView({ course }) {
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['course-video-sessions', course?.id],
+    queryFn: () => base44.entities.VideoSession.filter({ course_id: course?.id }, '-scheduled_date', 50),
+    enabled: !!course?.id,
+  });
+
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Live Video Sessions</h1>
+        <Link to={createPageUrl('ScheduleSession') + `?courseId=${course?.id}`}>
+          <Button className="bg-blue-600 hover:bg-blue-700">
+            <Plus className="w-4 h-4 mr-2" />
+            Schedule Session
+          </Button>
+        </Link>
+      </div>
+      <div className="space-y-3">
+        {sessions.length > 0 ? sessions.map(session => (
+          <div key={session.id} className="bg-white border border-gray-200 rounded-lg p-4">
+            <h3 className="font-semibold text-gray-900">{session.title}</h3>
+            <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
+              <span>{new Date(session.scheduled_date).toLocaleDateString()}</span>
+              <span>•</span>
+              <span>{session.scheduled_time}</span>
+              <span>•</span>
+              <span className="capitalize">{session.status}</span>
+            </div>
+          </div>
+        )) : (
+          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+            <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No sessions scheduled</h3>
+            <p className="text-gray-500">Schedule live video sessions with students</p>
+          </div>
+        )}
+      </div>
+    </div>
+  );
+}
+
+function CollaborationsView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Collaborations</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          New Collaboration
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <Users className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No collaborations yet</h3>
+        <p className="text-gray-500">Create collaborative documents and projects</p>
+      </div>
+    </div>
+  );
+}
+
+function AttendanceView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Attendance</h1>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <Calendar className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">Attendance Tracking</h3>
+        <p className="text-gray-500">Track student attendance for sessions and activities</p>
+      </div>
+    </div>
+  );
+}
+
+function WhiteboardView({ course }) {
+  return (
+    <div className="max-w-4xl">
+      <div className="flex items-center justify-between mb-6">
+        <h1 className="text-3xl font-bold text-gray-900">Whiteboard</h1>
+        <Button className="bg-blue-600 hover:bg-blue-700">
+          <Plus className="w-4 h-4 mr-2" />
+          New Whiteboard
+        </Button>
+      </div>
+      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
+        <FileText className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+        <h3 className="text-xl font-semibold text-gray-700 mb-2">No whiteboards yet</h3>
+        <p className="text-gray-500">Create collaborative whiteboards for visual learning</p>
       </div>
     </div>
   );
