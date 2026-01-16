@@ -9,8 +9,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Get URL from query params
-    const url = new URL(req.url).searchParams.get('url');
+    // Get URL from request body
+    const body = await req.json();
+    const url = body.url;
     if (!url) {
       return Response.json({ error: 'URL parameter required' }, { status: 400 });
     }
