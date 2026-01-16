@@ -12,7 +12,7 @@ Deno.serve(async (req) => {
     // Hardcoded list of CCEA GCSE subjects with their past papers URLs
     const subjects = [
       { name: 'Art and Design', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-art-and-design/past-papers' },
-      { name: 'Biology', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-biology/past-papers' },
+      { name: 'Biology', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-biology-2017/past-papers-mark-schemes/archived-past-papers-mark-schemes' },
       { name: 'Business Studies', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-business-studies/past-papers' },
       { name: 'Chemistry', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-chemistry/past-papers' },
       { name: 'Computer Science', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-computer-science/past-papers' },
