@@ -42,10 +42,16 @@ export default function CCEAPastPapers() {
 
     try {
       const response = await base44.functions.invoke('getCCEAPastPapers', { url });
-      setPapers(response.data.papers || []);
+      const papersData = response.data.papers || [];
+      setPapers(papersData);
+      
+      if (papersData.length === 0) {
+        setError(`No papers found for ${subject.name}. The page structure may have changed.`);
+      }
     } catch (err) {
-      console.error(err);
-      setError(`Failed to load papers for ${subject.name}`);
+      console.error('Error loading papers:', err);
+      const errorMsg = err.response?.data?.error || err.message || 'Unknown error';
+      setError(`Failed to load papers for ${subject.name}: ${errorMsg}`);
     } finally {
       setLoadingPapers(false);
     }

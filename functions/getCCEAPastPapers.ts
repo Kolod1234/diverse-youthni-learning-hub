@@ -15,8 +15,17 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'URL parameter required' }, { status: 400 });
     }
 
-    // Fetch the subject page
-    const response = await fetch(url);
+    // Fetch the subject page with proper headers
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+      }
+    });
+    
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+    }
+    
     const html = await response.text();
     
     // Parse past papers from the page
@@ -76,14 +85,22 @@ Deno.serve(async (req) => {
       }
     }
 
+    // If no papers found, log for debugging
+    if (papers.length === 0) {
+      console.log('No papers found. URL:', url);
+      console.log('HTML sample:', html.substring(0, 500));
+    }
+
     return Response.json({ 
-      papers: papers.slice(0, 100) // Limit to 100 papers
+      papers: papers.slice(0, 100),
+      foundCount: papers.length
     });
     
   } catch (error) {
     console.error('Error fetching past papers:', error);
     return Response.json({ 
-      error: error.message,
+      error: `Failed to load papers: ${error.message}`,
+      details: error.toString(),
       papers: []
     }, { status: 500 });
   }
