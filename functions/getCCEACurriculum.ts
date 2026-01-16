@@ -9,35 +9,43 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch CCEA GCSE subjects page
-    const response = await fetch('https://ccea.org.uk/key-stage-4/gcse/subjects');
-    const html = await response.text();
-    
-    // Parse subjects from the page
-    const subjects = [];
-    const subjectRegex = /<a[^>]*href="([^"]*)"[^>]*>([^<]+)<\/a>/gi;
-    let match;
-    
-    while ((match = subjectRegex.exec(html)) !== null) {
-      const url = match[1];
-      const name = match[2].trim();
-      
-      // Filter for relevant GCSE subjects - look for subject pages
-      if ((url.includes('/subjects/') || url.includes('/gcse/')) && name && name.length > 2 && !subjects.some(s => s.name === name)) {
-        const fullUrl = url.startsWith('http') ? url : `https://ccea.org.uk${url}`;
-        // Add /past-papers to the subject URL
-        const pastPapersUrl = fullUrl.endsWith('/') ? `${fullUrl}past-papers` : `${fullUrl}/past-papers`;
-        
-        subjects.push({
-          name: name,
-          url: pastPapersUrl
-        });
-      }
-    }
+    // Hardcoded list of CCEA GCSE subjects with their past papers URLs
+    const subjects = [
+      { name: 'Art and Design', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-art-and-design/past-papers' },
+      { name: 'Biology', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-biology/past-papers' },
+      { name: 'Business Studies', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-business-studies/past-papers' },
+      { name: 'Chemistry', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-chemistry/past-papers' },
+      { name: 'Computer Science', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-computer-science/past-papers' },
+      { name: 'Digital Technology', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-digital-technology/past-papers' },
+      { name: 'Drama', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-drama/past-papers' },
+      { name: 'English Language', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-english-language/past-papers' },
+      { name: 'English Literature', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-english-literature/past-papers' },
+      { name: 'French', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-french/past-papers' },
+      { name: 'Geography', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-geography/past-papers' },
+      { name: 'German', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-german/past-papers' },
+      { name: 'History', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-history/past-papers' },
+      { name: 'Home Economics', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-home-economics/past-papers' },
+      { name: 'Irish', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-irish/past-papers' },
+      { name: 'Journalism', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-journalism/past-papers' },
+      { name: 'Learning for Life and Work', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-learning-life-and-work/past-papers' },
+      { name: 'Mathematics', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-mathematics/past-papers' },
+      { name: 'Motor Vehicle and Road User Studies', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-motor-vehicle-and-road-user-studies/past-papers' },
+      { name: 'Moving Image Arts', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-moving-image-arts/past-papers' },
+      { name: 'Music', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-music/past-papers' },
+      { name: 'Performing Arts', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-performing-arts/past-papers' },
+      { name: 'Physical Education', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-physical-education/past-papers' },
+      { name: 'Physics', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-physics/past-papers' },
+      { name: 'Polish', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-polish/past-papers' },
+      { name: 'Portuguese', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-portuguese/past-papers' },
+      { name: 'Prince\'s Trust', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-princes-trust/past-papers' },
+      { name: 'Religious Studies', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-religious-studies/past-papers' },
+      { name: 'Science: Double Award', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-science-double-award/past-papers' },
+      { name: 'Science: Single Award', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-science-single-award/past-papers' },
+      { name: 'Spanish', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-spanish/past-papers' },
+      { name: 'Technology and Design', url: 'https://ccea.org.uk/key-stage-4/gcse/subjects/gcse-technology-and-design/past-papers' }
+    ];
 
-    return Response.json({ 
-      subjects: subjects.slice(0, 50) // Limit to 50 subjects
-    });
+    return Response.json({ subjects });
     
   } catch (error) {
     console.error('Error fetching curriculum:', error);
