@@ -41,7 +41,7 @@ export default function CCEAPastPapers() {
     setError(null);
 
     try {
-      const response = await base44.functions.invoke('getCCEAPastPapers', { url });
+      const response = await base44.functions.invoke('getCCEAPastPapers', { url: url });
       const papersData = response.data.papers || [];
       setPapers(papersData);
       

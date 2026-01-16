@@ -17,6 +17,7 @@ import AdminYouthWork from './pages/AdminYouthWork';
 import Analytics from './pages/Analytics';
 import ArtGallery from './pages/ArtGallery';
 import BookSession from './pages/BookSession';
+import CCEAPastPapers from './pages/CCEAPastPapers';
 import Community from './pages/Community';
 import ContactUs from './pages/ContactUs';
 import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
@@ -57,7 +58,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import CCEAPastPapers from './pages/CCEAPastPapers';
 import __Layout from './Layout.jsx';
 
 
@@ -81,6 +81,7 @@ export const PAGES = {
     "Analytics": Analytics,
     "ArtGallery": ArtGallery,
     "BookSession": BookSession,
+    "CCEAPastPapers": CCEAPastPapers,
     "Community": Community,
     "ContactUs": ContactUs,
     "CoordinatorsDashboard": CoordinatorsDashboard,
@@ -121,7 +122,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "CCEAPastPapers": CCEAPastPapers,
 }
 
 export const pagesConfig = {
