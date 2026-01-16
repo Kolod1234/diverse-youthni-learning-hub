@@ -523,6 +523,10 @@ function LayoutContent({ children, currentPageName }) {
                           <BookOpen className="w-5 h-5" />
                           <span>Manage Library</span>
                         </Link>
+                        <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                          <BookOpen className="w-5 h-5" />
+                          <span>CCEA Past Papers</span>
+                        </Link>
                         <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage Quotes</span>
