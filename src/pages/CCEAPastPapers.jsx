@@ -2,7 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { FileText, AlertCircle, Loader2 } from 'lucide-react';
+import { FileText, AlertCircle, Loader2, Download, CheckCircle } from 'lucide-react';
+import { toast } from 'sonner';
 
 export default function CCEAPastPapers() {
   const [subjects, setSubjects] = useState([]);
@@ -11,6 +12,7 @@ export default function CCEAPastPapers() {
   const [loadingSubjects, setLoadingSubjects] = useState(true);
   const [loadingPapers, setLoadingPapers] = useState(false);
   const [error, setError] = useState(null);
+  const [downloadingPapers, setDownloadingPapers] = useState(new Set());
 
   useEffect(() => {
     fetchSubjects();
@@ -46,6 +48,41 @@ export default function CCEAPastPapers() {
       setError(`Failed to load papers for ${subject.name}`);
     } finally {
       setLoadingPapers(false);
+    }
+  };
+
+  const handleDownload = async (paper, idx) => {
+    setDownloadingPapers(prev => new Set(prev).add(idx));
+    const toastId = toast.loading(`Downloading ${paper.title}...`);
+
+    try {
+      const response = await fetch(paper.url);
+      
+      if (!response.ok) {
+        throw new Error('Download failed');
+      }
+
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = paper.title.endsWith('.pdf') ? paper.title : `${paper.title}.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+
+      toast.success('Downloaded successfully!', { id: toastId });
+    } catch (err) {
+      console.error('Download error:', err);
+      toast.error('Download failed. Opening in new tab instead.', { id: toastId });
+      window.open(paper.url, '_blank');
+    } finally {
+      setDownloadingPapers(prev => {
+        const newSet = new Set(prev);
+        newSet.delete(idx);
+        return newSet;
+      });
     }
   };
 
@@ -115,15 +152,25 @@ export default function CCEAPastPapers() {
                     {paper.category}
                   </p>
                 </div>
-                <a 
-                  href={paper.url} 
-                  target="_blank" 
-                  rel="noopener noreferrer"
+                <Button 
+                  variant="outline" 
+                  size="sm" 
+                  className="bg-slate-700 hover:bg-cyan-600 border-slate-600"
+                  onClick={() => handleDownload(paper, idx)}
+                  disabled={downloadingPapers.has(idx)}
                 >
-                  <Button variant="outline" size="sm" className="bg-slate-700 hover:bg-cyan-600 border-slate-600">
-                    View PDF
-                  </Button>
-                </a>
+                  {downloadingPapers.has(idx) ? (
+                    <>
+                      <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                      Downloading
+                    </>
+                  ) : (
+                    <>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </>
+                  )}
+                </Button>
               </Card>
             ))}
           </div>
