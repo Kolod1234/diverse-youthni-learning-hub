@@ -9,8 +9,8 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Fetch CCEA curriculum page
-    const response = await fetch('https://ccea.org.uk/post-16/qualifications');
+    // Fetch CCEA GCSE subjects page
+    const response = await fetch('https://ccea.org.uk/key-stage-4/gcse/subjects');
     const html = await response.text();
     
     // Parse subjects from the page
@@ -22,11 +22,15 @@ Deno.serve(async (req) => {
       const url = match[1];
       const name = match[2].trim();
       
-      // Filter for relevant GCSE subjects
-      if (url.includes('/subjects/') && !subjects.some(s => s.name === name)) {
+      // Filter for relevant GCSE subjects - look for subject pages
+      if ((url.includes('/subjects/') || url.includes('/gcse/')) && name && name.length > 2 && !subjects.some(s => s.name === name)) {
+        const fullUrl = url.startsWith('http') ? url : `https://ccea.org.uk${url}`;
+        // Add /past-papers to the subject URL
+        const pastPapersUrl = fullUrl.endsWith('/') ? `${fullUrl}past-papers` : `${fullUrl}/past-papers`;
+        
         subjects.push({
           name: name,
-          url: url.startsWith('http') ? url : `https://ccea.org.uk${url}`
+          url: pastPapersUrl
         });
       }
     }
