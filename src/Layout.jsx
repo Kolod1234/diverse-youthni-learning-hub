@@ -223,13 +223,19 @@ function LayoutContent({ children, currentPageName }) {
                         <GraduationCap className="w-4 h-4 mr-2" />
                         Youth Work (OCN)
                       </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center cursor-pointer">
+                        <BookOpen className="w-4 h-4 mr-2" />
+                        CCEA Past Papers
+                      </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                       <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer">
                         <Video className="w-4 h-4 mr-2" />
                         Live Sessions
                       </Link>
-                    </DropdownMenuItem>
+                      </DropdownMenuItem>
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer">
                         <MessageSquare className="w-4 h-4 mr-2" />
