@@ -6,8 +6,9 @@ import { createPageUrl } from '@/utils';
 import { 
   Home, Bell, ClipboardList, MessageSquare, Award, Users, FileText, 
   BookOpen, Target, BarChart, FileCheck, HelpCircle, Calendar,
-  Video, Menu, Plus, Search, ChevronRight, Edit, Trash2, X
+  Video, Menu, Plus, Search, ChevronRight, Edit, Trash2, X, GripVertical
 } from 'lucide-react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 
@@ -259,6 +260,19 @@ function ModulesView({ courses, user }) {
       queryClient.invalidateQueries(['all-lessons']);
       setEditingLesson(null);
       toast.success('Lesson updated!');
+    },
+  });
+
+  const reorderLessonsMutation = useMutation({
+    mutationFn: async ({ lessons }) => {
+      const promises = lessons.map((lesson, index) => 
+        base44.entities.Lesson.update(lesson.id, { order: index })
+      );
+      return Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      toast.success('Lessons reordered!');
     },
   });
 
@@ -658,14 +672,39 @@ function ModulesView({ courses, user }) {
                       </div>
                     ) : (
                       <div className="space-y-3">
-                        {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+                        {Object.entries(sections).map(([sectionName, sectionLessons]) => {
+                          const sortedLessons = [...sectionLessons].sort((a, b) => (a.order || 0) - (b.order || 0));
+
+                          const handleDragEnd = (result) => {
+                            if (!result.destination) return;
+
+                            const items = Array.from(sortedLessons);
+                            const [reorderedItem] = items.splice(result.source.index, 1);
+                            items.splice(result.destination.index, 0, reorderedItem);
+
+                            reorderLessonsMutation.mutate({ lessons: items });
+                          };
+
+                          return (
                           <div key={sectionName} className="border border-gray-200 rounded-lg overflow-hidden">
                             <div className="bg-gray-50 px-4 py-2 border-b border-gray-200 flex items-center justify-between">
                               <h4 className="font-semibold text-gray-900 text-sm">{sectionName}</h4>
-                              <span className="text-xs text-gray-500">{sectionLessons.length} lessons</span>
+                              <span className="text-xs text-gray-500">{sortedLessons.length} lessons</span>
                             </div>
-                            <div className="divide-y divide-gray-200">
-                              {sectionLessons.map(lesson => {
+                            <DragDropContext onDragEnd={handleDragEnd}>
+                              <Droppable droppableId={`section-${sectionName}`}>
+                                {(provided) => (
+                                  <div ref={provided.innerRef} {...provided.droppableProps} className="divide-y divide-gray-200">
+                                    {sortedLessons.map((lesson, index) => (
+                                      <Draggable key={lesson.id} draggableId={lesson.id} index={index}>
+                                        {(provided, snapshot) => (
+                                          <div
+                                            ref={provided.innerRef}
+                                            {...provided.draggableProps}
+                                            className={snapshot.isDragging ? 'bg-blue-50' : ''}>
+                              <div>
+                                <div className="px-4 py-3 hover:bg-gray-50 group">
+                                  {editingLesson?.id === lesson.id ? (
                                 const isLessonExpanded = expandedLessonId === lesson.id;
                                 return (
                                   <div key={lesson.id}>
@@ -694,6 +733,9 @@ function ModulesView({ courses, user }) {
                                       ) : (
                                         <div className="flex items-center justify-between">
                                           <div className="flex items-center gap-3 flex-1">
+                                            <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                              <GripVertical className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                                            </div>
                                             <button
                                               onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)}
                                               className="hover:bg-gray-200 p-1 rounded"
@@ -844,12 +886,21 @@ function ModulesView({ courses, user }) {
                                         </div>
                                       </div>
                                     )}
-                                  </div>
-                                );
-                              })}
-                            </div>
-                          </div>
-                        ))}
+                                    </div>
+
+                                          </div>
+                                        </div>
+                                      )}
+                                    </Draggable>
+                                    ))}
+                                    {provided.placeholder}
+                                    </div>
+                                    )}
+                                    </Droppable>
+                                    </DragDropContext>
+                                    </div>
+                                    );
+                                    })}
                       </div>
                     )}
                   </div>
