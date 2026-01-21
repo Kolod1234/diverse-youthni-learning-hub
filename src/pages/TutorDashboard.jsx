@@ -695,55 +695,51 @@ function ModulesView({ courses, user }) {
                               <Droppable droppableId={`section-${sectionName}`}>
                                 {(provided) => (
                                   <div ref={provided.innerRef} {...provided.droppableProps} className="divide-y divide-gray-200">
-                                    {sortedLessons.map((lesson, index) => (
+                                    {sortedLessons.map((lesson, index) => {
+                                      const isLessonExpanded = expandedLessonId === lesson.id;
+                                      return (
                                       <Draggable key={lesson.id} draggableId={lesson.id} index={index}>
                                         {(provided, snapshot) => (
                                           <div
                                             ref={provided.innerRef}
                                             {...provided.draggableProps}
                                             className={snapshot.isDragging ? 'bg-blue-50' : ''}>
-                              <div>
-                                <div className="px-4 py-3 hover:bg-gray-50 group">
-                                  {editingLesson?.id === lesson.id ? (
-                                const isLessonExpanded = expandedLessonId === lesson.id;
-                                return (
-                                  <div key={lesson.id}>
-                                    <div className="px-4 py-3 hover:bg-gray-50 group">
-                                      {editingLesson?.id === lesson.id ? (
-                                        <div className="space-y-3">
-                                          <input
-                                            type="text"
-                                            value={lessonForm.title || ''}
-                                            onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg text-sm"
-                                          />
-                                          <textarea
-                                            value={lessonForm.description || ''}
-                                            onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-                                            className="w-full px-3 py-2 border rounded-lg text-sm"
-                                            rows={2}
-                                          />
-                                          <div className="flex gap-2">
-                                            <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
-                                              Save
-                                            </Button>
-                                            <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
-                                          </div>
-                                        </div>
-                                      ) : (
-                                        <div className="flex items-center justify-between">
-                                          <div className="flex items-center gap-3 flex-1">
-                                            <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
-                                              <GripVertical className="w-4 h-4 text-gray-400 hover:text-gray-600" />
-                                            </div>
-                                            <button
-                                              onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)}
-                                              className="hover:bg-gray-200 p-1 rounded"
-                                            >
-                                              <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform ${isLessonExpanded ? 'rotate-90' : ''}`} />
-                                            </button>
-                                            <FileText className="w-4 h-4 text-gray-400" />
-                                            <div className="flex-1">
+                              <div className="px-4 py-3 hover:bg-gray-50 group">
+                                {editingLesson?.id === lesson.id ? (
+                                  <div className="space-y-3">
+                                    <input
+                                      type="text"
+                                      value={lessonForm.title || ''}
+                                      onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
+                                      className="w-full px-3 py-2 border rounded-lg text-sm"
+                                    />
+                                    <textarea
+                                      value={lessonForm.description || ''}
+                                      onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+                                      className="w-full px-3 py-2 border rounded-lg text-sm"
+                                      rows={2}
+                                    />
+                                    <div className="flex gap-2">
+                                      <Button size="sm" onClick={() => updateLessonMutation.mutate({ id: lesson.id, data: lessonForm })}>
+                                        Save
+                                      </Button>
+                                      <Button variant="outline" size="sm" onClick={() => setEditingLesson(null)}>Cancel</Button>
+                                    </div>
+                                  </div>
+                                ) : (
+                                  <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-3 flex-1">
+                                      <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
+                                        <GripVertical className="w-4 h-4 text-gray-400 hover:text-gray-600" />
+                                      </div>
+                                      <button
+                                        onClick={() => setExpandedLessonId(isLessonExpanded ? null : lesson.id)}
+                                        className="hover:bg-gray-200 p-1 rounded"
+                                      >
+                                        <ChevronRight className={`w-4 h-4 text-gray-600 transition-transform ${isLessonExpanded ? 'rotate-90' : ''}`} />
+                                      </button>
+                                      <FileText className="w-4 h-4 text-gray-400" />
+                                      <div className="flex-1">
                                               <div className="font-medium text-gray-900 text-sm">{lesson.title}</div>
                                               <div className="flex items-center gap-2 mt-1 flex-wrap">
                                                 <span className="text-xs text-gray-500">{lesson.duration_minutes || 10} min</span>
@@ -886,21 +882,19 @@ function ModulesView({ courses, user }) {
                                         </div>
                                       </div>
                                     )}
-                                    </div>
-
-                                          </div>
+                                                </div>
+                                              )}
+                                            </Draggable>
+                                          );
+                                          })}
+                                          {provided.placeholder}
                                         </div>
                                       )}
-                                    </Draggable>
-                                    ))}
-                                    {provided.placeholder}
-                                    </div>
-                                    )}
                                     </Droppable>
-                                    </DragDropContext>
-                                    </div>
-                                    );
-                                    })}
+                                  </DragDropContext>
+                                </div>
+                                );
+                              })}
                       </div>
                     )}
                   </div>
