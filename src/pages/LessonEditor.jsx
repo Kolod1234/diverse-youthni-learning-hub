@@ -65,9 +65,12 @@ export default function LessonEditor() {
       if (lessonId) {
         await base44.entities.Lesson.update(lessonId, lessonForm);
       } else {
+        if (!courseId && !lessonForm.course_id) {
+          throw new Error('Course ID is required');
+        }
         await base44.entities.Lesson.create({
           ...lessonForm,
-          course_id: courseId,
+          course_id: lessonForm.course_id || courseId,
           order: 0,
           content_type: lessonForm.content_type || 'richtext'
         });
@@ -76,11 +79,12 @@ export default function LessonEditor() {
     onSuccess: () => {
       queryClient.invalidateQueries(['lesson', lessonId]);
       queryClient.invalidateQueries(['all-lessons']);
+      queryClient.invalidateQueries(['tutor-courses']);
       toast.success('Lesson saved successfully!');
       navigate(-1);
     },
-    onError: () => {
-      toast.error('Failed to save lesson');
+    onError: (error) => {
+      toast.error(error.message || 'Failed to save lesson');
     }
   });
 
@@ -146,7 +150,7 @@ export default function LessonEditor() {
           </h1>
           <Button 
             onClick={() => saveMutation.mutate()} 
-            disabled={!lessonForm.title || saveMutation.isPending}
+            disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
             className="bg-indigo-600"
           >
             {saveMutation.isPending ? (
@@ -170,6 +174,18 @@ export default function LessonEditor() {
           <Card className="p-6">
             <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
             <div className="grid md:grid-cols-2 gap-4">
+              {!lessonId && !courseId && (
+                <div className="md:col-span-2">
+                  <Label>Course *</Label>
+                  <select
+                    value={lessonForm.course_id || ''}
+                    onChange={(e) => setLessonForm({ ...lessonForm, course_id: e.target.value })}
+                    className="w-full px-3 py-2 border rounded-lg"
+                  >
+                    <option value="">Select a course</option>
+                  </select>
+                </div>
+              )}
               <div>
                 <Label>Lesson Title *</Label>
                 <Input 
@@ -374,7 +390,7 @@ export default function LessonEditor() {
             </Button>
             <Button 
               onClick={() => saveMutation.mutate()} 
-              disabled={!lessonForm.title || saveMutation.isPending}
+              disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
               className="bg-indigo-600"
               size="lg"
             >
