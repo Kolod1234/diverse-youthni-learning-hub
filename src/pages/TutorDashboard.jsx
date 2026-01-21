@@ -285,11 +285,17 @@ function ModulesView({ courses, user }) {
   };
 
   const handleCreateLesson = () => {
+    if (!lessonForm.course_id || !lessonForm.title) {
+      toast.error('Please fill in course and title');
+      return;
+    }
     const courseLessons = allLessons.filter(l => l.course_id === lessonForm.course_id);
     createLessonMutation.mutate({
       ...lessonForm,
+      section: lessonForm.section || 'General',
       order: courseLessons.length + 1,
       duration_minutes: parseInt(lessonForm.duration_minutes) || 10,
+      content_type: lessonForm.content_type || 'richtext'
     });
   };
 
