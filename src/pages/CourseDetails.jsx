@@ -53,7 +53,7 @@ export default function CourseDetails() {
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons', courseId],
-    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100),
+    queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500),
     enabled: !!courseId,
   });
 
