@@ -37,24 +37,11 @@ export default function CCEAPastPapers() {
     const subject = subjects.find(s => s.url === url);
     setSelectedSubject(subject);
     setPapers([]);
-    setLoadingPapers(true);
     setError(null);
-
-    try {
-      const response = await base44.functions.invoke('getCCEAPastPapers', { url: url });
-      const papersData = response.data.papers || [];
-      setPapers(papersData);
-      
-      if (papersData.length === 0) {
-        setError(`No papers found for ${subject.name}. The page structure may have changed.`);
-      }
-    } catch (err) {
-      console.error('Error loading papers:', err);
-      const errorMsg = err.response?.data?.error || err.message || 'Unknown error';
-      setError(`Failed to load papers for ${subject.name}: ${errorMsg}`);
-    } finally {
-      setLoadingPapers(false);
-    }
+    
+    // CCEA blocks automated scraping - redirect to their website
+    window.open(url, '_blank');
+    setError(`Opening CCEA website for ${subject.name}. Please download papers directly from their site.`);
   };
 
   const handleDownload = async (paper, idx) => {
