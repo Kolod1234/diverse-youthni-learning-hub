@@ -11,29 +11,19 @@ Deno.serve(async (req) => {
 
     // Get URL from request body
     const body = await req.json();
-    console.log('Received body:', body);
     const url = body?.url;
-    console.log('Extracted URL:', url);
     if (!url) {
-      return Response.json({ error: 'URL parameter required', receivedBody: body }, { status: 400 });
+      return Response.json({ error: 'URL parameter required' }, { status: 400 });
     }
 
-    // Fetch the subject page with proper headers to avoid blocking
-    const response = await fetch(url, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-GB,en;q=0.9',
-        'Accept-Encoding': 'gzip, deflate, br',
-        'Referer': 'https://ccea.org.uk/',
-      }
-    });
-    
-    if (!response.ok) {
-      throw new Error(`HTTP ${response.status}: ${response.statusText}`);
-    }
-    
-    const html = await response.text();
+    // CCEA website blocks direct scraping - use alternative approach
+    // Return helpful message and suggest manual download
+    return Response.json({ 
+      error: 'CCEA website blocks automated access. Please visit the page directly to download papers.',
+      visitUrl: url,
+      suggestion: 'Click the link below to visit CCEA website and download papers manually',
+      papers: []
+    }, { status: 403 });
     
     // Parse past papers from the page
     const papers = [];
