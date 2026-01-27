@@ -1575,7 +1575,7 @@ function PartnersSection() {
           <h2 className="text-3xl font-bold text-foreground mb-4">Our Partners</h2>
           <p className="text-muted-foreground">Working together to empower youth</p>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {logos.map((logo, idx) => (
             <motion.div
               key={logo.id}
@@ -1583,22 +1583,22 @@ function PartnersSection() {
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1, duration: 0.5 }}
-              whileHover={{ scale: 1.1, rotate: 2 }}
-              className="flex items-center justify-center"
+              whileHover={{ y: -8, scale: 1.03 }}
+              className="bg-card border border-border rounded-xl p-6 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center"
             >
               {logo.website_url ? (
-                <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block">
+                <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block w-full h-full flex items-center justify-center">
                   <img
                     src={logo.logo_url}
                     alt={logo.name}
-                    className="h-28 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                    className="h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
                   />
                 </a>
               ) : (
                 <img
                   src={logo.logo_url}
                   alt={logo.name}
-                  className="h-28 w-auto object-contain opacity-70"
+                  className="h-20 w-auto object-contain opacity-70"
                 />
               )}
             </motion.div>
