@@ -113,7 +113,7 @@ function LayoutContent({ children, currentPageName }) {
               className={`
                 flex items-center gap-2 px-4 py-2 rounded-lg transition-all
                 ${mobile ? 'w-full' : ''}
-                text-gray-600 hover:bg-gray-50 hover:text-gray-900
+                text-foreground/70 hover:bg-accent hover:text-accent-foreground
               `}
             >
               <Icon className="w-5 h-5" />
@@ -131,8 +131,8 @@ function LayoutContent({ children, currentPageName }) {
               flex items-center gap-2 px-4 py-2 rounded-lg transition-all
               ${mobile ? 'w-full' : ''}
               ${isActive 
-                ? 'bg-orange-50 text-[#FF8C00] font-medium' 
-                : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                ? 'bg-primary/10 text-primary font-medium' 
+                : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
               }
             `}
           >
@@ -145,13 +145,18 @@ function LayoutContent({ children, currentPageName }) {
   );
 
   return (
-    <div className="relative w-full bg-gray-50">
+    <div className="relative w-full bg-background text-foreground min-h-screen">
       <style>
         {`
           :root {
-            --color-primary: #EA580C;
-            --color-primary-light: #FB923C;
-            --color-primary-dark: #C2410C;
+            --color-primary: #FF8C00;
+            --color-primary-light: #FFA500;
+            --color-primary-dark: #CC7000;
+          }
+          .dark {
+            --color-primary: #FF8C00;
+            --color-primary-light: #FFA500;
+            --color-primary-dark: #CC7000;
           }
         `}
       </style>
@@ -160,8 +165,8 @@ function LayoutContent({ children, currentPageName }) {
         className={`
           sticky top-0 z-50 transition-all duration-300
           ${scrolled 
-            ? 'bg-white/95 backdrop-blur-md shadow-sm border-b border-gray-100' 
-            : 'bg-transparent'
+            ? 'bg-background/95 backdrop-blur-md shadow-sm border-b border-border' 
+            : 'bg-background/80 backdrop-blur-sm'
           }
         `}
       >
@@ -180,24 +185,24 @@ function LayoutContent({ children, currentPageName }) {
             <nav className="hidden md:flex items-center gap-1">
               <Link to={createPageUrl('Home')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 location.pathname === createPageUrl('Home') || location.pathname === '/'
-                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-primary/10 text-primary font-medium' 
+                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
               }`}>
                 <Home className="w-5 h-5" />
                 <span>Home</span>
               </Link>
               <Link to={createPageUrl('Explore')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 location.pathname.includes('Explore')
-                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-primary/10 text-primary font-medium' 
+                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
               }`}>
                 <Compass className="w-5 h-5" />
                 <span>Explore</span>
               </Link>
               <Link to={createPageUrl('Dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 location.pathname.includes('Dashboard')
-                  ? 'bg-orange-50 text-[#FF8C00] font-medium' 
-                  : 'text-gray-600 hover:bg-gray-50 hover:text-gray-900'
+                  ? 'bg-primary/10 text-primary font-medium' 
+                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
               }`}>
                 <BookOpen className="w-5 h-5" />
                 <span>My Learning</span>
@@ -206,7 +211,7 @@ function LayoutContent({ children, currentPageName }) {
               {/* More Menu */}
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                  <Button variant="ghost" className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                     <MoreVertical className="w-5 h-5" />
                     <span>More</span>
                   </Button>
@@ -424,7 +429,7 @@ function LayoutContent({ children, currentPageName }) {
                   <Button variant="ghost" className="relative h-10 w-10 rounded-full">
                     <Avatar className="h-10 w-10">
                       <AvatarImage src={user?.avatar} />
-                      <AvatarFallback className="bg-orange-100 text-[#FF8C00] font-medium">
+                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
                         {user?.full_name?.charAt(0) || 'U'}
                       </AvatarFallback>
                     </Avatar>
@@ -432,8 +437,8 @@ function LayoutContent({ children, currentPageName }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="w-56">
                   <div className="px-4 py-3">
-                    <p className="text-sm font-medium text-gray-900">{user?.full_name || 'User'}</p>
-                    <p className="text-xs text-gray-500 truncate">{user?.email}</p>
+                    <p className="text-sm font-medium text-foreground">{user?.full_name || 'User'}</p>
+                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
                   </div>
                   <DropdownMenuSeparator />
                   <DropdownMenuItem asChild>
@@ -566,21 +571,21 @@ function LayoutContent({ children, currentPageName }) {
       {/* Admin Password Modal */}
       {showAdminPassword && (
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAdminPassword(false)}>
-          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4">Admin Access</h3>
+          <div className="bg-card rounded-2xl p-6 w-96 shadow-xl border border-border" onClick={(e) => e.stopPropagation()}>
+            <h3 className="text-xl font-bold mb-4 text-foreground">Admin Access</h3>
             <input
               type="password"
               value={adminPassword}
               onChange={(e) => setAdminPassword(e.target.value)}
               placeholder="Enter admin password"
-              className="w-full px-4 py-2 border rounded-lg mb-4"
+              className="w-full px-4 py-2 bg-background border border-input rounded-lg mb-4 text-foreground"
               onKeyPress={(e) => e.key === 'Enter' && handleAdminAccess()}
             />
             <div className="flex gap-3">
-              <button onClick={handleAdminAccess} className="flex-1 bg-[#FF8C00] text-white py-2 rounded-lg hover:bg-[#CC7000]">
+              <button onClick={handleAdminAccess} className="flex-1 bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition">
                 Access
               </button>
-              <button onClick={() => setShowAdminPassword(false)} className="flex-1 border py-2 rounded-lg hover:bg-gray-50">
+              <button onClick={() => setShowAdminPassword(false)} className="flex-1 border border-border py-2 rounded-lg hover:bg-accent transition text-foreground">
                 Cancel
               </button>
             </div>
@@ -589,7 +594,7 @@ function LayoutContent({ children, currentPageName }) {
       )}
 
       {/* Footer */}
-      <footer className="bg-white border-t border-gray-100 mt-20">
+      <footer className="bg-card border-t border-border mt-20">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
             <div className="col-span-2 md:col-span-1">
@@ -600,36 +605,36 @@ function LayoutContent({ children, currentPageName }) {
                   className="h-12 w-auto object-contain"
                 />
               </Link>
-              <p className="text-gray-500 text-sm">
+              <p className="text-muted-foreground text-sm">
                 Empowering learners worldwide with expert-led courses and cutting-edge content.
               </p>
             </div>
             
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Platform</h4>
+              <h4 className="font-semibold text-foreground mb-4">Platform</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to={createPageUrl('Explore')} className="text-gray-500 hover:text-[#FF8C00]">Browse Courses</Link></li>
-                <li><Link to={createPageUrl('Dashboard')} className="text-gray-500 hover:text-[#FF8C00]">My Learning</Link></li>
+                <li><Link to={createPageUrl('Explore')} className="text-muted-foreground hover:text-primary transition">Browse Courses</Link></li>
+                <li><Link to={createPageUrl('Dashboard')} className="text-muted-foreground hover:text-primary transition">My Learning</Link></li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Support</h4>
+              <h4 className="font-semibold text-foreground mb-4">Support</h4>
               <ul className="space-y-2 text-sm">
-                <li><Link to={createPageUrl('ContactUs')} className="text-gray-500 hover:text-[#FF8C00]">Contact Us</Link></li>
+                <li><Link to={createPageUrl('ContactUs')} className="text-muted-foreground hover:text-primary transition">Contact Us</Link></li>
               </ul>
             </div>
-            
+
             <div>
-              <h4 className="font-semibold text-gray-900 mb-4">Legal</h4>
+              <h4 className="font-semibold text-foreground mb-4">Legal</h4>
               <ul className="space-y-2 text-sm">
-                <li><span className="text-gray-500">Privacy Policy</span></li>
-                <li><span className="text-gray-500">Terms of Service</span></li>
+                <li><span className="text-muted-foreground">Privacy Policy</span></li>
+                <li><span className="text-muted-foreground">Terms of Service</span></li>
               </ul>
             </div>
           </div>
           
-          <div className="border-t border-gray-100 mt-12 pt-8 text-center text-sm text-gray-500">
+          <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
             <p>{getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}</p>
           </div>
         </div>
