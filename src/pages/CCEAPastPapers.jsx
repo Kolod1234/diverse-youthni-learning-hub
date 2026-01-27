@@ -109,8 +109,8 @@ export default function CCEAPastPapers() {
             </select>
           )}
           {error && (
-            <div className="mt-4 p-4 bg-red-900/20 border border-red-500/50 rounded-lg text-red-200 text-sm flex items-center gap-2">
-              <AlertCircle className="h-5 w-5" />
+            <div className="mt-4 p-4 bg-blue-900/20 border border-blue-500/50 rounded-lg text-blue-200 text-sm flex items-center gap-2">
+              <CheckCircle className="h-5 w-5" />
               {error}
             </div>
           )}
