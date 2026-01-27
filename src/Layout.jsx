@@ -296,7 +296,7 @@ function LayoutContent({ children, currentPageName }) {
                   )}
                   {isCoordinator && !isTutorOrAdmin && (
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer text-foreground">
                         <User className="w-4 h-4 mr-2" />
                         Coordinators Dashboard
                       </Link>
@@ -305,43 +305,43 @@ function LayoutContent({ children, currentPageName }) {
                   {isTutorOrAdmin && (
                     <>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer text-foreground">
                           <Settings className="w-4 h-4 mr-2" />
                           Tutor Overview
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer text-foreground">
                           <BookOpen className="w-4 h-4 mr-2" />
                           Lesson Editor
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer text-foreground">
                           <ClipboardList className="w-4 h-4 mr-2" />
                           Templates
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer text-foreground">
                           <BarChart3 className="w-4 h-4 mr-2" />
                           Data to Slides
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer text-foreground">
                           <Award className="w-4 h-4 mr-2" />
                           Quiz Generator
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer text-foreground">
                           <User className="w-4 h-4 mr-2" />
                           Tutor Setup
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer text-foreground">
                           <Settings className="w-4 h-4 mr-2" />
                           Full Tutor Dashboard
                         </Link>
@@ -351,60 +351,60 @@ function LayoutContent({ children, currentPageName }) {
                   )}
                   {isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer">
+                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer text-foreground">
                         <Settings className="w-4 h-4 mr-2" />
                         Admin Panel
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer text-foreground">
                           <Layout className="w-4 h-4 mr-2" />
                           Page Builder
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer text-foreground">
                           <User className="w-4 h-4 mr-2" />
                           Manage Coordinators
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer text-foreground">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage RSS Feed
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer text-foreground">
                           <BookOpen className="w-4 h-4 mr-2" />
                           Manage Library
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer text-foreground">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Quotes
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer text-foreground">
                           <Award className="w-4 h-4 mr-2" />
                           Student of Month
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer text-foreground">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Facts
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center cursor-pointer text-foreground">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Discover
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer">
+                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer text-foreground">
                           <Award className="w-4 h-4 mr-2" />
                           Manage Reviews
                         </Link>
@@ -491,7 +491,7 @@ function LayoutContent({ children, currentPageName }) {
                     )}
 
                     {isCoordinator && !isTutorOrAdmin && (
-                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                         <User className="w-5 h-5" />
                         <span>Coordinators Dashboard</span>
                       </Link>
@@ -499,16 +499,16 @@ function LayoutContent({ children, currentPageName }) {
 
                     {isTutorOrAdmin && (
                       <>
-                        <div className="border-t border-gray-200 my-2" />
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <div className="border-t border-border my-2" />
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <Settings className="w-5 h-5" />
                           <span>Tutor Overview</span>
                         </Link>
-                        <Link to={createPageUrl('Templates')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('Templates')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <ClipboardList className="w-5 h-5" />
                           <span>Templates</span>
                         </Link>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <Settings className="w-5 h-5" />
                           <span>Full Tutor Dashboard</span>
                         </Link>
@@ -517,40 +517,40 @@ function LayoutContent({ children, currentPageName }) {
 
                     {isAdmin && (
                       <>
-                        <div className="border-t border-gray-200 my-2" />
-                        <button onClick={() => setShowAdminPassword(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900 w-full text-left">
+                        <div className="border-t border-border my-2" />
+                        <button onClick={() => setShowAdminPassword(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground w-full text-left">
                           <Settings className="w-5 h-5" />
                           <span>Admin Panel</span>
                         </button>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <User className="w-5 h-5" />
                           <span>Manage Coordinators</span>
                         </Link>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage RSS Feed</span>
                         </Link>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <BookOpen className="w-5 h-5" />
                           <span>Manage Library</span>
                         </Link>
-                        <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <BookOpen className="w-5 h-5" />
                           <span>CCEA Past Papers</span>
                         </Link>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage Quotes</span>
                         </Link>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <Award className="w-5 h-5" />
                           <span>Student of Month</span>
                         </Link>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage Facts</span>
                         </Link>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-gray-600 hover:bg-gray-50 hover:text-gray-900">
+                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
                           <MessageSquare className="w-5 h-5" />
                           <span>Manage Discover</span>
                         </Link>
