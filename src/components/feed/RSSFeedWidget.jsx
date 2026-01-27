@@ -24,6 +24,12 @@ const SOURCE_COLORS = {
   default: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', badge: 'bg-gray-500' },
 };
 
+const decodeHTMLEntities = (text) => {
+  const textarea = document.createElement('textarea');
+  textarea.innerHTML = text;
+  return textarea.value;
+};
+
 const getTimeAgo = (dateString) => {
   const now = new Date();
   const past = new Date(dateString);
@@ -179,12 +185,12 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                     </div>
                     
                     <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
-                      {featuredItem.title}
+                      {decodeHTMLEntities(featuredItem.title)}
                     </h2>
                     
                     {featuredItem.description && (
                       <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
-                        {featuredItem.description}
+                        {decodeHTMLEntities(featuredItem.description)}
                       </p>
                     )}
                     
@@ -256,12 +262,12 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                       </div>
                       
                       <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
-                        {item.title}
+                        {decodeHTMLEntities(item.title)}
                       </h3>
                       
                       {item.description && (
                         <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-1">
-                          {item.description}
+                          {decodeHTMLEntities(item.description)}
                         </p>
                       )}
                       
