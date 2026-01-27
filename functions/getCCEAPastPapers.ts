@@ -11,9 +11,11 @@ Deno.serve(async (req) => {
 
     // Get URL from request body
     const body = await req.json();
-    const url = body.url;
+    console.log('Received body:', body);
+    const url = body?.url;
+    console.log('Extracted URL:', url);
     if (!url) {
-      return Response.json({ error: 'URL parameter required' }, { status: 400 });
+      return Response.json({ error: 'URL parameter required', receivedBody: body }, { status: 400 });
     }
 
     // Fetch the subject page with proper headers
