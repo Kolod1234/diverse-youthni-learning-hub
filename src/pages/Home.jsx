@@ -214,10 +214,10 @@ export default function Home() {
   });
 
   return (
-    <div className="bg-white">
+    <div className="bg-background">
       <PageSEO pageName="Home" sections={allPageSections} />
       {/* Search Bar - Sticky at top */}
-      <section className="sticky top-16 z-40 bg-[#003366] shadow-md">
+      <section className="sticky top-16 z-40 bg-[#003366] dark:bg-slate-900 shadow-md">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center gap-4">
             <SearchBar 
@@ -429,11 +429,11 @@ export default function Home() {
 
       {/* Funders Section */}
       {funderLogos.length > 0 && (
-        <section className="py-16 bg-white">
+        <section className="py-16 bg-background">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-gray-900 mb-4">{getContent('funders_heading', 'Proudly Supported By')}</h2>
-              <p className="text-gray-600">{getContent('funders_description', 'Our funders who make this possible')}</p>
+              <h2 className="text-3xl font-bold text-foreground mb-4">{getContent('funders_heading', 'Proudly Supported By')}</h2>
+              <p className="text-muted-foreground">{getContent('funders_description', 'Our funders who make this possible')}</p>
             </div>
             <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
               {funderLogos.map((logo, idx) => (
@@ -488,13 +488,13 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-pink-100 text-orange-600 text-sm font-semibold mb-4 border border-orange-200">
+          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
             Our Community
           </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
             Experience the <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent">Diverse Youth NI</span> Journey
           </h2>
-          <p className="text-gray-600 text-lg max-w-2xl mx-auto">
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
             See what's happening in our vibrant learning community
           </p>
         </motion.div>
@@ -561,7 +561,7 @@ export default function Home() {
 
       {/* Featured Courses */}
       {featuredCourses.length > 0 && (
-        <section className="bg-gradient-to-b from-gray-50 to-white py-20">
+        <section className="bg-gradient-to-b from-muted/30 to-background py-20">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
@@ -571,11 +571,11 @@ export default function Home() {
               className="flex items-center justify-between mb-12"
             >
               <div>
-                <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-violet-100 to-fuchsia-100 text-violet-700 text-sm font-semibold mb-3 border border-violet-200">
+                <span className="inline-block px-4 py-2 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-sm font-semibold mb-3 border border-violet-500/20">
                   Top Picks
                 </span>
-                <h2 className="text-3xl sm:text-4xl font-bold text-gray-900 mb-2">Featured Courses</h2>
-                <p className="text-gray-600 text-lg">Hand-picked by our expert instructors</p>
+                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Featured Courses</h2>
+                <p className="text-muted-foreground text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
                 <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all">
@@ -594,7 +594,7 @@ export default function Home() {
       )}
 
       {/* Explore Online Courses - LeanDirect Style */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gradient-to-b from-white to-gray-50">
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gradient-to-b from-background to-muted/30">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -602,13 +602,13 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-orange-100 to-pink-100 text-orange-600 text-sm font-semibold mb-4 border border-orange-200">
+          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
             Popular Courses
           </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-4">
+          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Explore Our Online Courses
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Start learning today with our expert-led courses
           </p>
         </motion.div>
@@ -616,12 +616,12 @@ export default function Home() {
         {isLoading ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-white rounded-xl overflow-hidden shadow-lg animate-pulse">
-                <div className="aspect-video bg-gray-200" />
+              <div key={i} className="bg-card rounded-xl overflow-hidden shadow-lg animate-pulse border border-border">
+                <div className="aspect-video bg-muted" />
                 <div className="p-6 space-y-3">
-                  <div className="h-6 bg-gray-200 rounded" />
-                  <div className="h-4 bg-gray-200 rounded w-2/3" />
-                  <div className="h-12 bg-gray-200 rounded" />
+                  <div className="h-6 bg-muted rounded" />
+                  <div className="h-4 bg-muted rounded w-2/3" />
+                  <div className="h-12 bg-muted rounded" />
                 </div>
               </div>
             ))}
@@ -636,7 +636,7 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
                 whileHover={{ y: -8 }}
-                className="group bg-white rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-gray-100"
+                className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-border"
                 >
                 <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
                   {course.thumbnail ? (
@@ -658,10 +658,10 @@ export default function Home() {
                   )}
                 </div>
                 <div className="p-6">
-                  <h3 className="text-xl font-bold text-gray-900 mb-3 group-hover:text-[#003366] transition-colors">
+                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
                     {course.title}
                   </h3>
-                  <p className="text-gray-600 mb-4 line-clamp-2 text-sm">
+                  <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
                     {course.description}
                   </p>
                   <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
@@ -675,9 +675,9 @@ export default function Home() {
           </div>
         ) : (
           <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No courses found</h3>
-            <p className="text-gray-500">Check back soon for new courses</p>
+            <BookOpen className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-foreground mb-2">No courses found</h3>
+            <p className="text-muted-foreground">Check back soon for new courses</p>
           </div>
         )}
         
@@ -702,7 +702,7 @@ export default function Home() {
       <FeaturesSection />
 
       {/* RSS Feed Section */}
-      <section id="news" className="py-20 bg-gradient-to-b from-purple-50/30 to-white">
+      <section id="news" className="py-20 bg-gradient-to-b from-purple-500/5 to-background">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
@@ -710,14 +710,14 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+            <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
               <Rss className="w-4 h-4 inline-block mr-2" />
               Latest Updates
             </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
               News & Announcements
             </h2>
-            <p className="text-lg text-gray-600">Stay informed with our latest news and updates</p>
+            <p className="text-lg text-muted-foreground">Stay informed with our latest news and updates</p>
           </motion.div>
           <RSSFeedWidget limit={6} />
         </div>
@@ -804,16 +804,16 @@ export default function Home() {
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
-        <section className="py-20 bg-gradient-to-br from-slate-50 to-slate-100">
+        <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
             <div className="text-center mb-16">
-              <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+              <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
                 Real Student Reviews
               </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
                 What our learners say
               </h2>
-              <p className="text-lg text-gray-600">
+              <p className="text-lg text-muted-foreground">
                 Authentic feedback from students currently learning with us
               </p>
             </div>
@@ -825,22 +825,22 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-white rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300"
+                className="bg-card rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border"
               >
                 <div className="flex items-center gap-1 mb-4">
                   {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`} />
+                    <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted'}`} />
                   ))}
                 </div>
-                <p className="text-gray-700 mb-6 leading-relaxed">"{review.comment}"</p>
+                <p className="text-foreground/90 mb-6 leading-relaxed">"{review.comment}"</p>
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-3">
                     <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
                       {review.user_name?.charAt(0) || 'U'}
                     </div>
                     <div>
-                      <p className="font-semibold text-gray-900">{review.user_name}</p>
-                      <p className="text-sm text-gray-500">
+                      <p className="font-semibold text-foreground">{review.user_name}</p>
+                      <p className="text-sm text-muted-foreground">
                         {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
                       </p>
                     </div>
@@ -1008,10 +1008,10 @@ function ProgramsSection() {
         viewport={{ once: true }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl font-bold text-foreground mb-4">
           Solutions for every age, stage, and transitional moment
         </h2>
-        <p className="text-lg text-gray-600 max-w-3xl mx-auto">
+        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
           Explore our comprehensive programs designed to support your educational journey
         </p>
       </motion.div>
@@ -1025,7 +1025,7 @@ function ProgramsSection() {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
+            className="bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-border"
           >
             <div className="aspect-[16/10] overflow-hidden">
               <img
@@ -1035,8 +1035,8 @@ function ProgramsSection() {
               />
             </div>
             <div className="p-8">
-              <h3 className="text-3xl font-bold text-gray-900 mb-4">{program.title}</h3>
-              <p className="text-gray-600 mb-6 leading-relaxed text-lg">
+              <h3 className="text-3xl font-bold text-foreground mb-4">{program.title}</h3>
+              <p className="text-muted-foreground mb-6 leading-relaxed text-lg">
                 {program.description}
               </p>
               <Link to={program.link_url}>
@@ -1061,7 +1061,7 @@ function FeaturesSection() {
   if (features.length === 0) return null;
 
   return (
-    <section className="py-20 bg-gradient-to-b from-white via-blue-50/30 to-purple-50/30">
+    <section className="py-20 bg-gradient-to-b from-background via-blue-500/5 to-purple-500/5">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
@@ -1069,13 +1069,13 @@ function FeaturesSection() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-gradient-to-r from-blue-100 to-purple-100 text-blue-700 text-sm font-semibold mb-4 border border-blue-200">
+          <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
             Why Choose Us
           </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-gray-900 mb-4">
+          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
             Why learners love our platform
           </h2>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto">
+          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
             Experience the future of education with our innovative features
           </p>
         </motion.div>
@@ -1088,14 +1088,14 @@ function FeaturesSection() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="bg-white rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-gray-100 relative overflow-hidden group"
+              className="bg-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-border relative overflow-hidden group"
             >
               <div className={`absolute inset-0 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
               <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} rounded-xl mb-4 shadow-md`}>
                 <span className="text-2xl">{feature.icon}</span>
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-3">{feature.title}</h3>
-              <p className="text-gray-600 leading-relaxed">{feature.description}</p>
+              <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
+              <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
             </motion.div>
           ))}
         </div>
@@ -1148,9 +1148,9 @@ function SuccessStoriesCarousel() {
         viewport={{ once: true }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">{section.title || 'Success stories and resources'}</h2>
+        <h2 className="text-4xl font-bold text-foreground mb-4">{section.title || 'Success stories and resources'}</h2>
         {section.description && (
-          <p className="text-gray-600 text-lg">{section.description}</p>
+          <p className="text-muted-foreground text-lg">{section.description}</p>
         )}
       </motion.div>
       
@@ -1248,11 +1248,11 @@ function SolutionsSection() {
         viewport={{ once: true }}
         className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-gray-900 mb-4">
+        <h2 className="text-4xl font-bold text-foreground mb-4">
           {section.title || 'Solutions for every age, stage, and transitional moment'}
         </h2>
         {section.description && (
-          <p className="text-gray-600 text-lg max-w-3xl mx-auto">{section.description}</p>
+          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">{section.description}</p>
         )}
       </motion.div>
       
@@ -1265,7 +1265,7 @@ function SolutionsSection() {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ y: -8 }}
-            className="bg-white rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-gray-100"
+            className="bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-border"
           >
             {card.image && (
               <div className="aspect-video overflow-hidden">
@@ -1277,8 +1277,8 @@ function SolutionsSection() {
               </div>
             )}
             <div className="p-6">
-              <h3 className="text-2xl font-bold text-gray-900 mb-3">{card.title}</h3>
-              <p className="text-gray-600 mb-4 leading-relaxed">{card.description}</p>
+              <h3 className="text-2xl font-bold text-foreground mb-3">{card.title}</h3>
+              <p className="text-muted-foreground mb-4 leading-relaxed">{card.description}</p>
               {card.link && (
                 <Link to={card.link}>
                   <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
@@ -1569,11 +1569,11 @@ function PartnersSection() {
   if (logos.length === 0) return null;
 
   return (
-    <section className="py-16 bg-gray-50">
+    <section className="py-16 bg-muted/30">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-gray-900 mb-4">Our Partners</h2>
-          <p className="text-gray-600">Working together to empower youth</p>
+          <h2 className="text-3xl font-bold text-foreground mb-4">Our Partners</h2>
+          <p className="text-muted-foreground">Working together to empower youth</p>
         </div>
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-12">
           {logos.map((logo, idx) => (
