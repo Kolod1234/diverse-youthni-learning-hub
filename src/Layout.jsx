@@ -216,7 +216,7 @@ function LayoutContent({ children, currentPageName }) {
                     <span>More</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 max-h-[80vh] overflow-y-auto">
+                <DropdownMenuContent align="end" className="w-56 max-h-[80vh] overflow-y-auto bg-background border border-border shadow-lg z-50">
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer">
                         <GraduationCap className="w-4 h-4 mr-2" />
