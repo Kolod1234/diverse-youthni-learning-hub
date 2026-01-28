@@ -1584,30 +1584,30 @@ function PartnersSection() {
         
         <div className="relative">
           <div className="overflow-hidden" ref={partnersEmblaRef}>
-            <div className="flex gap-6">
+            <div className="flex gap-8">
               {logos.map((logo, idx) => (
-                <div key={logo.id} className="flex-[0_0_280px] min-w-0">
+                <div key={logo.id} className="flex-[0_0_calc(50%-16px)] min-w-0">
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     whileHover={{ y: -8, scale: 1.03 }}
-                    className="bg-card border border-border rounded-xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center h-40"
+                    className="bg-card border border-border rounded-xl p-12 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center h-52"
                   >
                     {logo.website_url ? (
                       <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block w-full h-full flex items-center justify-center">
                         <img
                           src={logo.logo_url}
                           alt={logo.name}
-                          className="max-h-24 w-auto object-contain hover:scale-110 transition-all duration-300"
+                          className="max-h-36 w-auto object-contain hover:scale-110 transition-all duration-300"
                         />
                       </a>
                     ) : (
                       <img
                         src={logo.logo_url}
                         alt={logo.name}
-                        className="max-h-24 w-auto object-contain"
+                        className="max-h-36 w-auto object-contain"
                       />
                     )}
                   </motion.div>
