@@ -300,16 +300,16 @@ function SuccessStoriesCarousel() {
         
         <button
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
         >
-          <ChevronLeft className="w-6 h-6 text-gray-800" />
+          <ChevronLeft className="w-6 h-6 text-white" />
         </button>
         
         <button
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
         >
-          <ChevronRight className="w-6 h-6 text-gray-800" />
+          <ChevronRight className="w-6 h-6 text-white" />
         </button>
         
         <div className="flex justify-center gap-2 mt-6">
