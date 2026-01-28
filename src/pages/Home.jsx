@@ -1618,15 +1618,15 @@ function PartnersSection() {
           
           <button
             onClick={() => partnersEmblaApi?.scrollPrev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10 border border-border"
+            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
           >
-            <ChevronLeft className="w-6 h-6 text-foreground" />
+            <ChevronLeft className="w-6 h-6 text-white" />
           </button>
           <button
             onClick={() => partnersEmblaApi?.scrollNext()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-white dark:bg-slate-800 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10 border border-border"
+            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
           >
-            <ChevronRight className="w-6 h-6 text-foreground" />
+            <ChevronRight className="w-6 h-6 text-white" />
           </button>
         </div>
       </div>
