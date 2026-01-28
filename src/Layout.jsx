@@ -216,7 +216,7 @@ function LayoutContent({ children, currentPageName }) {
                     <span>More</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2 z-[9999]" style={{ opacity: 1 }}>
+                <DropdownMenuContent align="end" className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2" sideOffset={8}>
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('Tutors')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
                         <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
