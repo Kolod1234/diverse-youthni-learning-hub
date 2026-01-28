@@ -216,63 +216,63 @@ function LayoutContent({ children, currentPageName }) {
                     <span>More</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 max-h-[80vh] overflow-y-auto bg-background border border-border shadow-lg z-50">
+                <DropdownMenuContent align="end" className="w-56 max-h-[80vh] overflow-y-auto bg-card border border-border shadow-lg z-50">
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <GraduationCap className="w-4 h-4 mr-2" />
                         Tutors
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('YouthWork')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('YouthWork')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <GraduationCap className="w-4 h-4 mr-2" />
                         Youth Work (OCN)
                       </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <BookOpen className="w-4 h-4 mr-2" />
                         CCEA Past Papers
                       </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <Video className="w-4 h-4 mr-2" />
                         Live Sessions
                       </Link>
                       </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer">
+                      <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <MessageSquare className="w-4 h-4 mr-2" />
                         Messages
                       </Link>
                     </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Analytics')} className="flex items-center cursor-pointer">
+                    <Link to={createPageUrl('Analytics')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                       <BarChart3 className="w-4 h-4 mr-2" />
                       Analytics
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Achievements')} className="flex items-center cursor-pointer">
+                    <Link to={createPageUrl('Achievements')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                       <Award className="w-4 h-4 mr-2" />
                       Achievements
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('LearningPaths')} className="flex items-center cursor-pointer">
+                    <Link to={createPageUrl('LearningPaths')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                       <Award className="w-4 h-4 mr-2" />
                       Learning Paths
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Programs')} className="flex items-center cursor-pointer">
+                    <Link to={createPageUrl('Programs')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                       <ClipboardList className="w-4 h-4 mr-2" />
                       Programmes
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('ContactUs')} className="flex items-center cursor-pointer">
+                    <Link to={createPageUrl('ContactUs')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                       <MessageSquare className="w-4 h-4 mr-2" />
                       Contact Us
                     </Link>
@@ -296,7 +296,7 @@ function LayoutContent({ children, currentPageName }) {
                   )}
                   {isCoordinator && !isTutorOrAdmin && (
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer text-foreground">
+                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                         <User className="w-4 h-4 mr-2" />
                         Coordinators Dashboard
                       </Link>
@@ -305,43 +305,43 @@ function LayoutContent({ children, currentPageName }) {
                   {isTutorOrAdmin && (
                     <>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Settings className="w-4 h-4 mr-2" />
                           Tutor Overview
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <BookOpen className="w-4 h-4 mr-2" />
                           Lesson Editor
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <ClipboardList className="w-4 h-4 mr-2" />
                           Templates
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <BarChart3 className="w-4 h-4 mr-2" />
                           Data to Slides
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Award className="w-4 h-4 mr-2" />
                           Quiz Generator
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <User className="w-4 h-4 mr-2" />
                           Tutor Setup
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Settings className="w-4 h-4 mr-2" />
                           Full Tutor Dashboard
                         </Link>
@@ -351,60 +351,60 @@ function LayoutContent({ children, currentPageName }) {
                   )}
                   {isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer text-foreground">
+                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer text-foreground hover:bg-accent">
                         <Settings className="w-4 h-4 mr-2" />
                         Admin Panel
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Layout className="w-4 h-4 mr-2" />
                           Page Builder
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <User className="w-4 h-4 mr-2" />
                           Manage Coordinators
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage RSS Feed
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <BookOpen className="w-4 h-4 mr-2" />
                           Manage Library
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Quotes
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Award className="w-4 h-4 mr-2" />
                           Student of Month
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Facts
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <MessageSquare className="w-4 h-4 mr-2" />
                           Manage Discover
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer text-foreground">
+                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
                           <Award className="w-4 h-4 mr-2" />
                           Manage Reviews
                         </Link>
