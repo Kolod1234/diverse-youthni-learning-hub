@@ -1593,7 +1593,7 @@ function PartnersSection() {
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     whileHover={{ y: -8, scale: 1.03 }}
-                    className="bg-card border border-border rounded-xl p-12 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center h-52"
+                    className="bg-white dark:bg-white border border-border rounded-xl p-12 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center h-52"
                   >
                     {logo.website_url ? (
                       <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block w-full h-full flex items-center justify-center">
