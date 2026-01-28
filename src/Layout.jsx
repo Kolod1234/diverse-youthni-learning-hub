@@ -216,67 +216,69 @@ function LayoutContent({ children, currentPageName }) {
                     <span>More</span>
                   </Button>
                 </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56 max-h-[80vh] overflow-y-auto bg-card border border-border shadow-lg z-50">
+                <DropdownMenuContent align="end" className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2 z-50">
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Tutors')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        Tutors
+                      <Link to={createPageUrl('Tutors')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                        <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                        <span className="font-medium">Tutors</span>
                       </Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('YouthWork')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <GraduationCap className="w-4 h-4 mr-2" />
-                        Youth Work (OCN)
-                      </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <BookOpen className="w-4 h-4 mr-2" />
-                        CCEA Past Papers
-                      </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Sessions')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <Video className="w-4 h-4 mr-2" />
-                        Live Sessions
-                      </Link>
-                      </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('MessageCenter')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <MessageSquare className="w-4 h-4 mr-2" />
-                        Messages
+                      <Link to={createPageUrl('YouthWork')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-slate-700 transition-colors">
+                        <GraduationCap className="w-5 h-5 text-green-600 dark:text-green-400" />
+                        <span className="font-medium">Youth Work (OCN)</span>
                       </Link>
                     </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Analytics')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                      <BarChart3 className="w-4 h-4 mr-2" />
-                      Analytics
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Achievements')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                      <Award className="w-4 h-4 mr-2" />
-                      Achievements
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('LearningPaths')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                      <Award className="w-4 h-4 mr-2" />
-                      Learning Paths
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Programs')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                      <ClipboardList className="w-4 h-4 mr-2" />
-                      Programmes
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('ContactUs')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                      <MessageSquare className="w-4 h-4 mr-2" />
-                      Contact Us
-                    </Link>
-                  </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
+                        <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                        <span className="font-medium">CCEA Past Papers</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Sessions')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
+                        <Video className="w-5 h-5 text-red-600 dark:text-red-400" />
+                        <span className="font-medium">Live Sessions</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('MessageCenter')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
+                        <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                        <span className="font-medium">Messages</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Analytics')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
+                        <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                        <span className="font-medium">Analytics</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
+                        <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                        <span className="font-medium">Achievements</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('LearningPaths')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
+                        <Award className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                        <span className="font-medium">Learning Paths</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('Programs')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
+                        <ClipboardList className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                        <span className="font-medium">Programmes</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                    <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('ContactUs')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
+                        <MessageSquare className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                        <span className="font-medium">Contact Us</span>
+                      </Link>
+                    </DropdownMenuItem>
                   <DropdownMenuSeparator />
                   {user && !user.is_coordinator && user.role !== 'admin' && (
                     <>
@@ -295,118 +297,128 @@ function LayoutContent({ children, currentPageName }) {
                     </>
                   )}
                   {isCoordinator && !isTutorOrAdmin && (
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                        <User className="w-4 h-4 mr-2" />
-                        Coordinators Dashboard
-                      </Link>
-                    </DropdownMenuItem>
+                    <>
+                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
+                          <User className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="font-medium">Coordinators Dashboard</span>
+                        </Link>
+                      </DropdownMenuItem>
+                    </>
                   )}
                   {isTutorOrAdmin && (
                     <>
+                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                        Tutor Tools
+                      </div>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Tutor Overview
+                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                          <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium">Tutor Overview</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('LessonEditor')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Lesson Editor
+                        <Link to={createPageUrl('LessonEditor')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
+                          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <span className="font-medium">Lesson Editor</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('Templates')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <ClipboardList className="w-4 h-4 mr-2" />
-                          Templates
+                        <Link to={createPageUrl('Templates')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
+                          <ClipboardList className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                          <span className="font-medium">Templates</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('DataPresentation')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <BarChart3 className="w-4 h-4 mr-2" />
-                          Data to Slides
+                        <Link to={createPageUrl('DataPresentation')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
+                          <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                          <span className="font-medium">Data to Slides</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Award className="w-4 h-4 mr-2" />
-                          Quiz Generator
+                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
+                          <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                          <span className="font-medium">Quiz Generator</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorSetup')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <User className="w-4 h-4 mr-2" />
-                          Tutor Setup
+                        <Link to={createPageUrl('TutorSetup')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
+                          <User className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                          <span className="font-medium">Tutor Setup</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Settings className="w-4 h-4 mr-2" />
-                          Full Tutor Dashboard
+                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
+                          <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium">Full Tutor Dashboard</span>
                         </Link>
                       </DropdownMenuItem>
-                      <DropdownMenuSeparator />
                     </>
                   )}
                   {isAdmin && (
                     <>
-                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="cursor-pointer text-foreground hover:bg-accent">
-                        <Settings className="w-4 h-4 mr-2" />
+                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
                         Admin Panel
+                      </div>
+                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
+                        <Settings className="w-5 h-5 text-red-600 dark:text-red-400" />
+                        <span className="font-medium">Admin Panel</span>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Layout className="w-4 h-4 mr-2" />
-                          Page Builder
+                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-violet-50 dark:hover:bg-slate-700 transition-colors">
+                          <Layout className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                          <span className="font-medium">Page Builder</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <User className="w-4 h-4 mr-2" />
-                          Manage Coordinators
+                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
+                          <User className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
+                          <span className="font-medium">Manage Coordinators</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Manage RSS Feed
+                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
+                          <span className="font-medium">Manage RSS Feed</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <BookOpen className="w-4 h-4 mr-2" />
-                          Manage Library
+                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
+                          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <span className="font-medium">Manage Library</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Manage Quotes
+                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-pink-600 dark:text-pink-400" />
+                          <span className="font-medium">Manage Quotes</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Award className="w-4 h-4 mr-2" />
-                          Student of Month
+                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
+                          <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
+                          <span className="font-medium">Student of Month</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Manage Facts
+                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
+                          <span className="font-medium">Manage Facts</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <MessageSquare className="w-4 h-4 mr-2" />
-                          Manage Discover
+                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                          <span className="font-medium">Manage Discover</span>
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReviews')} className="flex items-center cursor-pointer text-foreground hover:bg-accent">
-                          <Award className="w-4 h-4 mr-2" />
-                          Manage Reviews
+                        <Link to={createPageUrl('AdminReviews')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
+                          <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />
+                          <span className="font-medium">Manage Reviews</span>
                         </Link>
                       </DropdownMenuItem>
                       </>
