@@ -65,7 +65,7 @@ export default function Community() {
             <h1 className="text-3xl font-bold text-gray-900 mb-2">Community</h1>
             <p className="text-gray-600">Connect with fellow students and share</p>
           </div>
-          <Button onClick={() => setShowNewPost(true)} className="bg-indigo-600 hover:bg-indigo-700 gap-2">
+          <Button onClick={() => setShowNewPost(true)} className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2">
             <Plus className="w-4 h-4" />
             New Post
           </Button>
@@ -177,7 +177,7 @@ export default function Community() {
                 <Button
                   onClick={() => createPostMutation.mutate(newPost)}
                   disabled={!newPost.title || !newPost.content}
-                  className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+                  className="flex-1 bg-indigo-600 hover:bg-indigo-700 text-white"
                 >
                   Post
                 </Button>

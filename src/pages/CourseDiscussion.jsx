@@ -182,7 +182,7 @@ export default function CourseDiscussion() {
             <Button 
               onClick={handleCreateDiscussion}
               disabled={!newDiscussion.title || !newDiscussion.content || createDiscussionMutation.isPending}
-              className="bg-indigo-600 hover:bg-indigo-700"
+              className="bg-indigo-600 hover:bg-indigo-700 text-white"
             >
               <Send className="w-4 h-4 mr-2" />
               Post Discussion
@@ -316,7 +316,7 @@ function DiscussionCard({ discussion, index, courseId, onReply, replyContent, on
                     size="sm"
                     onClick={() => onReply(discussion.id)}
                     disabled={!replyContent.trim()}
-                    className="bg-indigo-600 hover:bg-indigo-700"
+                    className="bg-indigo-600 hover:bg-indigo-700 text-white"
                   >
                     <Send className="w-4 h-4" />
                   </Button>
