@@ -1591,14 +1591,14 @@ function PartnersSection() {
                   <img
                     src={logo.logo_url}
                     alt={logo.name}
-                    className="h-20 w-auto object-contain grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
+                    className="h-28 w-auto object-contain hover:scale-110 transition-all duration-300"
                   />
                 </a>
               ) : (
                 <img
                   src={logo.logo_url}
                   alt={logo.name}
-                  className="h-20 w-auto object-contain opacity-70"
+                  className="h-28 w-auto object-contain"
                 />
               )}
             </motion.div>
