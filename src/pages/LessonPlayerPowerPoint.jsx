@@ -23,6 +23,8 @@ import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
+import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
+import FeedbackButton from '@/components/lesson/FeedbackButton';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -892,8 +894,15 @@ export default function LessonPlayerPowerPoint() {
             )}
 
           </div>
-        </main>
-      </div>
+          </main>
+
+          {/* Feedback Section - Below Main Player */}
+          {!isPresenting && lesson && (
+          <div className="bg-card border-t border-border px-4 sm:px-6 py-3 flex justify-end">
+            <FeedbackButton lesson={lesson} courseId={courseId} />
+          </div>
+          )}
+          </div>
 
       {/* DESKTOP FOOTER */}
       {!isPresenting && (
