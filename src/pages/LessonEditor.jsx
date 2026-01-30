@@ -282,23 +282,44 @@ export default function LessonEditor() {
               <FileText className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-semibold">Upload Document (PPT, PDF, Word)</h2>
             </div>
-            <input
-              type="file"
-              accept=".pdf,.ppt,.pptx,.doc,.docx"
-              onChange={handleDocumentUpload}
-              disabled={uploading}
-              className="hidden"
-              id="document-upload"
-            />
-            <label htmlFor="document-upload">
-              <Button type="button" variant="outline" className="w-full" disabled={uploading} onClick={() => document.getElementById('document-upload').click()}>
-                {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Upload className="w-4 h-4 mr-2" />Upload Document</>}
-              </Button>
-            </label>
-            {lessonForm.file_url && (
+            {lessonForm.file_url ? (
               <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                <p className="text-sm text-green-800">✓ {lessonForm.file_type?.toUpperCase()} uploaded</p>
+                <div className="flex items-center justify-between">
+                  <p className="text-sm text-green-800">✓ {lessonForm.file_type?.toUpperCase()} uploaded</p>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => {
+                      setLessonForm({ 
+                        ...lessonForm, 
+                        file_url: null, 
+                        file_type: null,
+                        content_type: 'richtext'
+                      });
+                      toast.success('Document removed');
+                    }}
+                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                  >
+                    Remove
+                  </Button>
+                </div>
               </div>
+            ) : (
+              <>
+                <input
+                  type="file"
+                  accept=".pdf,.ppt,.pptx,.doc,.docx"
+                  onChange={handleDocumentUpload}
+                  disabled={uploading}
+                  className="hidden"
+                  id="document-upload"
+                />
+                <label htmlFor="document-upload">
+                  <Button type="button" variant="outline" className="w-full" disabled={uploading} onClick={() => document.getElementById('document-upload').click()}>
+                    {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Upload className="w-4 h-4 mr-2" />Upload Document</>}
+                  </Button>
+                </label>
+              </>
             )}
           </Card>
 
