@@ -583,11 +583,11 @@ export default function LessonPlayerPowerPoint() {
         </button>
       )}
       {lesson.learning_objectives?.length > 0 && (
-        <div className="bg-white rounded-xl p-4 shadow-sm border border-gray-200">
-          <h3 className="font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base"><Target className="w-4 h-4 text-blue-600"/> Learning Objectives</h3>
+        <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
+          <h3 className="font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base text-foreground"><Target className="w-4 h-4 text-blue-600"/> Learning Objectives</h3>
           <div className="space-y-2">
             {lesson.learning_objectives.map((obj, i) => (
-              <p key={i} className="text-xs sm:text-sm text-gray-600 flex gap-2 items-start">
+              <p key={i} className="text-xs sm:text-sm text-muted-foreground flex gap-2 items-start">
                 <CheckCircle size={14} className="mt-0.5 text-green-500 shrink-0"/> 
                 <span>{obj}</span>
               </p>
@@ -599,7 +599,7 @@ export default function LessonPlayerPowerPoint() {
   );
 
   return (
-    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-[#f3f2f1] ${isPresenting ? 'bg-black' : ''}`}>
+    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
 
       {/* HEADER: Slim on Mobile */}
       {!isPresenting && (
@@ -634,14 +634,14 @@ export default function LessonPlayerPowerPoint() {
           </div>
           
           {/* DESKTOP TOOLBAR (Hidden on Mobile) */}
-          <div className="hidden sm:flex h-16 bg-white border-b border-gray-200 items-center px-5 gap-4 overflow-x-auto">
-             <div onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Home size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Exit</span></div>
-             <div className="w-[1px] h-10 bg-gray-200" />
+          <div className="hidden sm:flex h-16 bg-card border-b border-border items-center px-5 gap-4 overflow-x-auto">
+             <div onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Home size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Exit</span></div>
+             <div className="w-[1px] h-10 bg-border" />
              <DropdownMenu>
               <DropdownMenuTrigger asChild>
-                <div className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]">
-                  <Layout size={20} className="text-gray-600" />
-                  <span className="text-[11px] mt-1">Style</span>
+                <div className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">
+                  <Layout size={20} className="text-foreground" />
+                  <span className="text-[11px] mt-1 text-muted-foreground">Style</span>
                 </div>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
@@ -671,27 +671,16 @@ export default function LessonPlayerPowerPoint() {
             </DropdownMenu>
             {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
               <div onClick={async () => {
-                if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
-                toast.loading('Converting Google Slides...');
-                try {
-                  const response = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
-                  if (response.data.success) {
-                    toast.success(`Converted ${response.data.slideCount} slides successfully!`);
-                    queryClient.invalidateQueries(['lesson', lessonId]);
-                    setTimeout(() => window.location.reload(), 1000);
-                  }
-                } catch (error) {
-                  toast.error('Failed to convert Google Slides');
-                }
-              }} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600"/><span className="text-[11px] mt-1">Convert</span></div>
+...
+              }} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600"/><span className="text-[11px] mt-1 text-muted-foreground">Convert</span></div>
             )}
-            <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Present</span></div>
-             <div onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-gray-600"/> : <Maximize size={20} className="text-gray-600"/>}<span className="text-[11px] mt-1">Full</span></div>
-             <div onClick={() => setShowSearch(!showSearch)} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Search</span></div>
-             <div onClick={generateAISummary} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600"/><span className="text-[11px] mt-1">AI</span></div>
-             <div onClick={() => setShowNotes(!showNotes)} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><BookOpen size={20} className="text-blue-600"/><span className="text-[11px] mt-1">Notes</span></div>
-             <div onClick={() => setShowOutline(!showOutline)} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><Layout size={20} className="text-gray-600"/><span className="text-[11px] mt-1">Outline</span></div>
-             {!isCompleted && <div onClick={() => markCompleteMutation.mutate()} className="flex flex-col items-center p-2 hover:bg-gray-100 rounded cursor-pointer min-w-[64px]"><CheckCircle size={20} className="text-green-600"/><span className="text-[11px] mt-1">Done</span></div>}
+            <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Present</span></div>
+             <div onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-foreground"/> : <Maximize size={20} className="text-foreground"/>}<span className="text-[11px] mt-1 text-muted-foreground">Full</span></div>
+             <div onClick={() => setShowSearch(!showSearch)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Search</span></div>
+             <div onClick={generateAISummary} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600"/><span className="text-[11px] mt-1 text-muted-foreground">AI</span></div>
+             <div onClick={() => setShowNotes(!showNotes)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><BookOpen size={20} className="text-blue-600"/><span className="text-[11px] mt-1 text-muted-foreground">Notes</span></div>
+             <div onClick={() => setShowOutline(!showOutline)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Layout size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Outline</span></div>
+             {!isCompleted && <div onClick={() => markCompleteMutation.mutate()} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><CheckCircle size={20} className="text-green-600"/><span className="text-[11px] mt-1 text-muted-foreground">Done</span></div>}
           </div>
         </div>
       )}
@@ -713,10 +702,10 @@ export default function LessonPlayerPowerPoint() {
         
         {/* SIDEBAR (Desktop Only) */}
         {!isPresenting && showOutline && (
-          <aside className="hidden md:flex w-52 border-r border-gray-200 bg-white overflow-y-auto flex-col p-3 gap-3 z-40">
+          <aside className="hidden md:flex w-52 border-r border-border bg-card overflow-y-auto flex-col p-3 gap-3 z-40">
             {sortedLessons.map((l, idx) => (
-              <div key={l.id} onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)} className={`aspect-video border rounded p-1 cursor-pointer ${l.id === lessonId ? 'border-orange-500 bg-orange-50 border-2' : 'border-gray-300'}`}>
-                 <div className="w-full h-full bg-gray-100 flex items-center justify-center text-[10px] text-center p-1 font-medium text-gray-700">{l.title}</div>
+              <div key={l.id} onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)} className={`aspect-video border rounded p-1 cursor-pointer ${l.id === lessonId ? 'border-orange-500 bg-orange-50 border-2' : 'border-border'}`}>
+                 <div className="w-full h-full bg-muted flex items-center justify-center text-[10px] text-center p-1 font-medium text-foreground">{l.title}</div>
               </div>
             ))}
           </aside>
@@ -725,7 +714,7 @@ export default function LessonPlayerPowerPoint() {
         {/* MAIN STAGE */}
         <main 
           className={`flex-1 flex flex-col items-center overflow-hidden transition-all relative
-            ${isPresenting ? 'bg-black justify-center p-0' : 'bg-black sm:bg-[#edebe9] p-0 sm:p-6 md:p-10'}
+            ${isPresenting ? 'bg-black justify-center p-0' : 'bg-black sm:bg-muted p-0 sm:p-6 md:p-10'}
           `}
           style={{ minHeight: 0 }}
           onTouchStart={onTouchStart}
@@ -736,10 +725,10 @@ export default function LessonPlayerPowerPoint() {
         >
           {/* MOBILE INFO ACCORDION */}
           {!isPresenting && (
-             <div className="md:hidden w-full bg-white border-b border-gray-200 shadow-sm z-20 flex-none flex-shrink-0">
+             <div className="md:hidden w-full bg-card border-b border-border shadow-sm z-20 flex-none flex-shrink-0">
                 <button 
                   onClick={() => setIsMobileInfoOpen(!isMobileInfoOpen)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-gray-700 bg-gray-50 hover:bg-gray-100 transition-colors"
+                  className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-foreground bg-muted hover:bg-accent transition-colors"
                 >
                   <span className="flex items-center gap-2">
                     <Info size={14} className="text-blue-500"/>
@@ -749,7 +738,7 @@ export default function LessonPlayerPowerPoint() {
                 </button>
 
                 {isMobileInfoOpen && (
-                  <div className="p-3 bg-gray-100 border-t border-gray-200 max-h-[35vh] overflow-y-auto">
+                  <div className="p-3 bg-muted border-t border-border max-h-[35vh] overflow-y-auto">
                     <LessonInfoContent />
                   </div>
                 )}
@@ -767,7 +756,7 @@ export default function LessonPlayerPowerPoint() {
           <div className={`relative flex flex-col transition-all duration-500 bg-black
             ${isPresenting 
               ? 'w-full h-full min-h-screen' 
-              : 'flex-1 w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-white' 
+              : 'flex-1 w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-card' 
             }`}
             style={!isPresenting ? { minHeight: 0 } : {}}
           >
@@ -831,14 +820,14 @@ export default function LessonPlayerPowerPoint() {
                         </div>
                       )}
                       <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                        <div className="w-full h-full bg-white p-4 sm:p-12 overflow-y-auto flex flex-col justify-center items-center" style={{
+                        <div className="w-full h-full bg-card text-foreground p-4 sm:p-12 overflow-y-auto flex flex-col justify-center items-center" style={{
                           fontSize: `${accessibilityMode.fontSize}%`,
                           filter: accessibilityMode.contrast === 'high' ? 'contrast(1.5)' : accessibilityMode.contrast === 'inverted' ? 'invert(1)' : 'none',
                           fontFamily: accessibilityMode.dyslexiaFont ? 'Comic Sans MS, cursive' : 'inherit'
                         }}>
                           <div className="max-w-4xl w-full">
-                            <h2 className="text-xl sm:text-3xl font-bold mb-4">{sortedSlides[currentSlideIndex]?.title}</h2>
-                            <div className="prose prose-sm sm:prose-lg max-w-none" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
+                            <h2 className="text-xl sm:text-3xl font-bold mb-4 text-foreground">{sortedSlides[currentSlideIndex]?.title}</h2>
+                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
                           </div>
                         </div>
                       </TransformComponent>
@@ -897,7 +886,7 @@ export default function LessonPlayerPowerPoint() {
 
       {/* DESKTOP FOOTER */}
       {!isPresenting && (
-        <footer className="hidden sm:flex h-12 bg-white border-t border-gray-200 items-center justify-between px-4 text-xs text-gray-600 flex-none">
+        <footer className="hidden sm:flex h-12 bg-card border-t border-border items-center justify-between px-4 text-xs text-muted-foreground flex-none">
           <div className="flex items-center gap-5">
             <span>Lesson {currentLessonIndex + 1} of {sortedLessons.length}</span>
             <div className="flex gap-2">
@@ -908,14 +897,14 @@ export default function LessonPlayerPowerPoint() {
           
           <div className="flex items-center gap-4">
              {hasSlides && (
-               <div className="flex items-center bg-gray-100 rounded-lg p-1">
-                 <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} className="p-1 hover:bg-white rounded disabled:opacity-30" disabled={currentSlideIndex === 0}><ChevronLeft size={16}/></button>
-                 <span className="px-2 font-mono">{currentSlideIndex + 1} / {sortedSlides.length}</span>
-                 <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} className="p-1 hover:bg-white rounded disabled:opacity-30" disabled={currentSlideIndex === sortedSlides.length - 1}><ChevronRight size={16}/></button>
+               <div className="flex items-center bg-muted rounded-lg p-1">
+                 <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} className="p-1 hover:bg-accent rounded disabled:opacity-30" disabled={currentSlideIndex === 0}><ChevronLeft size={16}/></button>
+                 <span className="px-2 font-mono text-foreground">{currentSlideIndex + 1} / {sortedSlides.length}</span>
+                 <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} className="p-1 hover:bg-accent rounded disabled:opacity-30" disabled={currentSlideIndex === sortedSlides.length - 1}><ChevronRight size={16}/></button>
                </div>
              )}
-             <button onClick={togglePresentation} className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded"><Presentation size={14}/><span>Present</span></button>
-             <button onClick={toggleFullscreen} className="flex items-center gap-1 hover:bg-gray-100 px-2 py-1 rounded">{isFullscreen ? <Minimize size={14}/> : <Maximize size={14}/>}</button>
+             <button onClick={togglePresentation} className="flex items-center gap-1 hover:bg-accent px-2 py-1 rounded"><Presentation size={14}/><span>Present</span></button>
+             <button onClick={toggleFullscreen} className="flex items-center gap-1 hover:bg-accent px-2 py-1 rounded">{isFullscreen ? <Minimize size={14}/> : <Maximize size={14}/>}</button>
           </div>
         </footer>
       )}
