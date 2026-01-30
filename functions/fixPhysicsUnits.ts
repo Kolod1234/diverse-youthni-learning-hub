@@ -14,53 +14,45 @@ Deno.serve(async (req) => {
     // Get all physics lessons
     const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
 
-    // CCEA Physics has 2 main units:
-    // Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics
-    // Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics
+    // CCEA Physics has ONLY 2 main units - no subsections
+    const unit1 = 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics';
+    const unit2 = 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics';
 
-    const lessonSections = {
-      // Unit 1 lessons
-      'Motion and Force': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Scalars and Vectors': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Kinematics': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Momentum and Collisions': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      "Newton's Laws of Motion": 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Moments and Equilibrium': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Kinetic Theory and Density': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Density and Pressure': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Energy Transfer': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Work, Energy and Power': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Atomic Structure': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Radioactivity': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      'Nuclear Fission and Fusion': 'Unit 1: Motion, Force, Density and Kinetic Theory, Energy, and Atomic and Nuclear Physics',
-      
-      // Unit 2 lessons
-      'Wave Properties': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Light and Reflection': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Refraction': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Lenses and the Eye': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Electromagnetic Spectrum': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Electric Circuits': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Current and Voltage': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Resistance and Ohm\'s Law': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Series and Parallel Circuits': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Electrical Power': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Magnetism': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Electromagnetism': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Electromagnetic Induction': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Transformers': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Space Physics': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'The Solar System': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'Stars and Galaxies': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-      'The Universe': 'Unit 2: Waves, Light, Electricity, Magnetism, Electromagnetism and Space Physics',
-    };
+    // Unit 1 keywords
+    const unit1Keywords = [
+      'motion', 'force', 'scalar', 'vector', 'kinematics', 'momentum', 'collision',
+      'newton', 'moment', 'equilibrium', 'density', 'kinetic theory', 'pressure',
+      'energy', 'power', 'work', 'efficiency', 'transfer', 'renewable',
+      'atomic', 'nuclear', 'radioactiv', 'radiation', 'fission', 'fusion', 'isotope'
+    ];
+
+    // Unit 2 keywords
+    const unit2Keywords = [
+      'wave', 'light', 'reflection', 'refraction', 'lens', 'prism', 'dispersion',
+      'optical', 'electromagnetic spectrum', 'electric', 'circuit', 'ohm', 'resistance',
+      'current', 'voltage', 'conductor', 'series', 'parallel', 'magnet', 'induction',
+      'transformer', 'generator', 'space', 'solar', 'planet', 'star', 'universe',
+      'galaxy', 'cosmic'
+    ];
 
     let updateCount = 0;
 
     for (const lesson of lessons) {
-      const correctSection = lessonSections[lesson.title];
-      
-      if (correctSection && lesson.section !== correctSection) {
+      // Determine correct unit based on title
+      const title = lesson.title.toLowerCase();
+      let correctSection = null;
+
+      // Check Unit 2 keywords first (more specific)
+      if (unit2Keywords.some(keyword => title.includes(keyword))) {
+        correctSection = unit2;
+      } 
+      // Then check Unit 1 keywords
+      else if (unit1Keywords.some(keyword => title.includes(keyword))) {
+        correctSection = unit1;
+      }
+
+      // Update if section is different OR if it contains subsections (has " - " in it)
+      if (correctSection && (lesson.section !== correctSection || lesson.section.includes(' - '))) {
         await base44.asServiceRole.entities.Lesson.update(lesson.id, {
           section: correctSection
         });
