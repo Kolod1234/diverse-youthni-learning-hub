@@ -13,11 +13,11 @@ export default function DocumentViewer({ fileUrl, fileType }) {
     );
   }
 
-  // Use Microsoft Office Online Viewer for PPTX files
-  const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
+  // Use Google Docs Viewer for PPTX files
+  const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
 
   return (
-    <div className="w-full h-full">
+    <div className="w-full h-full bg-white">
       <iframe
         src={viewerUrl}
         className="w-full h-full border-0"
