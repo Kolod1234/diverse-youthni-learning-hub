@@ -68,7 +68,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  {(enrollment.completed_lessons?.length || 0)}/{course.total_lessons || 0} lessons
+                  {(enrollment.completed_lessons?.length || 0)}/{courseLessons.length} lessons
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
