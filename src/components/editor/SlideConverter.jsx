@@ -32,10 +32,14 @@ export default function SlideConverter() {
         images[imageName] = `data:${mimeType};base64,${imageData}`;
       }
       
-      // Extract slide relationships to map images
+      // Extract slide content
       const slideFiles = Object.keys(zip.files).filter(name => 
         name.startsWith('ppt/slides/slide') && name.endsWith('.xml') && !name.includes('_rels')
-      ).sort();
+      ).sort((a, b) => {
+        const numA = parseInt(a.match(/slide(\d+)/)?.[1] || 0);
+        const numB = parseInt(b.match(/slide(\d+)/)?.[1] || 0);
+        return numA - numB;
+      });
 
       let htmlContent = '<div class="slides-container">';
       
@@ -48,7 +52,7 @@ export default function SlideConverter() {
         let imageRels = {};
         if (zip.files[relsPath]) {
           const relsXml = await zip.files[relsPath].async('text');
-          const relMatches = relsXml.matchAll(/<Relationship Id="([^"]+)"[^>]*Target="\.\.\/media\/([^"]+)"/g);
+          const relMatches = [...relsXml.matchAll(/<Relationship[^>]+Id="([^"]+)"[^>]+Target="\.\.\/media\/([^"]+)"/g)];
           for (const match of relMatches) {
             imageRels[match[1]] = match[2];
           }
@@ -56,48 +60,37 @@ export default function SlideConverter() {
         
         htmlContent += '<div class="slide" style="position: relative; width: 960px; height: 540px; margin-bottom: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; overflow: hidden;">';
         
-        // Extract text with positioning
-        const parser = new DOMParser();
-        const xmlDoc = parser.parseFromString(slideXml, 'text/xml');
+        // Extract text content
+        const textMatches = [...slideXml.matchAll(/<a:t>([^<]+)<\/a:t>/g)];
+        const texts = textMatches.map(m => m[1]);
         
-        // Find all shapes (text boxes and images)
-        const shapes = xmlDoc.querySelectorAll('p\\:sp, p\\:pic');
+        // Extract image references
+        const imageMatches = [...slideXml.matchAll(/<a:blip[^>]+r:embed="([^"]+)"/g)];
         
-        shapes.forEach(shape => {
-          // Get position and size
-          const xfrm = shape.querySelector('a\\:xfrm, xdr\\:xfrm');
-          if (xfrm) {
-            const off = xfrm.querySelector('a\\:off');
-            const ext = xfrm.querySelector('a\\:ext');
-            
-            if (off && ext) {
-              const x = parseInt(off.getAttribute('x')) / 12700; // EMUs to pixels
-              const y = parseInt(off.getAttribute('y')) / 12700;
-              const w = parseInt(ext.getAttribute('cx')) / 12700;
-              const h = parseInt(ext.getAttribute('cy')) / 12700;
-              
-              // Check if it's an image
-              const blip = shape.querySelector('a\\:blip');
-              if (blip) {
-                const embed = blip.getAttribute('r:embed');
-                if (embed && imageRels[embed]) {
-                  const imageData = images[imageRels[embed]];
-                  if (imageData) {
-                    htmlContent += `<img src="${imageData}" style="position: absolute; left: ${x}px; top: ${y}px; width: ${w}px; height: ${h}px;" />`;
-                  }
-                }
-              } else {
-                // It's a text box
-                const texts = Array.from(shape.querySelectorAll('a\\:t')).map(t => t.textContent);
-                if (texts.length > 0) {
-                  const fontSize = shape.querySelector('a\\:sz');
-                  const size = fontSize ? parseInt(fontSize.getAttribute('val')) / 100 : 16;
-                  const isBold = shape.querySelector('a\\:latin[typeface*="Bold"]') || shape.querySelector('a\\:b[val="1"]');
-                  
-                  htmlContent += `<div style="position: absolute; left: ${x}px; top: ${y}px; width: ${w}px; height: ${h}px; font-size: ${size}px; ${isBold ? 'font-weight: bold;' : ''} overflow: hidden;">`;
-                  htmlContent += texts.join('<br>');
-                  htmlContent += '</div>';
-                }
+        // Add texts as positioned elements
+        let yPos = 50;
+        texts.forEach((text, idx) => {
+          const isTitle = idx === 0;
+          const fontSize = isTitle ? 32 : 18;
+          const fontWeight = isTitle ? 'bold' : 'normal';
+          
+          htmlContent += `<div style="position: absolute; left: 50px; top: ${yPos}px; width: 860px; font-size: ${fontSize}px; font-weight: ${fontWeight};">${text}</div>`;
+          yPos += isTitle ? 80 : 40;
+        });
+        
+        // Add images
+        let imgX = 50;
+        let imgY = Math.max(yPos + 20, 200);
+        imageMatches.forEach(match => {
+          const embedId = match[1];
+          if (imageRels[embedId]) {
+            const imageData = images[imageRels[embedId]];
+            if (imageData) {
+              htmlContent += `<img src="${imageData}" style="position: absolute; left: ${imgX}px; top: ${imgY}px; max-width: 400px; max-height: 300px; object-fit: contain;" />`;
+              imgX += 420;
+              if (imgX > 800) {
+                imgX = 50;
+                imgY += 320;
               }
             }
           }
