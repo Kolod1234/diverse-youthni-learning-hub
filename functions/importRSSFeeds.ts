@@ -11,7 +11,6 @@ const RSS_FEEDS = {
   deni: 'https://www.education-ni.gov.uk/rss/news.xml',
   govuk: 'https://www.gov.uk/government/organisations/department-for-education.atom',
   ukparliament: 'https://www.parliament.uk/site-information/rss-feeds/rss-education/',
-  metroweather: 'https://metro.co.uk/feed/',
 };
 
 function cleanText(text) {

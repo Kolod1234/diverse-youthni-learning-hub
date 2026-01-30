@@ -59,7 +59,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
   useEffect(() => {
     const importAllSources = async () => {
-      const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather'];
+      const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament'];
       try {
         for (const source of sources) {
           await base44.functions.invoke('importRSSFeeds', { source });
