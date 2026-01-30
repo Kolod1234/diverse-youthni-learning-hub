@@ -7,7 +7,7 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { base44 } from '@/api/base44Client';
-import ImageGeneratorModal from './ImageGeneratorModal';
+import ImageGeneratorModal from '@/components/authoring/ImageGeneratorModal';
 import { 
   Sparkles, Loader2, CheckCircle, CheckCircle2, BookOpen, 
   Brain, Clock, Target, FileText, X, Wand2, ChevronLeft, ChevronRight, ImagePlus
