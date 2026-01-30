@@ -152,32 +152,34 @@ Deno.serve(async (req) => {
       const title = lesson.title.toLowerCase();
       let objectives = [];
 
-      // Match lesson to appropriate objectives
-      if (title.includes('motion') || title.includes('speed') || title.includes('velocity')) {
+      // Match lesson to appropriate objectives with comprehensive keyword matching
+      if (title.includes('motion') || title.includes('speed') || title.includes('velocity') || title.includes('scalar') || title.includes('vector') || title.includes('kinematic') || title.includes('displacement') || title.includes('acceleration')) {
         objectives = objectivesMap['Motion'];
-      } else if (title.includes('force') || title.includes('newton') || title.includes('moment') || title.includes('pressure') || title.includes('hooke')) {
+      } else if (title.includes('collision') || title.includes('momentum') || title.includes('equilibrium')) {
         objectives = objectivesMap['Force'];
-      } else if (title.includes('density') || title.includes('kinetic theory')) {
+      } else if (title.includes('force') || title.includes('newton') || title.includes('moment') || title.includes('pressure') || title.includes('hooke') || title.includes('gravity') || title.includes('centre of')) {
+        objectives = objectivesMap['Force'];
+      } else if (title.includes('density') || title.includes('kinetic theory') || title.includes('matter') || title.includes('particle')) {
         objectives = objectivesMap['Density'];
-      } else if (title.includes('energy') || title.includes('power') || title.includes('work') || title.includes('efficiency') || title.includes('renewable')) {
+      } else if (title.includes('energy') || title.includes('power') || title.includes('work') || title.includes('efficiency') || title.includes('renewable') || title.includes('heat') || title.includes('transfer')) {
         objectives = objectivesMap['Energy'];
       } else if (title.includes('atomic') || title.includes('radioactiv') || title.includes('radiation') || title.includes('isotope') || title.includes('half-life')) {
         objectives = objectivesMap['Atomic'];
       } else if (title.includes('nuclear') || title.includes('fission') || title.includes('fusion')) {
         objectives = objectivesMap['Nuclear'];
-      } else if (title.includes('wave') || title.includes('frequency') || title.includes('echo') || title.includes('electromagnetic spectrum')) {
+      } else if (title.includes('wave') || title.includes('frequency') || title.includes('echo') || title.includes('electromagnetic spectrum') || title.includes('ultrasound') || title.includes('sonar')) {
         objectives = objectivesMap['Waves'];
-      } else if (title.includes('light') || title.includes('refraction') || title.includes('reflection') || title.includes('lens') || title.includes('prism')) {
+      } else if (title.includes('light') || title.includes('refraction') || title.includes('reflection') || title.includes('lens') || title.includes('prism') || title.includes('dispersion') || title.includes('optical')) {
         objectives = objectivesMap['Light'];
-      } else if (title.includes('electric') || title.includes('circuit') || title.includes('ohm') || title.includes('resistance') || title.includes('current') || title.includes('voltage')) {
+      } else if (title.includes('electric') || title.includes('circuit') || title.includes('ohm') || title.includes('resistance') || title.includes('current') || title.includes('voltage') || title.includes('conductor') || title.includes('insulator')) {
         objectives = objectivesMap['Electricity'];
       } else if (title.includes('magnet') && !title.includes('electro')) {
         objectives = objectivesMap['Magnetism'];
-      } else if (title.includes('electromagnetism') || title.includes('induction') || title.includes('transformer') || title.includes('generator')) {
+      } else if (title.includes('electromagnetism') || title.includes('electromagnetic induction') || title.includes('induction') || title.includes('transformer') || title.includes('generator') || title.includes('motor effect')) {
         objectives = objectivesMap['Electromagnetism'];
-      } else if (title.includes('space') || title.includes('solar') || title.includes('planet') || title.includes('star') || title.includes('universe') || title.includes('big bang')) {
+      } else if (title.includes('space') || title.includes('solar') || title.includes('planet') || title.includes('star') || title.includes('universe') || title.includes('big bang') || title.includes('cosmic') || title.includes('galaxy')) {
         objectives = objectivesMap['Space'];
-      } else if (title.includes('practical') || title.includes('experiment') || title.includes('data')) {
+      } else if (title.includes('practical') || title.includes('experiment') || title.includes('data') || title.includes('investigation')) {
         objectives = objectivesMap['Practical'];
       }
 
