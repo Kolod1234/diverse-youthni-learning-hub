@@ -77,7 +77,8 @@ async function parseRSSFeed(xmlText) {
       const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
       const width = widthMatch ? parseInt(widthMatch[1]) : 0;
       
-      if (width > maxWidth && url.match(/\.(jpg|jpeg|png|webp)/i)) {
+      // Only use images with minimum width of 400px to avoid thumbnails
+      if (width >= 400 && width > maxWidth && url.match(/\.(jpg|jpeg|png|webp)/i)) {
         maxWidth = width;
         bestMediaUrl = url;
       }
@@ -88,10 +89,16 @@ async function parseRSSFeed(xmlText) {
     // Try enclosure with image type
     if (!imageUrl) {
       const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
-      if (enclosureMatch) imageUrl = enclosureMatch[1];
+      if (enclosureMatch) {
+        const url = enclosureMatch[1];
+        // Skip small thumbnails
+        if (!url.match(/thumb|small|icon|avatar|width=\d{1,2}[^\d]/i)) {
+          imageUrl = url;
+        }
+      }
     }
     
-    // Try media:thumbnail (fallback)
+    // Try media:thumbnail (fallback, but prefer larger sizes)
     if (!imageUrl) {
       const mediaThumbnailMatches = itemXml.matchAll(/<media:thumbnail[^>]*url=["']([^"']+)["'][^>]*>/gi);
       for (const match of mediaThumbnailMatches) {
@@ -100,7 +107,7 @@ async function parseRSSFeed(xmlText) {
         const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
         const width = widthMatch ? parseInt(widthMatch[1]) : 0;
         
-        if (width > maxWidth) {
+        if (width >= 400 && width > maxWidth) {
           maxWidth = width;
           imageUrl = url;
         }
