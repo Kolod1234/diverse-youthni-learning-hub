@@ -1,4 +1,5 @@
 import React from 'react';
+import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import { FileText } from 'lucide-react';
 
 export default function DocumentViewer({ fileUrl, fileType }) {
@@ -13,16 +14,23 @@ export default function DocumentViewer({ fileUrl, fileType }) {
     );
   }
 
-  // Use Google Docs Viewer for PPTX files
-  const viewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+  const docs = [{ 
+    uri: fileUrl,
+    fileType: fileType || fileUrl.split('.').pop()
+  }];
 
   return (
     <div className="w-full h-full bg-white">
-      <iframe
-        src={viewerUrl}
-        className="w-full h-full border-0"
-        title="Document Viewer"
-        allowFullScreen
+      <DocViewer
+        documents={docs}
+        pluginRenderers={DocViewerRenderers}
+        config={{
+          header: {
+            disableHeader: false,
+            disableFileName: false,
+          },
+        }}
+        style={{ height: '100%', width: '100%' }}
       />
     </div>
   );
