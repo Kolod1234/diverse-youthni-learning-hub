@@ -7,9 +7,10 @@ import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { base44 } from '@/api/base44Client';
+import ImageGeneratorModal from './ImageGeneratorModal';
 import { 
   Sparkles, Loader2, CheckCircle, CheckCircle2, BookOpen, 
-  Brain, Clock, Target, FileText, X, Wand2, ChevronLeft, ChevronRight
+  Brain, Clock, Target, FileText, X, Wand2, ChevronLeft, ChevronRight, ImagePlus
 } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
@@ -36,11 +37,14 @@ export default function AdvancedAISlideGenerator({ courseId, onSlidesGenerated, 
   const [targetAudience, setTargetAudience] = useState('secondary');
   const [complexityLevel, setComplexityLevel] = useState('intermediate');
   const [includeMultimedia, setIncludeMultimedia] = useState(true);
+  const [generateImages, setGenerateImages] = useState(false);
   
   const [generating, setGenerating] = useState(false);
   const [currentStep, setCurrentStep] = useState('');
   const [generatedContent, setGeneratedContent] = useState(null);
   const [previewSlideIndex, setPreviewSlideIndex] = useState(0);
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [imageGeneratorSlideIdx, setImageGeneratorSlideIdx] = useState(null);
 
   useEffect(() => {
     const fetchSections = async () => {
@@ -296,7 +300,39 @@ Return ONLY valid JSON:
         }
       }
 
-      // Step 3: Generate learning objectives with Base44 AI
+      // Step 3: Generate AI images for slides if requested
+      if (generateImages && includeMultimedia) {
+        setCurrentStep('Generating AI images for slides using ModelLabs...');
+        
+        const updatedSlides = [...slides];
+        for (let i = 0; i < updatedSlides.length; i++) {
+          if (updatedSlides[i].multimedia_suggestions?.images?.length > 0) {
+            const imageDesc = updatedSlides[i].multimedia_suggestions.images[0];
+            try {
+              const imgResponse = await base44.functions.invoke('generateImageForSlide', {
+                prompt: imageDesc,
+                style: 'illustration',
+              });
+              
+              if (imgResponse.data.success && imgResponse.data.imageUrl) {
+                // Replace placeholder with generated image
+                const placeholderRegex = /<img[^>]*src="[^"]*placeholder[^"]*"[^>]*>/;
+                if (placeholderRegex.test(updatedSlides[i].content)) {
+                  updatedSlides[i].content = updatedSlides[i].content.replace(
+                    placeholderRegex,
+                    `<img src="${imgResponse.data.imageUrl}" style="width: 100%; border-radius: 12px; margin: 20px 0;" alt="${imageDesc}"/>`
+                  );
+                }
+              }
+            } catch (err) {
+              console.warn(`Failed to generate image for slide ${i + 1}:`, err);
+            }
+          }
+        }
+        Object.assign(slidesResult, { slides: updatedSlides });
+      }
+
+      // Step 4: Generate learning objectives with Base44 AI
       setCurrentStep('Generating comprehensive learning objectives...');
       
       const objectivesPrompt = `For "${topic}" (${curriculum} ${examBoard}), create comprehensive pedagogical materials:
@@ -663,7 +699,23 @@ Return ONLY valid JSON:
                       Include multimedia suggestions (images, videos, interactive elements)
                     </Label>
                   </div>
-                </div>
+
+                  {includeMultimedia && (
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="checkbox"
+                        id="generateImages"
+                        checked={generateImages}
+                        onChange={(e) => setGenerateImages(e.target.checked)}
+                        className="w-4 h-4"
+                      />
+                      <Label htmlFor="generateImages" className="cursor-pointer flex items-center gap-2">
+                        <ImagePlus className="w-4 h-4 text-blue-600" />
+                        Auto-generate AI images for slides (via ModelLabs)
+                      </Label>
+                    </div>
+                  )}
+                  </div>
                 </div>
 
               <Button
@@ -853,8 +905,22 @@ Return ONLY valid JSON:
                     )}
 
                     {generatedContent?.slides?.[previewSlideIndex]?.multimedia_suggestions && (
-                      <div className="px-4 py-3">
-                        <p className="text-xs font-semibold text-purple-900 mb-2">🎨 Multimedia Suggestions:</p>
+                      <div className="px-4 py-3 border-b border-blue-100">
+                        <div className="flex items-center justify-between mb-2">
+                          <p className="text-xs font-semibold text-purple-900">🎨 Multimedia Suggestions:</p>
+                          <Button
+                            size="sm"
+                            variant="outline"
+                            onClick={() => {
+                              setImageGeneratorSlideIdx(previewSlideIndex);
+                              setShowImageGenerator(true);
+                            }}
+                            className="text-xs h-6"
+                          >
+                            <ImagePlus className="w-3 h-3 mr-1" />
+                            Generate Image
+                          </Button>
+                        </div>
                         <div className="space-y-2">
                           {generatedContent.slides[previewSlideIndex].multimedia_suggestions.images?.length > 0 && (
                             <div className="text-xs text-purple-800">
@@ -1010,6 +1076,39 @@ Return ONLY valid JSON:
               </Button>
             </div>
           </div>
+        )}
+
+        {/* Image Generator Modal */}
+        {showImageGenerator && imageGeneratorSlideIdx !== null && (
+          <ImageGeneratorModal
+            onImageSelect={(imageUrl) => {
+              const updatedSlides = [...generatedContent.slides];
+              const slide = updatedSlides[imageGeneratorSlideIdx];
+              
+              // Replace first placeholder with generated image
+              const placeholderRegex = /<img[^>]*src="[^"]*placeholder[^"]*"[^>]*>/;
+              if (placeholderRegex.test(slide.content)) {
+                slide.content = slide.content.replace(
+                  placeholderRegex,
+                  `<img src="${imageUrl}" style="width: 100%; border-radius: 12px; margin: 20px 0;" alt="Generated image"/>`
+                );
+              } else {
+                // Append image if no placeholder
+                slide.content += `<img src="${imageUrl}" style="width: 100%; border-radius: 12px; margin: 20px 0;" alt="Generated image"/>`;
+              }
+              
+              setGeneratedContent({
+                ...generatedContent,
+                slides: updatedSlides
+              });
+              setShowImageGenerator(false);
+              setImageGeneratorSlideIdx(null);
+            }}
+            onClose={() => {
+              setShowImageGenerator(false);
+              setImageGeneratorSlideIdx(null);
+            }}
+          />
         )}
       </motion.div>
     </div>
