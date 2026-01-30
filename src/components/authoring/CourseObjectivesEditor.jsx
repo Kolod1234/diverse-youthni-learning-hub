@@ -9,8 +9,17 @@ import { useMutation } from '@tanstack/react-query';
 export default function CourseObjectivesEditor({ courseId, lessons, onUpdate }) {
   const [objectives, setObjectives] = useState([]);
   const [newObjective, setNewObjective] = useState('');
-  const [selectedLessonId, setSelectedLessonId] = useState(lessons[0]?.id || '');
+  const [selectedLessonId, setSelectedLessonId] = useState('');
   const [isSaving, setIsSaving] = useState(false);
+
+  // Update selected lesson when lessons load
+  React.useEffect(() => {
+    if (lessons && lessons.length > 0 && !selectedLessonId) {
+      const firstLessonId = lessons[0].id;
+      setSelectedLessonId(firstLessonId);
+      setObjectives(lessons[0]?.learning_objectives || []);
+    }
+  }, [lessons]);
 
   const saveMutation = useMutation({
     mutationFn: async (lessonId, objs) => {
@@ -46,13 +55,17 @@ export default function CourseObjectivesEditor({ courseId, lessons, onUpdate }) 
     setIsSaving(false);
   };
 
+  if (!lessons || lessons.length === 0) {
+    return <p className="text-gray-500">No lessons created yet. Create lessons first to add objectives.</p>;
+  }
+
   return (
     <div className="space-y-6">
       {/* Lesson Selector */}
       <div>
         <label className="block text-sm font-medium mb-2">Select Lesson</label>
         <select
-          value={selectedLessonId}
+          value={selectedLessonId || ''}
           onChange={(e) => {
             setSelectedLessonId(e.target.value);
             const lesson = lessons.find(l => l.id === e.target.value);
@@ -60,6 +73,7 @@ export default function CourseObjectivesEditor({ courseId, lessons, onUpdate }) 
           }}
           className="w-full border border-input rounded-md p-2"
         >
+          <option value="">-- Select a lesson --</option>
           {lessons.map((lesson) => (
             <option key={lesson.id} value={lesson.id}>
               {lesson.title}
