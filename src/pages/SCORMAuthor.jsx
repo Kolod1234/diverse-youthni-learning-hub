@@ -8,6 +8,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { Upload, Save, Download, Plus, Edit2, Trash2, FileJson } from 'lucide-react';
 import CourseBasicInfo from '@/components/authoring/CourseBasicInfo';
 import CourseObjectivesEditor from '@/components/authoring/CourseObjectivesEditor';
+import LessonContentEditor from '@/components/authoring/LessonContentEditor';
 import AssessmentBuilder from '@/components/authoring/AssessmentBuilder';
 import SCORMExportConfig from '@/components/authoring/SCORMExportConfig';
 import RiseImportDialog from '@/components/authoring/RiseImportDialog';
@@ -157,9 +158,10 @@ export default function SCORMAuthor() {
 
         {/* Main Content Tabs */}
         <Tabs value={activeTab} onValueChange={setActiveTab}>
-          <TabsList className="grid w-full grid-cols-4">
+          <TabsList className="grid w-full grid-cols-5">
             <TabsTrigger value="basic">Basic Info</TabsTrigger>
-            <TabsTrigger value="objectives">Learning Objectives</TabsTrigger>
+            <TabsTrigger value="content">Lessons</TabsTrigger>
+            <TabsTrigger value="objectives">Objectives</TabsTrigger>
             <TabsTrigger value="assessments">Assessments</TabsTrigger>
             <TabsTrigger value="export">Export</TabsTrigger>
           </TabsList>
@@ -178,6 +180,29 @@ export default function SCORMAuthor() {
                   courseData={courseData}
                   onChange={setCourseData}
                 />
+              </CardContent>
+            </Card>
+          </TabsContent>
+
+          {/* Lesson Content Tab */}
+          <TabsContent value="content" className="mt-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Lesson Content</CardTitle>
+                <CardDescription>
+                  Create and edit lesson content with rich text formatting
+                </CardDescription>
+              </CardHeader>
+              <CardContent>
+                {courseId ? (
+                  <LessonContentEditor
+                    courseId={courseId}
+                    lessons={lessons}
+                    onUpdate={() => queryClient.invalidateQueries(['lessons', courseId])}
+                  />
+                ) : (
+                  <p className="text-gray-500">Save the course first to add lessons</p>
+                )}
               </CardContent>
             </Card>
           </TabsContent>
