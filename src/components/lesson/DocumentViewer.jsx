@@ -2,7 +2,31 @@ import React from 'react';
 import { FileText } from 'lucide-react';
 import PowerPointRenderer from './PowerPointRenderer';
 
-export default function DocumentViewer({ fileUrl, fileType }) {
+export default function DocumentViewer({ fileUrl, fileType, file, className }) {
+  // Handle slide object with image URLs (pre-converted slides)
+  if (file) {
+    if (file.url || file.image_url) {
+      return (
+        <img 
+          src={file.url || file.image_url} 
+          alt={file.title || 'Slide'}
+          className={className || "w-full h-full object-contain"}
+        />
+      );
+    }
+
+    if (file.file_path) {
+      return (
+        <img 
+          src={`/api/files/${file.file_path}`} 
+          alt={file.title || 'Slide'}
+          className={className || "w-full h-full object-contain"}
+        />
+      );
+    }
+  }
+
+  // Handle direct file URL
   if (!fileUrl) {
     return (
       <div className="flex items-center justify-center h-full bg-gray-100">
@@ -17,6 +41,17 @@ export default function DocumentViewer({ fileUrl, fileType }) {
   // Use custom PowerPoint renderer for PPTX files
   if (fileType === 'pptx' || fileUrl.toLowerCase().endsWith('.pptx')) {
     return <PowerPointRenderer fileUrl={fileUrl} />;
+  }
+
+  // Handle image files
+  if (fileType && ['png', 'jpg', 'jpeg', 'gif', 'webp'].includes(fileType.toLowerCase())) {
+    return (
+      <img 
+        src={fileUrl} 
+        alt="Document"
+        className={className || "w-full h-full object-contain"}
+      />
+    );
   }
 
   // Fallback to basic viewer for other file types
