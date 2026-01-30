@@ -347,6 +347,12 @@ function LayoutContent({ children, currentPageName }) {
                         </Link>
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('SlideConverter')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
+                          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+                          <span className="font-medium">Slide Converter</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
                         <Link to={createPageUrl('QuizGenerator')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
                           <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
                           <span className="font-medium">Quiz Generator</span>
