@@ -25,7 +25,6 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
-import SCORMWrapper from '@/components/lesson/SCORMWrapper';
 import { useSCORM } from '@/components/lesson/useSCORM';
 
 export default function LessonPlayerPowerPoint() {
@@ -611,8 +610,7 @@ export default function LessonPlayerPowerPoint() {
   );
 
   return (
-    <SCORMWrapper lesson={lesson} courseId={courseId}>
-      <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
+    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
 
       {/* HEADER: Slim on Mobile */}
       {!isPresenting && (
@@ -1105,6 +1103,5 @@ export default function LessonPlayerPowerPoint() {
         }}
       />
     </div>
-    </SCORMWrapper>
   );
 }

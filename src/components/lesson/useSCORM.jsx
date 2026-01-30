@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback } from 'react';
-import { useSCORMProvider } from '@code-by-dwayne/react-scorm-provider';
+import { useSCORM as useSCORMProvider } from '@code-by-dwayne/react-scorm-provider';
 
 /**
  * Custom hook for SCORM 2004 integration
@@ -16,12 +16,12 @@ export function useSCORM(lessonId, courseId) {
 
     try {
       // Initialize SCORM connection
-      scorm.init();
+      scorm.initialize();
       
       // Set learning object identifier
-      scorm.set('cmi.core.lesson_location', '0');
-      scorm.set('cmi.core.lesson_status', 'incomplete');
-      scorm.set('cmi.core.entry', 'ab-initio');
+      scorm.setValue('cmi.learner_id', lessonId);
+      scorm.setValue('cmi.learner_name', courseId);
+      scorm.setValue('cmi.completion_status', 'incomplete');
       
       setScormReady(true);
     } catch (error) {
@@ -32,9 +32,9 @@ export function useSCORM(lessonId, courseId) {
     return () => {
       if (scorm) {
         try {
-          scorm.quit();
+          scorm.terminate();
         } catch (e) {
-          console.error('SCORM quit error:', e);
+          console.error('SCORM terminate error:', e);
         }
       }
     };
@@ -46,21 +46,19 @@ export function useSCORM(lessonId, courseId) {
   const markComplete = useCallback(async (score = null) => {
     if (!scorm || !scormReady) {
       console.warn('SCORM not ready');
-      return;
+      return false;
     }
 
     try {
-      scorm.set('cmi.core.lesson_status', 'completed');
+      scorm.setValue('cmi.completion_status', 'completed');
       
       if (score !== null) {
-        scorm.set('cmi.core.score.raw', Math.min(100, Math.max(0, score)));
-        scorm.set('cmi.core.score.max', '100');
-        scorm.set('cmi.core.score.min', '0');
+        scorm.setValue('cmi.score.raw', Math.min(100, Math.max(0, score)));
+        scorm.setValue('cmi.score.max', 100);
+        scorm.setValue('cmi.score.min', 0);
       }
       
-      scorm.set('cmi.core.exit', 'logout');
       scorm.save();
-      
       return true;
     } catch (error) {
       console.error('Error marking complete:', error);
@@ -70,46 +68,17 @@ export function useSCORM(lessonId, courseId) {
   }, [scorm, scormReady]);
 
   /**
-   * Update lesson progress/location
+   * Update lesson progress
    */
-  const updateProgress = useCallback((location = '0', statusType = 'incomplete') => {
+  const updateProgress = useCallback((location = '0', status = 'incomplete') => {
     if (!scorm || !scormReady) return;
 
     try {
-      scorm.set('cmi.core.lesson_location', String(location));
-      scorm.set('cmi.core.lesson_status', statusType);
+      scorm.setValue('cmi.location', String(location));
+      scorm.setValue('cmi.completion_status', status);
       scorm.save();
     } catch (error) {
       console.error('Error updating progress:', error);
-    }
-  }, [scorm, scormReady]);
-
-  /**
-   * Set suspend data (for state persistence)
-   */
-  const setSuspendData = useCallback((data) => {
-    if (!scorm || !scormReady) return;
-
-    try {
-      scorm.set('cmi.suspend_data', JSON.stringify(data));
-      scorm.save();
-    } catch (error) {
-      console.error('Error setting suspend data:', error);
-    }
-  }, [scorm, scormReady]);
-
-  /**
-   * Get suspend data
-   */
-  const getSuspendData = useCallback(() => {
-    if (!scorm || !scormReady) return null;
-
-    try {
-      const data = scorm.get('cmi.suspend_data');
-      return data ? JSON.parse(data) : null;
-    } catch (error) {
-      console.error('Error getting suspend data:', error);
-      return null;
     }
   }, [scorm, scormReady]);
 
@@ -118,7 +87,5 @@ export function useSCORM(lessonId, courseId) {
     scormError,
     markComplete,
     updateProgress,
-    setSuspendData,
-    getSuspendData,
   };
 }
