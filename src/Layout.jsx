@@ -470,6 +470,12 @@ function LayoutContent({ children, currentPageName }) {
                     </Link>
                   </DropdownMenuItem>
                   <DropdownMenuItem asChild>
+                    <Link to={createPageUrl('Settings')} className="flex items-center cursor-pointer">
+                      <Settings className="w-4 h-4 mr-2" />
+                      Settings
+                    </Link>
+                  </DropdownMenuItem>
+                  <DropdownMenuItem asChild>
                     <Link to={createPageUrl('Dashboard')} className="flex items-center cursor-pointer">
                       <Award className="w-4 h-4 mr-2" />
                       Achievements
