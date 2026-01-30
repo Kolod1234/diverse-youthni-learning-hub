@@ -16,7 +16,7 @@ import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
@@ -378,7 +378,7 @@ function LayoutContent({ children, currentPageName }) {
                       </DropdownMenuItem>
                       <DropdownMenuItem asChild>
                         <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-violet-50 dark:hover:bg-slate-700 transition-colors">
-                          <Layout className="w-5 h-5 text-violet-600 dark:text-violet-400" />
+                          <LayoutIcon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
                           <span className="font-medium">Page Builder</span>
                         </Link>
                       </DropdownMenuItem>
