@@ -825,9 +825,9 @@ export default function LessonPlayerPowerPoint() {
                     <>
                       {!isPresenting && (
                         <div className="absolute top-2 right-2 z-10 hidden sm:flex gap-2">
-                          <button onClick={() => zoomIn()} className="p-2 bg-white/90 hover:bg-white rounded shadow"><ZoomIn className="w-4 h-4" /></button>
-                          <button onClick={() => zoomOut()} className="p-2 bg-white/90 hover:bg-white rounded shadow"><ZoomOut className="w-4 h-4" /></button>
-                          <button onClick={() => resetTransform()} className="p-2 bg-white/90 hover:bg-white rounded shadow"><Minimize2 className="w-4 h-4" /></button>
+                          <button onClick={() => zoomIn()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><ZoomIn className="w-4 h-4 text-foreground" /></button>
+                          <button onClick={() => zoomOut()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><ZoomOut className="w-4 h-4 text-foreground" /></button>
+                          <button onClick={() => resetTransform()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><Minimize2 className="w-4 h-4 text-foreground" /></button>
                         </div>
                       )}
                       <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
@@ -966,8 +966,8 @@ export default function LessonPlayerPowerPoint() {
           {searchQuery && searchResults.length > 0 && (
             <div className="space-y-2 mt-4">
               {searchResults.map(r => (
-                <button key={r.index} onClick={() => { setCurrentSlideIndex(r.index); setShowSearch(false); }} className="w-full p-3 bg-gray-50 hover:bg-gray-100 rounded text-left">
-                  <span className="font-medium">Slide {r.index + 1}: {r.title}</span>
+                <button key={r.index} onClick={() => { setCurrentSlideIndex(r.index); setShowSearch(false); }} className="w-full p-3 bg-muted hover:bg-accent rounded text-left">
+                  <span className="font-medium text-foreground">Slide {r.index + 1}: {r.title}</span>
                 </button>
               ))}
             </div>
@@ -982,10 +982,10 @@ export default function LessonPlayerPowerPoint() {
             <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>
           ) : aiSummary ? (
             <div className="space-y-4">
-              <div><h3 className="font-semibold mb-2">Summary</h3><p className="text-gray-700">{aiSummary.summary}</p></div>
+              <div><h3 className="font-semibold mb-2 text-foreground">Summary</h3><p className="text-foreground">{aiSummary.summary}</p></div>
               {aiSummary.key_points?.length > 0 && (
-                <div><h3 className="font-semibold mb-2">Key Points</h3>
-                  <ul className="space-y-2">{aiSummary.key_points.map((p, i) => <li key={i} className="flex gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5"/><span>{p}</span></li>)}</ul>
+                <div><h3 className="font-semibold mb-2 text-foreground">Key Points</h3>
+                  <ul className="space-y-2">{aiSummary.key_points.map((p, i) => <li key={i} className="flex gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5"/><span className="text-foreground">{p}</span></li>)}</ul>
                 </div>
               )}
             </div>
@@ -1001,7 +1001,7 @@ export default function LessonPlayerPowerPoint() {
             <Button onClick={addNote} className="gap-2"><Plus className="w-4 h-4"/>Add</Button>
           </div>
           <div className="mt-4 space-y-2">
-            {notes.length === 0 ? <p className="text-center text-gray-500 py-8">No notes yet</p> : notes.map(n=><div key={n.id} className="p-3 bg-gray-50 rounded"><div className="flex justify-between mb-1"><span className="text-xs font-semibold text-indigo-600">Slide {n.slideNumber}</span><button onClick={()=>setNotes(notes.filter(x=>x.id!==n.id))} className="text-red-500"><Trash2 size={14}/></button></div><p className="text-sm">{n.content}</p></div>)}
+            {notes.length === 0 ? <p className="text-center text-muted-foreground py-8">No notes yet</p> : notes.map(n=><div key={n.id} className="p-3 bg-muted rounded border border-border"><div className="flex justify-between mb-1"><span className="text-xs font-semibold text-indigo-600">Slide {n.slideNumber}</span><button onClick={()=>setNotes(notes.filter(x=>x.id!==n.id))} className="text-red-500"><Trash2 size={14}/></button></div><p className="text-sm text-foreground">{n.content}</p></div>)}
           </div>
         </DialogContent>
       </Dialog>
@@ -1013,8 +1013,8 @@ export default function LessonPlayerPowerPoint() {
             {lesson?.slides && lesson.slides.length > 0 && (() => {
               const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
               return slides.map((s, i) => (
-                <button key={i} onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} className={`w-full p-3 rounded text-left ${i === currentSlideIndex ? 'bg-indigo-50 border-2 border-indigo-600' : 'bg-gray-50 hover:bg-gray-100'}`}>
-                  <span className="font-medium">{i + 1}. {s.title}</span>
+                <button key={i} onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} className={`w-full p-3 rounded text-left ${i === currentSlideIndex ? 'bg-indigo-500/10 border-2 border-indigo-600' : 'bg-muted hover:bg-accent'}`}>
+                  <span className="font-medium text-foreground">{i + 1}. {s.title}</span>
                 </button>
               ));
             })()}
@@ -1031,8 +1031,8 @@ export default function LessonPlayerPowerPoint() {
           </div>
           {aiHelpLoading ? <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div> : aiHelpResponse && (
             <div className="space-y-3 mt-4">
-              <div><h3 className="font-semibold mb-2">Answer</h3><p>{aiHelpResponse.answer}</p></div>
-              {aiHelpResponse.key_points?.length > 0 && <div><h3 className="font-semibold mb-2">Key Points</h3><ul>{aiHelpResponse.key_points.map((p, i) => <li key={i} className="flex gap-2 mb-1"><CheckCircle size={16} className="text-green-600 mt-0.5"/><span>{p}</span></li>)}</ul></div>}
+              <div><h3 className="font-semibold mb-2 text-foreground">Answer</h3><p className="text-foreground">{aiHelpResponse.answer}</p></div>
+              {aiHelpResponse.key_points?.length > 0 && <div><h3 className="font-semibold mb-2 text-foreground">Key Points</h3><ul>{aiHelpResponse.key_points.map((p, i) => <li key={i} className="flex gap-2 mb-1"><CheckCircle size={16} className="text-green-600 mt-0.5"/><span className="text-foreground">{p}</span></li>)}</ul></div>}
             </div>
           )}
         </DialogContent>
@@ -1063,10 +1063,10 @@ export default function LessonPlayerPowerPoint() {
         <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
           <DialogHeader><DialogTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-green-600"/>Flashcards ({flashcards.length})</DialogTitle></DialogHeader>
           <div className="space-y-3">
-            {flashcards.length === 0 ? <p className="text-center text-gray-500 py-8">No flashcards yet</p> : flashcards.map((c, i) => (
-              <div key={i} className="p-4 bg-gradient-to-br from-green-50 to-blue-50 rounded border border-green-200">
-                <p className="font-semibold mb-3">{c.question}</p>
-                <div className="p-3 bg-white rounded"><p className="text-sm">{c.answer}</p></div>
+            {flashcards.length === 0 ? <p className="text-center text-muted-foreground py-8">No flashcards yet</p> : flashcards.map((c, i) => (
+              <div key={i} className="p-4 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded border border-green-500/20">
+                <p className="font-semibold mb-3 text-foreground">{c.question}</p>
+                <div className="p-3 bg-card border border-border rounded"><p className="text-sm text-foreground">{c.answer}</p></div>
               </div>
             ))}
           </div>
