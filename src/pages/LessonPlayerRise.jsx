@@ -7,6 +7,7 @@ import { createPageUrl } from '@/utils';
 import RiseLessonSidebar from '@/components/lesson/RiseLessonSidebar';
 import RiseLessonContent from '@/components/lesson/RiseLessonContent';
 import RiseLessonHeader from '@/components/lesson/RiseLessonHeader';
+import { useSCORMTracking } from '@/components/lesson/SCORMTracker';
 
 export default function LessonPlayerRise() {
   const navigate = useNavigate();
@@ -17,6 +18,7 @@ export default function LessonPlayerRise() {
   const courseId = searchParams.get('courseId');
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState({});
+  const { scormReady, trackProgress, markComplete: scormMarkComplete } = useSCORMTracking(lessonId, courseId);
 
   // Fetch lesson data
   const { data: lesson, isLoading: lessonLoading } = useQuery({
@@ -70,6 +72,13 @@ export default function LessonPlayerRise() {
     }
   });
 
+  // Track progress when slide changes
+  useEffect(() => {
+    if (scormReady && lesson?.slides) {
+      trackProgress(currentSlideIndex + 1, lesson.slides.length);
+    }
+  }, [currentSlideIndex, scormReady, lesson?.slides, trackProgress]);
+
   const toggleSection = (sectionKey) => {
     setExpandedSections(prev => ({
       ...prev,
@@ -80,6 +89,10 @@ export default function LessonPlayerRise() {
   const handleNextLesson = () => {
     const currentIndex = courseLessons.findIndex(l => l.id === lessonId);
     if (currentIndex < courseLessons.length - 1) {
+      // Track completion in SCORM
+      if (scormReady) {
+        scormMarkComplete(100);
+      }
       markCompleteMutation.mutate();
       const nextLesson = courseLessons[currentIndex + 1];
       navigate(`${createPageUrl('LessonPlayerRise')}?lessonId=${nextLesson.id}&courseId=${courseId}`);
