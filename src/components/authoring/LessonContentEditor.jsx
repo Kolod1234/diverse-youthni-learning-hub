@@ -3,19 +3,31 @@ import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Save, Trash2, Edit2 } from 'lucide-react';
+import { Plus, Save, Trash2, Edit2, Wand2 } from 'lucide-react';
 import { useMutation } from '@tanstack/react-query';
 import ReactQuill from 'react-quill';
 import 'react-quill/dist/quill.snow.css';
+import ImageGeneratorModal from './ImageGeneratorModal';
 
 export default function LessonContentEditor({ courseId, lessons, onUpdate }) {
   const [showForm, setShowForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
+  const [showImageGenerator, setShowImageGenerator] = useState(false);
+  const [quillRef, setQuillRef] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
     section: '',
     content: '',
   });
+
+  const handleImageGenerated = (imageUrl) => {
+    if (quillRef) {
+      const range = quillRef.getSelection();
+      const index = range ? range.index : quillRef.getLength();
+      quillRef.insertEmbed(index, 'image', imageUrl);
+      quillRef.setSelection(index + 1);
+    }
+  };
 
   const modules = {
     toolbar: [
@@ -157,8 +169,21 @@ export default function LessonContentEditor({ courseId, lessons, onUpdate }) {
 
             {/* Content Editor */}
             <div>
-              <label className="block text-sm font-medium mb-2">Lesson Content</label>
+              <div className="flex items-center justify-between mb-2">
+                <label className="block text-sm font-medium">Lesson Content</label>
+                <Button
+                  type="button"
+                  size="sm"
+                  variant="outline"
+                  onClick={() => setShowImageGenerator(true)}
+                  className="flex items-center gap-2 text-xs"
+                >
+                  <Wand2 className="w-3 h-3" />
+                  Generate Image
+                </Button>
+              </div>
               <ReactQuill
+                ref={setQuillRef}
                 value={formData.content}
                 onChange={(content) => setFormData({ ...formData, content })}
                 modules={modules}
@@ -188,6 +213,14 @@ export default function LessonContentEditor({ courseId, lessons, onUpdate }) {
             </div>
           </CardContent>
         </Card>
+      )}
+
+      {/* Image Generator Modal */}
+      {showImageGenerator && (
+        <ImageGeneratorModal
+          onImageSelect={handleImageGenerated}
+          onClose={() => setShowImageGenerator(false)}
+        />
       )}
 
       {/* Lessons List */}
