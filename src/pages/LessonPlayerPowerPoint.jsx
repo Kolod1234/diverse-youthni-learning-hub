@@ -25,6 +25,8 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
+import SCORMWrapper from '@/components/lesson/SCORMWrapper';
+import { useSCORM } from '@/hooks/useSCORM';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -148,11 +150,19 @@ export default function LessonPlayerPowerPoint() {
     enabled: !!courseId && courseId !== 'null'
   });
 
+  // SCORM tracking
+  const { scormReady, markComplete: scormMarkComplete } = useSCORM(lessonId, courseId);
+
   const markCompleteMutation = useMutation({
     mutationFn: async () => {
       if (!enrollment) return;
       const completedLessons = enrollment.completed_lessons || [];
       if (!completedLessons.includes(lessonId)) {
+        // Track in SCORM
+        if (scormReady) {
+          await scormMarkComplete(100);
+        }
+        
         await base44.entities.Enrollment.update(enrollment.id, {
           completed_lessons: [...completedLessons, lessonId],
           progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
@@ -601,7 +611,8 @@ export default function LessonPlayerPowerPoint() {
   );
 
   return (
-    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
+    <SCORMWrapper lesson={lesson} courseId={courseId}>
+      <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
 
       {/* HEADER: Slim on Mobile */}
       {!isPresenting && (
@@ -1094,5 +1105,6 @@ export default function LessonPlayerPowerPoint() {
         }}
       />
     </div>
+    </SCORMWrapper>
   );
 }

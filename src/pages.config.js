@@ -95,6 +95,7 @@ import Quiz from './pages/Quiz';
 import QuizGenerator from './pages/QuizGenerator';
 import ScheduleSession from './pages/ScheduleSession';
 import Sessions from './pages/Sessions';
+import Settings from './pages/Settings';
 import StudentAnalytics from './pages/StudentAnalytics';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
@@ -107,7 +108,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import Settings from './pages/Settings';
 import __Layout from './Layout.jsx';
 
 
@@ -160,6 +160,7 @@ export const PAGES = {
     "QuizGenerator": QuizGenerator,
     "ScheduleSession": ScheduleSession,
     "Sessions": Sessions,
+    "Settings": Settings,
     "StudentAnalytics": StudentAnalytics,
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
@@ -172,7 +173,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "Settings": Settings,
 }
 
 export const pagesConfig = {
