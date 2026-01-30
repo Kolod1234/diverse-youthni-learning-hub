@@ -218,12 +218,12 @@ function LayoutContent({ children, currentPageName }) {
                 </DropdownMenuTrigger>
                 <DropdownMenuContent 
                   align="end" 
-                  className="w-64 max-h-[600px] overflow-y-auto border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2" 
+                  className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2" 
                   sideOffset={8}
                   style={{ 
-                    backgroundColor: 'rgb(255, 255, 255)',
                     zIndex: 9999,
-                    position: 'relative'
+                    position: 'relative',
+                    opacity: 1
                   }}
                 >
                     <DropdownMenuItem asChild>
