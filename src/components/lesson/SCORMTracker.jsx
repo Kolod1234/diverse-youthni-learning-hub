@@ -260,6 +260,8 @@ export function getSCORMTracker() {
 /**
  * React hook for SCORM tracking
  */
+import React from 'react';
+
 export function useSCORMTracking(lessonId, courseId) {
   const [scormReady, setScormReady] = React.useState(false);
 
