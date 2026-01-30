@@ -8,6 +8,7 @@ import RiseLessonSidebar from '@/components/lesson/RiseLessonSidebar';
 import RiseLessonContent from '@/components/lesson/RiseLessonContent';
 import RiseLessonHeader from '@/components/lesson/RiseLessonHeader';
 import { useSCORMTracking } from '@/components/lesson/SCORMTracker';
+import { useLessonProgressTracking } from '@/components/analytics/ProgressTracker';
 
 export default function LessonPlayerRise() {
   const navigate = useNavigate();
@@ -19,6 +20,7 @@ export default function LessonPlayerRise() {
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [expandedSections, setExpandedSections] = useState({});
   const { scormReady, trackProgress, markComplete: scormMarkComplete } = useSCORMTracking(lessonId, courseId);
+  const { recordSlideView, recordSectionExpanded, recordInteraction, markLessonComplete } = useLessonProgressTracking(lessonId, courseId);
 
   // Fetch lesson data
   const { data: lesson, isLoading: lessonLoading } = useQuery({
@@ -77,13 +79,18 @@ export default function LessonPlayerRise() {
     if (scormReady && lesson?.slides) {
       trackProgress(currentSlideIndex + 1, lesson.slides.length);
     }
-  }, [currentSlideIndex, scormReady, lesson?.slides, trackProgress]);
+    // Record slide view for analytics
+    recordSlideView(currentSlideIndex);
+  }, [currentSlideIndex, scormReady, lesson?.slides, trackProgress, recordSlideView]);
 
   const toggleSection = (sectionKey) => {
     setExpandedSections(prev => ({
       ...prev,
       [sectionKey]: !prev[sectionKey]
     }));
+    // Record interaction
+    recordInteraction();
+    recordSectionExpanded(sectionKey);
   };
 
   const handleNextLesson = () => {
@@ -93,6 +100,8 @@ export default function LessonPlayerRise() {
       if (scormReady) {
         scormMarkComplete(100);
       }
+      // Track analytics
+      markLessonComplete();
       markCompleteMutation.mutate();
       const nextLesson = courseLessons[currentIndex + 1];
       navigate(`${createPageUrl('LessonPlayerRise')}?lessonId=${nextLesson.id}&courseId=${courseId}`);
