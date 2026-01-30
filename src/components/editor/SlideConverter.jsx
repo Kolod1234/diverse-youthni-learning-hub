@@ -18,32 +18,92 @@ export default function SlideConverter() {
       const arrayBuffer = await file.arrayBuffer();
       const zip = await JSZip.loadAsync(arrayBuffer);
       
-      // Extract slide content from PPTX (simplified approach)
-      const slideFiles = Object.keys(zip.files).filter(name => 
-        name.startsWith('ppt/slides/slide') && name.endsWith('.xml')
+      // Extract images from PPTX
+      const images = {};
+      const mediaFiles = Object.keys(zip.files).filter(name => 
+        name.startsWith('ppt/media/')
       );
+      
+      for (const mediaFile of mediaFiles) {
+        const imageData = await zip.files[mediaFile].async('base64');
+        const ext = mediaFile.split('.').pop().toLowerCase();
+        const mimeType = ext === 'png' ? 'image/png' : ext === 'jpg' || ext === 'jpeg' ? 'image/jpeg' : `image/${ext}`;
+        const imageName = mediaFile.split('/').pop();
+        images[imageName] = `data:${mimeType};base64,${imageData}`;
+      }
+      
+      // Extract slide relationships to map images
+      const slideFiles = Object.keys(zip.files).filter(name => 
+        name.startsWith('ppt/slides/slide') && name.endsWith('.xml') && !name.includes('_rels')
+      ).sort();
 
       let htmlContent = '<div class="slides-container">';
       
       for (const slideName of slideFiles) {
         const slideXml = await zip.files[slideName].async('text');
+        const slideNum = slideName.match(/slide(\d+)\.xml/)?.[1];
         
-        // Extract text content from XML
-        const textMatches = slideXml.match(/<a:t>(.*?)<\/a:t>/g) || [];
-        const texts = textMatches.map(match => 
-          match.replace(/<\/?a:t>/g, '').trim()
-        );
-
-        if (texts.length > 0) {
-          htmlContent += '<div class="slide" style="margin-bottom: 30px; padding: 20px; border: 1px solid #e0e0e0; border-radius: 8px;">';
-          htmlContent += `<h2 style="color: #2563eb; margin-bottom: 15px;">${texts[0] || 'Slide'}</h2>`;
-          
-          texts.slice(1).forEach(text => {
-            htmlContent += `<p style="margin-bottom: 10px; line-height: 1.6;">${text}</p>`;
-          });
-          
-          htmlContent += '</div>';
+        // Get relationships for this slide
+        const relsPath = `ppt/slides/_rels/slide${slideNum}.xml.rels`;
+        let imageRels = {};
+        if (zip.files[relsPath]) {
+          const relsXml = await zip.files[relsPath].async('text');
+          const relMatches = relsXml.matchAll(/<Relationship Id="([^"]+)"[^>]*Target="\.\.\/media\/([^"]+)"/g);
+          for (const match of relMatches) {
+            imageRels[match[1]] = match[2];
+          }
         }
+        
+        htmlContent += '<div class="slide" style="position: relative; width: 960px; height: 540px; margin-bottom: 30px; border: 1px solid #e0e0e0; border-radius: 8px; background: white; overflow: hidden;">';
+        
+        // Extract text with positioning
+        const parser = new DOMParser();
+        const xmlDoc = parser.parseFromString(slideXml, 'text/xml');
+        
+        // Find all shapes (text boxes and images)
+        const shapes = xmlDoc.querySelectorAll('p\\:sp, p\\:pic');
+        
+        shapes.forEach(shape => {
+          // Get position and size
+          const xfrm = shape.querySelector('a\\:xfrm, xdr\\:xfrm');
+          if (xfrm) {
+            const off = xfrm.querySelector('a\\:off');
+            const ext = xfrm.querySelector('a\\:ext');
+            
+            if (off && ext) {
+              const x = parseInt(off.getAttribute('x')) / 12700; // EMUs to pixels
+              const y = parseInt(off.getAttribute('y')) / 12700;
+              const w = parseInt(ext.getAttribute('cx')) / 12700;
+              const h = parseInt(ext.getAttribute('cy')) / 12700;
+              
+              // Check if it's an image
+              const blip = shape.querySelector('a\\:blip');
+              if (blip) {
+                const embed = blip.getAttribute('r:embed');
+                if (embed && imageRels[embed]) {
+                  const imageData = images[imageRels[embed]];
+                  if (imageData) {
+                    htmlContent += `<img src="${imageData}" style="position: absolute; left: ${x}px; top: ${y}px; width: ${w}px; height: ${h}px;" />`;
+                  }
+                }
+              } else {
+                // It's a text box
+                const texts = Array.from(shape.querySelectorAll('a\\:t')).map(t => t.textContent);
+                if (texts.length > 0) {
+                  const fontSize = shape.querySelector('a\\:sz');
+                  const size = fontSize ? parseInt(fontSize.getAttribute('val')) / 100 : 16;
+                  const isBold = shape.querySelector('a\\:latin[typeface*="Bold"]') || shape.querySelector('a\\:b[val="1"]');
+                  
+                  htmlContent += `<div style="position: absolute; left: ${x}px; top: ${y}px; width: ${w}px; height: ${h}px; font-size: ${size}px; ${isBold ? 'font-weight: bold;' : ''} overflow: hidden;">`;
+                  htmlContent += texts.join('<br>');
+                  htmlContent += '</div>';
+                }
+              }
+            }
+          }
+        });
+        
+        htmlContent += '</div>';
       }
       
       htmlContent += '</div>';
