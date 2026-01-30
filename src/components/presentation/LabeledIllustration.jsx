@@ -100,7 +100,15 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
           >
             Canva AI
           </Button>
-        </div>
+          <Button 
+            variant={imageProvider === 'modelslab' ? 'default' : 'outline'} 
+            size="sm"
+            onClick={() => setImageProvider('modelslab')}
+            disabled={generating}
+          >
+            ModelLabs
+          </Button>
+          </div>
 
         <Button onClick={generateBaseImage} disabled={generating}>
           {generating ? (
