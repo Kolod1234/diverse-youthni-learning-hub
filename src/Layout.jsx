@@ -220,6 +220,7 @@ function LayoutContent({ children, currentPageName }) {
                   align="end" 
                   className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2 z-[100]" 
                   sideOffset={8}
+                  style={{ backgroundColor: 'hsl(var(--popover))', opacity: 1 }}
                 >
                     <DropdownMenuItem asChild>
                       <Link to={createPageUrl('Tutors')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
