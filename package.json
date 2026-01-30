@@ -104,7 +104,8 @@
     "@kandiforge/pptx-renderer": "^1.0.0",
     "jszip": "^3.10.1",
     "@paddlejs-models/ocr": "^1.0.7",
-    "mermaid": "^10.6.1"
+    "mermaid": "^10.6.1",
+    "@code-by-dwayne/react-scorm-provider": "^1.0.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
