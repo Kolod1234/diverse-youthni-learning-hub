@@ -152,14 +152,24 @@ Deno.serve(async (req) => {
       const title = lesson.title.toLowerCase();
       let objectives = [];
 
-      // Match lesson to appropriate objectives with comprehensive keyword matching
-      if (title.includes('motion') || title.includes('speed') || title.includes('velocity') || title.includes('scalar') || title.includes('vector') || title.includes('kinematic') || title.includes('displacement') || title.includes('acceleration')) {
+      // Match lesson to appropriate objectives - check most specific first
+      if (title.includes('scalar') || title.includes('vector')) {
         objectives = objectivesMap['Motion'];
-      } else if (title.includes('collision') || title.includes('momentum') || title.includes('equilibrium')) {
+      } else if (title.includes('kinematic')) {
+        objectives = objectivesMap['Motion'];
+      } else if (title.includes('momentum') || title.includes('collision')) {
         objectives = objectivesMap['Force'];
-      } else if (title.includes('force') || title.includes('newton') || title.includes('moment') || title.includes('pressure') || title.includes('hooke') || title.includes('gravity') || title.includes('centre of')) {
+      } else if (title.includes('moment') && (title.includes('equilibrium') || title.includes('force'))) {
         objectives = objectivesMap['Force'];
-      } else if (title.includes('density') || title.includes('kinetic theory') || title.includes('matter') || title.includes('particle')) {
+      } else if (title.includes('kinetic theory')) {
+        objectives = objectivesMap['Density'];
+      } else if (title.includes('work') && (title.includes('energy') || title.includes('power'))) {
+        objectives = objectivesMap['Energy'];
+      } else if (title.includes('motion') || title.includes('speed') || title.includes('velocity') || title.includes('displacement') || title.includes('acceleration')) {
+        objectives = objectivesMap['Motion'];
+      } else if (title.includes('force') || title.includes('newton') || title.includes('pressure') || title.includes('hooke') || title.includes('gravity') || title.includes('centre of') || title.includes('equilibrium')) {
+        objectives = objectivesMap['Force'];
+      } else if (title.includes('density') || title.includes('matter') || title.includes('particle')) {
         objectives = objectivesMap['Density'];
       } else if (title.includes('energy') || title.includes('power') || title.includes('work') || title.includes('efficiency') || title.includes('renewable') || title.includes('heat') || title.includes('transfer')) {
         objectives = objectivesMap['Energy'];
@@ -180,6 +190,9 @@ Deno.serve(async (req) => {
       } else if (title.includes('space') || title.includes('solar') || title.includes('planet') || title.includes('star') || title.includes('universe') || title.includes('big bang') || title.includes('cosmic') || title.includes('galaxy')) {
         objectives = objectivesMap['Space'];
       } else if (title.includes('practical') || title.includes('experiment') || title.includes('data') || title.includes('investigation')) {
+        objectives = objectivesMap['Practical'];
+      } else {
+        // Fallback for any lesson without a match
         objectives = objectivesMap['Practical'];
       }
 
