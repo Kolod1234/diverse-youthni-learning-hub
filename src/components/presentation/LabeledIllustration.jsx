@@ -23,26 +23,31 @@ export default function LabeledIllustration({ data, onImageGenerated }) {
       const finalPrompt = `${data.baseImagePrompt}. High-quality educational illustration, clean, detailed, isolated on white background. CRITICAL: Include clear, legible text labels for: ${labelTexts}. The text must be perfectly spelled and clearly visible on the image.`;
       
       let result;
-      if (imageProvider === 'dalle') {
-        result = await base44.functions.invoke('generateImageWithDallE', {
-          prompt: finalPrompt,
-          size: '1792x1024'
-        });
-      } else if (imageProvider === 'flux2') {
-        result = await base44.functions.invoke('generateImageWithFlux2', {
-          prompt: finalPrompt,
-          aspect_ratio: '16:9'
-        });
-      } else if (imageProvider === 'canva') {
-        result = await base44.functions.invoke('canvaIntegration', {
-          action: 'generate_image',
-          prompt: finalPrompt
-        });
-      } else {
-        result = await base44.integrations.Core.GenerateImage({
-          prompt: finalPrompt
-        });
-      }
+       if (imageProvider === 'dalle') {
+         result = await base44.functions.invoke('generateImageWithDallE', {
+           prompt: finalPrompt,
+           size: '1792x1024'
+         });
+       } else if (imageProvider === 'flux2') {
+         result = await base44.functions.invoke('generateImageWithFlux2', {
+           prompt: finalPrompt,
+           aspect_ratio: '16:9'
+         });
+       } else if (imageProvider === 'canva') {
+         result = await base44.functions.invoke('canvaIntegration', {
+           action: 'generate_image',
+           prompt: finalPrompt
+         });
+       } else if (imageProvider === 'modelslab') {
+         result = await base44.functions.invoke('generateImageForSlide', {
+           prompt: finalPrompt,
+           style: 'illustration'
+         });
+       } else {
+         result = await base44.integrations.Core.GenerateImage({
+           prompt: finalPrompt
+         });
+       }
       
       const url = result.data?.url || result.url;
       if (url) {
