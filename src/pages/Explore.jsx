@@ -51,7 +51,17 @@ export default function Explore() {
 
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
-    queryFn: () => base44.entities.Course.list('-created_date', 100),
+    queryFn: async () => {
+      const courses = await base44.entities.Course.list('-created_date', 100);
+      // Fetch lesson counts for all courses
+      const coursesWithCounts = await Promise.all(
+        courses.map(async (course) => {
+          const lessons = await base44.entities.Lesson.filter({ course_id: course.id });
+          return { ...course, lesson_count: lessons.length };
+        })
+      );
+      return coursesWithCounts;
+    },
   });
 
   const { data: allReviews = [], isLoading: reviewsLoading } = useQuery({

@@ -239,7 +239,7 @@ export default function CourseDetails() {
                   </span>
                   <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
                     <BookOpen className="w-4 h-4" />
-                    {course.total_lessons || lessons.length} lessons
+                    {lessons.length} lessons
                   </span>
                   <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
                     <Globe className="w-4 h-4" />
@@ -641,7 +641,7 @@ export default function CourseDetails() {
                     <BookOpen className="w-4 h-4" />
                     Lessons
                   </span>
-                  <span className="font-medium text-gray-900">{course.total_lessons || lessons.length}</span>
+                  <span className="font-medium text-gray-900">{lessons.length}</span>
                 </div>
                 <div className="flex items-center justify-between">
                   <span className="flex items-center gap-2 text-gray-600">

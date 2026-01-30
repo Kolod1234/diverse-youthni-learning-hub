@@ -78,7 +78,7 @@ export default function CourseCard({ course, index = 0 }) {
                 </span>
                 <span className="flex items-center gap-1">
                   <BookOpen className="w-4 h-4" />
-                  {course.total_lessons || 0}
+                  {course.lesson_count || course.total_lessons || 0}
                 </span>
               </div>
               {course.rating && (
