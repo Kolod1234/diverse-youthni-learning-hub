@@ -1,5 +1,4 @@
 import React from 'react';
-import DocViewer, { DocViewerRenderers } from '@cyntler/react-doc-viewer';
 import { FileText } from 'lucide-react';
 
 export default function DocumentViewer({ fileUrl, fileType }) {
@@ -14,20 +13,16 @@ export default function DocumentViewer({ fileUrl, fileType }) {
     );
   }
 
-  const docs = [{ uri: fileUrl, fileType: fileType || 'pptx' }];
+  // Use Microsoft Office Online Viewer for PPTX files
+  const viewerUrl = `https://view.officeapps.live.com/op/embed.aspx?src=${encodeURIComponent(fileUrl)}`;
 
   return (
     <div className="w-full h-full">
-      <DocViewer
-        documents={docs}
-        pluginRenderers={DocViewerRenderers}
-        config={{
-          header: {
-            disableHeader: true,
-            disableFileName: true,
-          },
-        }}
-        style={{ height: '100%', width: '100%' }}
+      <iframe
+        src={viewerUrl}
+        className="w-full h-full border-0"
+        title="Document Viewer"
+        allowFullScreen
       />
     </div>
   );
