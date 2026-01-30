@@ -1,8 +1,8 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 /**
- * Generate images for lesson slides using AI
- * Supports multiple image generation APIs via Base44 integrations
+ * Generate images for lesson slides using ModelLabs API
+ * Provides high-quality AI-generated images for educational content
  */
 Deno.serve(async (req) => {
   try {
@@ -13,7 +13,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { prompt, style = 'default' } = await req.json();
+    const { prompt, style = 'illustration' } = await req.json();
 
     if (!prompt || prompt.trim().length === 0) {
       return Response.json(
@@ -22,22 +22,47 @@ Deno.serve(async (req) => {
       );
     }
 
-    // Enhance prompt with style
-    const enhancedPrompt = `${prompt}. Style: ${style}. High quality, professional illustration.`;
+    const apiKey = Deno.env.get('MODELSLAB_API_KEY');
+    if (!apiKey) {
+      throw new Error('ModelLabs API key not configured');
+    }
 
-    // Use Base44 image generation integration
-    const imageResponse = await base44.integrations.Core.GenerateImage({
-      prompt: enhancedPrompt,
+    // Enhance prompt with style for better results
+    const enhancedPrompt = `${prompt}. Style: ${style}. High quality, professional, educational illustration.`;
+
+    // Call ModelLabs API
+    const modelLabsResponse = await fetch('https://modelslab.com/api/v7/images/text-to-image', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        prompt: enhancedPrompt,
+        model_id: 'nano-banana-pro',
+        aspect_ratio: '16:9',
+        key: apiKey,
+      }),
     });
 
-    if (!imageResponse || !imageResponse.url) {
-      throw new Error('Failed to generate image');
+    if (!modelLabsResponse.ok) {
+      const error = await modelLabsResponse.text();
+      throw new Error(`ModelLabs API error: ${modelLabsResponse.status} - ${error}`);
+    }
+
+    const result = await modelLabsResponse.json();
+
+    // ModelLabs returns images in the response
+    const imageUrl = result.images?.[0] || result.url;
+    
+    if (!imageUrl) {
+      throw new Error('No image returned from ModelLabs API');
     }
 
     return Response.json({
       success: true,
-      imageUrl: imageResponse.url,
+      imageUrl: imageUrl,
       prompt: prompt,
+      style: style,
       timestamp: new Date().toISOString(),
     });
   } catch (error) {
