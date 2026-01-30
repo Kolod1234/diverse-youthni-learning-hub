@@ -671,7 +671,18 @@ export default function LessonPlayerPowerPoint() {
             </DropdownMenu>
             {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
               <div onClick={async () => {
-...
+                if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
+                toast.loading('Converting Google Slides...');
+                try {
+                  const response = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
+                  if (response.data.success) {
+                    toast.success(`Converted ${response.data.slideCount} slides successfully!`);
+                    queryClient.invalidateQueries(['lesson', lessonId]);
+                    setTimeout(() => window.location.reload(), 1000);
+                  }
+                } catch (error) {
+                  toast.error('Failed to convert Google Slides');
+                }
               }} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600"/><span className="text-[11px] mt-1 text-muted-foreground">Convert</span></div>
             )}
             <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Present</span></div>
