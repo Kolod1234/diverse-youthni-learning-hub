@@ -26,7 +26,7 @@ import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
 import SCORMWrapper from '@/components/lesson/SCORMWrapper';
-import { useSCORM } from '@/hooks/useSCORM';
+import { useSCORM } from '@/components/lesson/useSCORM';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
