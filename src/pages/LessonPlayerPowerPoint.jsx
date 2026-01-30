@@ -22,6 +22,7 @@ import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
+import DocumentViewer from '@/components/lesson/DocumentViewer';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -789,7 +790,9 @@ export default function LessonPlayerPowerPoint() {
 
             {/* Slide Content */}
             <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
-              {slideUrl ? (
+              {lesson?.file_url && lesson?.file_type === 'pptx' ? (
+                <DocumentViewer fileUrl={lesson.file_url} fileType={lesson.file_type} />
+              ) : slideUrl ? (
                 <>
                   <iframe 
                     src={slideUrl} 
