@@ -284,6 +284,12 @@ function LayoutContent({ children, currentPageName }) {
                     </DropdownMenuItem>
                     <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
                     <DropdownMenuItem asChild>
+                      <Link to={createPageUrl('CommunityEventSlides')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-lime-50 dark:hover:bg-slate-700 transition-colors">
+                        <GraduationCap className="w-5 h-5 text-lime-600 dark:text-lime-400" />
+                        <span className="font-medium">Event Slides</span>
+                      </Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem asChild>
                       <Link to={createPageUrl('ContactUs')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
                         <MessageSquare className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                         <span className="font-medium">Contact Us</span>
