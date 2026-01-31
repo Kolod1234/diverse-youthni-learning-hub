@@ -85,6 +85,7 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'Youth Work', href: createPageUrl('YouthWork'), icon: GraduationCap },
     { name: 'Library', href: createPageUrl('Library'), icon: BookOpen },
     { name: 'Community', href: createPageUrl('Community'), icon: MessageSquare },
+    { name: 'Event Slides', href: createPageUrl('CommunityEventSlides'), icon: GraduationCap },
     { name: 'Art Gallery', href: createPageUrl('ArtGallery'), icon: Award },
     { name: 'Messages', href: createPageUrl('MessageCenter'), icon: MessageSquare },
     { name: 'Analytics', href: createPageUrl('Analytics'), icon: BarChart3 },
