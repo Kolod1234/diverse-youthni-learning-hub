@@ -60,7 +60,10 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true,
-      imageUrl: imageUrl,
+      url: imageUrl,
+      data: {
+        url: imageUrl
+      },
       prompt: prompt,
       style: style,
       timestamp: new Date().toISOString(),
