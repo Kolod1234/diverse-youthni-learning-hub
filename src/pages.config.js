@@ -95,6 +95,7 @@ import Profile from './pages/Profile';
 import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
 import QuizGenerator from './pages/QuizGenerator';
+import SCORMAuthor from './pages/SCORMAuthor';
 import ScheduleSession from './pages/ScheduleSession';
 import Sessions from './pages/Sessions';
 import Settings from './pages/Settings';
@@ -110,7 +111,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import SCORMAuthor from './pages/SCORMAuthor';
+import CommunityEventSlides from './pages/CommunityEventSlides';
 import __Layout from './Layout.jsx';
 
 
@@ -163,6 +164,7 @@ export const PAGES = {
     "Programs": Programs,
     "Quiz": Quiz,
     "QuizGenerator": QuizGenerator,
+    "SCORMAuthor": SCORMAuthor,
     "ScheduleSession": ScheduleSession,
     "Sessions": Sessions,
     "Settings": Settings,
@@ -178,7 +180,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "SCORMAuthor": SCORMAuthor,
+    "CommunityEventSlides": CommunityEventSlides,
 }
 
 export const pagesConfig = {
