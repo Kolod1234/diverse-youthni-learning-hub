@@ -50,12 +50,14 @@ Deno.serve(async (req) => {
     }
 
     const result = await modelLabsResponse.json();
+    
+    console.log('ModelLabs response:', JSON.stringify(result, null, 2));
 
     // ModelLabs returns images in the response
-    const imageUrl = result.images?.[0] || result.url;
+    const imageUrl = result.output?.[0] || result.images?.[0] || result.url;
     
     if (!imageUrl) {
-      throw new Error('No image returned from ModelLabs API');
+      throw new Error(`No image returned from ModelLabs API. Response: ${JSON.stringify(result)}`);
     }
 
     return Response.json({
