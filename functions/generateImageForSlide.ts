@@ -24,7 +24,7 @@ Deno.serve(async (req) => {
 
     const apiKey = Deno.env.get('MODELSLAB_API_KEY');
     if (!apiKey) {
-      throw new Error('ModelLabs API key not configured');
+      throw new Error(`ModelLabs API key not configured. Available env keys: ${Object.keys(Deno.env.toObject()).filter(k => k.includes('MODEL')).join(', ')}`);
     }
 
     // Enhance prompt with style for better results
