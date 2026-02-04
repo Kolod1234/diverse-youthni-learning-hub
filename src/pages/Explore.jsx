@@ -240,8 +240,8 @@ export default function Explore() {
             disabled={showFreeOnly}
           />
           <div className="flex justify-between text-sm font-semibold text-foreground mb-4">
-            <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full">${priceRange[0]}</span>
-            <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-full">${priceRange[1]}</span>
+            <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full">£{priceRange[0]}</span>
+            <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-full">£{priceRange[1]}</span>
           </div>
         </div>
         <motion.div 
