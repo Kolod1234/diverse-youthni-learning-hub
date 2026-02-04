@@ -97,7 +97,7 @@ export default function CourseCard({ course, index = 0 }) {
                 </div>
               )}
               <span className="text-lg font-bold text-indigo-600">
-                {course.price === 0 ? 'Free' : `$${course.price}`}
+                {!course.price || course.price === 0 ? 'Free' : `$${course.price}`}
               </span>
             </div>
           </div>
