@@ -226,9 +226,9 @@ export default function Home() {
   return (
     <div className="bg-background">
       <PageSEO pageName="Home" sections={allPageSections} />
-      {/* Search Bar - Sticky at top */}
-      <section className="sticky top-16 z-40 bg-[#003366] dark:bg-slate-900 shadow-md">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      {/* Search Bar - Sticky at top with glass effect */}
+      <section className="sticky top-16 z-40 bg-gradient-to-r from-[#003366]/95 via-[#004488]/95 to-[#003366]/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl border-b border-white/10">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
           <div className="flex items-center gap-4">
             <SearchBar 
               value={searchQuery} 
@@ -270,20 +270,21 @@ export default function Home() {
               className="text-center"
             >
               <motion.div 
-                className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
-                whileHover={{ scale: 1.05 }}
+                className="inline-block bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
+                whileHover={{ scale: 1.08, boxShadow: "0 20px 40px rgba(251, 191, 36, 0.4)" }}
                 transition={{ duration: 0.2 }}
                 style={{ textShadow: '2px 2px 4px rgba(0,0,0,0.3)' }}
               >
+                <Sparkles className="w-5 h-5 md:w-6 md:h-6 inline-block mr-2" />
                 {getContent('hero_online_learning', 'ONLINE LEARNING')}
               </motion.div>
 
               <motion.div 
-                className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1"
-                whileHover={{ scale: 1.05, rotate: 2 }}
-                transition={{ duration: 0.2 }}
+                className="bg-white inline-block px-12 py-8 rounded-3xl shadow-2xl mb-6 transform rotate-1 border-4 border-yellow-400/30"
+                whileHover={{ scale: 1.08, rotate: 2, boxShadow: "0 25px 50px rgba(0,0,0,0.3)" }}
+                transition={{ duration: 0.3, type: "spring", stiffness: 200 }}
               >
-                <h1 className="text-5xl md:text-7xl font-black text-[#003366] tracking-tight" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.2)' }}>
+                <h1 className="text-5xl md:text-7xl font-black bg-gradient-to-r from-[#003366] via-blue-700 to-purple-700 bg-clip-text text-transparent tracking-tight" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.1)' }}>
                   {getContent('hero_afterschool_hours', 'Afterschool Hours')}
                 </h1>
               </motion.div>
@@ -298,13 +299,17 @@ export default function Home() {
               </motion.h2>
 
               <motion.div 
-                className="bg-yellow-400 inline-block px-12 py-6 rounded-2xl shadow-2xl"
-                whileHover={{ scale: 1.1, boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.5)" }}
-                transition={{ duration: 0.2 }}
+                className="bg-gradient-to-br from-yellow-400 via-amber-400 to-orange-500 inline-block px-12 py-6 rounded-2xl shadow-2xl relative overflow-hidden"
+                whileHover={{ scale: 1.12, boxShadow: "0 25px 50px rgba(251, 146, 60, 0.5)", rotate: -1 }}
+                transition={{ duration: 0.3, type: "spring" }}
               >
-                <p className="text-5xl md:text-7xl font-black text-[#003366]" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.3)' }}>
+                <div className="absolute inset-0 bg-gradient-to-tr from-white/0 via-white/20 to-white/0" />
+                <p className="text-5xl md:text-7xl font-black text-[#003366] relative z-10" style={{ textShadow: '3px 3px 6px rgba(0,0,0,0.3)' }}>
                   {getContent('hero_free_access', 'FREE ACCESS')}
-                  <span className="block text-3xl md:text-4xl mt-2">{getContent('hero_all_courses', 'ALL COURSES')}</span>
+                  <span className="block text-3xl md:text-4xl mt-2 flex items-center justify-center gap-3">
+                    <Zap className="w-8 h-8 md:w-10 md:h-10" />
+                    {getContent('hero_all_courses', 'ALL COURSES')}
+                  </span>
                 </p>
               </motion.div>
 
@@ -312,24 +317,43 @@ export default function Home() {
                 {getContent('hero_description', 'Access them at the comfort of your home')}
               </p>
 
-              <Link to={createPageUrl('Explore')}>
-                <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
-                  {getContent('hero_button', 'BROWSE COURSES')}
-                  <ArrowRight className="w-8 h-8 ml-3" />
-                </Button>
-              </Link>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.5 }}
+              >
+                <Link to={createPageUrl('Explore')}>
+                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 text-[#003366] hover:from-yellow-300 hover:via-amber-300 hover:to-orange-400 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:shadow-yellow-500/50 hover:scale-110 transition-all duration-300 relative overflow-hidden group">
+                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                    <span className="relative z-10 flex items-center gap-3">
+                      {getContent('hero_button', 'BROWSE COURSES')}
+                      <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
+                    </span>
+                  </Button>
+                </Link>
+              </motion.div>
             </motion.div>
           </div>
         </section>
       )}
 
       {/* Home Widgets */}
-      <section className="bg-slate-950 py-12">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between mb-6">
-            <h2 className="text-2xl font-bold text-white">Your Dashboard</h2>
+      <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 py-16 overflow-hidden">
+        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
+        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true }}
+            className="flex items-center justify-between mb-8"
+          >
+            <div>
+              <h2 className="text-3xl font-bold text-white mb-2">Your Dashboard</h2>
+              <p className="text-blue-200">Stay updated with your personalized widgets</p>
+            </div>
             {user && <WidgetCustomizer user={user} widgetPreferences={user.widget_preferences || {}} />}
-          </div>
+          </motion.div>
           
           {userLoading ? (
             <>
@@ -498,14 +522,20 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-12"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Our Community
-          </span>
-          <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-4">
-            Experience the <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent">Diverse Youth NI</span> Journey
+          <motion.span 
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 via-rose-500/10 to-pink-500/10 border-2 border-orange-500/20 text-sm font-semibold mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent flex items-center gap-2">
+              <Sparkles className="w-4 h-4 text-orange-500" />
+              Our Community
+            </span>
+          </motion.span>
+          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
+            Experience the <span className="bg-gradient-to-r from-orange-600 via-rose-600 to-pink-600 bg-clip-text text-transparent">Diverse Youth NI</span> Journey
           </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto">
-            See what's happening in our vibrant learning community
+          <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
+            See what's happening in our vibrant learning community through inspiring moments and achievements
           </p>
         </motion.div>
         
@@ -581,14 +611,22 @@ export default function Home() {
               className="flex items-center justify-between mb-12"
             >
               <div>
-                <span className="inline-block px-4 py-2 rounded-full bg-violet-500/10 text-violet-600 dark:text-violet-400 text-sm font-semibold mb-3 border border-violet-500/20">
-                  Top Picks
-                </span>
-                <h2 className="text-3xl sm:text-4xl font-bold text-foreground mb-2">Featured Courses</h2>
+                <motion.span 
+                  className="inline-block px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border-2 border-violet-500/30 text-sm font-bold mb-4"
+                  whileHover={{ scale: 1.05 }}
+                >
+                  <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent flex items-center gap-2">
+                    <Award className="w-4 h-4 text-violet-600 dark:text-violet-400" />
+                    Top Picks
+                  </span>
+                </motion.span>
+                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
+                  Featured Courses
+                </h2>
                 <p className="text-muted-foreground text-lg">Hand-picked by our expert instructors</p>
               </div>
               <Link to={createPageUrl('Explore')}>
-                <Button className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/40 transition-all">
+                <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white rounded-full shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 px-6 h-12">
                   View all <ArrowRight className="w-4 h-4 ml-2" />
                 </Button>
               </Link>
@@ -612,14 +650,22 @@ export default function Home() {
           viewport={{ once: true }}
           className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-semibold mb-4 border border-primary/20">
-            Popular Courses
-          </span>
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Explore Our Online Courses
+          <motion.span 
+            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 border-2 border-primary/30 text-sm font-bold mb-6"
+            whileHover={{ scale: 1.05 }}
+          >
+            <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+              <TrendingUp className="w-4 h-4 text-primary" />
+              Popular Courses
+            </span>
+          </motion.span>
+          <h2 className="text-4xl md:text-6xl font-bold mb-6">
+            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
+              Explore Our Online Courses
+            </span>
           </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Start learning today with our expert-led courses
+          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
+            Start learning today with our expert-led courses designed for your success
           </p>
         </motion.div>
         
@@ -645,38 +691,80 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -8 }}
-                className="group bg-card rounded-xl overflow-hidden shadow-lg hover:shadow-2xl transition-all duration-300 border border-border"
+                whileHover={{ y: -12 }}
+                className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border relative"
                 >
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 via-purple-600/0 to-pink-600/0 group-hover:from-blue-600/5 group-hover:via-purple-600/5 group-hover:to-pink-600/5 transition-all duration-500" />
                 <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
                   {course.thumbnail ? (
                     <img
                       src={course.thumbnail}
                       alt={course.title}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                      className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700"
                       loading="lazy"
                     />
                   ) : (
                     <div className="absolute inset-0 flex items-center justify-center">
-                      <BookOpen className="w-20 h-20 text-white/50" />
+                      <BookOpen className="w-20 h-20 text-white/50 group-hover:scale-110 transition-transform" />
                     </div>
                   )}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {course.category && (
-                    <div className="absolute top-4 right-4 bg-yellow-400 text-gray-900 px-4 py-1 rounded-full text-sm font-bold uppercase">
+                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 px-4 py-1 rounded-full text-sm font-bold uppercase shadow-lg group-hover:scale-110 transition-transform">
                       {course.category}
                     </div>
                   )}
+                  {course.lesson_count > 0 && (
+                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
+                      <BookOpen className="w-3 h-3" />
+                      {course.lesson_count} lessons
+                    </div>
+                  )}
                 </div>
-                <div className="p-6">
-                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors">
+                <div className="p-6 relative">
+                  <div className="flex items-center gap-2 mb-3">
+                    {course.instructor && (
+                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
+                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-[10px]">
+                          {course.instructor.charAt(0)}
+                        </div>
+                        <span>{course.instructor}</span>
+                      </div>
+                    )}
+                  </div>
+                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2 min-h-[3.5rem]">
                     {course.title}
                   </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-2 text-sm">
+                  <p className="text-muted-foreground mb-4 line-clamp-2 text-sm leading-relaxed">
                     {course.description}
                   </p>
+                  <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
+                    {course.duration_hours > 0 && (
+                      <span className="flex items-center gap-1">
+                        <Clock className="w-3 h-3" />
+                        {course.duration_hours}h
+                      </span>
+                    )}
+                    {course.enrolled_count > 0 && (
+                      <span className="flex items-center gap-1">
+                        <Users className="w-3 h-3" />
+                        {course.enrolled_count}
+                      </span>
+                    )}
+                    {course.rating && (
+                      <span className="flex items-center gap-1">
+                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
+                        {course.rating.toFixed(1)}
+                      </span>
+                    )}
+                  </div>
                   <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-                    <Button className="w-full bg-[#003366] hover:bg-[#002244] text-white font-bold py-6 rounded-lg text-base">
-                      LEARN MORE
+                    <Button className="w-full bg-gradient-to-r from-[#003366] to-blue-700 hover:from-[#002244] hover:to-blue-800 text-white font-bold py-6 rounded-xl text-base shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all relative overflow-hidden">
+                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
+                      <span className="relative z-10 flex items-center justify-center gap-2">
+                        LEARN MORE
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                      </span>
                     </Button>
                   </Link>
                 </div>
@@ -816,17 +904,28 @@ export default function Home() {
       {realReviews.length > 0 && (
         <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/50">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
-                Real Student Reviews
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              className="text-center mb-16"
+            >
+              <motion.span 
+                className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-blue-500/30 text-sm font-bold mb-6"
+                whileHover={{ scale: 1.05 }}
+              >
+                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
+                  <Star className="w-4 h-4 fill-blue-600 text-blue-600 dark:fill-blue-400 dark:text-blue-400" />
+                  Real Student Reviews
+                </span>
+              </motion.span>
+              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
                 What our learners say
               </h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
                 Authentic feedback from students currently learning with us
               </p>
-            </div>
+            </motion.div>
             <div className="grid md:grid-cols-3 gap-8">
               {realReviews.slice(0, 3).map((review, idx) => (
               <motion.div
@@ -835,27 +934,34 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
-                className="bg-card rounded-2xl p-8 shadow-lg hover:shadow-xl transition-all duration-300 border border-border"
+                whileHover={{ y: -8, scale: 1.02 }}
+                className="relative bg-card rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border overflow-hidden group"
               >
-                <div className="flex items-center gap-1 mb-4">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className={`w-5 h-5 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-muted'}`} />
-                  ))}
-                </div>
-                <p className="text-foreground/90 mb-6 leading-relaxed">"{review.comment}"</p>
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-lg">
-                      {review.user_name?.charAt(0) || 'U'}
-                    </div>
-                    <div>
-                      <p className="font-semibold text-foreground">{review.user_name}</p>
-                      <p className="text-sm text-muted-foreground">
-                        {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
-                      </p>
+                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
+                <div className="relative z-10">
+                  <div className="flex items-center gap-1 mb-4">
+                    {[...Array(5)].map((_, i) => (
+                      <Star key={i} className={`w-5 h-5 transition-all duration-200 ${i < review.rating ? 'fill-amber-400 text-amber-400 scale-110' : 'text-muted scale-100'}`} />
+                    ))}
+                  </div>
+                  <div className="mb-6">
+                    <div className="text-6xl text-blue-600/20 font-serif mb-2">"</div>
+                    <p className="text-foreground/90 leading-relaxed text-base italic">{review.comment}</p>
+                  </div>
+                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
+                        {review.user_name?.charAt(0) || 'U'}
+                      </div>
+                      <div>
+                        <p className="font-bold text-foreground">{review.user_name}</p>
+                        <p className="text-xs text-muted-foreground flex items-center gap-1">
+                          <CheckCircle className="w-3 h-3 text-green-500" />
+                          {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
+                        </p>
+                      </div>
                     </div>
                   </div>
-                  <CheckCircle className="w-5 h-5 text-green-500" />
                 </div>
               </motion.div>
               ))}
