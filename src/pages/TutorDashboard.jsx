@@ -11,6 +11,8 @@ import {
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
+import GlobalSearch from '@/components/search/GlobalSearch';
+import AdvancedFilters from '@/components/search/AdvancedFilters';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -18,6 +20,7 @@ export default function TutorDashboard() {
   const [selectedCourseId, setSelectedCourseId] = useState(searchParams.get('courseId'));
   const currentView = searchParams.get('view') || 'modules';
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
+  const [showGlobalSearch, setShowGlobalSearch] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -72,10 +75,22 @@ export default function TutorDashboard() {
     { icon: FileText, label: 'Lucid (Whiteboard)', view: 'whiteboard' },
   ];
 
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'k') {
+        e.preventDefault();
+        setShowGlobalSearch(true);
+      }
+    };
+    window.addEventListener('keydown', handleKeyDown);
+    return () => window.removeEventListener('keydown', handleKeyDown);
+  }, []);
+
   if (!user) return null;
 
   return (
     <div className="flex h-screen bg-white overflow-hidden">
+      {showGlobalSearch && <GlobalSearch onClose={() => setShowGlobalSearch(false)} />}
       {/* Left Sidebar */}
       <div className={`${sidebarOpen ? 'w-64' : 'w-0'} transition-all duration-300 bg-white border-r border-gray-200 flex flex-col overflow-hidden md:relative absolute md:static z-20 h-full`}>
         {/* Course Selector */}
@@ -131,14 +146,14 @@ export default function TutorDashboard() {
             <Menu className="w-5 h-5" />
           </button>
           <div className="flex-1 flex items-center gap-4">
-            <div className="relative flex-1 max-w-md hidden md:block">
-              <Search className="w-4 h-4 absolute left-3 top-1/2 -translate-y-1/2 text-gray-400" />
-              <input
-                type="text"
-                placeholder="Search..."
-                className="w-full bg-gray-700 text-white pl-10 pr-4 py-2 rounded text-sm placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500"
-              />
-            </div>
+            <button 
+              onClick={() => setShowGlobalSearch(true)}
+              className="relative flex-1 max-w-md hidden md:flex items-center gap-2 bg-gray-700 text-gray-400 px-4 py-2 rounded text-sm hover:bg-gray-600 transition-colors"
+            >
+              <Search className="w-4 h-4" />
+              <span>Search courses, lessons, students...</span>
+              <kbd className="ml-auto px-2 py-0.5 bg-gray-600 rounded text-xs">Ctrl+K</kbd>
+            </button>
           </div>
           <div className="flex items-center gap-3">
             <Link to={createPageUrl('Home')}>
@@ -202,6 +217,7 @@ function ModulesView({ courses, user }) {
   const [lessonForm, setLessonForm] = React.useState({});
   const [editingLesson, setEditingLesson] = React.useState(null);
   const [uploading, setUploading] = React.useState(false);
+  const [filters, setFilters] = React.useState({});
 
   const { data: allLessons = [] } = useQuery({
     queryKey: ['all-lessons'],
@@ -359,6 +375,18 @@ function ModulesView({ courses, user }) {
     }
   };
 
+  // Apply filters to courses
+  const filteredCourses = courses.filter(course => {
+    if (filters.category && filters.category !== 'all' && course.category !== filters.category) return false;
+    if (filters.level && filters.level !== 'all' && course.level !== filters.level) return false;
+    if (filters.query) {
+      const query = filters.query.toLowerCase();
+      return course.title?.toLowerCase().includes(query) || 
+             course.description?.toLowerCase().includes(query);
+    }
+    return true;
+  });
+
   return (
     <div className="max-w-5xl">
       <div className="flex items-center justify-between mb-6">
@@ -367,6 +395,16 @@ function ModulesView({ courses, user }) {
           <Plus className="w-4 h-4 mr-2" />
           Create Course
         </Button>
+      </div>
+
+      {/* Advanced Filters */}
+      <div className="mb-6">
+        <AdvancedFilters
+          filterType="courses"
+          filters={filters}
+          onFilterChange={setFilters}
+          onClear={() => setFilters({})}
+        />
       </div>
 
       {/* Create Course Form */}
@@ -588,7 +626,7 @@ function ModulesView({ courses, user }) {
         </div>
       ) : (
         <div className="space-y-4">
-          {courses.map((course) => {
+          {filteredCourses.map((course) => {
             const courseLessons = allLessons.filter(l => l.course_id === course.id);
             const sections = {};
             courseLessons.forEach(lesson => {
@@ -1192,21 +1230,48 @@ function AssignmentsView({ course }) {
 }
 
 function PeopleView({ course }) {
+  const [filters, setFilters] = React.useState({});
+
   const { data: enrollments = [] } = useQuery({
     queryKey: ['course-enrollments', course?.id],
     queryFn: () => base44.entities.Enrollment.filter({ course_id: course?.id }, '-created_date', 200),
     enabled: !!course?.id,
   });
 
+  // Apply filters
+  const filteredEnrollments = enrollments.filter(enrollment => {
+    if (filters.progress) {
+      const progress = enrollment.progress_percent || 0;
+      if (filters.progress === 'not_started' && progress > 0) return false;
+      if (filters.progress === 'in_progress' && (progress === 0 || progress === 100)) return false;
+      if (filters.progress === 'completed' && progress < 100) return false;
+    }
+    if (filters.query) {
+      const query = filters.query.toLowerCase();
+      return enrollment.created_by?.toLowerCase().includes(query);
+    }
+    return true;
+  });
+
   return (
     <div className="max-w-4xl">
       <h1 className="text-3xl font-bold text-gray-900 mb-6">People</h1>
+      
+      {/* Advanced Filters */}
+      <div className="mb-6">
+        <AdvancedFilters
+          filterType="students"
+          filters={filters}
+          onFilterChange={setFilters}
+          onClear={() => setFilters({})}
+        />
+      </div>
       <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
         <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
           <h3 className="font-semibold">Students ({enrollments.length})</h3>
         </div>
         <div className="divide-y divide-gray-200">
-          {enrollments.map(enrollment => (
+          {filteredEnrollments.map(enrollment => (
             <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
