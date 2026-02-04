@@ -552,6 +552,22 @@ export default function LessonPlayerClassic() {
               </div>
             )}
 
+            {/* Main Lesson Video */}
+            {lesson.video_url && (
+              <div className="max-w-5xl mx-auto mb-6">
+                <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-indigo-200/50 overflow-hidden border-2 border-indigo-100 ring-2 sm:ring-4 ring-indigo-50">
+                  <div className="aspect-video bg-black">
+                    <video 
+                      src={lesson.video_url} 
+                      controls 
+                      className="w-full h-full"
+                      controlsList="nodownload"
+                    />
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Slide Content */}
             <div className="max-w-5xl mx-auto">
               {lesson?.slides && lesson.slides.length > 0 ? (
