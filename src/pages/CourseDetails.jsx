@@ -276,11 +276,11 @@ export default function CourseDetails() {
                 <div className="p-6">
                   <div className="flex items-baseline gap-2 mb-6">
                     <span className="text-4xl font-bold text-gray-900">
-                      {course.price === 0 ? 'Free' : `$${course.price}`}
+                      {course.price === 0 ? 'Free' : `£${course.price}`}
                     </span>
                     {course.price > 0 && (
                       <span className="text-lg text-gray-400 line-through">
-                        ${Math.round(course.price * 1.5)}
+                        £{Math.round(course.price * 1.5)}
                       </span>
                     )}
                   </div>
