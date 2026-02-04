@@ -281,7 +281,11 @@ function ModulesView({ courses, user }) {
     onSuccess: () => {
       queryClient.invalidateQueries(['all-lessons']);
       queryClient.invalidateQueries(['tutor-courses']);
+      queryClient.invalidateQueries(['course-lessons']);
       toast.success('Lesson deleted!');
+    },
+    onError: (error) => {
+      toast.error(`Failed to delete lesson: ${error.message}`);
     },
   });
 
