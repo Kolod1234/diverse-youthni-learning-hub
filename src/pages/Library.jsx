@@ -102,12 +102,23 @@ export default function Library() {
                     </div>
                   )}
 
-                  <a href={resource.file_url} target="_blank" rel="noopener noreferrer">
-                    <Button className="w-full gap-2" variant="outline">
-                      <Download className="w-4 h-4" />
-                      Download
-                    </Button>
-                  </a>
+                  <Button 
+                    className="w-full gap-2" 
+                    variant="outline"
+                    onClick={async () => {
+                      try {
+                        await base44.entities.LibraryResource.update(resource.id, {
+                          downloads_count: (resource.downloads_count || 0) + 1
+                        });
+                        window.open(resource.file_url, '_blank');
+                      } catch (error) {
+                        window.open(resource.file_url, '_blank');
+                      }
+                    }}
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </Button>
                   
                   <p className="text-xs text-gray-400 mt-2 text-center">
                     {resource.downloads_count || 0} downloads
