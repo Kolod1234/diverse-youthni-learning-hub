@@ -200,6 +200,14 @@ function LayoutContent({ children, currentPageName }) {
                 <Compass className="w-5 h-5" />
                 <span>Explore</span>
               </Link>
+              <Link to={createPageUrl('Library')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
+                location.pathname.includes('Library')
+                  ? 'bg-primary/10 text-primary font-medium' 
+                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
+              }`}>
+                <BookOpen className="w-5 h-5" />
+                <span>Library</span>
+              </Link>
               <Link to={createPageUrl('Dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
                 location.pathname.includes('Dashboard')
                   ? 'bg-primary/10 text-primary font-medium' 
