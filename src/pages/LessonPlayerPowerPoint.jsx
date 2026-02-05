@@ -768,7 +768,7 @@ export default function LessonPlayerPowerPoint() {
 
           {/* MAIN LESSON VIDEO */}
           {!isPresenting && lesson?.video_url && (
-            <div className="w-full max-w-[960px] mb-4 sm:mb-6">
+            <div className="w-full max-w-[960px] mb-4 sm:mb-6 flex-none">
               <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20 dark:from-slate-800 dark:via-slate-800/20 dark:to-slate-900/20 rounded-xl sm:rounded-2xl shadow-2xl shadow-indigo-200/50 dark:shadow-indigo-900/30 overflow-hidden border-2 border-indigo-100 dark:border-indigo-900/50 ring-2 sm:ring-4 ring-indigo-50 dark:ring-indigo-950/50">
                 <div className="aspect-video bg-black">
                   <video 
@@ -786,9 +786,8 @@ export default function LessonPlayerPowerPoint() {
           <div className={`relative flex flex-col transition-all duration-500 bg-black
             ${isPresenting 
               ? 'w-full h-full min-h-screen' 
-              : 'flex-1 w-full sm:flex-none sm:h-auto sm:aspect-video sm:max-w-[960px] sm:shadow-2xl sm:rounded-lg sm:bg-card' 
+              : 'w-full sm:max-w-[960px] aspect-video sm:shadow-2xl sm:rounded-lg sm:bg-card flex-none' 
             }`}
-            style={!isPresenting ? { minHeight: 0 } : {}}
           >
             
             {/* Drawing Canvas */}
