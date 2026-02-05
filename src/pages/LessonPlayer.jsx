@@ -20,7 +20,11 @@ export default function LessonPlayer() {
         const userData = await base44.auth.me();
         setUser(userData);
         
-        // Priority: User preference > Lesson default > PowerPoint default
+        // Check lesson for content
+        const lessons = await base44.entities.Lesson.filter({ id: lessonId });
+        const lesson = lessons[0];
+        
+        // Priority: User preference > Lesson default > Auto-detect based on content
         
         // If user has a preference, use it
         if (userData.player_preference) {
@@ -29,17 +33,14 @@ export default function LessonPlayer() {
         }
         
         // Check lesson for default player set by tutor/admin
-        const lessons = await base44.entities.Lesson.filter({ id: lessonId });
-        const lesson = lessons[0];
-        
         if (lesson?.default_player) {
           navigate(`/${lesson.default_player}?lesson=${lessonId}&course=${courseId}`, { replace: true });
           return;
-        } else {
-          // Default to PowerPoint style
-          navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
-          return;
         }
+        
+        // Auto-route based on content type - always default to PowerPoint for Google Slides
+        navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`, { replace: true });
+        return;
       } catch (error) {
         setLoading(false);
       }
