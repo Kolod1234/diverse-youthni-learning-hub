@@ -783,10 +783,10 @@ export default function LessonPlayerPowerPoint() {
           )}
 
           {/* SLIDE CONTAINER */}
-          <div className={`relative flex flex-col transition-all duration-500 bg-black
+          <div className={`relative flex flex-col transition-all duration-500 bg-black mb-6
             ${isPresenting 
               ? 'w-full h-full min-h-screen' 
-              : 'w-full sm:max-w-[960px] aspect-video sm:shadow-2xl sm:rounded-lg sm:bg-card flex-none' 
+              : 'w-full sm:max-w-[960px] aspect-video sm:shadow-2xl sm:rounded-lg sm:bg-card' 
             }`}
           >
             
