@@ -766,6 +766,22 @@ export default function LessonPlayerPowerPoint() {
              </div>
           )}
 
+          {/* MAIN LESSON VIDEO */}
+          {!isPresenting && lesson?.video_url && (
+            <div className="w-full max-w-[960px] mb-4 sm:mb-6">
+              <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20 dark:from-slate-800 dark:via-slate-800/20 dark:to-slate-900/20 rounded-xl sm:rounded-2xl shadow-2xl shadow-indigo-200/50 dark:shadow-indigo-900/30 overflow-hidden border-2 border-indigo-100 dark:border-indigo-900/50 ring-2 sm:ring-4 ring-indigo-50 dark:ring-indigo-950/50">
+                <div className="aspect-video bg-black">
+                  <video 
+                    src={lesson.video_url} 
+                    controls 
+                    className="w-full h-full"
+                    controlsList="nodownload"
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
           {/* SLIDE CONTAINER */}
           <div className={`relative flex flex-col transition-all duration-500 bg-black
             ${isPresenting 
