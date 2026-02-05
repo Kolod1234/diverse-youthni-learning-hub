@@ -727,8 +727,8 @@ export default function LessonPlayerPowerPoint() {
 
         {/* MAIN STAGE */}
         <main 
-          className={`flex-1 flex flex-col items-center overflow-hidden transition-all relative
-            ${isPresenting ? 'bg-black justify-center p-0' : 'bg-black sm:bg-muted p-0 sm:p-6 md:p-10'}
+          className={`flex-1 flex flex-col items-center transition-all relative
+            ${isPresenting ? 'bg-black justify-center p-0 overflow-hidden' : 'bg-black sm:bg-muted p-0 sm:p-6 md:p-10 overflow-y-auto'}
           `}
           style={{ minHeight: 0 }}
           onTouchStart={onTouchStart}
