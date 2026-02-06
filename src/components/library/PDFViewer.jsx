@@ -86,8 +86,8 @@ export default function PDFViewer({ fileUrl, title }) {
       </div>
 
       {/* PDF Display */}
-      <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-4 bg-gray-900">
-        <div className="flex justify-center">
+      <div className="flex-1 overflow-auto bg-gray-900">
+        <div ref={containerRef} className="p-2 sm:p-4 flex justify-center min-h-full">
           <Document
             file={fileUrl}
             onLoadSuccess={onDocumentLoadSuccess}
