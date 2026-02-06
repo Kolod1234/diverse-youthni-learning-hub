@@ -162,17 +162,22 @@ export default function Library() {
 
   const handleFileSelected = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      setUploadingFile(false);
+      return;
+    }
 
     // Check file size (50MB limit)
     const maxSize = 50 * 1024 * 1024; // 50MB in bytes
     if (file.size > maxSize) {
       toast.error(`File too large! Maximum size is 50MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB`);
       e.target.value = '';
+      setUploadingFile(false);
       return;
     }
 
     setUploadingFile(true);
+    setAnalyzing(false);
     setUploadProgress(0);
     let progressInterval = null;
 
