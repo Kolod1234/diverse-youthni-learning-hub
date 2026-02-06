@@ -21,7 +21,7 @@ Deno.serve(async (req) => {
             - title: The book title (if you can extract it from the file)
             - author: The author name (if available)
             - description: A brief 2-3 sentence description of what the book is about
-            - category: Choose ONE from: book, document, video, article, research, other
+            - category: Choose ONE from: youth_work, gcse_books, gcse_past_questions, a_level_books, inspirational, dyni_books, workbooks_logbooks, history_books
             - tags: Array of 3-5 relevant tags/keywords
             
             File URL: ${file_url}
@@ -37,7 +37,7 @@ Deno.serve(async (req) => {
                     description: { type: "string" },
                     category: { 
                         type: "string",
-                        enum: ["book", "document", "video", "article", "research", "other"]
+                        enum: ["youth_work", "gcse_books", "gcse_past_questions", "a_level_books", "inspirational", "dyni_books", "workbooks_logbooks", "history_books"]
                     },
                     tags: {
                         type: "array",
