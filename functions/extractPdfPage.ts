@@ -1,5 +1,5 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { PDFDocument } from 'npm:pdf-lib@1.17.1';
+import { createCanvas, loadImage } from 'npm:canvas@2.11.2';
 
 Deno.serve(async (req) => {
   try {
@@ -20,26 +20,46 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Fetch and load the PDF
-    const pdfResponse = await fetch(file_url);
-    const pdfBytes = await pdfResponse.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(pdfBytes);
+    // Use pdfjs-dist to render PDF to canvas
+    const pdfjs = await import('npm:pdfjs-dist@3.11.174');
     
-    if (page_number >= pdfDoc.getPageCount()) {
+    // Fetch PDF
+    const pdfResponse = await fetch(file_url);
+    const pdfBuffer = await pdfResponse.arrayBuffer();
+    
+    // Load PDF document
+    const loadingTask = pdfjs.getDocument({ data: new Uint8Array(pdfBuffer) });
+    const pdfDoc = await loadingTask.promise;
+    
+    if (page_number >= pdfDoc.numPages) {
       return Response.json({ 
-        error: `Page ${page_number + 1} does not exist. PDF has ${pdfDoc.getPageCount()} pages.` 
+        error: `Page ${page_number + 1} does not exist. PDF has ${pdfDoc.numPages} pages.` 
       }, { status: 400 });
     }
 
-    // Extract the specified page
-    const newPdf = await PDFDocument.create();
-    const [extractedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
-    newPdf.addPage(extractedPage);
-    const extractedPageBytes = await newPdf.save();
+    // Get the page
+    const page = await pdfDoc.getPage(page_number + 1);
     
-    // Convert to blob and upload
-    const blob = new Blob([extractedPageBytes], { type: 'application/pdf' });
-    const file = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    // Set scale for good quality
+    const scale = 2.0;
+    const viewport = page.getViewport({ scale });
+    
+    // Create canvas
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext('2d');
+    
+    // Render page to canvas
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+    
+    // Convert canvas to PNG buffer
+    const pngBuffer = canvas.toBuffer('image/png');
+    
+    // Upload as PNG
+    const blob = new Blob([pngBuffer], { type: 'image/png' });
+    const file = new File([blob], `page-${page_number + 1}.png`, { type: 'image/png' });
     
     const { file_url: pageUrl } = await base44.integrations.Core.UploadFile({ file });
     
