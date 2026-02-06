@@ -361,7 +361,7 @@ export default function Library() {
                         <img
                           src={book.cover_image}
                           alt={book.title}
-                          className="w-full aspect-[3/4] object-cover"
+                          className="w-full aspect-[3/4] object-contain bg-gray-100"
                         />
                       )
                     ) : (
@@ -466,7 +466,7 @@ export default function Library() {
                     <img
                       src={book.cover_image}
                       alt={book.title}
-                      className="w-full aspect-[3/4] object-cover"
+                      className="w-full aspect-[3/4] object-contain bg-gray-100"
                     />
                   )
                 ) : (
@@ -523,7 +523,7 @@ export default function Library() {
                     <img
                       src={selectedBook.cover_image}
                       alt={selectedBook.title}
-                      className="w-full max-w-xs rounded-lg shadow-2xl mb-6"
+                      className="w-full max-w-xs rounded-lg shadow-2xl mb-6 object-contain bg-gray-100"
                     />
                   )
                 ) : (
