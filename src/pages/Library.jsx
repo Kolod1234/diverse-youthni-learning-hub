@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpen, Download, Search, X, Upload, Plus } from 'lucide-react';
+import { BookOpen, Download, Search, X, Upload, Plus, Trash2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -85,6 +85,17 @@ export default function Library() {
       setShowUploadDialog(false);
       resetForm();
       toast.success('Book uploaded successfully!');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.LibraryResource.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['library-resources']);
+      toast.success('Book deleted successfully!');
+    },
+    onError: () => {
+      toast.error('Failed to delete book');
     }
   });
 
@@ -259,7 +270,7 @@ export default function Library() {
               {featuredBooks.map((book) => (
                 <div 
                   key={book.id}
-                  className="cursor-pointer group"
+                  className="cursor-pointer group relative"
                   onClick={() => setSelectedBook(book)}
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
@@ -275,6 +286,18 @@ export default function Library() {
                       </div>
                     )}
                   </div>
+                  {canUpload && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(book);
+                      }}
+                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                      title="Delete book"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
                   <div className="mt-2">
                     <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
                     <p className="text-xs text-gray-500">{book.author || 'Unknown Author'}</p>
@@ -310,7 +333,7 @@ export default function Library() {
           {filteredResources.map((book) => (
             <div 
               key={book.id}
-              className="cursor-pointer group"
+              className="cursor-pointer group relative"
               onClick={() => setSelectedBook(book)}
             >
               <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
@@ -326,6 +349,18 @@ export default function Library() {
                   </div>
                 )}
               </div>
+              {canUpload && (
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDelete(book);
+                  }}
+                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
+                  title="Delete book"
+                >
+                  <Trash2 className="w-4 h-4" />
+                </button>
+              )}
               <div className="mt-2">
                 <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
                 <p className="text-xs text-gray-500">{book.author || 'Unknown Author'}</p>
