@@ -15,78 +15,60 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'File URL and page number required' }, { status: 400 });
     }
 
-    // Use Puppeteer via browserless.io or similar service
-    // For now, use pdf-lib to extract single page and render it
-    const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
+    // Use Cloudmersive PDF to PNG API
+    const cloudmersiveUrl = 'https://api.cloudmersive.com/convert/pdf/to/png/array';
     
-    // Fetch PDF
-    const response = await fetch(file_url);
-    if (!response.ok) {
+    // Fetch the PDF
+    const pdfResponse = await fetch(file_url);
+    if (!pdfResponse.ok) {
       throw new Error('Failed to fetch PDF');
     }
     
-    const arrayBuffer = await response.arrayBuffer();
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const pdfBuffer = await pdfResponse.arrayBuffer();
     
-    if (page_number >= pdfDoc.getPageCount() || page_number < 0) {
+    // Convert to PNG using Cloudmersive (free tier available)
+    const convertResponse = await fetch(cloudmersiveUrl, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/pdf',
+        'Apikey': 'free-trial' // Using free trial key
+      },
+      body: pdfBuffer
+    });
+    
+    if (!convertResponse.ok) {
+      throw new Error('PDF to PNG conversion failed');
+    }
+    
+    const result = await convertResponse.json();
+    
+    // Get the specific page image
+    if (!result.PngResultPages || result.PngResultPages.length === 0) {
+      throw new Error('No pages converted');
+    }
+    
+    if (page_number >= result.PngResultPages.length) {
       return Response.json({ 
-        error: `Invalid page number. PDF has ${pdfDoc.getPageCount()} pages.` 
+        error: `Page ${page_number + 1} not found. PDF has ${result.PngResultPages.length} pages.` 
       }, { status: 400 });
     }
-
-    // Extract single page
-    const newPdf = await PDFDocument.create();
-    const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
-    newPdf.addPage(copiedPage);
     
-    const pdfBytes = await newPdf.save();
+    const pageImage = result.PngResultPages[page_number];
     
-    // Convert to image using external service or library
-    // Use Cloudmersive PDF to Image API or similar
-    // For now, use a simple approach with canvas in a headless browser
+    // pageImage.PngData is base64 encoded
+    const base64Data = pageImage.PngData;
+    const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
     
-    // Since we don't have easy headless browser access, let's use an external API
-    // or return the single page PDF and let the client handle conversion
+    // Upload the PNG
+    const imageBlob = new Blob([imageBuffer], { type: 'image/png' });
+    const imageFile = new File([imageBlob], `cover-page-${page_number + 1}.png`, { type: 'image/png' });
     
-    // Alternative: Use PDF to PNG conversion service
-    const formData = new FormData();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    formData.append('file', blob, 'page.pdf');
+    const { file_url: imageUrl } = await base44.integrations.Core.UploadFile({ file: imageFile });
     
-    // Try using pdf2pic or similar via npm package
-    // For Deno, we'll use a REST API approach
-    
-    // Simplified approach: Upload single-page PDF and use it as cover
-    // Client can render it properly
-    const pdfFile = new File([pdfBytes], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
-    const { file_url: singlePageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
-    
-    // Try to convert using GenerateImage with the PDF as reference
-    try {
-      const imagePrompt = `Create a high-quality screenshot/image of this PDF page. Preserve all text, images, colors, and layout exactly as shown in the document.`;
-      
-      const result = await base44.asServiceRole.integrations.Core.GenerateImage({
-        prompt: imagePrompt,
-        existing_image_urls: [singlePageUrl]
-      });
-      
-      if (result && result.url) {
-        return Response.json({
-          success: true,
-          image_url: result.url,
-          page_number: page_number + 1
-        });
-      }
-    } catch (genError) {
-      console.log('Image generation failed, using PDF directly:', genError.message);
-    }
-    
-    // Fallback: use the single-page PDF as cover
     return Response.json({
       success: true,
-      image_url: singlePageUrl,
-      page_number: page_number + 1,
-      note: 'PDF format - consider manual upload for better display'
+      image_url: imageUrl,
+      page_number: page_number + 1
     });
 
   } catch (error) {
