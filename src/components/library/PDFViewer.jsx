@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { Document, Page, pdfjs } from 'react-pdf';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, ZoomIn, ZoomOut } from 'lucide-react';
@@ -10,21 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function PDFViewer({ fileUrl, title }) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.0);
-  const [containerWidth, setContainerWidth] = useState(null);
-  const containerRef = useRef(null);
-
-  useEffect(() => {
-    const updateWidth = () => {
-      if (containerRef.current) {
-        setContainerWidth(containerRef.current.offsetWidth - 32);
-      }
-    };
-    
-    updateWidth();
-    window.addEventListener('resize', updateWidth);
-    return () => window.removeEventListener('resize', updateWidth);
-  }, []);
+  const [scale, setScale] = useState(1.2);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -47,20 +33,28 @@ export default function PDFViewer({ fileUrl, title }) {
   }
 
   return (
-    <div className="flex flex-col h-full bg-gray-100">
+    <div style={{ display: 'flex', flexDirection: 'column', height: '100%', width: '100%', overflow: 'hidden' }}>
       {/* Controls */}
-      <div className="flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 bg-white border-b gap-2">
-        <div className="flex items-center gap-1 sm:gap-2">
+      <div style={{ 
+        display: 'flex', 
+        alignItems: 'center', 
+        justifyContent: 'space-between', 
+        padding: '12px',
+        backgroundColor: 'white',
+        borderBottom: '1px solid #e5e7eb',
+        flexShrink: 0,
+        zIndex: 10
+      }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
           <Button
             variant="outline"
             size="sm"
             onClick={previousPage}
             disabled={pageNumber <= 1}
-            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <span className="text-xs sm:text-sm whitespace-nowrap px-2">
+          <span style={{ fontSize: '14px', whiteSpace: 'nowrap', padding: '0 8px' }}>
             {pageNumber} / {numPages || '...'}
           </span>
           <Button
@@ -68,43 +62,54 @@ export default function PDFViewer({ fileUrl, title }) {
             size="sm"
             onClick={nextPage}
             disabled={pageNumber >= numPages}
-            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
         </div>
 
-        <div className="flex items-center gap-1 sm:gap-2">
-          <Button variant="outline" size="sm" onClick={zoomOut} className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
+        <div style={{ display: 'flex', alignItems: 'center', gap: '8px' }}>
+          <Button variant="outline" size="sm" onClick={zoomOut}>
             <ZoomOut className="w-4 h-4" />
           </Button>
-          <span className="text-xs sm:text-sm min-w-[50px] text-center">{Math.round(scale * 100)}%</span>
-          <Button variant="outline" size="sm" onClick={zoomIn} className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
+          <span style={{ fontSize: '14px', minWidth: '60px', textAlign: 'center' }}>
+            {Math.round(scale * 100)}%
+          </span>
+          <Button variant="outline" size="sm" onClick={zoomIn}>
             <ZoomIn className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      {/* PDF Display */}
-      <div ref={containerRef} className="flex-1 overflow-auto bg-gray-900 p-2 sm:p-4">
-        <div className="flex justify-center w-full">
+      {/* PDF Display - Scrollable Container */}
+      <div style={{ 
+        flex: 1,
+        width: '100%',
+        overflow: 'auto',
+        backgroundColor: '#1f2937',
+        WebkitOverflowScrolling: 'touch'
+      }}>
+        <div style={{
+          display: 'flex',
+          justifyContent: 'center',
+          padding: '20px',
+          minHeight: '100%'
+        }}>
           <Document
             file={fileUrl}
             onLoadSuccess={onDocumentLoadSuccess}
             loading={
-              <div className="flex items-center justify-center h-64">
-                <div className="text-gray-300">Loading PDF...</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#d1d5db' }}>
+                Loading PDF...
               </div>
             }
             error={
-              <div className="flex items-center justify-center h-64">
-                <div className="text-red-400">Failed to load PDF</div>
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '400px', color: '#f87171' }}>
+                Failed to load PDF
               </div>
             }
           >
             <Page
               pageNumber={pageNumber}
-              width={containerWidth}
               scale={scale}
               renderTextLayer={true}
               renderAnnotationLayer={true}
