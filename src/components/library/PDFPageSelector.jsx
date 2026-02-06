@@ -19,20 +19,23 @@ export default function PDFPageSelector({ pdfUrl, onPageSelect }) {
   const handleExtractPage = async () => {
     setExtracting(true);
     try {
-      const { data } = await base44.functions.invoke('extractPdfPage', {
+      const result = await base44.functions.invoke('extractPdfPage', {
         file_url: pdfUrl,
         page_number: currentPage - 1
       });
 
-      if (data.success && data.page_url) {
-        onPageSelect(data.page_url);
-        toast.success(`Page ${currentPage} set as cover!`);
+      console.log('Extract result:', result);
+
+      if (result.data?.success && result.data?.page_url) {
+        onPageSelect(result.data.page_url);
+        toast.success(`Page ${currentPage} extracted! Click "Save Changes" to apply.`);
       } else {
-        toast.error(data.error || 'Failed to extract page');
+        toast.error(result.data?.error || 'Failed to extract page');
+        console.error('Extraction failed:', result.data);
       }
     } catch (error) {
       console.error('Extract error:', error);
-      toast.error('Failed to extract page');
+      toast.error(error.message || 'Failed to extract page');
     } finally {
       setExtracting(false);
     }
