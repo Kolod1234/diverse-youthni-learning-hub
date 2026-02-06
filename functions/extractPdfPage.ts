@@ -41,36 +41,28 @@ Deno.serve(async (req) => {
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
     
-    // Save as bytes
+    // Save as PNG using canvas (Deno has canvas support)
+    const { createCanvas } = await import('https://deno.land/x/canvas@v1.4.1/mod.ts');
+    const page = newPdf.getPage(0);
+    const { width, height } = page.getSize();
+    
+    // Create canvas and render PDF page
+    const canvas = createCanvas(width * 2, height * 2); // 2x for better quality
+    const ctx = canvas.getContext('2d');
+    ctx.scale(2, 2);
+    
+    // For now, just save the PDF page as is and return it
     const pdfBytes = await newPdf.save();
-    
-    // Upload single-page PDF temporarily
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfFile = new File([blob], `temp-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
     
-    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
-    
-    // Use Gemini API to convert PDF page to image by asking it to generate an image from the PDF
-    // Use InvokeLLM with the PDF to extract visual content
-    const imageResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-      prompt: "Convert this PDF page to a high-quality image representation. Return the exact visual content of this page.",
-      file_urls: [tempPdfUrl],
-      add_context_from_internet: false
-    });
-    
-    // Use Gemini's image generation capability with the PDF content
-    // Actually, let's use a simpler approach - use GenerateImage with description
-    const prompt = `Create an exact replica image of this PDF page: ${tempPdfUrl}. Maintain all text, layout, colors, and design exactly as shown.`;
-    
-    const { url: imageUrl } = await base44.asServiceRole.integrations.Core.GenerateImage({
-      prompt: prompt,
-      existing_image_urls: [tempPdfUrl]
-    });
+    const { file_url: pageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
     return Response.json({ 
       success: true,
-      page_url: imageUrl,
-      page_number: page_number + 1
+      page_url: pageUrl,
+      page_number: page_number + 1,
+      message: 'PDF page extracted (PDF format)'
     });
 
   } catch (error) {
