@@ -689,44 +689,6 @@ export default function Library() {
                   {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
                 </div>
                 <div className="flex gap-2">
-                  {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
-                    <Button 
-                      variant="outline" 
-                      onClick={async () => {
-                        try {
-                          toast.loading('Capturing page...');
-                          
-                          const iframe = document.getElementById('pdf-viewer-iframe');
-                          const canvas = iframe.contentWindow.document.querySelector('.page.active canvas') || 
-                                       iframe.contentWindow.document.querySelector('canvas');
-                          
-                          if (!canvas) {
-                            toast.error('Could not find PDF canvas');
-                            return;
-                          }
-
-                          canvas.toBlob(async (blob) => {
-                            const file = new File([blob], 'cover.png', { type: 'image/png' });
-                            const { file_url } = await base44.integrations.Core.UploadFile({ file });
-                            
-                            await base44.entities.LibraryResource.update(viewingBook.id, {
-                              cover_image: file_url
-                            });
-                            
-                            queryClient.invalidateQueries(['library-resources']);
-                            toast.success('Cover updated!');
-                          });
-                        } catch (error) {
-                          console.error('Screenshot failed:', error);
-                          toast.error('Failed to capture page');
-                        }
-                      }}
-                      className="gap-2"
-                    >
-                      <Upload className="w-4 h-4" />
-                      Set Current Page as Cover
-                    </Button>
-                  )}
                   <Button 
                     variant="outline" 
                     onClick={() => handleDownload(viewingBook)}
@@ -740,8 +702,52 @@ export default function Library() {
                   </Button>
                 </div>
               </div>
-              <div className="flex-1" id="pdf-viewer-container">
-                <PDFViewer fileUrl={viewingBook.file_url} title={viewingBook.title} />
+              <div className="flex-1 flex flex-col" id="pdf-viewer-container">
+                {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
+                  <div className="p-2 bg-gray-50 border-b flex items-center justify-center">
+                    <Button 
+                      variant="outline" 
+                      onClick={async () => {
+                        try {
+                          const iframe = document.getElementById('pdf-viewer-iframe');
+                          if (!iframe) return;
+                          
+                          const pageNumElement = iframe.contentWindow?.document.getElementById('pageNumber');
+                          const currentPage = pageNumElement ? parseInt(pageNumElement.value) - 1 : 0;
+                          
+                          toast.loading('Extracting page...');
+                          
+                          const { data } = await base44.functions.invoke('extractPdfPage', {
+                            file_url: viewingBook.file_url,
+                            page_number: currentPage
+                          });
+                          
+                          if (data.success) {
+                            await base44.entities.LibraryResource.update(viewingBook.id, {
+                              cover_image: data.page_url
+                            });
+                            
+                            queryClient.invalidateQueries(['library-resources']);
+                            toast.success('Cover updated!');
+                            setShowPdfViewer(false);
+                          } else {
+                            toast.error(data.error || 'Failed to extract page');
+                          }
+                        } catch (error) {
+                          console.error('Failed:', error);
+                          toast.error('Failed to set cover');
+                        }
+                      }}
+                      className="gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Set Current Page as Cover
+                    </Button>
+                  </div>
+                )}
+                <div className="flex-1">
+                  <PDFViewer fileUrl={viewingBook.file_url} title={viewingBook.title} />
+                </div>
               </div>
             </div>
           )}
