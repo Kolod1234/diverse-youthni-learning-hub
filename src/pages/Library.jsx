@@ -439,13 +439,26 @@ export default function Library() {
                   </div>
                 )}
 
-                <Button 
-                  onClick={() => handleDownload(selectedBook)}
-                  className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
-                >
-                  <Download className="w-5 h-5" />
-                  Download Now
-                </Button>
+                <div className="flex gap-3">
+                  <Button 
+                    onClick={() => {
+                      window.open(selectedBook.file_url, '_blank');
+                      setSelectedBook(null);
+                    }}
+                    variant="outline"
+                    className="flex-1 gap-2"
+                  >
+                    <BookOpen className="w-5 h-5" />
+                    Read Online
+                  </Button>
+                  <Button 
+                    onClick={() => handleDownload(selectedBook)}
+                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 gap-2"
+                  >
+                    <Download className="w-5 h-5" />
+                    Download
+                  </Button>
+                </div>
               </div>
             </div>
           )}
