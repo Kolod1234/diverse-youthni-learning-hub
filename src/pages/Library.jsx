@@ -164,47 +164,30 @@ export default function Library() {
     if (!file) return;
 
     setUploadingFile(true);
-    setAnalyzing(true);
-    
+
     try {
       // Upload file
       toast.loading('Uploading file...');
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      
-      toast.loading('Analyzing book with AI...');
-      
-      // Analyze the book with AI
-      try {
-        const { data } = await base44.functions.invoke('analyzeBook', { file_url });
-        if (data.success && data.analysis) {
-          setFormData({
-            title: data.analysis.title || '',
-            author: data.analysis.author || '',
-            description: data.analysis.description || '',
-            category: data.analysis.category || 'gcse_books',
-            file_url,
-            cover_image: data.analysis.cover_image || '',
-            tags: data.analysis.tags || [],
-            is_featured: false
-          });
-          toast.success('Book analyzed! Review and edit details.');
-          setShowUploadDialog(true);
-        } else {
-          setFormData({ ...formData, file_url });
-          toast.info('Analysis incomplete. Please fill in the details.');
-          setShowUploadDialog(true);
-        }
-      } catch (error) {
-        console.error('Analysis failed:', error);
-        setFormData({ ...formData, file_url });
-        toast.info('Please fill in the book details manually.');
-        setShowUploadDialog(true);
-      }
+
+      // Set basic data and show dialog immediately
+      setFormData({
+        title: file.name.replace(/\.[^/.]+$/, ''),
+        author: '',
+        description: '',
+        category: 'gcse_books',
+        file_url,
+        cover_image: '',
+        tags: [],
+        is_featured: false
+      });
+
+      toast.success('File uploaded! Fill in details below.');
+      setShowUploadDialog(true);
     } catch (error) {
       toast.error('Upload failed');
     } finally {
       setUploadingFile(false);
-      setAnalyzing(false);
       e.target.value = '';
     }
   };
@@ -775,10 +758,46 @@ export default function Library() {
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Review Book Details</DialogTitle>
-            <p className="text-sm text-gray-500 mt-1">AI has analyzed your book. Review and edit the details below.</p>
+            <DialogTitle>Add Book Details</DialogTitle>
+            <p className="text-sm text-gray-500 mt-1">Fill in the book information below, or click "AI Analyze" to auto-fill.</p>
           </DialogHeader>
           <div className="space-y-4 mt-4">
+            <div className="flex justify-end mb-2">
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={async () => {
+                  if (!formData.file_url) return;
+                  setAnalyzing(true);
+                  try {
+                    toast.loading('Analyzing with AI...');
+                    const { data } = await base44.functions.invoke('analyzeBook', { file_url: formData.file_url });
+                    if (data.success && data.analysis) {
+                      setFormData({
+                        ...formData,
+                        title: data.analysis.title || formData.title,
+                        author: data.analysis.author || formData.author,
+                        description: data.analysis.description || formData.description,
+                        category: data.analysis.category || formData.category,
+                        cover_image: data.analysis.cover_image || formData.cover_image,
+                        tags: data.analysis.tags || formData.tags
+                      });
+                      toast.success('Analysis complete!');
+                    } else {
+                      toast.error('Analysis failed');
+                    }
+                  } catch (error) {
+                    toast.error('Analysis failed');
+                  } finally {
+                    setAnalyzing(false);
+                  }
+                }}
+                disabled={analyzing || !formData.file_url}
+              >
+                {analyzing ? 'Analyzing...' : '✨ AI Analyze Book'}
+              </Button>
+            </div>
             <div>
               <Label>Title *</Label>
               <Input 
