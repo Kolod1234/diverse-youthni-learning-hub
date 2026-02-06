@@ -12,6 +12,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
 import TagInput from '@/components/library/TagInput';
+import ShareDialog from '@/components/library/ShareDialog';
+import CommentsSection from '@/components/library/CommentsSection';
+import ActivityHistory from '@/components/library/ActivityHistory';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -19,6 +23,8 @@ export default function Library() {
   const [selectedBook, setSelectedBook] = useState(null);
   const [showPdfViewer, setShowPdfViewer] = useState(false);
   const [viewingBook, setViewingBook] = useState(null);
+  const [showShareDialog, setShowShareDialog] = useState(false);
+  const [sharingBook, setSharingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -88,10 +94,32 @@ export default function Library() {
       await base44.entities.LibraryResource.update(resource.id, {
         downloads_count: (resource.downloads_count || 0) + 1
       });
+      await base44.entities.FileActivity.create({
+        resource_id: resource.id,
+        action: 'downloaded',
+        user_name: user?.full_name
+      });
       window.open(resource.file_url, '_blank');
     } catch (error) {
       window.open(resource.file_url, '_blank');
     }
+  };
+
+  const handleView = async (resource) => {
+    try {
+      await base44.entities.FileActivity.create({
+        resource_id: resource.id,
+        action: 'viewed',
+        user_name: user?.full_name
+      });
+    } catch (error) {
+      console.error('Failed to log view:', error);
+    }
+  };
+
+  const handleShare = (book) => {
+    setSharingBook(book);
+    setShowShareDialog(true);
   };
 
   const createMutation = useMutation({
@@ -451,90 +479,132 @@ export default function Library() {
 
       {/* Book Detail Modal */}
       <Dialog open={!!selectedBook} onOpenChange={() => setSelectedBook(null)}>
-        <DialogContent className="max-w-4xl max-h-[90vh] overflow-hidden p-0">
+        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0">
           {selectedBook && (
-            <div className="flex flex-col md:flex-row">
+            <div className="flex flex-col md:flex-row h-full">
               {/* Book Cover */}
-              <div className="md:w-2/5 bg-gradient-to-br from-slate-800 to-slate-900 p-8 flex items-center justify-center">
+              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col items-center justify-start">
                 {selectedBook.cover_image ? (
                   <img
                     src={selectedBook.cover_image}
                     alt={selectedBook.title}
-                    className="w-full max-w-xs rounded-lg shadow-2xl"
+                    className="w-full max-w-xs rounded-lg shadow-2xl mb-6"
                   />
                 ) : (
-                  <div className="w-full max-w-xs aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center">
+                  <div className="w-full max-w-xs aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center mb-6">
                     <BookOpen className="w-24 h-24 text-gray-400" />
                   </div>
                 )}
-              </div>
 
-              {/* Book Details */}
-              <div className="md:w-3/5 p-8 overflow-y-auto">
-                <button
-                  onClick={() => setSelectedBook(null)}
-                  className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition"
-                >
-                  <X className="w-5 h-5" />
-                </button>
-
-                <h1 className="text-2xl font-bold text-gray-900 mb-2">{selectedBook.title}</h1>
-                <p className="text-gray-600 mb-4">{selectedBook.author || 'Unknown Author'}</p>
-
-                <div className="flex items-center gap-6 mb-6 text-sm">
-                  <div className="text-center">
-                    <div className="text-xl font-bold text-gray-900">{selectedBook.downloads_count || 0}</div>
-                    <div className="text-gray-500">Downloads</div>
-                  </div>
-                  <div className="text-center">
-                    <Badge className="capitalize">{selectedBook.category}</Badge>
-                  </div>
-                </div>
-
-                {selectedBook.description && (
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                    <p className="text-gray-600 text-sm leading-relaxed">{selectedBook.description}</p>
-                  </div>
-                )}
-
-                {selectedBook.tags && selectedBook.tags.length > 0 && (
-                  <div className="mb-6">
-                    <h3 className="font-semibold text-gray-900 mb-2">Tags</h3>
-                    <div className="flex flex-wrap gap-2">
-                      {selectedBook.tags.map((tag, i) => (
-                        <Badge key={i} variant="outline">{tag}</Badge>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="flex gap-3">
+                <div className="w-full space-y-2">
                   <Button 
                     onClick={() => {
+                      handleView(selectedBook);
                       setViewingBook(selectedBook);
                       setShowPdfViewer(true);
                       setSelectedBook(null);
                     }}
                     variant="outline"
-                    className="flex-1 gap-2"
+                    className="w-full gap-2 bg-white"
                   >
                     <BookOpen className="w-5 h-5" />
                     Read Online
                   </Button>
                   <Button 
                     onClick={() => handleDownload(selectedBook)}
-                    className="flex-1 bg-indigo-600 hover:bg-indigo-700 gap-2"
+                    className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
                   >
                     <Download className="w-5 h-5" />
                     Download
                   </Button>
+                  <Button 
+                    onClick={() => handleShare(selectedBook)}
+                    variant="outline"
+                    className="w-full gap-2 bg-white"
+                  >
+                    <Share2 className="w-5 h-5" />
+                    Share
+                  </Button>
+                </div>
+              </div>
+
+              {/* Book Details & Collaboration */}
+              <div className="md:w-2/3 flex flex-col overflow-hidden">
+                <div className="p-6 border-b">
+                  <button
+                    onClick={() => setSelectedBook(null)}
+                    className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition"
+                  >
+                    <X className="w-5 h-5" />
+                  </button>
+
+                  <h1 className="text-2xl font-bold text-gray-900 mb-2">{selectedBook.title}</h1>
+                  <p className="text-gray-600 mb-4">{selectedBook.author || 'Unknown Author'}</p>
+
+                  <div className="flex items-center gap-6 text-sm">
+                    <div className="text-center">
+                      <div className="text-xl font-bold text-gray-900">{selectedBook.downloads_count || 0}</div>
+                      <div className="text-gray-500">Downloads</div>
+                    </div>
+                    <Badge className="capitalize">{selectedBook.category}</Badge>
+                  </div>
+                </div>
+
+                <div className="flex-1 overflow-y-auto">
+                  <Tabs defaultValue="details" className="w-full">
+                    <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
+                      <TabsTrigger value="details" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
+                        Details
+                      </TabsTrigger>
+                      <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
+                        Comments
+                      </TabsTrigger>
+                      <TabsTrigger value="activity" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
+                        Activity
+                      </TabsTrigger>
+                    </TabsList>
+
+                    <TabsContent value="details" className="p-6 space-y-4">
+                      {selectedBook.description && (
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
+                          <p className="text-gray-600 text-sm leading-relaxed">{selectedBook.description}</p>
+                        </div>
+                      )}
+
+                      {selectedBook.tags && selectedBook.tags.length > 0 && (
+                        <div>
+                          <h3 className="font-semibold text-gray-900 mb-2">Tags</h3>
+                          <div className="flex flex-wrap gap-2">
+                            {selectedBook.tags.map((tag, i) => (
+                              <Badge key={i} variant="outline">{tag}</Badge>
+                            ))}
+                          </div>
+                        </div>
+                      )}
+                    </TabsContent>
+
+                    <TabsContent value="comments" className="p-6">
+                      <CommentsSection resourceId={selectedBook.id} />
+                    </TabsContent>
+
+                    <TabsContent value="activity" className="p-6">
+                      <ActivityHistory resourceId={selectedBook.id} />
+                    </TabsContent>
+                  </Tabs>
                 </div>
               </div>
             </div>
           )}
         </DialogContent>
       </Dialog>
+
+      {/* Share Dialog */}
+      <ShareDialog
+        resource={sharingBook}
+        open={showShareDialog}
+        onOpenChange={setShowShareDialog}
+      />
 
       {/* PDF Viewer Dialog */}
       <Dialog open={showPdfViewer} onOpenChange={setShowPdfViewer}>
