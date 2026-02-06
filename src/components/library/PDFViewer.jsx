@@ -84,6 +84,7 @@ export default function PDFViewer({ fileUrl, title }) {
       <div style={{ 
         flex: 1,
         width: '100%',
+        height: 0,
         overflow: 'auto',
         backgroundColor: '#1f2937',
         WebkitOverflowScrolling: 'touch'
@@ -91,8 +92,7 @@ export default function PDFViewer({ fileUrl, title }) {
         <div style={{
           display: 'flex',
           justifyContent: 'center',
-          padding: '20px',
-          minHeight: '100%'
+          padding: '20px'
         }}>
           <Document
             file={fileUrl}
