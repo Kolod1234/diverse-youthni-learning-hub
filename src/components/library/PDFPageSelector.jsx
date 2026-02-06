@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, Loader2 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
@@ -9,16 +9,15 @@ export default function PDFPageSelector({ pdfUrl, onPageSelect }) {
   const [currentPage, setCurrentPage] = useState(1);
   const [extracting, setExtracting] = useState(false);
   const [loading, setLoading] = useState(true);
+  const iframeRef = useRef(null);
 
   useEffect(() => {
-    // Load PDF.js and get page count
     const loadPdfInfo = async () => {
       try {
         const response = await fetch(pdfUrl);
         const blob = await response.blob();
         const arrayBuffer = await blob.arrayBuffer();
         
-        // Load PDF.js library from CDN
         if (!window.pdfjsLib) {
           const script = document.createElement('script');
           script.src = 'https://mozilla.github.io/pdf.js/build/pdf.js';
@@ -40,12 +39,19 @@ export default function PDFPageSelector({ pdfUrl, onPageSelect }) {
     loadPdfInfo();
   }, [pdfUrl]);
 
+  useEffect(() => {
+    if (iframeRef.current && !loading) {
+      const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#page=${currentPage}`;
+      iframeRef.current.src = viewerUrl;
+    }
+  }, [currentPage, pdfUrl, loading]);
+
   const handleExtractPage = async () => {
     setExtracting(true);
     try {
       const { data } = await base44.functions.invoke('extractPdfPage', {
         file_url: pdfUrl,
-        page_number: currentPage - 1 // 0-indexed
+        page_number: currentPage - 1
       });
 
       if (data.success && data.page_url) {
@@ -70,13 +76,11 @@ export default function PDFPageSelector({ pdfUrl, onPageSelect }) {
     );
   }
 
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(pdfUrl)}#page=${currentPage}`;
-
   return (
     <div className="space-y-3">
       <div className="border rounded-lg overflow-hidden bg-gray-100" style={{ height: '400px' }}>
         <iframe
-          src={viewerUrl}
+          ref={iframeRef}
           className="w-full h-full"
           style={{ border: 'none' }}
         />
