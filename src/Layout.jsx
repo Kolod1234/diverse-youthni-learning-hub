@@ -84,6 +84,7 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'Live Sessions', href: createPageUrl('Sessions'), icon: Video },
     { name: 'Youth Work', href: createPageUrl('YouthWork'), icon: GraduationCap },
     { name: 'Library', href: createPageUrl('Library'), icon: BookOpen },
+    { name: 'Learning Pathways', href: createPageUrl('StudentPathways'), icon: Award },
     { name: 'Community', href: createPageUrl('Community'), icon: MessageSquare },
     { name: 'Event Slides', href: createPageUrl('CommunityEventSlides'), icon: GraduationCap },
     { name: 'Art Gallery', href: createPageUrl('ArtGallery'), icon: Award },
@@ -359,6 +360,12 @@ function LayoutContent({ children, currentPageName }) {
                         <Link to={createPageUrl('DataPresentation')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
                           <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                           <span className="font-medium">Data to Slides</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('PathwayManager')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
+                          <Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium">Pathway Manager</span>
                         </Link>
                       </DropdownMenuItem>
 
