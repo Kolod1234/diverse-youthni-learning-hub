@@ -16,6 +16,7 @@ import ShareDialog from '@/components/library/ShareDialog';
 import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
+import SetCoverDialog from '@/components/library/SetCoverDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
@@ -29,6 +30,8 @@ export default function Library() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [showSetCoverDialog, setShowSetCoverDialog] = useState(false);
+  const [setCoverBook, setSetCoverBook] = useState(null);
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -577,8 +580,8 @@ export default function Library() {
                       {selectedBook.file_url?.toLowerCase().endsWith('.pdf') && (
                         <Button 
                           onClick={() => {
-                            setViewingBook(selectedBook);
-                            setShowPdfViewer(true);
+                            setSetCoverBook(selectedBook);
+                            setShowSetCoverDialog(true);
                             setSelectedBook(null);
                           }}
                           variant="outline"
@@ -678,6 +681,16 @@ export default function Library() {
         onOpenChange={setShowEditDialog}
       />
 
+      {/* Set Cover Dialog */}
+      <SetCoverDialog
+        book={setCoverBook}
+        open={showSetCoverDialog}
+        onOpenChange={setShowSetCoverDialog}
+        onSuccess={() => {
+          queryClient.invalidateQueries(['library-resources']);
+        }}
+      />
+
       {/* PDF Viewer Dialog */}
       <Dialog open={showPdfViewer} onOpenChange={setShowPdfViewer}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-[95vh] p-0">
@@ -689,44 +702,13 @@ export default function Library() {
                   {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
                 </div>
                 <div className="flex gap-2">
-                  {canEditBook(viewingBook) && (
+                  {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
                     <Button 
                       variant="outline" 
-                      onClick={async () => {
-                        try {
-                          const pdfIframe = document.querySelector('#pdf-viewer-iframe');
-                          if (!pdfIframe || !pdfIframe.contentWindow) {
-                            toast.error('PDF viewer not ready');
-                            return;
-                          }
-
-                          toast.loading('Capturing screenshot...');
-                          
-                          // Use html2canvas to capture the PDF viewer
-                          const html2canvas = (await import('npm:html2canvas@1.4.1')).default;
-                          const canvas = await html2canvas(pdfIframe.contentWindow.document.body, {
-                            allowTaint: true,
-                            useCORS: true,
-                            scale: 2
-                          });
-                          
-                          // Convert to blob
-                          canvas.toBlob(async (blob) => {
-                            const file = new File([blob], 'cover.png', { type: 'image/png' });
-                            const { file_url } = await base44.integrations.Core.UploadFile({ file });
-                            
-                            await base44.entities.LibraryResource.update(viewingBook.id, {
-                              cover_image: file_url
-                            });
-                            
-                            queryClient.invalidateQueries(['library-resources']);
-                            toast.success('Cover image updated!');
-                            setShowPdfViewer(false);
-                          }, 'image/png');
-                        } catch (error) {
-                          console.error('Screenshot failed:', error);
-                          toast.error('Failed to capture screenshot');
-                        }
+                      onClick={() => {
+                        setSetCoverBook(viewingBook);
+                        setShowSetCoverDialog(true);
+                        setShowPdfViewer(false);
                       }}
                       className="gap-2"
                     >
