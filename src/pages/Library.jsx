@@ -19,6 +19,7 @@ export default function Library() {
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
+  const [analyzing, setAnalyzing] = useState(false);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -29,6 +30,7 @@ export default function Library() {
     tags: [],
     is_featured: false
   });
+  const fileInputRef = React.useRef(null);
 
   const queryClient = useQueryClient();
 
@@ -86,39 +88,73 @@ export default function Library() {
     }
   });
 
-  const handleUploadFile = async (e) => {
+  const handleInitiateUpload = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleFileSelected = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploadingFile(true);
+    setAnalyzing(true);
+    
     try {
+      // Upload file
+      toast.loading('Uploading file...');
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData({ ...formData, file_url });
-      toast.success('File uploaded! Analyzing...');
-
+      
+      toast.loading('Analyzing book with AI...');
+      
       // Analyze the book with AI
       try {
         const { data } = await base44.functions.invoke('analyzeBook', { file_url });
         if (data.success && data.analysis) {
-          setFormData(prev => ({
-            ...prev,
+          setFormData({
+            title: data.analysis.title || '',
+            author: data.analysis.author || '',
+            description: data.analysis.description || '',
+            category: data.analysis.category || 'book',
             file_url,
-            title: data.analysis.title || prev.title,
-            author: data.analysis.author || prev.author,
-            description: data.analysis.description || prev.description,
-            category: data.analysis.category || prev.category,
-            tags: data.analysis.tags || prev.tags
-          }));
-          toast.success('Book analyzed! You can edit the details.');
+            cover_image: '',
+            tags: data.analysis.tags || [],
+            is_featured: false
+          });
+          toast.success('Book analyzed! Review and edit details.');
+          setShowUploadDialog(true);
+        } else {
+          setFormData({ ...formData, file_url });
+          toast.info('Analysis incomplete. Please fill in the details.');
+          setShowUploadDialog(true);
         }
       } catch (error) {
         console.error('Analysis failed:', error);
-        toast.info('Upload successful. Please fill in the details manually.');
+        setFormData({ ...formData, file_url });
+        toast.info('Please fill in the book details manually.');
+        setShowUploadDialog(true);
       }
     } catch (error) {
       toast.error('Upload failed');
     } finally {
       setUploadingFile(false);
+      setAnalyzing(false);
+      e.target.value = '';
+    }
+  };
+
+  const handleUploadCoverInForm = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, cover_image: file_url });
+      toast.success('Cover image uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingCover(false);
     }
   };
 
@@ -186,13 +222,23 @@ export default function Library() {
           </div>
 
           {canUpload && (
-            <Button 
-              onClick={() => setShowUploadDialog(true)}
-              className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-            >
-              <Plus className="w-5 h-5" />
-              Upload Book
-            </Button>
+            <>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept=".pdf,.epub,.mobi,.doc,.docx"
+                onChange={handleFileSelected}
+                className="hidden"
+              />
+              <Button 
+                onClick={handleInitiateUpload}
+                disabled={uploadingFile || analyzing}
+                className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+              >
+                <Plus className="w-5 h-5" />
+                {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
+              </Button>
+            </>
           )}
         </div>
 
@@ -363,11 +409,12 @@ export default function Library() {
         </DialogContent>
       </Dialog>
 
-      {/* Upload Book Dialog */}
+      {/* Upload Book Dialog - Shows after AI analysis */}
       <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
         <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
-            <DialogTitle>Upload New Book</DialogTitle>
+            <DialogTitle>Review Book Details</DialogTitle>
+            <p className="text-sm text-gray-500 mt-1">AI has analyzed your book. Review and edit the details below.</p>
           </DialogHeader>
           <div className="space-y-4 mt-4">
             <div>
@@ -411,21 +458,11 @@ export default function Library() {
               </select>
             </div>
             <div>
-              <Label>Book File * {uploadingFile && '(Uploading...)'}</Label>
-              <Input 
-                type="file" 
-                onChange={handleUploadFile} 
-                disabled={uploadingFile}
-                accept=".pdf,.epub,.mobi,.doc,.docx"
-              />
-              {formData.file_url && <p className="text-xs text-green-600 mt-1">✓ File uploaded</p>}
-            </div>
-            <div>
               <Label>Cover Image {uploadingCover && '(Uploading...)'}</Label>
               <Input 
                 type="file" 
                 accept="image/*" 
-                onChange={handleUploadCover}
+                onChange={handleUploadCoverInForm}
                 disabled={uploadingCover}
               />
               {formData.cover_image && (
@@ -459,10 +496,10 @@ export default function Library() {
               </Button>
               <Button 
                 onClick={handleSubmit} 
-                disabled={uploadingFile || uploadingCover} 
+                disabled={uploadingCover} 
                 className="flex-1 bg-indigo-600 hover:bg-indigo-700"
               >
-                Upload Book
+                Save Book
               </Button>
             </div>
           </div>
