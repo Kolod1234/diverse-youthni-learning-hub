@@ -53,6 +53,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
   const handlePageSelect = (pageUrl) => {
     setFormData({ ...formData, cover_image: pageUrl });
     setShowPageSelector(false);
+    toast.success('Cover image updated! Click "Save Changes" to apply.');
   };
 
   const handleSave = () => {
