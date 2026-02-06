@@ -11,6 +11,7 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
+import TagInput from '@/components/library/TagInput';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +24,8 @@ export default function Library() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [suggestingTags, setSuggestingTags] = useState(false);
+  const [tagSuggestions, setTagSuggestions] = useState([]);
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -50,13 +53,21 @@ export default function Library() {
     queryFn: () => base44.entities.LibraryResource.list('-created_date', 500)
   });
 
+  const [selectedTags, setSelectedTags] = useState([]);
+
+  // Get all unique tags from resources
+  const allTags = [...new Set(resources.flatMap(r => r.tags || []))].sort();
+
   const filteredResources = resources.filter(resource => {
     const matchesSearch = !searchQuery || 
       resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
       resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.author?.toLowerCase().includes(searchQuery.toLowerCase());
+      resource.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      resource.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
     const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
-    return matchesSearch && matchesCategory;
+    const matchesTags = selectedTags.length === 0 || 
+      selectedTags.some(tag => resource.tags?.includes(tag));
+    return matchesSearch && matchesCategory && matchesTags;
   });
 
   const featuredBooks = filteredResources.filter(r => r.is_featured).slice(0, 5);
@@ -219,6 +230,27 @@ export default function Library() {
 
   const canUpload = user && (user.role === 'admin' || user.is_tutor);
 
+  const handleSuggestTags = async () => {
+    setSuggestingTags(true);
+    try {
+      const { data } = await base44.functions.invoke('suggestTags', {
+        title: formData.title,
+        description: formData.description,
+        category: formData.category,
+        author: formData.author
+      });
+      
+      if (data.success && data.tags) {
+        setTagSuggestions(data.tags);
+        toast.success('Tag suggestions ready!');
+      }
+    } catch (error) {
+      toast.error('Failed to suggest tags');
+    } finally {
+      setSuggestingTags(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -332,6 +364,41 @@ export default function Library() {
             ))}
           </div>
         </div>
+
+        {/* Tag Filters */}
+        {allTags.length > 0 && (
+          <div className="mb-6">
+            <h2 className="text-xl font-bold text-gray-900 mb-4">Filter by Tags</h2>
+            <div className="flex flex-wrap gap-2">
+              {allTags.slice(0, 15).map((tag) => (
+                <Badge
+                  key={tag}
+                  variant={selectedTags.includes(tag) ? "default" : "outline"}
+                  className="cursor-pointer hover:bg-indigo-100 transition-colors"
+                  onClick={() => {
+                    setSelectedTags(prev => 
+                      prev.includes(tag) 
+                        ? prev.filter(t => t !== tag)
+                        : [...prev, tag]
+                    );
+                  }}
+                >
+                  {tag}
+                </Badge>
+              ))}
+              {selectedTags.length > 0 && (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => setSelectedTags([])}
+                  className="text-xs"
+                >
+                  Clear filters
+                </Button>
+              )}
+            </div>
+          </div>
+        )}
 
         {/* All Books Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 xl:grid-cols-6 gap-4">
@@ -564,11 +631,22 @@ export default function Library() {
               )}
             </div>
             <div>
-              <Label>Tags (comma separated)</Label>
-              <Input 
-                value={formData.tags.join(', ')} 
-                onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} 
-                placeholder="education, science, history"
+              <div className="flex items-center justify-between mb-2">
+                <Label>Tags</Label>
+                <Button
+                  type="button"
+                  variant="outline"
+                  size="sm"
+                  onClick={handleSuggestTags}
+                  disabled={suggestingTags || !formData.title}
+                >
+                  {suggestingTags ? 'Suggesting...' : '✨ AI Suggest Tags'}
+                </Button>
+              </div>
+              <TagInput
+                tags={formData.tags}
+                onChange={(tags) => setFormData({ ...formData, tags })}
+                suggestions={tagSuggestions}
               />
             </div>
             <div className="flex items-center gap-2">
