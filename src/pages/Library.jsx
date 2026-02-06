@@ -10,6 +10,7 @@ import { BookOpen, Download, Search, X, Upload, Plus, Trash2 } from 'lucide-reac
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
+import PDFViewer from '@/components/library/PDFViewer';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -492,13 +493,8 @@ export default function Library() {
                   </Button>
                 </div>
               </div>
-              <div className="flex-1 bg-gray-100">
-                <iframe
-                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingBook.file_url)}&embedded=true`}
-                  className="w-full h-full border-0"
-                  title={viewingBook.title}
-                  allow="fullscreen"
-                />
+              <div className="flex-1">
+                <PDFViewer fileUrl={viewingBook.file_url} title={viewingBook.title} />
               </div>
             </div>
           )}
