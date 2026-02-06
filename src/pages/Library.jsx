@@ -127,9 +127,9 @@ export default function Library() {
             title: data.analysis.title || '',
             author: data.analysis.author || '',
             description: data.analysis.description || '',
-            category: data.analysis.category || 'book',
+            category: data.analysis.category || 'gcse_books',
             file_url,
-            cover_image: '',
+            cover_image: data.analysis.cover_image || '',
             tags: data.analysis.tags || [],
             is_featured: false
           });
