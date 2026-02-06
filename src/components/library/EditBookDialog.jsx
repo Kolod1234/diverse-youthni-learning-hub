@@ -9,6 +9,7 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import TagInput from './TagInput';
+import PDFPageSelector from './PDFPageSelector';
 
 export default function EditBookDialog({ book, open, onOpenChange }) {
   const [formData, setFormData] = useState({
@@ -21,8 +22,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
     is_featured: book?.is_featured || false
   });
   const [uploadingCover, setUploadingCover] = useState(false);
-  const [extractingPage, setExtractingPage] = useState(false);
-  const [pageNumber, setPageNumber] = useState('1');
+  const [showPageSelector, setShowPageSelector] = useState(false);
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -50,36 +50,9 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
     }
   };
 
-  const handleExtractPage = async () => {
-    if (!book?.file_url?.toLowerCase().includes('.pdf')) {
-      toast.error('Only PDF files support page extraction');
-      return;
-    }
-
-    const page = parseInt(pageNumber);
-    if (isNaN(page) || page < 1) {
-      toast.error('Please enter a valid page number');
-      return;
-    }
-
-    setExtractingPage(true);
-    try {
-      const { data } = await base44.functions.invoke('extractPdfPage', {
-        file_url: book.file_url,
-        page_number: page - 1 // 0-indexed
-      });
-
-      if (data.success && data.page_url) {
-        setFormData({ ...formData, cover_image: data.page_url });
-        toast.success(`Page ${page} extracted as cover!`);
-      } else {
-        toast.error(data.error || 'Failed to extract page');
-      }
-    } catch (error) {
-      toast.error('Failed to extract page');
-    } finally {
-      setExtractingPage(false);
-    }
+  const handlePageSelect = (pageUrl) => {
+    setFormData({ ...formData, cover_image: pageUrl });
+    setShowPageSelector(false);
   };
 
   const handleSave = () => {
@@ -185,26 +158,31 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
 
               {book?.file_url?.toLowerCase().includes('.pdf') && (
                 <div>
-                  <Label className="text-sm text-gray-600 mb-1 block">Extract Page as Cover</Label>
-                  <div className="flex gap-2">
-                    <Input
-                      type="number"
-                      min="1"
-                      value={pageNumber}
-                      onChange={(e) => setPageNumber(e.target.value)}
-                      placeholder="Page number"
-                      className="w-32"
-                    />
+                  <Label className="text-sm text-gray-600 mb-2 block">Extract Page as Cover</Label>
+                  {!showPageSelector ? (
                     <Button 
                       variant="outline"
-                      onClick={handleExtractPage}
-                      disabled={extractingPage}
-                      className="gap-2"
+                      onClick={() => setShowPageSelector(true)}
+                      className="gap-2 w-full"
                     >
                       <FileText className="w-4 h-4" />
-                      {extractingPage ? 'Extracting...' : 'Extract'}
+                      Select Page from PDF
                     </Button>
-                  </div>
+                  ) : (
+                    <div className="space-y-3">
+                      <PDFPageSelector 
+                        pdfUrl={book.file_url} 
+                        onPageSelect={handlePageSelect}
+                      />
+                      <Button 
+                        variant="ghost"
+                        onClick={() => setShowPageSelector(false)}
+                        className="w-full"
+                      >
+                        Cancel
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
             </div>
