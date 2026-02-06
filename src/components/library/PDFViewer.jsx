@@ -1,6 +1,8 @@
 import React from 'react';
 
 export default function PDFViewer({ fileUrl, title }) {
+  const googleViewerUrl = `https://docs.google.com/gview?url=${encodeURIComponent(fileUrl)}&embedded=true`;
+
   return (
     <div style={{ 
       position: 'relative',
@@ -9,7 +11,7 @@ export default function PDFViewer({ fileUrl, title }) {
       overflow: 'hidden'
     }}>
       <iframe
-        src={fileUrl}
+        src={googleViewerUrl}
         title={title || "PDF Viewer"}
         style={{
           position: 'absolute',
