@@ -171,7 +171,8 @@ export default function Library() {
       // Simulate progress for better UX
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
-          if (prev >= 90) return prev;
+          if (prev >= 95) return prev;
+          if (prev >= 80) return prev + Math.random() * 2;
           return prev + Math.random() * 15;
         });
       }, 300);
