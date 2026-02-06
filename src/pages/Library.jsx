@@ -562,17 +562,33 @@ export default function Library() {
                     Share
                   </Button>
                   {canEditBook(selectedBook) && (
-                    <Button 
-                      onClick={() => {
-                        handleEdit(selectedBook);
-                        setSelectedBook(null);
-                      }}
-                      variant="outline"
-                      className="w-full gap-2 bg-white"
-                    >
-                      <Edit className="w-5 h-5" />
-                      Edit
-                    </Button>
+                    <>
+                      <Button 
+                        onClick={() => {
+                          handleEdit(selectedBook);
+                          setSelectedBook(null);
+                        }}
+                        variant="outline"
+                        className="w-full gap-2 bg-white"
+                      >
+                        <Edit className="w-5 h-5" />
+                        Edit
+                      </Button>
+                      {selectedBook.file_url?.toLowerCase().endsWith('.pdf') && (
+                        <Button 
+                          onClick={() => {
+                            setViewingBook(selectedBook);
+                            setShowPdfViewer(true);
+                            setSelectedBook(null);
+                          }}
+                          variant="outline"
+                          className="w-full gap-2 bg-white"
+                        >
+                          <Upload className="w-5 h-5" />
+                          Set Page as Cover
+                        </Button>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
