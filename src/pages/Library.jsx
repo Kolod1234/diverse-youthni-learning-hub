@@ -33,6 +33,7 @@ export default function Library() {
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
   const [suggestingTags, setSuggestingTags] = useState(false);
   const [tagSuggestions, setTagSuggestions] = useState([]);
   const [formData, setFormData] = useState({
@@ -164,11 +165,21 @@ export default function Library() {
     if (!file) return;
 
     setUploadingFile(true);
+    setUploadProgress(0);
 
     try {
-      // Upload file
-      toast.loading('Uploading file...');
+      // Simulate progress for better UX
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + Math.random() * 15;
+        });
+      }, 300);
+
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
 
       // Set basic data and show dialog immediately
       setFormData({
@@ -188,6 +199,7 @@ export default function Library() {
       toast.error('Upload failed');
     } finally {
       setUploadingFile(false);
+      setUploadProgress(0);
       e.target.value = '';
     }
   };
@@ -484,7 +496,33 @@ export default function Library() {
             <p className="text-gray-500">No resources found</p>
           </div>
         )}
-      </div>
+        </div>
+
+        {/* Upload Progress Dialog */}
+        <Dialog open={uploadingFile} onOpenChange={() => {}}>
+        <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
+          <DialogHeader>
+            <DialogTitle>Uploading Book</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4">
+            <div className="space-y-2">
+              <div className="flex items-center justify-between text-sm">
+                <span className="text-gray-600">Progress</span>
+                <span className="font-semibold text-indigo-600">{Math.round(uploadProgress)}%</span>
+              </div>
+              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
+                <div 
+                  className="bg-indigo-600 h-full transition-all duration-300 ease-out"
+                  style={{ width: `${uploadProgress}%` }}
+                />
+              </div>
+            </div>
+            <p className="text-sm text-gray-500 text-center">
+              Please wait while your book is being uploaded...
+            </p>
+          </div>
+        </DialogContent>
+        </Dialog>
 
       {/* Book Detail Modal */}
       <Dialog open={!!selectedBook} onOpenChange={() => setSelectedBook(null)}>
