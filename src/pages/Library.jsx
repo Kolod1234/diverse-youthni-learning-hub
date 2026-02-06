@@ -457,11 +457,18 @@ export default function Library() {
             >
               <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                 {book.cover_image ? (
-                  <img
-                    src={book.cover_image}
-                    alt={book.title}
-                    className="w-full aspect-[3/4] object-cover"
-                  />
+                  book.cover_image.toLowerCase().includes('.pdf') ? (
+                    <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-900 flex flex-col items-center justify-center p-4 text-white">
+                      <BookOpen className="w-12 h-12 mb-2 opacity-90" />
+                      <p className="text-xs font-semibold text-center line-clamp-2">{book.title}</p>
+                    </div>
+                  ) : (
+                    <img
+                      src={book.cover_image}
+                      alt={book.title}
+                      className="w-full aspect-[3/4] object-cover"
+                    />
+                  )
                 ) : (
                   <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
                     <BookOpen className="w-12 h-12 text-gray-400" />
