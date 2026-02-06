@@ -704,63 +704,61 @@ export default function Library() {
               </div>
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
                 {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
-                  <div className="p-2 bg-gray-50 border-b flex items-center justify-center gap-2">
+                  <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
+                    <div className="flex items-center gap-2 text-sm text-gray-600">
+                      <BookOpen className="w-4 h-4" />
+                      <span>Navigate to the page you want, then click:</span>
+                    </div>
                     <Button 
-                      variant="outline"
                       size="sm"
                       onClick={async () => {
                         try {
-                          toast.loading('Capturing page...');
-
                           const iframe = document.getElementById('pdf-viewer-iframe');
                           if (!iframe) {
                             toast.error('PDF viewer not found');
                             return;
                           }
 
-                          // Get current page from PDF.js viewer URL
-                          const iframeSrc = iframe.src;
-                          const urlParams = new URLSearchParams(iframeSrc.split('?')[1] || '');
-                          const pageMatch = iframeSrc.match(/page=(\d+)/);
-                          let currentPage = pageMatch ? parseInt(pageMatch[1]) : 1;
+                          toast.loading('Taking snapshot...');
 
-                          // Try to get from iframe's contentWindow if accessible
-                          try {
-                            const viewerApp = iframe.contentWindow?.PDFViewerApplication;
-                            if (viewerApp && viewerApp.page) {
-                              currentPage = viewerApp.page;
-                            }
-                          } catch (e) {
-                            // Cross-origin, use URL method
-                          }
+                          // Import html2canvas dynamically
+                          const html2canvas = (await import('html2canvas')).default;
 
-                          toast.loading(`Extracting page ${currentPage}...`);
-
-                          const { data } = await base44.functions.invoke('capturePdfPage', {
-                            file_url: viewingBook.file_url,
-                            page_number: currentPage - 1
+                          // Capture the entire iframe container
+                          const container = iframe.parentElement;
+                          const canvas = await html2canvas(container, {
+                            useCORS: true,
+                            allowTaint: true,
+                            logging: false,
+                            scale: 2
                           });
 
-                          if (data.success && data.image_url) {
-                            await base44.entities.LibraryResource.update(viewingBook.id, {
-                              cover_image: data.image_url
-                            });
+                          // Convert to blob
+                          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
+                          const file = new File([blob], 'cover.png', { type: 'image/png' });
 
-                            queryClient.invalidateQueries(['library-resources']);
-                            toast.success('Cover updated!');
-                            setShowPdfViewer(false);
-                          } else {
-                            toast.error(data.error || 'Failed to capture page');
-                          }
+                          toast.loading('Uploading cover...');
+
+                          // Upload
+                          const { file_url: coverUrl } = await base44.integrations.Core.UploadFile({ file });
+
+                          // Update book
+                          await base44.entities.LibraryResource.update(viewingBook.id, {
+                            cover_image: coverUrl
+                          });
+
+                          queryClient.invalidateQueries(['library-resources']);
+                          toast.success('Cover image saved!');
+                          setShowPdfViewer(false);
                         } catch (error) {
-                          console.error('Failed:', error);
-                          toast.error('Failed to set cover');
+                          console.error('Snapshot failed:', error);
+                          toast.error('Failed to take snapshot: ' + error.message);
                         }
                       }}
-                      className="gap-2"
+                      className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
                     >
                       <Upload className="w-4 h-4" />
-                      Set Current Page as Cover
+                      📸 Take Snapshot & Set as Cover
                     </Button>
                   </div>
                 )}
