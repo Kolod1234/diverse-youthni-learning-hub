@@ -34,23 +34,13 @@ Deno.serve(async (req) => {
                     
                     // Upload the first page as a separate file
                     const blob = new Blob([firstPageBytes], { type: 'application/pdf' });
-                    const file = new File([blob], 'cover.pdf', { type: 'application/pdf' });
+                    const file = new File([blob], 'first-page.pdf', { type: 'application/pdf' });
                     
                     const { file_url: coverPdfUrl } = await base44.asServiceRole.integrations.Core.UploadFile({ file });
                     
-                    // Use Cloud Vision OCR to extract and create cover image
-                    const ocrResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
-                        prompt: `Create a descriptive prompt for generating a book cover image based on this PDF page. Focus on the title, author, and visual elements you can see.`,
-                        file_urls: [coverPdfUrl],
-                        add_context_from_internet: false
-                    });
-                    
-                    // Generate a clean cover image
-                    const imageResult = await base44.asServiceRole.integrations.Core.GenerateImage({
-                        prompt: `Professional book cover with clean design: ${ocrResult}. Make it look like a real textbook cover with proper typography.`
-                    });
-                    
-                    coverImageUrl = imageResult.url;
+                    // Use the first page PDF directly as cover
+                    // We'll display it in the viewer using PDF.js
+                    coverImageUrl = coverPdfUrl;
                 }
             }
         } catch (error) {

@@ -340,11 +340,19 @@ export default function Library() {
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                     {book.cover_image ? (
-                      <img
-                        src={book.cover_image}
-                        alt={book.title}
-                        className="w-full aspect-[3/4] object-cover"
-                      />
+                      book.cover_image.toLowerCase().includes('.pdf') ? (
+                        <iframe
+                          src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(book.cover_image)}`}
+                          className="w-full aspect-[3/4] pointer-events-none"
+                          style={{ border: 'none' }}
+                        />
+                      ) : (
+                        <img
+                          src={book.cover_image}
+                          alt={book.title}
+                          className="w-full aspect-[3/4] object-cover"
+                        />
+                      )
                     ) : (
                       <div className="w-full aspect-[3/4] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center">
                         <BookOpen className="w-12 h-12 text-indigo-600" />
@@ -485,11 +493,21 @@ export default function Library() {
               {/* Book Cover */}
               <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col items-center justify-start">
                 {selectedBook.cover_image ? (
-                  <img
-                    src={selectedBook.cover_image}
-                    alt={selectedBook.title}
-                    className="w-full max-w-xs rounded-lg shadow-2xl mb-6"
-                  />
+                  selectedBook.cover_image.toLowerCase().includes('.pdf') ? (
+                    <div className="w-full max-w-xs rounded-lg shadow-2xl mb-6 bg-white">
+                      <iframe
+                        src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(selectedBook.cover_image)}`}
+                        className="w-full aspect-[3/4] rounded-lg"
+                        style={{ border: 'none' }}
+                      />
+                    </div>
+                  ) : (
+                    <img
+                      src={selectedBook.cover_image}
+                      alt={selectedBook.title}
+                      className="w-full max-w-xs rounded-lg shadow-2xl mb-6"
+                    />
+                  )
                 ) : (
                   <div className="w-full max-w-xs aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center mb-6">
                     <BookOpen className="w-24 h-24 text-gray-400" />
