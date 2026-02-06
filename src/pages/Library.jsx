@@ -182,6 +182,12 @@ export default function Library() {
     createMutation.mutate(formData);
   };
 
+  const handleDelete = (book) => {
+    if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
+      deleteMutation.mutate(book.id);
+    }
+  };
+
   const resetForm = () => {
     setFormData({
       title: '',
