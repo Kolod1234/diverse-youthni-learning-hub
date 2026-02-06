@@ -16,7 +16,6 @@ import ShareDialog from '@/components/library/ShareDialog';
 import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
-import SetCoverDialog from '@/components/library/SetCoverDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
@@ -30,8 +29,6 @@ export default function Library() {
   const [showEditDialog, setShowEditDialog] = useState(false);
   const [editingBook, setEditingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
-  const [showSetCoverDialog, setShowSetCoverDialog] = useState(false);
-  const [setCoverBook, setSetCoverBook] = useState(null);
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
@@ -580,8 +577,8 @@ export default function Library() {
                       {selectedBook.file_url?.toLowerCase().endsWith('.pdf') && (
                         <Button 
                           onClick={() => {
-                            setSetCoverBook(selectedBook);
-                            setShowSetCoverDialog(true);
+                            setViewingBook(selectedBook);
+                            setShowPdfViewer(true);
                             setSelectedBook(null);
                           }}
                           variant="outline"
@@ -681,16 +678,6 @@ export default function Library() {
         onOpenChange={setShowEditDialog}
       />
 
-      {/* Set Cover Dialog */}
-      <SetCoverDialog
-        book={setCoverBook}
-        open={showSetCoverDialog}
-        onOpenChange={setShowSetCoverDialog}
-        onSuccess={() => {
-          queryClient.invalidateQueries(['library-resources']);
-        }}
-      />
-
       {/* PDF Viewer Dialog */}
       <Dialog open={showPdfViewer} onOpenChange={setShowPdfViewer}>
         <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-[95vh] p-0">
@@ -705,15 +692,39 @@ export default function Library() {
                   {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
                     <Button 
                       variant="outline" 
-                      onClick={() => {
-                        setSetCoverBook(viewingBook);
-                        setShowSetCoverDialog(true);
-                        setShowPdfViewer(false);
+                      onClick={async () => {
+                        try {
+                          toast.loading('Capturing page...');
+                          
+                          const iframe = document.getElementById('pdf-viewer-iframe');
+                          const canvas = iframe.contentWindow.document.querySelector('.page.active canvas') || 
+                                       iframe.contentWindow.document.querySelector('canvas');
+                          
+                          if (!canvas) {
+                            toast.error('Could not find PDF canvas');
+                            return;
+                          }
+
+                          canvas.toBlob(async (blob) => {
+                            const file = new File([blob], 'cover.png', { type: 'image/png' });
+                            const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                            
+                            await base44.entities.LibraryResource.update(viewingBook.id, {
+                              cover_image: file_url
+                            });
+                            
+                            queryClient.invalidateQueries(['library-resources']);
+                            toast.success('Cover updated!');
+                          });
+                        } catch (error) {
+                          console.error('Screenshot failed:', error);
+                          toast.error('Failed to capture page');
+                        }
                       }}
                       className="gap-2"
                     >
                       <Upload className="w-4 h-4" />
-                      Set as Cover
+                      Set Current Page as Cover
                     </Button>
                   )}
                   <Button 
