@@ -92,6 +92,7 @@ import LessonPlayerRise from './pages/LessonPlayerRise';
 import Library from './pages/Library';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
+import PathwayManager from './pages/PathwayManager';
 import Profile from './pages/Profile';
 import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
@@ -101,6 +102,7 @@ import ScheduleSession from './pages/ScheduleSession';
 import Sessions from './pages/Sessions';
 import Settings from './pages/Settings';
 import StudentAnalytics from './pages/StudentAnalytics';
+import StudentPathways from './pages/StudentPathways';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
@@ -112,8 +114,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import PathwayManager from './pages/PathwayManager';
-import StudentPathways from './pages/StudentPathways';
 import __Layout from './Layout.jsx';
 
 
@@ -163,6 +163,7 @@ export const PAGES = {
     "Library": Library,
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
+    "PathwayManager": PathwayManager,
     "Profile": Profile,
     "Programs": Programs,
     "Quiz": Quiz,
@@ -172,6 +173,7 @@ export const PAGES = {
     "Sessions": Sessions,
     "Settings": Settings,
     "StudentAnalytics": StudentAnalytics,
+    "StudentPathways": StudentPathways,
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
@@ -183,8 +185,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "PathwayManager": PathwayManager,
-    "StudentPathways": StudentPathways,
 }
 
 export const pagesConfig = {

@@ -12,6 +12,7 @@ export default function PDFViewer({ fileUrl, title }) {
       overflow: 'hidden'
     }}>
       <iframe
+        id="pdf-viewer-iframe"
         src={viewerUrl}
         title={title || "PDF Viewer"}
         style={{

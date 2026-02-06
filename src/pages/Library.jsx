@@ -673,6 +673,51 @@ export default function Library() {
                   {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
                 </div>
                 <div className="flex gap-2">
+                  {canEditBook(viewingBook) && (
+                    <Button 
+                      variant="outline" 
+                      onClick={async () => {
+                        try {
+                          const pdfIframe = document.querySelector('#pdf-viewer-iframe');
+                          if (!pdfIframe || !pdfIframe.contentWindow) {
+                            toast.error('PDF viewer not ready');
+                            return;
+                          }
+
+                          toast.loading('Capturing screenshot...');
+                          
+                          // Use html2canvas to capture the PDF viewer
+                          const html2canvas = (await import('npm:html2canvas@1.4.1')).default;
+                          const canvas = await html2canvas(pdfIframe.contentWindow.document.body, {
+                            allowTaint: true,
+                            useCORS: true,
+                            scale: 2
+                          });
+                          
+                          // Convert to blob
+                          canvas.toBlob(async (blob) => {
+                            const file = new File([blob], 'cover.png', { type: 'image/png' });
+                            const { file_url } = await base44.integrations.Core.UploadFile({ file });
+                            
+                            await base44.entities.LibraryResource.update(viewingBook.id, {
+                              cover_image: file_url
+                            });
+                            
+                            queryClient.invalidateQueries(['library-resources']);
+                            toast.success('Cover image updated!');
+                            setShowPdfViewer(false);
+                          }, 'image/png');
+                        } catch (error) {
+                          console.error('Screenshot failed:', error);
+                          toast.error('Failed to capture screenshot');
+                        }
+                      }}
+                      className="gap-2"
+                    >
+                      <Upload className="w-4 h-4" />
+                      Set as Cover
+                    </Button>
+                  )}
                   <Button 
                     variant="outline" 
                     onClick={() => handleDownload(viewingBook)}
@@ -686,7 +731,7 @@ export default function Library() {
                   </Button>
                 </div>
               </div>
-              <div className="flex-1">
+              <div className="flex-1" id="pdf-viewer-container">
                 <PDFViewer fileUrl={viewingBook.file_url} title={viewingBook.title} />
               </div>
             </div>
