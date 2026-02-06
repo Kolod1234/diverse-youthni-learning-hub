@@ -44,26 +44,32 @@ Deno.serve(async (req) => {
     // Save as bytes
     const pdfBytes = await newPdf.save();
     
-    // Convert to PNG using Core.GenerateImage with the PDF
-    // Actually, let's just upload the single page PDF as the cover
+    // Upload single-page PDF temporarily
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfFile = new File([blob], `cover-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    const pdfFile = new File([blob], `temp-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
     
-    const { file_url: uploadedPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
-    // Now convert this single-page PDF to an image using a canvas approach via browser
-    // Since we're in Deno, let's use a different approach - use Vertex AI to generate from the PDF
-    // Or use the InvokeLLM with vision to extract the page as an image
+    // Use Gemini API to convert PDF page to image by asking it to generate an image from the PDF
+    // Use InvokeLLM with the PDF to extract visual content
+    const imageResult = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: "Convert this PDF page to a high-quality image representation. Return the exact visual content of this page.",
+      file_urls: [tempPdfUrl],
+      add_context_from_internet: false
+    });
     
-    // Simple solution: Return the PDF URL for now, and handle rendering on frontend
-    // Better: Convert PDF page to image using external service
+    // Use Gemini's image generation capability with the PDF content
+    // Actually, let's use a simpler approach - use GenerateImage with description
+    const prompt = `Create an exact replica image of this PDF page: ${tempPdfUrl}. Maintain all text, layout, colors, and design exactly as shown.`;
     
-    // Let's use a simple conversion: fetch the PDF and use an image conversion
-    // For now, return success with the single-page PDF URL
+    const { url: imageUrl } = await base44.asServiceRole.integrations.Core.GenerateImage({
+      prompt: prompt,
+      existing_image_urls: [tempPdfUrl]
+    });
     
     return Response.json({ 
       success: true,
-      page_url: uploadedPdfUrl,
+      page_url: imageUrl,
       page_number: page_number + 1
     });
 
