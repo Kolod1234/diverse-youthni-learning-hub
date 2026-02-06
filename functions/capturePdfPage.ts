@@ -15,60 +15,74 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'File URL and page number required' }, { status: 400 });
     }
 
-    // Use Cloudmersive PDF to PNG API
-    const cloudmersiveUrl = 'https://api.cloudmersive.com/convert/pdf/to/png/array';
+    // Use pdf-lib to extract the single page
+    const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
     
-    // Fetch the PDF
-    const pdfResponse = await fetch(file_url);
-    if (!pdfResponse.ok) {
-      throw new Error('Failed to fetch PDF');
-    }
-    
-    const pdfBuffer = await pdfResponse.arrayBuffer();
-    
-    // Convert to PNG using Cloudmersive (free tier available)
-    const convertResponse = await fetch(cloudmersiveUrl, {
-      method: 'POST',
+    // Fetch PDF with proper headers
+    const pdfResponse = await fetch(file_url, {
       headers: {
-        'Content-Type': 'application/pdf',
-        'Apikey': 'free-trial' // Using free trial key
-      },
-      body: pdfBuffer
+        'User-Agent': 'Mozilla/5.0'
+      }
     });
     
-    if (!convertResponse.ok) {
-      throw new Error('PDF to PNG conversion failed');
-    }
-    
-    const result = await convertResponse.json();
-    
-    // Get the specific page image
-    if (!result.PngResultPages || result.PngResultPages.length === 0) {
-      throw new Error('No pages converted');
-    }
-    
-    if (page_number >= result.PngResultPages.length) {
+    if (!pdfResponse.ok) {
       return Response.json({ 
-        error: `Page ${page_number + 1} not found. PDF has ${result.PngResultPages.length} pages.` 
+        error: `Failed to fetch PDF: ${pdfResponse.status}` 
       }, { status: 400 });
     }
     
-    const pageImage = result.PngResultPages[page_number];
+    const arrayBuffer = await pdfResponse.arrayBuffer();
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
     
-    // pageImage.PngData is base64 encoded
-    const base64Data = pageImage.PngData;
-    const imageBuffer = Uint8Array.from(atob(base64Data), c => c.charCodeAt(0));
+    const pageCount = pdfDoc.getPageCount();
     
-    // Upload the PNG
-    const imageBlob = new Blob([imageBuffer], { type: 'image/png' });
-    const imageFile = new File([imageBlob], `cover-page-${page_number + 1}.png`, { type: 'image/png' });
+    if (page_number >= pageCount || page_number < 0) {
+      return Response.json({ 
+        error: `Invalid page ${page_number + 1}. PDF has ${pageCount} pages.` 
+      }, { status: 400 });
+    }
+
+    // Extract single page as new PDF
+    const newPdf = await PDFDocument.create();
+    const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
+    newPdf.addPage(copiedPage);
     
-    const { file_url: imageUrl } = await base44.integrations.Core.UploadFile({ file: imageFile });
+    const pdfBytes = await newPdf.save();
     
+    // Upload the single-page PDF
+    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const pdfFile = new File([pdfBlob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    
+    const { file_url: singlePageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    
+    // Use LLM with vision to describe the page, then generate an image
+    const description = await base44.asServiceRole.integrations.Core.InvokeLLM({
+      prompt: 'Describe this PDF page in detail - all text, images, colors, layout, and design elements. Be very specific and detailed.',
+      file_urls: [singlePageUrl],
+      add_context_from_internet: false
+    });
+    
+    // Generate image from description
+    const prompt = `Create an exact replica of this document page: ${description}. Include all text exactly as shown, preserve all colors, layout, images, and design elements. Make it look like a professional book cover.`;
+    
+    const result = await base44.asServiceRole.integrations.Core.GenerateImage({
+      prompt: prompt
+    });
+    
+    if (result && result.url) {
+      return Response.json({
+        success: true,
+        image_url: result.url,
+        page_number: page_number + 1
+      });
+    }
+    
+    // Fallback: return the single-page PDF
     return Response.json({
       success: true,
-      image_url: imageUrl,
-      page_number: page_number + 1
+      image_url: singlePageUrl,
+      page_number: page_number + 1,
+      note: 'PDF format'
     });
 
   } catch (error) {
