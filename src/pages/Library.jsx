@@ -23,7 +23,7 @@ export default function Library() {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
-    category: 'book',
+    category: 'gcse_books',
     file_url: '',
     cover_image: '',
     author: '',
@@ -59,12 +59,14 @@ export default function Library() {
   const featuredBooks = filteredResources.filter(r => r.is_featured).slice(0, 5);
   const categories = [
     { id: 'all', label: 'All' },
-    { id: 'book', label: 'Books' },
-    { id: 'document', label: 'Documents' },
-    { id: 'video', label: 'Videos' },
-    { id: 'article', label: 'Articles' },
-    { id: 'research', label: 'Research' },
-    { id: 'other', label: 'Other' }
+    { id: 'youth_work', label: 'Youth Work' },
+    { id: 'gcse_books', label: 'GCSE Books' },
+    { id: 'gcse_past_questions', label: 'GCSE Past Questions' },
+    { id: 'a_level_books', label: 'A-Level Books' },
+    { id: 'inspirational', label: 'Inspirational' },
+    { id: 'dyni_books', label: 'DYNI Books' },
+    { id: 'workbooks_logbooks', label: 'Workbooks & Logbooks' },
+    { id: 'history_books', label: 'History Books' }
   ];
 
   const handleDownload = async (resource) => {
@@ -203,7 +205,7 @@ export default function Library() {
     setFormData({
       title: '',
       description: '',
-      category: 'book',
+      category: 'gcse_books',
       file_url: '',
       cover_image: '',
       author: '',
@@ -490,12 +492,14 @@ export default function Library() {
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
                 className="w-full px-3 py-2 border rounded-lg bg-white"
               >
-                <option value="book">Book</option>
-                <option value="document">Document</option>
-                <option value="video">Video</option>
-                <option value="article">Article</option>
-                <option value="research">Research</option>
-                <option value="other">Other</option>
+                <option value="youth_work">Youth Work</option>
+                <option value="gcse_books">GCSE Books</option>
+                <option value="gcse_past_questions">GCSE Past Questions</option>
+                <option value="a_level_books">A-Level Books</option>
+                <option value="inspirational">Inspirational</option>
+                <option value="dyni_books">DYNI Books</option>
+                <option value="workbooks_logbooks">Workbooks & Logbooks</option>
+                <option value="history_books">History Books</option>
               </select>
             </div>
             <div>
