@@ -9,6 +9,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 
 export default function PDFViewer({ fileUrl, title }) {
   const [numPages, setNumPages] = useState(null);
+  const [pageNumber, setPageNumber] = useState(1);
   const [scale, setScale] = useState(1.0);
   const [containerWidth, setContainerWidth] = useState(null);
   const containerRef = useRef(null);
@@ -29,6 +30,14 @@ export default function PDFViewer({ fileUrl, title }) {
     setNumPages(numPages);
   }
 
+  function previousPage() {
+    setPageNumber(prev => Math.max(prev - 1, 1));
+  }
+
+  function nextPage() {
+    setPageNumber(prev => Math.min(prev + 1, numPages));
+  }
+
   function zoomIn() {
     setScale(prev => Math.min(prev + 0.2, 3));
   }
@@ -40,10 +49,30 @@ export default function PDFViewer({ fileUrl, title }) {
   return (
     <div className="flex flex-col h-full bg-gray-100">
       {/* Controls */}
-      <div className="flex items-center justify-between p-2 sm:p-3 bg-white border-b gap-2">
-        <span className="text-xs sm:text-sm text-gray-600">
-          {numPages ? `${numPages} pages` : 'Loading...'}
-        </span>
+      <div className="flex flex-col sm:flex-row items-center justify-between p-2 sm:p-3 bg-white border-b gap-2">
+        <div className="flex items-center gap-1 sm:gap-2">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={previousPage}
+            disabled={pageNumber <= 1}
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+          >
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <span className="text-xs sm:text-sm whitespace-nowrap px-2">
+            {pageNumber} / {numPages || '...'}
+          </span>
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={nextPage}
+            disabled={pageNumber >= numPages}
+            className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3"
+          >
+            <ChevronRight className="w-4 h-4" />
+          </Button>
+        </div>
 
         <div className="flex items-center gap-1 sm:gap-2">
           <Button variant="outline" size="sm" onClick={zoomOut} className="h-8 w-8 p-0 sm:h-9 sm:w-auto sm:px-3">
@@ -56,9 +85,9 @@ export default function PDFViewer({ fileUrl, title }) {
         </div>
       </div>
 
-      {/* PDF Display - All Pages */}
-      <div ref={containerRef} className="flex-1 overflow-auto p-2 sm:p-4 bg-gray-900">
-        <div className="flex flex-col items-center gap-4">
+      {/* PDF Display */}
+      <div ref={containerRef} className="flex-1 overflow-y-auto overflow-x-hidden p-2 sm:p-4 bg-gray-900">
+        <div className="flex justify-center">
           <Document
             file={fileUrl}
             onLoadSuccess={onDocumentLoadSuccess}
@@ -73,17 +102,14 @@ export default function PDFViewer({ fileUrl, title }) {
               </div>
             }
           >
-            {numPages && Array.from(new Array(numPages), (el, index) => (
-              <Page
-                key={`page_${index + 1}`}
-                pageNumber={index + 1}
-                width={containerWidth}
-                scale={scale}
-                renderTextLayer={true}
-                renderAnnotationLayer={true}
-                className="shadow-2xl mb-4"
-              />
-            ))}
+            <Page
+              pageNumber={pageNumber}
+              width={containerWidth}
+              scale={scale}
+              renderTextLayer={true}
+              renderAnnotationLayer={true}
+              className="shadow-2xl"
+            />
           </Document>
         </div>
       </div>
