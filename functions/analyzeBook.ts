@@ -47,18 +47,46 @@ Deno.serve(async (req) => {
             console.log('Cover extraction failed, continuing without cover:', error.message);
         }
 
-        // Analyze the book using AI
+        // Analyze the book using AI with comprehensive content analysis
         const analysis = await base44.asServiceRole.integrations.Core.InvokeLLM({
-            prompt: `Analyze this book/document and provide the following information in JSON format:
-            - title: The book title (if you can extract it from the file)
-            - author: The author name (if available)
-            - description: A brief 2-3 sentence description of what the book is about
-            - category: Choose ONE from: youth_work, gcse_books, gcse_past_questions, a_level_books, inspirational, dyni_books, workbooks_logbooks, history_books
-            - tags: Array of 3-5 relevant tags/keywords
-            
-            File URL: ${file_url}
-            
-            If you cannot extract certain information, use reasonable defaults or leave empty.`,
+            prompt: `Perform a comprehensive analysis of this educational resource/book. Extract and provide:
+
+1. BASIC INFORMATION:
+   - title: Extract the exact book/document title
+   - author: Identify the author(s) or organization
+   
+2. CONTENT SUMMARY:
+   - summary: Provide a detailed 4-6 sentence summary covering:
+     * Main topics and themes
+     * Target audience (age/education level)
+     * Key concepts covered
+     * Practical applications or exercises included
+   - description: A concise 2-3 sentence overview suitable for quick browsing
+
+3. LEARNING OBJECTIVES:
+   - learning_objectives: Array of 5-8 specific learning objectives students will achieve by studying this resource. Format as actionable statements (e.g., "Understand the principles of...", "Apply techniques for...", "Analyze and evaluate...")
+
+4. CATEGORIZATION:
+   - category: Select the MOST appropriate category from: youth_work, gcse_books, gcse_past_questions, a_level_books, inspirational, dyni_books, workbooks_logbooks, history_books
+   - difficulty_level: Assess as beginner, intermediate, or advanced
+   - subject_area: Identify primary subject (e.g., Mathematics, Biology, English Literature, History, etc.)
+
+5. METADATA:
+   - tags: Generate 8-12 highly relevant keywords/tags including:
+     * Subject-specific terms
+     * Key topics covered
+     * Educational level indicators
+     * Resource type indicators (textbook, workbook, guide, etc.)
+   - estimated_reading_time: Estimate in hours for average student
+   
+6. CONTENT STRUCTURE:
+   - has_exercises: Boolean - does it include practice questions/exercises?
+   - has_illustrations: Boolean - contains diagrams, images, or visual aids?
+   - chapter_count: Approximate number of chapters/sections (if identifiable)
+
+Analyze the actual content thoroughly. Be specific and accurate.
+
+File URL: ${file_url}`,
             add_context_from_internet: false,
             file_urls: [file_url],
             response_json_schema: {
@@ -66,15 +94,33 @@ Deno.serve(async (req) => {
                 properties: {
                     title: { type: "string" },
                     author: { type: "string" },
+                    summary: { type: "string" },
                     description: { type: "string" },
+                    learning_objectives: {
+                        type: "array",
+                        items: { type: "string" },
+                        minItems: 5,
+                        maxItems: 8
+                    },
                     category: { 
                         type: "string",
                         enum: ["youth_work", "gcse_books", "gcse_past_questions", "a_level_books", "inspirational", "dyni_books", "workbooks_logbooks", "history_books"]
                     },
+                    difficulty_level: {
+                        type: "string",
+                        enum: ["beginner", "intermediate", "advanced"]
+                    },
+                    subject_area: { type: "string" },
                     tags: {
                         type: "array",
-                        items: { type: "string" }
-                    }
+                        items: { type: "string" },
+                        minItems: 8,
+                        maxItems: 12
+                    },
+                    estimated_reading_time: { type: "number" },
+                    has_exercises: { type: "boolean" },
+                    has_illustrations: { type: "boolean" },
+                    chapter_count: { type: "number" }
                 }
             }
         });
