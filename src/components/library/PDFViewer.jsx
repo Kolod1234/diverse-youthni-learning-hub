@@ -10,7 +10,7 @@ pdfjs.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/$
 export default function PDFViewer({ fileUrl, title }) {
   const [numPages, setNumPages] = useState(null);
   const [pageNumber, setPageNumber] = useState(1);
-  const [scale, setScale] = useState(1.2);
+  const [scale, setScale] = useState(1.5);
 
   function onDocumentLoadSuccess({ numPages }) {
     setNumPages(numPages);
@@ -114,6 +114,7 @@ export default function PDFViewer({ fileUrl, title }) {
               renderTextLayer={true}
               renderAnnotationLayer={true}
               className="shadow-2xl"
+              devicePixelRatio={window.devicePixelRatio || 2}
             />
           </Document>
         </div>
