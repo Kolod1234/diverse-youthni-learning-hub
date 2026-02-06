@@ -94,7 +94,27 @@ export default function Library() {
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData({ ...formData, file_url });
-      toast.success('File uploaded!');
+      toast.success('File uploaded! Analyzing...');
+
+      // Analyze the book with AI
+      try {
+        const { data } = await base44.functions.invoke('analyzeBook', { file_url });
+        if (data.success && data.analysis) {
+          setFormData(prev => ({
+            ...prev,
+            file_url,
+            title: data.analysis.title || prev.title,
+            author: data.analysis.author || prev.author,
+            description: data.analysis.description || prev.description,
+            category: data.analysis.category || prev.category,
+            tags: data.analysis.tags || prev.tags
+          }));
+          toast.success('Book analyzed! You can edit the details.');
+        }
+      } catch (error) {
+        console.error('Analysis failed:', error);
+        toast.info('Upload successful. Please fill in the details manually.');
+      }
     } catch (error) {
       toast.error('Upload failed');
     } finally {
