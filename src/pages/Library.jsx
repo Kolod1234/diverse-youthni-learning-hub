@@ -174,10 +174,11 @@ export default function Library() {
 
     setUploadingFile(true);
     setUploadProgress(0);
+    let progressInterval = null;
 
     try {
       // Simulate progress for better UX
-      const progressInterval = setInterval(() => {
+      progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           if (prev >= 95) return prev;
           if (prev >= 80) return prev + Math.random() * 2;
@@ -205,13 +206,15 @@ export default function Library() {
       toast.success('File uploaded! Fill in details below.');
       setShowUploadDialog(true);
     } catch (error) {
-      toast.error('Upload failed');
+      if (progressInterval) clearInterval(progressInterval);
+      console.error('Upload error:', error);
+      toast.error(`Upload failed: ${error.message || 'Unknown error'}. Please try again.`);
     } finally {
       setUploadingFile(false);
       setUploadProgress(0);
       e.target.value = '';
     }
-  };
+    };
 
   const handleUploadCoverInForm = async (e) => {
     const file = e.target.files[0];
