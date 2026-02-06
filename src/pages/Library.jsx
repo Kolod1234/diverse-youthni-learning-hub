@@ -492,11 +492,12 @@ export default function Library() {
                   </Button>
                 </div>
               </div>
-              <div className="flex-1 bg-gray-900">
+              <div className="flex-1 bg-gray-100">
                 <iframe
-                  src={`${viewingBook.file_url}#toolbar=1&navpanes=1&scrollbar=1`}
+                  src={`https://docs.google.com/viewer?url=${encodeURIComponent(viewingBook.file_url)}&embedded=true`}
                   className="w-full h-full border-0"
                   title={viewingBook.title}
+                  allow="fullscreen"
                 />
               </div>
             </div>
