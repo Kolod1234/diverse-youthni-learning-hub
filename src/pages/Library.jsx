@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
-import { BookOpen, Download, Search, X, Upload, Plus, Trash2 } from 'lucide-react';
+import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
@@ -15,6 +15,7 @@ import TagInput from '@/components/library/TagInput';
 import ShareDialog from '@/components/library/ShareDialog';
 import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
+import EditBookDialog from '@/components/library/EditBookDialog';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
@@ -25,6 +26,8 @@ export default function Library() {
   const [viewingBook, setViewingBook] = useState(null);
   const [showShareDialog, setShowShareDialog] = useState(false);
   const [sharingBook, setSharingBook] = useState(null);
+  const [showEditDialog, setShowEditDialog] = useState(false);
+  const [editingBook, setEditingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -120,6 +123,15 @@ export default function Library() {
   const handleShare = (book) => {
     setSharingBook(book);
     setShowShareDialog(true);
+  };
+
+  const handleEdit = (book) => {
+    setEditingBook(book);
+    setShowEditDialog(true);
+  };
+
+  const canEditBook = (book) => {
+    return user && (user.role === 'admin' || user.is_tutor || book.created_by === user.email);
   };
 
   const createMutation = useMutation({
@@ -543,6 +555,19 @@ export default function Library() {
                     <Share2 className="w-5 h-5" />
                     Share
                   </Button>
+                  {canEditBook(selectedBook) && (
+                    <Button 
+                      onClick={() => {
+                        handleEdit(selectedBook);
+                        setSelectedBook(null);
+                      }}
+                      variant="outline"
+                      className="w-full gap-2 bg-white"
+                    >
+                      <Edit className="w-5 h-5" />
+                      Edit
+                    </Button>
+                  )}
                 </div>
               </div>
 
@@ -622,6 +647,13 @@ export default function Library() {
         resource={sharingBook}
         open={showShareDialog}
         onOpenChange={setShowShareDialog}
+      />
+
+      {/* Edit Dialog */}
+      <EditBookDialog
+        book={editingBook}
+        open={showEditDialog}
+        onOpenChange={setShowEditDialog}
       />
 
       {/* PDF Viewer Dialog */}
