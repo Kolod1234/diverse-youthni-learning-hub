@@ -1,17 +1,44 @@
-import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect } from 'react';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { BookOpen, Download, Search, Star, X, ExternalLink } from 'lucide-react';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { BookOpen, Download, Search, X, Upload, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { toast } from 'sonner';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showUploadDialog, setShowUploadDialog] = useState(false);
+  const [user, setUser] = useState(null);
+  const [uploadingFile, setUploadingFile] = useState(false);
+  const [uploadingCover, setUploadingCover] = useState(false);
+  const [formData, setFormData] = useState({
+    title: '',
+    description: '',
+    category: 'book',
+    file_url: '',
+    cover_image: '',
+    author: '',
+    tags: [],
+    is_featured: false
+  });
+
+  const queryClient = useQueryClient();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
+  }, []);
 
   const { data: resources = [] } = useQuery({
     queryKey: ['library-resources'],
@@ -49,6 +76,71 @@ export default function Library() {
     }
   };
 
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.LibraryResource.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['library-resources']);
+      setShowUploadDialog(false);
+      resetForm();
+      toast.success('Book uploaded successfully!');
+    }
+  });
+
+  const handleUploadFile = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingFile(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, file_url });
+      toast.success('File uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingFile(false);
+    }
+  };
+
+  const handleUploadCover = async (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    setUploadingCover(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, cover_image: file_url });
+      toast.success('Cover image uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingCover(false);
+    }
+  };
+
+  const handleSubmit = () => {
+    if (!formData.title || !formData.file_url) {
+      toast.error('Title and file are required');
+      return;
+    }
+    createMutation.mutate(formData);
+  };
+
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      category: 'book',
+      file_url: '',
+      cover_image: '',
+      author: '',
+      tags: [],
+      is_featured: false
+    });
+  };
+
+  const canUpload = user && (user.role === 'admin' || user.is_tutor);
+
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -72,6 +164,16 @@ export default function Library() {
               />
             </div>
           </div>
+
+          {canUpload && (
+            <Button 
+              onClick={() => setShowUploadDialog(true)}
+              className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+            >
+              <Plus className="w-5 h-5" />
+              Upload Book
+            </Button>
+          )}
         </div>
 
         {/* Featured Section */}
@@ -238,6 +340,112 @@ export default function Library() {
               </div>
             </div>
           )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Upload Book Dialog */}
+      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
+        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+          <DialogHeader>
+            <DialogTitle>Upload New Book</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-4 mt-4">
+            <div>
+              <Label>Title *</Label>
+              <Input 
+                value={formData.title} 
+                onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
+                placeholder="Book title"
+              />
+            </div>
+            <div>
+              <Label>Author</Label>
+              <Input 
+                value={formData.author} 
+                onChange={(e) => setFormData({ ...formData, author: e.target.value })} 
+                placeholder="Author name"
+              />
+            </div>
+            <div>
+              <Label>Description</Label>
+              <Textarea 
+                value={formData.description} 
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
+                rows={3}
+                placeholder="Brief description of the book"
+              />
+            </div>
+            <div>
+              <Label>Category</Label>
+              <select 
+                value={formData.category} 
+                onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
+                className="w-full px-3 py-2 border rounded-lg bg-white"
+              >
+                <option value="book">Book</option>
+                <option value="document">Document</option>
+                <option value="video">Video</option>
+                <option value="article">Article</option>
+                <option value="research">Research</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+            <div>
+              <Label>Book File * {uploadingFile && '(Uploading...)'}</Label>
+              <Input 
+                type="file" 
+                onChange={handleUploadFile} 
+                disabled={uploadingFile}
+                accept=".pdf,.epub,.mobi,.doc,.docx"
+              />
+              {formData.file_url && <p className="text-xs text-green-600 mt-1">✓ File uploaded</p>}
+            </div>
+            <div>
+              <Label>Cover Image {uploadingCover && '(Uploading...)'}</Label>
+              <Input 
+                type="file" 
+                accept="image/*" 
+                onChange={handleUploadCover}
+                disabled={uploadingCover}
+              />
+              {formData.cover_image && (
+                <img src={formData.cover_image} alt="Cover" className="mt-2 h-32 rounded" />
+              )}
+            </div>
+            <div>
+              <Label>Tags (comma separated)</Label>
+              <Input 
+                value={formData.tags.join(', ')} 
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} 
+                placeholder="education, science, history"
+              />
+            </div>
+            <div className="flex items-center gap-2">
+              <input 
+                type="checkbox" 
+                checked={formData.is_featured} 
+                onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} 
+                id="featured"
+              />
+              <Label htmlFor="featured">Feature this book</Label>
+            </div>
+            <div className="flex gap-3">
+              <Button 
+                variant="outline" 
+                onClick={() => { setShowUploadDialog(false); resetForm(); }} 
+                className="flex-1"
+              >
+                Cancel
+              </Button>
+              <Button 
+                onClick={handleSubmit} 
+                disabled={uploadingFile || uploadingCover} 
+                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
+              >
+                Upload Book
+              </Button>
+            </div>
+          </div>
         </DialogContent>
       </Dialog>
     </div>
