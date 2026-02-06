@@ -15,6 +15,8 @@ export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
+  const [showPdfViewer, setShowPdfViewer] = useState(false);
+  const [viewingBook, setViewingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
@@ -442,7 +444,8 @@ export default function Library() {
                 <div className="flex gap-3">
                   <Button 
                     onClick={() => {
-                      window.open(selectedBook.file_url, '_blank');
+                      setViewingBook(selectedBook);
+                      setShowPdfViewer(true);
                       setSelectedBook(null);
                     }}
                     variant="outline"
@@ -459,6 +462,42 @@ export default function Library() {
                     Download
                   </Button>
                 </div>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* PDF Viewer Dialog */}
+      <Dialog open={showPdfViewer} onOpenChange={setShowPdfViewer}>
+        <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-[95vh] p-0">
+          {viewingBook && (
+            <div className="flex flex-col h-full">
+              <div className="flex items-center justify-between p-4 border-b bg-white">
+                <div>
+                  <h3 className="text-lg font-semibold text-gray-900">{viewingBook.title}</h3>
+                  {viewingBook.author && <p className="text-sm text-gray-600">{viewingBook.author}</p>}
+                </div>
+                <div className="flex gap-2">
+                  <Button 
+                    variant="outline" 
+                    onClick={() => handleDownload(viewingBook)}
+                    className="gap-2"
+                  >
+                    <Download className="w-4 h-4" />
+                    Download
+                  </Button>
+                  <Button variant="ghost" onClick={() => setShowPdfViewer(false)}>
+                    <X className="w-5 h-5" />
+                  </Button>
+                </div>
+              </div>
+              <div className="flex-1 bg-gray-900">
+                <iframe
+                  src={`${viewingBook.file_url}#toolbar=1&navpanes=1&scrollbar=1`}
+                  className="w-full h-full border-0"
+                  title={viewingBook.title}
+                />
               </div>
             </div>
           )}
