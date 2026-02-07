@@ -762,49 +762,39 @@ export default function Library() {
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
                     <Button 
                       size="sm"
-                      onClick={async () => {
+                      onClick={async (e) => {
+                        e.preventDefault();
+                        e.stopPropagation();
+                        
                         try {
-                          const toastId = toast.loading('Capturing page...');
+                          const toastId = toast.loading('Capturing first page as cover...');
 
-                          const html2canvas = (await import('html2canvas')).default;
-                          const iframe = document.querySelector('#pdf-viewer-container iframe');
-                          
-                          if (!iframe) {
-                            toast.error('PDF viewer not found', { id: toastId });
+                          const response = await base44.functions.invoke('extractPdfPage', {
+                            file_url: viewingBook.file_url,
+                            page_number: 0
+                          });
+
+                          if (!response.data.success) {
+                            toast.error(response.data.error || 'Failed to capture page', { id: toastId });
                             return;
                           }
 
-                          const canvas = await html2canvas(iframe, {
-                            allowTaint: true,
-                            useCORS: true,
-                            scale: 2
+                          await base44.entities.LibraryResource.update(viewingBook.id, {
+                            cover_image: response.data.extracted_page_url
                           });
 
-                          canvas.toBlob(async (blob) => {
-                            try {
-                              const file = new File([blob], 'cover.png', { type: 'image/png' });
-                              const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-                              await base44.entities.LibraryResource.update(viewingBook.id, {
-                                cover_image: file_url
-                              });
-
-                              queryClient.invalidateQueries(['library-resources']);
-                              toast.success('Cover image saved!', { id: toastId });
-                              setShowPdfViewer(false);
-                            } catch (error) {
-                              toast.error('Failed to upload snapshot', { id: toastId });
-                            }
-                          }, 'image/png');
+                          queryClient.invalidateQueries(['library-resources']);
+                          toast.success('Cover image saved!', { id: toastId });
+                          setShowPdfViewer(false);
                         } catch (error) {
-                          console.error('Snapshot failed:', error);
+                          console.error('Capture failed:', error);
                           toast.error('Failed to capture page: ' + error.message);
                         }
                       }}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
                     >
                       <Upload className="w-4 h-4" />
-                      Capture & Set as Cover
+                      Capture First Page as Cover
                     </Button>
                   </div>
                 )}
