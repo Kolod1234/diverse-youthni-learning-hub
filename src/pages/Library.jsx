@@ -16,7 +16,7 @@ import ShareDialog from '@/components/library/ShareDialog';
 import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
-import CoverPicker from '@/components/library/CoverPicker';
+
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
@@ -261,7 +261,12 @@ export default function Library() {
       toast.error('Title and file are required');
       return;
     }
-    createMutation.mutate(formData);
+    // If no cover image provided, use the file itself as cover
+    const dataToSubmit = {
+      ...formData,
+      cover_image: formData.cover_image || formData.file_url
+    };
+    createMutation.mutate(dataToSubmit);
   };
 
   const handleDelete = (book) => {
@@ -898,11 +903,24 @@ export default function Library() {
                 <option value="history_books">History Books</option>
               </select>
             </div>
-            <CoverPicker
-              fileUrl={formData.file_url}
-              currentCover={formData.cover_image}
-              onCoverChange={(url) => setFormData({ ...formData, cover_image: url })}
-            />
+            <div>
+              <Label>Cover Image (Optional)</Label>
+              <p className="text-xs text-gray-500 mb-2">Leave empty to use the book file as cover</p>
+              <div className="flex gap-2">
+                <Input
+                  type="file"
+                  accept="image/*"
+                  onChange={handleUploadCover}
+                  disabled={uploadingCover}
+                />
+                {uploadingCover && <span className="text-sm text-gray-500">Uploading...</span>}
+              </div>
+              {formData.cover_image && (
+                <div className="mt-2">
+                  <img src={formData.cover_image} alt="Cover preview" className="w-32 h-40 object-cover rounded" />
+                </div>
+              )}
+            </div>
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Tags</Label>
