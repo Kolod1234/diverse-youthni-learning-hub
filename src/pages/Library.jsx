@@ -363,21 +363,15 @@ export default function Library() {
                 <div 
                   key={book.id}
                   className="cursor-pointer group relative"
-                  onClick={(e) => {
-                    e.preventDefault();
-                    e.stopPropagation();
-                    console.log('Featured book clicked:', book);
-                    setSelectedBook(book);
-                  }}
+                  onClick={() => setSelectedBook(book)}
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                     {book.cover_image ? (
                       book.cover_image.toLowerCase().includes('.pdf') ? (
-                        <iframe
-                          src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(book.cover_image)}`}
-                          className="w-full aspect-[3/4] transform transition-transform duration-300 group-hover:scale-105"
-                          style={{ border: 'none' }}
-                        />
+                        <div className="w-full aspect-[3/4] bg-gradient-to-br from-indigo-500 to-purple-600 flex flex-col items-center justify-center p-4 text-white transform transition-transform duration-300 group-hover:scale-105">
+                          <BookOpen className="w-16 h-16 mb-3 opacity-90" />
+                          <p className="text-sm font-semibold text-center line-clamp-3">{book.title}</p>
+                        </div>
                       ) : (
                         <img
                           src={book.cover_image}
@@ -474,21 +468,15 @@ export default function Library() {
             <div 
               key={book.id}
               className="cursor-pointer group relative"
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                console.log('Book clicked:', book);
-                setSelectedBook(book);
-              }}
+              onClick={() => setSelectedBook(book)}
             >
               <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                 {book.cover_image ? (
                   book.cover_image.toLowerCase().includes('.pdf') ? (
-                    <iframe
-                      src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(book.cover_image)}`}
-                      className="w-full aspect-[3/4] transform transition-transform duration-300 group-hover:scale-105"
-                      style={{ border: 'none' }}
-                    />
+                    <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-900 flex flex-col items-center justify-center p-4 text-white transform transition-transform duration-300 group-hover:scale-105">
+                      <BookOpen className="w-12 h-12 mb-2 opacity-90" />
+                      <p className="text-xs font-semibold text-center line-clamp-2">{book.title}</p>
+                    </div>
                   ) : (
                     <img
                       src={book.cover_image}

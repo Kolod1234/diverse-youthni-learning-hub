@@ -19,6 +19,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
+    // Import pdf-lib
     const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
     
     // Fetch the PDF
@@ -35,15 +36,16 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Extract single page as a new PDF
+    // Create new PDF with single page
     const newPdf = await PDFDocument.create();
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
-    const pdfBytes = await newPdf.save();
     
-    // Upload extracted page as PDF
-    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfFile = new File([pdfBlob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    // Save as PDF
+    const pdfBytes = await newPdf.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    
     const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
     return Response.json({ 
