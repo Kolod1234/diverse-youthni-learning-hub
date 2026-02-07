@@ -785,19 +785,18 @@ export default function Library() {
 
                           const toastId = toast.loading('Extracting page...');
 
-                          const { data } = await base44.functions.invoke('extractPdfPage', {
+                          const response = await base44.functions.invoke('extractPdfPage', {
                             file_url: viewingBook.file_url,
-                            page_number: pageNumber - 1  // Convert to 0-indexed
+                            page_number: pageNumber - 1
                           });
 
-                          if (!data.success) {
-                            toast.error(data.error || 'Failed to extract page', { id: toastId });
+                          if (!response.data.success) {
+                            toast.error(response.data.error || 'Failed to extract page', { id: toastId });
                             return;
                           }
 
-                          // Update book with extracted page as cover
                           await base44.entities.LibraryResource.update(viewingBook.id, {
-                            cover_image: data.extracted_page_url
+                            cover_image: response.data.extracted_page_url
                           });
 
                           queryClient.invalidateQueries(['library-resources']);
