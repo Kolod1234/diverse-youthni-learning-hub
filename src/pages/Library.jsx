@@ -379,6 +379,20 @@ export default function Library() {
                           className="w-full aspect-[3/4] object-contain bg-gray-100 transform transition-transform duration-300 group-hover:scale-105"
                         />
                       )
+                    ) : book.file_url?.toLowerCase().endsWith('.pdf') ? (
+                      <div className="w-full aspect-[3/4] overflow-hidden bg-gray-100 relative">
+                        <iframe
+                          src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
+                          className="w-[120%] h-[120%] pointer-events-none border-none"
+                          style={{
+                            transform: 'scale(0.85)',
+                            transformOrigin: 'top left',
+                            overflow: 'hidden'
+                          }}
+                          scrolling="no"
+                        />
+                        <div className="absolute inset-0 z-10 bg-transparent" />
+                      </div>
                     ) : (
                       <div className="w-full aspect-[3/4] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
                         <BookOpen className="w-12 h-12 text-indigo-600" />
