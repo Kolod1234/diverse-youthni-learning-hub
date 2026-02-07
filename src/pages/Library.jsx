@@ -366,7 +366,7 @@ export default function Library() {
                   onClick={() => setSelectedBook(book)}
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
-                    {book.cover_image && !book.cover_image.toLowerCase().includes('.pdf') ? (
+                    {book.cover_image && book.cover_image.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
                       <img
                         src={book.cover_image}
                         alt={book.title}
@@ -478,7 +478,7 @@ export default function Library() {
               onClick={() => setSelectedBook(book)}
             >
               <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
-                {book.cover_image && !book.cover_image.toLowerCase().includes('.pdf') ? (
+                {book.cover_image && book.cover_image.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
                   <img
                     src={book.cover_image}
                     alt={book.title}
