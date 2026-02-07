@@ -769,15 +769,15 @@ export default function Library() {
                             return;
                           }
 
-                          toast.loading('Extracting page...');
+                          const toastId = toast.loading('Extracting page...');
 
                           const { data } = await base44.functions.invoke('extractPdfPage', {
                             file_url: viewingBook.file_url,
-                            page_number: pageNumber
+                            page_number: pageNumber - 1  // Convert to 0-indexed
                           });
 
                           if (!data.success) {
-                            toast.error(data.error || 'Failed to extract page');
+                            toast.error(data.error || 'Failed to extract page', { id: toastId });
                             return;
                           }
 
@@ -787,7 +787,7 @@ export default function Library() {
                           });
 
                           queryClient.invalidateQueries(['library-resources']);
-                          toast.success('Cover image saved!');
+                          toast.success('Cover image saved!', { id: toastId });
                           setShowPdfViewer(false);
                         } catch (error) {
                           console.error('Extract failed:', error);
