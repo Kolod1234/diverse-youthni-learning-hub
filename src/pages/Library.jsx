@@ -363,7 +363,12 @@ export default function Library() {
                 <div 
                   key={book.id}
                   className="cursor-pointer group relative"
-                  onClick={() => setSelectedBook(book)}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    console.log('Featured book clicked:', book);
+                    setSelectedBook(book);
+                  }}
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                     {book.cover_image ? (
