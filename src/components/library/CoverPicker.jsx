@@ -1,55 +1,38 @@
 import React, { useState, useRef } from 'react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Loader2, Upload, Sparkles, Image as ImageIcon } from 'lucide-react';
-import * as pdfjsLib from 'pdfjs-dist';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
-
-// Set up the worker for PDF.js
-pdfjsLib.GlobalWorkerOptions.workerSrc = `//cdnjs.cloudflare.com/ajax/libs/pdf.js/${pdfjsLib.version}/pdf.worker.min.js`;
 
 export default function CoverPicker({ fileUrl, onCoverChange, currentCover }) {
   const [isGenerating, setIsGenerating] = useState(false);
   const [isUploading, setIsUploading] = useState(false);
   const fileInputRef = useRef(null);
 
-  // --- Strategy 1: Automatic Extraction ---
+  // --- Strategy 1: Automatic Extraction (using backend) ---
   const generateAutoCover = async () => {
     if (!fileUrl) return toast.error("Upload a PDF first!");
     
     setIsGenerating(true);
     try {
-      // 1. Load the PDF
-      const loadingTask = pdfjsLib.getDocument(fileUrl);
-      const pdf = await loadingTask.promise;
+      toast.loading('Extracting page 1...');
       
-      // 2. Get the first page
-      const page = await pdf.getPage(1);
-      const viewport = page.getViewport({ scale: 1.5 });
+      const { data } = await base44.functions.invoke('extractPdfPage', {
+        file_url: fileUrl,
+        page_number: 1
+      });
 
-      // 3. Prepare canvas
-      const canvas = document.createElement('canvas');
-      const context = canvas.getContext('2d');
-      canvas.height = viewport.height;
-      canvas.width = viewport.width;
+      if (!data.success) {
+        toast.error(data.error || 'Failed to extract page');
+        return;
+      }
 
-      // 4. Render PDF page to canvas
-      await page.render({ canvasContext: context, viewport }).promise;
-
-      // 5. Convert canvas to Blob
-      const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
-      const file = new File([blob], "cover.jpg", { type: "image/jpeg" });
-
-      // 6. Upload to your storage
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      
-      onCoverChange(file_url);
+      onCoverChange(data.extracted_page_url);
       toast.success("Cover generated from page 1!");
     } catch (error) {
       console.error(error);
-      toast.error("Failed to extract page. Check CORS settings.");
+      toast.error("Failed to extract page: " + error.message);
     } finally {
       setIsGenerating(false);
     }
