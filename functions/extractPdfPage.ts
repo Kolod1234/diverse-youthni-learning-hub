@@ -88,7 +88,8 @@ Deno.serve(async (req) => {
       success: true,
       extracted_page_url: extractedPageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted successfully'
+      message: 'PDF page extracted as image',
+      format: 'image'
     });
 
   } catch (error) {
