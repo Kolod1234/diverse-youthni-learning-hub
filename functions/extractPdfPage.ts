@@ -41,28 +41,18 @@ Deno.serve(async (req) => {
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
     
-    // Save as PNG using canvas (Deno has canvas support)
-    const { createCanvas } = await import('https://deno.land/x/canvas@v1.4.1/mod.ts');
-    const page = newPdf.getPage(0);
-    const { width, height } = page.getSize();
-    
-    // Create canvas and render PDF page
-    const canvas = createCanvas(width * 2, height * 2); // 2x for better quality
-    const ctx = canvas.getContext('2d');
-    ctx.scale(2, 2);
-    
-    // For now, just save the PDF page as is and return it
+    // Save as PDF
     const pdfBytes = await newPdf.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
     
-    const { file_url: pageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
     return Response.json({ 
       success: true,
-      page_url: pageUrl,
+      extracted_page_url: extractedPageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted (PDF format)'
+      message: 'PDF page extracted successfully'
     });
 
   } catch (error) {
