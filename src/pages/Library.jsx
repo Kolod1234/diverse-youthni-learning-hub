@@ -760,57 +760,51 @@ export default function Library() {
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
                 {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
-                    <div className="flex items-center gap-2 text-sm text-gray-600">
-                      <BookOpen className="w-4 h-4" />
-                      <span>Extract page as cover:</span>
-                    </div>
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="Page #"
-                      className="w-20 h-8"
-                      id="page-number-input"
-                    />
                     <Button 
                       size="sm"
                       onClick={async () => {
                         try {
-                          const pageInput = document.getElementById('page-number-input');
-                          const pageNumber = parseInt(pageInput.value);
+                          const toastId = toast.loading('Capturing page...');
 
-                          if (!pageNumber || pageNumber < 1) {
-                            toast.error('Please enter a valid page number');
+                          const html2canvas = (await import('html2canvas')).default;
+                          const iframe = document.querySelector('#pdf-viewer-container iframe');
+                          
+                          if (!iframe) {
+                            toast.error('PDF viewer not found', { id: toastId });
                             return;
                           }
 
-                          const toastId = toast.loading('Extracting page...');
-
-                          const response = await base44.functions.invoke('extractPdfPage', {
-                            file_url: viewingBook.file_url,
-                            page_number: pageNumber - 1
+                          const canvas = await html2canvas(iframe, {
+                            allowTaint: true,
+                            useCORS: true,
+                            scale: 2
                           });
 
-                          if (!response.data.success) {
-                            toast.error(response.data.error || 'Failed to extract page', { id: toastId });
-                            return;
-                          }
+                          canvas.toBlob(async (blob) => {
+                            try {
+                              const file = new File([blob], 'cover.png', { type: 'image/png' });
+                              const { file_url } = await base44.integrations.Core.UploadFile({ file });
 
-                          await base44.entities.LibraryResource.update(viewingBook.id, {
-                            cover_image: response.data.extracted_page_url
-                          });
+                              await base44.entities.LibraryResource.update(viewingBook.id, {
+                                cover_image: file_url
+                              });
 
-                          queryClient.invalidateQueries(['library-resources']);
-                          toast.success('Cover image saved!', { id: toastId });
-                          setShowPdfViewer(false);
+                              queryClient.invalidateQueries(['library-resources']);
+                              toast.success('Cover image saved!', { id: toastId });
+                              setShowPdfViewer(false);
+                            } catch (error) {
+                              toast.error('Failed to upload snapshot', { id: toastId });
+                            }
+                          }, 'image/png');
                         } catch (error) {
-                          console.error('Extract failed:', error);
-                          toast.error('Failed to extract page: ' + error.message);
+                          console.error('Snapshot failed:', error);
+                          toast.error('Failed to capture page: ' + error.message);
                         }
                       }}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
                     >
                       <Upload className="w-4 h-4" />
-                      Set as Cover
+                      Capture & Set as Cover
                     </Button>
                   </div>
                 )}
