@@ -19,14 +19,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Import pdf-lib
+    // Import pdf-lib and pdf.js for rendering
     const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
+    const pdfjsLib = await import('npm:pdfjs-dist@3.11.174');
     
     // Fetch the PDF
     const response = await fetch(file_url);
     const arrayBuffer = await response.arrayBuffer();
     
-    // Load PDF
+    // Load PDF with pdf-lib to check page count
     const pdfDoc = await PDFDocument.load(arrayBuffer);
     const pageCount = pdfDoc.getPageCount();
     
@@ -36,17 +37,32 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Create new PDF with single page
-    const newPdf = await PDFDocument.create();
-    const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
-    newPdf.addPage(copiedPage);
+    // Load PDF with pdf.js for rendering to image
+    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(page_number + 1);
     
-    // Save as PDF
-    const pdfBytes = await newPdf.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    // Set scale for good quality
+    const scale = 2.0;
+    const viewport = page.getViewport({ scale });
     
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    // Create canvas using Deno's canvas
+    const { createCanvas } = await import('npm:canvas@2.11.2');
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext('2d');
+    
+    // Render PDF page to canvas
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+    
+    // Convert canvas to PNG buffer
+    const pngBuffer = canvas.toBuffer('image/png');
+    const pngBlob = new Blob([pngBuffer], { type: 'image/png' });
+    const pngFile = new File([pngBlob], `page-${page_number + 1}.png`, { type: 'image/png' });
+    
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pngFile });
     
     return Response.json({ 
       success: true,
