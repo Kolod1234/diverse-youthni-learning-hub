@@ -26,8 +26,8 @@ export default function PDFPageSelector({ pdfUrl, onPageSelect }) {
 
       console.log('Extract result:', result);
 
-      if (result.data?.success && result.data?.page_url) {
-        onPageSelect(result.data.page_url);
+      if (result.data?.success && result.data?.extracted_page_url) {
+        onPageSelect(result.data.extracted_page_url);
         toast.success(`Page ${currentPage} extracted! Click "Save Changes" to apply.`);
       } else {
         toast.error(result.data?.error || 'Failed to extract page');
