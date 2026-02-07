@@ -19,50 +19,70 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Import pdf-lib and pdf.js for rendering
-    const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
-    const pdfjsLib = await import('npm:pdfjs-dist@3.11.174');
-    
     // Fetch the PDF
     const response = await fetch(file_url);
-    const arrayBuffer = await response.arrayBuffer();
+    const pdfBlob = await response.blob();
+    const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
     
-    // Load PDF with pdf-lib to check page count
-    const pdfDoc = await PDFDocument.load(arrayBuffer);
-    const pageCount = pdfDoc.getPageCount();
+    // Upload the PDF temporarily
+    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
-    if (page_number >= pageCount) {
-      return Response.json({ 
-        error: `Page ${page_number + 1} does not exist. PDF has ${pageCount} pages.` 
-      }, { status: 400 });
-    }
+    // Use Manus API to convert PDF page to image
+    const manusResponse = await fetch('https://backend.manus.chat/api/v1/image-generation', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${Deno.env.get('MANUS_API_KEY')}`
+      },
+      body: JSON.stringify({
+        prompt: `Convert page ${page_number + 1} of this PDF to a high-quality image: ${tempPdfUrl}`,
+        model: 'flux-1.1-pro',
+        width: 800,
+        height: 1200
+      })
+    });
+    
+    if (!manusResponse.ok) {
+      // Fallback: just extract as single-page PDF
+      const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
+      const arrayBuffer = await pdfBlob.arrayBuffer();
+      const pdfDoc = await PDFDocument.load(arrayBuffer);
+      const pageCount = pdfDoc.getPageCount();
+      
+      if (page_number >= pageCount) {
+        return Response.json({ 
+          error: `Page ${page_number + 1} does not exist. PDF has ${pageCount} pages.` 
+        }, { status: 400 });
+      }
 
-    // Load PDF with pdf.js for rendering to image
-    const loadingTask = pdfjsLib.getDocument({ data: arrayBuffer });
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(page_number + 1);
+      const newPdf = await PDFDocument.create();
+      const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
+      newPdf.addPage(copiedPage);
+      
+      const pdfBytes = await newPdf.save();
+      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+      const extractedPdfFile = new File([blob], `cover-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+      
+      const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: extractedPdfFile });
+      
+      return Response.json({ 
+        success: true,
+        extracted_page_url: extractedPageUrl,
+        page_number: page_number + 1,
+        message: 'PDF page extracted (PDF format)',
+        format: 'pdf'
+      });
+    }
     
-    // Set scale for good quality
-    const scale = 2.0;
-    const viewport = page.getViewport({ scale });
+    const manusData = await manusResponse.json();
+    const imageUrl = manusData.url || manusData.image_url;
     
-    // Create canvas using Deno's canvas
-    const { createCanvas } = await import('npm:canvas@2.11.2');
-    const canvas = createCanvas(viewport.width, viewport.height);
-    const context = canvas.getContext('2d');
+    // Download the generated image
+    const imgResponse = await fetch(imageUrl);
+    const imgBlob = await imgResponse.blob();
+    const imgFile = new File([imgBlob], `page-${page_number + 1}.png`, { type: 'image/png' });
     
-    // Render PDF page to canvas
-    await page.render({
-      canvasContext: context,
-      viewport: viewport
-    }).promise;
-    
-    // Convert canvas to PNG buffer
-    const pngBuffer = canvas.toBuffer('image/png');
-    const pngBlob = new Blob([pngBuffer], { type: 'image/png' });
-    const pngFile = new File([pngBlob], `page-${page_number + 1}.png`, { type: 'image/png' });
-    
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pngFile });
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: imgFile });
     
     return Response.json({ 
       success: true,
