@@ -15,24 +15,23 @@ export default function CoverPicker({ fileUrl, onCoverChange, currentCover }) {
     if (!fileUrl) return toast.error("Upload a PDF first!");
     
     setIsGenerating(true);
+    const toastId = toast.loading('Extracting page 1...');
     try {
-      toast.loading('Extracting page 1...');
-      
       const { data } = await base44.functions.invoke('extractPdfPage', {
         file_url: fileUrl,
-        page_number: 1
+        page_number: 0  // 0-indexed, so 0 = first page
       });
 
       if (!data.success) {
-        toast.error(data.error || 'Failed to extract page');
+        toast.error(data.error || 'Failed to extract page', { id: toastId });
         return;
       }
 
       onCoverChange(data.extracted_page_url);
-      toast.success("Cover generated from page 1!");
+      toast.success("Cover generated from page 1!", { id: toastId });
     } catch (error) {
       console.error(error);
-      toast.error("Failed to extract page: " + error.message);
+      toast.error("Failed to extract page: " + (error.message || 'Unknown error'), { id: toastId });
     } finally {
       setIsGenerating(false);
     }
