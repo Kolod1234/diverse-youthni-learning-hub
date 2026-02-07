@@ -745,58 +745,56 @@ export default function Library() {
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
                     <div className="flex items-center gap-2 text-sm text-gray-600">
                       <BookOpen className="w-4 h-4" />
-                      <span>Navigate to the page you want, then click:</span>
+                      <span>Extract page as cover:</span>
                     </div>
+                    <Input
+                      type="number"
+                      min="1"
+                      placeholder="Page #"
+                      className="w-20 h-8"
+                      id="page-number-input"
+                    />
                     <Button 
                       size="sm"
                       onClick={async () => {
                         try {
-                          const iframe = document.getElementById('pdf-viewer-iframe');
-                          if (!iframe) {
-                            toast.error('PDF viewer not found');
+                          const pageInput = document.getElementById('page-number-input');
+                          const pageNumber = parseInt(pageInput.value);
+
+                          if (!pageNumber || pageNumber < 1) {
+                            toast.error('Please enter a valid page number');
                             return;
                           }
 
-                          toast.loading('Taking snapshot...');
+                          toast.loading('Extracting page...');
 
-                          // Import html2canvas dynamically
-                          const html2canvas = (await import('html2canvas')).default;
-
-                          // Capture the entire iframe container
-                          const container = iframe.parentElement;
-                          const canvas = await html2canvas(container, {
-                            useCORS: true,
-                            allowTaint: true,
-                            logging: false,
-                            scale: 2
+                          const { data } = await base44.functions.invoke('extractPdfPage', {
+                            file_url: viewingBook.file_url,
+                            page_number: pageNumber
                           });
 
-                          // Convert to blob
-                          const blob = await new Promise(resolve => canvas.toBlob(resolve, 'image/png'));
-                          const file = new File([blob], 'cover.png', { type: 'image/png' });
+                          if (!data.success) {
+                            toast.error(data.error || 'Failed to extract page');
+                            return;
+                          }
 
-                          toast.loading('Uploading cover...');
-
-                          // Upload
-                          const { file_url: coverUrl } = await base44.integrations.Core.UploadFile({ file });
-
-                          // Update book
+                          // Update book with extracted page as cover
                           await base44.entities.LibraryResource.update(viewingBook.id, {
-                            cover_image: coverUrl
+                            cover_image: data.extracted_page_url
                           });
 
                           queryClient.invalidateQueries(['library-resources']);
                           toast.success('Cover image saved!');
                           setShowPdfViewer(false);
                         } catch (error) {
-                          console.error('Snapshot failed:', error);
-                          toast.error('Failed to take snapshot: ' + error.message);
+                          console.error('Extract failed:', error);
+                          toast.error('Failed to extract page: ' + error.message);
                         }
                       }}
                       className="bg-indigo-600 hover:bg-indigo-700 text-white gap-2"
                     >
                       <Upload className="w-4 h-4" />
-                      📸 Take Snapshot & Set as Cover
+                      Set as Cover
                     </Button>
                   </div>
                 )}
