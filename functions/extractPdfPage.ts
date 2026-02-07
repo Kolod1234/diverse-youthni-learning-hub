@@ -1,6 +1,4 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-import { getDocument } from 'npm:pdfjs-dist@3.11.174';
-import { createCanvas } from 'npm:canvas@2.11.2';
 
 Deno.serve(async (req) => {
   try {
@@ -21,7 +19,6 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Import pdf-lib
     const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
     
     // Fetch the PDF
@@ -38,37 +35,30 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Extract single page as image
+    // Extract single page and convert to PNG
     const newPdf = await PDFDocument.create();
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
     const pdfBytes = await newPdf.save();
     
-    // Convert PDF page to image using pdfjs
-    const loadingTask = getDocument({ data: pdfBytes });
-    const pdf = await loadingTask.promise;
-    const page = await pdf.getPage(1);
+    // Use InvokeLLM to convert PDF to image
+    const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const tempFile = new File([pdfBlob], `temp-page.pdf`, { type: 'application/pdf' });
+    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: tempFile });
     
-    const scale = 2.0;
-    const viewport = page.getViewport({ scale });
+    // Convert to image using backend function
+    const { data: imageData } = await base44.asServiceRole.functions.invoke('convertPdfToImage', {
+      pdf_url: tempPdfUrl,
+      page_index: 0
+    });
     
-    const canvas = createCanvas(viewport.width, viewport.height);
-    const context = canvas.getContext('2d');
-    
-    await page.render({
-      canvasContext: context,
-      viewport: viewport
-    }).promise;
-    
-    // Convert canvas to PNG blob
-    const pngBuffer = canvas.toBuffer('image/png');
-    const imageFile = new File([pngBuffer], `page-${page_number + 1}.png`, { type: 'image/png' });
-    
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: imageFile });
+    if (!imageData.success) {
+      throw new Error(imageData.error || 'Failed to convert PDF to image');
+    }
     
     return Response.json({ 
       success: true,
-      extracted_page_url: extractedPageUrl,
+      extracted_page_url: imageData.image_url,
       page_number: page_number + 1,
       message: 'PDF page extracted as image'
     });
