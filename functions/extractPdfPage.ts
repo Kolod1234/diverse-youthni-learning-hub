@@ -1,4 +1,6 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { getDocument } from 'npm:pdfjs-dist@3.11.174';
+import { createCanvas } from 'npm:canvas@2.11.2';
 
 Deno.serve(async (req) => {
   try {
