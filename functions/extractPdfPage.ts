@@ -35,32 +35,22 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Extract single page and convert to PNG
+    // Extract single page as a new PDF
     const newPdf = await PDFDocument.create();
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
     const pdfBytes = await newPdf.save();
     
-    // Use InvokeLLM to convert PDF to image
+    // Upload extracted page as PDF
     const pdfBlob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const tempFile = new File([pdfBlob], `temp-page.pdf`, { type: 'application/pdf' });
-    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: tempFile });
-    
-    // Convert to image using backend function
-    const { data: imageData } = await base44.asServiceRole.functions.invoke('convertPdfToImage', {
-      pdf_url: tempPdfUrl,
-      page_index: 0
-    });
-    
-    if (!imageData.success) {
-      throw new Error(imageData.error || 'Failed to convert PDF to image');
-    }
+    const pdfFile = new File([pdfBlob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
     
     return Response.json({ 
       success: true,
-      extracted_page_url: imageData.image_url,
+      extracted_page_url: extractedPageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted as image'
+      message: 'PDF page extracted successfully'
     });
 
   } catch (error) {
