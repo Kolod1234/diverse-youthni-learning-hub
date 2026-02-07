@@ -16,6 +16,7 @@ import ShareDialog from '@/components/library/ShareDialog';
 import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
+import CoverPicker from '@/components/library/CoverPicker';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
@@ -895,18 +896,11 @@ export default function Library() {
                 <option value="history_books">History Books</option>
               </select>
             </div>
-            <div>
-              <Label>Cover Image {uploadingCover && '(Uploading...)'}</Label>
-              <Input 
-                type="file" 
-                accept="image/*" 
-                onChange={handleUploadCoverInForm}
-                disabled={uploadingCover}
-              />
-              {formData.cover_image && (
-                <img src={formData.cover_image} alt="Cover" className="mt-2 h-32 rounded" />
-              )}
-            </div>
+            <CoverPicker
+              fileUrl={formData.file_url}
+              currentCover={formData.cover_image}
+              onCoverChange={(url) => setFormData({ ...formData, cover_image: url })}
+            />
             <div>
               <div className="flex items-center justify-between mb-2">
                 <Label>Tags</Label>
