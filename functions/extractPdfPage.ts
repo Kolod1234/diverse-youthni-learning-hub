@@ -36,23 +36,39 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Create new PDF with single page
+    // Extract single page as image
     const newPdf = await PDFDocument.create();
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
-    
-    // Save as PDF
     const pdfBytes = await newPdf.save();
-    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-    const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
     
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    // Convert PDF page to image using pdfjs
+    const loadingTask = getDocument({ data: pdfBytes });
+    const pdf = await loadingTask.promise;
+    const page = await pdf.getPage(1);
+    
+    const scale = 2.0;
+    const viewport = page.getViewport({ scale });
+    
+    const canvas = createCanvas(viewport.width, viewport.height);
+    const context = canvas.getContext('2d');
+    
+    await page.render({
+      canvasContext: context,
+      viewport: viewport
+    }).promise;
+    
+    // Convert canvas to PNG blob
+    const pngBuffer = canvas.toBuffer('image/png');
+    const imageFile = new File([pngBuffer], `page-${page_number + 1}.png`, { type: 'image/png' });
+    
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: imageFile });
     
     return Response.json({ 
       success: true,
       extracted_page_url: extractedPageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted successfully'
+      message: 'PDF page extracted as image'
     });
 
   } catch (error) {
