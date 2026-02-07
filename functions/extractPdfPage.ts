@@ -41,18 +41,24 @@ Deno.serve(async (req) => {
     const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
     newPdf.addPage(copiedPage);
     
-    // Save as PDF
+    // Save as PDF and convert to image using Core.GenerateImage
     const pdfBytes = await newPdf.save();
     const blob = new Blob([pdfBytes], { type: 'application/pdf' });
     const pdfFile = new File([blob], `page-${page_number + 1}.pdf`, { type: 'application/pdf' });
     
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
+    
+    // Use AI to generate an image representation of the page
+    const { url: imageUrl } = await base44.asServiceRole.integrations.Core.GenerateImage({
+      prompt: `Create a high-quality image representation of this PDF page. Maintain all text, layout, colors, and design elements exactly as they appear.`,
+      existing_image_urls: [tempPdfUrl]
+    });
     
     return Response.json({ 
       success: true,
-      extracted_page_url: extractedPageUrl,
+      extracted_page_url: imageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted successfully'
+      message: 'PDF page extracted and converted to image'
     });
 
   } catch (error) {
