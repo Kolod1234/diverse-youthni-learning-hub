@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
@@ -68,17 +68,19 @@ export default function Library() {
   // Get all unique tags from resources
   const allTags = [...new Set(resources.flatMap(r => r.tags || []))].sort();
 
-  const filteredResources = resources.filter(resource => {
-    const matchesSearch = !searchQuery || 
-      resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      resource.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-    const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
-    const matchesTags = selectedTags.length === 0 || 
-      selectedTags.some(tag => resource.tags?.includes(tag));
-    return matchesSearch && matchesCategory && matchesTags;
-  });
+  const filteredResources = useMemo(() => {
+    return resources.filter(resource => {
+      const matchesSearch = !searchQuery || 
+        resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
+      const matchesTags = selectedTags.length === 0 || 
+        selectedTags.some(tag => resource.tags?.includes(tag));
+      return matchesSearch && matchesCategory && matchesTags;
+    });
+  }, [resources, searchQuery, selectedCategory, selectedTags]);
 
   const featuredBooks = filteredResources.filter(r => r.is_featured).slice(0, 5);
   const categories = [
