@@ -21,6 +21,20 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
     cover_image: book?.cover_image || '',
     is_featured: book?.is_featured || false
   });
+
+  React.useEffect(() => {
+    if (book) {
+      setFormData({
+        title: book.title || '',
+        author: book.author || '',
+        description: book.description || '',
+        category: book.category || 'gcse_books',
+        tags: book.tags || [],
+        cover_image: book.cover_image || '',
+        is_featured: book.is_featured || false
+      });
+    }
+  }, [book]);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showPageSelector, setShowPageSelector] = useState(false);
   const queryClient = useQueryClient();
