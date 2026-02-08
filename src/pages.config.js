@@ -119,6 +119,7 @@ import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import StudyGroupDetail from './pages/StudyGroupDetail';
+import AdminReminders from './pages/AdminReminders';
 import __Layout from './Layout.jsx';
 
 
@@ -195,6 +196,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "StudyGroupDetail": StudyGroupDetail,
+    "AdminReminders": AdminReminders,
 }
 
 export const pagesConfig = {
