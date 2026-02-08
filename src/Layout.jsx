@@ -24,7 +24,6 @@ import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import { motion } from 'framer-motion';
-import '@/styles/theme-variables.css';
 
 function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
