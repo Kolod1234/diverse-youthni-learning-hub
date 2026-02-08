@@ -37,6 +37,7 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
   }, [book]);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [showPageSelector, setShowPageSelector] = useState(false);
+  const fileInputRef = React.useRef(null);
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
