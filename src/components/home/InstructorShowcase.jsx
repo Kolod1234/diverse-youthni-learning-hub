@@ -17,8 +17,9 @@ export default function InstructorShowcase() {
   });
 
   // Get unique instructors with their stats (filter out generic/empty names)
+  const genericNames = ['dr sarah', 'mr james', 'ms emma', 'mrs mary', 'instructor', 'unknown', 'tutor'];
   const instructorStats = courses
-    .filter(c => c.instructor && c.instructor.trim() && c.instructor.toLowerCase() !== 'instructor' && c.instructor.toLowerCase() !== 'unknown')
+    .filter(c => c.instructor && c.instructor.trim() && !genericNames.includes(c.instructor.toLowerCase()))
     .reduce((acc, course) => {
       const existing = acc.find(i => i.name === course.instructor);
       const instructorReviews = reviews.filter(r => 
