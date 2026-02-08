@@ -34,6 +34,11 @@ import ContinueLearningSection from '@/components/home/ContinueLearningSection';
 import QuickStatsCard from '@/components/home/QuickStatsCard';
 import TrendingCoursesCarousel from '@/components/home/TrendingCoursesCarousel';
 import CategoryQuickAccess from '@/components/home/CategoryQuickAccess';
+import StudentSuccessStories from '@/components/home/StudentSuccessStories';
+import SubjectMasteryRoadmaps from '@/components/home/SubjectMasteryRoadmaps';
+import InstructorShowcase from '@/components/home/InstructorShowcase';
+import LearningStatisticsSection from '@/components/home/LearningStatisticsSection';
+import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
