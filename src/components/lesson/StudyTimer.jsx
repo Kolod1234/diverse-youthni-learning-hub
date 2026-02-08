@@ -7,6 +7,7 @@ import { toast } from 'sonner';
 export default function StudyTimer() {
   const [isActive, setIsActive] = useState(false);
   const [isBreak, setIsBreak] = useState(false);
+  const [duration, setDuration] = useState(25);
   const [seconds, setSeconds] = useState(25 * 60);
   const [initialSeconds, setInitialSeconds] = useState(25 * 60);
 
@@ -21,8 +22,8 @@ export default function StudyTimer() {
       if (isBreak) {
         toast.success('Break time is over! Ready to study?');
         setIsBreak(false);
-        setSeconds(25 * 60);
-        setInitialSeconds(25 * 60);
+        setSeconds(duration * 60);
+        setInitialSeconds(duration * 60);
       } else {
         toast.success('Great work! Time for a break!');
         setIsBreak(true);
@@ -42,8 +43,16 @@ export default function StudyTimer() {
   const reset = () => {
     setIsActive(false);
     setIsBreak(false);
-    setSeconds(25 * 60);
-    setInitialSeconds(25 * 60);
+    setSeconds(duration * 60);
+    setInitialSeconds(duration * 60);
+  };
+
+  const changeDuration = (mins) => {
+    if (!isActive) {
+      setDuration(mins);
+      setSeconds(mins * 60);
+      setInitialSeconds(mins * 60);
+    }
   };
 
   return (
@@ -60,6 +69,28 @@ export default function StudyTimer() {
           </h3>
         </div>
       </div>
+
+      {/* Duration Selector */}
+      {!isBreak && !isActive && (
+        <div className="mb-4">
+          <label className="text-sm text-gray-600 mb-2 block">Session Duration</label>
+          <div className="flex flex-wrap gap-2">
+            {[25, 30, 35, 40, 45, 50, 55, 60].map(mins => (
+              <button
+                key={mins}
+                onClick={() => changeDuration(mins)}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  duration === mins 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
+              >
+                {mins}m
+              </button>
+            ))}
+          </div>
+        </div>
+      )}
 
       <div className="relative w-48 h-48 mx-auto mb-6">
         <svg className="transform -rotate-90 w-48 h-48">
