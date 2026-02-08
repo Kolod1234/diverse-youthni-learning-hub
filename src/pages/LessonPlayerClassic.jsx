@@ -286,7 +286,6 @@ export default function LessonPlayerClassic() {
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
-  const slideUrl = getSlideEmbedUrl();
 
   return (
     <div className="min-h-screen flex flex-col bg-gray-100">
