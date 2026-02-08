@@ -15,9 +15,9 @@ import {
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-  GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users
-} from 'lucide-react';
+        GraduationCap, Home, Compass, BookOpen, Award, 
+        Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell
+      } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
@@ -445,6 +445,24 @@ function LayoutContent({ children, currentPageName }) {
                         <Link to={createPageUrl('AdminReviews')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
                           <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />
                           <span className="font-medium">Manage Reviews</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminReminders')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
+                          <Bell className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                          <span className="font-medium">Student Reminders</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      </>
+                      )}
+
+                      {isTutorOrAdmin && !isAdmin && (
+                      <>
+                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminReminders')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
+                          <Bell className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
+                          <span className="font-medium">Student Reminders</span>
                         </Link>
                       </DropdownMenuItem>
                       </>
