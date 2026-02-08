@@ -67,65 +67,6 @@ export default function LessonPlayerClassic() {
     loadUser();
   }, []);
 
-  // Progress auto-save hook
-  const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId, async (progressData) => {
-    if (enrollment) {
-      // Optionally sync to backend
-      console.log('Auto-saved progress:', progressData);
-    }
-  });
-
-  // Check for resume prompt
-  useEffect(() => {
-    if (lessonId && enrollment) {
-      const lastProgress = getLastProgress();
-      if (lastProgress && lastProgress.progress > 10 && lastProgress.progress < 90) {
-        setShowResumePrompt(true);
-      }
-    }
-  }, [lessonId, enrollment]);
-
-  // Keyboard shortcuts
-  useKeyboardShortcuts({
-    onNext: handleNextLesson,
-    onPrev: handlePrevLesson,
-    onToggleFullscreen: () => {
-      if (!document.fullscreenElement) {
-        mainContentRef.current?.requestFullscreen();
-        setIsFullscreen(true);
-      } else {
-        document.exitFullscreen();
-        setIsFullscreen(false);
-      }
-    },
-    onBookmark: () => setShowBookmarksSheet(true),
-    onSearch: () => searchInputRef.current?.focus()
-  });
-
-  // Track engagement metrics
-  const trackEngagement = (eventType, data = {}) => {
-    base44.analytics.track({
-      eventName: `lesson_${eventType}`,
-      properties: {
-        lessonId,
-        courseId,
-        ...data
-      }
-    });
-  };
-
-  useEffect(() => {
-    if (lessonId) {
-      trackEngagement('started');
-      const startTime = Date.now();
-      
-      return () => {
-        const timeSpent = Math.round((Date.now() - startTime) / 1000);
-        trackEngagement('time_spent', { seconds: timeSpent });
-      };
-    }
-  }, [lessonId]);
-
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
     queryKey: ['lesson', lessonId],
@@ -212,6 +153,72 @@ export default function LessonPlayerClassic() {
       return enrollments[0];
     },
     enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
+  });
+
+  // Progress auto-save hook (after enrollment is defined)
+  const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId);
+
+  // Check for resume prompt
+  useEffect(() => {
+    if (lessonId && enrollment) {
+      const lastProgress = getLastProgress();
+      if (lastProgress && lastProgress.progress > 10 && lastProgress.progress < 90) {
+        setShowResumePrompt(true);
+      }
+    }
+  }, [lessonId, enrollment]);
+
+  // Track engagement metrics
+  const trackEngagement = (eventType, data = {}) => {
+    base44.analytics.track({
+      eventName: `lesson_${eventType}`,
+      properties: {
+        lessonId,
+        courseId,
+        ...data
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (lessonId) {
+      trackEngagement('started');
+      const startTime = Date.now();
+      
+      return () => {
+        const timeSpent = Math.round((Date.now() - startTime) / 1000);
+        trackEngagement('time_spent', { seconds: timeSpent });
+      };
+    }
+  }, [lessonId]);
+
+  // Keyboard shortcuts
+  const handleNextLesson = () => {
+    if (nextLesson) {
+      navigate(`/LessonPlayerClassic?lesson=${nextLesson.id}&course=${courseId}`);
+    }
+  };
+
+  const handlePrevLesson = () => {
+    if (prevLesson) {
+      navigate(`/LessonPlayerClassic?lesson=${prevLesson.id}&course=${courseId}`);
+    }
+  };
+
+  useKeyboardShortcuts({
+    onNext: handleNextLesson,
+    onPrev: handlePrevLesson,
+    onToggleFullscreen: () => {
+      if (!document.fullscreenElement) {
+        mainContentRef.current?.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    },
+    onBookmark: () => setShowBookmarksSheet(true),
+    onSearch: () => searchInputRef.current?.focus()
   });
 
   // Check if lesson is locked
@@ -329,18 +336,6 @@ export default function LessonPlayerClassic() {
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
   const nextLesson = sortedLessons[currentLessonIndex + 1];
   const prevLesson = sortedLessons[currentLessonIndex - 1];
-
-  const handleNextLesson = () => {
-    if (nextLesson) {
-      navigate(`/LessonPlayerClassic?lesson=${nextLesson.id}&course=${courseId}`);
-    }
-  };
-
-  const handlePrevLesson = () => {
-    if (prevLesson) {
-      navigate(`/LessonPlayerClassic?lesson=${prevLesson.id}&course=${courseId}`);
-    }
-  };
 
   // Swipe gesture handlers
   const handleTouchStart = (e) => {
