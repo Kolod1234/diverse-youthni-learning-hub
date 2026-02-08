@@ -120,8 +120,14 @@ export default function EnhancedMediaPlayer({
 
   if (type === 'google-slides' || type === 'iframe') {
     return (
-      <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden ${className}`}>
-        <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
+      <div 
+        ref={containerRef} 
+        className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden ${isFullscreen ? 'w-screen h-screen' : ''} ${className}`}
+      >
+        <div 
+          className="relative w-full" 
+          style={isFullscreen ? { height: '100vh' } : { paddingTop: '56.25%' }}
+        >
           <iframe 
             src={src}
             className="absolute top-0 left-0 w-full h-full"
