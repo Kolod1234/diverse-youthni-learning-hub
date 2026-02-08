@@ -58,6 +58,7 @@ import AdminLibrary from './pages/AdminLibrary';
 import AdminPageBuilder from './pages/AdminPageBuilder';
 import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
+import AdminReminders from './pages/AdminReminders';
 import AdminReviews from './pages/AdminReviews';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminUserProfile from './pages/AdminUserProfile';
@@ -107,6 +108,7 @@ import Settings from './pages/Settings';
 import SocialHub from './pages/SocialHub';
 import StudentAnalytics from './pages/StudentAnalytics';
 import StudentPathways from './pages/StudentPathways';
+import StudyGroupDetail from './pages/StudyGroupDetail';
 import Templates from './pages/Templates';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
@@ -118,8 +120,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import StudyGroupDetail from './pages/StudyGroupDetail';
-import AdminReminders from './pages/AdminReminders';
 import __Layout from './Layout.jsx';
 
 
@@ -135,6 +135,7 @@ export const PAGES = {
     "AdminPageBuilder": AdminPageBuilder,
     "AdminQuotes": AdminQuotes,
     "AdminRSSFeed": AdminRSSFeed,
+    "AdminReminders": AdminReminders,
     "AdminReviews": AdminReviews,
     "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminUserProfile": AdminUserProfile,
@@ -184,6 +185,7 @@ export const PAGES = {
     "SocialHub": SocialHub,
     "StudentAnalytics": StudentAnalytics,
     "StudentPathways": StudentPathways,
+    "StudyGroupDetail": StudyGroupDetail,
     "Templates": Templates,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
@@ -195,8 +197,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "StudyGroupDetail": StudyGroupDetail,
-    "AdminReminders": AdminReminders,
 }
 
 export const pagesConfig = {

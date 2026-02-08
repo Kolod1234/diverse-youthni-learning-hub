@@ -36,7 +36,7 @@ export default function AdminReminders() {
 
   const { data: reminders = [] } = useQuery({
     queryKey: ['reminders'],
-    queryFn: () => base44.asServiceRole.entities.ReminderConfig.list('-updated_date', 100),
+    queryFn: () => base44.entities.ReminderConfig.list('-updated_date', 100),
     enabled: !!user && (user.role === 'admin' || user.is_tutor)
   });
 
@@ -51,7 +51,7 @@ export default function AdminReminders() {
   });
 
   const createMutation = useMutation({
-    mutationFn: (data) => base44.asServiceRole.entities.ReminderConfig.create({
+    mutationFn: (data) => base44.entities.ReminderConfig.create({
       ...data,
       created_by_role: user.role === 'admin' ? 'admin' : 'teacher'
     }),
@@ -61,11 +61,11 @@ export default function AdminReminders() {
       setShowCreateDialog(false);
       toast.success('Reminder created successfully');
     },
-    onError: (error) => toast.error('Failed to create reminder')
+    onError: (error) => toast.error('Failed to create reminder: ' + error.message)
   });
 
   const updateMutation = useMutation({
-    mutationFn: (data) => base44.asServiceRole.entities.ReminderConfig.update(editingReminder.id, data),
+    mutationFn: (data) => base44.entities.ReminderConfig.update(editingReminder.id, data),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] });
       resetForm();
@@ -73,16 +73,16 @@ export default function AdminReminders() {
       setShowCreateDialog(false);
       toast.success('Reminder updated successfully');
     },
-    onError: () => toast.error('Failed to update reminder')
+    onError: (error) => toast.error('Failed to update reminder: ' + error.message)
   });
 
   const deleteMutation = useMutation({
-    mutationFn: (id) => base44.asServiceRole.entities.ReminderConfig.delete(id),
+    mutationFn: (id) => base44.entities.ReminderConfig.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['reminders'] });
       toast.success('Reminder deleted');
     },
-    onError: () => toast.error('Failed to delete reminder')
+    onError: (error) => toast.error('Failed to delete reminder: ' + error.message)
   });
 
   const sendMutation = useMutation({
