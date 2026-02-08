@@ -414,7 +414,7 @@ export default function Explore() {
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex gap-3 mb-8"
+          className="flex gap-3 mb-12"
         >
           <div className="flex-1">
             <SearchBar 
