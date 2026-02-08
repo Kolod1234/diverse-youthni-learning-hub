@@ -40,13 +40,13 @@ export default function QuickStatsCard({ user }) {
       {/* Total XP */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-gradient-to-br from-yellow-50 to-amber-50 border-2 border-amber-200 rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
-        <div className="flex justify-center mb-2">
-          <Zap className="w-6 h-6 text-amber-600" />
+        <div className="flex justify-center mb-3">
+          <StyledIcon Icon={Zap} colorFrom="from-amber-500" colorTo="to-orange-600" size="md" />
         </div>
-        <div className="text-2xl font-bold text-amber-700">{totalXP.toLocaleString()}</div>
-        <div className="text-xs text-amber-600 font-semibold">Total XP</div>
+        <div className="text-2xl font-bold text-foreground">{totalXP.toLocaleString()}</div>
+        <div className="text-xs text-muted-foreground font-semibold">Total XP</div>
       </motion.div>
 
       {/* Current Streak */}
