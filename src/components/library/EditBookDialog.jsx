@@ -163,13 +163,24 @@ export default function EditBookDialog({ book, open, onOpenChange }) {
 
             <div className="space-y-3">
               <div>
-                <Label className="text-sm text-gray-600 mb-1 block">Upload Custom Cover</Label>
-                <Input 
-                  type="file" 
-                  accept="image/*" 
+                <Label className="text-sm text-gray-600 mb-2 block">Upload Custom Cover</Label>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
                   onChange={handleUploadCover}
-                  disabled={uploadingCover}
+                  className="hidden"
                 />
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={uploadingCover}
+                  className="gap-2 w-full"
+                >
+                  <Upload className="w-4 h-4" />
+                  {uploadingCover ? 'Uploading...' : 'Choose File'}
+                </Button>
               </div>
 
               {book?.file_url?.toLowerCase().includes('.pdf') && (
