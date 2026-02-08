@@ -6,11 +6,14 @@ import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { createPageUrl } from '@/utils';
 import { 
         ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles, Lock, Key, FileText
+        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles, Lock, Key, FileText, Search
       } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
+import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import { Card } from '@/components/ui/card';
-      import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { Input } from '@/components/ui/input';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import {
@@ -35,6 +38,7 @@ export default function LessonPlayerClassic() {
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [searchQuery, setSearchQuery] = useState('');
   
   // Touch state for swipe navigation
   const [touchStart, setTouchStart] = useState(null);
@@ -329,10 +333,17 @@ export default function LessonPlayerClassic() {
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
 
+  const filteredLessons = searchQuery 
+    ? sortedLessons.filter(l => 
+        l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+      )
+    : sortedLessons;
+
   return (
-    <div ref={containerRef} className="h-screen flex flex-col bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 overflow-hidden">
+    <div ref={containerRef} className="h-screen flex flex-col bg-[#1e3a8a] overflow-hidden">
       {/* Header */}
-      <header className="flex-none bg-white/80 backdrop-blur-xl border-b border-purple-100 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-lg shadow-purple-100/50 z-30">
+      <header className="flex-none bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm z-30">
         <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
           <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
             <X className="w-5 h-5" />
@@ -431,21 +442,47 @@ export default function LessonPlayerClassic() {
       </header>
 
       <div className="flex flex-1 overflow-hidden" style={{ minHeight: 0 }}>
-        {/* Sidebar */}
+        {/* Enhanced Sidebar */}
         {showSidebar && (
-          <aside className="fixed lg:relative z-20 w-full sm:w-80 lg:max-w-sm h-[calc(100vh-4rem)] lg:h-full bg-gradient-to-b from-white to-purple-50/30 border-r border-purple-100 overflow-y-auto shadow-2xl lg:shadow-lg">
-            <div className="p-4">
-              <div className="flex items-center justify-between mb-4">
-                <h3 className="font-semibold text-gray-900 flex items-center gap-2">
-                  <BookOpen className="w-5 h-5" />
-                  Course Content
-                </h3>
-                <button onClick={() => setShowSidebar(false)} className="lg:hidden p-2 hover:bg-gray-100 rounded-lg">
-                  <X className="w-5 h-5" />
-                </button>
+          <aside className="fixed lg:relative z-20 w-full sm:w-80 lg:w-96 h-[calc(100vh-4rem)] lg:h-full bg-[#1e3a8a] text-white flex flex-col shadow-2xl">
+            {/* Search Bar */}
+            <div className="p-4 border-b border-white/20">
+              <div className="relative">
+                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+                <Input
+                  placeholder="Search lessons..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/60 pl-10 focus:bg-white/20"
+                />
               </div>
-              <div className="space-y-2">
-                {sortedLessons.map((l, idx) => {
+            </div>
+
+            {/* Course Info */}
+            <div className="p-6 border-b border-white/20">
+              <h3 className="text-lg font-bold mb-4 leading-tight">
+                {lesson?.course_id || 'Course Content'}
+              </h3>
+              {enrollment && (
+                <div className="space-y-2">
+                  <div className="flex items-center justify-between text-sm font-semibold">
+                    <span>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
+                    <span>{enrollment.completed_lessons?.length || 0}/{sortedLessons.length}</span>
+                  </div>
+                  <div className="w-full bg-white/20 rounded-full h-2">
+                    <div
+                      className="bg-white rounded-full h-2 transition-all duration-500"
+                      style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+                    />
+                  </div>
+                </div>
+              )}
+            </div>
+
+            {/* Lessons List */}
+            <ScrollArea className="flex-1">
+              <div className="p-4 space-y-2">
+                {filteredLessons.map((l, idx) => {
                   const completed = enrollment?.completed_lessons?.includes(l.id);
                   const isCurrent = l.id === lessonId;
 
@@ -453,28 +490,38 @@ export default function LessonPlayerClassic() {
                     <button
                       key={l.id}
                       onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
-                      className={`w-full text-left p-3 rounded-xl transition-all ${
+                      className={`w-full text-left p-3 rounded-lg transition-all ${
                         isCurrent
-                          ? 'bg-gradient-to-r from-indigo-50 to-purple-50 border-2 border-indigo-600 shadow-lg'
-                          : 'bg-gray-50 hover:bg-gradient-to-r hover:from-purple-50 hover:to-pink-50 hover:shadow-md'
+                          ? 'bg-white/20 border-2 border-white shadow-lg'
+                          : 'hover:bg-white/10'
                       }`}
                     >
                       <div className="flex items-center gap-3">
                         {completed ? (
-                          <CheckCircle className="w-5 h-5 text-green-500" />
+                          <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0">
+                            <CheckCircle className="w-4 h-4 text-[#1e3a8a]" />
+                          </div>
                         ) : (
-                          <div className="w-5 h-5 rounded-full border-2 border-gray-300" />
+                          <div className="w-6 h-6 rounded-full border-2 border-white/40 shrink-0" />
                         )}
-                        <div className="flex-1">
-                          <div className="text-xs text-gray-500">Lesson {idx + 1}</div>
-                          <div className="font-medium text-gray-900 text-sm">{l.title}</div>
+                        <div className="flex-1 min-w-0">
+                          <div className="text-xs text-white/70 mb-1">Lesson {sortedLessons.findIndex(sl => sl.id === l.id) + 1}</div>
+                          <div className="font-medium text-sm leading-relaxed">{l.title}</div>
                         </div>
                       </div>
                     </button>
                   );
                 })}
               </div>
-            </div>
+            </ScrollArea>
+
+            {/* Close button for mobile */}
+            <button 
+              onClick={() => setShowSidebar(false)} 
+              className="lg:hidden p-4 border-t border-white/20 text-center text-sm font-medium hover:bg-white/10"
+            >
+              Close Sidebar
+            </button>
           </aside>
         )}
 
@@ -552,19 +599,14 @@ export default function LessonPlayerClassic() {
               </div>
             )}
 
-            {/* Main Lesson Video */}
+            {/* Main Lesson Video with Enhanced Player */}
             {lesson.video_url && (
               <div className="max-w-5xl mx-auto mb-6">
-                <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-indigo-200/50 overflow-hidden border-2 border-indigo-100 ring-2 sm:ring-4 ring-indigo-50">
-                  <div className="aspect-video bg-black">
-                    <video 
-                      src={lesson.video_url} 
-                      controls 
-                      className="w-full h-full"
-                      controlsList="nodownload"
-                    />
-                  </div>
-                </div>
+                <EnhancedMediaPlayer 
+                  type="video" 
+                  src={lesson.video_url}
+                  className="shadow-2xl"
+                />
               </div>
             )}
 
@@ -675,17 +717,11 @@ export default function LessonPlayerClassic() {
                   )}
                 </TransformWrapper>
               ) : slideUrl ? (
-                <div className="relative w-full overflow-hidden rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-200/50 border-2 border-purple-100 ring-2 sm:ring-4 ring-purple-50 bg-black" style={{ paddingTop: '56.25%' }}>
-                  <iframe 
-                    src={slideUrl} 
-                    className="absolute top-0 left-0 w-full h-full"
-                    allowFullScreen={true}
-                    allow="fullscreen"
-                    mozallowfullscreen="true"
-                    webkitallowfullscreen="true"
-                    title="Lesson Content"
-                  />
-                </div>
+                <EnhancedMediaPlayer 
+                  type={lesson.google_slides_url ? 'google-slides' : 'iframe'}
+                  src={slideUrl}
+                  className="shadow-2xl"
+                />
               ) : (
                 <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
                   <div className="text-center">
@@ -700,31 +736,31 @@ export default function LessonPlayerClassic() {
           </div>
 
           {/* Navigation Footer */}
-          <footer className="flex-none bg-white/80 backdrop-blur-xl border-t border-purple-100 px-3 sm:px-6 py-2.5 sm:py-4 shadow-lg shadow-purple-100/50 z-30">
+          <footer className="flex-none bg-white border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4 shadow-sm z-30">
             <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 relative">
               <Button
                 variant="outline"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                size="sm"
-                className="border-2 border-purple-200 hover:bg-purple-50 hover:border-purple-300 font-semibold text-purple-700 h-9 px-3 sm:px-4"
+                size="lg"
+                className="h-12 px-6 font-semibold"
               >
-                <ChevronLeft className="w-4 h-4 sm:mr-2" />
-                <span className="hidden sm:inline">Previous</span>
+                <ChevronLeft className="w-5 h-5 mr-2" />
+                Previous
               </Button>
 
-              <span className="text-xs sm:text-sm font-semibold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent text-center absolute left-1/2 -translate-x-1/2 hidden sm:block">
+              <span className="text-sm font-medium text-gray-600 text-center absolute left-1/2 -translate-x-1/2 hidden sm:block">
                 {enrollment?.completed_lessons?.length || 0} of {sortedLessons.length} completed
               </span>
 
               <Button
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
-                size="sm"
-                className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 active:scale-95 sm:hover:scale-105 font-bold h-9 px-3 sm:px-4"
+                size="lg"
+                className="h-12 px-6 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 font-semibold"
               >
-                <span className="hidden sm:inline">Next</span>
-                <ChevronRight className="w-4 h-4 sm:ml-2" />
+                Next
+                <ChevronRight className="w-5 h-5 ml-2" />
               </Button>
             </div>
           </footer>
