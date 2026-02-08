@@ -16,9 +16,9 @@ export default function InstructorShowcase() {
     queryFn: () => base44.entities.Review.list(),
   });
 
-  // Get unique instructors with their stats
+  // Get unique instructors with their stats (filter out generic/empty names)
   const instructorStats = courses
-    .filter(c => c.instructor)
+    .filter(c => c.instructor && c.instructor.trim() && c.instructor.toLowerCase() !== 'instructor' && c.instructor.toLowerCase() !== 'unknown')
     .reduce((acc, course) => {
       const existing = acc.find(i => i.name === course.instructor);
       const instructorReviews = reviews.filter(r => 
