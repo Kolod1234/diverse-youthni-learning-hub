@@ -24,25 +24,45 @@ export default function StyledIcon({
   className = ''
 }) {
   const sizeMap = {
-    sm: { container: 'w-10 h-10', icon: 'w-5 h-5' },
-    md: { container: 'w-14 h-14', icon: 'w-7 h-7' },
-    lg: { container: 'w-16 h-16', icon: 'w-8 h-8' },
-    xl: { container: 'w-20 h-20', icon: 'w-10 h-10' }
+    sm: { container: 'w-10 h-10', icon: 'w-5 h-5', badge: 'w-5 h-5 text-xs' },
+    md: { container: 'w-14 h-14', icon: 'w-7 h-7', badge: 'w-6 h-6 text-sm' },
+    lg: { container: 'w-16 h-16', icon: 'w-8 h-8', badge: 'w-7 h-7 text-sm' },
+    xl: { container: 'w-20 h-20', icon: 'w-10 h-10', badge: 'w-8 h-8 text-base' }
   };
 
   const sizes = sizeMap[size] || sizeMap.md;
 
+  const badgePositionMap = {
+    'top-right': 'top-0 right-0 translate-x-1 -translate-y-1',
+    'top-left': 'top-0 left-0 -translate-x-1 -translate-y-1',
+    'bottom-right': 'bottom-0 right-0 translate-x-1 translate-y-1',
+    'bottom-left': 'bottom-0 left-0 -translate-x-1 translate-y-1'
+  };
+
   return (
     <div 
       className={cn(
-        'bg-gradient-to-br rounded-lg flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105',
+        'relative bg-gradient-to-br rounded-lg flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105',
         colorFrom,
         colorTo,
         sizes.container,
         className
       )}
     >
-      <Icon className={cn('text-white', sizes.icon)} />
+      <Icon className={cn('text-white', sizes.icon)} strokeWidth={2} />
+      
+      {badge && (
+        <div 
+          className={cn(
+            'absolute rounded-full flex items-center justify-center text-white font-bold shadow-md',
+            badgeColor,
+            sizes.badge,
+            badgePositionMap[badgePosition] || badgePositionMap['top-right']
+          )}
+        >
+          {badge}
+        </div>
+      )}
     </div>
   );
 }
