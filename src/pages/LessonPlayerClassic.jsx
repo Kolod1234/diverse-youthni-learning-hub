@@ -183,6 +183,12 @@ export default function LessonPlayerClassic() {
   // Progress auto-save hook (after enrollment is defined)
   const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId);
 
+  // Sort lessons once
+  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
+  const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
+  const nextLesson = sortedLessons[currentLessonIndex + 1];
+  const prevLesson = sortedLessons[currentLessonIndex - 1];
+
   // Check for resume prompt
   useEffect(() => {
     if (lessonId && enrollment) {
@@ -207,7 +213,7 @@ export default function LessonPlayerClassic() {
 
   // Calculate reading time
   const estimatedMinutes = lesson?.duration_minutes || Math.ceil((lesson?.slides?.length || 0) * 2);
-  const progressPercent = (sortedLessons.findIndex(l => l.id === lessonId) + 1) / sortedLessons.length * 100;
+  const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
 
   useEffect(() => {
     if (lessonId) {
@@ -360,11 +366,6 @@ export default function LessonPlayerClassic() {
       console.error(error);
     }
   });
-
-  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
-  const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
-  const nextLesson = sortedLessons[currentLessonIndex + 1];
-  const prevLesson = sortedLessons[currentLessonIndex - 1];
 
   // Swipe gesture handlers
   const handleTouchStart = (e) => {
