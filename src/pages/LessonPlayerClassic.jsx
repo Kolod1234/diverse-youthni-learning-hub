@@ -430,26 +430,26 @@ export default function LessonPlayerClassic() {
 
         {/* Main Content */}
         <main className="flex-1 overflow-y-auto bg-gray-100">
-          <div className="max-w-5xl mx-auto px-8 py-12">
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
             {/* Content Card */}
-            <div className="bg-white rounded-lg shadow-sm p-12">
+            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 lg:p-12">
               {/* Title */}
-              <div className="text-center mb-8">
-                <h1 className="text-4xl font-light leading-tight text-gray-800 mb-8">
+              <div className="text-center mb-6 sm:mb-8">
+                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light leading-tight text-gray-800 mb-4 sm:mb-8">
                   {lesson.title}
                 </h1>
               </div>
 
               {/* Description */}
               {lesson.description && (
-                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
                   {lesson.description}
                 </p>
               )}
 
               {/* Media Player */}
               {lesson.video_url && (
-                <div className="my-8">
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
                   <EnhancedMediaPlayer
                     type="video"
                     src={lesson.video_url}
@@ -458,7 +458,7 @@ export default function LessonPlayerClassic() {
               )}
 
               {lesson.google_slides_url && (
-                <div className="my-8">
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
                   <EnhancedMediaPlayer
                     type="google-slides"
                     src={lesson.google_slides_url.includes('/embed') 
@@ -469,7 +469,7 @@ export default function LessonPlayerClassic() {
               )}
 
               {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                <div className="my-8">
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
                   <EnhancedMediaPlayer
                     type="iframe"
                     src={lesson.file_url}
@@ -479,12 +479,12 @@ export default function LessonPlayerClassic() {
 
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-                <ul className="space-y-6 mt-8">
+                <ul className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
                   {lesson.learning_objectives.map((objective, idx) => (
-                    <li key={idx} className="flex gap-4">
-                      <span className="text-[#1e3a8a] text-2xl flex-shrink-0 mt-1">•</span>
+                    <li key={idx} className="flex gap-3 sm:gap-4">
+                      <span className="text-[#1e3a8a] text-xl sm:text-2xl flex-shrink-0 mt-0.5 sm:mt-1">•</span>
                       <div>
-                        <span className="text-lg text-gray-700">{objective}</span>
+                        <span className="text-base sm:text-lg text-gray-700">{objective}</span>
                       </div>
                     </li>
                   ))}
@@ -493,18 +493,19 @@ export default function LessonPlayerClassic() {
             </div>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-8">
+            <div className="flex justify-between items-center mt-6 sm:mt-8 gap-2 sm:gap-4">
               <Button 
                 variant="outline" 
                 size="lg"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
+                className="flex-1 sm:flex-none"
               >
                 ← Previous
               </Button>
               <Button 
                 size="lg" 
-                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90"
+                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 flex-1 sm:flex-none"
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
               >

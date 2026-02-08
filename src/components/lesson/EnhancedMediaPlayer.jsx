@@ -120,7 +120,7 @@ export default function EnhancedMediaPlayer({
 
   if (type === 'google-slides' || type === 'iframe') {
     return (
-      <div ref={containerRef} className={`relative bg-black rounded-2xl overflow-hidden ${className}`}>
+      <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden ${className}`}>
         <div className="relative w-full" style={{ paddingTop: '56.25%' }}>
           <iframe 
             src={src}
@@ -137,14 +137,14 @@ export default function EnhancedMediaPlayer({
           )}
         </div>
         
-        <div className="absolute bottom-4 right-4 z-10">
+        <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-10">
           <Button
             variant="secondary"
             size="sm"
             onClick={toggleFullscreen}
-            className="bg-white/90 hover:bg-white shadow-lg"
+            className="bg-white/90 hover:bg-white shadow-lg h-8 w-8 sm:h-9 sm:w-9 p-0"
           >
-            {isFullscreen ? <Minimize2 className="w-4 h-4" /> : <Maximize2 className="w-4 h-4" />}
+            {isFullscreen ? <Minimize2 className="w-3 h-3 sm:w-4 sm:h-4" /> : <Maximize2 className="w-3 h-3 sm:w-4 sm:h-4" />}
           </Button>
         </div>
       </div>
@@ -152,14 +152,16 @@ export default function EnhancedMediaPlayer({
   }
 
   return (
-    <div ref={containerRef} className={`relative bg-black rounded-2xl overflow-hidden group ${className}`}>
+    <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden group ${className}`}>
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-full"
+        className="w-full h-auto max-h-[60vh] sm:max-h-none"
         onClick={togglePlay}
         onLoadStart={() => setLoading(true)}
         onCanPlay={() => setLoading(false)}
+        playsInline
+        controls={false}
       />
 
       {loading && (
@@ -169,9 +171,9 @@ export default function EnhancedMediaPlayer({
       )}
 
       {/* Custom Controls */}
-      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4 opacity-0 group-hover:opacity-100 transition-opacity">
+      <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/90 to-transparent p-2 sm:p-4 opacity-100 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity">
         {/* Progress Bar */}
-        <div className="mb-3">
+        <div className="mb-2 sm:mb-3">
           <input
             type="range"
             min="0"
@@ -188,42 +190,42 @@ export default function EnhancedMediaPlayer({
 
         {/* Control Buttons */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-1 sm:gap-2">
             <Button
               variant="ghost"
               size="sm"
               onClick={togglePlay}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0"
             >
-              {isPlaying ? <Pause className="w-5 h-5" /> : <Play className="w-5 h-5" />}
+              {isPlaying ? <Pause className="w-4 h-4 sm:w-5 sm:h-5" /> : <Play className="w-4 h-4 sm:w-5 sm:h-5" />}
             </Button>
 
             <Button
               variant="ghost"
               size="sm"
               onClick={() => skip(-10)}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0 hidden xs:inline-flex"
             >
-              <SkipBack className="w-4 h-4" />
+              <SkipBack className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
 
             <Button
               variant="ghost"
               size="sm"
               onClick={() => skip(10)}
-              className="text-white hover:bg-white/20"
+              className="text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0 hidden xs:inline-flex"
             >
-              <SkipForward className="w-4 h-4" />
+              <SkipForward className="w-3 h-3 sm:w-4 sm:h-4" />
             </Button>
 
-            <div className="flex items-center gap-2 ml-2">
+            <div className="flex items-center gap-1 sm:gap-2 ml-1 sm:ml-2">
               <Button
                 variant="ghost"
                 size="sm"
                 onClick={toggleMute}
-                className="text-white hover:bg-white/20"
+                className="text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0"
               >
-                {isMuted ? <VolumeX className="w-4 h-4" /> : <Volume2 className="w-4 h-4" />}
+                {isMuted ? <VolumeX className="w-3 h-3 sm:w-4 sm:h-4" /> : <Volume2 className="w-3 h-3 sm:w-4 sm:h-4" />}
               </Button>
               <input
                 type="range"
@@ -232,7 +234,7 @@ export default function EnhancedMediaPlayer({
                 step="0.1"
                 value={volume}
                 onChange={handleVolumeChange}
-                className="w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white"
+                className="w-12 sm:w-20 h-1 bg-white/30 rounded-lg appearance-none cursor-pointer [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-2 [&::-webkit-slider-thumb]:h-2 [&::-webkit-slider-thumb]:rounded-full [&::-webkit-slider-thumb]:bg-white hidden sm:inline-block"
               />
             </div>
           </div>
@@ -241,9 +243,9 @@ export default function EnhancedMediaPlayer({
             variant="ghost"
             size="sm"
             onClick={toggleFullscreen}
-            className="text-white hover:bg-white/20"
+            className="text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0"
           >
-            {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+            {isFullscreen ? <Minimize2 className="w-4 h-4 sm:w-5 sm:h-5" /> : <Maximize2 className="w-4 h-4 sm:w-5 sm:h-5" />}
           </Button>
         </div>
       </div>
