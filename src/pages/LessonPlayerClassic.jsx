@@ -9,6 +9,9 @@ import {
 } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
+import MatchingGame from '@/components/lesson/MatchingGame';
+import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
+import FlashCards from '@/components/lesson/FlashCards';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
@@ -529,6 +532,56 @@ export default function LessonPlayerClassic() {
                   ))}
                 </ul>
               )}
+
+              {/* Interactive Elements - Demo Examples */}
+              <div className="space-y-6 mt-8 sm:mt-12">
+                {/* Matching Game Example */}
+                <MatchingGame
+                  pairs={[
+                    { left: 'Photosynthesis', right: 'Process plants use to make food' },
+                    { left: 'Mitosis', right: 'Cell division process' },
+                    { left: 'DNA', right: 'Genetic material in cells' },
+                    { left: 'Respiration', right: 'Process of releasing energy from glucose' }
+                  ]}
+                  onComplete={(score) => toast.success(`Great job! You scored ${score} points!`)}
+                />
+
+                {/* Interactive Quiz Example */}
+                <InteractiveQuiz
+                  questions={[
+                    {
+                      question: 'What is the powerhouse of the cell?',
+                      options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
+                      correctAnswer: 1,
+                      explanation: 'Mitochondria are known as the powerhouse of the cell because they produce ATP, the energy currency of cells.'
+                    },
+                    {
+                      question: 'Which gas do plants absorb from the atmosphere?',
+                      options: ['Oxygen', 'Nitrogen', 'Carbon Dioxide', 'Hydrogen'],
+                      correctAnswer: 2,
+                      explanation: 'Plants absorb carbon dioxide (CO₂) from the atmosphere during photosynthesis to produce glucose and oxygen.'
+                    },
+                    {
+                      question: 'What is the largest organ in the human body?',
+                      options: ['Heart', 'Liver', 'Brain', 'Skin'],
+                      correctAnswer: 3,
+                      explanation: 'The skin is the largest organ, covering the entire body and protecting internal organs.'
+                    }
+                  ]}
+                  onComplete={(score) => toast.success(`Quiz complete! You got ${score} correct!`)}
+                />
+
+                {/* Flash Cards Example */}
+                <FlashCards
+                  cards={[
+                    { front: 'What is H₂O?', back: 'Water' },
+                    { front: 'What is CO₂?', back: 'Carbon Dioxide' },
+                    { front: 'What is O₂?', back: 'Oxygen' },
+                    { front: 'What is NaCl?', back: 'Sodium Chloride (Salt)' },
+                    { front: 'What is ATP?', back: 'Adenosine Triphosphate (Energy)' }
+                  ]}
+                />
+              </div>
             </div>
 
             {/* Navigation Buttons */}
