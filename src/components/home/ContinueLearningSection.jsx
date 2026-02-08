@@ -61,13 +61,11 @@ export default function ContinueLearningSection({ user }) {
           >
             {/* Course Thumbnail */}
             <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-indigo-400 to-purple-500">
-              {enrollment.course?.thumbnail && (
-                <img
-                  src={enrollment.course.thumbnail}
-                  alt={enrollment.course.title}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
-                />
-              )}
+              <img
+                src={enrollment.course?.thumbnail || 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&h=450&fit=crop'}
+                alt={enrollment.course?.title}
+                className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+              />
               <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent" />
               
               {/* Progress badge */}
