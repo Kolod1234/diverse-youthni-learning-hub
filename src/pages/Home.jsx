@@ -196,17 +196,18 @@ export default function Home() {
   const featuredCourses = coursesWithActualData.filter(c => c.is_featured).slice(0, 3);
   
   // Get real user reviews with detailed comments
-  // Get real user reviews only
+  // Get real user reviews only from displayed courses
+  const displayedCourseIds = sortedCourses.slice(0, 6).map(c => c.id);
   const realReviews = allReviews
     .filter(r => 
+      displayedCourseIds.includes(r.course_id) &&
       r.comment && 
       r.comment.trim().length >= 20 && 
       r.rating >= 4 &&
-      r.user_name &&
       (r.rating_type === 'lesson' || r.rating_type === 'course' || !r.rating_type)
     )
     .sort((a, b) => new Date(b.created_date) - new Date(a.created_date))
-    .slice(0, 6);
+    .slice(0, 3);
 
   const filteredCourses = coursesWithActualData.filter(course => {
     const matchesCategory = category === 'all' || course.category === category;
