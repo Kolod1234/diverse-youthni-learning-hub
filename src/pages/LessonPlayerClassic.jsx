@@ -675,6 +675,17 @@ export default function LessonPlayerClassic() {
           setIsLessonLocked(false);
         }}
       />
+
+      <PointsAnimation 
+        show={showPointsAnimation}
+        points={earnedPoints}
+        onComplete={() => setShowPointsAnimation(false)}
+      />
+
+      <BadgeUnlock 
+        badges={newBadges}
+        onClose={() => setShowBadges(false)}
+      />
     </div>
   );
 }
