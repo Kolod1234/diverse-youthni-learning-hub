@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { 
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
-  Lock, Key, BookOpen, CheckCircle
+  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare
 } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
@@ -14,8 +14,17 @@ import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
+import LessonBookmarks from '@/components/lesson/LessonBookmarks';
+import LessonNotes from '@/components/lesson/LessonNotes';
+import ResumePrompt from '@/components/lesson/ResumePrompt';
+import CertificateGenerator from '@/components/lesson/CertificateGenerator';
+import AccessibilityControls from '@/components/lesson/AccessibilityControls';
+import QuickActions from '@/components/lesson/QuickActions';
+import useKeyboardShortcuts from '@/components/lesson/useKeyboardShortcuts';
+import useProgressAutoSave from '@/components/lesson/useProgressAutoSave';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
@@ -42,6 +51,13 @@ export default function LessonPlayerClassic() {
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
+  const [showResumePrompt, setShowResumePrompt] = useState(false);
+  const [showCertificate, setShowCertificate] = useState(false);
+  const [showNotesSheet, setShowNotesSheet] = useState(false);
+  const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const searchInputRef = useRef(null);
+  const mainContentRef = useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -50,6 +66,65 @@ export default function LessonPlayerClassic() {
     };
     loadUser();
   }, []);
+
+  // Progress auto-save hook
+  const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId, async (progressData) => {
+    if (enrollment) {
+      // Optionally sync to backend
+      console.log('Auto-saved progress:', progressData);
+    }
+  });
+
+  // Check for resume prompt
+  useEffect(() => {
+    if (lessonId && enrollment) {
+      const lastProgress = getLastProgress();
+      if (lastProgress && lastProgress.progress > 10 && lastProgress.progress < 90) {
+        setShowResumePrompt(true);
+      }
+    }
+  }, [lessonId, enrollment]);
+
+  // Keyboard shortcuts
+  useKeyboardShortcuts({
+    onNext: handleNextLesson,
+    onPrev: handlePrevLesson,
+    onToggleFullscreen: () => {
+      if (!document.fullscreenElement) {
+        mainContentRef.current?.requestFullscreen();
+        setIsFullscreen(true);
+      } else {
+        document.exitFullscreen();
+        setIsFullscreen(false);
+      }
+    },
+    onBookmark: () => setShowBookmarksSheet(true),
+    onSearch: () => searchInputRef.current?.focus()
+  });
+
+  // Track engagement metrics
+  const trackEngagement = (eventType, data = {}) => {
+    base44.analytics.track({
+      eventName: `lesson_${eventType}`,
+      properties: {
+        lessonId,
+        courseId,
+        ...data
+      }
+    });
+  };
+
+  useEffect(() => {
+    if (lessonId) {
+      trackEngagement('started');
+      const startTime = Date.now();
+      
+      return () => {
+        const timeSpent = Math.round((Date.now() - startTime) / 1000);
+        trackEngagement('time_spent', { seconds: timeSpent });
+      };
+    }
+  }, [lessonId]);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
@@ -201,6 +276,9 @@ export default function LessonPlayerClassic() {
           progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
         });
         
+        // Clear progress tracking
+        clearProgress();
+        
         // Award points for completing lesson
         const response = await base44.functions.invoke('awardPoints', {
           action: 'complete_lesson'
@@ -214,6 +292,15 @@ export default function LessonPlayerClassic() {
             setNewBadges(response.data.newBadges);
             setShowBadges(true);
           }
+        }
+
+        // Track completion
+        trackEngagement('completed');
+
+        // Check if course is complete
+        const newCompletedCount = completedLessons.length + 1;
+        if (newCompletedCount === courseLessons.length) {
+          setTimeout(() => setShowCertificate(true), 2000);
         }
       }
     },
@@ -395,6 +482,36 @@ export default function LessonPlayerClassic() {
         </div>
         
         <div className="flex items-center gap-4">
+          <AccessibilityControls />
+          
+          <Sheet>
+            <SheetTrigger asChild>
+              <Button variant="ghost" size="icon">
+                <Settings className="w-5 h-5" />
+              </Button>
+            </SheetTrigger>
+            <SheetContent>
+              <SheetHeader>
+                <SheetTitle>Lesson Tools</SheetTitle>
+              </SheetHeader>
+              <div className="space-y-6 mt-6">
+                <div>
+                  <h4 className="font-medium mb-3">Bookmarks</h4>
+                  <LessonBookmarks lessonId={lessonId} />
+                </div>
+                <div>
+                  <h4 className="font-medium mb-3">Keyboard Shortcuts</h4>
+                  <div className="text-sm space-y-1 text-gray-600">
+                    <p>← → : Navigate lessons</p>
+                    <p>F : Fullscreen</p>
+                    <p>Ctrl+B : Bookmark</p>
+                    <p>/ : Search</p>
+                  </div>
+                </div>
+              </div>
+            </SheetContent>
+          </Sheet>
+
           <Button
             variant="outline"
             onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
@@ -419,11 +536,13 @@ export default function LessonPlayerClassic() {
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
               <input
+                ref={searchInputRef}
                 type="text"
-                placeholder="Search..."
+                placeholder="Search... (Press /)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                aria-label="Search lessons"
               />
             </div>
           </div>
@@ -527,10 +646,13 @@ export default function LessonPlayerClassic() {
 
         {/* Main Content */}
         <main 
+          ref={mainContentRef}
           className="flex-1 overflow-y-auto bg-gray-100"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
+          role="main"
+          aria-label="Lesson content"
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
             {/* Content Card */}
@@ -681,9 +803,72 @@ export default function LessonPlayerClassic() {
                 Next →
               </Button>
             </div>
+
+            {/* Mark Complete Button */}
+            {!isCompleted && (
+              <div className="mt-6 text-center">
+                <Button
+                  size="lg"
+                  onClick={() => markCompleteMutation.mutate()}
+                  disabled={markCompleteMutation.isPending}
+                  className="bg-green-600 hover:bg-green-700 gap-2"
+                >
+                  <CheckCircle className="w-5 h-5" />
+                  {markCompleteMutation.isPending ? 'Saving...' : 'Mark as Complete'}
+                </Button>
+              </div>
+            )}
           </div>
         </main>
       </div>
+
+      {/* Quick Actions FAB */}
+      <QuickActions
+        lesson={lesson}
+        onOpenNotes={() => setShowNotesSheet(true)}
+        onAddBookmark={() => setShowBookmarksSheet(true)}
+        onOpenDiscussion={() => navigate(`/CourseDiscussion?id=${courseId}`)}
+      />
+
+      {/* Notes Sheet */}
+      <Sheet open={showNotesSheet} onOpenChange={setShowNotesSheet}>
+        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
+          <SheetHeader>
+            <SheetTitle>My Notes</SheetTitle>
+          </SheetHeader>
+          <div className="mt-6">
+            <LessonNotes lessonId={lessonId} />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {/* Resume Prompt */}
+      <ResumePrompt
+        open={showResumePrompt}
+        onOpenChange={setShowResumePrompt}
+        lastPosition={getLastProgress()}
+        onResume={() => {
+          const progress = getLastProgress();
+          if (progress) {
+            window.scrollTo({ top: progress.scrollPosition, behavior: 'smooth' });
+          }
+          setShowResumePrompt(false);
+        }}
+        onStartOver={() => {
+          clearProgress();
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          setShowResumePrompt(false);
+        }}
+      />
+
+      {/* Certificate */}
+      <CertificateGenerator
+        open={showCertificate}
+        onOpenChange={setShowCertificate}
+        courseTitle={course?.title || 'Course'}
+        userName={user?.full_name || 'Student'}
+        completionDate={new Date().toISOString()}
+      />
 
       <LessonUnlockDialog
         open={showUnlockDialog}

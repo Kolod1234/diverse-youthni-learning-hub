@@ -101,6 +101,7 @@ import SCORMAuthor from './pages/SCORMAuthor';
 import ScheduleSession from './pages/ScheduleSession';
 import Sessions from './pages/Sessions';
 import Settings from './pages/Settings';
+import SocialHub from './pages/SocialHub';
 import StudentAnalytics from './pages/StudentAnalytics';
 import StudentPathways from './pages/StudentPathways';
 import Templates from './pages/Templates';
@@ -114,7 +115,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import SocialHub from './pages/SocialHub';
 import __Layout from './Layout.jsx';
 
 
@@ -173,6 +173,7 @@ export const PAGES = {
     "ScheduleSession": ScheduleSession,
     "Sessions": Sessions,
     "Settings": Settings,
+    "SocialHub": SocialHub,
     "StudentAnalytics": StudentAnalytics,
     "StudentPathways": StudentPathways,
     "Templates": Templates,
@@ -186,7 +187,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "SocialHub": SocialHub,
 }
 
 export const pagesConfig = {
