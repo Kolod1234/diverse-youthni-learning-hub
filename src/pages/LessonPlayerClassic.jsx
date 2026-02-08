@@ -32,7 +32,6 @@ import NetworkStatusIndicator from '@/components/lesson/NetworkStatusIndicator';
 import RelatedLessons from '@/components/lesson/RelatedLessons';
 import ScrollPositionIndicator from '@/components/lesson/ScrollPositionIndicator';
 import SplitViewLayout from '@/components/lesson/SplitViewLayout';
-import PrintMode from '@/components/lesson/PrintMode';
 import ErrorBoundary from '@/components/lesson/ErrorBoundary';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
@@ -547,7 +546,6 @@ export default function LessonPlayerClassic() {
             </div>
           )}
           
-          <PrintMode lesson={lesson} course={course} />
           <AccessibilityControls />
           
           <Sheet>
