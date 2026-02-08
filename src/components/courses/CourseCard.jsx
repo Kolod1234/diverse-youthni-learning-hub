@@ -63,7 +63,7 @@ export default function CourseCard({ course, index = 0 }) {
           {/* Image Section */}
           <div className="relative overflow-hidden aspect-video bg-gradient-to-br from-gray-200 to-gray-300">
             <img
-              src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'}
+              src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80')}
               alt={course.title}
               className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
             />
