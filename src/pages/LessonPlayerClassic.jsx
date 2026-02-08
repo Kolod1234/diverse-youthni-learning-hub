@@ -12,6 +12,8 @@ import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
+import PointsAnimation from '@/components/gamification/PointsAnimation';
+import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
@@ -36,6 +38,10 @@ export default function LessonPlayerClassic() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [interactiveContent, setInteractiveContent] = useState(null);
   const [loadingInteractives, setLoadingInteractives] = useState(false);
+  const [showPointsAnimation, setShowPointsAnimation] = useState(false);
+  const [earnedPoints, setEarnedPoints] = useState(0);
+  const [showBadges, setShowBadges] = useState(false);
+  const [newBadges, setNewBadges] = useState([]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -178,6 +184,21 @@ export default function LessonPlayerClassic() {
           completed_lessons: [...completedLessons, lessonId],
           progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
         });
+        
+        // Award points for completing lesson
+        const response = await base44.functions.invoke('awardPoints', {
+          action: 'complete_lesson'
+        });
+        
+        if (response.data.success) {
+          setEarnedPoints(response.data.pointsEarned);
+          setShowPointsAnimation(true);
+          
+          if (response.data.newBadges?.length > 0) {
+            setNewBadges(response.data.newBadges);
+            setShowBadges(true);
+          }
+        }
       }
     },
     onSuccess: () => {
@@ -569,14 +590,46 @@ export default function LessonPlayerClassic() {
                   {interactiveContent.matchingPairs?.length > 0 && (
                     <MatchingGame
                       pairs={interactiveContent.matchingPairs}
-                      onComplete={(score) => toast.success(`Great job! You scored ${score} points!`)}
+                      onComplete={async (score) => {
+                        toast.success(`Great job! You scored ${score} points!`);
+                        
+                        // Award points for completing interactive
+                        const response = await base44.functions.invoke('awardPoints', {
+                          action: 'interactive_complete',
+                          value: score
+                        });
+                        
+                        if (response.data.success) {
+                          setEarnedPoints(response.data.pointsEarned);
+                          setShowPointsAnimation(true);
+                        }
+                      }}
                     />
                   )}
 
                   {interactiveContent.quizQuestions?.length > 0 && (
                     <InteractiveQuiz
                       questions={interactiveContent.quizQuestions}
-                      onComplete={(score) => toast.success(`Quiz complete! You got ${score} correct!`)}
+                      onComplete={async (score) => {
+                        const percentage = Math.round((score / interactiveContent.quizQuestions.length) * 100);
+                        toast.success(`Quiz complete! You scored ${percentage}%`);
+                        
+                        // Award points based on quiz score
+                        const response = await base44.functions.invoke('awardPoints', {
+                          action: 'complete_quiz',
+                          value: percentage
+                        });
+                        
+                        if (response.data.success) {
+                          setEarnedPoints(response.data.pointsEarned);
+                          setShowPointsAnimation(true);
+                          
+                          if (response.data.newBadges?.length > 0) {
+                            setNewBadges(response.data.newBadges);
+                            setShowBadges(true);
+                          }
+                        }
+                      }}
                     />
                   )}
 
