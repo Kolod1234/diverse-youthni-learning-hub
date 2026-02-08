@@ -2,11 +2,15 @@ import React from 'react';
 import { cn } from '@/lib/utils';
 
 /**
- * StyledIcon - Wraps lucide icons with professional gradient background, shadow, and rounded corners
- * @param {React.Component} icon - Lucide icon component to render
+ * StyledIcon - Line Art Icon with optional Badge Overlay
+ * Outline/linear style with gradient background, shadow, and accent badges
+ * @param {React.Component} Icon - Lucide icon component to render
  * @param {string} colorFrom - Gradient start color (e.g., 'from-blue-500')
  * @param {string} colorTo - Gradient end color (e.g., 'to-blue-600')
  * @param {string} size - Icon size preset: 'sm' | 'md' | 'lg' | 'xl' (default: 'md')
+ * @param {string} badge - Badge content (e.g., 'NEW', '5', numeric count)
+ * @param {string} badgeColor - Badge background color (default: 'bg-red-500')
+ * @param {string} badgePosition - Badge position: 'top-right' | 'top-left' | 'bottom-right' | 'bottom-left' (default: 'top-right')
  * @param {string} className - Additional CSS classes
  */
 export default function StyledIcon({ 
@@ -14,6 +18,9 @@ export default function StyledIcon({
   colorFrom = 'from-blue-500', 
   colorTo = 'to-blue-600',
   size = 'md',
+  badge = null,
+  badgeColor = 'bg-red-500',
+  badgePosition = 'top-right',
   className = ''
 }) {
   const sizeMap = {
