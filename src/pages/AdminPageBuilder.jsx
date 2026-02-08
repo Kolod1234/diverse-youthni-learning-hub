@@ -1,13 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Info, Mail, FileText, Star, Video } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Copy, Save, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
+import LivePreview from '@/components/pagebuilder/LivePreview';
+import SectionPreview from '@/components/pagebuilder/SectionPreview';
+import UnsavedChangesModal from '@/components/pagebuilder/UnsavedChangesModal';
+import PageSettings from '@/components/pagebuilder/PageSettings';
 
 const SECTION_TEMPLATES = [
   {
@@ -124,7 +128,27 @@ export default function AdminPageBuilder() {
   const [selectedPage, setSelectedPage] = useState('Home');
   const [editingSection, setEditingSection] = useState(null);
   const [showTemplates, setShowTemplates] = useState(false);
+  const [deviceMode, setDeviceMode] = useState('desktop');
+  const [hasUnsavedChanges, setHasUnsavedChanges] = useState(false);
+  const [showUnsavedModal, setShowUnsavedModal] = useState(false);
+  const [isDraft, setIsDraft] = useState(true);
+  const [pendingPageChange, setPendingPageChange] = useState(null);
   const queryClient = useQueryClient();
+
+  // Keyboard shortcuts
+  useEffect(() => {
+    const handleKeyPress = (e) => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+        e.preventDefault();
+        toast.info('Auto-saved');
+      }
+      if (e.key === 'Delete' && editingSection) {
+        e.preventDefault();
+      }
+    };
+    window.addEventListener('keydown', handleKeyPress);
+    return () => window.removeEventListener('keydown', handleKeyPress);
+  }, [editingSection]);
 
   const { data: rawSections = [], isLoading } = useQuery({
     queryKey: ['page-sections', selectedPage],
@@ -181,7 +205,37 @@ export default function AdminPageBuilder() {
     mutationFn: (id) => base44.entities.PageSection.delete(id),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['page-sections'] });
+      setHasUnsavedChanges(true);
       toast.success('Section deleted');
+    }
+  });
+
+  const duplicateMutation = useMutation({
+    mutationFn: async (sectionToDuplicate) => {
+      const { id, created_date, updated_date, created_by, ...sectionData } = sectionToDuplicate;
+      return base44.entities.PageSection.create({
+        ...sectionData,
+        title: `${sectionData.title} (Copy)`
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['page-sections'] });
+      setHasUnsavedChanges(true);
+      toast.success('Section duplicated');
+    }
+  });
+
+  const reorderMutation = useMutation({
+    mutationFn: async (reorderedSections) => {
+      return Promise.all(
+        reorderedSections.map((section, index) =>
+          base44.entities.PageSection.update(section.id, { order: index })
+        )
+      );
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ['page-sections'] });
+      setHasUnsavedChanges(true);
     }
   });
 
@@ -201,113 +255,148 @@ export default function AdminPageBuilder() {
     setShowTemplates(false);
   };
 
+  const handlePageChange = (newPage) => {
+    if (hasUnsavedChanges) {
+      setPendingPageChange(newPage);
+      setShowUnsavedModal(true);
+    } else {
+      setSelectedPage(newPage);
+    }
+  };
+
+  const handleDragEnd = (result) => {
+    const { source, destination } = result;
+    if (!destination) return;
+    if (source.index === destination.index) return;
+
+    const reorderedSections = Array.from(sections);
+    const [movedSection] = reorderedSections.splice(source.index, 1);
+    reorderedSections.splice(destination.index, 0, movedSection);
+
+    reorderMutation.mutate(reorderedSections);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold">Page Builder</h1>
-              <p className="text-gray-500">Build and customize your pages</p>
-            </div>
-            <div className="flex gap-2">
-              <Button onClick={() => setShowTemplates(true)} variant="outline">
-                <LayoutGrid className="w-4 h-4 mr-2" />
-                Templates
-              </Button>
-              <Button onClick={() => setEditingSection({ page_name: selectedPage })}>
-                <Plus className="w-4 h-4 mr-2" />
-                Custom Section
-              </Button>
-            </div>
-          </div>
-
-          <div className="flex gap-2 mb-6">
-            {['Home', 'About', 'Contact'].map(page => (
-              <Button
-                key={page}
-                variant={selectedPage === page ? 'default' : 'outline'}
-                onClick={() => setSelectedPage(page)}
-                size="sm"
-              >
-                {page}
-              </Button>
-            ))}
-          </div>
-
-          {isLoading ? (
-            <div className="text-center py-12">
-              <div className="animate-spin w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto"></div>
-            </div>
-          ) : sections.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed">
-              <p className="text-gray-500 mb-4">No sections yet</p>
-              <Button onClick={() => setEditingSection({ page_name: selectedPage })}>
-                <Plus className="w-4 h-4 mr-2" />
-                Add First Section
-              </Button>
-            </div>
-          ) : (
-            <div className="space-y-3">
-              {sections.map((section) => (
-                <div
-                  key={section.id}
-                  className={`bg-white border rounded-lg p-4 ${!section.is_active ? 'opacity-50 bg-gray-50' : ''}`}
+      <div className="max-w-full flex h-screen">
+        {/* Left Panel - Editor */}
+        <div className="flex-1 flex flex-col overflow-hidden">
+          {/* Header */}
+          <div className="bg-white border-b p-4 shadow-sm">
+            <div className="flex items-center justify-between mb-4">
+              <div>
+                <h1 className="text-2xl font-bold flex items-center gap-2">
+                  Page Builder
+                  {hasUnsavedChanges && (
+                    <motion.span
+                      initial={{ scale: 0 }}
+                      animate={{ scale: 1 }}
+                      className="w-2 h-2 bg-orange-500 rounded-full"
+                      title="Unsaved changes"
+                    />
+                  )}
+                </h1>
+                <p className="text-gray-500 text-sm">Edit and manage page sections</p>
+              </div>
+              <div className="flex gap-2">
+                <PageSettings page={selectedPage} isDraft={isDraft} onUpdate={() => {}} />
+                <Button
+                  onClick={() => setShowTemplates(true)}
+                  variant="outline"
+                  size="sm"
                 >
-                  <div className="flex items-center gap-4">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
-                        <span className="text-xs font-medium px-2 py-1 bg-indigo-100 text-indigo-700 rounded">
-                          {section.section_type}
-                        </span>
-                        {section.is_active ? (
-                          <span className="text-xs font-medium px-2 py-1 bg-green-100 text-green-700 rounded">
-                            ✓ Active
-                          </span>
-                        ) : (
-                          <span className="text-xs font-medium px-2 py-1 bg-red-100 text-red-700 rounded">
-                            ✗ Inactive
-                          </span>
-                        )}
-                      </div>
-                      <h3 className="font-semibold">{section.title || 'Untitled Section'}</h3>
-                      <p className="text-sm text-gray-500">{section.description?.substring(0, 80)}</p>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          const newActiveState = !section.is_active;
-                          console.log('Toggling section', section.id, 'to', newActiveState);
-                          toggleActiveMutation.mutate({ id: section.id, is_active: newActiveState });
-                        }}
-                      >
-                        {section.is_active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => {
-                          console.log('Editing section:', section);
-                          setEditingSection(section);
-                        }}
-                      >
-                        <Edit className="w-4 h-4" />
-                      </Button>
-                      <Button
-                        variant="ghost"
-                        size="sm"
-                        onClick={() => deleteMutation.mutate(section.id)}
-                      >
-                        <Trash2 className="w-4 h-4 text-red-500" />
-                      </Button>
-                    </div>
-                  </div>
-                </div>
+                  <Sparkles className="w-4 h-4 mr-2" />
+                  Templates
+                </Button>
+                <Button
+                  onClick={() => setEditingSection({ page_name: selectedPage })}
+                  size="sm"
+                >
+                  <Plus className="w-4 h-4 mr-2" />
+                  Add Section
+                </Button>
+              </div>
+            </div>
+
+            {/* Page Tabs */}
+            <div className="flex gap-2 border-t pt-4">
+              {['Home', 'About', 'Contact'].map(page => (
+                <Button
+                  key={page}
+                  variant={selectedPage === page ? 'default' : 'outline'}
+                  onClick={() => handlePageChange(page)}
+                  size="sm"
+                >
+                  {page}
+                </Button>
               ))}
             </div>
-          )}
+          </div>
+
+          {/* Sections Grid */}
+          <div className="flex-1 overflow-y-auto p-6">
+            {isLoading ? (
+              <div className="text-center py-12">
+                <div className="animate-spin w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto"></div>
+              </div>
+            ) : sections.length === 0 ? (
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="text-center py-12 bg-gradient-to-br from-blue-50 to-purple-50 rounded-lg border-2 border-dashed border-gray-300"
+              >
+                <AlertCircle className="w-12 h-12 text-gray-400 mx-auto mb-3" />
+                <p className="text-gray-600 font-medium mb-4">No sections yet</p>
+                <Button onClick={() => setEditingSection({ page_name: selectedPage })}>
+                  <Plus className="w-4 h-4 mr-2" />
+                  Create First Section
+                </Button>
+              </motion.div>
+            ) : (
+              <DragDropContext onDragEnd={handleDragEnd}>
+                <Droppable droppableId="sections">
+                  {(provided, snapshot) => (
+                    <div
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                      className="grid grid-cols-2 lg:grid-cols-3 gap-4"
+                    >
+                      <AnimatePresence mode="popLayout">
+                        {sections.map((section, index) => (
+                          <Draggable key={section.id} draggableId={section.id} index={index}>
+                            {(provided, snapshot) => (
+                              <div
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                {...provided.dragHandleProps}
+                              >
+                                <SectionPreview
+                                  section={section}
+                                  isDragging={snapshot.isDragging}
+                                  onEdit={() => setEditingSection(section)}
+                                  onDuplicate={() => duplicateMutation.mutate(section)}
+                                  onDelete={() => deleteMutation.mutate(section.id)}
+                                  onToggleActive={(active) =>
+                                    toggleActiveMutation.mutate({ id: section.id, is_active: active })
+                                  }
+                                />
+                              </div>
+                            )}
+                          </Draggable>
+                        ))}
+                      </AnimatePresence>
+                      {provided.placeholder}
+                    </div>
+                  )}
+                </Droppable>
+              </DragDropContext>
+            )}
+          </div>
+        </div>
+
+        {/* Right Panel - Live Preview */}
+        <div className="hidden lg:flex w-[40%] bg-gray-900 overflow-hidden">
+          <LivePreview sections={sections} deviceMode={deviceMode} onDeviceModeChange={setDeviceMode} />
         </div>
       </div>
 
@@ -315,8 +404,8 @@ export default function AdminPageBuilder() {
         <PageSectionEditor
           section={editingSection}
           onSave={(data) => {
-            console.log('onSave called with:', data);
             saveMutation.mutate(data);
+            setHasUnsavedChanges(true);
           }}
           isSaving={saveMutation.isPending}
           onClose={() => setEditingSection(null)}
@@ -327,7 +416,6 @@ export default function AdminPageBuilder() {
         <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="text-2xl font-bold">Choose a Template</DialogTitle>
-            <p className="text-gray-500">Select a pre-built section to add to your page</p>
           </DialogHeader>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {SECTION_TEMPLATES.map((template, idx) => {
@@ -355,6 +443,28 @@ export default function AdminPageBuilder() {
           </div>
         </DialogContent>
       </Dialog>
+
+      <UnsavedChangesModal
+        open={showUnsavedModal}
+        onSave={() => {
+          setShowUnsavedModal(false);
+          setHasUnsavedChanges(false);
+          if (pendingPageChange) {
+            setSelectedPage(pendingPageChange);
+            setPendingPageChange(null);
+          }
+        }}
+        onDiscard={() => {
+          setShowUnsavedModal(false);
+          setHasUnsavedChanges(false);
+          if (pendingPageChange) {
+            setSelectedPage(pendingPageChange);
+            setPendingPageChange(null);
+          }
+        }}
+        onCancel={() => setShowUnsavedModal(false)}
+        isSaving={saveMutation.isPending}
+      />
     </div>
   );
 }
