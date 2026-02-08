@@ -48,7 +48,7 @@ export default function LessonPlayerClassic() {
   // Load interactive content based on lesson
   useEffect(() => {
     const loadInteractives = async () => {
-      if (!lessonId || !lesson) return;
+      if (!lessonId || lessonId === 'null' || lessonId === 'undefined' || !currentLessonArray.length) return;
       
       setLoadingInteractives(true);
       try {
@@ -64,7 +64,7 @@ export default function LessonPlayerClassic() {
     };
     
     loadInteractives();
-  }, [lessonId, lesson]);
+  }, [lessonId, currentLessonArray]);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
