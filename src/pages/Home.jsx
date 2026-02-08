@@ -750,16 +750,6 @@ export default function Home() {
                   )}
                 </div>
                 <div className="p-6 relative">
-                  <div className="flex items-center gap-2 mb-3">
-                    {course.instructor && (
-                      <div className="flex items-center gap-2 text-xs text-muted-foreground">
-                        <div className="w-6 h-6 rounded-full bg-gradient-to-br from-blue-500 to-purple-600 flex items-center justify-center text-white font-bold text-[10px]">
-                          {course.instructor.charAt(0)}
-                        </div>
-                        <span>{course.instructor}</span>
-                      </div>
-                    )}
-                  </div>
                   <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2 min-h-[3.5rem]">
                     {course.title}
                   </h3>
