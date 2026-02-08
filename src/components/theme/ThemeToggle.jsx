@@ -39,7 +39,6 @@ export default function ThemeToggle() {
     light: { icon: Sun, label: 'Light', color: 'text-yellow-600' },
     dark: { icon: Moon, label: 'Dark', color: 'text-slate-400' },
     system: { icon: Monitor, label: 'System', color: 'text-gray-600' },
-    'high-contrast-dark': { icon: Eye, label: 'High Contrast', color: 'text-blue-600' },
   };
 
   const currentConfig = themeConfig[theme] || themeConfig.system;
@@ -89,15 +88,6 @@ export default function ThemeToggle() {
         >
           <Moon className="w-4 h-4 mr-2" />
           Dark Mode
-        </DropdownMenuCheckboxItem>
-
-        <DropdownMenuCheckboxItem
-          checked={theme === 'high-contrast-dark'}
-          onCheckedChange={() => setTheme('high-contrast-dark')}
-          className="cursor-pointer"
-        >
-          <Eye className="w-4 h-4 mr-2" />
-          High Contrast Dark
         </DropdownMenuCheckboxItem>
 
         <DropdownMenuCheckboxItem
