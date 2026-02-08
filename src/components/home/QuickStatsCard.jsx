@@ -52,13 +52,13 @@ export default function QuickStatsCard({ user }) {
       {/* Current Streak */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-gradient-to-br from-red-50 to-orange-50 border-2 border-red-200 rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
-        <div className="flex justify-center mb-2">
-          <Flame className="w-6 h-6 text-red-600" />
+        <div className="flex justify-center mb-3">
+          <StyledIcon Icon={Flame} colorFrom="from-red-500" colorTo="to-orange-600" size="md" />
         </div>
-        <div className="text-2xl font-bold text-red-700">{streakDays}</div>
-        <div className="text-xs text-red-600 font-semibold">Day Streak 🔥</div>
+        <div className="text-2xl font-bold text-foreground">{streakDays}</div>
+        <div className="text-xs text-muted-foreground font-semibold">Day Streak 🔥</div>
       </motion.div>
 
       {/* Courses Completed */}
