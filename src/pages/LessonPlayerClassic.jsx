@@ -188,6 +188,16 @@ export default function LessonPlayerClassic() {
     }
   };
 
+  const getSlideEmbedUrl = () => {
+    if (lesson.google_slides_url) {
+      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
+      if (presentationId) {
+        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
+      }
+    }
+    return lesson.file_url || null;
+  };
+
   const toggleSection = (section) => {
     setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
   };
@@ -275,6 +285,7 @@ export default function LessonPlayerClassic() {
   }
 
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
+  const slideUrl = getSlideEmbedUrl();
   const slideUrl = getSlideEmbedUrl();
 
   return (
