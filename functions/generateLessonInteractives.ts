@@ -23,13 +23,18 @@ Deno.serve(async (req) => {
     const lessonTitle = lesson.title || '';
     const lessonDescription = lesson.description || '';
 
-    // Generate interactive content using AI
+    // Generate interactive content using AI with randomization
+    const randomSeed = Math.floor(Math.random() * 10000);
+    const timestamp = Date.now();
+    
     const prompt = `You are an educational content creator. Based on the following lesson, create engaging interactive learning materials.
 
 Lesson Title: ${lessonTitle}
 Lesson Description: ${lessonDescription}
 Learning Objectives:
 ${learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
+
+CRITICAL: This is generation #${randomSeed} at ${timestamp}. Create COMPLETELY NEW and DIFFERENT questions from any previous generations. Use varied examples, different question phrasings, alternative perspectives, and diverse scenarios to cover ALL aspects of the topic comprehensively.
 
 Generate the following in valid JSON format:
 
@@ -51,11 +56,13 @@ Generate the following in valid JSON format:
 }
 
 Requirements:
-- Create exactly 4 matching pairs based on key concepts
-- Create exactly 5 quiz questions with 4 options each
-- Create exactly 10 flashcards covering the main concepts
-- All content must be directly related to the learning objectives
-- Make questions progressively harder
+- Create exactly 4 UNIQUE matching pairs (use different concepts each time)
+- Create exactly 5 FRESH quiz questions with varied approaches
+- Create exactly 10 NEW flashcards exploring different angles
+- Cover different aspects of the learning objectives each generation
+- Vary difficulty levels (easy, medium, hard)
+- Use real-world examples and practical applications
+- Never repeat the same questions or terms
 - Ensure educational value and accuracy`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
@@ -67,10 +74,10 @@ Requirements:
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are an expert educational content creator. Always respond with valid JSON only.' },
+          { role: 'system', content: 'You are an expert educational content creator who specializes in creating VARIED and UNIQUE learning materials. Each generation must be completely different, exploring the topic from new angles with fresh examples and varied difficulty levels. Always respond with valid JSON only.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.7,
+        temperature: 1.0,
         response_format: { type: "json_object" }
       }),
     });
