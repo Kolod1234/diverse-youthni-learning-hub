@@ -299,7 +299,7 @@ export default function AdminPageBuilder() {
                 <p className="text-gray-500 text-sm">Edit and manage page sections</p>
               </div>
               <div className="flex gap-2">
-                <PageSettings page={selectedPage} isDraft={isDraft} onUpdate={() => {}} />
+                <PageSettings page={selectedPage} isDraft={isDraft} sections={sections} onUpdate={() => {}} />
                 <Button
                   onClick={() => setShowTemplates(true)}
                   variant="outline"

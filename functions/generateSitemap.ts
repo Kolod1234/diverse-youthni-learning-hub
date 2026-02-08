@@ -3,99 +3,54 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    // Get all active page sections
-    const sections = await base44.asServiceRole.entities.PageSection.filter({ is_active: true });
-    
-    // Get all published courses
-    const courses = await base44.asServiceRole.entities.Course.list();
-    
-    // Base URL (update with your actual domain)
-    const baseUrl = 'https://diverseyouthni.com';
-    
-    // Generate sitemap XML
-    const sitemap = `<?xml version="1.0" encoding="UTF-8"?>
-<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
-  <!-- Static Pages -->
-  <url>
-    <loc>${baseUrl}/</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>1.0</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/explore</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.9</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/dashboard</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/tutors</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/sessions</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/youth-work</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/library</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.7</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/community</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>daily</changefreq>
-    <priority>0.6</priority>
-  </url>
-  <url>
-    <loc>${baseUrl}/contact-us</loc>
-    <lastmod>${new Date().toISOString().split('T')[0]}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.5</priority>
-  </url>
-  
-  <!-- Dynamic Pages (Courses) -->
-${courses.map(course => `  <url>
-    <loc>${baseUrl}/course/${course.id}</loc>
-    <lastmod>${course.updated_date || course.created_date}</lastmod>
-    <changefreq>weekly</changefreq>
-    <priority>0.8</priority>
-  </url>`).join('\n')}
-  
-  <!-- Custom Page Sections -->
-${sections.filter(s => s.page_name).map(section => `  <url>
-    <loc>${baseUrl}/${section.page_name.toLowerCase()}</loc>
-    <lastmod>${section.updated_date || section.created_date}</lastmod>
-    <changefreq>monthly</changefreq>
-    <priority>0.6</priority>
-  </url>`).join('\n')}
-</urlset>`;
+    const user = await base44.auth.me();
 
-    return new Response(sitemap, {
+    if (!user) {
+      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+    }
+
+    // Fetch all page sections
+    const sections = await base44.asServiceRole.entities.PageSection.list('-updated_date', 1000);
+
+    // Group sections by page
+    const pages = {};
+    sections.forEach(section => {
+      if (!pages[section.page_name]) {
+        pages[section.page_name] = [];
+      }
+      pages[section.page_name].push(section);
+    });
+
+    // Build sitemap XML
+    let sitemapXml = '<?xml version="1.0" encoding="UTF-8"?>\n';
+    sitemapXml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n';
+
+    const baseUrl = req.headers.get('origin') || 'https://example.com';
+
+    // Add pages with sections
+    Object.entries(pages).forEach(([pageName, pageSections]) => {
+      const path = pageName === 'Home' ? '' : `/${pageName.toLowerCase()}`;
+      const url = `${baseUrl}${path}`;
+      const lastModified = pageSections[0]?.updated_date || new Date().toISOString();
+
+      sitemapXml += '  <url>\n';
+      sitemapXml += `    <loc>${url}</loc>\n`;
+      sitemapXml += `    <lastmod>${lastModified.split('T')[0]}</lastmod>\n`;
+      sitemapXml += `    <changefreq>weekly</changefreq>\n`;
+      sitemapXml += `    <priority>${pageName === 'Home' ? '1.0' : '0.8'}</priority>\n`;
+      sitemapXml += '  </url>\n';
+    });
+
+    sitemapXml += '</urlset>';
+
+    return new Response(sitemapXml, {
       headers: {
         'Content-Type': 'application/xml',
-        'Cache-Control': 'public, max-age=3600'
-      }
+        'Content-Disposition': 'attachment; filename="sitemap.xml"',
+      },
     });
   } catch (error) {
+    console.error('Sitemap generation error:', error);
     return Response.json({ error: error.message }, { status: 500 });
   }
 });
