@@ -215,11 +215,9 @@ export default function Home() {
     }
   });
 
-  // Get real user reviews only from displayed courses
-  const displayedCourseIds = sortedCourses.slice(0, 6).map(c => c.id);
+  // Get real user reviews from all courses
   const realReviews = allReviews
     .filter(r => 
-      displayedCourseIds.includes(r.course_id) &&
       r.comment && 
       r.comment.trim().length >= 20 && 
       r.rating >= 4 &&
