@@ -453,6 +453,12 @@ function LayoutContent({ children, currentPageName }) {
                           <span className="font-medium">Student Reminders</span>
                         </Link>
                       </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminStudentMessages')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium">Send Student Messages</span>
+                        </Link>
+                      </DropdownMenuItem>
                       </>
                       )}
 
@@ -463,6 +469,12 @@ function LayoutContent({ children, currentPageName }) {
                         <Link to={createPageUrl('AdminReminders')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
                           <Bell className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
                           <span className="font-medium">Student Reminders</span>
+                        </Link>
+                      </DropdownMenuItem>
+                      <DropdownMenuItem asChild>
+                        <Link to={createPageUrl('AdminStudentMessages')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
+                          <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
+                          <span className="font-medium">Send Student Messages</span>
                         </Link>
                       </DropdownMenuItem>
                       </>
