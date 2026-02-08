@@ -81,7 +81,7 @@ export default function TrendingCoursesCarousel() {
                   <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-orange-400 to-red-500">
                     {course.thumbnail && (
                       <img
-                        src={course.thumbnail}
+                        src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
                         alt={course.title}
                         className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                       />
