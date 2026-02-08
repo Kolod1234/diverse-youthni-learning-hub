@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { 
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
-  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw
+  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye
 } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
@@ -34,6 +34,8 @@ import ScrollPositionIndicator from '@/components/lesson/ScrollPositionIndicator
 import SplitViewLayout from '@/components/lesson/SplitViewLayout';
 import ErrorBoundary from '@/components/lesson/ErrorBoundary';
 import FocusMode from '@/components/lesson/FocusMode';
+import ImprovedFocusMode from '@/components/lesson/ImprovedFocusMode';
+import { useDeviceType } from '@/components/lesson/ResponsiveControls';
 import StudyTimer from '@/components/lesson/StudyTimer';
 import StreakTracker from '@/components/lesson/StreakTracker';
 import XPProgressBar from '@/components/lesson/XPProgressBar';
@@ -81,6 +83,7 @@ export default function LessonPlayerClassic() {
   const [xpGain, setXpGain] = useState(0);
   const searchInputRef = useRef(null);
   const mainContentRef = useRef(null);
+  const { deviceType, orientation, isTouchDevice } = useDeviceType();
   
   // Advanced hooks
   const { videoRef, isPiP, enterPiP, exitPiP } = usePictureInPicture();
@@ -584,7 +587,11 @@ export default function LessonPlayerClassic() {
         </div>
       )}
 
-      <div className="min-h-screen flex flex-col bg-gray-100"
+      <div 
+        className={`min-h-screen flex flex-col bg-gray-100 ${
+          deviceType === 'mobile' ? 'text-sm' : 
+          deviceType === 'tablet' ? 'text-base' : 'text-base'
+        }`}
         style={{
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',
@@ -593,7 +600,9 @@ export default function LessonPlayerClassic() {
         }}
       >
         {/* Top Bar */}
-        <header className="bg-white border-b h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+        <header className={`bg-white border-b flex items-center justify-between sticky top-0 z-50 shadow-sm ${
+          deviceType === 'mobile' ? 'h-14 px-3' : 'h-16 px-6'
+        }`}>
         <div className="flex items-center gap-4">
           <button
             className="lg:hidden"
@@ -619,22 +628,15 @@ export default function LessonPlayerClassic() {
           
           <AccessibilityControls />
           
-          <FocusMode 
-            enabled={focusModeEnabled} 
-            onToggle={setFocusModeEnabled}
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => setFocusModeEnabled(!focusModeEnabled)}
+            className="hidden md:inline-flex"
+            title="Focus mode (F)"
           >
-            <div className="prose prose-lg max-w-none text-white">
-              <h1>{lesson?.title}</h1>
-              {lesson?.description && <p>{lesson.description}</p>}
-              {lesson?.learning_objectives && (
-                <ul>
-                  {lesson.learning_objectives.map((obj, i) => (
-                    <li key={i}>{obj}</li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          </FocusMode>
+            <Eye className="w-5 h-5" />
+          </Button>
           
           <ThemeCustomizer />
           
@@ -682,8 +684,10 @@ export default function LessonPlayerClassic() {
           initial={false}
           animate={{ x: showSidebar ? 0 : '-100%' }}
           transition={{ type: 'tween', duration: 0.3 }}
-          className="lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-80 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none"
-          style={{ marginTop: '64px' }}
+          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none ${
+            deviceType === 'mobile' ? 'w-72' : 'w-80'
+          }`}
+          style={{ marginTop: deviceType === 'mobile' ? '56px' : '64px' }}
         >
           {/* Search */}
           <div className="p-4 border-b border-white/20">
@@ -1113,6 +1117,47 @@ export default function LessonPlayerClassic() {
         badges={newBadges}
         onClose={() => setShowBadges(false)}
       />
+
+      {/* Improved Focus Mode */}
+      <ImprovedFocusMode
+        enabled={focusModeEnabled}
+        onToggle={setFocusModeEnabled}
+        type={lesson?.video_url ? 'video' : 'slides'}
+      >
+        {lesson?.video_url ? (
+          <EnhancedMediaPlayer
+            type="video"
+            src={lesson.video_url}
+            className="w-full h-full"
+          />
+        ) : lesson?.google_slides_url ? (
+          <EnhancedMediaPlayer
+            type="google-slides"
+            src={lesson.google_slides_url.includes('/embed') 
+              ? lesson.google_slides_url 
+              : lesson.google_slides_url.replace('/edit', '/embed')}
+            className="w-full h-full"
+          />
+        ) : lesson?.file_url ? (
+          <EnhancedMediaPlayer
+            type="iframe"
+            src={lesson.file_url}
+            className="w-full h-full"
+          />
+        ) : (
+          <div className="prose prose-lg max-w-none text-white bg-black/50 p-8 rounded-lg backdrop-blur-sm">
+            <h1>{lesson?.title}</h1>
+            {lesson?.description && <p>{lesson.description}</p>}
+            {lesson?.learning_objectives && (
+              <ul>
+                {lesson.learning_objectives.map((obj, i) => (
+                  <li key={i}>{obj}</li>
+                ))}
+              </ul>
+            )}
+          </div>
+        )}
+      </ImprovedFocusMode>
     </ErrorBoundary>
   );
 }

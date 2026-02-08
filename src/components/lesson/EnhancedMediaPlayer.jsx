@@ -33,6 +33,12 @@ export default function EnhancedMediaPlayer({
   const [showThumbnails, setShowThumbnails] = useState(false);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showSubtitles, setShowSubtitles] = useState(false);
+  const [isPiPMode, setIsPiPMode] = useState(false);
+  const [theaterMode, setTheaterMode] = useState(false);
+  const [quality, setQuality] = useState('auto');
+  const [showGridView, setShowGridView] = useState(false);
+  const [lastTapTime, setLastTapTime] = useState(0);
+  const [tapSide, setTapSide] = useState(null);
   
   const videoRef = useRef(null);
   const containerRef = useRef(null);
@@ -196,6 +202,35 @@ export default function EnhancedMediaPlayer({
     }
   };
 
+  const togglePiP = async () => {
+    if (!videoRef.current) return;
+    try {
+      if (document.pictureInPictureElement) {
+        await document.exitPictureInPicture();
+        setIsPiPMode(false);
+      } else {
+        await videoRef.current.requestPictureInPicture();
+        setIsPiPMode(true);
+      }
+    } catch (error) {
+      console.error('PiP error:', error);
+    }
+  };
+
+  const handleDoubleTap = (e) => {
+    const rect = e.currentTarget.getBoundingClientRect();
+    const x = e.clientX - rect.left;
+    const isLeftSide = x < rect.width / 2;
+    
+    const now = Date.now();
+    if (now - lastTapTime < 300) {
+      skip(isLeftSide ? -10 : 10);
+      setTapSide(isLeftSide ? 'left' : 'right');
+      setTimeout(() => setTapSide(null), 500);
+    }
+    setLastTapTime(now);
+  };
+
   const toggleFullscreen = async () => {
     if (!containerRef.current) return;
     
@@ -248,6 +283,57 @@ export default function EnhancedMediaPlayer({
   };
 
   if (type === 'google-slides' || type === 'iframe') {
+    // Grid View Modal
+    if (showGridView && slides.length > 0) {
+      return (
+        <div className="fixed inset-0 bg-black/95 z-50 overflow-auto p-4">
+          <div className="max-w-7xl mx-auto">
+            <div className="flex justify-between items-center mb-6 sticky top-0 bg-black/95 py-4 z-10">
+              <h2 className="text-2xl font-bold text-white">All Slides</h2>
+              <button
+                onClick={() => setShowGridView(false)}
+                className="text-white hover:bg-white/20 rounded-lg p-2"
+              >
+                <X className="w-6 h-6" />
+              </button>
+            </div>
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-5 gap-4">
+              {slides.map((slide, index) => (
+                <button
+                  key={index}
+                  onClick={() => {
+                    handleSlideClick(index);
+                    setShowGridView(false);
+                  }}
+                  className={`relative aspect-video rounded-lg border-2 transition-all overflow-hidden group ${
+                    currentSlide === index 
+                      ? 'border-blue-500 ring-4 ring-blue-300' 
+                      : 'border-gray-600 hover:border-blue-400'
+                  }`}
+                >
+                  {slide.thumbnail ? (
+                    <img src={slide.thumbnail} alt={`Slide ${index + 1}`} className="w-full h-full object-cover" />
+                  ) : (
+                    <div className="w-full h-full bg-gray-800 flex items-center justify-center">
+                      <span className="text-4xl font-bold text-gray-500">{index + 1}</span>
+                    </div>
+                  )}
+                  <div className="absolute inset-0 bg-black/0 group-hover:bg-black/30 transition-colors flex items-center justify-center">
+                    <span className="text-white font-bold opacity-0 group-hover:opacity-100 transition-opacity">
+                      Go to slide
+                    </span>
+                  </div>
+                  <div className="absolute bottom-2 right-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    {index + 1}
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      );
+    }
+
     return (
       <div className={`relative ${className}`}>
         <div className="flex gap-4">
@@ -306,14 +392,27 @@ export default function EnhancedMediaPlayer({
             
             <div className="absolute bottom-2 right-2 sm:bottom-4 sm:right-4 z-10 flex gap-2">
               {slides.length > 0 && (
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={() => setShowThumbnails(!showThumbnails)}
-                  className="bg-white/90 hover:bg-white shadow-lg h-8 sm:h-9 px-3 lg:hidden"
-                >
-                  <ChevronRight className="w-4 h-4" />
-                </Button>
+                <>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowGridView(true)}
+                    className="bg-white/90 hover:bg-white shadow-lg h-8 sm:h-9 px-3"
+                    title="Grid view"
+                  >
+                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z" />
+                    </svg>
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    size="sm"
+                    onClick={() => setShowThumbnails(!showThumbnails)}
+                    className="bg-white/90 hover:bg-white shadow-lg h-8 sm:h-9 px-3 lg:hidden"
+                  >
+                    <ChevronRight className="w-4 h-4" />
+                  </Button>
+                </>
               )}
               <Button
                 variant="secondary"
@@ -359,12 +458,12 @@ export default function EnhancedMediaPlayer({
   }
 
   return (
-    <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden group ${className}`}>
+    <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden group ${theaterMode ? 'max-w-none' : ''} ${className}`}>
       <video
         ref={videoRef}
         src={src}
-        className="w-full h-auto max-h-[60vh] sm:max-h-none"
-        onClick={togglePlay}
+        className={`w-full h-auto ${theaterMode ? 'max-h-[80vh]' : 'max-h-[60vh] sm:max-h-none'}`}
+        onClick={handleDoubleTap}
         onLoadStart={() => setLoading(true)}
         onCanPlay={() => setLoading(false)}
         playsInline
@@ -381,6 +480,20 @@ export default function EnhancedMediaPlayer({
           />
         )}
       </video>
+
+      {/* Double-tap feedback */}
+      {tapSide && (
+        <div className={`absolute top-1/2 -translate-y-1/2 ${tapSide === 'left' ? 'left-8' : 'right-8'} pointer-events-none`}>
+          <motion.div
+            initial={{ scale: 0.5, opacity: 0 }}
+            animate={{ scale: 1.2, opacity: 1 }}
+            exit={{ scale: 0.5, opacity: 0 }}
+            className="bg-white/90 rounded-full p-4"
+          >
+            {tapSide === 'left' ? <SkipBack className="w-8 h-8 text-black" /> : <SkipForward className="w-8 h-8 text-black" />}
+          </motion.div>
+        </div>
+      )}
 
       {loading && (
         <div className="absolute inset-0 flex items-center justify-center bg-black/50">
@@ -469,13 +582,38 @@ export default function EnhancedMediaPlayer({
                 </Button>
               </DropdownMenuTrigger>
               <DropdownMenuContent>
-                {[0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
+                {[0.25, 0.5, 0.75, 1, 1.25, 1.5, 1.75, 2].map(rate => (
                   <DropdownMenuItem 
                     key={rate}
                     onClick={() => changePlaybackRate(rate)}
                     className={playbackRate === rate ? 'bg-blue-50' : ''}
                   >
                     {rate}x {rate === 1 && '(Normal)'}
+                  </DropdownMenuItem>
+                ))}
+              </DropdownMenuContent>
+            </DropdownMenu>
+
+            {/* Quality Selector */}
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  className="text-white hover:bg-white/20 h-8 sm:h-9 px-2 hidden md:inline-flex"
+                  title="Quality"
+                >
+                  <Settings className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent>
+                {['auto', '1080p', '720p', '480p', '360p'].map(q => (
+                  <DropdownMenuItem 
+                    key={q}
+                    onClick={() => setQuality(q)}
+                    className={quality === q ? 'bg-blue-50' : ''}
+                  >
+                    {q === 'auto' ? 'Auto' : q}
                   </DropdownMenuItem>
                 ))}
               </DropdownMenuContent>
@@ -495,6 +633,36 @@ export default function EnhancedMediaPlayer({
           </div>
 
           <div className="flex items-center gap-1">
+            {/* Picture-in-Picture */}
+            {document.pictureInPictureEnabled && (
+              <Button
+                variant="ghost"
+                size="sm"
+                onClick={togglePiP}
+                className={`text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0 hidden sm:inline-flex ${isPiPMode ? 'bg-white/20' : ''}`}
+                title="Picture-in-Picture"
+              >
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <rect x="3" y="3" width="18" height="14" rx="2" strokeWidth="2"/>
+                  <rect x="13" y="12" width="6" height="5" rx="1" strokeWidth="2"/>
+                </svg>
+              </Button>
+            )}
+
+            {/* Theater Mode */}
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setTheaterMode(!theaterMode)}
+              className={`text-white hover:bg-white/20 h-8 w-8 sm:h-9 sm:w-9 p-0 hidden lg:inline-flex ${theaterMode ? 'bg-white/20' : ''}`}
+              title="Theater mode"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <rect x="2" y="6" width="20" height="12" rx="2" strokeWidth="2"/>
+                <path d="M2 10h20M2 14h20" strokeWidth="2"/>
+              </svg>
+            </Button>
+
             {/* Chapters Menu */}
             {chapters.length > 0 && (
               <DropdownMenu>
