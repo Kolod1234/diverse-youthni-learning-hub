@@ -6,6 +6,17 @@ import { Download, FileText, BookOpen, Lightbulb, Filter } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 export default function FreeResourcesCenter() {
+  const { data: user } = useQuery({
+    queryKey: ['user-free-resources'],
+    queryFn: () => base44.auth.me(),
+  });
+
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['user-enrollments-free-resources'],
+    queryFn: () => base44.entities.Enrollment.list(),
+    enabled: !!user,
+  });
+
   const { data: resources = [] } = useQuery({
     queryKey: ['library-resources'],
     queryFn: () => base44.entities.LibraryResource.list('-created_date', 100),
@@ -13,6 +24,11 @@ export default function FreeResourcesCenter() {
   });
 
   const [selectedCategory, setSelectedCategory] = useState('all');
+
+  // Only show to enrolled students
+  if (!user || enrollments.length === 0) {
+    return null;
+  }
 
   const categories = [
     { id: 'all', label: 'All Resources' },
