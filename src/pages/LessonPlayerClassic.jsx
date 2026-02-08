@@ -34,6 +34,8 @@ export default function LessonPlayerClassic() {
   const [searchQuery, setSearchQuery] = useState('');
   const [touchStart, setTouchStart] = useState(0);
   const [touchEnd, setTouchEnd] = useState(0);
+  const [interactiveContent, setInteractiveContent] = useState(null);
+  const [loadingInteractives, setLoadingInteractives] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -42,6 +44,27 @@ export default function LessonPlayerClassic() {
     };
     loadUser();
   }, []);
+
+  // Load interactive content based on lesson
+  useEffect(() => {
+    const loadInteractives = async () => {
+      if (!lessonId || !lesson) return;
+      
+      setLoadingInteractives(true);
+      try {
+        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
+        if (response.data.success) {
+          setInteractiveContent(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to load interactive content:', error);
+      } finally {
+        setLoadingInteractives(false);
+      }
+    };
+    
+    loadInteractives();
+  }, [lessonId, lesson]);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
@@ -533,55 +556,35 @@ export default function LessonPlayerClassic() {
                 </ul>
               )}
 
-              {/* Interactive Elements - Demo Examples */}
-              <div className="space-y-6 mt-8 sm:mt-12">
-                {/* Matching Game Example */}
-                <MatchingGame
-                  pairs={[
-                    { left: 'Photosynthesis', right: 'Process plants use to make food' },
-                    { left: 'Mitosis', right: 'Cell division process' },
-                    { left: 'DNA', right: 'Genetic material in cells' },
-                    { left: 'Respiration', right: 'Process of releasing energy from glucose' }
-                  ]}
-                  onComplete={(score) => toast.success(`Great job! You scored ${score} points!`)}
-                />
+              {/* Interactive Elements - Generated from Learning Objectives */}
+              {loadingInteractives && (
+                <div className="mt-8 sm:mt-12 text-center py-8">
+                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
+                  <p className="text-gray-600">Generating interactive activities...</p>
+                </div>
+              )}
 
-                {/* Interactive Quiz Example */}
-                <InteractiveQuiz
-                  questions={[
-                    {
-                      question: 'What is the powerhouse of the cell?',
-                      options: ['Nucleus', 'Mitochondria', 'Ribosome', 'Chloroplast'],
-                      correctAnswer: 1,
-                      explanation: 'Mitochondria are known as the powerhouse of the cell because they produce ATP, the energy currency of cells.'
-                    },
-                    {
-                      question: 'Which gas do plants absorb from the atmosphere?',
-                      options: ['Oxygen', 'Nitrogen', 'Carbon Dioxide', 'Hydrogen'],
-                      correctAnswer: 2,
-                      explanation: 'Plants absorb carbon dioxide (CO₂) from the atmosphere during photosynthesis to produce glucose and oxygen.'
-                    },
-                    {
-                      question: 'What is the largest organ in the human body?',
-                      options: ['Heart', 'Liver', 'Brain', 'Skin'],
-                      correctAnswer: 3,
-                      explanation: 'The skin is the largest organ, covering the entire body and protecting internal organs.'
-                    }
-                  ]}
-                  onComplete={(score) => toast.success(`Quiz complete! You got ${score} correct!`)}
-                />
+              {!loadingInteractives && interactiveContent && (
+                <div className="space-y-6 mt-8 sm:mt-12">
+                  {interactiveContent.matchingPairs?.length > 0 && (
+                    <MatchingGame
+                      pairs={interactiveContent.matchingPairs}
+                      onComplete={(score) => toast.success(`Great job! You scored ${score} points!`)}
+                    />
+                  )}
 
-                {/* Flash Cards Example */}
-                <FlashCards
-                  cards={[
-                    { front: 'What is H₂O?', back: 'Water' },
-                    { front: 'What is CO₂?', back: 'Carbon Dioxide' },
-                    { front: 'What is O₂?', back: 'Oxygen' },
-                    { front: 'What is NaCl?', back: 'Sodium Chloride (Salt)' },
-                    { front: 'What is ATP?', back: 'Adenosine Triphosphate (Energy)' }
-                  ]}
-                />
-              </div>
+                  {interactiveContent.quizQuestions?.length > 0 && (
+                    <InteractiveQuiz
+                      questions={interactiveContent.quizQuestions}
+                      onComplete={(score) => toast.success(`Quiz complete! You got ${score} correct!`)}
+                    />
+                  )}
+
+                  {interactiveContent.flashCards?.length > 0 && (
+                    <FlashCards cards={interactiveContent.flashCards} />
+                  )}
+                </div>
+              )}
             </div>
 
             {/* Navigation Buttons */}
