@@ -2,26 +2,16 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { createPageUrl } from '@/utils';
 import { 
-        ChevronLeft, ChevronRight, X, CheckCircle, Target, 
-        BookOpen, Menu, Maximize2, Layout, Presentation, ClipboardCheck, ZoomIn, ZoomOut, Minimize2, Sparkles, Lock, Key, FileText, Search
-      } from 'lucide-react';
+  ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X
+} from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
@@ -31,20 +21,12 @@ export default function LessonPlayerClassic() {
   const lessonId = params.get('lesson');
   const urlCourseId = params.get('course');
 
-  const [showSidebar, setShowSidebar] = useState(true);
-  const [showObjectives, setShowObjectives] = useState(true);
-  const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
+  const [showSidebar, setShowSidebar] = useState(false);
+  const [expandedSections, setExpandedSections] = useState({});
   const [user, setUser] = useState(null);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  
-  // Touch state for swipe navigation
-  const [touchStart, setTouchStart] = useState(null);
-  const [touchEnd, setTouchEnd] = useState(null);
-  
-  const containerRef = React.useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -52,16 +34,6 @@ export default function LessonPlayerClassic() {
       setUser(userData);
     };
     loadUser();
-  }, []);
-
-  // Fullscreen state listener
-  useEffect(() => {
-    const handleFullscreenChange = () => {
-      setIsFullscreen(!!document.fullscreenElement);
-    };
-    
-    document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
   // First fetch the lesson to get its course_id
@@ -81,10 +53,16 @@ export default function LessonPlayerClassic() {
   
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
-  
-  // Define slide-related variables early (before they're used in effects/handlers)
-  const hasSlides = lesson?.slides && lesson.slides.length > 0;
-  const sortedSlides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+
+  const { data: course } = useQuery({
+    queryKey: ['course', courseId],
+    queryFn: async () => {
+      if (!courseId) return null;
+      const courses = await base44.entities.Course.filter({ id: courseId });
+      return courses[0];
+    },
+    enabled: !!courseId
+  });
 
   const { data: courseLessons = [] } = useQuery({
     queryKey: ['courseLessons', courseId],
@@ -210,58 +188,24 @@ export default function LessonPlayerClassic() {
     }
   };
 
-  const getSlideEmbedUrl = () => {
-    if (lesson.google_slides_url) {
-      const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
-      if (presentationId) {
-        return `https://docs.google.com/presentation/d/${presentationId}/embed?start=false&loop=false&delayms=3000&rm=minimal`;
-      }
+  const toggleSection = (section) => {
+    setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }));
+  };
+
+  // Group lessons by section
+  const groupedLessons = sortedLessons.reduce((acc, lesson) => {
+    const section = lesson.section || 'Lessons';
+    if (!acc[section]) acc[section] = [];
+    acc[section].push(lesson);
+    return acc;
+  }, {});
+
+  // Auto-expand current lesson's section
+  useEffect(() => {
+    if (lesson?.section && !expandedSections[lesson.section]) {
+      setExpandedSections(prev => ({ ...prev, [lesson.section]: true }));
     }
-    return lesson.file_url || null;
-  };
-
-  const handleFullscreen = async () => {
-    if (!containerRef.current) return;
-    
-    if (!document.fullscreenElement) {
-      try {
-        await containerRef.current.requestFullscreen();
-      } catch (err) {
-        toast.error('Fullscreen not supported');
-      }
-    } else {
-      document.exitFullscreen();
-    }
-  };
-
-  // Touch/Swipe Logic for mobile
-  const minSwipeDistance = 50;
-
-  const onTouchStart = (e) => {
-    setTouchEnd(null);
-    setTouchStart(e.targetTouches[0].clientX);
-  };
-
-  const onTouchMove = (e) => {
-    setTouchEnd(e.targetTouches[0].clientX);
-  };
-
-  const onTouchEnd = () => {
-    if (!touchStart || !touchEnd) return;
-    const distance = touchStart - touchEnd;
-    const isLeftSwipe = distance > minSwipeDistance;
-    const isRightSwipe = distance < -minSwipeDistance;
-
-    // Only handle swipe for custom slides, not Google Slides
-    if (hasSlides) {
-      if (isLeftSwipe && currentSlideIndex < sortedSlides.length - 1) {
-        setCurrentSlideIndex(curr => curr + 1);
-      }
-      if (isRightSwipe && currentSlideIndex > 0) {
-        setCurrentSlideIndex(curr => curr - 1);
-      }
-    }
-  };
+  }, [lesson?.section]);
 
   if (lessonLoading) {
     return (
@@ -333,437 +277,230 @@ export default function LessonPlayerClassic() {
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
 
-  const filteredLessons = searchQuery 
-    ? sortedLessons.filter(l => 
-        l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        l.section?.toLowerCase().includes(searchQuery.toLowerCase())
-      )
-    : sortedLessons;
-
   return (
-    <div ref={containerRef} className="h-screen flex flex-col bg-[#1e3a8a] overflow-hidden">
-      {/* Header */}
-      <header className="flex-none bg-white border-b border-gray-200 px-3 sm:px-6 py-3 sm:py-4 flex items-center justify-between shadow-sm z-30">
-        <div className="flex items-center gap-2 sm:gap-4 flex-1 min-w-0">
-          <button onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="p-2 hover:bg-gray-100 rounded-lg shrink-0">
-            <X className="w-5 h-5" />
-          </button>
-          <button 
-            onClick={() => setShowSidebar(!showSidebar)} 
-            className="lg:hidden p-2 hover:bg-gray-100 rounded-lg shrink-0"
+    <div className="min-h-screen flex flex-col bg-gray-100">
+      {/* Top Bar */}
+      <header className="bg-white border-b h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+        <div className="flex items-center gap-4">
+          <button
+            className="lg:hidden"
+            onClick={() => setShowSidebar(!showSidebar)}
           >
-            <Menu className="w-5 h-5" />
+            <Menu className="w-6 h-6" />
           </button>
-          <div className="min-w-0 flex-1">
-            <h1 className="font-semibold text-gray-900 text-sm sm:text-base truncate">{lesson.title}</h1>
-            <p className="text-xs sm:text-sm text-gray-500 hidden sm:block">Lesson {currentLessonIndex + 1} of {sortedLessons.length}</p>
-          </div>
         </div>
-        <div className="flex items-center gap-1 sm:gap-2 shrink-0">
-          {lesson?.google_slides_url && !(lesson?.slides && lesson.slides.length > 0) && (user?.role === 'admin' || user?.is_tutor) && (
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={async () => {
-                if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
-                toast.loading('Converting Google Slides...');
-                try {
-                  const response = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
-                  if (response.data.success) {
-                    toast.success(`Converted ${response.data.slideCount} slides successfully!`);
-                    queryClient.invalidateQueries(['lesson', lessonId]);
-                    setTimeout(() => window.location.reload(), 1000);
-                  }
-                } catch (error) {
-                  toast.error('Failed to convert Google Slides');
-                }
-              }}
-              className="hidden sm:flex gap-2"
-            >
-              <FileText className="w-4 h-4" />
-              <span className="hidden md:inline">Convert to Custom</span>
-            </Button>
-          )}
+        
+        <div className="flex items-center gap-4">
           <Button
             variant="outline"
-            size="sm"
-            onClick={handleFullscreen}
-            className="hidden sm:flex"
-            title={isFullscreen ? "Exit Fullscreen" : "Fullscreen"}
+            onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
+            className="font-semibold"
           >
-            <Maximize2 className="w-4 h-4" />
+            EXIT COURSE
           </Button>
-          <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button variant="outline" size="sm">
-                <Layout className="w-4 h-4 sm:mr-2" />
-                <span className="hidden md:inline">Player Style</span>
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent align="end">
-              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
-                <Presentation className="w-4 h-4 mr-2" />
-                PowerPoint (Default)
-              </DropdownMenuItem>
-              <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
-                <Layout className="w-4 h-4 mr-2" />
-                Classic Style (Current)
-              </DropdownMenuItem>
-              {(user?.role === 'admin' || user?.is_tutor) && lesson && (
-                <>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={async () => {
-                      await base44.entities.Lesson.update(lessonId, { 
-                        default_player: 'LessonPlayerClassic' 
-                      });
-                      toast.success('Classic set as default for this lesson');
-                    }}
-                  >
-                    <CheckCircle className="w-4 h-4 mr-2" />
-                    Set Classic as Default (Override)
-                  </DropdownMenuItem>
-                </>
-              )}
-            </DropdownMenuContent>
-          </DropdownMenu>
-
-          {!isCompleted && (
-            <Button 
-              onClick={() => markCompleteMutation.mutate()}
-              size="sm"
-              className="bg-gradient-to-r from-green-500 to-emerald-600 hover:from-green-600 hover:to-emerald-700 shadow-lg shadow-green-200 hover:shadow-xl hover:shadow-green-300 transform hover:scale-105 font-semibold"
-            >
-              <CheckCircle className="w-4 h-4 sm:mr-2" />
-              <span className="hidden sm:inline">Mark Complete</span>
-            </Button>
-          )}
         </div>
       </header>
 
-      <div className="flex flex-1 overflow-hidden" style={{ minHeight: 0 }}>
-        {/* Enhanced Sidebar */}
-        {showSidebar && (
-          <aside className="fixed lg:relative z-20 w-full sm:w-80 lg:w-96 h-[calc(100vh-4rem)] lg:h-full bg-[#1e3a8a] text-white flex flex-col shadow-2xl">
-            {/* Search Bar */}
-            <div className="p-4 border-b border-white/20">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-                <Input
-                  placeholder="Search lessons..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-white/10 border-white/20 text-white placeholder:text-white/60 pl-10 focus:bg-white/20"
-                />
-              </div>
-            </div>
-
-            {/* Course Info */}
-            <div className="p-6 border-b border-white/20">
-              <h3 className="text-lg font-bold mb-4 leading-tight">
-                {lesson?.course_id || 'Course Content'}
-              </h3>
-              {enrollment && (
-                <div className="space-y-2">
-                  <div className="flex items-center justify-between text-sm font-semibold">
-                    <span>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
-                    <span>{enrollment.completed_lessons?.length || 0}/{sortedLessons.length}</span>
-                  </div>
-                  <div className="w-full bg-white/20 rounded-full h-2">
-                    <div
-                      className="bg-white rounded-full h-2 transition-all duration-500"
-                      style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
-                    />
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Lessons List */}
-            <ScrollArea className="flex-1">
-              <div className="p-4 space-y-2">
-                {filteredLessons.map((l, idx) => {
-                  const completed = enrollment?.completed_lessons?.includes(l.id);
-                  const isCurrent = l.id === lessonId;
-
-                  return (
-                    <button
-                      key={l.id}
-                      onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
-                      className={`w-full text-left p-3 rounded-lg transition-all ${
-                        isCurrent
-                          ? 'bg-white/20 border-2 border-white shadow-lg'
-                          : 'hover:bg-white/10'
-                      }`}
-                    >
-                      <div className="flex items-center gap-3">
-                        {completed ? (
-                          <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center shrink-0">
-                            <CheckCircle className="w-4 h-4 text-[#1e3a8a]" />
-                          </div>
-                        ) : (
-                          <div className="w-6 h-6 rounded-full border-2 border-white/40 shrink-0" />
-                        )}
-                        <div className="flex-1 min-w-0">
-                          <div className="text-xs text-white/70 mb-1">Lesson {sortedLessons.findIndex(sl => sl.id === l.id) + 1}</div>
-                          <div className="font-medium text-sm leading-relaxed">{l.title}</div>
-                        </div>
-                      </div>
-                    </button>
-                  );
-                })}
-              </div>
-            </ScrollArea>
-
-            {/* Close button for mobile */}
-            <button 
-              onClick={() => setShowSidebar(false)} 
-              className="lg:hidden p-4 border-t border-white/20 text-center text-sm font-medium hover:bg-white/10"
-            >
-              Close Sidebar
-            </button>
-          </aside>
-        )}
-
-        {/* Main Content */}
-        <main 
-          className="flex-1 flex flex-col overflow-hidden lesson-content-container"
-          style={{ minHeight: 0 }}
-          onTouchStart={onTouchStart}
-          onTouchMove={onTouchMove}
-          onTouchEnd={onTouchEnd}
+      <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar */}
+        <aside
+          className={`${
+            showSidebar ? "translate-x-0" : "-translate-x-full"
+          } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-80 bg-[#1e3a8a] text-white transition-transform duration-300 flex flex-col`}
+          style={{ marginTop: '64px' }}
         >
-          <div className="flex-1 overflow-y-auto p-3 sm:p-6 md:p-8" style={{ minHeight: 0 }}>
-            {/* Learning Objectives */}
-            {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-              <div className="max-w-5xl mx-auto mb-3 sm:mb-4">
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => setShowObjectives(!showObjectives)}
-                    className="flex-1 bg-gradient-to-r from-blue-500 via-indigo-600 to-purple-600 text-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex items-center justify-between text-xs sm:text-base hover:from-blue-600 hover:via-indigo-700 hover:to-purple-700 transition-all shadow-lg shadow-indigo-200 hover:shadow-xl hover:shadow-indigo-300 active:scale-[0.98] sm:hover:scale-[1.02]"
-                  >
-                    <div className="flex items-center gap-2 sm:gap-3">
-                      <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                        <Target className="w-4 h-4 sm:w-5 sm:h-5" />
-                      </div>
-                      <span className="font-bold">Learning Objectives</span>
-                    </div>
-                    <ChevronRight className={`w-4 h-4 sm:w-5 sm:h-5 transition-transform ${showObjectives ? 'rotate-90' : ''}`} />
-                  </button>
-                  {(user?.role === 'admin' || user?.is_tutor) && (
-                    <Button
-                      onClick={() => updateObjectivesMutation.mutate()}
-                      disabled={updateObjectivesMutation.isPending}
-                      className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 shadow-lg"
-                      size="sm"
-                    >
-                      {updateObjectivesMutation.isPending ? (
-                        <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                      ) : (
-                        <Sparkles className="w-4 h-4" />
-                      )}
-                    </Button>
-                  )}
-                </div>
-                
-                {showObjectives && (
-                  <div className="bg-gradient-to-br from-white to-indigo-50/50 rounded-b-xl sm:rounded-b-2xl border border-t-0 border-indigo-200 p-2.5 sm:p-4 space-y-2 sm:space-y-3 shadow-lg">
-                    {lesson.learning_objectives.map((objective, idx) => (
-                      <div key={idx} className="flex items-start gap-2 sm:gap-3 p-1.5 sm:p-2 rounded-lg hover:bg-white/60 transition-colors">
-                        <div className="p-0.5 sm:p-1 bg-green-100 rounded-full shrink-0">
-                          <CheckCircle className="w-3 h-3 sm:w-4 sm:h-4 text-green-600" />
-                        </div>
-                        <p className="text-gray-700 text-xs sm:text-sm leading-relaxed font-medium">{objective}</p>
-                      </div>
-                    ))}
-                  </div>
-                )}
-              </div>
-            )}
-
-            {/* Quiz Link */}
-            {quizzes.length > 0 && (
-              <div className="max-w-5xl mx-auto mb-3 sm:mb-4">
-                <button
-                  onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
-                  className="w-full bg-gradient-to-r from-purple-500 via-pink-500 to-rose-500 text-white rounded-xl sm:rounded-2xl p-2.5 sm:p-4 flex items-center justify-between text-xs sm:text-base hover:from-purple-600 hover:via-pink-600 hover:to-rose-600 transition-all shadow-xl shadow-purple-200 hover:shadow-2xl hover:shadow-purple-300 active:scale-[0.98] sm:hover:scale-[1.02]"
-                >
-                  <div className="flex items-center gap-2 sm:gap-3">
-                    <div className="p-1.5 bg-white/20 rounded-lg backdrop-blur-sm">
-                      <ClipboardCheck className="w-4 h-4 sm:w-5 sm:h-5" />
-                    </div>
-                    <span className="font-bold">Take Quiz</span>
-                  </div>
-                  <ChevronRight className="w-4 h-4 sm:w-5 sm:h-5" />
-                </button>
-              </div>
-            )}
-
-            {/* Main Lesson Video with Enhanced Player */}
-            {lesson.video_url && (
-              <div className="max-w-5xl mx-auto mb-6">
-                <EnhancedMediaPlayer 
-                  type="video" 
-                  src={lesson.video_url}
-                  className="shadow-2xl"
-                />
-              </div>
-            )}
-
-            {/* Slide Content */}
-            <div className="max-w-5xl mx-auto">
-              {lesson?.slides && lesson.slides.length > 0 ? (
-                <TransformWrapper
-                  initialScale={1}
-                  minScale={0.5}
-                  maxScale={3}
-                  centerOnInit={true}
-                >
-                  {({ zoomIn, zoomOut, resetTransform }) => (
-                    <>
-                      <div className="flex justify-end gap-2 mb-4">
-                        <Button variant="outline" size="sm" onClick={() => zoomIn()}>
-                          <ZoomIn className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => zoomOut()}>
-                          <ZoomOut className="w-4 h-4" />
-                        </Button>
-                        <Button variant="outline" size="sm" onClick={() => resetTransform()}>
-                          <Minimize2 className="w-4 h-4" />
-                        </Button>
-                      </div>
-                      <TransformComponent wrapperClass="w-full" contentClass="w-full">
-                        <div className="bg-gradient-to-br from-white via-purple-50/20 to-pink-50/20 rounded-2xl sm:rounded-3xl shadow-2xl shadow-purple-200/50 overflow-hidden border-2 border-purple-100 ring-2 sm:ring-4 ring-purple-50">
-                          <div className="p-3 sm:p-8 min-h-[250px] sm:min-h-[500px] space-y-4 sm:space-y-6">
-                            <h2 className="text-lg sm:text-2xl font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent leading-tight">
-                              {sortedSlides[currentSlideIndex]?.title || 'Untitled Slide'}
-                            </h2>
-                            
-                            {sortedSlides[currentSlideIndex]?.content && (
-                              <div 
-                                className="prose prose-xs sm:prose-lg max-w-none prose-headings:text-gray-900 prose-p:text-gray-700 prose-strong:text-gray-900"
-                                dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].content }}
-                              />
-                            )}
-                            
-                            {sortedSlides[currentSlideIndex]?.imageUrl && (
-                              <div className="mt-6">
-                                <img 
-                                  src={sortedSlides[currentSlideIndex].imageUrl} 
-                                  alt="Slide visual" 
-                                  className="w-full rounded-xl shadow-lg"
-                                />
-                              </div>
-                            )}
-                            
-                            {sortedSlides[currentSlideIndex]?.diagramCode && (
-                              <div className="mt-6 bg-white p-4 rounded-xl border border-gray-200">
-                                <div dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex].diagramCode }} />
-                              </div>
-                            )}
-                            
-                            {sortedSlides[currentSlideIndex]?.labeledIllustration?.generatedUrl && (
-                              <div className="mt-6">
-                                <img 
-                                  src={sortedSlides[currentSlideIndex].labeledIllustration.generatedUrl} 
-                                  alt="Educational diagram" 
-                                  className="w-full rounded-xl shadow-lg"
-                                />
-                              </div>
-                            )}
-                            
-                            {sortedSlides[currentSlideIndex]?.videoUrl && (
-                              <div className="mt-6">
-                                <video 
-                                  src={sortedSlides[currentSlideIndex].videoUrl} 
-                                  controls 
-                                  className="w-full rounded-xl shadow-lg"
-                                />
-                              </div>
-                            )}
-                            
-                            {sortedSlides[currentSlideIndex]?.audioUrl && (
-                              <div className="mt-6">
-                                <audio 
-                                  src={sortedSlides[currentSlideIndex].audioUrl} 
-                                  controls 
-                                  className="w-full"
-                                />
-                              </div>
-                            )}
-                          </div>
-                          <div className="bg-gradient-to-r from-purple-50 to-pink-50 px-2 sm:px-8 py-2.5 sm:py-4 flex items-center justify-between border-t border-purple-200 gap-2">
-                            <button
-                              onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                              disabled={currentSlideIndex === 0}
-                              className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl transition-all active:scale-90 sm:hover:scale-105"
-                            >
-                              <ChevronLeft className="w-4 h-4 sm:w-6 sm:h-6" />
-                            </button>
-                            <span className="text-xs sm:text-sm font-bold bg-gradient-to-r from-purple-600 to-pink-600 bg-clip-text text-transparent px-2">
-                              {currentSlideIndex + 1} / {sortedSlides.length}
-                            </span>
-                            <button
-                              onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
-                              disabled={currentSlideIndex === sortedSlides.length - 1}
-                              className="flex items-center justify-center w-9 h-9 sm:w-12 sm:h-12 bg-gradient-to-r from-purple-600 to-indigo-600 text-white rounded-full hover:from-purple-700 hover:to-indigo-700 disabled:opacity-30 disabled:cursor-not-allowed shadow-xl transition-all active:scale-90 sm:hover:scale-105"
-                            >
-                              <ChevronRight className="w-4 h-4 sm:w-6 sm:h-6" />
-                            </button>
-                          </div>
-                        </div>
-                      </TransformComponent>
-                    </>
-                  )}
-                </TransformWrapper>
-              ) : slideUrl ? (
-                <EnhancedMediaPlayer 
-                  type={lesson.google_slides_url ? 'google-slides' : 'iframe'}
-                  src={slideUrl}
-                  className="shadow-2xl"
-                />
-              ) : (
-                <div className="bg-gradient-to-br from-white to-purple-50/30 rounded-3xl shadow-xl border-2 border-purple-100 aspect-video flex items-center justify-center">
-                  <div className="text-center">
-                    <div className="w-20 h-20 bg-gradient-to-br from-purple-100 to-pink-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <BookOpen className="w-10 h-10 text-purple-400" />
-                    </div>
-                    <p className="text-gray-600 font-medium">No content available</p>
-                  </div>
-                </div>
-              )}
+          {/* Search */}
+          <div className="p-4 border-b border-white/20">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+              <input
+                type="text"
+                placeholder="Search..."
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+              />
             </div>
           </div>
 
-          {/* Navigation Footer */}
-          <footer className="flex-none bg-white border-t border-gray-200 px-3 sm:px-6 py-3 sm:py-4 shadow-sm z-30">
-            <div className="max-w-5xl mx-auto flex items-center justify-between gap-2 relative">
-              <Button
-                variant="outline"
+          {/* Course Title and Progress */}
+          <div className="p-6 border-b border-white/20">
+            <h2 className="text-lg font-bold mb-4 leading-tight">
+              {course?.title || 'Course Content'}
+            </h2>
+            {enrollment && (
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold">{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-2">
+                  <div
+                    className="bg-white rounded-full h-2 transition-all duration-300"
+                    style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+                  />
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* Lessons */}
+          <ScrollArea className="flex-1">
+            <div className="p-4 space-y-2">
+              {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
+                <div key={section}>
+                  <button
+                    onClick={() => toggleSection(section)}
+                    className="w-full flex items-center justify-between px-3 py-3 text-xs font-bold tracking-wide hover:bg-white/10 rounded transition-colors text-left"
+                  >
+                    <span className="flex-1">{section}</span>
+                    {expandedSections[section] ? (
+                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
+                    ) : (
+                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
+                    )}
+                  </button>
+
+                  {expandedSections[section] && (
+                    <div className="space-y-1 mt-1">
+                      {sectionLessons.filter(l => 
+                        !searchQuery || 
+                        l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                        l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+                      ).map((l) => {
+                        const completed = enrollment?.completed_lessons?.includes(l.id);
+                        const isCurrent = l.id === lessonId;
+
+                        return (
+                          <div
+                            key={l.id}
+                            onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                            className={`flex items-start gap-3 px-3 py-3 rounded cursor-pointer transition-colors ${
+                              isCurrent ? 'bg-white/20' : 'hover:bg-white/10'
+                            }`}
+                          >
+                            <div className="w-5 h-5 flex-shrink-0 mt-0.5">
+                              <Menu className="w-4 h-4 text-white/60" />
+                            </div>
+                            <p className="flex-1 text-sm leading-relaxed">
+                              {l.title}
+                            </p>
+                            {completed && (
+                              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0">
+                                <Check className="w-4 h-4 text-[#1e3a8a]" />
+                              </div>
+                            )}
+                          </div>
+                        );
+                      })}
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* Chat with us */}
+          <div className="p-4 border-t border-white/20">
+            <button className="w-full flex items-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
+              <span className="text-2xl">👋</span>
+              <span className="text-sm font-medium">Chat with us</span>
+            </button>
+          </div>
+        </aside>
+
+        {/* Overlay for mobile */}
+        {showSidebar && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+            onClick={() => setShowSidebar(false)}
+            style={{ marginTop: '64px' }}
+          />
+        )}
+
+        {/* Main Content */}
+        <main className="flex-1 overflow-y-auto bg-gray-100">
+          <div className="max-w-5xl mx-auto px-8 py-12">
+            {/* Content Card */}
+            <div className="bg-white rounded-lg shadow-sm p-12">
+              {/* Title */}
+              <div className="text-center mb-8">
+                <h1 className="text-4xl font-light leading-tight text-gray-800 mb-8">
+                  {lesson.title}
+                </h1>
+              </div>
+
+              {/* Description */}
+              {lesson.description && (
+                <p className="text-lg text-gray-700 leading-relaxed mb-6">
+                  {lesson.description}
+                </p>
+              )}
+
+              {/* Media Player */}
+              {lesson.video_url && (
+                <div className="my-8">
+                  <EnhancedMediaPlayer
+                    type="video"
+                    src={lesson.video_url}
+                  />
+                </div>
+              )}
+
+              {lesson.google_slides_url && (
+                <div className="my-8">
+                  <EnhancedMediaPlayer
+                    type="google-slides"
+                    src={lesson.google_slides_url.includes('/embed') 
+                      ? lesson.google_slides_url 
+                      : lesson.google_slides_url.replace('/edit', '/embed')}
+                  />
+                </div>
+              )}
+
+              {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
+                <div className="my-8">
+                  <EnhancedMediaPlayer
+                    type="iframe"
+                    src={lesson.file_url}
+                  />
+                </div>
+              )}
+
+              {/* Learning Objectives */}
+              {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                <ul className="space-y-6 mt-8">
+                  {lesson.learning_objectives.map((objective, idx) => (
+                    <li key={idx} className="flex gap-4">
+                      <span className="text-[#1e3a8a] text-2xl flex-shrink-0 mt-1">•</span>
+                      <div>
+                        <span className="text-lg text-gray-700">{objective}</span>
+                      </div>
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
+
+            {/* Navigation Buttons */}
+            <div className="flex justify-between items-center mt-8">
+              <Button 
+                variant="outline" 
+                size="lg"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                size="lg"
-                className="h-12 px-6 font-semibold"
               >
-                <ChevronLeft className="w-5 h-5 mr-2" />
-                Previous
+                ← Previous
               </Button>
-
-              <span className="text-sm font-medium text-gray-600 text-center absolute left-1/2 -translate-x-1/2 hidden sm:block">
-                {enrollment?.completed_lessons?.length || 0} of {sortedLessons.length} completed
-              </span>
-
-              <Button
+              <Button 
+                size="lg" 
+                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90"
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
-                size="lg"
-                className="h-12 px-6 bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 font-semibold"
               >
-                Next
-                <ChevronRight className="w-5 h-5 ml-2" />
+                Next →
               </Button>
             </div>
-          </footer>
+          </div>
         </main>
       </div>
 
