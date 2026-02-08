@@ -215,9 +215,14 @@ export default function Home() {
     }
   });
 
-  // Get real user reviews from all courses
+  // Get real user reviews from GCSE/A-level courses only
+  const gcseCourseIds = coursesWithActualData
+    .filter(c => ['mathematics', 'english', 'biology', 'chemistry', 'physics', 'science', 'history', 'geography'].includes(c.category))
+    .map(c => c.id);
+  
   const realReviews = allReviews
     .filter(r => 
+      gcseCourseIds.includes(r.course_id) &&
       r.comment && 
       r.comment.trim().length >= 20 && 
       r.rating >= 4 &&
