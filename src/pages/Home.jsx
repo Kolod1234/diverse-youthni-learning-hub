@@ -928,6 +928,21 @@ export default function Home() {
       {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
       {faqSection[0] && <FAQSection section={faqSection[0]} />}
 
+      {/* Learning Statistics Section */}
+      <LearningStatisticsSection />
+
+      {/* Subject Mastery Roadmaps */}
+      <SubjectMasteryRoadmaps />
+
+      {/* Instructor Showcase */}
+      <InstructorShowcase />
+
+      {/* Free Resources Center */}
+      <FreeResourcesCenter />
+
+      {/* Student Success Stories */}
+      <StudentSuccessStories />
+
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
         <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/50">
