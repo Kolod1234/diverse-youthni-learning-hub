@@ -4,7 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { 
-  ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X
+  ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
+  Lock, Key, BookOpen, CheckCircle
 } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
