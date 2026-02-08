@@ -104,10 +104,27 @@ export default function EnhancedMediaPlayer({
     if (!document.fullscreenElement) {
       try {
         await containerRef.current.requestFullscreen();
+        
+        // Lock to landscape on mobile for google-slides/iframe
+        if ((type === 'google-slides' || type === 'iframe') && window.screen?.orientation?.lock) {
+          try {
+            await window.screen.orientation.lock('landscape');
+          } catch (err) {
+            console.log('Orientation lock not supported:', err);
+          }
+        }
       } catch (err) {
         console.error('Fullscreen error:', err);
       }
     } else {
+      // Unlock orientation when exiting fullscreen
+      if (window.screen?.orientation?.unlock) {
+        try {
+          window.screen.orientation.unlock();
+        } catch (err) {
+          console.log('Orientation unlock error:', err);
+        }
+      }
       document.exitFullscreen();
     }
   };
