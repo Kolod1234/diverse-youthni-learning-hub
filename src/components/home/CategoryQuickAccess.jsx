@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 import { BookOpen, Microscope, Globe, Clock, PenTool, Lightbulb } from 'lucide-react';
 
 const categories = [
-  { name: 'Mathematics', icon: PenTool, color: 'from-blue-500 to-blue-600', textColor: 'text-blue-600', query: 'mathematics' },
-  { name: 'Science', icon: Microscope, color: 'from-green-500 to-emerald-600', textColor: 'text-green-600', query: 'biology' },
-  { name: 'English', icon: BookOpen, color: 'from-purple-500 to-purple-600', textColor: 'text-purple-600', query: 'english' },
-  { name: 'History', icon: Clock, color: 'from-rose-500 to-rose-600', textColor: 'text-rose-600', query: 'history' },
-  { name: 'Geography', icon: Globe, color: 'from-teal-500 to-teal-600', textColor: 'text-teal-600', query: 'geography' },
-  { name: 'Physics', icon: Lightbulb, color: 'from-yellow-500 to-orange-600', textColor: 'text-yellow-600', query: 'physics' },
+  { name: 'Mathematics', icon: PenTool, color: 'from-blue-500 to-blue-600', image: 'https://images.unsplash.com/photo-1520997894817-7ba015e33e51?w=500&h=500&fit=crop', query: 'mathematics' },
+  { name: 'Biology', icon: Microscope, color: 'from-green-500 to-emerald-600', image: 'https://images.unsplash.com/photo-1576091160550-112173f4e3db?w=500&h=500&fit=crop', query: 'biology' },
+  { name: 'English', icon: BookOpen, color: 'from-purple-500 to-purple-600', image: 'https://images.unsplash.com/photo-1495446815901-a7297e60ffe1?w=500&h=500&fit=crop', query: 'english' },
+  { name: 'History', icon: Clock, color: 'from-rose-500 to-rose-600', image: 'https://images.unsplash.com/photo-1507842217343-583f7270bfba?w=500&h=500&fit=crop', query: 'history' },
+  { name: 'Geography', icon: Globe, color: 'from-teal-500 to-teal-600', image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=500&h=500&fit=crop', query: 'geography' },
+  { name: 'Physics', icon: Lightbulb, color: 'from-yellow-500 to-orange-600', image: 'https://images.unsplash.com/photo-1514320291840-2e0a9bf2a9ae?w=500&h=500&fit=crop', query: 'physics' },
 ];
 
 export default function CategoryQuickAccess() {
@@ -39,15 +39,23 @@ export default function CategoryQuickAccess() {
               whileHover={{ scale: 1.08, y: -4 }}
             >
               <Link to={createPageUrl('Explore') + `?category=${category.query}`}>
-                <div className={`bg-gradient-to-br ${category.color} rounded-2xl p-6 shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full flex flex-col items-center justify-center text-center`}>
-                  <div className="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:bg-white/30 transition-all">
-                    <Icon className="w-6 h-6 text-white" />
-                  </div>
-                  <h3 className="text-white font-bold text-sm leading-tight">
-                    {category.name}
-                  </h3>
-                  <div className="text-white/80 text-xs mt-2 group-hover:text-white transition-colors">
-                    Explore →
+                <div className="relative rounded-2xl overflow-hidden shadow-lg hover:shadow-xl transition-all cursor-pointer group h-full">
+                  <img
+                    src={category.image}
+                    alt={category.name}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  <div className={`absolute inset-0 bg-gradient-to-br ${category.color} opacity-60 group-hover:opacity-50 transition-opacity`} />
+                  <div className="absolute inset-0 flex flex-col items-center justify-center text-center p-4">
+                    <div className="bg-white/25 backdrop-blur-sm rounded-full p-3 mb-3 group-hover:bg-white/35 transition-all">
+                      <Icon className="w-6 h-6 text-white" />
+                    </div>
+                    <h3 className="text-white font-bold text-sm leading-tight">
+                      {category.name}
+                    </h3>
+                    <div className="text-white/90 text-xs mt-2 group-hover:text-white transition-colors">
+                      Explore →
+                    </div>
                   </div>
                 </div>
               </Link>
