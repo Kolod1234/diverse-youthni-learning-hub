@@ -110,19 +110,7 @@ export default function CourseCard({ course, index = 0 }) {
               {course.description}
             </p>
             
-            {/* Instructor */}
-            <div className="flex items-center gap-3 mb-4 pb-4 border-b border-gray-200">
-              <img
-                src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor || 'Instructor')}&background=6366f1&color=fff`}
-                alt={course.instructor}
-                className="w-8 h-8 rounded-full object-cover ring-2 ring-gray-100"
-              />
-              <div className="flex-1">
-                <p className="text-sm font-medium text-gray-900">{course.instructor || 'Expert Instructor'}</p>
-                <p className="text-xs text-gray-500">Course Instructor</p>
-              </div>
-            </div>
-            
+
             {/* Stats Row 1 */}
             <div className="grid grid-cols-3 gap-3 mb-4">
               <div className="text-center">
