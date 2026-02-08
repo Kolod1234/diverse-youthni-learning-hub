@@ -33,6 +33,12 @@ import RelatedLessons from '@/components/lesson/RelatedLessons';
 import ScrollPositionIndicator from '@/components/lesson/ScrollPositionIndicator';
 import SplitViewLayout from '@/components/lesson/SplitViewLayout';
 import ErrorBoundary from '@/components/lesson/ErrorBoundary';
+import FocusMode from '@/components/lesson/FocusMode';
+import StudyTimer from '@/components/lesson/StudyTimer';
+import StreakTracker from '@/components/lesson/StreakTracker';
+import XPProgressBar from '@/components/lesson/XPProgressBar';
+import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
+import DifficultyRating from '@/components/lesson/DifficultyRating';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -68,6 +74,11 @@ export default function LessonPlayerClassic() {
   const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
+  const [focusModeEnabled, setFocusModeEnabled] = useState(false);
+  const [currentXP, setCurrentXP] = useState(0);
+  const [userLevel, setUserLevel] = useState(1);
+  const [showXPGain, setShowXPGain] = useState(false);
+  const [xpGain, setXpGain] = useState(0);
   const searchInputRef = useRef(null);
   const mainContentRef = useRef(null);
   
@@ -90,6 +101,50 @@ export default function LessonPlayerClassic() {
     };
     loadUser();
   }, []);
+
+  // Load user XP and update streak
+  useEffect(() => {
+    const updateStreak = async () => {
+      if (!user) return;
+      
+      const today = new Date().toISOString().split('T')[0];
+      const streaks = await base44.entities.StudyStreak.list();
+      const streak = streaks[0];
+      
+      if (streak) {
+        const lastDate = streak.last_activity_date;
+        if (lastDate !== today) {
+          // Update streak
+          const yesterday = new Date();
+          yesterday.setDate(yesterday.getDate() - 1);
+          const yesterdayStr = yesterday.toISOString().split('T')[0];
+          
+          const newStreak = lastDate === yesterdayStr ? streak.current_streak + 1 : 1;
+          
+          await base44.entities.StudyStreak.update(streak.id, {
+            current_streak: newStreak,
+            longest_streak: Math.max(newStreak, streak.longest_streak),
+            last_activity_date: today,
+            streak_dates: [...(streak.streak_dates || []), today],
+            total_xp: streak.total_xp || 0,
+          });
+        }
+        setCurrentXP(streak.total_xp || 0);
+        setUserLevel(Math.floor((streak.total_xp || 0) / 100) + 1);
+      } else {
+        // Create first streak record
+        await base44.entities.StudyStreak.create({
+          current_streak: 1,
+          longest_streak: 1,
+          last_activity_date: today,
+          streak_dates: [today],
+          total_xp: 0,
+        });
+      }
+    };
+    
+    updateStreak();
+  }, [user]);
 
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
@@ -329,6 +384,21 @@ export default function LessonPlayerClassic() {
           setEarnedPoints(response.data.pointsEarned);
           setShowPointsAnimation(true);
           
+          // Update XP
+          const newXP = currentXP + response.data.pointsEarned;
+          setCurrentXP(newXP);
+          setXpGain(response.data.pointsEarned);
+          setShowXPGain(true);
+          setTimeout(() => setShowXPGain(false), 3000);
+          
+          // Update streak XP
+          const streaks = await base44.entities.StudyStreak.list();
+          if (streaks[0]) {
+            await base44.entities.StudyStreak.update(streaks[0].id, {
+              total_xp: newXP,
+            });
+          }
+          
           if (response.data.newBadges?.length > 0) {
             setNewBadges(response.data.newBadges);
             setShowBadges(true);
@@ -547,6 +617,25 @@ export default function LessonPlayerClassic() {
           )}
           
           <AccessibilityControls />
+          
+          <FocusMode 
+            enabled={focusModeEnabled} 
+            onToggle={setFocusModeEnabled}
+          >
+            <div className="prose prose-lg max-w-none text-white">
+              <h1>{lesson?.title}</h1>
+              {lesson?.description && <p>{lesson.description}</p>}
+              {lesson?.learning_objectives && (
+                <ul>
+                  {lesson.learning_objectives.map((obj, i) => (
+                    <li key={i}>{obj}</li>
+                  ))}
+                </ul>
+              )}
+            </div>
+          </FocusMode>
+          
+          <ThemeCustomizer />
           
           <Sheet>
             <SheetTrigger asChild>
@@ -896,8 +985,30 @@ export default function LessonPlayerClassic() {
               </div>
             )}
 
+            {/* Learning Enhancement Tools */}
+            <div className="grid md:grid-cols-2 gap-6 mt-8">
+              <StreakTracker />
+              <StudyTimer />
+            </div>
+
+            <div className="mt-6">
+              <XPProgressBar 
+                currentXP={currentXP}
+                level={userLevel}
+                showGain={showXPGain}
+                gainAmount={xpGain}
+              />
+            </div>
+
+            <div className="mt-6 flex justify-center">
+              <DifficultyRating 
+                lessonId={lessonId}
+                onComplete={() => toast.success('Thank you for your feedback!')}
+              />
+            </div>
+
             {/* Related Lessons */}
-            <div className="no-print">
+            <div className="no-print mt-8">
               <RelatedLessons 
                 lessons={sortedLessons}
                 courseId={courseId}
