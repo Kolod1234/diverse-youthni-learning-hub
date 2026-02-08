@@ -90,6 +90,22 @@ export default function LessonPlayerClassic() {
     loadInteractives();
   }, [lessonId, lesson]);
 
+  const handleRegenerateInteractives = async () => {
+    setLoadingInteractives(true);
+    try {
+      const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
+      if (response.data.success) {
+        setInteractiveContent(response.data);
+        toast.success('New activities generated!');
+      }
+    } catch (error) {
+      console.error('Failed to regenerate interactive content:', error);
+      toast.error('Failed to generate new activities');
+    } finally {
+      setLoadingInteractives(false);
+    }
+  };
+
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
@@ -590,6 +606,7 @@ export default function LessonPlayerClassic() {
                   {interactiveContent.matchingPairs?.length > 0 && (
                     <MatchingGame
                       pairs={interactiveContent.matchingPairs}
+                      onRegenerate={handleRegenerateInteractives}
                       onComplete={async (score) => {
                         toast.success(`Great job! You scored ${score} points!`);
                         
@@ -610,6 +627,7 @@ export default function LessonPlayerClassic() {
                   {interactiveContent.quizQuestions?.length > 0 && (
                     <InteractiveQuiz
                       questions={interactiveContent.quizQuestions}
+                      onRegenerate={handleRegenerateInteractives}
                       onComplete={async (score) => {
                         const percentage = Math.round((score / interactiveContent.quizQuestions.length) * 100);
                         toast.success(`Quiz complete! You scored ${percentage}%`);
@@ -634,7 +652,10 @@ export default function LessonPlayerClassic() {
                   )}
 
                   {interactiveContent.flashCards?.length > 0 && (
-                    <FlashCards cards={interactiveContent.flashCards} />
+                    <FlashCards 
+                      cards={interactiveContent.flashCards}
+                      onRegenerate={handleRegenerateInteractives}
+                    />
                   )}
                 </div>
               )}
