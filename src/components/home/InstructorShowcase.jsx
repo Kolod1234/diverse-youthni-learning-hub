@@ -18,14 +18,10 @@ export default function InstructorShowcase() {
 
   // Get unique instructors with their stats (filter out generic/empty names)
   const isGenericName = (name) => {
-    const lowerName = name.toLowerCase();
-    return lowerName.includes('dr. sarah') || 
-           lowerName.includes('mr. james') || 
-           lowerName.includes('ms. emma') || 
-           lowerName.includes('mrs. mary') || 
-           lowerName === 'instructor' || 
-           lowerName === 'unknown' || 
-           lowerName === 'tutor';
+    if (!name) return true;
+    const lowerName = name.toLowerCase().trim();
+    const genericPatterns = ['dr. sarah', 'mr. james', 'ms. emma', 'mrs. mary', 'instructor', 'unknown', 'tutor', 'dr sarah', 'mr james', 'ms emma', 'mrs mary'];
+    return genericPatterns.some(pattern => lowerName.includes(pattern));
   };
   
   const instructorStats = courses
