@@ -42,7 +42,7 @@ export default function StyledIcon({
   return (
     <div 
       className={cn(
-        'relative bg-gradient-to-br rounded-lg flex items-center justify-center shadow-lg transition-all duration-300 hover:shadow-xl hover:scale-105',
+        'relative bg-gradient-to-br rounded-lg flex items-center justify-center shadow-lg transition-shadow duration-300 hover:shadow-xl',
         colorFrom,
         colorTo,
         sizes.container,
