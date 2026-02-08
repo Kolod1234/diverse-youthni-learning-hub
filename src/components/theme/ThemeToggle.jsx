@@ -22,45 +22,13 @@ export default function ThemeToggle() {
     setMounted(true);
     const saved = localStorage.getItem('auto-schedule-theme');
     setAutoSchedule(saved === 'true');
-
-    // Apply theme class to document
-    const applyTheme = (themeName) => {
-      const html = document.documentElement;
-      html.classList.remove('dark', 'high-contrast');
-
-      if (themeName === 'dark') {
-        html.classList.add('dark');
-      } else if (themeName === 'high-contrast-dark') {
-        html.classList.add('dark', 'high-contrast');
-      }
-    };
-
-    applyTheme(theme);
-
-    // Listen for theme changes
-    const observer = new MutationObserver(() => {
-      applyTheme(theme);
-    });
-
-    observer.observe(html, { attributes: true, attributeFilter: ['class'] });
-    return () => observer.disconnect();
-  }, [theme]);
+  }, []);
 
   const handleAutoSchedule = () => {
     const newState = !autoSchedule;
     setAutoSchedule(newState);
     localStorage.setItem('auto-schedule-theme', newState);
-    if (newState) {
-      setTheme('dark');
-      applyThemeAndSchedule();
-    }
-  };
-
-  const applyThemeAndSchedule = () => {
-    const now = new Date();
-    const hour = now.getHours();
-    const isDarkHours = hour >= 18 || hour < 6;
-    setTheme(isDarkHours ? 'dark' : 'light');
+    if (newState) setTheme('dark');
   };
 
   if (!mounted) {

@@ -28,7 +28,7 @@ export default function ThemeProvider({ children }) {
       defaultTheme="system"
       enableSystem
       storageKey="theme-preference"
-      themes={['light', 'dark', 'system', 'auto-schedule', 'high-contrast-dark']}
+      themes={['light', 'dark', 'system']}
       disableTransitionOnChange={false}
       forcedTheme={undefined}
       enableColorScheme={true}
