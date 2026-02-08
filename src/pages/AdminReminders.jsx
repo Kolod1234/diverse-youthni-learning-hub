@@ -21,7 +21,13 @@ export default function AdminReminders() {
     target_audience: 'all_students',
     course_id: '',
     group_id: '',
-    is_active: true
+    is_active: true,
+    schedule_type: 'manual',
+    scheduled_date: '',
+    scheduled_time: '09:00',
+    repeat_interval: 1,
+    repeat_end_date: '',
+    is_scheduled_active: false
   });
 
   React.useEffect(() => {
@@ -103,7 +109,13 @@ export default function AdminReminders() {
       target_audience: 'all_students',
       course_id: '',
       group_id: '',
-      is_active: true
+      is_active: true,
+      schedule_type: 'manual',
+      scheduled_date: '',
+      scheduled_time: '09:00',
+      repeat_interval: 1,
+      repeat_end_date: '',
+      is_scheduled_active: false
     });
     setEditingReminder(null);
   };
@@ -131,7 +143,13 @@ export default function AdminReminders() {
       target_audience: reminder.target_audience,
       course_id: reminder.course_id || '',
       group_id: reminder.group_id || '',
-      is_active: reminder.is_active
+      is_active: reminder.is_active,
+      schedule_type: reminder.schedule_type || 'manual',
+      scheduled_date: reminder.scheduled_date || '',
+      scheduled_time: reminder.scheduled_time || '09:00',
+      repeat_interval: reminder.repeat_interval || 1,
+      repeat_end_date: reminder.repeat_end_date || '',
+      is_scheduled_active: reminder.is_scheduled_active || false
     });
     setShowCreateDialog(true);
   };
@@ -293,7 +311,7 @@ export default function AdminReminders() {
               )}
 
               {/* Active Toggle */}
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-3 pb-6 border-b border-border">
                 <input
                   type="checkbox"
                   id="is_active"
@@ -304,6 +322,93 @@ export default function AdminReminders() {
                 <label htmlFor="is_active" className="text-sm font-medium text-foreground cursor-pointer">
                   Reminder is active
                 </label>
+              </div>
+
+              {/* Schedule Section */}
+              <div className="pt-6 space-y-4 border-t border-border">
+                <h3 className="font-semibold text-foreground">Schedule Settings</h3>
+
+                {/* Schedule Type */}
+                <div>
+                  <label className="block text-sm font-medium text-foreground mb-2">Schedule Type</label>
+                  <select
+                    value={formData.schedule_type}
+                    onChange={(e) => setFormData({ ...formData, schedule_type: e.target.value })}
+                    className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                  >
+                    <option value="manual">Manual (Send when I click)</option>
+                    <option value="once">Once (Send at specific date & time)</option>
+                    <option value="continuous">Continuous (Send repeatedly)</option>
+                  </select>
+                </div>
+
+                {/* Date & Time (for once and continuous) */}
+                {(formData.schedule_type === 'once' || formData.schedule_type === 'continuous') && (
+                  <>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">Date *</label>
+                        <input
+                          type="date"
+                          value={formData.scheduled_date}
+                          onChange={(e) => setFormData({ ...formData, scheduled_date: e.target.value })}
+                          className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium text-foreground mb-2">Time *</label>
+                        <input
+                          type="time"
+                          value={formData.scheduled_time}
+                          onChange={(e) => setFormData({ ...formData, scheduled_time: e.target.value })}
+                          className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                        />
+                      </div>
+                    </div>
+                  </>
+                )}
+
+                {/* Continuous Options */}
+                {formData.schedule_type === 'continuous' && (
+                  <div className="space-y-4 p-4 bg-muted rounded-lg">
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Repeat Every (days) *</label>
+                      <input
+                        type="number"
+                        min="1"
+                        value={formData.repeat_interval}
+                        onChange={(e) => setFormData({ ...formData, repeat_interval: parseInt(e.target.value) })}
+                        className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-sm font-medium text-foreground mb-2">Stop Repeating On</label>
+                      <input
+                        type="date"
+                        value={formData.repeat_end_date}
+                        onChange={(e) => setFormData({ ...formData, repeat_end_date: e.target.value })}
+                        className="w-full px-4 py-2 bg-background border border-border rounded-lg text-foreground focus:outline-none focus:ring-2 focus:ring-primary"
+                      />
+                      <p className="text-xs text-muted-foreground mt-1">Leave empty to repeat indefinitely</p>
+                    </div>
+                  </div>
+                )}
+
+                {/* Enable Schedule Toggle */}
+                {formData.schedule_type !== 'manual' && (
+                  <div className="flex items-center gap-3 p-4 bg-muted rounded-lg">
+                    <input
+                      type="checkbox"
+                      id="is_scheduled_active"
+                      checked={formData.is_scheduled_active}
+                      onChange={(e) => setFormData({ ...formData, is_scheduled_active: e.target.checked })}
+                      className="w-4 h-4 accent-primary"
+                    />
+                    <label htmlFor="is_scheduled_active" className="text-sm font-medium text-foreground cursor-pointer">
+                      Enable automatic scheduling
+                    </label>
+                  </div>
+                )}
               </div>
             </div>
 
@@ -392,6 +497,19 @@ export default function AdminReminders() {
                             <p className="text-sm font-medium text-muted-foreground">Message Preview</p>
                             <p className="text-foreground whitespace-pre-wrap text-sm">{reminder.message.substring(0, 150)}...</p>
                           </div>
+                          {reminder.schedule_type && reminder.schedule_type !== 'manual' && (
+                            <div className="p-3 bg-muted rounded-lg">
+                              <p className="text-xs font-medium text-foreground mb-1">Schedule: {reminder.schedule_type === 'once' ? 'Once' : 'Continuous'}</p>
+                              <p className="text-xs text-muted-foreground">
+                                {reminder.scheduled_date && reminder.scheduled_time && (
+                                  <>
+                                    {new Date(reminder.scheduled_date).toLocaleDateString()} at {reminder.scheduled_time}
+                                    {reminder.schedule_type === 'continuous' && ` • Every ${reminder.repeat_interval} day(s)`}
+                                  </>
+                                )}
+                              </p>
+                            </div>
+                          )}
                           <div className="flex gap-4 text-xs text-muted-foreground">
                             <span>Sent: {reminder.sent_count || 0} times</span>
                             {reminder.last_sent_date && (
