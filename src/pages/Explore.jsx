@@ -284,15 +284,24 @@ export default function Explore() {
     </div>
   );
 
+  const stats = [
+    { icon: BookOpen, label: 'Total Courses', value: coursesWithActualData.length, color: 'from-blue-500 to-cyan-500' },
+    { icon: Users, label: 'Active Learners', value: allEnrollments.length, color: 'from-purple-500 to-pink-500' },
+    { icon: Star, label: 'Avg Rating', value: (coursesWithActualData.reduce((sum, c) => sum + (c.rating || 0), 0) / coursesWithActualData.length).toFixed(1), color: 'from-yellow-500 to-orange-500' },
+    { icon: TrendingUp, label: 'Success Rate', value: '96%', color: 'from-green-500 to-emerald-500' }
+  ];
+
+  const featuredCourses = coursesWithActualData.filter(c => c.rating && c.rating >= 4.5).slice(0, 3);
+
   return (
     <CoursePasswordProtection user={user}>
       <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/30 to-white dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-900">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        {/* Header */}
+        {/* Header with Stats */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-12 text-center"
+          className="mb-16 text-center"
         >
           <motion.span 
             className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 border-blue-500/30 text-sm font-bold mb-6"
@@ -300,7 +309,7 @@ export default function Explore() {
           >
             <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
               <Sparkles className="w-4 h-4 text-blue-600" />
-              Course Catalog
+              Discover Learning
             </span>
           </motion.span>
           <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
@@ -309,6 +318,96 @@ export default function Explore() {
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Discover courses tailored to your interests and start your learning journey today
           </p>
+        </motion.div>
+
+        {/* Stats Grid */}
+        <motion.div 
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12"
+        >
+          {stats.map((stat, i) => {
+            const Icon = stat.icon;
+            return (
+              <motion.div
+                key={i}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.1 }}
+                whileHover={{ y: -4 }}
+                className="bg-gradient-to-br from-white to-blue-50/50 dark:from-slate-800 dark:to-blue-950/30 rounded-2xl p-5 border border-border shadow-md hover:shadow-lg transition-all"
+              >
+                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3 shadow-lg`}>
+                  <Icon className="w-6 h-6 text-white" />
+                </div>
+                <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
+                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
+              </motion.div>
+            );
+          })}
+        </motion.div>
+
+        {/* Featured Courses Section */}
+        {featuredCourses.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mb-14"
+          >
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent flex items-center gap-2">
+                <Star className="w-6 h-6 text-yellow-500" />
+                Featured Courses
+              </h2>
+              <Badge className="bg-yellow-100 text-yellow-800">Top Rated</Badge>
+            </div>
+            <div className="grid md:grid-cols-3 gap-6">
+              <AnimatePresence>
+                {featuredCourses.map((course, i) => (
+                  <motion.div
+                    key={course.id}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.9 }}
+                    transition={{ delay: i * 0.1 }}
+                    className="relative group"
+                  >
+                    <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-all" />
+                    <CourseCard course={course} index={i} />
+                  </motion.div>
+                ))}
+              </AnimatePresence>
+            </div>
+          </motion.div>
+        )}
+
+        {/* Category Showcase */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-14"
+        >
+          <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
+          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
+            {categories.map((cat, i) => (
+              <motion.button
+                key={cat.id}
+                initial={{ opacity: 0, y: 10 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: i * 0.05 }}
+                whileHover={{ scale: 1.05, y: -2 }}
+                onClick={() => setSelectedCategories([cat.id])}
+                className={`p-3 rounded-xl transition-all ${
+                  selectedCategories.includes(cat.id)
+                    ? `bg-gradient-to-br ${cat.color} text-white shadow-lg`
+                    : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-border shadow-sm hover:shadow-md'
+                }`}
+              >
+                <div className="text-2xl mb-1">{cat.icon}</div>
+                <div className="text-xs font-semibold line-clamp-2">{cat.label}</div>
+              </motion.button>
+            ))}
+          </div>
         </motion.div>
 
         {/* Search and Mobile Filter */}
