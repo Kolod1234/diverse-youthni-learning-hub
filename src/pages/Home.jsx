@@ -718,18 +718,15 @@ export default function Home() {
                 >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 via-purple-600/0 to-pink-600/0 group-hover:from-blue-600/5 group-hover:via-purple-600/5 group-hover:to-pink-600/5 transition-all duration-500" />
                 <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                  {course.thumbnail ? (
-                    <img
-                      src={course.thumbnail}
-                      alt={course.title}
-                      className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700"
-                      loading="lazy"
-                    />
-                  ) : (
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <BookOpen className="w-20 h-20 text-white/50 group-hover:scale-110 transition-transform" />
-                    </div>
-                  )}
+                  <img
+                    src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
+                    alt={course.title}
+                    className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700"
+                    loading="lazy"
+                    onError={(e) => {
+                      e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop';
+                    }}
+                  />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
                   {course.category && (
                     <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 px-4 py-1 rounded-full text-sm font-bold uppercase shadow-lg group-hover:scale-110 transition-transform">
