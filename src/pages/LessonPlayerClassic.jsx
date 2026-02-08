@@ -493,7 +493,34 @@ export default function LessonPlayerClassic() {
   const slideUrl = getSlideEmbedUrl();
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <ErrorBoundary>
+      <div className="min-h-screen bg-gray-50 flex"
+        style={{
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
+        }}
+      >
+        {/* Network Status */}
+        <NetworkStatusIndicator />
+        
+        {/* Scroll Progress */}
+        <ScrollPositionIndicator />
+        
+        {/* Pull to Refresh Indicator */}
+        {isPulling && (
+          <div 
+            className="fixed top-0 left-0 right-0 flex justify-center z-50 transition-transform"
+            style={{ transform: `translateY(${Math.min(pullDistance, 80)}px)` }}
+          >
+            <div className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+              <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+              <span className="text-sm">{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</span>
+            </div>
+          </div>
+        )}
+
       {/* Top Bar */}
       <header className="bg-white border-b h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
@@ -685,6 +712,7 @@ export default function LessonPlayerClassic() {
         {/* Main Content */}
         <main 
           ref={mainContentRef}
+          id="lesson-content"
           className="flex-1 overflow-y-auto bg-gray-100"
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
@@ -693,6 +721,15 @@ export default function LessonPlayerClassic() {
           aria-label="Lesson content"
         >
           <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
+            {/* Breadcrumb Navigation */}
+            <div className="no-print mb-4">
+              <BreadcrumbNav 
+                course={course}
+                section={lesson?.section}
+                lesson={lesson}
+              />
+            </div>
+
             {/* Content Card */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 lg:p-12">
               {/* Title */}
@@ -965,5 +1002,6 @@ export default function LessonPlayerClassic() {
         onClose={() => setShowBadges(false)}
       />
     </div>
+    </ErrorBoundary>
   );
 }
