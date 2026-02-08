@@ -464,6 +464,7 @@ export default function LessonPlayerClassic() {
   };
 
   const getSlideEmbedUrl = () => {
+    if (!lesson) return null;
     if (lesson.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
       if (presentationId) {
