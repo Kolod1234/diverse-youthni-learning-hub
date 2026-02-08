@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Flame, Trophy, Zap, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
+import StyledIcon from '@/components/ui/StyledIcon';
 
 export default function QuickStatsCard({ user }) {
   const { data: userProgress } = useQuery({
