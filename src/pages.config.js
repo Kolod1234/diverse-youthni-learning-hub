@@ -67,6 +67,9 @@ import Analytics from './pages/Analytics';
 import ArtGallery from './pages/ArtGallery';
 import BookSession from './pages/BookSession';
 import CCEAPastPapers from './pages/CCEAPastPapers';
+import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
+import ChallengePlayer from './pages/ChallengePlayer';
+import Challenges from './pages/Challenges';
 import Community from './pages/Community';
 import CommunityEventSlides from './pages/CommunityEventSlides';
 import ContactUs from './pages/ContactUs';
@@ -115,9 +118,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import Challenges from './pages/Challenges';
-import ChallengePlayer from './pages/ChallengePlayer';
-import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
+import StudyGroupDetail from './pages/StudyGroupDetail';
 import __Layout from './Layout.jsx';
 
 
@@ -142,6 +143,9 @@ export const PAGES = {
     "ArtGallery": ArtGallery,
     "BookSession": BookSession,
     "CCEAPastPapers": CCEAPastPapers,
+    "ChallengeLeaderboard": ChallengeLeaderboard,
+    "ChallengePlayer": ChallengePlayer,
+    "Challenges": Challenges,
     "Community": Community,
     "CommunityEventSlides": CommunityEventSlides,
     "ContactUs": ContactUs,
@@ -190,9 +194,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "Challenges": Challenges,
-    "ChallengePlayer": ChallengePlayer,
-    "ChallengeLeaderboard": ChallengeLeaderboard,
+    "StudyGroupDetail": StudyGroupDetail,
 }
 
 export const pagesConfig = {
