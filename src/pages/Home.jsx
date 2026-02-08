@@ -967,19 +967,11 @@ export default function Home() {
                     <div className="text-6xl text-blue-600/20 font-serif mb-2">"</div>
                     <p className="text-foreground/90 leading-relaxed text-base italic">{review.comment}</p>
                   </div>
-                  <div className="flex items-center justify-between pt-4 border-t border-border/50">
-                    <div className="flex items-center gap-3">
-                      <div className="w-12 h-12 bg-gradient-to-br from-blue-500 via-purple-600 to-pink-600 rounded-full flex items-center justify-center text-white font-bold text-lg shadow-lg">
-                        {review.user_name?.charAt(0) || 'U'}
-                      </div>
-                      <div>
-                        <p className="font-bold text-foreground">{review.user_name}</p>
-                        <p className="text-xs text-muted-foreground flex items-center gap-1">
-                          <CheckCircle className="w-3 h-3 text-green-500" />
-                          {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
-                        </p>
-                      </div>
-                    </div>
+                  <div className="flex items-center justify-start pt-4 border-t border-border/50">
+                    <p className="text-xs text-muted-foreground flex items-center gap-1">
+                      <CheckCircle className="w-3 h-3 text-green-500" />
+                      {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
+                    </p>
                   </div>
                 </div>
               </motion.div>
