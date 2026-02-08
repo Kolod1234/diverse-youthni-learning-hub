@@ -17,9 +17,19 @@ export default function InstructorShowcase() {
   });
 
   // Get unique instructors with their stats (filter out generic/empty names)
-  const genericNames = ['dr sarah', 'mr james', 'ms emma', 'mrs mary', 'instructor', 'unknown', 'tutor'];
+  const isGenericName = (name) => {
+    const lowerName = name.toLowerCase();
+    return lowerName.includes('dr. sarah') || 
+           lowerName.includes('mr. james') || 
+           lowerName.includes('ms. emma') || 
+           lowerName.includes('mrs. mary') || 
+           lowerName === 'instructor' || 
+           lowerName === 'unknown' || 
+           lowerName === 'tutor';
+  };
+  
   const instructorStats = courses
-    .filter(c => c.instructor && c.instructor.trim() && !genericNames.includes(c.instructor.toLowerCase()))
+    .filter(c => c.instructor && c.instructor.trim() && !isGenericName(c.instructor))
     .reduce((acc, course) => {
       const existing = acc.find(i => i.name === course.instructor);
       const instructorReviews = reviews.filter(r => 
