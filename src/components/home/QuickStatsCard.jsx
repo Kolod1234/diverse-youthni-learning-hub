@@ -76,13 +76,13 @@ export default function QuickStatsCard({ user }) {
       {/* In Progress */}
       <motion.div
         whileHover={{ y: -4 }}
-        className="bg-gradient-to-br from-blue-50 to-indigo-50 border-2 border-blue-200 rounded-xl p-5 text-center hover:shadow-lg transition-all"
+        className="bg-white border border-border rounded-xl p-5 text-center hover:shadow-lg transition-all"
       >
-        <div className="flex justify-center mb-2">
-          <Trophy className="w-6 h-6 text-blue-600" />
+        <div className="flex justify-center mb-3">
+          <StyledIcon Icon={Trophy} colorFrom="from-blue-500" colorTo="to-indigo-600" size="md" />
         </div>
-        <div className="text-2xl font-bold text-blue-700">{inProgressCourses}</div>
-        <div className="text-xs text-blue-600 font-semibold">In Progress</div>
+        <div className="text-2xl font-bold text-foreground">{inProgressCourses}</div>
+        <div className="text-xs text-muted-foreground font-semibold">In Progress</div>
       </motion.div>
     </motion.div>
   );
