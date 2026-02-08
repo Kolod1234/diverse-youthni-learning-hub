@@ -1003,7 +1003,6 @@ export default function LessonPlayerClassic() {
         badges={newBadges}
         onClose={() => setShowBadges(false)}
       />
-    </div>
     </ErrorBoundary>
   );
 }
