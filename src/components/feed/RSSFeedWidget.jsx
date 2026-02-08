@@ -151,7 +151,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
         {/* Featured Story - Large Card */}
         {featuredItem && (
           <motion.div
-            key={featuredItem.id}
+            key="featured-item"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
