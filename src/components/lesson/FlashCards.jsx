@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { ChevronLeft, ChevronRight, RotateCcw, Sparkles } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCcw, Sparkles, RefreshCw } from 'lucide-react';
 
-export default function FlashCards({ cards }) {
+export default function FlashCards({ cards, onRegenerate }) {
   const [currentCard, setCurrentCard] = useState(0);
   const [isFlipped, setIsFlipped] = useState(false);
   const [knownCards, setKnownCards] = useState(new Set());
@@ -43,6 +43,11 @@ export default function FlashCards({ cards }) {
           <Button variant="outline" size="sm" onClick={reset}>
             <RotateCcw className="w-4 h-4" />
           </Button>
+          {onRegenerate && (
+            <Button variant="outline" size="sm" onClick={onRegenerate}>
+              <RefreshCw className="w-4 h-4" />
+            </Button>
+          )}
         </div>
       </div>
 

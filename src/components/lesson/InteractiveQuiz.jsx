@@ -2,10 +2,10 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CheckCircle, XCircle, Trophy, ArrowRight } from 'lucide-react';
+import { CheckCircle, XCircle, Trophy, ArrowRight, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function InteractiveQuiz({ questions, onComplete }) {
+export default function InteractiveQuiz({ questions, onComplete, onRegenerate }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswer, setSelectedAnswer] = useState(null);
   const [showResult, setShowResult] = useState(false);
@@ -59,9 +59,17 @@ export default function InteractiveQuiz({ questions, onComplete }) {
           <p className="text-lg text-gray-600 mb-6">
             You scored {score} out of {questions.length} ({percentage}%)
           </p>
-          <Button onClick={reset} className="bg-gradient-to-r from-green-600 to-blue-600">
-            Try Again
-          </Button>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={reset} className="bg-gradient-to-r from-green-600 to-blue-600">
+              Try Again
+            </Button>
+            {onRegenerate && (
+              <Button onClick={onRegenerate} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                New Questions
+              </Button>
+            )}
+          </div>
         </motion.div>
       </Card>
     );

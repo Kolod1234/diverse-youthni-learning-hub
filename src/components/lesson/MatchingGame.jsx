@@ -2,10 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
-import { CheckCircle, XCircle, RotateCcw, Trophy } from 'lucide-react';
+import { CheckCircle, XCircle, RotateCcw, Trophy, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
 
-export default function MatchingGame({ pairs, onComplete }) {
+export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
   const [leftItems, setLeftItems] = useState([]);
   const [rightItems, setRightItems] = useState([]);
   const [selectedLeft, setSelectedLeft] = useState(null);
@@ -102,9 +102,17 @@ export default function MatchingGame({ pairs, onComplete }) {
           <p className="text-gray-600 mb-4">
             You completed the matching game with {score} points in {attempts} attempts!
           </p>
-          <Button onClick={reset} className="bg-gradient-to-r from-purple-600 to-blue-600">
-            Play Again
-          </Button>
+          <div className="flex gap-3 justify-center">
+            <Button onClick={reset} className="bg-gradient-to-r from-purple-600 to-blue-600">
+              Play Again
+            </Button>
+            {onRegenerate && (
+              <Button onClick={onRegenerate} variant="outline">
+                <RefreshCw className="w-4 h-4 mr-2" />
+                New Activity
+              </Button>
+            )}
+          </div>
         </motion.div>
       ) : (
         <div className="grid grid-cols-2 gap-4">
