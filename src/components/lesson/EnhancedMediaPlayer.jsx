@@ -105,18 +105,32 @@ export default function EnhancedMediaPlayer({
       try {
         await containerRef.current.requestFullscreen();
         
-        // Lock to landscape on mobile for google-slides/iframe
-        if ((type === 'google-slides' || type === 'iframe') && window.screen?.orientation?.lock) {
+        // Lock to landscape on mobile for all media types
+        if (window.screen?.orientation?.lock) {
           try {
             await window.screen.orientation.lock('landscape');
           } catch (err) {
             console.log('Orientation lock not supported:', err);
           }
         }
+        
+        // Enable zooming in fullscreen
+        const viewport = document.querySelector('meta[name="viewport"]');
+        if (viewport) {
+          viewport.setAttribute('data-original-content', viewport.getAttribute('content'));
+          viewport.setAttribute('content', 'width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes');
+        }
       } catch (err) {
         console.error('Fullscreen error:', err);
       }
     } else {
+      // Restore viewport settings
+      const viewport = document.querySelector('meta[name="viewport"]');
+      if (viewport && viewport.getAttribute('data-original-content')) {
+        viewport.setAttribute('content', viewport.getAttribute('data-original-content'));
+        viewport.removeAttribute('data-original-content');
+      }
+      
       // Unlock orientation when exiting fullscreen
       if (window.screen?.orientation?.unlock) {
         try {
