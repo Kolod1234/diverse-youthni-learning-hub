@@ -45,27 +45,6 @@ export default function LessonPlayerClassic() {
     loadUser();
   }, []);
 
-  // Load interactive content based on lesson
-  useEffect(() => {
-    const loadInteractives = async () => {
-      if (!lessonId || lessonId === 'null' || lessonId === 'undefined' || !currentLessonArray.length) return;
-      
-      setLoadingInteractives(true);
-      try {
-        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
-        if (response.data.success) {
-          setInteractiveContent(response.data);
-        }
-      } catch (error) {
-        console.error('Failed to load interactive content:', error);
-      } finally {
-        setLoadingInteractives(false);
-      }
-    };
-    
-    loadInteractives();
-  }, [lessonId, currentLessonArray]);
-
   // First fetch the lesson to get its course_id
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
     queryKey: ['lesson', lessonId],
@@ -83,6 +62,27 @@ export default function LessonPlayerClassic() {
   
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
+
+  // Load interactive content based on lesson
+  useEffect(() => {
+    const loadInteractives = async () => {
+      if (!lessonId || lessonId === 'null' || lessonId === 'undefined' || !lesson) return;
+      
+      setLoadingInteractives(true);
+      try {
+        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
+        if (response.data.success) {
+          setInteractiveContent(response.data);
+        }
+      } catch (error) {
+        console.error('Failed to load interactive content:', error);
+      } finally {
+        setLoadingInteractives(false);
+      }
+    };
+    
+    loadInteractives();
+  }, [lessonId, lesson]);
 
   const { data: course } = useQuery({
     queryKey: ['course', courseId],
