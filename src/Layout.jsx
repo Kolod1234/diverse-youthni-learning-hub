@@ -24,6 +24,7 @@ import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import { motion } from 'framer-motion';
+import '@/styles/theme-variables.css';
 
 function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -149,19 +150,13 @@ function LayoutContent({ children, currentPageName }) {
   return (
     <div className="relative w-full bg-background text-foreground min-h-screen">
       <style>
-        {`
-          :root {
-            --color-primary: #FF8C00;
-            --color-primary-light: #FFA500;
-            --color-primary-dark: #CC7000;
-          }
-          .dark {
-            --color-primary: #FF8C00;
-            --color-primary-light: #FFA500;
-            --color-primary-dark: #CC7000;
-          }
-        `}
-      </style>
+              {`
+                /* Apply custom primary color if saved */
+                :root {
+                  --custom-primary: var(--color-primary, #FF8C00);
+                }
+              `}
+            </style>
       {/* Header */}
       <header 
         className={`
