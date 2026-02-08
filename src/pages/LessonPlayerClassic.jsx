@@ -495,7 +495,26 @@ export default function LessonPlayerClassic() {
 
   return (
     <ErrorBoundary>
-      <div className="min-h-screen bg-gray-50 flex"
+      {/* Network Status */}
+      <NetworkStatusIndicator />
+      
+      {/* Scroll Progress */}
+      <ScrollPositionIndicator />
+      
+      {/* Pull to Refresh Indicator */}
+      {isPulling && (
+        <div 
+          className="fixed top-0 left-0 right-0 flex justify-center z-50 transition-transform"
+          style={{ transform: `translateY(${Math.min(pullDistance, 80)}px)` }}
+        >
+          <div className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
+            <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+            <span className="text-sm">{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</span>
+          </div>
+        </div>
+      )}
+
+      <div className="min-h-screen flex flex-col bg-gray-100"
         style={{
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',
@@ -503,27 +522,8 @@ export default function LessonPlayerClassic() {
           paddingRight: 'env(safe-area-inset-right)'
         }}
       >
-        {/* Network Status */}
-        <NetworkStatusIndicator />
-        
-        {/* Scroll Progress */}
-        <ScrollPositionIndicator />
-        
-        {/* Pull to Refresh Indicator */}
-        {isPulling && (
-          <div 
-            className="fixed top-0 left-0 right-0 flex justify-center z-50 transition-transform"
-            style={{ transform: `translateY(${Math.min(pullDistance, 80)}px)` }}
-          >
-            <div className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-              <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
-              <span className="text-sm">{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</span>
-            </div>
-          </div>
-        )}
-
-      {/* Top Bar */}
-      <header className="bg-white border-b h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
+        {/* Top Bar */}
+        <header className="bg-white border-b h-16 flex items-center justify-between px-6 sticky top-0 z-50 shadow-sm">
         <div className="flex items-center gap-4">
           <button
             className="lg:hidden"
@@ -908,6 +908,7 @@ export default function LessonPlayerClassic() {
             </div>
           </div>
         </main>
+      </div>
       </div>
 
       {/* Command Palette */}
