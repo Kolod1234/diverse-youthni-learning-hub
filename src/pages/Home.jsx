@@ -30,6 +30,10 @@ import ImageGallerySection from '@/components/sections/ImageGallerySection';
 import VideoEmbedSection from '@/components/sections/VideoEmbedSection';
 import TeamMembersSection from '@/components/sections/TeamMembersSection';
 import FAQSection from '@/components/sections/FAQSection';
+import ContinueLearningSection from '@/components/home/ContinueLearningSection';
+import QuickStatsCard from '@/components/home/QuickStatsCard';
+import TrendingCoursesCarousel from '@/components/home/TrendingCoursesCarousel';
+import CategoryQuickAccess from '@/components/home/CategoryQuickAccess';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -336,6 +340,24 @@ export default function Home() {
           </div>
         </section>
       )}
+
+      {/* Quick Stats Banner - For logged in users */}
+      {user && (
+        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+          <QuickStatsCard user={user} />
+        </section>
+      )}
+
+      {/* Continue Learning Section */}
+      {user && (
+        <ContinueLearningSection user={user} />
+      )}
+
+      {/* Category Quick Access */}
+      <CategoryQuickAccess />
+
+      {/* Trending Courses */}
+      <TrendingCoursesCarousel />
 
       {/* Home Widgets */}
       <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 py-16 overflow-hidden">
