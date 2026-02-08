@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { 
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
-  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare
+  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw
 } from 'lucide-react';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
@@ -22,6 +22,18 @@ import AccessibilityControls from '@/components/lesson/AccessibilityControls';
 import QuickActions from '@/components/lesson/QuickActions';
 import useKeyboardShortcuts from '@/components/lesson/useKeyboardShortcuts';
 import useProgressAutoSave from '@/components/lesson/useProgressAutoSave';
+import usePictureInPicture from '@/components/lesson/usePictureInPicture';
+import useHapticFeedback from '@/components/lesson/useHapticFeedback';
+import usePullToRefresh from '@/components/lesson/usePullToRefresh';
+import CommandPalette from '@/components/lesson/CommandPalette';
+import BreadcrumbNav from '@/components/lesson/BreadcrumbNav';
+import ProgressRing from '@/components/lesson/ProgressRing';
+import NetworkStatusIndicator from '@/components/lesson/NetworkStatusIndicator';
+import RelatedLessons from '@/components/lesson/RelatedLessons';
+import ScrollPositionIndicator from '@/components/lesson/ScrollPositionIndicator';
+import SplitViewLayout from '@/components/lesson/SplitViewLayout';
+import PrintMode from '@/components/lesson/PrintMode';
+import ErrorBoundary from '@/components/lesson/ErrorBoundary';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
@@ -56,8 +68,21 @@ export default function LessonPlayerClassic() {
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showCommandPalette, setShowCommandPalette] = useState(false);
   const searchInputRef = useRef(null);
   const mainContentRef = useRef(null);
+  
+  // Advanced hooks
+  const { videoRef, isPiP, enterPiP, exitPiP } = usePictureInPicture();
+  const haptic = useHapticFeedback();
+  const { isPulling, pullDistance } = usePullToRefresh(async () => {
+    await Promise.all([
+      refetchLesson(),
+      refetchCourse(),
+      refetchEnrollment()
+    ]);
+    haptic.success();
+  });
 
   useEffect(() => {
     const loadUser = async () => {
@@ -179,6 +204,10 @@ export default function LessonPlayerClassic() {
       }
     });
   };
+
+  // Calculate reading time
+  const estimatedMinutes = lesson?.duration_minutes || Math.ceil((lesson?.slides?.length || 0) * 2);
+  const progressPercent = (sortedLessons.findIndex(l => l.id === lessonId) + 1) / sortedLessons.length * 100;
 
   useEffect(() => {
     if (lessonId) {
@@ -477,6 +506,20 @@ export default function LessonPlayerClassic() {
         </div>
         
         <div className="flex items-center gap-4">
+          {/* Progress Ring */}
+          <div className="hidden md:block">
+            <ProgressRing progress={progressPercent} size={50} />
+          </div>
+          
+          {/* Estimated Time */}
+          {estimatedMinutes > 0 && (
+            <div className="hidden lg:flex items-center gap-1 text-sm text-gray-600">
+              <Clock className="w-4 h-4" />
+              <span>{estimatedMinutes} min</span>
+            </div>
+          )}
+          
+          <PrintMode lesson={lesson} course={course} />
           <AccessibilityControls />
           
           <Sheet>
@@ -801,21 +844,55 @@ export default function LessonPlayerClassic() {
 
             {/* Mark Complete Button */}
             {!isCompleted && (
-              <div className="mt-6 text-center">
+              <div className="mt-6 text-center no-print">
                 <Button
                   size="lg"
-                  onClick={() => markCompleteMutation.mutate()}
+                  onClick={() => {
+                    markCompleteMutation.mutate();
+                    haptic.success();
+                  }}
                   disabled={markCompleteMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 gap-2"
+                  className="bg-green-600 hover:bg-green-700 gap-2 min-h-[44px] min-w-[44px]"
                 >
                   <CheckCircle className="w-5 h-5" />
                   {markCompleteMutation.isPending ? 'Saving...' : 'Mark as Complete'}
                 </Button>
               </div>
             )}
+
+            {/* Related Lessons */}
+            <div className="no-print">
+              <RelatedLessons 
+                lessons={sortedLessons}
+                courseId={courseId}
+                currentLessonId={lessonId}
+              />
+            </div>
           </div>
         </main>
       </div>
+
+      {/* Command Palette */}
+      <CommandPalette
+        open={showCommandPalette}
+        onOpenChange={setShowCommandPalette}
+        actions={{
+          onSearch: () => searchInputRef.current?.focus(),
+          onBookmark: () => setShowBookmarksSheet(true),
+          onNotes: () => setShowNotesSheet(true),
+          onDiscussion: () => navigate(`/CourseDiscussion?id=${courseId}`),
+          onShare: () => {
+            if (navigator.share) {
+              navigator.share({
+                title: lesson?.title,
+                text: `Check out this lesson: ${lesson?.title}`,
+                url: window.location.href
+              });
+            }
+          },
+          onAnalytics: () => navigate(`/Analytics`)
+        }}
+      />
 
       {/* Quick Actions FAB */}
       <QuickActions
