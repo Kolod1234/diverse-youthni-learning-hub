@@ -13,6 +13,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
+import { motion } from 'framer-motion';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
@@ -28,6 +29,8 @@ export default function LessonPlayerClassic() {
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
+  const [touchStart, setTouchStart] = useState(0);
+  const [touchEnd, setTouchEnd] = useState(0);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -189,6 +192,33 @@ export default function LessonPlayerClassic() {
     }
   };
 
+  // Swipe gesture handlers
+  const handleTouchStart = (e) => {
+    setTouchStart(e.touches[0].clientX);
+  };
+
+  const handleTouchMove = (e) => {
+    setTouchEnd(e.touches[0].clientX);
+  };
+
+  const handleTouchEnd = () => {
+    if (!touchStart || !touchEnd) return;
+    
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > 50;
+    const isRightSwipe = distance < -50;
+    
+    if (isLeftSwipe && nextLesson) {
+      handleNextLesson();
+    }
+    if (isRightSwipe && prevLesson) {
+      handlePrevLesson();
+    }
+    
+    setTouchStart(0);
+    setTouchEnd(0);
+  };
+
   const getSlideEmbedUrl = () => {
     if (lesson.google_slides_url) {
       const presentationId = lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1];
@@ -314,10 +344,11 @@ export default function LessonPlayerClassic() {
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar */}
-        <aside
-          className={`${
-            showSidebar ? "translate-x-0" : "-translate-x-full"
-          } lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-80 bg-[#1e3a8a] text-white transition-transform duration-300 flex flex-col`}
+        <motion.aside
+          initial={false}
+          animate={{ x: showSidebar ? 0 : '-100%' }}
+          transition={{ type: 'tween', duration: 0.3 }}
+          className="lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 w-80 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none"
           style={{ marginTop: '64px' }}
         >
           {/* Search */}
@@ -410,14 +441,17 @@ export default function LessonPlayerClassic() {
             </div>
           </ScrollArea>
 
-          {/* Chat with us */}
-          <div className="p-4 border-t border-white/20">
-            <button className="w-full flex items-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors">
-              <span className="text-2xl">👋</span>
-              <span className="text-sm font-medium">Chat with us</span>
+          {/* Close button for mobile */}
+          <div className="p-4 border-t border-white/20 lg:hidden">
+            <button 
+              onClick={() => setShowSidebar(false)}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+            >
+              <X className="w-5 h-5" />
+              <span className="text-sm font-medium">Close Menu</span>
             </button>
           </div>
-        </aside>
+        </motion.aside>
 
         {/* Overlay for mobile */}
         {showSidebar && (
@@ -429,8 +463,13 @@ export default function LessonPlayerClassic() {
         )}
 
         {/* Main Content */}
-        <main className="flex-1 overflow-y-auto bg-gray-100">
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12">
+        <main 
+          className="flex-1 overflow-y-auto bg-gray-100"
+          onTouchStart={handleTouchStart}
+          onTouchMove={handleTouchMove}
+          onTouchEnd={handleTouchEnd}
+        >
+          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
             {/* Content Card */}
             <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 lg:p-12">
               {/* Title */}

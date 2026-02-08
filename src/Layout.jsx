@@ -616,7 +616,29 @@ function LayoutContent({ children, currentPageName }) {
       </header>
 
       {/* Main Content */}
-      <main className="w-full">{children}</main>
+      <main className="w-full pb-20 md:pb-0">{children}</main>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50 shadow-lg">
+        <div className="flex items-center justify-around h-16">
+          <Link to={createPageUrl('Explore')} className="flex flex-col items-center gap-1 px-3 py-2">
+            <Compass className={`w-5 h-5 ${location.pathname.includes('Explore') ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs ${location.pathname.includes('Explore') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Courses</span>
+          </Link>
+          <Link to={createPageUrl('Dashboard')} className="flex flex-col items-center gap-1 px-3 py-2">
+            <BarChart3 className={`w-5 h-5 ${location.pathname.includes('Dashboard') ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs ${location.pathname.includes('Dashboard') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Progress</span>
+          </Link>
+          <Link to={createPageUrl('Library')} className="flex flex-col items-center gap-1 px-3 py-2">
+            <BookOpen className={`w-5 h-5 ${location.pathname.includes('Library') ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs ${location.pathname.includes('Library') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Library</span>
+          </Link>
+          <Link to={createPageUrl('Profile')} className="flex flex-col items-center gap-1 px-3 py-2">
+            <User className={`w-5 h-5 ${location.pathname.includes('Profile') ? 'text-primary' : 'text-muted-foreground'}`} />
+            <span className={`text-xs ${location.pathname.includes('Profile') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Profile</span>
+          </Link>
+        </div>
+      </nav>
 
       {/* Admin Password Modal */}
       {showAdminPassword && (
