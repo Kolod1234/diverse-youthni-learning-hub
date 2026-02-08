@@ -6,7 +6,7 @@ import { BookOpen, Microscope, Globe, Clock, PenTool, Lightbulb } from 'lucide-r
 
 const categories = [
   { name: 'Mathematics', icon: PenTool, color: 'from-blue-500 to-blue-600', image: 'https://images.unsplash.com/photo-1520997894817-7ba015e33e51?w=500&h=500&fit=crop', query: 'mathematics' },
-  { name: 'Biology', icon: Microscope, color: 'from-green-500 to-emerald-600', image: 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=500&h=500&fit=crop', query: 'biology' },
+  { name: 'Biology', icon: Microscope, color: 'from-green-500 to-emerald-600', image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg', query: 'biology' },
   { name: 'English', icon: BookOpen, color: 'from-purple-500 to-purple-600', image: 'https://images.unsplash.com/photo-1495446815901-a7297e60ffe1?w=500&h=500&fit=crop', query: 'english' },
   { name: 'History', icon: Clock, color: 'from-rose-500 to-rose-600', image: 'https://images.unsplash.com/photo-1507842217343-583f7270bfba?w=500&h=500&fit=crop', query: 'history' },
   { name: 'Geography', icon: Globe, color: 'from-teal-500 to-teal-600', image: 'https://images.unsplash.com/photo-1524661135-423995f22d0b?w=500&h=500&fit=crop', query: 'geography' },

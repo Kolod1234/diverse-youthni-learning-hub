@@ -62,7 +62,7 @@ export default function ContinueLearningSection({ user }) {
             {/* Course Thumbnail */}
             <div className="relative aspect-video overflow-hidden bg-gradient-to-br from-indigo-400 to-purple-500">
               <img
-                src={enrollment.course?.thumbnail || 'https://images.unsplash.com/photo-1530587191325-3db32d826c18?w=800&h=450&fit=crop'}
+                src={enrollment.course?.thumbnail || (enrollment.course?.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
                 alt={enrollment.course?.title}
                 className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
               />
