@@ -161,7 +161,7 @@ export default function YouthWork() {
         </Box>
 
         {/* Qualifications */}
-        <div className="space-y-6">
+        <Box sx={{ space: 3 }}>
           {filteredQualifications.map((qual, index) => (
             <motion.div
               key={qual.id}
@@ -169,30 +169,28 @@ export default function YouthWork() {
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
             >
-              <Card className="overflow-hidden hover:shadow-xl transition-shadow">
-                <div className="bg-gradient-to-r from-emerald-600 to-teal-600 p-6 text-white">
-                  <div className="flex items-center justify-between mb-3">
-                    <Badge className="bg-white text-emerald-700 font-semibold">
-                      {qual.level}
-                    </Badge>
-                    <div className="flex items-center gap-4 text-sm">
+              <Card sx={{ overflow: 'hidden', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
+                <Box sx={{ background: 'linear-gradient(to right, #16a34a, #0d9488)', p: 3, color: 'white' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                    <Chip label={qual.level} sx={{ bgcolor: 'white', color: '#16a34a', fontWeight: 'bold' }} />
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, fontSize: '0.875rem' }}>
                       {qual.credit_value && (
-                        <span className="flex items-center gap-1">
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Award className="w-4 h-4" />
                           {qual.credit_value} Credits
-                        </span>
+                        </Box>
                       )}
                       {qual.guided_learning_hours && (
-                        <span className="flex items-center gap-1">
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                           <Clock className="w-4 h-4" />
                           {qual.guided_learning_hours} GLH
-                        </span>
+                        </Box>
                       )}
-                    </div>
-                  </div>
-                  <h2 className="text-2xl font-bold mb-2">{qual.title}</h2>
-                  <p className="text-emerald-50">{qual.description}</p>
-                </div>
+                    </Box>
+                  </Box>
+                  <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1, m: 0 }}>{qual.title}</Typography>
+                  <Typography sx={{ opacity: 0.9 }}>{qual.description}</Typography>
+                </Box>
 
                 <div className="p-6">
                   <Tabs defaultValue="curriculum" className="w-full">
