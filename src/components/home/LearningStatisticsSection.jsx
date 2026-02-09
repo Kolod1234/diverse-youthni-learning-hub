@@ -106,11 +106,11 @@ export default function LearningStatisticsSection() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.05 }}
-                className={`relative ${stat.bgColor} rounded-2xl p-8 border border-border overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300`}
+                className={`relative ${stat.bgColor} rounded-2xl p-8 border border-border overflow-hidden group shadow-lg hover:shadow-2xl transition-all duration-300 text-center`}
               >
                 <div className={`absolute inset-0 bg-gradient-to-br ${stat.color} opacity-0 group-hover:opacity-10 transition-opacity duration-300`} />
                 
-                <div className={`relative z-10 mb-4 w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300`}>
+                <div className={`relative z-10 mb-4 w-14 h-14 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center shadow-lg group-hover:scale-110 transition-transform duration-300 mx-auto`}>
                   <Icon className="w-7 h-7 text-white" />
                 </div>
 
