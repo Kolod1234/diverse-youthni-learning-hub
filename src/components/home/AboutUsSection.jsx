@@ -68,7 +68,7 @@ export default function AboutUsSection() {
               </p>
 
               <p className="text-muted-foreground leading-relaxed mb-8">
-                {getContent('about_mission', 'Our mission is to break down barriers to education and create opportunities for all young people, regardless of their background. Through our carefully tailored approaches, dedicated and experienced tutors, and support structure, we help young people from marginalised communities in their academic work, homework club, AfterSchool and transfer test preparation, to boost confidence, promote learning and provide them with the platform to develop in their academic journey.')}
+                {getContent('about_mission', 'Our mission is to break down barriers to education and create opportunities for all young people, regardless of their background. Through our carefully tailored approaches, dedicated and experienced tutors, and support structure, we help young people from marginalised communities in their academic work through homework club, AfterSchool lessons and transfer test preparation, to boost confidence, promote learning and provide them with the platform to develop in their academic journey.')}
               </p>
 
               {/* Stats Grid */}
