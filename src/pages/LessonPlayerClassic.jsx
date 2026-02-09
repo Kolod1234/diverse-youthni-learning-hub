@@ -1095,83 +1095,84 @@ export default function LessonPlayerClassic() {
                       onRegenerate={handleRegenerateInteractives}
                     />
                   )}
-                </div>
+                </Stack>
               )}
-            </div>
+            </Card>
 
             {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-6 sm:mt-8 gap-2 sm:gap-4">
+            <Stack direction="row" spacing={1} sx={{ mt: { xs: 2, sm: 4 }, justifyContent: 'space-between' }}>
               <Button 
-                variant="outline" 
-                size="lg"
+                variant="outlined"
+                size="large"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                className="flex-1 sm:flex-none"
+                sx={{ flex: { xs: 1, sm: 'none' } }}
               >
                 ← Previous
               </Button>
               <Button 
-                size="lg" 
-                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 flex-1 sm:flex-none"
+                variant="contained"
+                size="large"
+                sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#1e3a8a', '&:hover': { bgcolor: '#1e2855' } }}
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
               >
                 Next →
               </Button>
-            </div>
+            </Stack>
 
             {/* Mark Complete Button */}
             {!isCompleted && (
-              <div className="mt-6 text-center no-print">
+              <Box sx={{ mt: 3, textAlign: 'center' }}>
                 <Button
-                  size="lg"
+                  size="large"
+                  variant="contained"
                   onClick={() => {
                     markCompleteMutation.mutate();
                     haptic.success();
                   }}
                   disabled={markCompleteMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 gap-2 min-h-[44px] min-w-[44px]"
+                  sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' }, gap: 1, minHeight: 44 }}
                 >
-                  <CheckCircle className="w-5 h-5" />
+                  <CheckCircle size={20} />
                   {markCompleteMutation.isPending ? 'Saving...' : 'Mark as Complete'}
                 </Button>
-              </div>
+              </Box>
             )}
 
             {/* Learning Enhancement Tools */}
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mt: 4 }}>
               <StreakTracker />
               <StudyTimer />
-            </div>
+            </Box>
 
-            <div className="mt-6">
+            <Box sx={{ mt: 3 }}>
               <XPProgressBar 
                 currentXP={currentXP}
                 level={userLevel}
                 showGain={showXPGain}
                 gainAmount={xpGain}
               />
-            </div>
+            </Box>
 
-            <div className="mt-6 flex justify-center">
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
               <DifficultyRating 
                 lessonId={lessonId}
                 onComplete={() => toast.success('Thank you for your feedback!')}
               />
-            </div>
+            </Box>
 
             {/* Related Lessons */}
-            <div className="no-print mt-8">
+            <Box sx={{ mt: 4 }}>
               <RelatedLessons 
                 lessons={sortedLessons}
                 courseId={courseId}
                 currentLessonId={lessonId}
               />
-            </div>
-          </div>
-        </main>
-      </div>
-      </div>
+            </Box>
+          </Container>
+        </Box>
+      </Box>
 
       {/* Command Palette */}
       <CommandPalette
