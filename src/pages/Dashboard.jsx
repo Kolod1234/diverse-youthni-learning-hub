@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import { usePullToRefresh } from '@/components/lesson/usePullToRefresh';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button, Tabs, Tab, Card, Box, Typography, Container } from '@mui/material';
@@ -136,8 +137,12 @@ export default function Dashboard() {
     );
   }
 
+  const { pullToRefreshProps } = usePullToRefresh(() => {
+    queryClient?.invalidateQueries();
+  });
+
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }} {...pullToRefreshProps}>
       <Container maxWidth="xl" sx={{ py: 5 }}>
         {/* Enhanced Header */}
         <motion.div 

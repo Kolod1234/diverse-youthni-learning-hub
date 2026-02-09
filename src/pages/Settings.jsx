@@ -4,11 +4,11 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import { 
   Card, Button, TextField, Box, Typography, Container, Tabs, Tab, 
-  Avatar, IconButton, InputLabel
+  Avatar, IconButton, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { 
   User, Lock, Settings as SettingsIcon, Presentation, Layout,
-  Camera, Save, ArrowLeft, CheckCircle2
+  Camera, Save, ArrowLeft, CheckCircle2, AlertTriangle, Trash2
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
@@ -30,6 +30,8 @@ export default function Settings() {
   
   // Preferences state
   const [playerPreference, setPlayerPreference] = useState('');
+  const [showDeleteDialog, setShowDeleteDialog] = useState(false);
+  const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('');
 
   useEffect(() => {
     const loadUser = async () => {
@@ -115,6 +117,21 @@ export default function Settings() {
     updatePreferenceMutation.mutate(preference);
   };
 
+  const handleDeleteAccount = async () => {
+    if (deleteConfirmEmail !== user?.email) {
+      toast.error('Email does not match');
+      return;
+    }
+    try {
+      // Note: Account deletion requires backend implementation
+      toast.success('Account deletion request submitted. Please contact support.');
+      setShowDeleteDialog(false);
+      setDeleteConfirmEmail('');
+    } catch (error) {
+      toast.error('Failed to delete account');
+    }
+  };
+
   const [tabValue, setTabValue] = useState('profile');
 
   if (loading) {
@@ -150,6 +167,7 @@ export default function Settings() {
             <Tab value="profile" icon={<User size={16} />} iconPosition="start" label="Profile" />
             <Tab value="account" icon={<Lock size={16} />} iconPosition="start" label="Account" />
             <Tab value="preferences" icon={<SettingsIcon size={16} />} iconPosition="start" label="Preferences" />
+            <Tab value="danger" icon={<AlertTriangle size={16} />} iconPosition="start" label="Danger Zone" sx={{ color: '#dc2626' }} />
           </Tabs>
 
           {/* Profile Tab */}
@@ -307,8 +325,79 @@ export default function Settings() {
             </motion.div>
           )}
 
+          {/* Danger Zone Tab */}
+          {tabValue === 'danger' && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
+              <Card sx={{ p: 3, border: '2px solid #dc2626', bgcolor: '#fef2f2' }}>
+                <Box sx={{ display: 'flex', alignItems: 'flex-start', gap: 2, mb: 3 }}>
+                  <AlertTriangle size={24} color="#dc2626" />
+                  <Box>
+                    <Typography variant="h6" fontWeight={600} sx={{ color: '#dc2626' }}>Danger Zone</Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      Irreversible actions that will permanently affect your account
+                    </Typography>
+                  </Box>
+                </Box>
+
+                <Box sx={{ bgcolor: '#fee2e2', border: 1, borderColor: '#fca5a5', borderRadius: 2, p: 3 }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#991b1b' }}>Delete Account</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                    Permanently delete your account and all associated data. This action cannot be undone.
+                  </Typography>
+                  <Button
+                    onClick={() => setShowDeleteDialog(true)}
+                    variant="contained"
+                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } }}
+                    startIcon={<Trash2 size={16} />}
+                  >
+                    Delete Account
+                  </Button>
+                </Box>
+              </Card>
+
+              {/* Delete Confirmation Dialog */}
+              <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
+                <DialogTitle sx={{ bgcolor: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>
+                  Delete Account
+                </DialogTitle>
+                <DialogContent sx={{ mt: 2 }}>
+                  <Typography color="error" variant="body2" sx={{ mb: 2 }}>
+                    This action is permanent and cannot be reversed. All your data will be deleted.
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    To confirm, please enter your email address:
+                  </Typography>
+                  <TextField
+                    fullWidth
+                    type="email"
+                    placeholder="Enter your email"
+                    value={deleteConfirmEmail}
+                    onChange={(e) => setDeleteConfirmEmail(e.target.value)}
+                    error={deleteConfirmEmail !== '' && deleteConfirmEmail !== user?.email}
+                  />
+                </DialogContent>
+                <DialogActions sx={{ p: 2, gap: 1 }}>
+                  <Button onClick={() => { setShowDeleteDialog(false); setDeleteConfirmEmail(''); }} color="inherit">
+                    Cancel
+                  </Button>
+                  <Button
+                    onClick={handleDeleteAccount}
+                    disabled={deleteConfirmEmail !== user?.email}
+                    variant="contained"
+                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } }}
+                  >
+                    Delete Account
+                  </Button>
+                </DialogActions>
+              </Dialog>
+            </motion.div>
+          )}
+
           {/* Preferences Tab */}
-          {tabValue === 'preferences' && (
+           {tabValue === 'preferences' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}

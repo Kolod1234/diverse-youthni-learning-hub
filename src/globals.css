@@ -5,10 +5,19 @@ html {
 }
 
 body {
-  margin: 0;
-  padding: 0;
-  min-width: 320px; /* Prevents layout collapse on tiny screens */
-}
+        margin: 0;
+        padding: 0;
+        min-width: 320px; /* Prevents layout collapse on tiny screens */
+        overscroll-behavior: none;
+      }
+
+      /* User select none for interactive elements */
+      button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
 
 #root {
   min-height: 100vh;

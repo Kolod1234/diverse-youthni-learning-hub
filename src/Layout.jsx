@@ -160,19 +160,28 @@ function LayoutContent({ children, currentPageName }) {
           backdropFilter: 'blur(10px)',
           borderBottom: 1,
           borderColor: 'divider',
-          color: 'text.primary'
+          color: 'text.primary',
+          paddingTop: 'env(safe-area-inset-top)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
         }}
       >
         <Container maxWidth="xl">
           <Toolbar disableGutters sx={{ minHeight: 64 }}>
-            {/* Logo */}
-            <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
-              <img 
-                src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
-                alt="Diverse Youth NI"
-                style={{ height: '56px', width: 'auto', objectFit: 'contain' }}
-              />
-            </Link>
+            {/* Logo or Back Button */}
+            {location.pathname === '/' || location.pathname === createPageUrl('Home') ? (
+              <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
+                <img 
+                  src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
+                  alt="Diverse Youth NI"
+                  style={{ height: '56px', width: 'auto', objectFit: 'contain' }}
+                />
+              </Link>
+            ) : (
+              <IconButton onClick={() => window.history.back()} sx={{ mr: 'auto', display: { xs: 'flex', md: 'flex' } }}>
+                <ArrowLeft size={24} />
+              </IconButton>
+            )}
 
             {/* Desktop Navigation */}
             <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, mr: 2 }}>
@@ -578,29 +587,48 @@ function LayoutContent({ children, currentPageName }) {
           borderColor: 'divider',
           zIndex: 50,
           boxShadow: 3,
-          height: 64
+          height: 64,
+          paddingBottom: 'env(safe-area-inset-bottom)',
+          paddingLeft: 'env(safe-area-inset-left)',
+          paddingRight: 'env(safe-area-inset-right)'
         }}
       >
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
-          <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+          <Link 
+            to={createPageUrl('Explore')} 
+            onClick={() => location.pathname.includes('Explore') && window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+          >
             <Compass size={20} color={location.pathname.includes('Explore') ? '#003366' : '#999'} />
             <Typography variant="caption" sx={{ color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Explore') ? 600 : 400 }}>
               Courses
             </Typography>
           </Link>
-          <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+          <Link 
+            to={createPageUrl('Dashboard')} 
+            onClick={() => location.pathname.includes('Dashboard') && window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+          >
             <BarChart3 size={20} color={location.pathname.includes('Dashboard') ? '#003366' : '#999'} />
             <Typography variant="caption" sx={{ color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Dashboard') ? 600 : 400 }}>
               Progress
             </Typography>
           </Link>
-          <Link to={createPageUrl('Library')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+          <Link 
+            to={createPageUrl('Library')} 
+            onClick={() => location.pathname.includes('Library') && window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+          >
             <BookOpen size={20} color={location.pathname.includes('Library') ? '#003366' : '#999'} />
             <Typography variant="caption" sx={{ color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Library') ? 600 : 400 }}>
               Library
             </Typography>
           </Link>
-          <Link to={createPageUrl('Profile')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+          <Link 
+            to={createPageUrl('Profile')} 
+            onClick={() => location.pathname.includes('Profile') && window.scrollTo({ top: 0, behavior: 'smooth' })}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+          >
             <User size={20} color={location.pathname.includes('Profile') ? '#003366' : '#999'} />
             <Typography variant="caption" sx={{ color: location.pathname.includes('Profile') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Profile') ? 600 : 400 }}>
               Profile
