@@ -429,9 +429,11 @@ export default function Home() {
                 {(!user?.widget_preferences?.upcoming_lessons || user.widget_preferences.upcoming_lessons.enabled !== false) && <UpcomingLessonsWidget />}
                 {(!user?.widget_preferences?.rss_notifications || user.widget_preferences.rss_notifications.enabled !== false) && <RSSNotificationsWidget />}
               </Box>
-              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2, mb: 2 }}>
+              <Box sx={{ mb: 2 }}>
+                {(!user?.widget_preferences?.fact || user.widget_preferences.fact.enabled !== false) && <EnhancedFactOfDay />}
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2, mb: 2 }}>
                 {(!user?.widget_preferences?.quote || user.widget_preferences.quote.enabled !== false) && <QuoteWidget />}
-                {(!user?.widget_preferences?.fact || user.widget_preferences.fact.enabled !== false) && <FactOfDayWidget />}
                 {(!user?.widget_preferences?.discover || user.widget_preferences.discover.enabled !== false) && <DiscoverWidget />}
               </Box>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2, mb: 2 }}>
