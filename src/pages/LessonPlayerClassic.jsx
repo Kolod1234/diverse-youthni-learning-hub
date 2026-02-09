@@ -679,7 +679,7 @@ export default function LessonPlayerClassic() {
       </header>
 
       <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar */}
+        {/* Sidebar - Tailwind only, not Material UI */}
         <motion.aside
           initial={false}
           animate={{ x: showSidebar ? 0 : '-100%' }}
