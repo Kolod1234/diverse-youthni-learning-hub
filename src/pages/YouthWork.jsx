@@ -322,58 +322,56 @@ export default function YouthWork() {
         </div>
 
         {filteredQualifications.length === 0 && (
-          <Card className="p-12 text-center">
-            <GraduationCap className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">
+          <Card sx={{ p: 6, textAlign: 'center' }}>
+            <GraduationCap className="w-16 h-16 mx-auto mb-4" style={{ color: '#d1d5db' }} />
+            <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 1 }}>
               No Qualifications Available
-            </h3>
-            <p className="text-gray-500">
+            </Typography>
+            <Typography color="textSecondary">
               Youth work qualifications will be displayed here once added by administrators
-            </p>
+            </Typography>
           </Card>
         )}
-        </div>
+        </Box>
 
         {/* Coordinator View */}
         {isCoordinator && assignedProgress.length > 0 && (
-        <div className="mt-12">
-          <h2 className="text-2xl font-bold text-gray-900 mb-6">Your Assigned Participants</h2>
-          <div className="grid gap-4">
+        <Box sx={{ mt: 6 }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>Your Assigned Participants</Typography>
+          <Grid container spacing={2}>
             {assignedProgress.map(progress => {
               const qual = qualifications.find(q => q.id === progress.qualification_id);
               return (
-                <Card key={progress.id} className="p-6">
-                  <div className="flex items-start justify-between">
-                    <div>
-                      <h3 className="font-bold text-gray-900">{progress.participant_name}</h3>
-                      <p className="text-sm text-gray-600">{progress.participant_email}</p>
-                      <p className="text-sm text-gray-600 mt-1">
-                        {qual?.title} - Unit {progress.unit_index + 1}
-                      </p>
-                      <div className="flex items-center gap-2 mt-2">
-                        <div className="h-2 w-32 bg-gray-200 rounded-full overflow-hidden">
-                          <div 
-                            className="h-full bg-emerald-600" 
-                            style={{ width: `${progress.progress_percent}%` }}
-                          />
-                        </div>
-                        <span className="text-sm text-gray-600">{progress.progress_percent}%</span>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      {progress.is_approved ? (
-                        <Badge className="bg-green-100 text-green-700">Approved</Badge>
-                      ) : (
-                        <Badge className="bg-yellow-100 text-yellow-700">Pending Review</Badge>
-                      )}
-                    </div>
-                  </div>
-                </Card>
+                <Grid item xs={12} key={progress.id}>
+                  <Card sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                      <Box sx={{ flex: 1 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{progress.participant_name}</Typography>
+                        <Typography variant="caption" color="textSecondary">{progress.participant_email}</Typography>
+                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+                          {qual?.title} - Unit {progress.unit_index + 1}
+                        </Typography>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                          <LinearProgress variant="determinate" value={progress.progress_percent} sx={{ width: 128, height: 8 }} />
+                          <Typography variant="caption" color="textSecondary">{progress.progress_percent}%</Typography>
+                        </Box>
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 1 }}>
+                        <Chip 
+                          label={progress.is_approved ? 'Approved' : 'Pending Review'} 
+                          color={progress.is_approved ? 'success' : 'warning'} 
+                          size="small"
+                        />
+                      </Box>
+                    </Box>
+                  </Card>
+                </Grid>
               );
             })}
-          </div>
-        </div>
+          </Grid>
+        </Box>
         )}
-        </div>
-        );
+      </Container>
+    </Box>
+    );
         }
