@@ -660,7 +660,7 @@ export default function Home() {
                   </Box>
                 </Box>
               ))}
-            </div>
+              </Box>
             </Box>
           </Box>
           
@@ -716,7 +716,7 @@ export default function Home() {
           </IconButton>
         </Box>
         </motion.div>
-      </section>
+      </Container>
 
       {/* Leadership Programmes CTA */}
       <LeadershipCTASection />
@@ -2148,9 +2148,9 @@ function EcosystemSection() {
               </Typography>
             </Box>
           </motion.div>
-        </div>
-      </div>
-    </section>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 
