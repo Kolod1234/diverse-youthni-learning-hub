@@ -727,24 +727,30 @@ export default function LessonPlayerClassic() {
           </Box>
 
           {/* Course Title and Progress */}
-          <div className="p-6 border-b border-white/20">
-            <h2 className="text-lg font-bold mb-4 leading-tight">
+          <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'white' }}>
               {course?.title || 'Course Content'}
-            </h2>
+            </Typography>
             {enrollment && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold">{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-white rounded-full h-2 transition-all duration-300"
-                    style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+              <Stack spacing={1}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
+                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
+                  </Typography>
+                </Box>
+                <Box sx={{ width: '100%', height: 8, bgcolor: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
+                  <Box
+                    sx={{
+                      height: '100%',
+                      bgcolor: 'white',
+                      width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%`,
+                      transition: 'width 300ms ease-in-out'
+                    }}
                   />
-                </div>
-              </div>
+                </Box>
+              </Stack>
             )}
-          </div>
+          </Box>
 
           {/* Lessons */}
           <ScrollArea className="flex-1">
