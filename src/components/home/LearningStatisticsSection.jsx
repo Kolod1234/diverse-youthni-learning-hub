@@ -137,7 +137,7 @@ export default function LearningStatisticsSection() {
           className="text-center mt-16"
         >
           <p className="text-lg text-muted-foreground mb-6">
-            Join thousands of students already learning on our platform
+            Join many of our young people already using this platform
           </p>
         </motion.div>
       </div>
