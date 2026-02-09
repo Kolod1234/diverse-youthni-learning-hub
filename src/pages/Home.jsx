@@ -1867,9 +1867,9 @@ function LeadershipCTASection() {
               </Box>
             )}
           </Box>
-        </motion.div>
-      </Container>
-    </Box>
+        </Box>
+      </motion.div>
+    </Container>
   );
 }
 
@@ -1986,9 +1986,8 @@ function FinalCTASection() {
               </Link>
             )}
           </Box>
-        </Box>
-      </motion.div>
-    </Container>
+        </motion.div>
+      </Container>
     </Box>
   );
 }
