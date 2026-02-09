@@ -1,15 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
-  User, Mail, Calendar, Award, BookOpen, Clock, 
+  Button, TextField, InputLabel, Card, Tabs, Tab, Avatar, 
+  Box, Typography, Container, IconButton, Chip
+} from '@mui/material';
+import { 
+  User, Calendar, Award, BookOpen, Clock, 
   Settings, Bell, Shield, Save, Camera
 } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -77,60 +74,53 @@ export default function Profile() {
   }, 0);
 
   const completedCourses = enrollments.filter(e => e.is_completed).length;
+  const [tabValue, setTabValue] = useState('courses');
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Profile Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
         >
-          <Card className="p-8 border-0 shadow-sm mb-8">
-            <div className="flex flex-col sm:flex-row items-start sm:items-center gap-6">
-              <div className="relative group">
-                <Avatar className="w-24 h-24 border-4 border-white shadow-lg">
-                  <AvatarImage src={user?.avatar} />
-                  <AvatarFallback className="bg-gradient-to-br from-indigo-500 to-violet-600 text-white text-3xl font-semibold">
-                    {user?.full_name?.charAt(0) || 'U'}
-                  </AvatarFallback>
+          <Card sx={{ p: 4, mb: 4, boxShadow: 2 }}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3 }}>
+              <Box sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }}>
+                <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: 'linear-gradient(to bottom right, #6366f1, #8b5cf6)', fontSize: '2rem', fontWeight: 600 }}>
+                  {user?.full_name?.charAt(0) || 'U'}
                 </Avatar>
-                <button className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Camera className="w-6 h-6 text-white" />
-                </button>
-              </div>
+                <Box className="avatar-overlay" sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', cursor: 'pointer' }}>
+                  <Camera size={24} color="white" />
+                </Box>
+              </Box>
               
-              <div className="flex-1">
-                <h1 className="text-3xl font-bold text-gray-900 mb-2">{user?.full_name || 'User'}</h1>
-                <p className="text-gray-500 mb-4">{user?.email}</p>
-                <div className="flex flex-wrap gap-4 text-sm">
-                  <div className="flex items-center gap-2 text-gray-600">
-                    <Calendar className="w-4 h-4" />
-                    <span>Joined {new Date(user?.created_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}</span>
-                  </div>
+              <Box sx={{ flex: 1 }}>
+                <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>{user?.full_name || 'User'}</Typography>
+                <Typography color="text.secondary" sx={{ mb: 2 }}>{user?.email}</Typography>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Chip icon={<Calendar size={16} />} label={`Joined ${new Date(user?.created_date).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}`} variant="outlined" />
                   {user?.location && (
-                    <div className="flex items-center gap-2 text-gray-600">
-                      <span>📍 {user.location}</span>
-                    </div>
+                    <Chip label={`📍 ${user.location}`} variant="outlined" />
                   )}
-                </div>
-              </div>
+                </Box>
+              </Box>
 
-              <div className="grid grid-cols-3 gap-6 text-center">
-                <div>
-                  <div className="text-3xl font-bold text-indigo-600">{enrollments.length}</div>
-                  <div className="text-xs text-gray-500">Courses</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-emerald-600">{completedCourses}</div>
-                  <div className="text-xs text-gray-500">Completed</div>
-                </div>
-                <div>
-                  <div className="text-3xl font-bold text-orange-600">{Math.round(totalHours)}</div>
-                  <div className="text-xs text-gray-500">Hours</div>
-                </div>
-              </div>
-            </div>
+              <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, textAlign: 'center' }}>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} color="primary">{enrollments.length}</Typography>
+                  <Typography variant="caption" color="text.secondary">Courses</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: '#10b981' }}>{completedCourses}</Typography>
+                  <Typography variant="caption" color="text.secondary">Completed</Typography>
+                </Box>
+                <Box>
+                  <Typography variant="h4" fontWeight={700} sx={{ color: '#f97316' }}>{Math.round(totalHours)}</Typography>
+                  <Typography variant="caption" color="text.secondary">Hours</Typography>
+                </Box>
+              </Box>
+            </Box>
           </Card>
         </motion.div>
 
@@ -138,125 +128,117 @@ export default function Profile() {
         <ProgressStats user={user} />
 
         {/* Tabs */}
-        <Tabs defaultValue="courses" className="w-full mt-8">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-            <TabsTrigger value="courses" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
-              <BookOpen className="w-4 h-4 mr-2" />
-              My Courses
-            </TabsTrigger>
-            <TabsTrigger value="overview" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
-              <User className="w-4 h-4 mr-2" />
-              Overview
-            </TabsTrigger>
-            <TabsTrigger value="achievements" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
-              <Award className="w-4 h-4 mr-2" />
-              Achievements
-            </TabsTrigger>
-            <TabsTrigger value="certificates" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
-              <BookOpen className="w-4 h-4 mr-2" />
-              Certificates
-            </TabsTrigger>
-            <TabsTrigger value="settings" className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6">
-              <Settings className="w-4 h-4 mr-2" />
-              Settings
-            </TabsTrigger>
-          </TabsList>
+        <Box sx={{ mt: 4 }}>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tab value="courses" icon={<BookOpen size={16} />} iconPosition="start" label="My Courses" />
+            <Tab value="overview" icon={<User size={16} />} iconPosition="start" label="Overview" />
+            <Tab value="achievements" icon={<Award size={16} />} iconPosition="start" label="Achievements" />
+            <Tab value="certificates" icon={<BookOpen size={16} />} iconPosition="start" label="Certificates" />
+            <Tab value="settings" icon={<Settings size={16} />} iconPosition="start" label="Settings" />
+          </Tabs>
 
           {/* My Courses Tab */}
-          <TabsContent value="courses">
+          {tabValue === 'courses' && (
             <EnrolledCourses user={user} />
-          </TabsContent>
+          )}
 
           {/* Overview Tab */}
-          <TabsContent value="overview">
+          {tabValue === 'overview' && (
             <div className="grid lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
                 <Card className="p-6 border-0 shadow-sm">
                   <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl font-semibold text-gray-900">About</h2>
                     {!isEditing && (
-                      <Button variant="outline" onClick={() => setIsEditing(true)}>
+                      <Button variant="outlined" onClick={() => setIsEditing(true)}>
                         Edit Profile
                       </Button>
                     )}
                   </div>
 
                   {isEditing ? (
-                    <div className="space-y-4">
-                      <div>
-                        <Label htmlFor="full_name">Full Name</Label>
-                        <Input
-                          id="full_name"
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                      <Box>
+                        <InputLabel>Full Name</InputLabel>
+                        <TextField
+                          fullWidth
                           value={formData.full_name}
                           onChange={(e) => setFormData({ ...formData, full_name: e.target.value })}
+                          sx={{ mt: 1 }}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="bio">Bio</Label>
-                        <Textarea
-                          id="bio"
+                      </Box>
+                      <Box>
+                        <InputLabel>Bio</InputLabel>
+                        <TextField
+                          fullWidth
+                          multiline
+                          rows={4}
                           value={formData.bio || ''}
                           onChange={(e) => setFormData({ ...formData, bio: e.target.value })}
                           placeholder="Tell us about yourself..."
-                          rows={4}
+                          sx={{ mt: 1 }}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="location">Location</Label>
-                        <Input
-                          id="location"
+                      </Box>
+                      <Box>
+                        <InputLabel>Location</InputLabel>
+                        <TextField
+                          fullWidth
                           value={formData.location || ''}
                           onChange={(e) => setFormData({ ...formData, location: e.target.value })}
                           placeholder="City, Country"
+                          sx={{ mt: 1 }}
                         />
-                      </div>
-                      <div>
-                        <Label htmlFor="website">Website</Label>
-                        <Input
-                          id="website"
+                      </Box>
+                      <Box>
+                        <InputLabel>Website</InputLabel>
+                        <TextField
+                          fullWidth
                           value={formData.website || ''}
                           onChange={(e) => setFormData({ ...formData, website: e.target.value })}
                           placeholder="https://yourwebsite.com"
+                          sx={{ mt: 1 }}
                         />
-                      </div>
-                      <div className="flex gap-3 pt-4">
+                      </Box>
+                      <Box sx={{ display: 'flex', gap: 1.5, pt: 2 }}>
                         <Button 
                           onClick={handleSave}
                           disabled={updateProfileMutation.isPending}
-                          className="bg-indigo-600 hover:bg-indigo-700"
+                          variant="contained"
+                          startIcon={<Save size={16} />}
+                          sx={{ bgcolor: '#6366f1', '&:hover': { bgcolor: '#4f46e5' } }}
                         >
-                          <Save className="w-4 h-4 mr-2" />
                           Save Changes
                         </Button>
                         <Button 
-                          variant="outline" 
+                          variant="outlined" 
                           onClick={() => setIsEditing(false)}
                         >
                           Cancel
                         </Button>
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   ) : (
-                    <div className="space-y-4">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {user?.bio ? (
-                        <p className="text-gray-600 leading-relaxed">{user.bio}</p>
+                        <Typography color="text.secondary" sx={{ lineHeight: 1.6 }}>{user.bio}</Typography>
                       ) : (
-                        <p className="text-gray-400 italic">No bio added yet</p>
+                        <Typography color="text.disabled" fontStyle="italic">No bio added yet</Typography>
                       )}
                       {user?.website && (
-                        <div>
-                          <p className="text-sm text-gray-500 mb-1">Website</p>
-                          <a 
-                            href={user.website} 
-                            target="_blank" 
+                        <Box>
+                          <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>Website</Typography>
+                          <Typography
+                            component="a"
+                            href={user.website}
+                            target="_blank"
                             rel="noopener noreferrer"
-                            className="text-indigo-600 hover:underline"
+                            sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}
                           >
                             {user.website}
-                          </a>
-                        </div>
+                          </Typography>
+                        </Box>
                       )}
-                    </div>
+                    </Box>
                   )}
                 </Card>
               </div>
@@ -300,10 +282,10 @@ export default function Profile() {
                 </Card>
               </div>
             </div>
-          </TabsContent>
+          )}
 
           {/* Achievements Tab */}
-          <TabsContent value="achievements">
+          {tabValue === 'achievements' && (
             <Card className="p-6 border-0 shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Achievements</h2>
               {achievements.length > 0 ? (
@@ -324,10 +306,10 @@ export default function Profile() {
                 </div>
               )}
             </Card>
-          </TabsContent>
+          )}
 
           {/* Certificates Tab */}
-          <TabsContent value="certificates">
+          {tabValue === 'certificates' && (
             <Card className="p-6 border-0 shadow-sm">
               <h2 className="text-xl font-semibold text-gray-900 mb-6">Your Certificates</h2>
               {certificates.length > 0 ? (
@@ -372,10 +354,10 @@ export default function Profile() {
                 </div>
               )}
             </Card>
-          </TabsContent>
+          )}
 
           {/* Settings Tab */}
-          <TabsContent value="settings">
+          {tabValue === 'settings' && (
             <div className="space-y-6">
               <AccountSettings user={user} />
               
@@ -435,9 +417,9 @@ export default function Profile() {
                 </Card>
               </div>
             </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          )}
+        </Box>
+      </Container>
+    </Box>
   );
 }

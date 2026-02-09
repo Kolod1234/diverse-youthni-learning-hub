@@ -1,11 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Button } from '@/components/ui/button';
+import { Card, Button, Tabs, Tab, Box, Typography, Container } from '@mui/material';
 import { 
-  TrendingUp, Target, Brain, Calendar, Award, 
+  TrendingUp, Target, Brain, Award, 
   ArrowLeft, BarChart3, PieChart, Activity
 } from 'lucide-react';
 import { Link } from 'react-router-dom';
@@ -71,15 +69,16 @@ export default function Analytics() {
     ? Math.round(quizAttempts.reduce((sum, a) => sum + a.score, 0) / quizAttempts.length)
     : 0;
 
+  const [tabValue, setTabValue] = useState('overview');
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+          <Box>
             <Link to={createPageUrl('Dashboard')}>
-              <Button variant="ghost" className="mb-4">
-                <ArrowLeft className="w-4 h-4 mr-2" />
+              <Button variant="text" startIcon={<ArrowLeft size={16} />} sx={{ mb: 2 }}>
                 Back to Dashboard
               </Button>
             </Link>
@@ -87,37 +86,37 @@ export default function Analytics() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">
+              <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>
                 Learning Analytics 📊
-              </h1>
-              <p className="text-gray-500">
+              </Typography>
+              <Typography color="text.secondary">
                 Detailed insights into your learning journey and performance
-              </p>
+              </Typography>
             </motion.div>
-          </div>
+          </Box>
           <PointsDisplay 
             points={userProgress?.points || 0} 
             level={userProgress?.level || 1}
           />
-        </div>
+        </Box>
 
         {/* Quick Stats */}
-        <div className="grid grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', lg: 'repeat(5, 1fr)' }, gap: 2, mb: 4 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: 0.1 }}
           >
-            <Card className="p-4 bg-gradient-to-br from-blue-50 to-cyan-50 border-blue-200">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
-                  <TrendingUp className="w-5 h-5 text-blue-600" />
-                </div>
-                <div>
-                  <p className="text-2xl font-bold text-gray-900">{avgProgress}%</p>
-                  <p className="text-xs text-gray-600">Avg Progress</p>
-                </div>
-              </div>
+            <Card sx={{ p: 2, background: 'linear-gradient(to bottom right, #eff6ff, #cffafe)', border: 1, borderColor: '#60a5fa' }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                <Box sx={{ width: 40, height: 40, bgcolor: '#dbeafe', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                  <TrendingUp size={20} color="#2563eb" />
+                </Box>
+                <Box>
+                  <Typography variant="h5" fontWeight={700}>{avgProgress}%</Typography>
+                  <Typography variant="caption" color="text.secondary">Avg Progress</Typography>
+                </Box>
+              </Box>
             </Card>
           </motion.div>
 
@@ -192,60 +191,42 @@ export default function Analytics() {
               </div>
             </Card>
           </motion.div>
-        </div>
+        </Box>
 
         {/* Main Content */}
-        <Tabs defaultValue="overview" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-            <TabsTrigger 
-              value="overview" 
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6"
-            >
-              <BarChart3 className="w-4 h-4 mr-2" />
-              Learning Path
-            </TabsTrigger>
-            <TabsTrigger 
-              value="performance"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6"
-            >
-              <PieChart className="w-4 h-4 mr-2" />
-              Quiz Performance
-            </TabsTrigger>
-            <TabsTrigger 
-              value="feedback"
-              className="rounded-lg data-[state=active]:bg-indigo-600 data-[state=active]:text-white px-6"
-            >
-              <Brain className="w-4 h-4 mr-2" />
-              AI Insights
-            </TabsTrigger>
-          </TabsList>
+        <Box>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tab value="overview" icon={<BarChart3 size={16} />} iconPosition="start" label="Learning Path" />
+            <Tab value="performance" icon={<PieChart size={16} />} iconPosition="start" label="Quiz Performance" />
+            <Tab value="feedback" icon={<Brain size={16} />} iconPosition="start" label="AI Insights" />
+          </Tabs>
 
-          <TabsContent value="overview">
+          {tabValue === 'overview' && (
             <LearningPathVisualization 
               enrollments={enrollments}
               courses={courses}
               userProgress={userProgress}
             />
-          </TabsContent>
+          )}
 
-          <TabsContent value="performance">
+          {tabValue === 'performance' && (
             <QuizPerformanceAnalysis 
               quizAttempts={quizAttempts}
               enrollments={enrollments}
               courses={courses}
             />
-          </TabsContent>
+          )}
 
-          <TabsContent value="feedback">
+          {tabValue === 'feedback' && (
             <PersonalizedFeedback 
               enrollments={enrollments}
               quizAttempts={quizAttempts}
               courses={courses}
               userProgress={userProgress}
             />
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          )}
+        </Box>
+      </Container>
+    </Box>
   );
 }

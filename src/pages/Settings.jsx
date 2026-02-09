@@ -2,12 +2,10 @@ import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import { 
+  Card, Button, TextField, Box, Typography, Container, Tabs, Tab, 
+  Avatar, IconButton, InputLabel
+} from '@mui/material';
 import { 
   User, Lock, Settings as SettingsIcon, Presentation, Layout,
   Camera, Save, ArrowLeft, CheckCircle2
@@ -117,274 +115,292 @@ export default function Settings() {
     updatePreferenceMutation.mutate(preference);
   };
 
+  const [tabValue, setTabValue] = useState('profile');
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 flex items-center justify-center">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box className="animate-spin rounded-full" sx={{ width: 48, height: 48, border: 2, borderColor: 'primary.main', borderBottomColor: 'transparent', borderRadius: '50%' }} />
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100">
-      <div className="max-w-5xl mx-auto px-4 py-8">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
         {/* Header */}
         <motion.div
           initial={{ y: -20, opacity: 0 }}
           animate={{ y: 0, opacity: 1 }}
-          className="mb-8"
         >
           <Button
-            variant="ghost"
+            variant="text"
             onClick={() => navigate(-1)}
-            className="mb-4"
+            startIcon={<ArrowLeft size={16} />}
+            sx={{ mb: 2 }}
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
             Back
           </Button>
-          <h1 className="text-4xl font-bold text-gray-900 mb-2">Settings</h1>
-          <p className="text-gray-600">Manage your account settings and preferences</p>
+          <Typography variant="h3" fontWeight={700} sx={{ mb: 1 }}>Settings</Typography>
+          <Typography color="text.secondary">Manage your account settings and preferences</Typography>
         </motion.div>
 
-        <Tabs defaultValue="profile" className="space-y-6">
-          <TabsList className="grid w-full grid-cols-3 lg:w-auto">
-            <TabsTrigger value="profile" className="flex items-center gap-2">
-              <User className="w-4 h-4" />
-              <span className="hidden sm:inline">Profile</span>
-            </TabsTrigger>
-            <TabsTrigger value="account" className="flex items-center gap-2">
-              <Lock className="w-4 h-4" />
-              <span className="hidden sm:inline">Account</span>
-            </TabsTrigger>
-            <TabsTrigger value="preferences" className="flex items-center gap-2">
-              <SettingsIcon className="w-4 h-4" />
-              <span className="hidden sm:inline">Preferences</span>
-            </TabsTrigger>
-          </TabsList>
+        <Box sx={{ mt: 4 }}>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+            <Tab value="profile" icon={<User size={16} />} iconPosition="start" label="Profile" />
+            <Tab value="account" icon={<Lock size={16} />} iconPosition="start" label="Account" />
+            <Tab value="preferences" icon={<SettingsIcon size={16} />} iconPosition="start" label="Preferences" />
+          </Tabs>
 
           {/* Profile Tab */}
-          <TabsContent value="profile">
+          {tabValue === 'profile' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Profile Information</CardTitle>
-                  <CardDescription>
-                    Update your profile details and avatar
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Profile Information</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Update your profile details and avatar
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   {/* Avatar Section */}
-                  <div className="flex items-center gap-6">
-                    <div className="relative">
-                      <Avatar className="w-24 h-24">
-                        <AvatarImage src={avatarUrl} />
-                        <AvatarFallback className="text-2xl">
-                          {fullName?.charAt(0) || 'U'}
-                        </AvatarFallback>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Box sx={{ position: 'relative' }}>
+                      <Avatar src={avatarUrl} sx={{ width: 96, height: 96, fontSize: '2rem' }}>
+                        {fullName?.charAt(0) || 'U'}
                       </Avatar>
-                      <label className="absolute bottom-0 right-0 bg-primary text-white p-2 rounded-full cursor-pointer hover:bg-primary/90 transition">
-                        <Camera className="w-4 h-4" />
+                      <IconButton
+                        component="label"
+                        sx={{ 
+                          position: 'absolute', 
+                          bottom: 0, 
+                          right: 0, 
+                          bgcolor: 'primary.main', 
+                          color: 'white',
+                          '&:hover': { bgcolor: 'primary.dark' }
+                        }}
+                        size="small"
+                      >
+                        <Camera size={16} />
                         <input
                           type="file"
                           accept="image/*"
-                          className="hidden"
+                          hidden
                           onChange={handleAvatarUpload}
                         />
-                      </label>
-                    </div>
-                    <div>
-                      <h3 className="font-semibold text-lg">{fullName}</h3>
-                      <p className="text-sm text-gray-600">{user?.email}</p>
-                      <p className="text-xs text-gray-500 mt-1">
-                        Role: <span className="font-medium capitalize">{user?.role}</span>
-                      </p>
-                    </div>
-                  </div>
+                      </IconButton>
+                    </Box>
+                    <Box>
+                      <Typography variant="h6" fontWeight={600}>{fullName}</Typography>
+                      <Typography variant="body2" color="text.secondary">{user?.email}</Typography>
+                      <Typography variant="caption" color="text.secondary">
+                        Role: <Box component="span" fontWeight={600} sx={{ textTransform: 'capitalize' }}>{user?.role}</Box>
+                      </Typography>
+                    </Box>
+                  </Box>
 
                   {/* Name Field */}
-                  <div className="space-y-2">
-                    <Label htmlFor="fullName">Full Name</Label>
-                    <Input
-                      id="fullName"
+                  <Box>
+                    <InputLabel>Full Name</InputLabel>
+                    <TextField
+                      fullWidth
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
                       placeholder="Enter your full name"
+                      sx={{ mt: 1 }}
                     />
-                  </div>
+                  </Box>
 
                   {/* Email (Read-only) */}
-                  <div className="space-y-2">
-                    <Label htmlFor="email">Email</Label>
-                    <Input
-                      id="email"
+                  <Box>
+                    <InputLabel>Email</InputLabel>
+                    <TextField
+                      fullWidth
                       value={user?.email}
                       disabled
-                      className="bg-gray-50"
+                      sx={{ mt: 1, bgcolor: '#f9fafb' }}
                     />
-                    <p className="text-xs text-gray-500">
+                    <Typography variant="caption" color="text.secondary" sx={{ mt: 0.5 }}>
                       Email cannot be changed
-                    </p>
-                  </div>
+                    </Typography>
+                  </Box>
 
                   <Button
                     onClick={handleProfileUpdate}
                     disabled={updateProfileMutation.isPending}
-                    className="w-full sm:w-auto"
+                    variant="contained"
+                    startIcon={<Save size={16} />}
+                    sx={{ alignSelf: 'flex-start' }}
                   >
-                    <Save className="w-4 h-4 mr-2" />
                     {updateProfileMutation.isPending ? 'Saving...' : 'Save Changes'}
                   </Button>
-                </CardContent>
+                </Box>
               </Card>
             </motion.div>
-          </TabsContent>
+          )}
 
           {/* Account Tab */}
-          <TabsContent value="account">
+          {tabValue === 'account' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Change Password</CardTitle>
-                  <CardDescription>
-                    Update your password to keep your account secure
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="currentPassword">Current Password</Label>
-                    <Input
-                      id="currentPassword"
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Change Password</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Update your password to keep your account secure
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                  <Box>
+                    <InputLabel>Current Password</InputLabel>
+                    <TextField
+                      fullWidth
                       type="password"
                       value={currentPassword}
                       onChange={(e) => setCurrentPassword(e.target.value)}
                       placeholder="Enter current password"
+                      sx={{ mt: 1 }}
                     />
-                  </div>
+                  </Box>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="newPassword">New Password</Label>
-                    <Input
-                      id="newPassword"
+                  <Box>
+                    <InputLabel>New Password</InputLabel>
+                    <TextField
+                      fullWidth
                       type="password"
                       value={newPassword}
                       onChange={(e) => setNewPassword(e.target.value)}
                       placeholder="Enter new password"
+                      sx={{ mt: 1 }}
                     />
-                  </div>
+                  </Box>
 
-                  <div className="space-y-2">
-                    <Label htmlFor="confirmPassword">Confirm New Password</Label>
-                    <Input
-                      id="confirmPassword"
+                  <Box>
+                    <InputLabel>Confirm New Password</InputLabel>
+                    <TextField
+                      fullWidth
                       type="password"
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
                       placeholder="Confirm new password"
+                      sx={{ mt: 1 }}
                     />
-                  </div>
+                  </Box>
 
                   <Button
                     onClick={handlePasswordChange}
-                    className="w-full sm:w-auto"
+                    variant="contained"
+                    startIcon={<Lock size={16} />}
+                    sx={{ alignSelf: 'flex-start' }}
                   >
-                    <Lock className="w-4 h-4 mr-2" />
                     Update Password
                   </Button>
 
-                  <p className="text-sm text-amber-600 bg-amber-50 border border-amber-200 rounded-lg p-3">
-                    Password change feature requires additional backend setup
-                  </p>
-                </CardContent>
+                  <Box sx={{ bgcolor: '#fef3c7', border: 1, borderColor: '#fbbf24', borderRadius: 2, p: 2 }}>
+                    <Typography variant="body2" color="#92400e">
+                      Password change feature requires additional backend setup
+                    </Typography>
+                  </Box>
+                </Box>
               </Card>
             </motion.div>
-          </TabsContent>
+          )}
 
           {/* Preferences Tab */}
-          <TabsContent value="preferences">
+          {tabValue === 'preferences' && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card>
-                <CardHeader>
-                  <CardTitle>Lesson Player Preference</CardTitle>
-                  <CardDescription>
-                    Choose your preferred lesson viewing experience
-                  </CardDescription>
-                </CardHeader>
-                <CardContent className="space-y-6">
-                  <div className="grid md:grid-cols-2 gap-4">
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Lesson Player Preference</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Choose your preferred lesson viewing experience
+                </Typography>
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
                     {/* PowerPoint Style */}
-                    <button
+                    <Button
                       onClick={() => handlePlayerPreferenceChange('LessonPlayerPowerPoint')}
                       disabled={updatePreferenceMutation.isPending}
-                      className={`relative p-6 rounded-xl border-2 transition-all text-left ${
-                        playerPreference === 'LessonPlayerPowerPoint'
-                          ? 'border-orange-500 bg-orange-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      sx={{
+                        position: 'relative',
+                        p: 3,
+                        borderRadius: 3,
+                        border: 2,
+                        borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#f97316' : 'divider',
+                        bgcolor: playerPreference === 'LessonPlayerPowerPoint' ? '#fff7ed' : 'background.paper',
+                        textAlign: 'left',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        '&:hover': { borderColor: playerPreference === 'LessonPlayerPowerPoint' ? '#ea580c' : 'text.secondary' }
+                      }}
                     >
                       {playerPreference === 'LessonPlayerPowerPoint' && (
-                        <div className="absolute top-4 right-4 bg-orange-500 text-white p-1 rounded-full">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
+                        <Box sx={{ position: 'absolute', top: 16, right: 16, bgcolor: '#f97316', color: 'white', p: 0.5, borderRadius: '50%' }}>
+                          <CheckCircle2 size={20} />
+                        </Box>
                       )}
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-orange-500 to-red-600 rounded-xl flex items-center justify-center">
-                          <Presentation className="w-6 h-6 text-white" />
-                        </div>
-                        <h3 className="font-bold text-lg">PowerPoint Style</h3>
-                      </div>
-                      <p className="text-sm text-gray-600">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                        <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #f97316, #dc2626)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Presentation size={24} color="white" />
+                        </Box>
+                        <Typography variant="h6" fontWeight={700}>PowerPoint Style</Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
                         Professional presentation mode with ribbon toolbar and filmstrip navigation
-                      </p>
-                    </button>
+                      </Typography>
+                    </Button>
 
                     {/* Classic Style */}
-                    <button
+                    <Button
                       onClick={() => handlePlayerPreferenceChange('LessonPlayerClassic')}
                       disabled={updatePreferenceMutation.isPending}
-                      className={`relative p-6 rounded-xl border-2 transition-all text-left ${
-                        playerPreference === 'LessonPlayerClassic'
-                          ? 'border-indigo-500 bg-indigo-50'
-                          : 'border-gray-200 hover:border-gray-300'
-                      }`}
+                      sx={{
+                        position: 'relative',
+                        p: 3,
+                        borderRadius: 3,
+                        border: 2,
+                        borderColor: playerPreference === 'LessonPlayerClassic' ? '#6366f1' : 'divider',
+                        bgcolor: playerPreference === 'LessonPlayerClassic' ? '#eef2ff' : 'background.paper',
+                        textAlign: 'left',
+                        display: 'flex',
+                        flexDirection: 'column',
+                        alignItems: 'flex-start',
+                        '&:hover': { borderColor: playerPreference === 'LessonPlayerClassic' ? '#4f46e5' : 'text.secondary' }
+                      }}
                     >
                       {playerPreference === 'LessonPlayerClassic' && (
-                        <div className="absolute top-4 right-4 bg-indigo-500 text-white p-1 rounded-full">
-                          <CheckCircle2 className="w-5 h-5" />
-                        </div>
+                        <Box sx={{ position: 'absolute', top: 16, right: 16, bgcolor: '#6366f1', color: 'white', p: 0.5, borderRadius: '50%' }}>
+                          <CheckCircle2 size={20} />
+                        </Box>
                       )}
-                      <div className="flex items-center gap-3 mb-3">
-                        <div className="w-12 h-12 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-xl flex items-center justify-center">
-                          <Layout className="w-6 h-6 text-white" />
-                        </div>
-                        <h3 className="font-bold text-lg">Classic Style</h3>
-                      </div>
-                      <p className="text-sm text-gray-600">
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                        <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #6366f1, #9333ea)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Layout size={24} color="white" />
+                        </Box>
+                        <Typography variant="h6" fontWeight={700}>Classic Style</Typography>
+                      </Box>
+                      <Typography variant="body2" color="text.secondary">
                         Clean, minimal interface perfect for distraction-free learning
-                      </p>
-                    </button>
-                  </div>
+                      </Typography>
+                    </Button>
+                  </Box>
 
-                  <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                    <p className="text-sm text-blue-800">
-                      <strong>Note:</strong> Your preference will be applied to all lessons you view. 
+                  <Box sx={{ bgcolor: '#dbeafe', border: 1, borderColor: '#60a5fa', borderRadius: 2, p: 2 }}>
+                    <Typography variant="body2" color="#1e3a8a">
+                      <Box component="strong">Note:</Box> Your preference will be applied to all lessons you view. 
                       You can change this anytime.
-                    </p>
-                  </div>
-                </CardContent>
+                    </Typography>
+                  </Box>
+                </Box>
               </Card>
             </motion.div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          )}
+        </Box>
+      </Container>
+    </Box>
   );
 }
