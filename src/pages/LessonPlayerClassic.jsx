@@ -1298,17 +1298,17 @@ export default function LessonPlayerClassic() {
             className="w-full h-full"
           />
         ) : (
-          <div className="prose prose-lg max-w-none text-white bg-black/50 p-8 rounded-lg backdrop-blur-sm">
-            <h1>{lesson?.title}</h1>
-            {lesson?.description && <p>{lesson.description}</p>}
+          <Box sx={{ color: 'white', bgcolor: 'rgba(0,0,0,0.5)', p: 4, borderRadius: 2, backdropFilter: 'blur(4px)', maxWidth: '100%' }}>
+            <Typography variant="h4" component="h1" sx={{ mb: 2, fontWeight: 'bold' }}>{lesson?.title}</Typography>
+            {lesson?.description && <Typography sx={{ mb: 2 }}>{lesson.description}</Typography>}
             {lesson?.learning_objectives && (
-              <ul>
+              <ul style={{ color: 'white' }}>
                 {lesson.learning_objectives.map((obj, i) => (
-                  <li key={i}>{obj}</li>
+                  <li key={i} style={{ marginBottom: 8 }}>{obj}</li>
                 ))}
               </ul>
             )}
-          </div>
+          </Box>
         )}
       </ImprovedFocusMode>
     </ErrorBoundary>
