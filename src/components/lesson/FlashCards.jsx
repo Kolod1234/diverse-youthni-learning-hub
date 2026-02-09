@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
+import { Button, Card, CardContent, IconButton, Box, Typography, Chip } from '@mui/material';
 import { ChevronLeft, ChevronRight, RotateCcw, Sparkles, RefreshCw } from 'lucide-react';
 
 export default function FlashCards({ cards, onRegenerate }) {
@@ -33,120 +32,121 @@ export default function FlashCards({ cards, onRegenerate }) {
   };
 
   return (
-    <Card className="p-4 sm:p-6 bg-gradient-to-br from-indigo-50 to-purple-50">
-      <div className="flex justify-between items-center mb-6">
-        <h3 className="text-lg sm:text-xl font-bold text-gray-800">Flash Cards</h3>
-        <div className="flex gap-2 items-center">
-          <span className="text-sm font-semibold text-purple-600">
-            {knownCards.size}/{cards.length} known
-          </span>
-          <Button variant="outline" size="sm" onClick={reset}>
-            <RotateCcw className="w-4 h-4" />
-          </Button>
-          {onRegenerate && (
-            <Button variant="outline" size="sm" onClick={onRegenerate}>
-              <RefreshCw className="w-4 h-4" />
-            </Button>
-          )}
-        </div>
-      </div>
+    <Card sx={{ background: 'linear-gradient(to bottom right, #eef2ff, #faf5ff)', borderRadius: 3 }}>
+      <CardContent sx={{ p: { xs: 2, sm: 3 } }}>
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+          <Typography variant="h6" sx={{ fontSize: { xs: '1.125rem', sm: '1.25rem' }, fontWeight: 700, color: 'grey.800' }}>Flash Cards</Typography>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+            <Chip
+              label={`${knownCards.size}/${cards.length} known`}
+              size="small"
+              sx={{ fontWeight: 600, bgcolor: '#9333ea', color: 'white' }}
+            />
+            <IconButton size="small" onClick={reset}>
+              <RotateCcw size={16} />
+            </IconButton>
+            {onRegenerate && (
+              <IconButton size="small" onClick={onRegenerate}>
+                <RefreshCw size={16} />
+              </IconButton>
+            )}
+          </Box>
+        </Box>
 
-      <div className="relative h-64 sm:h-80 mb-6 perspective-1000">
-        <AnimatePresence mode="wait">
-          <motion.div
-            key={currentCard}
-            initial={{ rotateY: 90, opacity: 0 }}
-            animate={{ rotateY: 0, opacity: 1 }}
-            exit={{ rotateY: -90, opacity: 0 }}
-            transition={{ duration: 0.3 }}
-            className="h-full cursor-pointer"
-            onClick={() => setIsFlipped(!isFlipped)}
+        <Box sx={{ position: 'relative', height: { xs: 256, sm: 320 }, mb: 3, perspective: 1000 }}>
+          <AnimatePresence mode="wait">
+            <motion.div
+              key={currentCard}
+              initial={{ rotateY: 90, opacity: 0 }}
+              animate={{ rotateY: 0, opacity: 1 }}
+              exit={{ rotateY: -90, opacity: 0 }}
+              transition={{ duration: 0.3 }}
+              style={{ height: '100%', cursor: 'pointer' }}
+              onClick={() => setIsFlipped(!isFlipped)}
+            >
+              <Box sx={{ position: 'relative', height: '100%' }}>
+                <motion.div
+                  animate={{ rotateY: isFlipped ? 180 : 0 }}
+                  transition={{ duration: 0.6 }}
+                  style={{ position: 'absolute', inset: 0, transformStyle: 'preserve-3d' }}
+                >
+                  <Box
+                    sx={{ position: 'absolute', inset: 0, bgcolor: 'white', borderRadius: 4, boxShadow: 8, p: { xs: 3, sm: 4 }, display: 'flex', alignItems: 'center', justifyContent: 'center', backfaceVisibility: 'hidden' }}
+                  >
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Sparkles size={32} color="#6366f1" style={{ margin: '0 auto 16px' }} />
+                      <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, color: 'grey.800' }}>
+                        {card.front}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary" sx={{ mt: 2 }}>Tap to reveal</Typography>
+                    </Box>
+                  </Box>
+
+                  <Box
+                    sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom right, #6366f1, #9333ea)', borderRadius: 4, boxShadow: 8, p: { xs: 3, sm: 4 }, display: 'flex', alignItems: 'center', justifyContent: 'center', backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
+                  >
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography variant="h5" sx={{ fontSize: { xs: '1.25rem', sm: '1.5rem' }, fontWeight: 700, color: 'white' }}>
+                        {card.back}
+                      </Typography>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mt: 2 }}>Tap to flip back</Typography>
+                    </Box>
+                  </Box>
+                </motion.div>
+              </Box>
+            </motion.div>
+          </AnimatePresence>
+        </Box>
+
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 1.5 }}>
+          <IconButton
+            onClick={handlePrev}
+            disabled={cards.length <= 1}
+            sx={{ border: 1, borderColor: 'divider' }}
           >
-            <div className="relative h-full">
-              <motion.div
-                animate={{ rotateY: isFlipped ? 180 : 0 }}
-                transition={{ duration: 0.6 }}
-                className="absolute inset-0"
-                style={{ transformStyle: 'preserve-3d' }}
-              >
-                {/* Front */}
-                <div
-                  className="absolute inset-0 bg-white rounded-2xl shadow-xl p-6 sm:p-8 flex items-center justify-center"
-                  style={{ backfaceVisibility: 'hidden' }}
-                >
-                  <div className="text-center">
-                    <Sparkles className="w-8 h-8 text-indigo-500 mx-auto mb-4" />
-                    <p className="text-xl sm:text-2xl font-bold text-gray-800">
-                      {card.front}
-                    </p>
-                    <p className="text-sm text-gray-500 mt-4">Tap to reveal</p>
-                  </div>
-                </div>
+            <ChevronLeft size={20} />
+          </IconButton>
 
-                {/* Back */}
-                <div
-                  className="absolute inset-0 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-2xl shadow-xl p-6 sm:p-8 flex items-center justify-center"
-                  style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
-                >
-                  <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-white">
-                      {card.back}
-                    </p>
-                    <p className="text-sm text-white/80 mt-4">Tap to flip back</p>
-                  </div>
-                </div>
-              </motion.div>
-            </div>
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      <div className="flex items-center justify-between gap-3">
-        <Button
-          variant="outline"
-          onClick={handlePrev}
-          disabled={cards.length <= 1}
-        >
-          <ChevronLeft className="w-4 h-4" />
-        </Button>
-
-        <div className="flex gap-2">
           <Button
             onClick={markAsKnown}
-            className="bg-gradient-to-r from-green-600 to-emerald-600"
+            variant="contained"
             disabled={knownCards.has(currentCard)}
+            sx={{ background: 'linear-gradient(to right, #16a34a, #059669)', '&:hover': { background: 'linear-gradient(to right, #15803d, #047857)' } }}
           >
             {knownCards.has(currentCard) ? '✓ Known' : 'I Know This'}
           </Button>
-        </div>
 
-        <Button
-          variant="outline"
-          onClick={handleNext}
-          disabled={cards.length <= 1}
-        >
-          <ChevronRight className="w-4 h-4" />
-        </Button>
-      </div>
+          <IconButton
+            onClick={handleNext}
+            disabled={cards.length <= 1}
+            sx={{ border: 1, borderColor: 'divider' }}
+          >
+            <ChevronRight size={20} />
+          </IconButton>
+        </Box>
 
-      <div className="flex gap-2 justify-center mt-4">
-        {cards.map((_, index) => (
-          <button
-            key={index}
-            onClick={() => {
-              setCurrentCard(index);
-              setIsFlipped(false);
-            }}
-            className={`w-2 h-2 rounded-full transition-all ${
-              index === currentCard
-                ? 'bg-indigo-600 w-6'
-                : knownCards.has(index)
-                ? 'bg-green-500'
-                : 'bg-gray-300'
-            }`}
-          />
-        ))}
-      </div>
+        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center', mt: 2 }}>
+          {cards.map((_, index) => (
+            <Box
+              component="button"
+              key={index}
+              onClick={() => {
+                setCurrentCard(index);
+                setIsFlipped(false);
+              }}
+              sx={{
+                width: index === currentCard ? 24 : 8,
+                height: 8,
+                borderRadius: 50,
+                transition: 'all 0.3s',
+                border: 'none',
+                cursor: 'pointer',
+                bgcolor: index === currentCard ? '#6366f1' : knownCards.has(index) ? '#22c55e' : '#d1d5db'
+              }}
+            />
+          ))}
+        </Box>
+      </CardContent>
     </Card>
   );
 }

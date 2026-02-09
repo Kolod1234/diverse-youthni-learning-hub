@@ -7,6 +7,11 @@ import {
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
   Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye
 } from 'lucide-react';
+import { 
+  Box, Button, Card, CardContent, Drawer, IconButton, Typography, 
+  AppBar, Toolbar, Collapse, List, ListItem, ListItemButton, ListItemIcon, ListItemText,
+  TextField, InputAdornment, Chip, CircularProgress
+} from '@mui/material';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import MatchingGame from '@/components/lesson/MatchingGame';
@@ -41,11 +46,7 @@ import StreakTracker from '@/components/lesson/StreakTracker';
 import XPProgressBar from '@/components/lesson/XPProgressBar';
 import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
 import DifficultyRating from '@/components/lesson/DifficultyRating';
-import { Card } from '@/components/ui/card';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
 import { motion } from 'framer-motion';
 
 export default function LessonPlayerClassic() {
@@ -498,24 +499,24 @@ export default function LessonPlayerClassic() {
 
   if (lessonLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading lesson...</p>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress sx={{ mb: 2 }} />
+          <Typography color="text.secondary">Loading lesson...</Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (!lesson) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
-          <Button onClick={() => navigate(-1)}>Go Back</Button>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <BookOpen size={64} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
+          <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>Lesson not found</Typography>
+          <Button variant="contained" onClick={() => navigate(-1)}>Go Back</Button>
+        </Box>
+      </Box>
     );
   }
 
@@ -523,31 +524,35 @@ export default function LessonPlayerClassic() {
   if (isLessonLocked && !lessonLoading) {
     return (
       <>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
-          <Card className="max-w-md p-8 text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-orange-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Lesson Locked</h2>
-            <p className="text-gray-600 mb-6">
-              This lesson requires an unlock key. Contact your tutor to get access.
-            </p>
-            <Button
-              onClick={() => setShowUnlockDialog(true)}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 gap-2"
-            >
-              <Key className="w-4 h-4" />
-              Enter Unlock Key
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate(-1)}
-              className="w-full mt-3"
-            >
-              Back to Course
-            </Button>
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom right, #fff7ed, #fee2e2)' }}>
+          <Card sx={{ maxWidth: 448, textAlign: 'center' }}>
+            <CardContent sx={{ p: 4 }}>
+              <Box sx={{ width: 64, height: 64, bgcolor: '#fed7aa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                <Lock size={32} color="#ea580c" />
+              </Box>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>Lesson Locked</Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                This lesson requires an unlock key. Contact your tutor to get access.
+              </Typography>
+              <Button
+                onClick={() => setShowUnlockDialog(true)}
+                variant="contained"
+                fullWidth
+                startIcon={<Key size={16} />}
+                sx={{ background: 'linear-gradient(to right, #ea580c, #dc2626)', mb: 1.5, '&:hover': { background: 'linear-gradient(to right, #c2410c, #b91c1c)' } }}
+              >
+                Enter Unlock Key
+              </Button>
+              <Button
+                variant="outlined"
+                onClick={() => navigate(-1)}
+                fullWidth
+              >
+                Back to Course
+              </Button>
+            </CardContent>
           </Card>
-        </div>
+        </Box>
         <LessonUnlockDialog
           open={showUnlockDialog}
           onOpenChange={setShowUnlockDialog}
@@ -576,174 +581,267 @@ export default function LessonPlayerClassic() {
       
       {/* Pull to Refresh Indicator */}
       {isPulling && (
-        <div 
-          className="fixed top-0 left-0 right-0 flex justify-center z-50 transition-transform"
-          style={{ transform: `translateY(${Math.min(pullDistance, 80)}px)` }}
-        >
-          <div className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-            <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
-            <span className="text-sm">{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</span>
-          </div>
-        </div>
+        <Box sx={{ position: 'fixed', top: 0, left: 0, right: 0, display: 'flex', justifyContent: 'center', zIndex: 50, transition: 'transform 0.3s', transform: `translateY(${Math.min(pullDistance, 80)}px)` }}>
+          <Chip
+            icon={<RefreshCw size={16} className={pullDistance > 80 ? 'animate-spin' : ''} />}
+            label={pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+            sx={{ bgcolor: '#2563eb', color: 'white', px: 2, py: 1.5, boxShadow: 4 }}
+          />
+        </Box>
       )}
 
-      <div 
-        className={`min-h-screen flex flex-col bg-gray-100 ${
-          deviceType === 'mobile' ? 'text-sm' : 
-          deviceType === 'tablet' ? 'text-base' : 'text-base'
-        }`}
-        style={{
-          paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
-        }}
-      >
+      <Box sx={{ minHeight: '100vh', display: 'flex', flexDirection: 'column', bgcolor: 'grey.100', fontSize: deviceType === 'mobile' ? '0.875rem' : '1rem' }}>
         {/* Top Bar */}
-        <header className={`bg-white border-b flex items-center justify-between sticky top-0 z-50 shadow-sm ${
-          deviceType === 'mobile' ? 'h-14 px-3' : 'h-16 px-6'
-        }`}>
-        <div className="flex items-center gap-4">
-          <button
-            className="lg:hidden"
-            onClick={() => setShowSidebar(!showSidebar)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
-        
-        <div className="flex items-center gap-4">
-          {/* Progress Ring */}
-          <div className="hidden md:block">
-            <ProgressRing progress={progressPercent} size={50} />
-          </div>
-          
-          {/* Estimated Time */}
-          {estimatedMinutes > 0 && (
-            <div className="hidden lg:flex items-center gap-1 text-sm text-gray-600">
-              <Clock className="w-4 h-4" />
-              <span>{estimatedMinutes} min</span>
-            </div>
-          )}
-          
-          <AccessibilityControls />
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setFocusModeEnabled(!focusModeEnabled)}
-            className="hidden md:inline-flex"
-            title="Focus mode (F)"
-          >
-            <Eye className="w-5 h-5" />
-          </Button>
-          
-          <ThemeCustomizer />
-          
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-5 h-5" />
+        <AppBar position="sticky" elevation={1} sx={{ bgcolor: 'white', color: 'text.primary', height: deviceType === 'mobile' ? 56 : 64 }}>
+          <Toolbar sx={{ minHeight: { xs: 56, md: 64 }, px: { xs: 1.5, md: 3 }, justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton sx={{ display: { xs: 'inline-flex', lg: 'none' } }} onClick={() => setShowSidebar(!showSidebar)}>
+                <Menu size={24} />
+              </IconButton>
+            </Box>
+            
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <ProgressRing progress={progressPercent} size={50} />
+              </Box>
+              
+              {estimatedMinutes > 0 && (
+                <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>
+                  <Clock size={16} />
+                  <Typography variant="body2">{estimatedMinutes} min</Typography>
+                </Box>
+              )}
+              
+              <AccessibilityControls />
+              
+              <IconButton
+                onClick={() => setFocusModeEnabled(!focusModeEnabled)}
+                sx={{ display: { xs: 'none', md: 'inline-flex' } }}
+                title="Focus mode (F)"
+              >
+                <Eye size={20} />
+              </IconButton>
+              
+              <ThemeCustomizer />
+              
+              <Drawer anchor="right" open={showNotesSheet} onClose={() => setShowNotesSheet(false)}>
+                <Box sx={{ width: { xs: '100vw', sm: 400 }, p: 3 }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>Lesson Tools</Typography>
+                  <Box sx={{ mb: 4 }}>
+                    <Typography variant="subtitle2" fontWeight={500} sx={{ mb: 2 }}>Bookmarks</Typography>
+                    <LessonBookmarks lessonId={lessonId} />
+                  </Box>
+                  <Box>
+                    <Typography variant="subtitle2" fontWeight={500} sx={{ mb: 2 }}>Keyboard Shortcuts</Typography>
+                    <Box sx={{ fontSize: '0.875rem', color: 'text.secondary', display: 'flex', flexDirection: 'column', gap: 0.5 }}>
+                      <Typography variant="body2">← → : Navigate lessons</Typography>
+                      <Typography variant="body2">F : Fullscreen</Typography>
+                      <Typography variant="body2">Ctrl+B : Bookmark</Typography>
+                      <Typography variant="body2">/ : Search</Typography>
+                    </Box>
+                  </Box>
+                </Box>
+              </Drawer>
+
+              <IconButton onClick={() => setShowNotesSheet(true)}>
+                <Settings size={20} />
+              </IconButton>
+
+              <Button
+                variant="outlined"
+                onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
+                sx={{ fontWeight: 600 }}
+              >
+                EXIT COURSE
               </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Lesson Tools</SheetTitle>
-              </SheetHeader>
-              <div className="space-y-6 mt-6">
-                <div>
-                  <h4 className="font-medium mb-3">Bookmarks</h4>
-                  <LessonBookmarks lessonId={lessonId} />
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3">Keyboard Shortcuts</h4>
-                  <div className="text-sm space-y-1 text-gray-600">
-                    <p>← → : Navigate lessons</p>
-                    <p>F : Fullscreen</p>
-                    <p>Ctrl+B : Bookmark</p>
-                    <p>/ : Search</p>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+            </Box>
+          </Toolbar>
+        </AppBar>
 
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
-            className="font-semibold"
-          >
-            EXIT COURSE
-          </Button>
-        </div>
-      </header>
-
-      <div className="flex flex-1 overflow-hidden">
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
         {/* Sidebar */}
-        <motion.aside
-          initial={false}
-          animate={{ x: showSidebar ? 0 : '-100%' }}
-          transition={{ type: 'tween', duration: 0.3 }}
-          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none ${
-            deviceType === 'mobile' ? 'w-72' : 'w-80'
-          }`}
-          style={{ marginTop: deviceType === 'mobile' ? '56px' : '64px' }}
+        <Drawer
+          variant="temporary"
+          open={showSidebar}
+          onClose={() => setShowSidebar(false)}
+          sx={{
+            display: { xs: 'block', lg: 'none' },
+            '& .MuiDrawer-paper': { 
+              width: deviceType === 'mobile' ? 288 : 320, 
+              bgcolor: '#1e3a8a', 
+              color: 'white',
+              marginTop: deviceType === 'mobile' ? '56px' : '64px',
+              height: `calc(100% - ${deviceType === 'mobile' ? 56 : 64}px)`
+            }
+          }}
         >
-          {/* Search */}
-          <div className="p-4 border-b border-white/20">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-              <input
-                ref={searchInputRef}
-                type="text"
+          <Box sx={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+              <TextField
+                inputRef={searchInputRef}
                 placeholder="Search... (Press /)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
-                aria-label="Search lessons"
+                fullWidth
+                size="small"
+                InputProps={{
+                  startAdornment: (
+                    <InputAdornment position="start">
+                      <Search size={16} color="rgba(255,255,255,0.6)" />
+                    </InputAdornment>
+                  ),
+                  sx: { bgcolor: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: 2, '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' }, '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.3)' } }
+                }}
+                sx={{ '& input': { color: 'white', '&::placeholder': { color: 'rgba(255,255,255,0.6)' } } }}
               />
-            </div>
-          </div>
+            </Box>
 
-          {/* Course Title and Progress */}
-          <div className="p-6 border-b border-white/20">
-            <h2 className="text-lg font-bold mb-4 leading-tight">
+            <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+              <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+                {course?.title || 'Course Content'}
+              </Typography>
+              {enrollment && (
+                <Box>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, fontSize: '0.875rem' }}>
+                    <Typography variant="body2" fontWeight={600}>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</Typography>
+                  </Box>
+                  <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.2)', borderRadius: 50, height: 8 }}>
+                    <Box
+                      sx={{ bgcolor: 'white', borderRadius: 50, height: 8, transition: 'width 0.3s', width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+                    />
+                  </Box>
+                </Box>
+              )}
+            </Box>
+
+            <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
+              <List>
+                {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
+                  <Box key={section}>
+                    <ListItemButton onClick={() => toggleSection(section)} sx={{ px: 1.5, py: 1.5, fontSize: '0.75rem', fontWeight: 700, letterSpacing: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }, borderRadius: 1 }}>
+                      <ListItemText primary={section} sx={{ '& .MuiTypography-root': { fontSize: '0.75rem', fontWeight: 700 } }} />
+                      {expandedSections[section] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                    </ListItemButton>
+
+                    <Collapse in={expandedSections[section]}>
+                      <List disablePadding sx={{ mt: 0.5 }}>
+                        {sectionLessons.filter(l => 
+                          !searchQuery || 
+                          l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                          l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+                        ).map((l) => {
+                          const completed = enrollment?.completed_lessons?.includes(l.id);
+                          const isCurrent = l.id === lessonId;
+
+                          return (
+                            <ListItemButton
+                              key={l.id}
+                              onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                              sx={{ 
+                                px: 1.5, 
+                                py: 1.5, 
+                                gap: 1.5, 
+                                borderRadius: 1,
+                                bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'transparent',
+                                '&:hover': { bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)' }
+                              }}
+                            >
+                              <ListItemIcon sx={{ minWidth: 'auto' }}>
+                                <Menu size={16} color="rgba(255,255,255,0.6)" />
+                              </ListItemIcon>
+                              <ListItemText 
+                                primary={l.title} 
+                                sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                              />
+                              {completed && (
+                                <Box sx={{ width: 24, height: 24, borderRadius: '50%', bgcolor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                  <Check size={16} color="#1e3a8a" />
+                                </Box>
+                              )}
+                            </ListItemButton>
+                          );
+                        })}
+                      </List>
+                    </Collapse>
+                  </Box>
+                ))}
+              </List>
+            </Box>
+
+            <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.2)', display: { xs: 'block', lg: 'none' } }}>
+              <Button 
+                onClick={() => setShowSidebar(false)}
+                fullWidth
+                startIcon={<X size={20} />}
+                sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, borderRadius: 2 }}
+              >
+                Close Menu
+              </Button>
+            </Box>
+          </Box>
+        </Drawer>
+
+        {/* Desktop Sidebar */}
+        <Box
+          component="aside"
+          sx={{
+            display: { xs: 'none', lg: 'flex' },
+            width: 320,
+            bgcolor: '#1e3a8a',
+            color: 'white',
+            flexDirection: 'column',
+            height: 'calc(100vh - 64px)'
+          }}
+        >
+          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <TextField
+              inputRef={searchInputRef}
+              placeholder="Search... (Press /)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              size="small"
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={16} color="rgba(255,255,255,0.6)" />
+                  </InputAdornment>
+                ),
+                sx: { bgcolor: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: 2, '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }
+              }}
+              sx={{ '& input': { color: 'white', '&::placeholder': { color: 'rgba(255,255,255,0.6)' } } }}
+            />
+          </Box>
+
+          <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
               {course?.title || 'Course Content'}
-            </h2>
+            </Typography>
             {enrollment && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold">{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-white rounded-full h-2 transition-all duration-300"
-                    style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, fontSize: '0.875rem' }}>
+                  <Typography variant="body2" fontWeight={600}>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</Typography>
+                </Box>
+                <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.2)', borderRadius: 50, height: 8 }}>
+                  <Box
+                    sx={{ bgcolor: 'white', borderRadius: 50, height: 8, transition: 'width 0.3s', width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
                   />
-                </div>
-              </div>
+                </Box>
+              </Box>
             )}
-          </div>
+          </Box>
 
-          {/* Lessons */}
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-2">
+          <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
+            <List>
               {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
-                <div key={section}>
-                  <button
-                    onClick={() => toggleSection(section)}
-                    className="w-full flex items-center justify-between px-3 py-3 text-xs font-bold tracking-wide hover:bg-white/10 rounded transition-colors text-left"
-                  >
-                    <span className="flex-1">{section}</span>
-                    {expandedSections[section] ? (
-                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                    )}
-                  </button>
+                <Box key={section}>
+                  <ListItemButton onClick={() => toggleSection(section)} sx={{ px: 1.5, py: 1.5, fontSize: '0.75rem', fontWeight: 700, letterSpacing: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }, borderRadius: 1 }}>
+                    <ListItemText primary={section} sx={{ '& .MuiTypography-root': { fontSize: '0.75rem', fontWeight: 700 } }} />
+                    {expandedSections[section] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                  </ListItemButton>
 
-                  {expandedSections[section] && (
-                    <div className="space-y-1 mt-1">
+                  <Collapse in={expandedSections[section]}>
+                    <List disablePadding sx={{ mt: 0.5 }}>
                       {sectionLessons.filter(l => 
                         !searchQuery || 
                         l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
@@ -753,146 +851,126 @@ export default function LessonPlayerClassic() {
                         const isCurrent = l.id === lessonId;
 
                         return (
-                          <div
+                          <ListItemButton
                             key={l.id}
                             onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
-                            className={`flex items-start gap-3 px-3 py-3 rounded cursor-pointer transition-colors ${
-                              isCurrent ? 'bg-white/20' : 'hover:bg-white/10'
-                            }`}
+                            sx={{ 
+                              px: 1.5, 
+                              py: 1.5, 
+                              gap: 1.5, 
+                              borderRadius: 1,
+                              bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'transparent',
+                              '&:hover': { bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)' }
+                            }}
                           >
-                            <div className="w-5 h-5 flex-shrink-0 mt-0.5">
-                              <Menu className="w-4 h-4 text-white/60" />
-                            </div>
-                            <p className="flex-1 text-sm leading-relaxed">
-                              {l.title}
-                            </p>
+                            <ListItemIcon sx={{ minWidth: 'auto' }}>
+                              <Menu size={16} color="rgba(255,255,255,0.6)" />
+                            </ListItemIcon>
+                            <ListItemText 
+                              primary={l.title} 
+                              sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                            />
                             {completed && (
-                              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                                <Check className="w-4 h-4 text-[#1e3a8a]" />
-                              </div>
+                              <Box sx={{ width: 24, height: 24, borderRadius: '50%', bgcolor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                <Check size={16} color="#1e3a8a" />
+                              </Box>
                             )}
-                          </div>
+                          </ListItemButton>
                         );
                       })}
-                    </div>
-                  )}
-                </div>
+                    </List>
+                  </Collapse>
+                </Box>
               ))}
-            </div>
-          </ScrollArea>
-
-          {/* Close button for mobile */}
-          <div className="p-4 border-t border-white/20 lg:hidden">
-            <button 
-              onClick={() => setShowSidebar(false)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
-            >
-              <X className="w-5 h-5" />
-              <span className="text-sm font-medium">Close Menu</span>
-            </button>
-          </div>
-        </motion.aside>
-
-        {/* Overlay for mobile */}
-        {showSidebar && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-            onClick={() => setShowSidebar(false)}
-            style={{ marginTop: '64px' }}
-          />
-        )}
+            </List>
+          </Box>
+        </Box>
+        </Drawer>
 
         {/* Main Content */}
-        <main 
+        <Box
+          component="main" 
           ref={mainContentRef}
           id="lesson-content"
-          className="flex-1 overflow-y-auto bg-gray-100"
+          sx={{ flex: 1, overflowY: 'auto', bgcolor: 'grey.100' }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           role="main"
           aria-label="Lesson content"
         >
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
-            {/* Breadcrumb Navigation */}
-            <div className="no-print mb-4">
+          <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, sm: 3, lg: 4 }, py: { xs: 3, sm: 6 }, pb: { xs: 12, md: 6 } }}>
+            <Box className="no-print" sx={{ mb: 2 }}>
               <BreadcrumbNav 
                 course={course}
                 section={lesson?.section}
                 lesson={lesson}
               />
-            </div>
+            </Box>
 
-            {/* Content Card */}
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 lg:p-12">
-              {/* Title */}
-              <div className="text-center mb-6 sm:mb-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light leading-tight text-gray-800 mb-4 sm:mb-8">
-                  {lesson.title}
-                </h1>
-              </div>
+            <Card sx={{ borderRadius: 2, boxShadow: 1 }}>
+              <CardContent sx={{ p: { xs: 2, sm: 4, lg: 6 } }}>
+                <Box sx={{ textAlign: 'center', mb: { xs: 3, sm: 4 } }}>
+                  <Typography variant="h3" sx={{ fontSize: { xs: '1.5rem', sm: '1.875rem', lg: '2.25rem' }, fontWeight: 300, color: 'grey.800', mb: { xs: 2, sm: 4 } }}>
+                    {lesson.title}
+                  </Typography>
+                </Box>
 
-              {/* Description */}
-              {lesson.description && (
-                <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
-                  {lesson.description}
-                </p>
-              )}
+                {lesson.description && (
+                  <Typography sx={{ fontSize: { xs: '1rem', sm: '1.125rem' }, color: 'grey.700', lineHeight: 1.75, mb: { xs: 2, sm: 3 } }}>
+                    {lesson.description}
+                  </Typography>
+                )}
 
-              {/* Media Player */}
-              {lesson.video_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="video"
-                    src={lesson.video_url}
-                  />
-                </div>
-              )}
+                {lesson.video_url && (
+                  <Box sx={{ my: { xs: 2, sm: 4 }, mx: { xs: -2, sm: 0 } }}>
+                    <EnhancedMediaPlayer
+                      type="video"
+                      src={lesson.video_url}
+                    />
+                  </Box>
+                )}
 
-              {lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="google-slides"
-                    src={lesson.google_slides_url.includes('/embed') 
-                      ? lesson.google_slides_url 
-                      : lesson.google_slides_url.replace('/edit', '/embed')}
-                  />
-                </div>
-              )}
+                {lesson.google_slides_url && (
+                  <Box sx={{ my: { xs: 2, sm: 4 }, mx: { xs: -2, sm: 0 } }}>
+                    <EnhancedMediaPlayer
+                      type="google-slides"
+                      src={lesson.google_slides_url.includes('/embed') 
+                        ? lesson.google_slides_url 
+                        : lesson.google_slides_url.replace('/edit', '/embed')}
+                    />
+                  </Box>
+                )}
 
-              {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="iframe"
-                    src={lesson.file_url}
-                  />
-                </div>
-              )}
+                {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
+                  <Box sx={{ my: { xs: 2, sm: 4 }, mx: { xs: -2, sm: 0 } }}>
+                    <EnhancedMediaPlayer
+                      type="iframe"
+                      src={lesson.file_url}
+                    />
+                  </Box>
+                )}
 
-              {/* Learning Objectives */}
-              {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-                <ul className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
-                  {lesson.learning_objectives.map((objective, idx) => (
-                    <li key={idx} className="flex gap-3 sm:gap-4">
-                      <span className="text-[#1e3a8a] text-xl sm:text-2xl flex-shrink-0 mt-0.5 sm:mt-1">•</span>
-                      <div>
-                        <span className="text-base sm:text-lg text-gray-700">{objective}</span>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
-              )}
+                {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
+                  <Box component="ul" sx={{ listStyle: 'none', p: 0, display: 'flex', flexDirection: 'column', gap: { xs: 2, sm: 3 }, mt: { xs: 3, sm: 4 } }}>
+                    {lesson.learning_objectives.map((objective, idx) => (
+                      <Box component="li" key={idx} sx={{ display: 'flex', gap: { xs: 1.5, sm: 2 } }}>
+                        <Typography sx={{ color: '#1e3a8a', fontSize: { xs: '1.25rem', sm: '1.5rem' }, lineHeight: 1 }}>•</Typography>
+                        <Typography sx={{ fontSize: { xs: '1rem', sm: '1.125rem' }, color: 'grey.700' }}>{objective}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                )}
 
-              {/* Interactive Elements - Generated from Learning Objectives */}
-              {loadingInteractives && (
-                <div className="mt-8 sm:mt-12 text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Generating interactive activities...</p>
-                </div>
-              )}
+                {loadingInteractives && (
+                  <Box sx={{ mt: { xs: 4, sm: 6 }, textAlign: 'center', py: 4 }}>
+                    <CircularProgress sx={{ mb: 2 }} />
+                    <Typography color="text.secondary">Generating interactive activities...</Typography>
+                  </Box>
+                )}
 
-              {!loadingInteractives && interactiveContent && (
-                <div className="space-y-6 mt-8 sm:mt-12">
+                {!loadingInteractives && interactiveContent && (
+                  <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3, mt: { xs: 4, sm: 6 } }}>
                   {interactiveContent.matchingPairs?.length > 0 && (
                     <MatchingGame
                       pairs={interactiveContent.matchingPairs}
@@ -947,85 +1025,83 @@ export default function LessonPlayerClassic() {
                       onRegenerate={handleRegenerateInteractives}
                     />
                   )}
-                </div>
-              )}
-            </div>
+                  </Box>
+                )}
+              </CardContent>
+            </Card>
 
-            {/* Navigation Buttons */}
-            <div className="flex justify-between items-center mt-6 sm:mt-8 gap-2 sm:gap-4">
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: { xs: 3, sm: 4 }, gap: { xs: 1, sm: 2 } }}>
               <Button 
-                variant="outline" 
-                size="lg"
+                variant="outlined"
+                size="large"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                className="flex-1 sm:flex-none"
+                sx={{ flex: { xs: 1, sm: 'none' } }}
               >
                 ← Previous
               </Button>
               <Button 
-                size="lg" 
-                className="bg-[#1e3a8a] hover:bg-[#1e3a8a]/90 flex-1 sm:flex-none"
+                variant="contained"
+                size="large"
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
+                sx={{ bgcolor: '#1e3a8a', '&:hover': { bgcolor: 'rgba(30, 58, 138, 0.9)' }, flex: { xs: 1, sm: 'none' } }}
               >
                 Next →
               </Button>
-            </div>
+            </Box>
 
-            {/* Mark Complete Button */}
             {!isCompleted && (
-              <div className="mt-6 text-center no-print">
+              <Box className="no-print" sx={{ mt: 3, textAlign: 'center' }}>
                 <Button
-                  size="lg"
+                  variant="contained"
+                  size="large"
                   onClick={() => {
                     markCompleteMutation.mutate();
                     haptic.success();
                   }}
                   disabled={markCompleteMutation.isPending}
-                  className="bg-green-600 hover:bg-green-700 gap-2 min-h-[44px] min-w-[44px]"
+                  startIcon={<CheckCircle size={20} />}
+                  sx={{ bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' }, minHeight: 44, minWidth: 44 }}
                 >
-                  <CheckCircle className="w-5 h-5" />
                   {markCompleteMutation.isPending ? 'Saving...' : 'Mark as Complete'}
                 </Button>
-              </div>
+              </Box>
             )}
 
-            {/* Learning Enhancement Tools */}
-            <div className="grid md:grid-cols-2 gap-6 mt-8">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 3, mt: 4 }}>
               <StreakTracker />
               <StudyTimer />
-            </div>
+            </Box>
 
-            <div className="mt-6">
+            <Box sx={{ mt: 3 }}>
               <XPProgressBar 
                 currentXP={currentXP}
                 level={userLevel}
                 showGain={showXPGain}
                 gainAmount={xpGain}
               />
-            </div>
+            </Box>
 
-            <div className="mt-6 flex justify-center">
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: 'center' }}>
               <DifficultyRating 
                 lessonId={lessonId}
                 onComplete={() => toast.success('Thank you for your feedback!')}
               />
-            </div>
+            </Box>
 
-            {/* Related Lessons */}
-            <div className="no-print mt-8">
+            <Box className="no-print" sx={{ mt: 4 }}>
               <RelatedLessons 
                 lessons={sortedLessons}
                 courseId={courseId}
                 currentLessonId={lessonId}
               />
-            </div>
-          </div>
-        </main>
-      </div>
-      </div>
+            </Box>
+          </Box>
+        </Box>
+      </Box>
+      </Box>
 
-      {/* Command Palette */}
       <CommandPalette
         open={showCommandPalette}
         onOpenChange={setShowCommandPalette}
@@ -1047,7 +1123,6 @@ export default function LessonPlayerClassic() {
         }}
       />
 
-      {/* Quick Actions FAB */}
       <QuickActions
         lesson={lesson}
         onOpenNotes={() => setShowNotesSheet(true)}
@@ -1055,17 +1130,12 @@ export default function LessonPlayerClassic() {
         onOpenDiscussion={() => navigate(`/CourseDiscussion?id=${courseId}`)}
       />
 
-      {/* Notes Sheet */}
-      <Sheet open={showNotesSheet} onOpenChange={setShowNotesSheet}>
-        <SheetContent side="right" className="w-full sm:max-w-lg overflow-y-auto">
-          <SheetHeader>
-            <SheetTitle>My Notes</SheetTitle>
-          </SheetHeader>
-          <div className="mt-6">
-            <LessonNotes lessonId={lessonId} />
-          </div>
-        </SheetContent>
-      </Sheet>
+      <Drawer anchor="right" open={showNotesSheet} onClose={() => setShowNotesSheet(false)}>
+        <Box sx={{ width: { xs: '100vw', sm: 500 }, p: 3, overflowY: 'auto' }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 3 }}>My Notes</Typography>
+          <LessonNotes lessonId={lessonId} />
+        </Box>
+      </Drawer>
 
       {/* Resume Prompt */}
       <ResumePrompt
