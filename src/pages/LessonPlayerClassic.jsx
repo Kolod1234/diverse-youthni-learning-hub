@@ -45,11 +45,9 @@ import XPProgressBar from '@/components/lesson/XPProgressBar';
 import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
 import DifficultyRating from '@/components/lesson/DifficultyRating';
 import { Card, TextField, Box, Button, Drawer, List, ListItem, ListItemButton, ListItemIcon, ListItemText, Divider, LinearProgress, Typography, Backdrop, Chip, Stack, Container, AppBar, Toolbar, IconButton } from '@mui/material';
-import MenuIcon from '@mui/icons-material/Menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Stack } from '@mui/material';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
