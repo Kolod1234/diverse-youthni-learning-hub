@@ -5,9 +5,8 @@ import { Box, Button, Card, CardContent, TextField, Tabs, Tab, Chip, Container, 
 import { Calendar, Download, Plus, Check, X, Search, BarChart3, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
-import AttendanceMarker from '@/components/attendance/AttendanceMarker';
-import AttendanceReports from '@/components/attendance/AttendanceReports';
-import AttendanceStatistics from '@/components/attendance/AttendanceStatistics';
+import AttendanceReports from '@/components/attendance/AttendanceReports.jsx';
+import AttendanceStatistics from '@/components/attendance/AttendanceStatistics.jsx';
 
 export default function AdminAttendance() {
   const [selectedTab, setSelectedTab] = useState('mark');
