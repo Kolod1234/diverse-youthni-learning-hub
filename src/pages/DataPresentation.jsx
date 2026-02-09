@@ -1,29 +1,11 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Box, Button, Card, CardContent, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Container, Typography } from '@mui/material';
 import { Sparkles, BarChart3, Save, BookOpen } from 'lucide-react';
 import AIGenerateMode from '@/components/presentation/AIGenerateMode';
 import SlideWorkspace from '@/components/presentation/SlideWorkspace';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Input } from '@/components/ui/input';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 
 export default function DataPresentation() {
   const [generatedSlides, setGeneratedSlides] = useState([]);
