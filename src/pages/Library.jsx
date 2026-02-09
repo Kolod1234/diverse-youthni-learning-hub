@@ -723,8 +723,8 @@ export default function Library() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+      </DialogContent>
+    </Dialog>
 
       {/* Share Dialog */}
       <ShareDialog
@@ -811,8 +811,8 @@ export default function Library() {
               </div>
             </div>
           )}
-        </DialogContent>
-      </Dialog>
+      </DialogContent>
+    </Dialog>
 
       {/* Upload Book Dialog - Shows after AI analysis */}
       <Dialog open={showUploadDialog} onClose={() => setShowUploadDialog(false)} maxWidth="md" fullWidth>
