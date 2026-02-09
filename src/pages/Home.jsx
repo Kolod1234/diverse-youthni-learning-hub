@@ -262,16 +262,16 @@ export default function Home() {
           <Box sx={{ position: 'absolute', inset: 0 }} ref={heroEmblaRef}>
             <Box sx={{ display: 'flex', height: '100%' }}>
               {heroBackgroundImages.map((imgUrl, idx) => (
-                <div key={idx} className="flex-[0_0_100%] min-w-0 h-full">
-                  <img
-                    src={imgUrl}
-                    alt={`Educational background ${idx + 1}`}
-                    className="w-full h-full object-cover opacity-40"
-                    loading="eager"
-                    fetchpriority="high"
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/60 via-[#003366]/30 to-[#002244]/70" />
-                </div>
+               <Box key={idx} sx={{ flex: '0 0 100%', minWidth: 0, height: '100%' }}>
+                 <Box
+                   component="img"
+                   src={imgUrl}
+                   alt={`Educational background ${idx + 1}`}
+                   sx={{ width: '100%', height: '100%', objectFit: 'cover', opacity: 0.4 }}
+                   loading="eager"
+                 />
+                 <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,51,102,0.6), rgba(0,51,102,0.3), rgba(0,34,68,0.7))' }} />
+               </Box>
               ))}
             </Box>
           </Box>
@@ -486,44 +486,71 @@ export default function Home() {
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
-              className="relative"
             >
-              <div className="overflow-hidden rounded-2xl shadow-2xl" ref={leadershipEmblaRef}>
-                <div className="flex">
+              <Box sx={{ position: 'relative' }}>
+                <Box sx={{ overflow: 'hidden', borderRadius: 4, boxShadow: 6 }} ref={leadershipEmblaRef}>
+                  <Box sx={{ display: 'flex' }}>
                   {(leadershipCarouselImages.length > 0 ? leadershipCarouselImages : [
                     { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1600&q=95&auto=format&fit=crop' }
                   ]).map((img, idx) => (
-                    <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                      <div className="relative aspect-[4/3] overflow-hidden">
-                        <img
-                          src={img.image_url}
+                    <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
+                      <Box sx={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+                        <CardMedia
+                          component="img"
+                          image={img.image_url}
                           alt={`Leadership programme ${idx + 1}`}
-                          className="w-full h-full object-cover transform transition-transform duration-700"
-                          loading="lazy"
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1)', transition: 'transform 0.7s' }}
                         />
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   ))}
-                </div>
-              </div>
-              <button
-                onClick={() => leadershipEmblaApi?.scrollPrev()}
-                className="absolute left-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 z-10"
-              >
-                <ChevronLeft className="w-5 h-5 text-gray-800" />
-              </button>
-              <button
-                onClick={() => leadershipEmblaApi?.scrollNext()}
-                className="absolute right-4 top-1/2 -translate-y-1/2 w-10 h-10 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-lg hover:shadow-xl transition-all hover:scale-110 z-10"
-              >
-                <ChevronRight className="w-5 h-5 text-gray-800" />
-              </button>
-              <div className="absolute -bottom-6 -right-6 bg-white p-6 rounded-full shadow-2xl z-10">
-                <Award className="w-16 h-16 text-[#003366]" />
-              </div>
+                  </Box>
+                </Box>
+                <IconButton
+                  onClick={() => leadershipEmblaApi?.scrollPrev()}
+                  sx={{
+                    position: 'absolute',
+                    left: 16,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    backdropFilter: 'blur(8px)',
+                    boxShadow: 3,
+                    zIndex: 10,
+                    '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)', boxShadow: 4 },
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <ChevronLeft size={20} color="#1f2937" />
+                </IconButton>
+                <IconButton
+                  onClick={() => leadershipEmblaApi?.scrollNext()}
+                  sx={{
+                    position: 'absolute',
+                    right: 16,
+                    top: '50%',
+                    transform: 'translateY(-50%)',
+                    width: 40,
+                    height: 40,
+                    bgcolor: 'rgba(255,255,255,0.9)',
+                    backdropFilter: 'blur(8px)',
+                    boxShadow: 3,
+                    zIndex: 10,
+                    '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)', boxShadow: 4 },
+                    transition: 'all 0.3s'
+                  }}
+                >
+                  <ChevronRight size={20} color="#1f2937" />
+                </IconButton>
+                <Box sx={{ position: 'absolute', bottom: -24, right: -24, bgcolor: 'white', p: 3, borderRadius: '50%', boxShadow: 6, zIndex: 10 }}>
+                  <Award size={64} color="#003366" />
+                </Box>
+              </Box>
             </motion.div>
           </div>
         </div>
@@ -621,17 +648,17 @@ export default function Home() {
                 { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=2400&q=95&auto=format&fit=crop' },
                 { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=2400&q=95&auto=format&fit=crop' },
               ]).map((img, idx) => (
-                <div key={img.id || idx} className="flex-[0_0_100%] min-w-0">
-                  <div className="relative aspect-[4/3] sm:aspect-[16/9] lg:aspect-[16/9] overflow-hidden">
-                    <img
-                      src={img.image_url}
+                <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
+                  <Box sx={{ position: 'relative', aspectRatio: { xs: '4/3', sm: '16/9', lg: '16/9' }, overflow: 'hidden' }}>
+                    <CardMedia
+                      component="img"
+                      image={img.image_url}
                       alt={`Community ${idx + 1}`}
-                      className="w-full h-full object-cover object-center transform transition-transform duration-700"
-                      loading="lazy"
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transform: 'scale(1)', transition: 'transform 0.7s' }}
                     />
-                    <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/10 to-transparent" />
-                  </div>
-                </div>
+                    <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1), transparent)' }} />
+                  </Box>
+                </Box>
               ))}
             </div>
             </Box>
@@ -959,8 +986,8 @@ export default function Home() {
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mt-12"
           >
+            <Box sx={{ textAlign: 'center', mt: 6 }}>
             <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
               <Button
                 variant="contained"
@@ -1208,17 +1235,18 @@ function HeroCarousel({ items }) {
       <Box ref={emblaRef} sx={{ overflow: 'hidden' }}>
         <Box sx={{ display: 'flex' }}>
           {items.map((item, idx) => (
-            <div key={idx} className="flex-[0_0_100%] min-w-0">
-              <div className="relative h-[600px] md:h-[700px]">
-                <img
-                  src={item.image_url}
+            <Box key={idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
+              <Box sx={{ position: 'relative', height: { xs: 600, md: 700 } }}>
+                <CardMedia
+                  component="img"
+                  image={item.image_url}
                   alt={item.title}
-                  className="w-full h-full object-cover"
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
                 />
-                <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/70 via-[#003366]/50 to-[#002244]/80" />
+                <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom, rgba(0,51,102,0.7), rgba(0,51,102,0.5), rgba(0,34,68,0.8))' }} />
                 
-                <div className="absolute inset-0 flex items-center justify-center overflow-hidden">
-                  <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center w-full">
+                <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden' }}>
+                  <Container maxWidth="xl" sx={{ textAlign: 'center', width: '100%' }}>
                     <motion.div
                       key={idx}
                       initial={{ opacity: 0, x: 100 }}
@@ -1227,50 +1255,63 @@ function HeroCarousel({ items }) {
                     >
                       {item.badge && (
                         <motion.div 
-                          className="inline-block bg-yellow-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
                           initial={{ x: -50, opacity: 0 }}
                           animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 50, opacity: 0 }}
                           transition={{ duration: 0.6, delay: 0.1 }}
                         >
-                          {item.badge}
+                          <Chip
+                            label={item.badge}
+                            sx={{
+                              bgcolor: '#fbbf24',
+                              color: '#003366',
+                              px: { xs: 3, md: 4 },
+                              py: { xs: 1, md: 1.5 },
+                              fontSize: { xs: '1rem', md: '1.5rem' },
+                              fontWeight: 900,
+                              mb: 3,
+                              boxShadow: 6,
+                              height: 'auto'
+                            }}
+                          />
                         </motion.div>
                       )}
 
                       {item.title && (
                         <motion.div 
-                          className="bg-white inline-block px-8 md:px-12 py-6 md:py-8 rounded-3xl shadow-2xl mb-6"
                           initial={{ x: 80, opacity: 0, rotate: 0 }}
                           animate={currentIndex === idx ? { x: 0, opacity: 1, rotate: 1 } : { x: -80, opacity: 0, rotate: 0 }}
                           transition={{ duration: 0.7, delay: 0.15, ease: "easeInOut" }}
                         >
-                          <h1 className="text-4xl md:text-7xl font-black text-[#003366] tracking-tight">
-                            {item.title}
-                          </h1>
+                          <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 3, md: 4 }, borderRadius: 6, boxShadow: 6, mb: 3 }}>
+                            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4.5rem' }, fontWeight: 900, color: '#003366', letterSpacing: '-0.025em' }}>
+                              {item.title}
+                            </Typography>
+                          </Box>
                         </motion.div>
                       )}
 
                       {item.subtitle && (
-                        <motion.h2 
-                          className="text-2xl md:text-5xl font-extrabold text-white mb-4"
+                        <motion.div
                           initial={{ x: -60, opacity: 0 }}
                           animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 60, opacity: 0 }}
                           transition={{ duration: 0.7, delay: 0.2, ease: "easeInOut" }}
-                          style={{ textShadow: '3px 3px 8px rgba(0,0,0,0.8)' }}
                         >
-                          {item.subtitle}
-                        </motion.h2>
+                          <Typography variant="h3" sx={{ fontSize: { xs: '1.5rem', md: '3rem' }, fontWeight: 800, color: 'white', mb: 2, textShadow: '3px 3px 8px rgba(0,0,0,0.8)' }}>
+                            {item.subtitle}
+                          </Typography>
+                        </motion.div>
                       )}
 
                       {item.description && (
-                        <motion.p 
-                          className="text-white text-lg md:text-2xl font-bold mt-6 mb-8 max-w-3xl mx-auto"
+                        <motion.div
                           initial={{ x: 70, opacity: 0 }}
                           animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: -70, opacity: 0 }}
                           transition={{ duration: 0.7, delay: 0.25, ease: "easeInOut" }}
-                          style={{ textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}
                         >
-                          {item.description}
-                        </motion.p>
+                          <Typography sx={{ color: 'white', fontSize: { xs: '1.125rem', md: '1.5rem' }, fontWeight: 700, mt: 3, mb: 4, maxWidth: 800, mx: 'auto', textShadow: '2px 2px 6px rgba(0,0,0,0.9)' }}>
+                            {item.description}
+                          </Typography>
+                        </motion.div>
                       )}
 
                       {item.cta_text && item.cta_link && (
@@ -1306,10 +1347,10 @@ function HeroCarousel({ items }) {
                         </motion.div>
                       )}
                     </motion.div>
-                  </div>
-                </div>
-              </div>
-            </div>
+                  </Container>
+                </Box>
+              </Box>
+            </Box>
           ))}
         </Box>
       </Box>
@@ -1556,50 +1597,59 @@ function SuccessStoriesCarousel() {
         <Box sx={{ overflow: 'hidden' }} ref={emblaRef}>
           <Box sx={{ display: 'flex', gap: 3 }}>
             {stories.map((story, idx) => (
-              <div key={idx} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
-                <motion.div
-                  whileHover={{ y: -8 }}
-                  className={`relative h-80 rounded-3xl overflow-hidden bg-gradient-to-br ${story.bgColor} p-8 flex flex-col justify-between shadow-2xl`}
-                >
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="text-white/90 text-sm font-medium">{story.category}</span>
-                      <span className={`${story.tagColor} text-white px-3 py-1 rounded text-xs font-bold uppercase`}>
-                        {story.tag}
-                      </span>
-                    </div>
+              <Box key={idx} sx={{ flex: { xs: '0 0 100%', md: '0 0 45%', lg: '0 0 30%' }, minWidth: 0 }}>
+                <motion.div whileHover={{ y: -8 }}>
+                  <Box sx={{ position: 'relative', height: 320, borderRadius: 6, overflow: 'hidden', background: `linear-gradient(to bottom right, ${story.bgColor})`, p: 4, display: 'flex', flexDirection: 'column', justifyContent: 'space-between', boxShadow: 6 }}>
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                        <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '0.875rem', fontWeight: 500 }}>{story.category}</Typography>
+                        <Chip
+                          label={story.tag}
+                          size="small"
+                          sx={{
+                            bgcolor: story.tagColor.replace('bg-', '#'),
+                            color: 'white',
+                            px: 1.5,
+                            py: 0.5,
+                            fontSize: '0.75rem',
+                            fontWeight: 700,
+                            textTransform: 'uppercase'
+                          }}
+                        />
+                      </Box>
+                      
+                      <Typography variant="h5" sx={{ fontWeight: 700, color: 'white', mb: 2, lineHeight: 1.2 }}>
+                        {story.title}
+                      </Typography>
+                      
+                      {story.description && (
+                        <Typography sx={{ color: 'rgba(255,255,255,0.8)', fontSize: '0.875rem', lineHeight: 1.75 }}>
+                          {story.description}
+                        </Typography>
+                      )}
+                    </Box>
                     
-                    <h3 className="text-3xl font-bold text-white mb-4 leading-tight">
-                      {story.title}
-                    </h3>
-                    
-                    {story.description && (
-                      <p className="text-white/80 text-sm leading-relaxed">
-                        {story.description}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <Button
-                    variant="outlined"
-                    sx={{
-                      borderColor: 'white',
-                      borderWidth: 2,
-                      color: 'white',
-                      bgcolor: 'transparent',
-                      borderRadius: 50,
-                      px: 3,
-                      '&:hover': {
-                        bgcolor: 'white',
-                        color: '#1f2937',
+                    <Button
+                      variant="outlined"
+                      sx={{
                         borderColor: 'white',
-                      },
-                    }}
-                  >
-                    Learn more
-                  </Button>
+                        borderWidth: 2,
+                        color: 'white',
+                        bgcolor: 'transparent',
+                        borderRadius: 50,
+                        px: 3,
+                        '&:hover': {
+                          bgcolor: 'white',
+                          color: '#1f2937',
+                          borderColor: 'white',
+                        },
+                      }}
+                    >
+                      Learn more
+                    </Button>
+                  </Box>
                 </motion.div>
-              </div>
+              </Box>
             ))}
           </div>
         </Box>
