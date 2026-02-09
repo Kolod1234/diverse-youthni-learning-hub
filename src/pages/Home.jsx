@@ -76,8 +76,8 @@ export default function Home() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const courses = await base44.entities.Course.list('-created_date', 50);
-      return courses;
+      const allCourses = await base44.entities.Course.list('-created_date', 100);
+      return allCourses;
     },
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
