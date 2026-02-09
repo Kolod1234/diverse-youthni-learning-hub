@@ -45,7 +45,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
-import { Button } from '@/components/ui/button';
+import { Button } from '@mui/material';
 import { motion } from 'framer-motion';
 
 export default function LessonPlayerClassic() {
