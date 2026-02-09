@@ -612,10 +612,10 @@ export default function Home() {
           whileInView={{ opacity: 1, scale: 1 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="relative"
         >
-          <div className="overflow-hidden rounded-3xl shadow-2xl" ref={emblaRef}>
-            <div className="flex">
+          <Box sx={{ position: 'relative' }}>
+            <Box sx={{ overflow: 'hidden', borderRadius: 6, boxShadow: 6 }} ref={emblaRef}>
+              <Box sx={{ display: 'flex' }}>
               {(carouselImages.length > 0 ? carouselImages : [
                 { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=2400&q=95&auto=format&fit=crop' },
                 { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=2400&q=95&auto=format&fit=crop' },
@@ -634,20 +634,60 @@ export default function Home() {
                 </div>
               ))}
             </div>
-          </div>
+            </Box>
+          </Box>
           
-          <button
+          <IconButton
             onClick={() => emblaApi?.scrollPrev()}
-            className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
+            sx={{
+              position: 'absolute',
+              left: 24,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: 56,
+              height: 56,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid #e5e7eb',
+              boxShadow: 4,
+              '&:hover': {
+                background: 'linear-gradient(to right, #f97316, #e11d48)',
+                transform: 'translateY(-50%) scale(1.1)',
+                boxShadow: 6,
+                border: 'none',
+                '& svg': { color: 'white' }
+              },
+              transition: 'all 0.3s'
+            }}
           >
-            <ChevronLeft className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
-          </button>
-          <button
+            <ChevronLeft size={28} color="#1f2937" />
+          </IconButton>
+          <IconButton
             onClick={() => emblaApi?.scrollNext()}
-            className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-gradient-to-r hover:from-orange-500 hover:to-rose-500 rounded-full flex items-center justify-center shadow-xl hover:shadow-2xl transition-all hover:scale-110 group border border-gray-200 hover:border-transparent"
+            sx={{
+              position: 'absolute',
+              right: 24,
+              top: '50%',
+              transform: 'translateY(-50%)',
+              width: 56,
+              height: 56,
+              bgcolor: 'rgba(255,255,255,0.9)',
+              backdropFilter: 'blur(8px)',
+              border: '1px solid #e5e7eb',
+              boxShadow: 4,
+              '&:hover': {
+                background: 'linear-gradient(to right, #f97316, #e11d48)',
+                transform: 'translateY(-50%) scale(1.1)',
+                boxShadow: 6,
+                border: 'none',
+                '& svg': { color: 'white' }
+              },
+              transition: 'all 0.3s'
+            }}
           >
-            <ChevronRight className="w-7 h-7 text-gray-800 group-hover:text-white transition-colors" />
-          </button>
+            <ChevronRight size={28} color="#1f2937" />
+          </IconButton>
+        </Box>
         </motion.div>
       </section>
 
@@ -943,48 +983,48 @@ export default function Home() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="group bg-slate-800 rounded-2xl overflow-hidden hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-slate-700 hover:border-blue-500/50"
                 >
-                  {post.featured_image && (
-                    <div className="aspect-video overflow-hidden">
-                      <img
-                        src={post.featured_image}
-                        alt={post.title}
-                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
-                      />
-                    </div>
-                  )}
-                  <div className="p-6">
-                    <div className="flex items-center gap-3 mb-4">
-                      <span className="px-3 py-1 bg-blue-500/10 text-blue-400 text-xs font-semibold rounded-full capitalize">
-                        {post.category}
-                      </span>
-                      {post.read_time_minutes && (
-                        <span className="flex items-center gap-1 text-slate-400 text-xs">
-                          <Clock className="w-3 h-3" />
-                          {post.read_time_minutes} min read
-                        </span>
-                      )}
-                    </div>
-                    <h3 className="text-xl font-bold text-white mb-3 group-hover:text-blue-400 transition-colors">
-                      {post.title}
-                    </h3>
-                    <p className="text-slate-400 mb-4 line-clamp-2">{post.excerpt}</p>
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {post.author_avatar && (
-                          <img src={post.author_avatar} alt={post.author_name} className="w-8 h-8 rounded-full" />
+                  <Card sx={{ bgcolor: '#1e293b', borderRadius: 4, overflow: 'hidden', border: '1px solid #334155', '&:hover': { boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)', borderColor: 'rgba(59, 130, 246, 0.5)' }, transition: 'all 0.3s' }}>
+                    {post.featured_image && (
+                      <Box sx={{ aspectRatio: '16/9', overflow: 'hidden' }}>
+                        <CardMedia
+                          component="img"
+                          image={post.featured_image}
+                          alt={post.title}
+                          sx={{ width: '100%', height: '100%', objectFit: 'cover', '&:hover': { transform: 'scale(1.1)' }, transition: 'transform 0.3s' }}
+                        />
+                      </Box>
+                    )}
+                    <CardContent sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <Chip label={post.category} size="small" sx={{ px: 1.5, py: 0.5, bgcolor: 'rgba(59, 130, 246, 0.1)', color: '#60a5fa', fontWeight: 600, textTransform: 'capitalize', fontSize: '0.75rem' }} />
+                        {post.read_time_minutes && (
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, color: '#94a3b8', fontSize: '0.75rem' }}>
+                            <Clock size={12} />
+                            <Typography variant="caption">{post.read_time_minutes} min read</Typography>
+                          </Box>
                         )}
-                        <div>
-                          <p className="text-sm font-medium text-white">{post.author_name}</p>
-                          {post.published_date && (
-                            <p className="text-xs text-slate-500">{new Date(post.published_date).toLocaleDateString()}</p>
+                      </Box>
+                      <Typography variant="h6" sx={{ fontWeight: 700, color: 'white', mb: 1.5, '&:hover': { color: '#60a5fa' }, transition: 'color 0.3s' }}>
+                        {post.title}
+                      </Typography>
+                      <Typography sx={{ color: '#94a3b8', mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{post.excerpt}</Typography>
+                      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          {post.author_avatar && (
+                            <Avatar src={post.author_avatar} alt={post.author_name} sx={{ width: 32, height: 32 }} />
                           )}
-                        </div>
-                      </div>
-                      <ArrowRight className="w-5 h-5 text-blue-400 group-hover:translate-x-1 transition-transform" />
-                    </div>
-                  </div>
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 500, color: 'white', fontSize: '0.875rem' }}>{post.author_name}</Typography>
+                            {post.published_date && (
+                              <Typography variant="caption" sx={{ color: '#64748b', fontSize: '0.75rem' }}>{new Date(post.published_date).toLocaleDateString()}</Typography>
+                            )}
+                          </Box>
+                        </Box>
+                        <ArrowRight size={20} color="#60a5fa" style={{ transition: 'transform 0.3s' }} />
+                      </Box>
+                    </CardContent>
+                  </Card>
                 </motion.div>
               ))}
             </div>
@@ -1021,31 +1061,43 @@ export default function Home() {
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
-        <section className="py-20 bg-gradient-to-br from-muted/30 to-muted/50">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Box component="section" sx={{ py: 10, background: 'linear-gradient(to bottom right, rgba(0,0,0,0.02), rgba(0,0,0,0.05))' }}>
+          <Container maxWidth="xl">
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="text-center mb-16"
             >
-              <motion.span 
-                className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 via-indigo-500/10 to-purple-500/10 border-2 border-blue-500/30 text-sm font-bold mb-6"
-                whileHover={{ scale: 1.05 }}
-              >
-                <span className="bg-gradient-to-r from-blue-600 via-indigo-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
-                  <Star className="w-4 h-4 fill-blue-600 text-blue-600 dark:fill-blue-400 dark:text-blue-400" />
-                  Real Student Reviews
-                </span>
-              </motion.span>
-              <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-                What our learners say
-              </h2>
-              <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-                Authentic feedback from students currently learning with us
-              </p>
+              <Box sx={{ textAlign: 'center', mb: 8 }}>
+                <motion.div whileHover={{ scale: 1.05 }}>
+                  <Chip
+                    icon={<Star size={16} style={{ fill: '#2563eb' }} />}
+                    label="Real Student Reviews"
+                    sx={{
+                      px: 3,
+                      py: 1.5,
+                      borderRadius: 50,
+                      background: 'linear-gradient(to right, rgba(59, 130, 246, 0.1), rgba(99, 102, 241, 0.1), rgba(168, 85, 247, 0.1))',
+                      border: '2px solid rgba(59, 130, 246, 0.3)',
+                      fontWeight: 700,
+                      mb: 3,
+                      '& .MuiChip-label': {
+                        background: 'linear-gradient(to right, #2563eb, #6366f1, #a855f7)',
+                        WebkitBackgroundClip: 'text',
+                        WebkitTextFillColor: 'transparent'
+                      }
+                    }}
+                  />
+                </motion.div>
+                <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', md: '3rem' }, fontWeight: 700, mb: 2 }}>
+                  What our learners say
+                </Typography>
+                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+                  Authentic feedback from students currently learning with us
+                </Typography>
+              </Box>
             </motion.div>
-            <div className="grid md:grid-cols-3 gap-8">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
               {realReviews.slice(0, 3).map((review, idx) => (
               <motion.div
                 key={idx}
@@ -1054,31 +1106,32 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
-                className="relative bg-card rounded-2xl p-8 shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border overflow-hidden group"
               >
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gradient-to-br from-blue-500/5 to-purple-500/5 rounded-full blur-2xl group-hover:scale-150 transition-transform duration-500" />
-                <div className="relative z-10">
-                  <div className="flex items-center gap-1 mb-4">
-                    {[...Array(5)].map((_, i) => (
-                      <Star key={i} className={`w-5 h-5 transition-all duration-200 ${i < review.rating ? 'fill-amber-400 text-amber-400 scale-110' : 'text-muted scale-100'}`} />
-                    ))}
-                  </div>
-                  <div className="mb-6">
-                    <div className="text-6xl text-blue-600/20 font-serif mb-2">"</div>
-                    <p className="text-foreground/90 leading-relaxed text-base italic">{review.comment}</p>
-                  </div>
-                  <div className="flex items-center justify-start pt-4 border-t border-border/50">
-                    <p className="text-xs text-muted-foreground flex items-center gap-1">
-                      <CheckCircle className="w-3 h-3 text-green-500" />
-                      {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
-                    </p>
-                  </div>
-                </div>
+                <Card sx={{ position: 'relative', borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 8, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', overflow: 'hidden' }}>
+                  <Box sx={{ position: 'absolute', top: 0, right: 0, width: 128, height: 128, background: 'linear-gradient(to bottom right, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))', borderRadius: '50%', filter: 'blur(64px)', '&:hover': { transform: 'scale(1.5)' }, transition: 'transform 0.5s' }} />
+                  <Box sx={{ position: 'relative', zIndex: 10 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
+                      {[...Array(5)].map((_, i) => (
+                        <Star key={i} size={20} style={{ fill: i < review.rating ? '#fbbf24' : 'transparent', color: i < review.rating ? '#fbbf24' : '#d1d5db', transform: i < review.rating ? 'scale(1.1)' : 'scale(1)', transition: 'all 0.2s' }} />
+                      ))}
+                    </Box>
+                    <Box sx={{ mb: 3 }}>
+                      <Typography sx={{ fontSize: '4rem', color: 'rgba(37, 99, 235, 0.2)', fontFamily: 'serif', mb: 1 }}>"</Typography>
+                      <Typography sx={{ color: 'text.primary', lineHeight: 1.75, fontStyle: 'italic' }}>{review.comment}</Typography>
+                    </Box>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pt: 2, borderTop: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
+                      <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                        <CheckCircle size={12} color="#22c55e" />
+                        {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Card>
               </motion.div>
               ))}
-            </div>
-          </div>
-        </section>
+            </Box>
+          </Container>
+        </Box>
       )}
 
       {/* CTA Section */}
@@ -1099,9 +1152,9 @@ function HeroCarousel({ items }) {
   }, [emblaApi]);
 
   return (
-    <section className="relative overflow-hidden">
-      <div ref={emblaRef} className="overflow-hidden">
-        <div className="flex">
+    <Box component="section" sx={{ position: 'relative', overflow: 'hidden' }}>
+      <Box ref={emblaRef} sx={{ overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex' }}>
           {items.map((item, idx) => (
             <div key={idx} className="flex-[0_0_100%] min-w-0">
               <div className="relative h-[600px] md:h-[700px]">
@@ -1206,34 +1259,66 @@ function HeroCarousel({ items }) {
               </div>
             </div>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
-      <button
+      <IconButton
         onClick={() => emblaApi?.scrollPrev()}
-        className="absolute left-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+        sx={{
+          position: 'absolute',
+          left: 24,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: 56,
+          height: 56,
+          bgcolor: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(8px)',
+          boxShadow: 4,
+          zIndex: 10,
+          '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' },
+          transition: 'all 0.3s'
+        }}
       >
-        <ChevronLeft className="w-7 h-7 text-gray-800" />
-      </button>
-      <button
+        <ChevronLeft size={28} color="#1f2937" />
+      </IconButton>
+      <IconButton
         onClick={() => emblaApi?.scrollNext()}
-        className="absolute right-6 top-1/2 -translate-y-1/2 w-14 h-14 bg-white/90 backdrop-blur-sm hover:bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+        sx={{
+          position: 'absolute',
+          right: 24,
+          top: '50%',
+          transform: 'translateY(-50%)',
+          width: 56,
+          height: 56,
+          bgcolor: 'rgba(255,255,255,0.9)',
+          backdropFilter: 'blur(8px)',
+          boxShadow: 4,
+          zIndex: 10,
+          '&:hover': { bgcolor: 'white', transform: 'translateY(-50%) scale(1.1)' },
+          transition: 'all 0.3s'
+        }}
       >
-        <ChevronRight className="w-7 h-7 text-gray-800" />
-      </button>
+        <ChevronRight size={28} color="#1f2937" />
+      </IconButton>
 
-      <div className="absolute bottom-8 left-1/2 -translate-x-1/2 flex gap-3 z-10">
+      <Box sx={{ position: 'absolute', bottom: 32, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 1.5, zIndex: 10 }}>
         {items.map((_, idx) => (
-          <button
+          <Box
             key={idx}
+            component="button"
             onClick={() => emblaApi?.scrollTo(idx)}
-            className={`h-3 rounded-full transition-all ${
-              currentIndex === idx ? 'w-12 bg-yellow-400' : 'w-3 bg-white/60 hover:bg-white/80'
-            }`}
+            sx={{
+              height: 12,
+              borderRadius: 50,
+              transition: 'all 0.3s',
+              border: 'none',
+              cursor: 'pointer',
+              ...(currentIndex === idx ? { width: 48, bgcolor: '#fbbf24' } : { width: 12, bgcolor: 'rgba(255,255,255,0.6)', '&:hover': { bgcolor: 'rgba(255,255,255,0.8)' } })
+            }}
           />
         ))}
-      </div>
-    </section>
+      </Box>
+    </Box>
   );
 }
 
@@ -1246,22 +1331,23 @@ function ProgramsSection() {
   if (programs.length === 0) return null;
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-foreground mb-4">
-          Solutions for every age, stage, and transitional moment
-        </h2>
-        <p className="text-lg text-muted-foreground max-w-3xl mx-auto">
-          Explore our comprehensive programs designed to support your educational journey
-        </p>
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
+            Solutions for every age, stage, and transitional moment
+          </Typography>
+          <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>
+            Explore our comprehensive programs designed to support your educational journey
+          </Typography>
+        </Box>
       </motion.div>
       
-      <div className="grid md:grid-cols-2 gap-8">
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 4 }}>
         {programs.map((program, idx) => (
           <motion.div
             key={program.id}
@@ -1270,30 +1356,32 @@ function ProgramsSection() {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ y: -8 }}
-            className="bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-border"
           >
-            <div className="aspect-[16/10] overflow-hidden">
-              <img
-                src={program.image_url}
-                alt={program.title}
-                className="w-full h-full object-cover"
-              />
-            </div>
-            <div className="p-8">
-              <h3 className="text-3xl font-bold text-foreground mb-4">{program.title}</h3>
-              <p className="text-muted-foreground mb-6 leading-relaxed text-lg">
-                {program.description}
-              </p>
-              <Link to={program.link_url}>
-                <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
-                  See how →
-                </Button>
-              </Link>
-            </div>
+            <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
+              <Box sx={{ aspectRatio: '16/10', overflow: 'hidden' }}>
+                <CardMedia
+                  component="img"
+                  image={program.image_url}
+                  alt={program.title}
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                />
+              </Box>
+              <CardContent sx={{ p: 4 }}>
+                <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>{program.title}</Typography>
+                <Typography color="text.secondary" sx={{ mb: 3, lineHeight: 1.75, fontSize: '1.125rem' }}>
+                  {program.description}
+                </Typography>
+                <Link to={program.link_url} style={{ textDecoration: 'none' }}>
+                  <Button sx={{ color: 'primary.main', fontWeight: 600, p: 0, '&:hover': { color: 'primary.dark' } }}>
+                    See how →
+                  </Button>
+                </Link>
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
-      </div>
-    </section>
+      </Box>
+    </Container>
   );
 }
 
@@ -1306,25 +1394,36 @@ function FeaturesSection() {
   if (features.length === 0) return null;
 
   return (
-    <section className="py-20 bg-gradient-to-b from-background via-blue-500/5 to-purple-500/5">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Box component="section" sx={{ py: 10, background: 'linear-gradient(to bottom, transparent, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))' }}>
+      <Container maxWidth="xl">
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
-            Why Choose Us
-          </span>
-          <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-            Why learners love our platform
-          </h2>
-          <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
-            Experience the future of education with our innovative features
-          </p>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Chip
+              label="Why Choose Us"
+              sx={{
+                px: 2,
+                py: 1,
+                borderRadius: 50,
+                bgcolor: 'rgba(59, 130, 246, 0.1)',
+                color: 'primary.main',
+                fontWeight: 600,
+                mb: 2,
+                border: '1px solid rgba(59, 130, 246, 0.2)'
+              }}
+            />
+            <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.5rem' }, fontWeight: 700, mb: 2 }}>
+              Why learners love our platform
+            </Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+              Experience the future of education with our innovative features
+            </Typography>
+          </Box>
         </motion.div>
-        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 4 }}>
           {features.map((feature, idx) => (
             <motion.div
               key={feature.id}
@@ -1333,19 +1432,20 @@ function FeaturesSection() {
               viewport={{ once: true }}
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
-              className="bg-card rounded-2xl p-8 hover:shadow-2xl transition-all duration-300 border border-border relative overflow-hidden group"
             >
-              <div className={`absolute inset-0 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} opacity-0 group-hover:opacity-5 transition-opacity duration-300`} />
-              <div className={`inline-flex items-center justify-center w-14 h-14 bg-gradient-to-br from-${feature.color_from} to-${feature.color_to} rounded-xl mb-4 shadow-md`}>
-                <span className="text-2xl">{feature.icon}</span>
-              </div>
-              <h3 className="text-xl font-bold text-foreground mb-3">{feature.title}</h3>
-              <p className="text-muted-foreground leading-relaxed">{feature.description}</p>
+              <Card sx={{ borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative', overflow: 'hidden' }}>
+                <Box sx={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom right, ${feature.color_from}, ${feature.color_to})`, opacity: 0, '&:hover': { opacity: 0.05 }, transition: 'opacity 0.3s' }} />
+                <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, background: `linear-gradient(to bottom right, ${feature.color_from}, ${feature.color_to})`, borderRadius: 3, mb: 2, boxShadow: 2 }}>
+                  <Typography sx={{ fontSize: '2rem' }}>{feature.icon}</Typography>
+                </Box>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5 }}>{feature.title}</Typography>
+                <Typography color="text.secondary" sx={{ lineHeight: 1.75 }}>{feature.description}</Typography>
+              </Card>
             </motion.div>
           ))}
-        </div>
-      </div>
-    </section>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 
