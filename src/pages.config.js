@@ -48,6 +48,7 @@
  * The mainPage value must match a key in the PAGES object exactly.
  */
 import Achievements from './pages/Achievements';
+import AdminAttendance from './pages/AdminAttendance';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import AdminDailyFacts from './pages/AdminDailyFacts';
@@ -121,12 +122,12 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminAttendance from './pages/AdminAttendance';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
     "Achievements": Achievements,
+    "AdminAttendance": AdminAttendance,
     "AdminCoordinators": AdminCoordinators,
     "AdminCourseBuilder": AdminCourseBuilder,
     "AdminDailyFacts": AdminDailyFacts,
@@ -200,7 +201,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminAttendance": AdminAttendance,
 }
 
 export const pagesConfig = {

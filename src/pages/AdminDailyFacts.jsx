@@ -6,7 +6,7 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Lightbulb, Sparkles, Loader, Beaker, BookOpen, Leaf, Zap } from 'lucide-react';
+import { Plus, Edit, Trash2, Lightbulb, Sparkles, Loader, Beaker, BookOpen, Leaf, Zap, RotateCw } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import FactCard from '@/components/facts/FactCard.jsx';
