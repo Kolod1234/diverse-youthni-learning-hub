@@ -5,12 +5,12 @@ import { motion } from 'framer-motion';
 import { Lightbulb, Beaker, BookOpen, Leaf, Zap, Sparkles, ArrowRight } from 'lucide-react';
 
 const CATEGORY_CONFIG = {
-  science: { icon: Beaker, color: '#3b82f6', gradient: 'from-blue-50 to-cyan-50', accent: 'text-blue-600' },
-  history: { icon: BookOpen, color: '#8b5cf6', gradient: 'from-purple-50 to-pink-50', accent: 'text-purple-600' },
-  nature: { icon: Leaf, color: '#10b981', gradient: 'from-green-50 to-emerald-50', accent: 'text-green-600' },
-  technology: { icon: Zap, color: '#f59e0b', gradient: 'from-amber-50 to-orange-50', accent: 'text-amber-600' },
-  general: { icon: Lightbulb, color: '#ec4899', gradient: 'from-pink-50 to-rose-50', accent: 'text-pink-600' }
-};
+        science: { icon: Beaker, color: '#ff8c42', gradient: 'from-orange-50 to-amber-50', accent: 'text-orange-600' },
+        history: { icon: BookOpen, color: '#ff9a56', gradient: 'from-amber-50 to-orange-50', accent: 'text-amber-600' },
+        nature: { icon: Leaf, color: '#ffb84d', gradient: 'from-yellow-50 to-amber-50', accent: 'text-amber-600' },
+        technology: { icon: Zap, color: '#ff6b35', gradient: 'from-orange-50 to-red-50', accent: 'text-orange-600' },
+        general: { icon: Lightbulb, color: '#ff8c42', gradient: 'from-orange-50 to-amber-50', accent: 'text-orange-600' }
+      };
 
 export default function EnhancedFactOfDay() {
   const [selectedFact, setSelectedFact] = useState(null);
