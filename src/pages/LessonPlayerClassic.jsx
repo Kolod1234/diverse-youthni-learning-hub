@@ -883,9 +883,9 @@ export default function LessonPlayerClassic() {
                 </Box>
               ))}
             </List>
-          </Box>
-        </Box>
-        </Drawer>
+            </Box>
+            </Box>
+            </Drawer>
 
         {/* Main Content */}
         <Box
@@ -1099,7 +1099,6 @@ export default function LessonPlayerClassic() {
             </Box>
           </Box>
         </Box>
-      </Box>
       </Box>
 
       <CommandPalette
