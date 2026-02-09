@@ -4,6 +4,8 @@ import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Star, Users, Award, MessageSquare } from 'lucide-react';
 import { Button } from '@/components/ui/button';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
 
 export default function InstructorShowcase() {
   const { data: courses = [] } = useQuery({
@@ -155,13 +157,12 @@ export default function InstructorShowcase() {
                   </div>
                 </div>
 
-                <Button 
-                  onClick={() => window.location.href = `/Explore?instructor=${encodeURIComponent(instructor.name)}`}
-                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
-                >
-                  <MessageSquare className="w-4 h-4 mr-2" />
-                  View Courses
-                </Button>
+                <Link to={createPageUrl('Explore') + `?instructor=${encodeURIComponent(instructor.name)}`} className="w-full">
+                  <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+                    <MessageSquare className="w-4 h-4 mr-2" />
+                    View Courses
+                  </Button>
+                </Link>
               </div>
             </motion.div>
           ))}

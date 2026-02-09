@@ -851,6 +851,8 @@ function CoursesManagement({ courses, users }) {
   const queryClient = useQueryClient();
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [selectedTutorEmail, setSelectedTutorEmail] = useState('');
+  const [editingInstructor, setEditingInstructor] = useState(null);
+  const [customInstructorName, setCustomInstructorName] = useState('');
 
   const tutors = users.filter(u => u.is_tutor || u.role === 'admin');
 
@@ -860,6 +862,8 @@ function CoursesManagement({ courses, users }) {
       queryClient.invalidateQueries(['all-courses']);
       toast.success('Course updated successfully');
       setSelectedCourse(null);
+      setEditingInstructor(null);
+      setCustomInstructorName('');
     },
   });
 
@@ -882,6 +886,18 @@ function CoursesManagement({ courses, users }) {
       data: {
         instructor: tutor.full_name,
         instructor_avatar: tutor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(tutor.full_name)}&background=6366f1&color=fff`
+      }
+    });
+  };
+
+  const updateCustomInstructor = () => {
+    if (!editingInstructor || !customInstructorName.trim()) return;
+
+    updateCourseMutation.mutate({
+      id: editingInstructor.id,
+      data: {
+        instructor: customInstructorName,
+        instructor_avatar: `https://ui-avatars.com/api/?name=${encodeURIComponent(customInstructorName)}&background=6366f1&color=fff`
       }
     });
   };
@@ -915,6 +931,25 @@ function CoursesManagement({ courses, users }) {
         </Card>
       )}
 
+      {editingInstructor && (
+        <Card className="p-4 mb-6 bg-purple-50 border-purple-200">
+          <h3 className="font-semibold mb-3">Edit Instructor Name: {editingInstructor.title}</h3>
+          <div className="flex gap-3">
+            <Input
+              value={customInstructorName}
+              onChange={(e) => setCustomInstructorName(e.target.value)}
+              placeholder="Enter custom instructor name"
+              className="flex-1"
+            />
+            <Button onClick={updateCustomInstructor}>Update</Button>
+            <Button variant="outline" onClick={() => {
+              setEditingInstructor(null);
+              setCustomInstructorName('');
+            }}>Cancel</Button>
+          </div>
+        </Card>
+      )}
+
       <div className="space-y-3">
         {courses.map((course) => (
           <Card key={course.id} className="p-4">
@@ -924,7 +959,7 @@ function CoursesManagement({ courses, users }) {
                 <div>
                   <h3 className="font-semibold text-gray-900">{course.title}</h3>
                   <p className="text-sm text-gray-500">
-                    Instructor: {course.instructor} • {course.enrolled_count || 0} students
+                    Instructor: {course.instructor || 'Not assigned'} • {course.enrolled_count || 0} students
                   </p>
                 </div>
               </div>
@@ -936,6 +971,17 @@ function CoursesManagement({ courses, users }) {
                 >
                   <UserCog className="w-4 h-4 mr-2" />
                   Assign Tutor
+                </Button>
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => {
+                    setEditingInstructor(course);
+                    setCustomInstructorName(course.instructor || '');
+                  }}
+                >
+                  <Edit className="w-4 h-4 mr-2" />
+                  Edit Name
                 </Button>
                 <Button
                   variant="outline"
