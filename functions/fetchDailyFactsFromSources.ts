@@ -10,6 +10,32 @@ const FACT_SOURCES = [
   'https://www.findafact.com/'
 ];
 
+async function fetchPageContent(url) {
+  try {
+    const response = await fetch(url, {
+      headers: {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+      }
+    });
+    
+    if (!response.ok) return null;
+    const html = await response.text();
+    
+    // Extract text content from HTML (remove scripts, styles, etc)
+    const text = html
+      .replace(/<script\b[^<]*(?:(?!<\/script>)<[^<]*)*<\/script>/gi, '')
+      .replace(/<style\b[^<]*(?:(?!<\/style>)<[^<]*)*<\/style>/gi, '')
+      .replace(/<[^>]+>/g, ' ')
+      .replace(/\s+/g, ' ')
+      .slice(0, 5000); // Limit to 5000 chars to avoid token overload
+    
+    return text;
+  } catch (error) {
+    console.error(`Failed to fetch ${url}:`, error.message);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -21,39 +47,43 @@ Deno.serve(async (req) => {
 
     const factsToAdd = [];
     let successCount = 0;
-    let errorCount = 0;
 
-    // Fetch facts from various sources using LLM to extract and summarize
+    // Fetch content from each source and extract facts
     for (const source of FACT_SOURCES) {
+      const pageContent = await fetchPageContent(source);
+      
+      if (!pageContent) {
+        console.error(`Could not fetch content from ${source}`);
+        continue;
+      }
+
       try {
         const response = await base44.integrations.Core.InvokeLLM({
-          prompt: `Visit and extract 3-5 interesting, educational facts from this source: ${source}. 
-          
-          Return ONLY a JSON array of facts in this format:
-          [
-            {
-              "fact": "An interesting fact here",
-              "category": "science|history|general|nature|technology",
-              "source_url": "${source}"
-            }
-          ]
-          
-          Make sure facts are:
-          - Accurate and educational
-          - Concise (1-2 sentences)
-          - Interesting and engaging
-          - Not repetitive
-          
-          Return ONLY valid JSON, no other text.`,
-          add_context_from_internet: true,
+          prompt: `Extract 3-5 unique, interesting, and educational facts from the following webpage content:
+
+"${pageContent}"
+
+Return ONLY a valid JSON array in this exact format - no other text:
+[
+  {
+    "fact": "A complete, interesting educational fact",
+    "category": "science|history|general|nature|technology"
+  }
+]
+
+Rules:
+- Facts must be concise (1-2 sentences max)
+- Facts must be unique and not repetitive
+- Facts must be interesting and educational
+- Only include facts actually mentioned in the content
+- Return ONLY JSON, nothing else`,
           response_json_schema: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
                 fact: { type: 'string' },
-                category: { type: 'string', enum: ['science', 'history', 'general', 'nature', 'technology'] },
-                source_url: { type: 'string' }
+                category: { type: 'string', enum: ['science', 'history', 'general', 'nature', 'technology'] }
               },
               required: ['fact', 'category']
             }
@@ -62,44 +92,43 @@ Deno.serve(async (req) => {
 
         if (Array.isArray(response)) {
           response.forEach(item => {
-            if (item.fact && item.category) {
+            if (item.fact && item.fact.length > 10) {
               factsToAdd.push({
-                content: item.fact,
+                fact: item.fact,
                 category: item.category,
-                source_url: item.source_url || source,
-                is_published: true
+                source_url: source,
+                is_active: true
               });
               successCount++;
             }
           });
         }
-      } catch (sourceError) {
-        errorCount++;
-        console.error(`Error fetching from ${source}:`, sourceError.message);
+      } catch (parseError) {
+        console.error(`Error parsing facts from ${source}:`, parseError.message);
       }
     }
 
-    // Remove duplicates
+    // Remove exact duplicates
     const uniqueFacts = [];
     const seen = new Set();
     for (const fact of factsToAdd) {
-      if (!seen.has(fact.content.toLowerCase())) {
-        seen.add(fact.content.toLowerCase());
+      const factLower = fact.fact.toLowerCase().trim();
+      if (!seen.has(factLower)) {
+        seen.add(factLower);
         uniqueFacts.push(fact);
       }
     }
 
-    // Save unique facts to database
+    // Save to database
     if (uniqueFacts.length > 0) {
       await base44.asServiceRole.entities.DailyFact.bulkCreate(uniqueFacts);
     }
 
     return Response.json({
       success: true,
-      message: `Fetched ${successCount} facts from ${FACT_SOURCES.length} sources, saved ${uniqueFacts.length} unique facts`,
       factsAdded: uniqueFacts.length,
-      sourcesAttempted: FACT_SOURCES.length,
-      errors: errorCount
+      sourcesProcessed: FACT_SOURCES.length,
+      message: `Successfully added ${uniqueFacts.length} unique facts from ${FACT_SOURCES.length} sources`
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
