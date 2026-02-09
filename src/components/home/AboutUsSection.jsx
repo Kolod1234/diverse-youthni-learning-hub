@@ -19,10 +19,10 @@ export default function AboutUsSection() {
   };
 
   const stats = [
-    { icon: Users, label: 'Active Students', value: getContent('about_stat_students', '500+') },
-    { icon: Award, label: 'Courses Offered', value: getContent('about_stat_courses', '50+') },
-    { icon: Target, label: 'Success Rate', value: getContent('about_stat_success', '95%') },
-    { icon: Heart, label: 'Years Experience', value: getContent('about_stat_years', '10+') },
+    { icon: PeopleIcon, label: 'Active Students', value: getContent('about_stat_students', '500+') },
+    { icon: EmojiEventsIcon, label: 'Courses Offered', value: getContent('about_stat_courses', '50+') },
+    { icon: GpsFixedIcon, label: 'Success Rate', value: getContent('about_stat_success', '95%') },
+    { icon: FavoriteIcon, label: 'Years Experience', value: getContent('about_stat_years', '10+') },
   ];
 
   return (
