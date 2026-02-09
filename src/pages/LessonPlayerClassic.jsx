@@ -693,13 +693,16 @@ export default function LessonPlayerClassic() {
           <div className="p-4 border-b border-white/20">
             <div className="relative">
               <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-              <input
-                ref={searchInputRef}
+              <TextField
+                inputRef={searchInputRef}
                 type="text"
                 placeholder="Search... (Press /)"
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full bg-white/10 border border-white/20 rounded-lg pl-10 pr-4 py-2 text-sm text-white placeholder:text-white/60 focus:outline-none focus:ring-2 focus:ring-white/30"
+                size="small"
+                fullWidth
+                variant="outlined"
+                sx={{ '& .MuiOutlinedInput-root': { color: 'white', '& fieldset': { borderColor: 'white/20' } } }}
                 aria-label="Search lessons"
               />
             </div>
