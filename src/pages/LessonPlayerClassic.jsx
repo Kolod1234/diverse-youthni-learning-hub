@@ -1050,9 +1050,10 @@ export default function LessonPlayerClassic() {
         </main>
         </Box>
         </Box>
+        </Box>
 
         {/* Command Palette */}
-      <CommandPalette
+        <CommandPalette
         open={showCommandPalette}
         onOpenChange={setShowCommandPalette}
         actions={{
