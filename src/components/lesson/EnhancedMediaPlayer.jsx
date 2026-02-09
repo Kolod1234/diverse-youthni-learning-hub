@@ -458,11 +458,11 @@ export default function EnhancedMediaPlayer({
   }
 
   return (
-    <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden group ${theaterMode ? 'max-w-none' : ''} ${className}`}>
+    <div ref={containerRef} className={`relative bg-black rounded-lg sm:rounded-2xl overflow-hidden group ${theaterMode ? 'max-w-none' : ''} ${className}`} style={{ aspectRatio: '16/9', minHeight: '300px' }}>
       <video
         ref={videoRef}
         src={src}
-        className={`w-full h-auto ${theaterMode ? 'max-h-[80vh]' : 'max-h-[60vh] sm:max-h-none'}`}
+        className="w-full h-full object-contain"
         onClick={handleDoubleTap}
         onLoadStart={() => setLoading(true)}
         onCanPlay={() => setLoading(false)}
