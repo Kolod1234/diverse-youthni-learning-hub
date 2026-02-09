@@ -63,13 +63,15 @@ Deno.serve(async (req) => {
 
 "${pageContent}"
 
-Return ONLY a valid JSON array in this exact format - no other text:
-[
-  {
-    "fact": "A complete, interesting educational fact",
-    "category": "science|history|general|nature|technology"
-  }
-]
+Return ONLY a valid JSON object in this exact format - no other text:
+{
+  "facts": [
+    {
+      "fact": "A complete, interesting educational fact",
+      "category": "science|history|general|nature|technology"
+    }
+  ]
+}
 
 Rules:
 - Facts must be concise (1-2 sentences max)
@@ -78,15 +80,21 @@ Rules:
 - Only include facts actually mentioned in the content
 - Return ONLY JSON, nothing else`,
           response_json_schema: {
-            type: 'array',
-            items: {
-              type: 'object',
-              properties: {
-                fact: { type: 'string' },
-                category: { type: 'string', enum: ['science', 'history', 'general', 'nature', 'technology'] }
-              },
-              required: ['fact', 'category']
-            }
+            type: 'object',
+            properties: {
+              facts: {
+                type: 'array',
+                items: {
+                  type: 'object',
+                  properties: {
+                    fact: { type: 'string' },
+                    category: { type: 'string', enum: ['science', 'history', 'general', 'nature', 'technology'] }
+                  },
+                  required: ['fact', 'category']
+                }
+              }
+            },
+            required: ['facts']
           }
         });
 
