@@ -8,26 +8,21 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
-import { ScrollArea } from '@/components/ui/scroll-area';
 import { 
-        GraduationCap, Home, Compass, BookOpen, Award, 
-        Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell
-      } from 'lucide-react';
+  AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
+  Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
+  Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField
+} from '@mui/material';
+import { 
+  GraduationCap, Home, Compass, BookOpen, Award, 
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell
+} from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
+import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import { motion } from 'framer-motion';
 
 function LayoutContent({ children, currentPageName }) {
@@ -35,6 +30,9 @@ function LayoutContent({ children, currentPageName }) {
   const [scrolled, setScrolled] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
+  const [moreMenuAnchor, setMoreMenuAnchor] = useState(null);
+  const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
 
   const { data: siteContent = [] } = useQuery({
@@ -152,344 +150,335 @@ function LayoutContent({ children, currentPageName }) {
   );
 
   return (
-    <div className="relative w-full bg-background text-foreground min-h-screen">
-      <style>
-              {`
-                /* Apply custom primary color if saved */
-                :root {
-                  --custom-primary: var(--color-primary, #FF8C00);
-                }
-              `}
-            </style>
+    <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
       {/* Header */}
-      <header 
-        className={`
-          sticky top-0 z-50 transition-all duration-300
-          ${scrolled 
-            ? 'bg-background/95 backdrop-blur-md shadow-sm border-b border-border' 
-            : 'bg-background/80 backdrop-blur-sm'
-          }
-        `}
+      <AppBar 
+        position="sticky" 
+        elevation={scrolled ? 2 : 0}
+        sx={{ 
+          bgcolor: scrolled ? 'background.paper' : 'background.paper/80',
+          backdropFilter: 'blur(10px)',
+          borderBottom: 1,
+          borderColor: 'divider',
+          color: 'text.primary'
+        }}
       >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between h-16">
+        <Container maxWidth="xl">
+          <Toolbar disableGutters sx={{ minHeight: 64 }}>
             {/* Logo */}
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2">
+            <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginRight: 'auto' }}>
               <img 
                 src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                 alt="Diverse Youth NI"
-                className="h-12 lg:h-14 w-auto object-contain"
+                style={{ height: '56px', width: 'auto', objectFit: 'contain' }}
               />
             </Link>
 
             {/* Desktop Navigation */}
-            <nav className="hidden md:flex items-center gap-1">
-              <Link to={createPageUrl('Home')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                location.pathname === createPageUrl('Home') || location.pathname === '/'
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
-              }`}>
-                <Home className="w-5 h-5" />
-                <span>Home</span>
-              </Link>
-              <Link to={createPageUrl('Explore')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                location.pathname.includes('Explore')
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
-              }`}>
-                <Compass className="w-5 h-5" />
-                <span>Explore</span>
-              </Link>
-              <Link to={createPageUrl('Library')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                location.pathname.includes('Library')
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
-              }`}>
-                <BookOpen className="w-5 h-5" />
-                <span>Library</span>
-              </Link>
-              <Link to={createPageUrl('Dashboard')} className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-all ${
-                location.pathname.includes('Dashboard')
-                  ? 'bg-primary/10 text-primary font-medium' 
-                  : 'text-foreground/70 hover:bg-accent hover:text-accent-foreground'
-              }`}>
-                <BookOpen className="w-5 h-5" />
-                <span>My Learning</span>
-              </Link>
+            <Box sx={{ display: { xs: 'none', md: 'flex' }, gap: 0.5, mr: 2 }}>
+              <Button
+                component={Link}
+                to={createPageUrl('Home')}
+                startIcon={<Home size={20} />}
+                sx={{
+                  color: location.pathname === createPageUrl('Home') || location.pathname === '/' ? 'primary.main' : 'text.secondary',
+                  bgcolor: location.pathname === createPageUrl('Home') || location.pathname === '/' ? 'primary.main' + '15' : 'transparent',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  px: 2, py: 1, borderRadius: 2
+                }}
+              >
+                Home
+              </Button>
+              <Button
+                component={Link}
+                to={createPageUrl('Explore')}
+                startIcon={<Compass size={20} />}
+                sx={{
+                  color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary',
+                  bgcolor: location.pathname.includes('Explore') ? 'primary.main' + '15' : 'transparent',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  px: 2, py: 1, borderRadius: 2
+                }}
+              >
+                Explore
+              </Button>
+              <Button
+                component={Link}
+                to={createPageUrl('Library')}
+                startIcon={<BookOpen size={20} />}
+                sx={{
+                  color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary',
+                  bgcolor: location.pathname.includes('Library') ? 'primary.main' + '15' : 'transparent',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  px: 2, py: 1, borderRadius: 2
+                }}
+              >
+                Library
+              </Button>
+              <Button
+                component={Link}
+                to={createPageUrl('Dashboard')}
+                startIcon={<BookOpen size={20} />}
+                sx={{
+                  color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary',
+                  bgcolor: location.pathname.includes('Dashboard') ? 'primary.main' + '15' : 'transparent',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  px: 2, py: 1, borderRadius: 2
+                }}
+              >
+                My Learning
+              </Button>
 
               {/* More Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                    <MoreVertical className="w-5 h-5" />
-                    <span>More</span>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent 
-                  align="end" 
-                  className="w-64 max-h-[600px] overflow-y-auto bg-white dark:bg-slate-800 border-2 border-gray-200 dark:border-slate-600 shadow-2xl rounded-xl p-2" 
-                  sideOffset={8}
-                  style={{ 
-                    zIndex: 9999,
-                    position: 'relative',
-                    opacity: 1
-                  }}
-                >
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Tutors')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
-                        <GraduationCap className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                        <span className="font-medium">Tutors</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('YouthWork')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-green-50 dark:hover:bg-slate-700 transition-colors">
-                        <GraduationCap className="w-5 h-5 text-green-600 dark:text-green-400" />
-                        <span className="font-medium">Youth Work (OCN)</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
-                        <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                        <span className="font-medium">CCEA Past Papers</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Sessions')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
-                        <Video className="w-5 h-5 text-red-600 dark:text-red-400" />
-                        <span className="font-medium">Live Sessions</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('MessageCenter')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
-                        <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                        <span className="font-medium">Messages</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Analytics')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
-                        <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                        <span className="font-medium">Analytics</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Achievements')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
-                        <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                        <span className="font-medium">Achievements</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('LearningPaths')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
-                        <Award className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-                        <span className="font-medium">Learning Paths</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('Programs')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
-                        <ClipboardList className="w-5 h-5 text-pink-600 dark:text-pink-400" />
-                        <span className="font-medium">Programmes</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('CommunityEventSlides')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-lime-50 dark:hover:bg-slate-700 transition-colors">
-                        <GraduationCap className="w-5 h-5 text-lime-600 dark:text-lime-400" />
-                        <span className="font-medium">Event Slides</span>
-                      </Link>
-                    </DropdownMenuItem>
-                    <DropdownMenuItem asChild>
-                      <Link to={createPageUrl('ContactUs')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
-                        <MessageSquare className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                        <span className="font-medium">Contact Us</span>
-                      </Link>
-                    </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  {user && !user.is_coordinator && user.role !== 'admin' && (
-                    <>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <BecomeCoordinatorButton user={user} />
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  {user && !user.is_tutor && user.role !== 'admin' && (
-                    <>
-                      <DropdownMenuItem onSelect={(e) => e.preventDefault()}>
-                        <BecomeTutorButton user={user} />
-                      </DropdownMenuItem>
-                      <DropdownMenuSeparator />
-                    </>
-                  )}
-                  {isCoordinator && !isTutorOrAdmin && (
-                    <>
-                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
-                          <User className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                          <span className="font-medium">Coordinators Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  {isTutorOrAdmin && (
-                    <>
-                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Tutor Tools
-                      </div>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
-                          <Settings className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                          <span className="font-medium">Tutor Overview</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('LessonEditor')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
-                          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                          <span className="font-medium">Lesson Editor</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('Templates')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
-                          <ClipboardList className="w-5 h-5 text-pink-600 dark:text-pink-400" />
-                          <span className="font-medium">Templates</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('DataPresentation')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
-                          <BarChart3 className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                          <span className="font-medium">Data to Slides</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('PathwayManager')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
-                          <Award className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                          <span className="font-medium">Pathway Manager</span>
-                        </Link>
-                      </DropdownMenuItem>
+              <Button
+                onClick={(e) => setMoreMenuAnchor(e.currentTarget)}
+                startIcon={<MoreVertical size={20} />}
+                sx={{
+                  color: 'text.secondary',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  px: 2, py: 1, borderRadius: 2
+                }}
+              >
+                More
+              </Button>
+              <MuiMenu
+                anchorEl={moreMenuAnchor}
+                open={Boolean(moreMenuAnchor)}
+                onClose={() => setMoreMenuAnchor(null)}
+                PaperProps={{
+                  sx: { width: 280, maxHeight: 600, borderRadius: 3, mt: 1 }
+                }}
+              >
+                <MenuItem component={Link} to={createPageUrl('Tutors')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><GraduationCap size={20} color="#2563eb" /></ListItemIcon>
+                  <ListItemText primary="Tutors" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('YouthWork')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
+                  <ListItemText primary="Youth Work (OCN)" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('CCEAPastPapers')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
+                  <ListItemText primary="CCEA Past Papers" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Sessions')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Video size={20} color="#dc2626" /></ListItemIcon>
+                  <ListItemText primary="Live Sessions" />
+                </MenuItem>
+                <Divider />
+                <MenuItem component={Link} to={createPageUrl('MessageCenter')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
+                  <ListItemText primary="Messages" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Analytics')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
+                  <ListItemText primary="Analytics" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Achievements')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                  <ListItemText primary="Achievements" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('LearningPaths')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Award size={20} color="#0d9488" /></ListItemIcon>
+                  <ListItemText primary="Learning Paths" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Programs')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
+                  <ListItemText primary="Programmes" />
+                </MenuItem>
+                <Divider />
+                <MenuItem component={Link} to={createPageUrl('CommunityEventSlides')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><GraduationCap size={20} color="#84cc16" /></ListItemIcon>
+                  <ListItemText primary="Event Slides" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('ContactUs')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
+                  <ListItemText primary="Contact Us" />
+                </MenuItem>
+                <Divider />
+                {user && !user.is_coordinator && user.role !== 'admin' && (
+                  <>
+                    <Box sx={{ px: 2, py: 1 }}>
+                      <BecomeCoordinatorButton user={user} />
+                    </Box>
+                    <Divider />
+                  </>
+                )}
+                {user && !user.is_tutor && user.role !== 'admin' && (
+                  <>
+                    <Box sx={{ px: 2, py: 1 }}>
+                      <BecomeTutorButton user={user} />
+                    </Box>
+                    <Divider />
+                  </>
+                )}
+                {isCoordinator && !isTutorOrAdmin && (
+                  <>
+                    <Divider />
+                    <MenuItem component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
+                      <ListItemText primary="Coordinators Dashboard" />
+                    </MenuItem>
+                  </>
+                )}
+                {isTutorOrAdmin && (
+                  <>
+                    <Divider />
+                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
+                      TUTOR TOOLS
+                    </Typography>
+                    <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
+                      <ListItemText primary="Tutor Overview" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
+                      <ListItemText primary="Lesson Editor" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('Templates')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
+                      <ListItemText primary="Templates" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('DataPresentation')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
+                      <ListItemText primary="Data to Slides" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Pathway Manager" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Quiz Generator" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Tutor Setup" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Full Tutor Dashboard" />
+                    </MenuItem>
+                  </>
+                )}
+                {isAdmin && (
+                  <>
+                    <Divider />
+                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
+                      ADMIN PANEL
+                    </Typography>
+                    <MenuItem onClick={() => { setShowAdminPassword(true); setMoreMenuAnchor(null); }}>
+                      <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
+                      <ListItemText primary="Admin Panel" />
+                    </MenuItem>
+                {isTutorOrAdmin && (
+                  <>
+                    <Divider />
+                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
+                      TUTOR TOOLS
+                    </Typography>
+                    <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
+                      <ListItemText primary="Tutor Overview" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
+                      <ListItemText primary="Lesson Editor" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('Templates')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
+                      <ListItemText primary="Templates" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('DataPresentation')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
+                      <ListItemText primary="Data to Slides" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Pathway Manager" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Quiz Generator" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Tutor Setup" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Full Tutor Dashboard" />
+                    </MenuItem>
+                  </>
+                )}
 
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('QuizGenerator')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
-                          <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                          <span className="font-medium">Quiz Generator</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorSetup')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
-                          <User className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-                          <span className="font-medium">Tutor Setup</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
-                          <Settings className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                          <span className="font-medium">Full Tutor Dashboard</span>
-                        </Link>
-                      </DropdownMenuItem>
-                    </>
-                  )}
-                  {isAdmin && (
-                    <>
-                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                      <div className="px-3 py-2 text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-                        Admin Panel
-                      </div>
-                      <DropdownMenuItem onClick={() => setShowAdminPassword(true)} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-red-50 dark:hover:bg-slate-700 transition-colors">
-                        <Settings className="w-5 h-5 text-red-600 dark:text-red-400" />
-                        <span className="font-medium">Admin Panel</span>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminPageBuilder')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-violet-50 dark:hover:bg-slate-700 transition-colors">
-                          <LayoutIcon className="w-5 h-5 text-violet-600 dark:text-violet-400" />
-                          <span className="font-medium">Page Builder</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-emerald-50 dark:hover:bg-slate-700 transition-colors">
-                          <User className="w-5 h-5 text-emerald-600 dark:text-emerald-400" />
-                          <span className="font-medium">Manage Coordinators</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-blue-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-blue-600 dark:text-blue-400" />
-                          <span className="font-medium">Manage RSS Feed</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-purple-50 dark:hover:bg-slate-700 transition-colors">
-                          <BookOpen className="w-5 h-5 text-purple-600 dark:text-purple-400" />
-                          <span className="font-medium">Manage Library</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-pink-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-pink-600 dark:text-pink-400" />
-                          <span className="font-medium">Manage Quotes</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-yellow-50 dark:hover:bg-slate-700 transition-colors">
-                          <Award className="w-5 h-5 text-yellow-600 dark:text-yellow-400" />
-                          <span className="font-medium">Student of Month</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-teal-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-teal-600 dark:text-teal-400" />
-                          <span className="font-medium">Manage Facts</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          <span className="font-medium">Manage Discover</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReviews')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-orange-50 dark:hover:bg-slate-700 transition-colors">
-                          <Award className="w-5 h-5 text-orange-600 dark:text-orange-400" />
-                          <span className="font-medium">Manage Reviews</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReminders')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
-                          <Bell className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          <span className="font-medium">Student Reminders</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentMessages')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                          <span className="font-medium">Send Student Messages</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      </>
-                      )}
+                {isAdmin && (
+                  <>
+                    <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
+                      <ListItemText primary="Page Builder" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
+                      <ListItemText primary="Manage Coordinators" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminRSSFeed')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#2563eb" /></ListItemIcon>
+                      <ListItemText primary="Manage RSS Feed" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminLibrary')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
+                      <ListItemText primary="Manage Library" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminQuotes')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#ec4899" /></ListItemIcon>
+                      <ListItemText primary="Manage Quotes" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentOfMonth')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                      <ListItemText primary="Student of Month" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminDailyFacts')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#0d9488" /></ListItemIcon>
+                      <ListItemText primary="Manage Facts" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminDiscover')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
+                      <ListItemText primary="Manage Discover" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminReviews')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Award size={20} color="#ea580c" /></ListItemIcon>
+                      <ListItemText primary="Manage Reviews" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
+                      <ListItemText primary="Student Reminders" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Send Student Messages" />
+                    </MenuItem>
+                  </>
+                )}
 
-                      {isTutorOrAdmin && !isAdmin && (
-                      <>
-                      <DropdownMenuSeparator className="my-2 bg-gray-200 dark:bg-slate-600" />
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminReminders')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-cyan-50 dark:hover:bg-slate-700 transition-colors">
-                          <Bell className="w-5 h-5 text-cyan-600 dark:text-cyan-400" />
-                          <span className="font-medium">Student Reminders</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      <DropdownMenuItem asChild>
-                        <Link to={createPageUrl('AdminStudentMessages')} className="flex items-center gap-3 px-3 py-2.5 rounded-lg cursor-pointer text-gray-900 dark:text-white hover:bg-indigo-50 dark:hover:bg-slate-700 transition-colors">
-                          <MessageSquare className="w-5 h-5 text-indigo-600 dark:text-indigo-400" />
-                          <span className="font-medium">Send Student Messages</span>
-                        </Link>
-                      </DropdownMenuItem>
-                      </>
-                      )}
-                      </DropdownMenuContent>
-                      </DropdownMenu>
-            </nav>
+                {isTutorOrAdmin && !isAdmin && (
+                  <>
+                    <Divider />
+                    <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
+                      <ListItemText primary="Student Reminders" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminStudentMessages')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
+                      <ListItemText primary="Send Student Messages" />
+                    </MenuItem>
+                  </>
+                )}
+              </MuiMenu>
+            </Box>
 
             {/* Right Side */}
-            <div className="flex items-center gap-3">
+            <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
               {/* Theme Toggle */}
               <ThemeToggle />
 
@@ -497,257 +486,276 @@ function LayoutContent({ children, currentPageName }) {
               <NotificationBell />
 
               {/* User Menu */}
-              <DropdownMenu>
-                <DropdownMenuTrigger asChild>
-                  <Button variant="ghost" className="relative h-10 w-10 rounded-full">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={user?.avatar} />
-                      <AvatarFallback className="bg-primary/10 text-primary font-medium">
-                        {user?.full_name?.charAt(0) || 'U'}
-                      </AvatarFallback>
-                    </Avatar>
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end" className="w-56">
-                  <div className="px-4 py-3">
-                    <p className="text-sm font-medium text-foreground">{user?.full_name || 'User'}</p>
-                    <p className="text-xs text-muted-foreground truncate">{user?.email}</p>
-                  </div>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Dashboard')} className="flex items-center cursor-pointer">
-                      <User className="w-4 h-4 mr-2" />
-                      My Dashboard
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Settings')} className="flex items-center cursor-pointer">
-                      <Settings className="w-4 h-4 mr-2" />
-                      Settings
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuItem asChild>
-                    <Link to={createPageUrl('Dashboard')} className="flex items-center cursor-pointer">
-                      <Award className="w-4 h-4 mr-2" />
-                      Achievements
-                    </Link>
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem 
-                    onClick={() => base44.auth.logout()}
-                    className="text-red-600 cursor-pointer"
-                  >
-                    <LogOut className="w-4 h-4 mr-2" />
-                    Log out
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+              <IconButton onClick={(e) => setUserMenuAnchor(e.currentTarget)} sx={{ p: 0 }}>
+                <Avatar src={user?.avatar} sx={{ width: 40, height: 40, bgcolor: 'primary.main' + '20', color: 'primary.main' }}>
+                  {user?.full_name?.charAt(0) || 'U'}
+                </Avatar>
+              </IconButton>
+              <MuiMenu
+                anchorEl={userMenuAnchor}
+                open={Boolean(userMenuAnchor)}
+                onClose={() => setUserMenuAnchor(null)}
+                PaperProps={{ sx: { width: 240, borderRadius: 2, mt: 1 } }}
+              >
+                <Box sx={{ px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
+                  <Typography variant="body2" fontWeight={600}>{user?.full_name || 'User'}</Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ wordBreak: 'break-all' }}>{user?.email}</Typography>
+                </Box>
+                <MenuItem component={Link} to={createPageUrl('Dashboard')} onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><User size={18} /></ListItemIcon>
+                  <ListItemText primary="My Dashboard" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Settings')} onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><Settings size={18} /></ListItemIcon>
+                  <ListItemText primary="Settings" />
+                </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Dashboard')} onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><Award size={18} /></ListItemIcon>
+                  <ListItemText primary="Achievements" />
+                </MenuItem>
+                <Divider />
+                <MenuItem onClick={() => { base44.auth.logout(); setUserMenuAnchor(null); }} sx={{ color: 'error.main' }}>
+                  <ListItemIcon><LogOut size={18} color="#dc2626" /></ListItemIcon>
+                  <ListItemText primary="Log out" />
+                </MenuItem>
+              </MuiMenu>
 
               {/* Mobile Menu */}
-              <Sheet>
-                <SheetTrigger asChild>
-                  <Button variant="ghost" size="icon" className="md:hidden">
-                    <Menu className="w-5 h-5" />
-                  </Button>
-                </SheetTrigger>
-                <SheetContent side="right" className="w-72 overflow-y-auto p-0">
-                  <ScrollArea className="h-full w-full">
-                  <div className="flex flex-col gap-4 mt-8 pb-8 px-6">
-                    <NavLinks mobile onItemClick={() => {}} />
-                    
-                    {/* Become Coordinator - Mobile */}
-                    {user && !user.is_coordinator && user.role !== 'admin' && (
-                      <div className="px-2 py-1">
-                        <BecomeCoordinatorButton user={user} />
-                      </div>
-                    )}
+              <IconButton onClick={() => setMobileMenuOpen(true)} sx={{ display: { xs: 'flex', md: 'none' } }}>
+                <Menu size={24} />
+              </IconButton>
+              <Drawer
+                anchor="right"
+                open={mobileMenuOpen}
+                onClose={() => setMobileMenuOpen(false)}
+                PaperProps={{ sx: { width: 280 } }}
+              >
+                <Box sx={{ pt: 3, pb: 2 }}>
+                  <List>
+                    <ListItemButton component={Link} to={createPageUrl('Home')} onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><Home size={20} /></ListItemIcon>
+                      <ListItemText primary="Home" />
+                    </ListItemButton>
+                    <ListItemButton component={Link} to={createPageUrl('Explore')} onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><Compass size={20} /></ListItemIcon>
+                      <ListItemText primary="Explore" />
+                    </ListItemButton>
+                    <ListItemButton component={Link} to={createPageUrl('Library')} onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><BookOpen size={20} /></ListItemIcon>
+                      <ListItemText primary="Library" />
+                    </ListItemButton>
+                    <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><BookOpen size={20} /></ListItemIcon>
+                      <ListItemText primary="My Learning" />
+                    </ListItemButton>
 
-                    {/* Become Tutor - Mobile */}
+                    {user && !user.is_coordinator && user.role !== 'admin' && (
+                      <Box sx={{ px: 2, py: 1 }}>
+                        <BecomeCoordinatorButton user={user} />
+                      </Box>
+                    )}
                     {user && !user.is_tutor && user.role !== 'admin' && (
-                      <div className="px-2 py-1">
+                      <Box sx={{ px: 2, py: 1 }}>
                         <BecomeTutorButton user={user} />
-                      </div>
+                      </Box>
                     )}
 
                     {isCoordinator && !isTutorOrAdmin && (
-                      <Link to={createPageUrl('CoordinatorsDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                        <User className="w-5 h-5" />
-                        <span>Coordinators Dashboard</span>
-                      </Link>
+                      <ListItemButton component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMobileMenuOpen(false)}>
+                        <ListItemIcon><User size={20} /></ListItemIcon>
+                        <ListItemText primary="Coordinators Dashboard" />
+                      </ListItemButton>
                     )}
 
                     {isTutorOrAdmin && (
                       <>
-                        <div className="border-t border-border my-2" />
-                        <Link to={createPageUrl('TutorDashboardOverview')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <Settings className="w-5 h-5" />
-                          <span>Tutor Overview</span>
-                        </Link>
-                        <Link to={createPageUrl('Templates')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <ClipboardList className="w-5 h-5" />
-                          <span>Templates</span>
-                        </Link>
-                        <Link to={createPageUrl('TutorDashboard')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <Settings className="w-5 h-5" />
-                          <span>Full Tutor Dashboard</span>
-                        </Link>
+                        <Divider sx={{ my: 1 }} />
+                        <ListItemButton component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMobileMenuOpen(false)}>
+                          <ListItemIcon><Settings size={20} /></ListItemIcon>
+                          <ListItemText primary="Tutor Overview" />
+                        </ListItemButton>
+                        <ListItemButton component={Link} to={createPageUrl('Templates')} onClick={() => setMobileMenuOpen(false)}>
+                          <ListItemIcon><ClipboardList size={20} /></ListItemIcon>
+                          <ListItemText primary="Templates" />
+                        </ListItemButton>
+                        <ListItemButton component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMobileMenuOpen(false)}>
+                          <ListItemIcon><Settings size={20} /></ListItemIcon>
+                          <ListItemText primary="Full Tutor Dashboard" />
+                        </ListItemButton>
                       </>
                     )}
 
                     {isAdmin && (
                       <>
-                        <div className="border-t border-border my-2" />
-                        <button onClick={() => setShowAdminPassword(true)} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground w-full text-left">
-                          <Settings className="w-5 h-5" />
-                          <span>Admin Panel</span>
-                        </button>
-                        <Link to={createPageUrl('AdminCoordinators')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <User className="w-5 h-5" />
-                          <span>Manage Coordinators</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminRSSFeed')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <MessageSquare className="w-5 h-5" />
-                          <span>Manage RSS Feed</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminLibrary')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <BookOpen className="w-5 h-5" />
-                          <span>Manage Library</span>
-                        </Link>
-                        <Link to={createPageUrl('CCEAPastPapers')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <BookOpen className="w-5 h-5" />
-                          <span>CCEA Past Papers</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminQuotes')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <MessageSquare className="w-5 h-5" />
-                          <span>Manage Quotes</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminStudentOfMonth')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <Award className="w-5 h-5" />
-                          <span>Student of Month</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminDailyFacts')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <MessageSquare className="w-5 h-5" />
-                          <span>Manage Facts</span>
-                        </Link>
-                        <Link to={createPageUrl('AdminDiscover')} className="flex items-center gap-2 px-4 py-2 rounded-lg text-foreground/70 hover:bg-accent hover:text-accent-foreground">
-                          <MessageSquare className="w-5 h-5" />
-                          <span>Manage Discover</span>
-                        </Link>
+                        <Divider sx={{ my: 1 }} />
+                        <ListItemButton onClick={() => { setShowAdminPassword(true); setMobileMenuOpen(false); }}>
+                          <ListItemIcon><Settings size={20} /></ListItemIcon>
+                          <ListItemText primary="Admin Panel" />
+                        </ListItemButton>
                       </>
-                      )}
-                      </div>
-                      </ScrollArea>
-                      </SheetContent>
-                      </Sheet>
-            </div>
-          </div>
-        </div>
-      </header>
+                    )}
+                  </List>
+                </Box>
+              </Drawer>
+            </Box>
+          </Toolbar>
+        </Container>
+      </AppBar>
 
       {/* Main Content */}
-      <main className="w-full pb-20 md:pb-0">{children}</main>
+      <Box component="main" sx={{ flexGrow: 1, pb: { xs: 8, md: 0 } }}>
+        {children}
+      </Box>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-white border-t border-border z-50 shadow-lg">
-        <div className="flex items-center justify-around h-16">
-          <Link to={createPageUrl('Explore')} className="flex flex-col items-center gap-1 px-3 py-2">
-            <Compass className={`w-5 h-5 ${location.pathname.includes('Explore') ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className={`text-xs ${location.pathname.includes('Explore') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Courses</span>
+      <Box
+        component="nav"
+        sx={{
+          display: { xs: 'flex', md: 'none' },
+          position: 'fixed',
+          bottom: 0,
+          left: 0,
+          right: 0,
+          bgcolor: 'background.paper',
+          borderTop: 1,
+          borderColor: 'divider',
+          zIndex: 50,
+          boxShadow: 3,
+          height: 64
+        }}
+      >
+        <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
+          <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+            <Compass size={20} color={location.pathname.includes('Explore') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Explore') ? 600 : 400 }}>
+              Courses
+            </Typography>
           </Link>
-          <Link to={createPageUrl('Dashboard')} className="flex flex-col items-center gap-1 px-3 py-2">
-            <BarChart3 className={`w-5 h-5 ${location.pathname.includes('Dashboard') ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className={`text-xs ${location.pathname.includes('Dashboard') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Progress</span>
+          <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+            <BarChart3 size={20} color={location.pathname.includes('Dashboard') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Dashboard') ? 600 : 400 }}>
+              Progress
+            </Typography>
           </Link>
-          <Link to={createPageUrl('Library')} className="flex flex-col items-center gap-1 px-3 py-2">
-            <BookOpen className={`w-5 h-5 ${location.pathname.includes('Library') ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className={`text-xs ${location.pathname.includes('Library') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Library</span>
+          <Link to={createPageUrl('Library')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+            <BookOpen size={20} color={location.pathname.includes('Library') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Library') ? 600 : 400 }}>
+              Library
+            </Typography>
           </Link>
-          <Link to={createPageUrl('Profile')} className="flex flex-col items-center gap-1 px-3 py-2">
-            <User className={`w-5 h-5 ${location.pathname.includes('Profile') ? 'text-primary' : 'text-muted-foreground'}`} />
-            <span className={`text-xs ${location.pathname.includes('Profile') ? 'text-primary font-medium' : 'text-muted-foreground'}`}>Profile</span>
+          <Link to={createPageUrl('Profile')} style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}>
+            <User size={20} color={location.pathname.includes('Profile') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Profile') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Profile') ? 600 : 400 }}>
+              Profile
+            </Typography>
           </Link>
-        </div>
-      </nav>
+        </Box>
+      </Box>
 
       {/* Admin Password Modal */}
-      {showAdminPassword && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowAdminPassword(false)}>
-          <div className="bg-card rounded-2xl p-6 w-96 shadow-xl border border-border" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4 text-foreground">Admin Access</h3>
-            <input
-              type="password"
-              value={adminPassword}
-              onChange={(e) => setAdminPassword(e.target.value)}
-              placeholder="Enter admin password"
-              className="w-full px-4 py-2 bg-background border border-input rounded-lg mb-4 text-foreground"
-              onKeyPress={(e) => e.key === 'Enter' && handleAdminAccess()}
-            />
-            <div className="flex gap-3">
-              <button onClick={handleAdminAccess} className="flex-1 bg-primary text-primary-foreground py-2 rounded-lg hover:opacity-90 transition">
-                Access
-              </button>
-              <button onClick={() => setShowAdminPassword(false)} className="flex-1 border border-border py-2 rounded-lg hover:bg-accent transition text-foreground">
-                Cancel
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={showAdminPassword} onClose={() => setShowAdminPassword(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Admin Access</DialogTitle>
+        <DialogContent>
+          <TextField
+            type="password"
+            value={adminPassword}
+            onChange={(e) => setAdminPassword(e.target.value)}
+            placeholder="Enter admin password"
+            fullWidth
+            autoFocus
+            onKeyPress={(e) => e.key === 'Enter' && handleAdminAccess()}
+            sx={{ mt: 1 }}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowAdminPassword(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button onClick={handleAdminAccess} variant="contained" color="primary">
+            Access
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Footer */}
-      <footer className="bg-card border-t border-border mt-20">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="col-span-2 md:col-span-1">
-              <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-4">
+      <Box component="footer" sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', mt: 10 }}>
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 4 }}>
+            <Box sx={{ gridColumn: { xs: 'span 2', md: 'span 1' } }}>
+              <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                   alt="Diverse Youth NI"
-                  className="h-12 w-auto object-contain"
+                  style={{ height: 48, width: 'auto', objectFit: 'contain' }}
                 />
               </Link>
-              <p className="text-muted-foreground text-sm">
+              <Typography variant="body2" color="text.secondary">
                 Empowering learners worldwide with expert-led courses and cutting-edge content.
-              </p>
-            </div>
+              </Typography>
+            </Box>
             
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Platform</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to={createPageUrl('Explore')} className="text-muted-foreground hover:text-primary transition">Browse Courses</Link></li>
-                <li><Link to={createPageUrl('Dashboard')} className="text-muted-foreground hover:text-primary transition">My Learning</Link></li>
-              </ul>
-            </div>
+            <Box>
+              <Typography variant="h6" fontWeight={600} gutterBottom>Platform</Typography>
+              <List dense disablePadding>
+                <ListItem disablePadding>
+                  <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                      Browse Courses
+                    </Typography>
+                  </Link>
+                </ListItem>
+                <ListItem disablePadding>
+                  <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                      My Learning
+                    </Typography>
+                  </Link>
+                </ListItem>
+              </List>
+            </Box>
 
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Support</h4>
-              <ul className="space-y-2 text-sm">
-                <li><Link to={createPageUrl('ContactUs')} className="text-muted-foreground hover:text-primary transition">Contact Us</Link></li>
-              </ul>
-            </div>
+            <Box>
+              <Typography variant="h6" fontWeight={600} gutterBottom>Support</Typography>
+              <List dense disablePadding>
+                <ListItem disablePadding>
+                  <Link to={createPageUrl('ContactUs')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                      Contact Us
+                    </Typography>
+                  </Link>
+                </ListItem>
+              </List>
+            </Box>
 
-            <div>
-              <h4 className="font-semibold text-foreground mb-4">Legal</h4>
-              <ul className="space-y-2 text-sm">
-                <li><span className="text-muted-foreground">Privacy Policy</span></li>
-                <li><span className="text-muted-foreground">Terms of Service</span></li>
-              </ul>
-            </div>
-          </div>
+            <Box>
+              <Typography variant="h6" fontWeight={600} gutterBottom>Legal</Typography>
+              <List dense disablePadding>
+                <ListItem disablePadding>
+                  <Typography variant="body2" color="text.secondary">Privacy Policy</Typography>
+                </ListItem>
+                <ListItem disablePadding>
+                  <Typography variant="body2" color="text.secondary">Terms of Service</Typography>
+                </ListItem>
+              </List>
+            </Box>
+          </Box>
           
-          <div className="border-t border-border mt-12 pt-8 text-center text-sm text-muted-foreground">
-            <p>{getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}</p>
-          </div>
-        </div>
-      </footer>
-    </div>
+          <Divider sx={{ my: 4 }} />
+          <Typography variant="body2" color="text.secondary" align="center">
+            {getContent('footer_copyright', '© 2024 LearnHub. All rights reserved.')}
+          </Typography>
+        </Container>
+      </Box>
+    </Box>
     );
     }
 
-    export default function Layout({ children, currentPageName }) {
-    return (
+export default function Layout({ children, currentPageName }) {
+  return (
     <ThemeProvider>
-    <LayoutContent children={children} currentPageName={currentPageName} />
+      <MUIThemeProvider>
+        <LayoutContent children={children} currentPageName={currentPageName} />
+      </MUIThemeProvider>
     </ThemeProvider>
-    );
-    }
+  );
+}
