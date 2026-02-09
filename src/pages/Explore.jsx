@@ -332,7 +332,7 @@ export default function Explore() {
 
   return (
     <CoursePasswordProtection user={user}>
-      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, #eff6ff, white)' }}>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
         <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, sm: 3, lg: 4 }, py: 6 }}>
         {/* Header with Stats */}
         <motion.div 
@@ -348,19 +348,19 @@ export default function Explore() {
                   px: 3, 
                   py: 2.5, 
                   borderRadius: 50, 
-                  background: 'linear-gradient(to right, rgba(37,99,235,0.1), rgba(147,51,234,0.1), rgba(236,72,153,0.1))',
+                  bgcolor: 'primary.main',
+                  color: 'white',
                   border: 2,
-                  borderColor: 'rgba(37,99,235,0.3)',
+                  borderColor: 'primary.main',
                   fontWeight: 700,
-                  mb: 3,
-                  color: 'primary.main'
+                  mb: 3
                 }}
               />
             </motion.div>
-            <Typography variant="h2" fontWeight={700} sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.75rem' } }}>
+            <Typography variant="h2" fontWeight={700} sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.75rem' }, color: 'text.primary' }}>
               Explore Courses
             </Typography>
-            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+            <Typography variant="h6" sx={{ maxWidth: 600, mx: 'auto', color: 'text.secondary' }}>
               Discover courses tailored to your interests and start your learning journey today
             </Typography>
           </Box>
@@ -382,12 +382,12 @@ export default function Explore() {
                   transition={{ delay: i * 0.1 }}
                   whileHover={{ y: -4 }}
                 >
-                  <Card sx={{ p: 2.5, border: 1, borderColor: 'divider', boxShadow: 2, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', borderRadius: 4 }}>
-                    <Box sx={{ width: 48, height: 48, borderRadius: 3, background: 'linear-gradient(to bottom right, #2563eb, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 3 }}>
-                      <Icon className="w-6 h-6 text-white" style={{ color: 'white' }} />
+                  <Card sx={{ p: 2.5, border: 1, borderColor: 'divider', boxShadow: 2, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', borderRadius: 4, bgcolor: 'background.paper' }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 3 }}>
+                      <Icon className="w-6 h-6" style={{ color: 'white' }} />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontSize: '0.875rem' }}>{stat.label}</Typography>
-                     <Typography variant="h5" fontWeight={700} sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '1.875rem' } }}>{stat.value}</Typography>
+                    <Typography variant="body2" sx={{ mb: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>{stat.label}</Typography>
+                     <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.5rem', sm: '1.875rem' }, color: 'text.primary' }}>{stat.value}</Typography>
                   </Card>
                 </motion.div>
               );
@@ -544,7 +544,7 @@ export default function Explore() {
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
             >
-              <Card sx={{ position: 'sticky', top: 96, background: 'linear-gradient(to bottom right, white, rgba(239,246,255,0.3), rgba(243,232,255,0.3))', p: 3, boxShadow: 4, border: 2, borderColor: 'rgba(255,140,0,0.1)', borderRadius: 4, backdropFilter: 'blur(10px)' }}>
+              <Card sx={{ position: 'sticky', top: 96, bgcolor: 'background.paper', p: 3, boxShadow: 4, border: 2, borderColor: 'divider', borderRadius: 4 }}>
                 <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
                   <Filter size={20} color="#FF8C00" />
                   Filters
@@ -560,11 +560,11 @@ export default function Explore() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
             >
-              <Card sx={{ mb: 4, p: 2, background: 'linear-gradient(to right, white, rgba(239,246,255,0.5), rgba(243,232,255,0.5))', border: 1, borderColor: 'divider', boxShadow: 2, borderRadius: 4 }}>
+              <Card sx={{ mb: 4, p: 2, bgcolor: 'background.paper', border: 1, borderColor: 'divider', boxShadow: 2, borderRadius: 4 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(to bottom right, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
-                      <BookOpen size={24} color="white" style={{ color: 'white' }} />
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
+                      <BookOpen size={24} style={{ color: 'white' }} />
                     </Box>
                     <Box>
                       <Typography variant="caption" color="text.secondary">Available Courses</Typography>
@@ -661,7 +661,7 @@ export default function Explore() {
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
               >
-                <Card sx={{ textAlign: 'center', py: 10, background: 'linear-gradient(to bottom right, white, #eff6ff, #faf5ff)', borderRadius: 6, border: 2, borderStyle: 'dashed', borderColor: 'divider', boxShadow: 4 }}>
+                <Card sx={{ textAlign: 'center', py: 10, bgcolor: 'background.paper', borderRadius: 6, border: 2, borderStyle: 'dashed', borderColor: 'divider', boxShadow: 4 }}>
                   <motion.div
                     animate={{ y: [0, -10, 0] }}
                     transition={{ repeat: Infinity, duration: 2 }}
