@@ -128,9 +128,9 @@ export default function AdminDashboard() {
         </motion.div>
 
         {/* Quick Access Widgets */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '1fr 1fr' }, gap: 3, mb: 4 }}>
           {/* Tutor Requests Widget */}
-          <Card className="p-6">
+          <Card sx={{ p: 3 }}>
             <div className="flex items-center justify-between mb-4">
               <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-lg bg-orange-100 flex items-center justify-center">
