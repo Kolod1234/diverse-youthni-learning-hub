@@ -702,9 +702,9 @@ export default function LessonPlayerClassic() {
             }}
           >
           {/* Search */}
-          <div className="p-4 border-b border-white/20">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
+          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+            <Box sx={{ position: 'relative' }}>
+              <Search sx={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} />
               <TextField
                 inputRef={searchInputRef}
                 type="text"
@@ -714,11 +714,17 @@ export default function LessonPlayerClassic() {
                 size="small"
                 fullWidth
                 variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { color: 'white', '& fieldset': { borderColor: 'white/20' } } }}
+                sx={{
+                  '& .MuiOutlinedInput-input': { color: 'white', pl: '28px' },
+                  '& .MuiOutlinedInput-root': { 
+                    color: 'white',
+                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' }
+                  }
+                }}
                 aria-label="Search lessons"
               />
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           {/* Course Title and Progress */}
           <div className="p-6 border-b border-white/20">
