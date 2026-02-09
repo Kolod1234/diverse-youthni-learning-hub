@@ -49,6 +49,13 @@ export default function Explore() {
       }
     };
     loadUser();
+
+    // Check for instructor filter in URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const instructorParam = urlParams.get('instructor');
+    if (instructorParam) {
+      setSearchQuery(instructorParam);
+    }
   }, []);
 
   const { data: courses = [], isLoading } = useQuery({

@@ -155,7 +155,10 @@ export default function InstructorShowcase() {
                   </div>
                 </div>
 
-                <Button className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700">
+                <Button 
+                  onClick={() => window.location.href = `/Explore?instructor=${encodeURIComponent(instructor.name)}`}
+                  className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
+                >
                   <MessageSquare className="w-4 h-4 mr-2" />
                   View Courses
                 </Button>
