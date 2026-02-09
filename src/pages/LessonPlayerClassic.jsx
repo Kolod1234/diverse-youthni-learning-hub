@@ -602,71 +602,70 @@ export default function LessonPlayerClassic() {
               </IconButton>
             </Box>
         
-        <div className="flex items-center gap-4">
-          {/* Progress Ring */}
-          <div className="hidden md:block">
-            <ProgressRing progress={progressPercent} size={50} />
-          </div>
-          
-          {/* Estimated Time */}
-          {estimatedMinutes > 0 && (
-            <div className="hidden lg:flex items-center gap-1 text-sm text-gray-600">
-              <Clock className="w-4 h-4" />
-              <span>{estimatedMinutes} min</span>
-            </div>
-          )}
-          
-          <AccessibilityControls />
-          
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setFocusModeEnabled(!focusModeEnabled)}
-            className="hidden md:inline-flex"
-            title="Focus mode (F)"
-          >
-            <Eye className="w-5 h-5" />
-          </Button>
-          
-          <ThemeCustomizer />
-          
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="ghost" size="icon">
-                <Settings className="w-5 h-5" />
-              </Button>
-            </SheetTrigger>
-            <SheetContent>
-              <SheetHeader>
-                <SheetTitle>Lesson Tools</SheetTitle>
-              </SheetHeader>
-              <div className="space-y-6 mt-6">
-                <div>
-                  <h4 className="font-medium mb-3">Bookmarks</h4>
-                  <LessonBookmarks lessonId={lessonId} />
-                </div>
-                <div>
-                  <h4 className="font-medium mb-3">Keyboard Shortcuts</h4>
-                  <div className="text-sm space-y-1 text-gray-600">
-                    <p>← → : Navigate lessons</p>
-                    <p>F : Fullscreen</p>
-                    <p>Ctrl+B : Bookmark</p>
-                    <p>/ : Search</p>
-                  </div>
-                </div>
-              </div>
-            </SheetContent>
-          </Sheet>
+            <Stack direction="row" spacing={1.5} sx={{ display: 'flex', alignItems: 'center' }}>
+              {/* Progress Ring */}
+              <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+                <ProgressRing progress={progressPercent} size={50} />
+              </Box>
+              
+              {/* Estimated Time */}
+              {estimatedMinutes > 0 && (
+                <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>
+                  <Clock className="w-4 h-4" />
+                  <Typography variant="body2">{estimatedMinutes} min</Typography>
+                </Box>
+              )}
+              
+              <AccessibilityControls />
+              
+              <IconButton
+                onClick={() => setFocusModeEnabled(!focusModeEnabled)}
+                sx={{ display: { xs: 'none', md: 'flex' } }}
+                title="Focus mode (F)"
+              >
+                <Eye className="w-5 h-5" />
+              </IconButton>
+              
+              <ThemeCustomizer />
+              
+              <Sheet>
+                <SheetTrigger asChild>
+                  <IconButton>
+                    <Settings className="w-5 h-5" />
+                  </IconButton>
+                </SheetTrigger>
+                <SheetContent>
+                  <SheetHeader>
+                    <SheetTitle>Lesson Tools</SheetTitle>
+                  </SheetHeader>
+                  <Stack spacing={3} sx={{ mt: 3 }}>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>Bookmarks</Typography>
+                      <LessonBookmarks lessonId={lessonId} />
+                    </Box>
+                    <Box>
+                      <Typography variant="subtitle2" sx={{ mb: 1.5, fontWeight: 600 }}>Keyboard Shortcuts</Typography>
+                      <Stack spacing={0.5}>
+                        <Typography variant="caption" color="text.secondary">← → : Navigate lessons</Typography>
+                        <Typography variant="caption" color="text.secondary">F : Fullscreen</Typography>
+                        <Typography variant="caption" color="text.secondary">Ctrl+B : Bookmark</Typography>
+                        <Typography variant="caption" color="text.secondary">/ : Search</Typography>
+                      </Stack>
+                    </Box>
+                  </Stack>
+                </SheetContent>
+              </Sheet>
 
-          <Button
-            variant="outline"
-            onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
-            className="font-semibold"
-          >
-            EXIT COURSE
-          </Button>
-          </div>
-          </Box>
+              <Button
+                variant="outlined"
+                onClick={() => navigate(`/CourseDetails?id=${courseId}`)}
+                sx={{ fontWeight: 600 }}
+              >
+                EXIT COURSE
+              </Button>
+            </Stack>
+          </Toolbar>
+        </AppBar>
 
           <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Tailwind only, not Material UI */}
