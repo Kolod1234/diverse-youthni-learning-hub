@@ -238,29 +238,29 @@ export default function Home() {
     .slice(0, 3);
 
   return (
-    <div className="bg-background">
+    <Box sx={{ bgcolor: 'background.default' }}>
       <PageSEO pageName="Home" sections={allPageSections} />
       {/* Search Bar - Sticky at top with glass effect */}
-      <section className="sticky top-16 z-40 bg-gradient-to-r from-[#003366]/95 via-[#004488]/95 to-[#003366]/95 dark:bg-slate-900/95 backdrop-blur-xl shadow-2xl border-b border-white/10">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5">
-          <div className="flex items-center gap-4">
+      <Box component="section" sx={{ position: 'sticky', top: 64, zIndex: 40, background: 'linear-gradient(to right, rgba(0,51,102,0.95), rgba(0,68,136,0.95), rgba(0,51,102,0.95))', backdropFilter: 'blur(24px)', boxShadow: 6, borderBottom: 1, borderColor: 'rgba(255,255,255,0.1)' }}>
+        <Container maxWidth="xl" sx={{ py: 2.5 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
             <SearchBar 
               value={searchQuery} 
               onChange={setSearchQuery}
               sortBy={sortBy}
               onSortChange={setSortBy}
             />
-          </div>
-        </div>
-      </section>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Dynamic Hero Carousel */}
       {heroSections.length > 0 && heroSections[0].carousel_items?.length > 0 ? (
         <HeroCarousel items={heroSections[0].carousel_items} />
       ) : (
-        <section className="relative overflow-hidden bg-gradient-to-br from-[#003366] via-[#004488] to-[#0055aa]">
-          <div className="absolute inset-0" ref={heroEmblaRef}>
-            <div className="flex h-full">
+        <Box component="section" sx={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(to bottom right, #003366, #004488, #0055aa)' }}>
+          <Box sx={{ position: 'absolute', inset: 0 }} ref={heroEmblaRef}>
+            <Box sx={{ display: 'flex', height: '100%' }}>
               {heroBackgroundImages.map((imgUrl, idx) => (
                 <div key={idx} className="flex-[0_0_100%] min-w-0 h-full">
                   <img
@@ -273,16 +273,16 @@ export default function Home() {
                   <div className="absolute inset-0 bg-gradient-to-b from-[#003366]/60 via-[#003366]/30 to-[#002244]/70" />
                 </div>
               ))}
-            </div>
-          </div>
+            </Box>
+          </Box>
           
-          <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 md:py-24">
+          <Container maxWidth="xl" sx={{ position: 'relative', py: { xs: 8, md: 12 } }}>
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="text-center"
             >
+              <Box sx={{ textAlign: 'center' }}>
               <motion.div 
                 className="inline-block bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-400 text-[#003366] px-6 py-2 md:px-8 md:py-3 rounded-full text-base md:text-2xl font-black mb-6 shadow-2xl"
                 whileHover={{ scale: 1.08, boxShadow: "0 20px 40px rgba(251, 191, 36, 0.4)" }}
@@ -363,16 +363,16 @@ export default function Home() {
                   </Button>
                 </Link>
               </motion.div>
-            </motion.div>
-          </div>
-        </section>
+            </Box>
+          </Container>
+        </Box>
       )}
 
       {/* Quick Stats Banner - For logged in users */}
       {user && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Container maxWidth="xl" sx={{ py: 6 }}>
           <QuickStatsCard user={user} />
-        </section>
+        </Container>
       )}
 
       {/* Continue Learning Section */}
@@ -661,15 +661,15 @@ export default function Home() {
 
       {/* Upcoming Sessions Banner */}
       {user && (
-        <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <Container maxWidth="xl" sx={{ py: 6 }}>
           <UpcomingSessionsWidget user={user} />
-        </section>
+        </Container>
       )}
 
       {/* Featured Courses */}
       {featuredCourses.length > 0 && (
-        <section className="bg-gradient-to-b from-muted/30 to-background py-20">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Box component="section" sx={{ background: 'linear-gradient(to bottom, rgba(0,0,0,0.02), transparent)', py: 10 }}>
+          <Container maxWidth="xl">
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -720,12 +720,12 @@ export default function Home() {
                 <CourseCard key={course.id} course={course} />
               ))}
             </div>
-          </div>
-        </section>
+          </Container>
+        </Box>
       )}
 
       {/* Explore Online Courses - LeanDirect Style */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20 bg-gradient-to-b from-background to-muted/30">
+      <Container maxWidth="xl" sx={{ py: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -894,7 +894,7 @@ export default function Home() {
             </Link>
           </motion.div>
         )}
-      </section>
+      </Container>
 
       {/* Why Choose Us Section - Dynamic */}
       <FeaturesSection />
@@ -1082,7 +1082,7 @@ export default function Home() {
 
       {/* CTA Section */}
       <FinalCTASection />
-    </div>
+    </Box>
   );
 }
 
