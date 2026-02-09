@@ -912,7 +912,6 @@ export default function LessonPlayerClassic() {
       >
         <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
           <TextField
-            inputRef={searchInputRef}
             placeholder="Search... (Press /)"
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
