@@ -6,8 +6,10 @@ import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Lightbulb, Sparkles, Loader } from 'lucide-react';
+import { Plus, Edit, Trash2, Lightbulb, Sparkles, Loader, Beaker, BookOpen, Leaf, Zap } from 'lucide-react';
 import { toast } from 'sonner';
+import { motion } from 'framer-motion';
+import FactCard from '@/components/facts/FactCard.jsx';
 
 export default function AdminDailyFacts() {
   const [showDialog, setShowDialog] = useState(false);
@@ -102,54 +104,117 @@ export default function AdminDailyFacts() {
     }
   };
 
+  const getCategoryIcon = (category) => {
+    const icons = { science: Beaker, history: BookOpen, nature: Leaf, technology: Zap };
+    return icons[category] || Lightbulb;
+  };
+
+  const getStats = () => {
+    return {
+      total: facts.length,
+      active: facts.filter(f => f.is_active).length,
+      byCategory: ['science', 'history', 'nature', 'technology', 'general'].reduce((acc, cat) => {
+        acc[cat] = facts.filter(f => f.category === cat).length;
+        return acc;
+      }, {})
+    };
+  };
+
+  const stats = getStats();
+
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="flex items-center justify-between mb-10"
+        >
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Daily Facts</h1>
-            <p className="text-gray-600">Manage educational facts</p>
+            <h1 className="text-4xl font-bold text-gray-900 mb-2">Daily Facts Library</h1>
+            <p className="text-gray-600">Manage engaging facts across multiple categories</p>
           </div>
           <div className="flex gap-3">
-            <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600">
+            <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600 hover:bg-blue-700">
               <Plus className="w-4 h-4" />
               Add Fact
             </Button>
             <Button onClick={() => { resetForm(); setShowDialog(true); generateFactWithAI(); }} className="gap-2 bg-purple-600 hover:bg-purple-700" disabled={generatingFact}>
               <Sparkles className="w-4 h-4" />
-              {generatingFact ? 'Generating...' : 'Generate with AI'}
+              {generatingFact ? 'Fetching...' : 'Fetch from Sources'}
             </Button>
           </div>
-        </div>
+        </motion.div>
 
-        <div className="space-y-4">
-          {facts.map((fact) => (
-            <Card key={fact.id} className="p-6">
-              <div className="flex items-start gap-4">
-                <Lightbulb className="w-6 h-6 text-yellow-600 shrink-0" />
-                <div className="flex-1">
-                  <p className="text-gray-900 mb-2">{fact.fact}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs bg-blue-100 text-blue-700 px-2 py-1 rounded">{fact.category}</span>
-                    <span className={`text-xs px-2 py-1 rounded ${fact.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {fact.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(fact)}>
+        {/* Stats Cards */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.1 }}
+          className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
+        >
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+            <p className="text-gray-600 text-sm font-medium">Total Facts</p>
+            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.total}</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
+            <p className="text-gray-600 text-sm font-medium">Active</p>
+            <p className="text-3xl font-bold text-green-600 mt-2">{stats.active}</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 border border-blue-200 shadow-sm">
+            <p className="text-blue-600 text-sm font-medium">Science</p>
+            <p className="text-2xl font-bold text-blue-700 mt-2">{stats.byCategory.science}</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 border border-purple-200 shadow-sm">
+            <p className="text-purple-600 text-sm font-medium">History</p>
+            <p className="text-2xl font-bold text-purple-700 mt-2">{stats.byCategory.history}</p>
+          </div>
+          <div className="bg-white rounded-xl p-4 border border-green-200 shadow-sm">
+            <p className="text-green-600 text-sm font-medium">Nature</p>
+            <p className="text-2xl font-bold text-green-700 mt-2">{stats.byCategory.nature}</p>
+          </div>
+        </motion.div>
+
+        {/* Facts Grid */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.2 }}
+          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
+        >
+          {facts.length > 0 ? (
+            facts.map((fact, index) => (
+              <div key={fact.id} className="relative group">
+                <FactCard fact={fact} index={index} />
+                {/* Action buttons overlay */}
+                <motion.div
+                  initial={{ opacity: 0 }}
+                  whileHover={{ opacity: 1 }}
+                  className="absolute top-4 right-4 flex gap-2"
+                >
+                  <Button size="sm" variant="outline" onClick={() => handleEdit(fact)} className="shadow-lg">
                     <Edit className="w-4 h-4" />
                   </Button>
-                  <Button size="sm" variant="outline" className="text-red-600" onClick={() => {
+                  <Button size="sm" variant="outline" className="text-red-600 shadow-lg" onClick={() => {
                     if (confirm('Delete this fact?')) deleteMutation.mutate(fact.id);
                   }}>
                     <Trash2 className="w-4 h-4" />
                   </Button>
-                </div>
+                </motion.div>
               </div>
-            </Card>
-          ))}
-        </div>
+            ))
+          ) : (
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="col-span-full text-center py-16"
+            >
+              <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+              <p className="text-gray-500 text-lg">No facts yet. Create one or fetch from sources!</p>
+            </motion.div>
+          )}
+        </motion.div>
 
         <Dialog open={showDialog} onOpenChange={setShowDialog}>
           <DialogContent className="max-w-2xl">
