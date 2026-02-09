@@ -22,7 +22,7 @@ const levelColors = {
   advanced: 'bg-red-100 text-red-700',
 };
 
-export default function CourseCard({ course, index = 0 }) {
+export default function CourseCard({ course }) {
   const getCategoryColor = (category) => {
     const colors = {
       mathematics: 'from-blue-600 to-blue-400',
@@ -52,8 +52,9 @@ export default function CourseCard({ course, index = 0 }) {
   return (
     <motion.div
       initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.4, delay: index * 0.1 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: "-50px" }}
+      transition={{ duration: 0.4 }}
     >
       <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
         <div className={`group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-gradient-to-r ${getCategoryColor(course.category)} relative h-full`}>

@@ -28,7 +28,8 @@ export default function AboutUsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
+          viewport={{ once: true, margin: "-100px" }}
+          transition={{ duration: 0.5 }}
           className="bg-card rounded-3xl overflow-hidden shadow-xl border border-border"
         >
           <div className="grid md:grid-cols-2 gap-0">

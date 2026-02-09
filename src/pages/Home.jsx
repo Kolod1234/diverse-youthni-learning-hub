@@ -666,7 +666,7 @@ export default function Home() {
             
             <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
               {featuredCourses.map((course, index) => (
-                <CourseCard key={course.id} course={course} index={index} />
+                <CourseCard key={course.id} course={course} />
               ))}
             </div>
           </div>
@@ -716,15 +716,14 @@ export default function Home() {
           </div>
         ) : sortedCourses.length > 0 ? (
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-            {sortedCourses.slice(0, 6).map((course, index) => (
+            {sortedCourses.slice(0, 6).map((course) => (
               <motion.div
                 key={course.id}
                 initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ delay: index * 0.1 }}
-                whileHover={{ y: -12 }}
-                className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border relative"
+                viewport={{ once: true, margin: "-100px" }}
+                transition={{ duration: 0.3 }}
+                className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border relative hover:-translate-y-3"
                 >
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 via-purple-600/0 to-pink-600/0 group-hover:from-blue-600/5 group-hover:via-purple-600/5 group-hover:to-pink-600/5 transition-all duration-500" />
                 <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
