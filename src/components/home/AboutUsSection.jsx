@@ -64,7 +64,7 @@ export default function AboutUsSection() {
               </h2>
               
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
-                {getContent('about_description', 'Diverse Youth NI is dedicated to providing afterschool educational support and resources to young people across Northern Ireland. We believe in creating inclusive enabling environments where young people in respect of colour, race or different cultural backgrounds can thrive and reach their full potential.')}
+                {getContent('about_description', 'Diverse Youth NI is dedicated to providing afterschool educational support and resources to young people across Northern Ireland. We believe in creating inclusive enabling environments where young people irrespective of colour, race or different cultural backgrounds can thrive and reach their full potential.')}
               </p>
 
               <p className="text-muted-foreground leading-relaxed mb-8">
