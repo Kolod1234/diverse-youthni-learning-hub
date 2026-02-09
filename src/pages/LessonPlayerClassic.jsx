@@ -676,8 +676,8 @@ export default function LessonPlayerClassic() {
           >
             EXIT COURSE
           </Button>
-        </div>
-      </header>
+          </Box>
+          </Box>
 
       <div className="flex flex-1 overflow-hidden">
         {/* Sidebar - Tailwind only, not Material UI */}
