@@ -7,6 +7,9 @@ import {
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
   Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye
 } from 'lucide-react';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MenuIcon from '@mui/icons-material/Menu';
+import CloseIcon from '@mui/icons-material/Close';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import MatchingGame from '@/components/lesson/MatchingGame';
