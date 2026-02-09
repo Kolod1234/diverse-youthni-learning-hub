@@ -589,28 +589,18 @@ export default function LessonPlayerClassic() {
         </div>
       )}
 
-      <div 
-        className={`min-h-screen flex flex-col bg-gray-100 ${
-          deviceType === 'mobile' ? 'text-sm' : 
-          deviceType === 'tablet' ? 'text-base' : 'text-base'
-        }`}
-        style={{
-          paddingTop: 'env(safe-area-inset-top)',
-          paddingBottom: 'env(safe-area-inset-bottom)',
-          paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
-        }}
-      >
+      <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
         {/* Top Bar */}
-                <Box component="header" sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: 1, height: { xs: 56, md: 64 }, px: { xs: 1.5, md: 3 } }}>
-        <div className="flex items-center gap-4">
-          <button
-            className="lg:hidden"
-            onClick={() => setShowSidebar(!showSidebar)}
-          >
-            <Menu className="w-6 h-6" />
-          </button>
-        </div>
+        <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 1, zIndex: 40 }}>
+          <Toolbar disableGutters sx={{ px: { xs: 1.5, md: 3 }, justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <IconButton
+                sx={{ display: { xs: 'flex', lg: 'none' } }}
+                onClick={() => setShowSidebar(!showSidebar)}
+              >
+                <MenuIcon />
+              </IconButton>
+            </Box>
         
         <div className="flex items-center gap-4">
           {/* Progress Ring */}
