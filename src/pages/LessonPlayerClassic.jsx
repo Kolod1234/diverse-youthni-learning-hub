@@ -983,46 +983,52 @@ export default function LessonPlayerClassic() {
 
               {/* Media Player */}
               {lesson.video_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                <Box sx={{ my: { xs: 2, sm: 4 } }}>
                   <EnhancedMediaPlayer
                     type="video"
                     src={lesson.video_url}
                   />
-                </div>
+                </Box>
               )}
 
               {lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                <Box sx={{ my: { xs: 2, sm: 4 } }}>
                   <EnhancedMediaPlayer
                     type="google-slides"
                     src={lesson.google_slides_url.includes('/embed') 
                       ? lesson.google_slides_url 
                       : lesson.google_slides_url.replace('/edit', '/embed')}
                   />
-                </div>
+                </Box>
               )}
 
               {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                <Box sx={{ my: { xs: 2, sm: 4 } }}>
                   <EnhancedMediaPlayer
                     type="iframe"
                     src={lesson.file_url}
                   />
-                </div>
+                </Box>
               )}
 
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
-                <ul className="space-y-4 sm:space-y-6 mt-6 sm:mt-8">
+                <List sx={{ mt: { xs: 2, sm: 4 }, py: 0 }}>
                   {lesson.learning_objectives.map((objective, idx) => (
-                    <li key={idx} className="flex gap-3 sm:gap-4">
-                      <span className="text-[#1e3a8a] text-xl sm:text-2xl flex-shrink-0 mt-0.5 sm:mt-1">•</span>
-                      <div>
-                        <span className="text-base sm:text-lg text-gray-700">{objective}</span>
-                      </div>
-                    </li>
+                    <ListItem key={idx} sx={{ py: 1.5 }}>
+                      <ListItemIcon sx={{ color: 'primary.main', minWidth: 24 }}>
+                        •
+                      </ListItemIcon>
+                      <ListItemText
+                        primary={objective}
+                        primaryTypographyProps={{
+                          variant: 'body1',
+                          sx={{ fontSize: { xs: '1rem', sm: '1.125rem' }, color: 'text.primary' }
+                        }}
+                      />
+                    </ListItem>
                   ))}
-                </ul>
+                </List>
               )}
 
               {/* Interactive Elements - Generated from Learning Objectives */}
