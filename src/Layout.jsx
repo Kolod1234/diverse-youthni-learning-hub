@@ -371,49 +371,6 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
                       <ListItemText primary="Admin Panel" />
                     </MenuItem>
-                {isTutorOrAdmin && (
-                  <>
-                    <Divider />
-                    <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
-                      TUTOR TOOLS
-                    </Typography>
-                    <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
-                      <ListItemText primary="Tutor Overview" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
-                      <ListItemText primary="Lesson Editor" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('Templates')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
-                      <ListItemText primary="Templates" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('DataPresentation')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
-                      <ListItemText primary="Data to Slides" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Pathway Manager" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Quiz Generator" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Tutor Setup" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Full Tutor Dashboard" />
-                    </MenuItem>
-                  </>
-                )}
-
-                {isAdmin && (
-                  <>
                     <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
                       <ListItemText primary="Page Builder" />
@@ -458,11 +415,11 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                  </>
-                )}
+                    </>
+                    )}
 
-                {isTutorOrAdmin && !isAdmin && (
-                  <>
+                    {isTutorOrAdmin && !isAdmin && (
+                    <>
                     <Divider />
                     <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
@@ -472,10 +429,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                  </>
-                )}
-              </MuiMenu>
-            </Box>
+                    </>
+                    )}
+                    </MuiMenu>
+                    </Box>
 
             {/* Right Side */}
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
