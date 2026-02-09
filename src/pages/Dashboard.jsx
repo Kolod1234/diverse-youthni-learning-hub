@@ -93,6 +93,47 @@ export default function Dashboard() {
   const inProgressEnrollments = enrollments.filter(e => !e.is_completed);
   const completedEnrollments = enrollments.filter(e => e.is_completed);
 
+  // Block tutors from accessing student dashboard
+  if (accessDenied) {
+    return (
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Container maxWidth="sm">
+          <Card sx={{ textAlign: 'center', py: 10, px: 4, borderRadius: 6, boxShadow: 4, border: 1, borderColor: 'divider' }}>
+            <Box sx={{ width: 96, height: 96, background: 'linear-gradient(to bottom right, #ef4444, #dc2626)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4, boxShadow: '0 20px 25px -5px rgba(239, 68, 68, 0.2)' }}>
+              <BookOpen size={48} color="white" />
+            </Box>
+            <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>Access Denied</Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 400, mx: 'auto', mb: 4 }}>
+              This dashboard is for students only. You can access student information through the messaging system or your tutor dashboard.
+            </Typography>
+            <Link to={createPageUrl('Home')} style={{ textDecoration: 'none' }}>
+              <Button 
+                size="large"
+                variant="contained"
+                endIcon={<ArrowRight size={20} />}
+                sx={{
+                  background: 'linear-gradient(to right, #4f46e5, #7c3aed)',
+                  color: 'white',
+                  borderRadius: 50,
+                  px: 5,
+                  py: 2,
+                  fontSize: '1.125rem',
+                  boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)',
+                  '&:hover': {
+                    background: 'linear-gradient(to right, #4338ca, #6d28d9)',
+                    boxShadow: 4
+                  }
+                }}
+              >
+                Back to Home
+              </Button>
+            </Link>
+          </Card>
+        </Container>
+      </Box>
+    );
+  }
+
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="xl" sx={{ py: 5 }}>
