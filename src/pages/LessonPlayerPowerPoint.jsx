@@ -176,9 +176,29 @@ export default function LessonPlayerPowerPoint() {
   const toggleFullscreen = async () => {
     try {
       if (!document.fullscreenElement) {
-        await playerRef.current?.requestFullscreen?.();
+        if (playerRef.current) {
+          await playerRef.current.requestFullscreen?.().catch(async () => {
+            // Fallback: Use Screen Orientation API for mobile
+            if (screen.orientation?.lock) {
+              try {
+                await screen.orientation.lock('landscape');
+              } catch (e) {
+                console.log('Orientation lock not supported');
+              }
+            }
+          });
+        }
       } else {
-        await document.exitFullscreen?.();
+        await document.exitFullscreen?.().catch(async () => {
+          // Fallback: Unlock orientation
+          if (screen.orientation?.unlock) {
+            try {
+              await screen.orientation.unlock();
+            } catch (e) {
+              console.log('Orientation unlock not supported');
+            }
+          }
+        });
       }
     } catch (err) {
       console.error('Fullscreen error:', err);
