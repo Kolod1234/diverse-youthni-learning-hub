@@ -82,35 +82,28 @@ export default function Home() {
     staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
-  const { data: carouselImages = [] } = useQuery({
-    queryKey: ['carousel-images'],
+  const { data: allCarouselImages = [] } = useQuery({
+    queryKey: ['all-carousel-images'],
     queryFn: async () => {
-      const all = await base44.entities.CarouselImage.list('-created_date', 1000);
-      return all.filter(img => img.carousel_type === 'main').sort((a, b) => (a.order || 0) - (b.order || 0));
+      const images = await base44.entities.CarouselImage.list('-created_date', 1000);
+      return images || [];
     },
     staleTime: 0,
-    refetchOnMount: true
+    refetchOnMount: true,
+    refetchOnWindowFocus: true
   });
 
-  const { data: leadershipCarouselImages = [] } = useQuery({
-    queryKey: ['leadership-carousel-images'],
-    queryFn: async () => {
-      const all = await base44.entities.CarouselImage.list('-created_date', 1000);
-      return all.filter(img => img.carousel_type === 'leadership').sort((a, b) => (a.order || 0) - (b.order || 0));
-    },
-    staleTime: 0,
-    refetchOnMount: true
-  });
+  const carouselImages = allCarouselImages
+    .filter(img => img.carousel_type === 'main' && img.is_active !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
-  const { data: heroCarouselImages = [] } = useQuery({
-    queryKey: ['hero-carousel-images'],
-    queryFn: async () => {
-      const all = await base44.entities.CarouselImage.list('-created_date', 1000);
-      return all.filter(img => img.carousel_type === 'hero').sort((a, b) => (a.order || 0) - (b.order || 0));
-    },
-    staleTime: 0,
-    refetchOnMount: true
-  });
+  const leadershipCarouselImages = allCarouselImages
+    .filter(img => img.carousel_type === 'leadership' && img.is_active !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
+
+  const heroCarouselImages = allCarouselImages
+    .filter(img => img.carousel_type === 'hero' && img.is_active !== false)
+    .sort((a, b) => (a.order || 0) - (b.order || 0));
 
   const { data: heroSections = [] } = useQuery({
     queryKey: ['page-sections-home'],
