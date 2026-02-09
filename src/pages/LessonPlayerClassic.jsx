@@ -865,41 +865,44 @@ export default function LessonPlayerClassic() {
                 </p>
               )}
 
-              {/* Media Player */}
-               {lesson.video_url && (
-                 <div className="my-4 sm:my-8">
-                   <div className="bg-black rounded-lg overflow-hidden">
-                     <EnhancedMediaPlayer
-                       type="video"
-                       src={lesson.video_url}
-                     />
-                   </div>
-                 </div>
-               )}
+              {/* Media Player - with explicit sizing */}
+                {lesson.video_url && (
+                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
+                    <EnhancedMediaPlayer
+                      type="video"
+                      src={lesson.video_url}
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
 
-               {lesson.google_slides_url && !lesson.video_url && (
-                 <div className="my-4 sm:my-8">
-                   <div className="bg-black rounded-lg overflow-hidden">
-                     <EnhancedMediaPlayer
-                       type="google-slides"
-                       src={lesson.google_slides_url.includes('/embed') 
-                         ? lesson.google_slides_url 
-                         : `https://docs.google.com/presentation/d/${lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}/embed?start=false&loop=false&delayms=3000`}
-                     />
-                   </div>
-                 </div>
-               )}
+                {lesson.google_slides_url && !lesson.video_url && (
+                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
+                    <EnhancedMediaPlayer
+                      type="google-slides"
+                      src={lesson.google_slides_url.includes('/embed') 
+                        ? lesson.google_slides_url 
+                        : `https://docs.google.com/presentation/d/${lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}/embed?start=false&loop=false&delayms=3000`}
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
 
-               {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                 <div className="my-4 sm:my-8">
-                   <div className="bg-black rounded-lg overflow-hidden">
-                     <EnhancedMediaPlayer
-                       type="iframe"
-                       src={lesson.file_url}
-                     />
-                   </div>
-                 </div>
-               )}
+                {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
+                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
+                    <EnhancedMediaPlayer
+                      type="iframe"
+                      src={lesson.file_url}
+                      className="w-full h-full"
+                    />
+                  </div>
+                )}
+
+                {!lesson.video_url && !lesson.google_slides_url && !lesson.file_url && (
+                  <div className="my-8 p-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center">
+                    <p className="text-gray-600">No video, slides, or file attached to this lesson yet.</p>
+                  </div>
+                )}
 
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
