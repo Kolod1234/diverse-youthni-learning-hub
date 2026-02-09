@@ -809,25 +809,25 @@ export default function LessonPlayerClassic() {
           </ScrollArea>
 
           {/* Close button for mobile */}
-          <div className="p-4 border-t border-white/20 lg:hidden">
-            <button 
+          <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.2)', display: { lg: 'none' } }}>
+            <Button 
               onClick={() => setShowSidebar(false)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              fullWidth
+              sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, textTransform: 'none', fontSize: '0.875rem', fontWeight: 500 }}
             >
               <X className="w-5 h-5" />
-              <span className="text-sm font-medium">Close Menu</span>
-            </button>
-          </div>
-        </motion.aside>
+              Close Menu
+            </Button>
+          </Box>
+          </motion.div>
 
-        {/* Overlay for mobile */}
-        {showSidebar && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
+          {/* Overlay for mobile */}
+          {showSidebar && (
+          <Box
             onClick={() => setShowSidebar(false)}
-            style={{ marginTop: '64px' }}
+            sx={{ position: 'fixed', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', zIndex: 30, display: { lg: 'none' }, mt: { xs: '56px', md: '64px' } }}
           />
-        )}
+          )}
 
         {/* Main Content */}
         <main 
