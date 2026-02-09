@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
+import DOMPurify from 'isomorphic-dompurify';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import { 
   FileText, Presentation, ChevronLeft, ChevronRight, X, 
@@ -856,7 +857,7 @@ export default function LessonPlayerPowerPoint() {
                         }}>
                           <div className="max-w-4xl w-full">
                             <h2 className="text-xl sm:text-3xl font-bold mb-4 text-foreground">{sortedSlides[currentSlideIndex]?.title}</h2>
-                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
+                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(sortedSlides[currentSlideIndex]?.content) }} />
                           </div>
                         </div>
                       </TransformComponent>
