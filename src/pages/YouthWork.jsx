@@ -147,36 +147,18 @@ export default function YouthWork() {
         </Card>
 
         {/* Level Filter */}
-        <div className="flex items-center justify-center gap-3 mb-8">
-          <Button
-            variant={selectedLevel === 'all' ? 'default' : 'outline'}
-            onClick={() => setSelectedLevel('all')}
-            className={selectedLevel === 'all' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-          >
-            All Levels
-          </Button>
-          <Button
-            variant={selectedLevel === 'Level 1' ? 'default' : 'outline'}
-            onClick={() => setSelectedLevel('Level 1')}
-            className={selectedLevel === 'Level 1' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-          >
-            Level 1
-          </Button>
-          <Button
-            variant={selectedLevel === 'Level 2' ? 'default' : 'outline'}
-            onClick={() => setSelectedLevel('Level 2')}
-            className={selectedLevel === 'Level 2' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-          >
-            Level 2
-          </Button>
-          <Button
-            variant={selectedLevel === 'Level 3' ? 'default' : 'outline'}
-            onClick={() => setSelectedLevel('Level 3')}
-            className={selectedLevel === 'Level 3' ? 'bg-emerald-600 hover:bg-emerald-700' : ''}
-          >
-            Level 3
-          </Button>
-        </div>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 4, flexWrap: 'wrap' }}>
+          {['all', 'Level 1', 'Level 2', 'Level 3'].map(level => (
+            <Button
+              key={level}
+              variant={selectedLevel === level ? 'contained' : 'outlined'}
+              onClick={() => setSelectedLevel(level)}
+              sx={selectedLevel === level ? { bgcolor: '#16a34a', '&:hover': { bgcolor: '#15803d' } } : {}}
+            >
+              {level === 'all' ? 'All Levels' : level}
+            </Button>
+          ))}
+        </Box>
 
         {/* Qualifications */}
         <div className="space-y-6">
