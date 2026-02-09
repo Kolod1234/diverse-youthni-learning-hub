@@ -3,17 +3,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { 
+  Button, Card, CardContent, CardMedia, Chip, Box, Typography, Container,
+  Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs
+} from '@mui/material';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { 
   Play, Clock, Users, Star, BookOpen, Award, CheckCircle, 
   Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare, Brain, Settings
 } from 'lucide-react';
 import ModuleProgress from '@/components/interactive/ModuleProgress';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';
 import CourseLeaderboard from '@/components/gamification/CourseLeaderboard';
@@ -21,13 +20,14 @@ import CourseSEO from '@/components/seo/CourseSEO';
 import DynamicCourseLanding from '@/components/course/DynamicCourseLanding';
 
 const levelColors = {
-  beginner: 'bg-green-100 text-green-700',
-  intermediate: 'bg-yellow-100 text-yellow-700',
-  advanced: 'bg-red-100 text-red-700',
+  beginner: { bgcolor: '#dcfce7', color: '#15803d' },
+  intermediate: { bgcolor: '#fef3c7', color: '#a16207' },
+  advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
 export default function CourseDetails() {
   const [user, setUser] = useState(null);
+  const [tabValue, setTabValue] = useState('curriculum');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   
@@ -145,240 +145,236 @@ export default function CourseDetails() {
 
   if (loadingCourse) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <div className="animate-pulse">
-            <div className="h-64 bg-gray-200 rounded-2xl mb-8" />
-            <div className="h-8 bg-gray-200 rounded w-2/3 mb-4" />
-            <div className="h-4 bg-gray-200 rounded w-1/2" />
-          </div>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+        <Container maxWidth="xl" sx={{ py: 4 }}>
+          <Box sx={{ '& > *': { bgcolor: 'grey.200', borderRadius: 4, mb: 2 } }}>
+            <Box sx={{ height: 256 }} />
+            <Box sx={{ height: 32, width: '66%' }} />
+            <Box sx={{ height: 16, width: '50%' }} />
+          </Box>
+        </Container>
+      </Box>
     );
   }
 
   if (!course) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold text-gray-900 mb-2">Course not found</h2>
-          <Link to={createPageUrl('Explore')}>
-            <Button>Browse Courses</Button>
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" style={{ color: '#d1d5db' }} />
+          <Typography variant="h5" fontWeight={600} sx={{ mb: 2 }}>Course not found</Typography>
+          <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+            <Button variant="contained">Browse Courses</Button>
           </Link>
-        </div>
-      </div>
+        </Box>
+      </Box>
     );
   }
 
   return (
     <>
       <CourseSEO course={course} />
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
       {/* Hero Section */}
-      <section className="relative bg-gradient-to-br from-indigo-600 via-violet-600 to-purple-700 text-white">
+      <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #4f46e5, #7c3aed, #9333ea)', color: 'white' }}>
         {user?.role === 'admin' && (
-            <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`}>
-              <Button className="absolute top-4 right-4 z-20 bg-white/20 hover:bg-white/30 border-white/30" size="sm">
-                <Settings className="w-4 h-4 mr-2" />
+            <Link to={createPageUrl('AdminCourseBuilder') + `?course=${courseId}`} style={{ textDecoration: 'none' }}>
+              <Button 
+                startIcon={<Settings size={16} />}
+                variant="contained"
+                size="small"
+                sx={{ 
+                  position: 'absolute', 
+                  top: 16, 
+                  right: 16, 
+                  zIndex: 20, 
+                  bgcolor: 'rgba(255,255,255,0.2)', 
+                  '&:hover': { bgcolor: 'rgba(255,255,255,0.3)' },
+                  color: 'white'
+                }}
+              >
                 Customize Page
               </Button>
             </Link>
           )}
-        <div className="absolute inset-0 bg-black/20" />
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-          <nav className="flex items-center gap-2 text-sm text-indigo-100 mb-6">
-            <Link to={createPageUrl('Dashboard')} className="hover:text-white transition-colors">
-              Dashboard
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <Link to={createPageUrl('Explore')} className="hover:text-white transition-colors">
-              Courses
-            </Link>
-            <ChevronRight className="w-4 h-4" />
-            <span className="text-white font-medium">{course.title}</span>
-          </nav>
+        <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.2)' }} />
+        <Container maxWidth="xl" sx={{ position: 'relative', py: 6 }}>
+          <Breadcrumbs separator={<ChevronRight size={16} />} sx={{ color: 'rgba(255,255,255,0.7)', mb: 3, '& a': { color: 'rgba(255,255,255,0.7)', '&:hover': { color: 'white' } } }}>
+            <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>Dashboard</Link>
+            <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none', color: 'inherit' }}>Courses</Link>
+            <Typography sx={{ color: 'white', fontWeight: 500 }}>{course.title}</Typography>
+          </Breadcrumbs>
           
-          <div className="grid lg:grid-cols-3 gap-8 items-start">
-            <div className="lg:col-span-2">
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4, alignItems: 'start' }}>
+            <Box>
               <motion.div
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
               >
-                <Badge className={`${levelColors[course.level] || levelColors.beginner} border-0 mb-4`}>
-                  {course.level}
-                </Badge>
+                <Chip 
+                  label={course.level} 
+                  sx={{ ...levelColors[course.level] || levelColors.beginner, border: 0, mb: 2, textTransform: 'capitalize' }}
+                />
                 
-                <h1 className="text-3xl sm:text-4xl font-bold mb-4">{course.title}</h1>
-                <p className="text-lg text-indigo-100 mb-6">{course.description}</p>
+                <Typography variant="h3" fontWeight={700} sx={{ mb: 2 }}>{course.title}</Typography>
+                <Typography variant="h6" sx={{ color: 'rgba(255,255,255,0.9)', mb: 3 }}>{course.description}</Typography>
                 
-                <div className="flex flex-wrap items-center gap-6 text-indigo-100 mb-6">
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', alignItems: 'center', gap: 3, color: 'rgba(255,255,255,0.9)', mb: 3 }}>
                   {course.instructor && (
-                    <div className="flex items-center gap-2">
-                      <img
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                      <Avatar
                         src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff`}
                         alt={course.instructor}
-                        className="w-10 h-10 rounded-full border-2 border-white/30"
+                        sx={{ width: 40, height: 40, border: '2px solid rgba(255,255,255,0.3)' }}
                       />
-                      <span>{course.instructor}</span>
-                    </div>
+                      <Typography>{course.instructor}</Typography>
+                    </Box>
                   )}
                   {actualCourseRating && (
-                    <div className="flex items-center gap-1">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                      <span className="font-semibold text-white">{actualCourseRating}</span>
-                      <span>({actualStudentCount.toLocaleString()} students)</span>
-                    </div>
+                      <Typography fontWeight={600} sx={{ color: 'white' }}>{actualCourseRating}</Typography>
+                      <Typography>({actualStudentCount.toLocaleString()} students)</Typography>
+                    </Box>
                   )}
-                </div>
+                </Box>
                 
-                <div className="flex flex-wrap gap-4 text-sm">
-                  <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <Clock className="w-4 h-4" />
-                    {course.duration_hours || 0} hours
-                  </span>
-                  <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <BookOpen className="w-4 h-4" />
-                    {lessons.length} lessons
-                  </span>
-                  <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <Globe className="w-4 h-4" />
-                    English
-                  </span>
-                  <span className="flex items-center gap-2 bg-white/10 px-4 py-2 rounded-full">
-                    <Award className="w-4 h-4" />
-                    Certificate
-                  </span>
-                </div>
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+                  <Chip icon={<Clock size={16} />} label={`${course.duration_hours || 0} hours`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
+                  <Chip icon={<BookOpen size={16} />} label={`${lessons.length} lessons`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
+                  <Chip icon={<Globe size={16} />} label="English" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
+                  <Chip icon={<Award size={16} />} label="Certificate" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
+                </Box>
               </motion.div>
             </div>
             
             {/* Enrollment Card */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2 }}
-            >
-              <Card className="overflow-hidden border-0 shadow-2xl">
-                <div className="aspect-video relative">
-                  <img
-                    src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'}
-                    alt={course.title}
-                    className="w-full h-full object-cover"
-                  />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <div className="w-16 h-16 bg-white/90 rounded-full flex items-center justify-center cursor-pointer hover:scale-110 transition-transform">
-                      <Play className="w-6 h-6 text-indigo-600 ml-1" />
-                    </div>
-                  </div>
-                </div>
-                
-                <div className="p-6">
-                  <div className="flex items-baseline gap-2 mb-6">
-                    <span className="text-4xl font-bold text-gray-900">
-                      {course.price === 0 ? 'Free' : `£${course.price}`}
-                    </span>
-                    {course.price > 0 && (
-                      <span className="text-lg text-gray-400 line-through">
-                        £{Math.round(course.price * 1.5)}
-                      </span>
+            <Box>
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+              >
+                <Card sx={{ overflow: 'hidden', border: 0, boxShadow: 6 }}>
+                  <CardMedia
+                    component="div"
+                    sx={{ position: 'relative', paddingTop: '56.25%' }}
+                  >
+                    <img
+                      src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80'}
+                      alt={course.title}
+                      style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover' }}
+                    />
+                    <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.4)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                      <Box sx={{ width: 64, height: 64, bgcolor: 'rgba(255,255,255,0.9)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', '&:hover': { transform: 'scale(1.1)' }, transition: 'transform 0.2s' }}>
+                        <Play className="w-6 h-6 text-indigo-600 ml-1" style={{ color: '#4f46e5' }} />
+                      </Box>
+                    </Box>
+                  </CardMedia>
+                  
+                  <CardContent sx={{ p: 3 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'baseline', gap: 1, mb: 3 }}>
+                      <Typography variant="h4" fontWeight={700}>
+                        {course.price === 0 ? 'Free' : `£${course.price}`}
+                      </Typography>
+                      {course.price > 0 && (
+                        <Typography variant="h6" sx={{ color: 'text.secondary', textDecoration: 'line-through' }}>
+                          £{Math.round(course.price * 1.5)}
+                        </Typography>
+                      )}
+                    </Box>
+                  
+                    {isEnrolled ? (
+                      <Button 
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        startIcon={<Play size={20} />}
+                        onClick={() => {
+                          const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
+                          const targetLessonId = enrollment.current_lesson_id || sortedLessons[0]?.id;
+                          if (targetLessonId) {
+                            navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${targetLessonId}`);
+                          }
+                        }}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                      >
+                        Continue Learning
+                      </Button>
+                    ) : (
+                      <Button 
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        onClick={() => enrollMutation.mutate()}
+                        disabled={enrollMutation.isPending}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                      >
+                        {enrollMutation.isPending ? 'Enrolling...' : (course.price === 0 ? 'Enroll for Free' : 'Buy Now')}
+                      </Button>
                     )}
-                  </div>
                   
-                  {isEnrolled ? (
-                    <Button 
-                      className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl"
-                      onClick={() => {
-                        const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
-                        const targetLessonId = enrollment.current_lesson_id || sortedLessons[0]?.id;
-                        if (targetLessonId) {
-                          navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${targetLessonId}`);
-                        }
-                      }}
-                    >
-                      <Play className="w-5 h-5 mr-2" />
-                      Continue Learning
-                    </Button>
-                  ) : (
-                    <Button 
-                      className="w-full h-14 text-lg bg-indigo-600 hover:bg-indigo-700 rounded-xl"
-                      onClick={() => enrollMutation.mutate()}
-                      disabled={enrollMutation.isPending}
-                    >
-                      {enrollMutation.isPending ? 'Enrolling...' : (course.price === 0 ? 'Enroll for Free' : 'Buy Now')}
-                    </Button>
-                  )}
-                  
-                  <div className="mt-6 space-y-3 text-sm text-gray-600">
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span>Lifetime access</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span>Certificate of completion</span>
-                    </div>
-                    <div className="flex items-center gap-2">
-                      <CheckCircle className="w-4 h-4 text-emerald-500" />
-                      <span>Downloadable resources</span>
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </motion.div>
-          </div>
-        </div>
-      </section>
+                    <Box sx={{ mt: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircle size={16} color="#10b981" />
+                        <Typography variant="body2">Lifetime access</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircle size={16} color="#10b981" />
+                        <Typography variant="body2">Certificate of completion</Typography>
+                      </Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <CheckCircle size={16} color="#10b981" />
+                        <Typography variant="body2">Downloadable resources</Typography>
+                      </Box>
+                    </Box>
+                  </CardContent>
+                </Card>
+              </motion.div>
+            </Box>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Course Content */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <div className="grid lg:grid-cols-3 gap-8">
-          <div className="lg:col-span-2">
-            <Tabs defaultValue="curriculum" className="w-full">
-              <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-                <TabsTrigger value="curriculum" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-                  Curriculum
-                </TabsTrigger>
-                <TabsTrigger value="overview" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-                  Overview
-                </TabsTrigger>
-                <TabsTrigger value="reviews" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-                  Reviews ({reviews.length})
-                </TabsTrigger>
-                <TabsTrigger value="discussion" className="rounded-lg px-6 data-[state=active]:bg-indigo-600 data-[state=active]:text-white">
-                  Discussion
-                </TabsTrigger>
-              </TabsList>
+      <Container maxWidth="xl" sx={{ py: 6 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4 }}>
+          <Box>
+            <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
+              <Tab label="Curriculum" value="curriculum" />
+              <Tab label="Overview" value="overview" />
+              <Tab label={`Reviews (${reviews.length})`} value="reviews" />
+              <Tab label="Discussion" value="discussion" />
+            </Tabs>
 
-              <TabsContent value="curriculum">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-                  <div className="p-4 border-b border-gray-100 flex items-center justify-between">
-                    <span className="font-medium text-gray-900">
+              {tabValue === 'curriculum' && (
+                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider' }}>
+                  <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                    <Typography fontWeight={500}>
                       {Object.keys(sections).length} sections • {lessons.length} lessons
-                    </span>
-                    <span className="text-sm text-gray-500">
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
                       {course.duration_hours || 0}h total
-                    </span>
-                  </div>
+                    </Typography>
+                  </Box>
                   
-                  <Accordion type="multiple" defaultValue={Object.keys(sections)} className="divide-y divide-gray-100">
-                    {Object.entries(sections).map(([sectionName, sectionLessons]) => (
-                      <AccordionItem key={sectionName} value={sectionName} className="border-0">
-                        <AccordionTrigger className="px-6 py-4 hover:bg-gray-50 hover:no-underline">
-                          <div className="flex items-center gap-3 text-left">
-                            <div className="w-8 h-8 bg-indigo-100 rounded-lg flex items-center justify-center">
-                              <BookOpen className="w-4 h-4 text-indigo-600" />
-                            </div>
-                            <div>
-                              <h3 className="font-semibold text-gray-900">{sectionName}</h3>
-                              <p className="text-sm text-gray-500">
-                                {sectionLessons.length} lessons
-                              </p>
-                            </div>
-                          </div>
-                        </AccordionTrigger>
-                        <AccordionContent className="pb-0">
-                          <div className="divide-y divide-gray-50">
+                  {Object.entries(sections).map(([sectionName, sectionLessons]) => (
+                    <Accordion key={sectionName} defaultExpanded>
+                      <AccordionSummary expandIcon={<ExpandMoreIcon />} sx={{ px: 3, py: 2, '&:hover': { bgcolor: 'action.hover' } }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Box sx={{ width: 32, height: 32, bgcolor: 'primary.main' + '15', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                            <BookOpen size={16} color="#4f46e5" />
+                          </Box>
+                          <Box>
+                            <Typography fontWeight={600}>{sectionName}</Typography>
+                            <Typography variant="body2" color="text.secondary">
+                              {sectionLessons.length} lessons
+                            </Typography>
+                          </Box>
+                        </Box>
+                      </AccordionSummary>
+                      <AccordionDetails sx={{ p: 0 }}>
+                        <Box sx={{ borderTop: 1, borderColor: 'divider' }}>
                           {sectionLessons.map((lesson, index) => {
                             const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
                             const hasActiveKey = lessonKeys.some(k => k.lesson_id === lesson.id && k.is_active);
@@ -387,202 +383,198 @@ export default function CourseDetails() {
                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
 
                              return (
-                               <div
+                               <Box
                                  key={lesson.id}
                                  onClick={() => {
                                    if (canAccess) {
                                      navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${lesson.id}`);
                                    }
                                  }}
-                                 className={`px-6 py-3 ${canAccess ? 'hover:bg-gray-50 cursor-pointer' : 'opacity-60'}`}
+                                 sx={{ px: 3, py: 1.5, cursor: canAccess ? 'pointer' : 'default', opacity: canAccess ? 1 : 0.6, '&:hover': canAccess ? { bgcolor: 'action.hover' } : {} }}
                                >
-                                 <div className="flex items-center justify-between">
-                                   <div className="flex items-center gap-3">
+                                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                                      {isCompleted ? (
-                                       <div className="w-6 h-6 bg-emerald-100 rounded-full flex items-center justify-center shrink-0">
-                                         <CheckCircle className="w-4 h-4 text-emerald-600" />
-                                       </div>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: '#d1fae5', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                         <CheckCircle size={16} color="#059669" />
+                                       </Box>
                                      ) : canAccess ? (
-                                       <div className="w-6 h-6 bg-indigo-100 rounded-full flex items-center justify-center shrink-0">
-                                         <Play className="w-3 h-3 text-indigo-600 ml-0.5" />
-                                       </div>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: '#e0e7ff', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                         <Play size={12} color="#4f46e5" style={{ marginLeft: 2 }} />
+                                       </Box>
                                      ) : (
-                                       <div className="w-6 h-6 bg-gray-100 rounded-full flex items-center justify-center shrink-0">
-                                         <Lock className="w-3 h-3 text-gray-400" />
-                                       </div>
+                                       <Box sx={{ width: 24, height: 24, bgcolor: '#f3f4f6', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                         <Lock size={12} color="#9ca3af" />
+                                       </Box>
                                      )}
-                                     <div className="flex-1">
-                                       <p className="font-medium text-gray-900 text-sm">{lesson.title}</p>
-                                       <div className="flex items-center gap-2 mt-1">
+                                     <Box sx={{ flex: 1 }}>
+                                       <Typography variant="body2" fontWeight={500}>{lesson.title}</Typography>
+                                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
                                          {lesson.is_preview && !isEnrolled && (
-                                           <Badge variant="outline" className="text-xs">Preview</Badge>
+                                           <Chip label="Preview" size="small" variant="outlined" sx={{ height: 20, fontSize: '0.65rem' }} />
                                          )}
                                          {lessonQuizCount > 0 && (
-                                           <span className="inline-flex items-center gap-1 text-xs text-violet-600">
-                                             <Brain className="w-3 h-3" />
-                                             {lessonQuizCount} quiz{lessonQuizCount > 1 ? 'zes' : ''}
-                                           </span>
+                                           <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 0.5 }}>
+                                             <Brain size={12} color="#7c3aed" />
+                                             <Typography variant="caption" sx={{ color: '#7c3aed' }}>
+                                               {lessonQuizCount} quiz{lessonQuizCount > 1 ? 'zes' : ''}
+                                             </Typography>
+                                           </Box>
                                          )}
-                                       </div>
-                                     </div>
-                                   </div>
-                                   <span className="text-sm text-gray-500 shrink-0 ml-2">
+                                       </Box>
+                                     </Box>
+                                   </Box>
+                                   <Typography variant="body2" color="text.secondary" sx={{ ml: 1 }}>
                                      {lesson.duration_minutes || 10} min
-                                   </span>
-                                 </div>
-                               </div>
+                                   </Typography>
+                                 </Box>
+                               </Box>
                              );
                            })}
-                          </div>
-                        </AccordionContent>
-                      </AccordionItem>
-                    ))}
-                  </Accordion>
-                </div>
-              </TabsContent>
+                        </Box>
+                      </AccordionDetails>
+                    </Accordion>
+                  ))}
+                </Card>
+              )}
 
-              <TabsContent value="overview">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                  <h3 className="text-xl font-semibold text-gray-900 mb-4">About This Course</h3>
-                  <p className="text-gray-600 leading-relaxed mb-6">{course.description}</p>
+              {tabValue === 'overview' && (
+                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>About This Course</Typography>
+                  <Typography color="text.secondary" sx={{ lineHeight: 1.7, mb: 3 }}>{course.description}</Typography>
                   
                   {course.tags?.length > 0 && (
-                    <div className="mb-6">
-                      <h4 className="font-semibold text-gray-900 mb-3">Topics Covered</h4>
-                      <div className="flex flex-wrap gap-2">
+                    <Box sx={{ mb: 3 }}>
+                      <Typography fontWeight={600} sx={{ mb: 1.5 }}>Topics Covered</Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                         {course.tags.map((tag, i) => (
-                          <Badge key={i} variant="secondary" className="bg-indigo-50 text-indigo-700">
-                            {tag}
-                          </Badge>
+                          <Chip key={i} label={tag} sx={{ bgcolor: '#eef2ff', color: '#4338ca' }} />
                         ))}
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   )}
                   
 
 
                   {quizzes.length > 0 && (
-                    <div>
-                      <h4 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                        <Award className="w-5 h-5 text-indigo-600" />
+                    <Box>
+                      <Typography fontWeight={600} sx={{ mb: 1.5, display: 'flex', alignItems: 'center', gap: 1 }}>
+                        <Award size={20} color="#4f46e5" />
                         Course Quizzes
-                      </h4>
-                      <div className="space-y-2">
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
                         {quizzes.map((quiz) => (
-                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`}>
-                            <div className="flex items-center justify-between p-4 bg-gradient-to-r from-indigo-50 to-purple-50 rounded-lg hover:shadow-md transition-all border border-indigo-100">
-                              <div>
-                                <p className="font-medium text-gray-900">{quiz.title}</p>
-                                <div className="flex gap-2 text-sm text-gray-600 mt-1">
-                                  <span className="flex items-center gap-1">
-                                    <Award className="w-3 h-3" />
-                                    {quiz.questions?.length} questions
-                                  </span>
-                                  {quiz.time_limit_minutes && (
-                                    <>
-                                      <span>•</span>
-                                      <span>{quiz.time_limit_minutes} min</span>
-                                    </>
-                                  )}
-                                  {quiz.difficulty && (
-                                    <>
-                                      <span>•</span>
-                                      <span className="capitalize">{quiz.difficulty}</span>
-                                    </>
-                                  )}
-                                </div>
-                              </div>
-                              <div className="flex items-center gap-2">
-                                <span className="text-sm text-indigo-600 font-medium">Take Quiz</span>
-                                <ChevronRight className="w-5 h-5 text-indigo-600" />
-                              </div>
-                            </div>
+                          <Link key={quiz.id} to={createPageUrl('Quiz') + `?id=${quiz.id}`} style={{ textDecoration: 'none' }}>
+                            <Card sx={{ p: 2, background: 'linear-gradient(to right, #eef2ff, #faf5ff)', border: '1px solid #c7d2fe', cursor: 'pointer', '&:hover': { boxShadow: 2 }, transition: 'all 0.2s' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                                <Box>
+                                  <Typography fontWeight={500}>{quiz.title}</Typography>
+                                  <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', mt: 0.5 }}>
+                                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                                      <Award size={12} />
+                                      <Typography variant="caption">{quiz.questions?.length} questions</Typography>
+                                    </Box>
+                                    {quiz.time_limit_minutes && (
+                                      <>
+                                        <Typography variant="caption">•</Typography>
+                                        <Typography variant="caption">{quiz.time_limit_minutes} min</Typography>
+                                      </>
+                                    )}
+                                    {quiz.difficulty && (
+                                      <>
+                                        <Typography variant="caption">•</Typography>
+                                        <Typography variant="caption" sx={{ textTransform: 'capitalize' }}>{quiz.difficulty}</Typography>
+                                      </>
+                                    )}
+                                  </Box>
+                                </Box>
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <Typography variant="body2" color="primary" fontWeight={500}>Take Quiz</Typography>
+                                  <ChevronRight size={20} color="#4f46e5" />
+                                </Box>
+                              </Box>
+                            </Card>
                           </Link>
                         ))}
-                      </div>
-                    </div>
+                      </Box>
+                    </Box>
                   )}
-                </div>
-              </TabsContent>
+                </Card>
+              )}
 
-              <TabsContent value="reviews">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6">
-                  <div className="flex items-center justify-between mb-6">
-                    <h3 className="text-xl font-semibold text-gray-900">Student Reviews</h3>
+              {tabValue === 'reviews' && (
+                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3 }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                    <Typography variant="h6" fontWeight={600}>Student Reviews</Typography>
                     {actualCourseRating && (
-                      <div className="text-right">
-                        <div className="flex items-center gap-2 mb-1">
+                      <Box sx={{ textAlign: 'right' }}>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
                           <Star className="w-5 h-5 fill-amber-400 text-amber-400" />
-                          <span className="text-2xl font-bold text-gray-900">{actualCourseRating}</span>
-                        </div>
-                        <p className="text-sm text-gray-500">{courseReviews.length} reviews</p>
-                      </div>
+                          <Typography variant="h5" fontWeight={700}>{actualCourseRating}</Typography>
+                        </Box>
+                        <Typography variant="caption" color="text.secondary">{courseReviews.length} reviews</Typography>
+                      </Box>
                     )}
-                  </div>
+                  </Box>
 
                   {reviews.length > 0 ? (
-                    <div className="space-y-4">
+                    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {reviews.map((review) => (
-                        <div key={review.id} className="border-b border-gray-100 pb-4 last:border-0">
-                          <div className="flex items-start gap-3">
-                            <Avatar>
-                              <AvatarImage src={review.user_avatar} />
-                              <AvatarFallback className="bg-indigo-100 text-indigo-600">
-                                {review.user_name?.charAt(0) || 'U'}
-                              </AvatarFallback>
+                        <Box key={review.id} sx={{ borderBottom: '1px solid', borderColor: 'divider', pb: 2, '&:last-child': { border: 0 } }}>
+                          <Box sx={{ display: 'flex', alignItems: 'start', gap: 1.5 }}>
+                            <Avatar src={review.user_avatar} sx={{ bgcolor: '#eef2ff', color: '#4f46e5' }}>
+                              {review.user_name?.charAt(0) || 'U'}
                             </Avatar>
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-2">
-                                <span className="font-medium text-gray-900">{review.user_name}</span>
+                            <Box sx={{ flex: 1 }}>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                                <Typography fontWeight={500}>{review.user_name}</Typography>
                                 {review.is_verified_purchase && (
-                                  <Badge variant="secondary" className="text-xs bg-emerald-50 text-emerald-700">
-                                    Verified
-                                  </Badge>
+                                  <Chip label="Verified" size="small" sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.65rem' }} />
                                 )}
-                              </div>
-                              <div className="flex items-center gap-1 mb-2">
+                              </Box>
+                              <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 1 }}>
                                 {[...Array(5)].map((_, i) => (
                                   <Star 
                                     key={i}
-                                    className={`w-4 h-4 ${i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}`}
+                                    size={16}
+                                    className={i < review.rating ? 'fill-amber-400 text-amber-400' : 'text-gray-300'}
                                   />
                                 ))}
-                              </div>
-                              <p className="text-gray-600 text-sm">{review.comment}</p>
-                              <p className="text-xs text-gray-400 mt-2">
+                              </Box>
+                              <Typography variant="body2" color="text.secondary">{review.comment}</Typography>
+                              <Typography variant="caption" color="text.disabled" sx={{ mt: 1, display: 'block' }}>
                                 {format(new Date(review.created_date), 'MMM d, yyyy')}
-                              </p>
-                            </div>
-                          </div>
-                        </div>
+                              </Typography>
+                            </Box>
+                          </Box>
+                        </Box>
                       ))}
-                    </div>
+                    </Box>
                   ) : (
-                    <div className="text-center py-8">
-                      <Star className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-                      <p className="text-gray-500">No reviews yet</p>
-                    </div>
+                    <Box sx={{ textAlign: 'center', py: 4 }}>
+                      <Star size={48} color="#d1d5db" style={{ margin: '0 auto 12px' }} />
+                      <Typography color="text.secondary">No reviews yet</Typography>
+                    </Box>
                   )}
-                </div>
-              </TabsContent>
+                </Card>
+              )}
 
-              <TabsContent value="discussion">
-                <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 text-center">
-                  <MessageSquare className="w-12 h-12 text-indigo-600 mx-auto mb-4" />
-                  <h3 className="text-lg font-semibold text-gray-900 mb-2">Join the Discussion</h3>
-                  <p className="text-gray-500 mb-4">Connect with other students and instructors</p>
-                  <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}`}>
-                    <Button className="bg-indigo-600 hover:bg-indigo-700">
+              {tabValue === 'discussion' && (
+                <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider', p: 3, textAlign: 'center' }}>
+                  <MessageSquare size={48} color="#4f46e5" style={{ margin: '0 auto 16px' }} />
+                  <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Join the Discussion</Typography>
+                  <Typography color="text.secondary" sx={{ mb: 2 }}>Connect with other students and instructors</Typography>
+                  <Link to={createPageUrl('CourseDiscussion') + `?courseId=${courseId}`} style={{ textDecoration: 'none' }}>
+                    <Button variant="contained">
                       Go to Discussion Forum
                     </Button>
                   </Link>
-                </div>
-              </TabsContent>
-            </Tabs>
-          </div>
+                </Card>
+              )}
+          </Box>
 
           {/* Sidebar */}
-          <div className="space-y-6">
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
             {/* Module Progress */}
             {isEnrolled && (
               <ModuleProgress 
@@ -594,98 +586,100 @@ export default function CourseDetails() {
 
             {/* Instructor Card */}
             {course.instructor && (
-              <Card className="p-6 border-0 shadow-sm">
-                <h3 className="font-semibold text-gray-900 mb-4">Your Instructor</h3>
-                <div className="flex items-center gap-4 mb-4">
-                  <img
+              <Card sx={{ p: 3, border: 0, boxShadow: 1 }}>
+                <Typography fontWeight={600} sx={{ mb: 2 }}>Your Instructor</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+                  <Avatar
                     src={course.instructor_avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(course.instructor)}&background=6366f1&color=fff&size=80`}
                     alt={course.instructor}
-                    className="w-16 h-16 rounded-full"
+                    sx={{ width: 64, height: 64 }}
                   />
-                <div>
-                  <h4 className="font-semibold text-gray-900">{course.instructor}</h4>
-                </div>
-                </div>
+                  <Box>
+                    <Typography fontWeight={600}>{course.instructor}</Typography>
+                  </Box>
+                </Box>
                 {(instructorRating || instructorStudents > 0) && (
-                <div className="flex items-center gap-6 text-sm text-gray-600">
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                   {instructorRating && (
-                    <span className="flex items-center gap-1">
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
                       <Star className="w-4 h-4 fill-amber-400 text-amber-400" />
-                      {instructorRating} Rating
-                    </span>
+                      <Typography variant="body2">{instructorRating} Rating</Typography>
+                    </Box>
                   )}
                   {instructorStudents > 0 && (
-                    <span className="flex items-center gap-1">
-                      <Users className="w-4 h-4" />
-                      {instructorStudents.toLocaleString()} Students
-                    </span>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                      <Users size={16} />
+                      <Typography variant="body2">{instructorStudents.toLocaleString()} Students</Typography>
+                    </Box>
                   )}
-                </div>
+                </Box>
                 )}
-                </Card>
-                )}
+              </Card>
+            )}
 
             {/* Course Stats */}
-            <Card className="p-6 border-0 shadow-sm">
-              <h3 className="font-semibold text-gray-900 mb-4">Course Includes</h3>
-              <div className="space-y-4 text-sm">
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-gray-600">
-                    <Clock className="w-4 h-4" />
-                    Duration
-                  </span>
-                  <span className="font-medium text-gray-900">{course.duration_hours || 0} hours</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-gray-600">
-                    <BookOpen className="w-4 h-4" />
-                    Lessons
-                  </span>
-                  <span className="font-medium text-gray-900">{lessons.length}</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-gray-600">
-                    <Download className="w-4 h-4" />
-                    Resources
-                  </span>
-                  <span className="font-medium text-gray-900">Downloadable</span>
-                </div>
-                <div className="flex items-center justify-between">
-                  <span className="flex items-center gap-2 text-gray-600">
-                    <Trophy className="w-4 h-4" />
-                    Certificate
-                  </span>
-                  <span className="font-medium text-gray-900">Included</span>
-                </div>
-              </div>
+            <Card sx={{ p: 3, border: 0, boxShadow: 1 }}>
+              <Typography fontWeight={600} sx={{ mb: 2 }}>Course Includes</Typography>
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                    <Clock size={16} />
+                    <Typography variant="body2">Duration</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={500}>{course.duration_hours || 0} hours</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                    <BookOpen size={16} />
+                    <Typography variant="body2">Lessons</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={500}>{lessons.length}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                    <Download size={16} />
+                    <Typography variant="body2">Resources</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={500}>Downloadable</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                    <Trophy size={16} />
+                    <Typography variant="body2">Certificate</Typography>
+                  </Box>
+                  <Typography variant="body2" fontWeight={500}>Included</Typography>
+                </Box>
+              </Box>
             </Card>
 
             {/* GCSE Syllabus */}
             {course.syllabus_url && (
-              <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-amber-50 to-orange-50">
-                <div className="flex items-center gap-3 mb-4">
-                  <div className="w-10 h-10 bg-amber-100 rounded-lg flex items-center justify-center">
-                    <BookOpen className="w-5 h-5 text-amber-600" />
-                  </div>
-                  <div>
-                    <h3 className="font-semibold text-gray-900">GCSE Syllabus</h3>
+              <Card sx={{ p: 3, border: 0, boxShadow: 1, background: 'linear-gradient(to bottom right, #fef3c7, #fed7aa)' }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                  <Box sx={{ width: 40, height: 40, bgcolor: '#fef3c7', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <BookOpen size={20} color="#d97706" />
+                  </Box>
+                  <Box>
+                    <Typography fontWeight={600}>GCSE Syllabus</Typography>
                     {course.exam_board && (
-                      <p className="text-xs text-gray-500">{course.exam_board}</p>
+                      <Typography variant="caption" color="text.secondary">{course.exam_board}</Typography>
                     )}
-                  </div>
-                </div>
+                  </Box>
+                </Box>
                 <a
                   href={course.syllabus_url}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block"
+                  style={{ textDecoration: 'none', display: 'block' }}
                 >
-                  <Button variant="outline" className="w-full justify-between hover:bg-white">
-                    <span className="flex items-center gap-2">
-                      <Download className="w-4 h-4" />
-                      Download Syllabus PDF
-                    </span>
-                    <ChevronRight className="w-4 h-4" />
+                  <Button 
+                    variant="outlined" 
+                    fullWidth 
+                    endIcon={<ChevronRight size={16} />}
+                    startIcon={<Download size={16} />}
+                    sx={{ justifyContent: 'space-between', '&:hover': { bgcolor: 'white' } }}
+                  >
+                    Download Syllabus PDF
                   </Button>
                 </a>
               </Card>
@@ -695,13 +689,13 @@ export default function CourseDetails() {
             {isEnrolled && actualStudentCount > 1 && (
               <CourseLeaderboard courseId={courseId} />
             )}
-            </div>
-        </div>
+          </Box>
+        </Box>
 
         {/* Dynamic Landing Page Sections */}
         <DynamicCourseLanding course={course} enrollment={enrollment} />
-      </section>
-      </div>
+      </Container>
+      </Box>
     </>
   );
 }
