@@ -82,6 +82,32 @@ export default function AdminDailyFacts() {
     setEditingFact(null);
   };
 
+  const generateFactWithAI = async () => {
+    setGeneratingFact(true);
+    try {
+      const categoryDescriptions = {
+        science: 'an interesting scientific fact about physics, chemistry, biology, or natural sciences',
+        history: 'a fascinating historical event or fact about world history',
+        nature: 'an interesting fact about wildlife, plants, ecosystems, or natural phenomena',
+        technology: 'a fact about technological innovations, computers, or modern technology',
+        space: 'a fascinating fact about space, astronomy, planets, or the universe'
+      };
+
+      const result = await base44.integrations.Core.InvokeLLM({
+        prompt: `Generate ${categoryDescriptions[formData.category]}. Make it educational, concise (1-3 sentences), and accurate. Format: just the fact itself, no extra text.`,
+        add_context_from_internet: true
+      });
+
+      setFormData({ ...formData, fact: result });
+      toast.success('Fact generated!');
+    } catch (error) {
+      toast.error('Failed to generate fact');
+      console.error(error);
+    } finally {
+      setGeneratingFact(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
