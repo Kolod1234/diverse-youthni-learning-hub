@@ -1988,6 +1988,7 @@ function FinalCTASection() {
         </Box>
       </motion.div>
     </Container>
+    </Box>
   );
 }
 
