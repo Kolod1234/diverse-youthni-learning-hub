@@ -1,7 +1,7 @@
 import React, { useMemo } from 'react';
 import { ThemeProvider as MuiThemeProvider, createTheme } from '@mui/material/styles';
 import CssBaseline from '@mui/material/CssBaseline';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from 'next-themes';
 
 export default function MUIThemeProvider({ children }) {
   const { theme: currentTheme } = useTheme();
