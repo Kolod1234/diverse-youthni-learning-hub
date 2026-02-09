@@ -852,10 +852,8 @@ export default function Home() {
                 }}
               />
             </motion.div>
-            <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '3.75rem' }, fontWeight: 700, mb: 3 }}>
-              <Box component="span" sx={{ background: 'linear-gradient(to right, currentColor, rgba(0,0,0,0.9), rgba(0,0,0,0.7))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
-                Explore Our Online Courses
-              </Box>
+            <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '3.75rem' }, fontWeight: 700, mb: 3, color: 'text.primary' }}>
+              Explore Our Online Courses
             </Typography>
             <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', lineHeight: 1.75 }}>
               Start learning today with our expert-led courses designed for your success
