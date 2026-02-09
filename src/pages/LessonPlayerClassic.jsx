@@ -301,18 +301,15 @@ export default function LessonPlayerClassic() {
   useKeyboardShortcuts({
     onNext: handleNextLesson,
     onPrev: handlePrevLesson,
-    onToggleFullscreen: () => {
-      if (!document.fullscreenElement) {
-        mainContentRef.current?.requestFullscreen?.().catch((err) => {
-          console.error('Fullscreen request failed:', err);
-          toast.error('Fullscreen not available');
-        });
-        setIsFullscreen(true);
-      } else {
-        document.exitFullscreen?.().catch((err) => {
-          console.error('Exit fullscreen failed:', err);
-        });
-        setIsFullscreen(false);
+    onToggleFullscreen: async () => {
+      try {
+        if (!document.fullscreenElement) {
+          await mainContentRef.current?.requestFullscreen?.();
+        } else {
+          await document.exitFullscreen?.();
+        }
+      } catch (err) {
+        console.error('Fullscreen error:', err);
       }
     },
     onBookmark: () => setShowBookmarksSheet(true),

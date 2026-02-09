@@ -173,16 +173,15 @@ export default function LessonPlayerPowerPoint() {
     return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
   }, []);
 
-  const toggleFullscreen = () => {
-    if (!document.fullscreenElement) {
-      playerRef.current?.requestFullscreen?.().catch((err) => {
-        console.error('Fullscreen request failed:', err);
-        toast.error('Fullscreen not available');
-      });
-    } else {
-      document.exitFullscreen?.().catch((err) => {
-        console.error('Exit fullscreen failed:', err);
-      });
+  const toggleFullscreen = async () => {
+    try {
+      if (!document.fullscreenElement) {
+        await playerRef.current?.requestFullscreen?.();
+      } else {
+        await document.exitFullscreen?.();
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
     }
   };
 
