@@ -778,11 +778,11 @@ export default function LessonPlayerClassic() {
                 Close Menu
               </Button>
             </Box>
-          </Box>
-        </Drawer>
+            </Box>
+            </Drawer>
 
-                {/* Desktop Sidebar */}
-                <Box
+            {/* Desktop Sidebar */}
+            <Box
           component="aside"
           sx={{
             display: { xs: 'none', lg: 'flex' },
