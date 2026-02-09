@@ -503,19 +503,20 @@ export default function Home() {
               <Box sx={{ position: 'relative' }}>
                 <Box sx={{ overflow: 'hidden', borderRadius: 4, boxShadow: 6 }} ref={leadershipEmblaRef}>
                   <Box sx={{ display: 'flex' }}>
-                  {(leadershipCarouselImages.length > 0 ? leadershipCarouselImages : [
+                  {(leadershipCarouselImages && leadershipCarouselImages.length > 0 ? leadershipCarouselImages : [
                     { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=1600&q=95&auto=format&fit=crop' },
                     { image_url: 'https://images.unsplash.com/photo-1531482615713-2afd69097998?w=1600&q=95&auto=format&fit=crop' }
                   ]).map((img, idx) => (
                     <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
-                      <Box sx={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden' }}>
+                      <Box sx={{ position: 'relative', aspectRatio: '4/3', overflow: 'hidden', bgcolor: '#f0f0f0' }}>
                         <CardMedia
                           component="img"
                           image={img.image_url}
                           alt={`Leadership programme ${idx + 1}`}
                           sx={{ width: '100%', height: '100%', objectFit: 'cover', transform: 'scale(1)', transition: 'transform 0.7s' }}
+                          onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=1600&q=95&auto=format&fit=crop'; }}
                         />
                       </Box>
                     </Box>
