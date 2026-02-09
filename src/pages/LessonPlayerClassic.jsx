@@ -676,6 +676,7 @@ export default function LessonPlayerClassic() {
           >
             EXIT COURSE
           </Button>
+          </div>
           </Box>
 
           <div className="flex flex-1 overflow-hidden">
