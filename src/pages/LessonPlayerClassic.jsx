@@ -939,28 +939,46 @@ export default function LessonPlayerClassic() {
         >
           <Container maxWidth="lg" sx={{ py: { xs: 3, sm: 6, md: 12 }, pb: { xs: 12, md: 6 } }}>
             {/* Breadcrumb Navigation */}
-            <div className="no-print mb-4">
+            <Box sx={{ mb: 2, printIcon: 'none' }}>
               <BreadcrumbNav 
                 course={course}
                 section={lesson?.section}
                 lesson={lesson}
               />
-            </div>
+            </Box>
 
             {/* Content Card */}
-            <div className="bg-white rounded-lg shadow-sm p-4 sm:p-8 lg:p-12">
+            <Card sx={{ rounded: 2, boxShadow: 1, p: { xs: 2, sm: 4, md: 6 } }}>
               {/* Title */}
-              <div className="text-center mb-6 sm:mb-8">
-                <h1 className="text-2xl sm:text-3xl lg:text-4xl font-light leading-tight text-gray-800 mb-4 sm:mb-8">
+              <Box sx={{ textAlign: 'center', mb: { xs: 2, sm: 3, md: 4 } }}>
+                <Typography
+                  variant="h3"
+                  component="h1"
+                  sx={{
+                    fontSize: { xs: '1.5rem', sm: '1.875rem', md: '2.25rem' },
+                    fontWeight: 300,
+                    lineHeight: 1.3,
+                    color: 'text.primary',
+                    mb: { xs: 2, sm: 3, md: 4 }
+                  }}
+                >
                   {lesson.title}
-                </h1>
-              </div>
+                </Typography>
+              </Box>
 
               {/* Description */}
               {lesson.description && (
-                <p className="text-base sm:text-lg text-gray-700 leading-relaxed mb-4 sm:mb-6">
+                <Typography
+                  variant="body1"
+                  sx={{
+                    fontSize: { xs: '1rem', sm: '1.125rem' },
+                    lineHeight: 1.7,
+                    color: 'text.secondary',
+                    mb: { xs: 2, sm: 3 }
+                  }}
+                >
                   {lesson.description}
-                </p>
+                </Typography>
               )}
 
               {/* Media Player */}
