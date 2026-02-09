@@ -682,17 +682,25 @@ export default function LessonPlayerClassic() {
           </div>
           </Box>
 
-          <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Tailwind only, not Material UI */}
-        <motion.aside
-          initial={false}
-          animate={{ x: showSidebar ? 0 : '-100%' }}
-          transition={{ type: 'tween', duration: 0.3 }}
-          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none ${
-            deviceType === 'mobile' ? 'w-72' : 'w-80'
-          }`}
-          style={{ marginTop: deviceType === 'mobile' ? '56px' : '64px' }}
-        >
+          <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+          {/* Sidebar */}
+          <motion.div
+            initial={false}
+            animate={{ x: showSidebar ? 0 : '-100%' }}
+            transition={{ type: 'tween', duration: 0.3 }}
+            style={{
+              position: 'fixed',
+              insetInlineStart: 0,
+              insetBlockStart: deviceType === 'mobile' ? '56px' : '64px',
+              insetBlockEnd: 0,
+              width: deviceType === 'mobile' ? '288px' : '320px',
+              zIndex: 40,
+              display: 'flex',
+              flexDirection: 'column',
+              backgroundColor: '#1e3a8a',
+              color: 'white'
+            }}
+          >
           {/* Search */}
           <div className="p-4 border-b border-white/20">
             <div className="relative">
