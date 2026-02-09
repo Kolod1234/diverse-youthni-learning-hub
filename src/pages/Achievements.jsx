@@ -1,13 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Box, Container, Card, CardContent, Chip, Tabs, Tab, LinearProgress, Button, Typography, Grid, Avatar, CardMedia } from '@mui/material';
 import { Trophy, Award, Star, Zap, Target, Crown, Flame, Sparkles, Lock, ChevronLeft, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
 import useEmblaCarousel from 'embla-carousel-react';
 
 const ACHIEVEMENT_CONFIGS = {
@@ -28,6 +24,7 @@ const ACHIEVEMENT_CONFIGS = {
 
 export default function Achievements() {
   const [user, setUser] = useState(null);
+  const [tabValue, setTabValue] = useState('all');
 
   useEffect(() => {
     const loadUser = async () => {
@@ -76,130 +73,116 @@ export default function Achievements() {
     { name: 'Current Streak', current: userProgress?.streak_days || 0, target: 30, icon: Flame },
   ];
 
+  const filteredAchievements = tabValue === 'earned' 
+    ? allAchievements.filter(a => a.earned)
+    : tabValue === 'locked'
+    ? allAchievements.filter(a => !a.earned)
+    : allAchievements;
+
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       {/* Hero Banner */}
-      <div className="relative h-64 mb-8 overflow-hidden">
-        <img 
-          src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/565ae72b8_image.png"
+      <Box sx={{ position: 'relative', height: 256, mb: 4, overflow: 'hidden' }}>
+        <CardMedia
+          component="img"
+          image="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/565ae72b8_image.png"
           alt="Diverse Youth NI Learning Hub"
-          className="w-full h-full object-cover"
+          sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
         />
-        <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent flex items-center">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 w-full">
-            <motion.div
-              initial={{ opacity: 0, x: -20 }}
-              animate={{ opacity: 1, x: 0 }}
-            >
-              <h1 className="text-4xl font-bold text-white mb-2">Your Achievements</h1>
-              <p className="text-white/90 text-lg">Track your learning milestones and unlock badges</p>
+        <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to right, rgba(0,0,0,0.5), transparent)', display: 'flex', alignItems: 'center' }}>
+          <Container maxWidth="lg" sx={{ width: '100%' }}>
+            <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
+              <Typography variant="h3" sx={{ fontWeight: 'bold', color: 'white', mb: 1 }}>Your Achievements</Typography>
+              <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: '1.125rem' }}>Track your learning milestones and unlock badges</Typography>
             </motion.div>
-          </div>
-        </div>
-      </div>
+          </Container>
+        </Box>
+      </Box>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
-
+      <Container maxWidth="lg" sx={{ pb: 4 }}>
         {/* Overall Progress */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-        >
-          <Card className="p-6 mb-8 bg-gradient-to-br from-orange-50 via-pink-50 to-purple-50 border-orange-200">
-            <div className="flex items-center justify-between mb-4">
-              <div>
-                <h2 className="text-2xl font-bold text-gray-900">
-                  {earnedCount} / {totalCount} Achievements
-                </h2>
-                <p className="text-sm text-gray-600">Keep learning to unlock more!</p>
-              </div>
-              <div className="text-right">
-                <div className="text-3xl font-bold bg-gradient-to-r from-orange-500 to-pink-600 bg-clip-text text-transparent">{userProgress?.points || 0}</div>
-                <div className="text-sm text-gray-600">Total Points</div>
-              </div>
-            </div>
-            <Progress value={completionPercent} className="h-3" />
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Card sx={{ background: 'linear-gradient(to bottom right, #fdf2f8, #fce7f3, #f3e8ff)', borderColor: '#fed7aa', border: 1, mb: 4 }}>
+            <CardContent>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 2 }}>
+                <Box>
+                  <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 0.5 }}>
+                    {earnedCount} / {totalCount} Achievements
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">Keep learning to unlock more!</Typography>
+                </Box>
+                <Box sx={{ textAlign: 'right' }}>
+                  <Typography variant="h4" sx={{ background: 'linear-gradient(to right, #f97316, #ec4899)', backgroundClip: 'text', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', fontWeight: 'bold' }}>
+                    {userProgress?.points || 0}
+                  </Typography>
+                  <Typography variant="body2" color="textSecondary">Total Points</Typography>
+                </Box>
+              </Box>
+              <LinearProgress variant="determinate" value={completionPercent} sx={{ height: 12, borderRadius: 1 }} />
+            </CardContent>
           </Card>
         </motion.div>
 
         {/* Success Stories Section */}
         <SuccessStoriesCarousel />
 
-
-
         {/* Milestones */}
-        <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <Grid container spacing={2} sx={{ mb: 4 }}>
           {milestones.map((milestone, idx) => {
             const Icon = milestone.icon;
             const progress = Math.min((milestone.current / milestone.target) * 100, 100);
             
             return (
-              <motion.div
-                key={milestone.name}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: 0.2 + idx * 0.1 }}
-              >
-                <Card className="p-4">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="w-10 h-10 bg-gradient-to-br from-orange-100 to-pink-100 rounded-lg flex items-center justify-center">
-                      <Icon className="w-5 h-5 text-orange-600" />
-                    </div>
-                    <div className="flex-1">
-                      <p className="text-sm font-medium text-gray-900">{milestone.name}</p>
-                      <p className="text-xs text-gray-500">
-                        {milestone.current} / {milestone.target}
-                      </p>
-                    </div>
-                  </div>
-                  <Progress value={progress} className="h-2" />
-                </Card>
-              </motion.div>
+              <Grid item xs={12} sm={6} lg={3} key={milestone.name}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.2 + idx * 0.1 }}
+                >
+                  <Card>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2 }}>
+                        <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #fed7aa, #fce7f3)', borderRadius: 1, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Icon style={{ width: 20, height: 20, color: '#b45309' }} />
+                        </Box>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 500 }}>{milestone.name}</Typography>
+                          <Typography variant="caption" color="textSecondary">
+                            {milestone.current} / {milestone.target}
+                          </Typography>
+                        </Box>
+                      </Box>
+                      <LinearProgress variant="determinate" value={progress} sx={{ height: 8, borderRadius: 1 }} />
+                    </CardContent>
+                  </Card>
+                </motion.div>
+              </Grid>
             );
           })}
-        </div>
+        </Grid>
 
         {/* Achievements Grid */}
-        <Tabs defaultValue="all" className="w-full">
-          <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-            <TabsTrigger value="all" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
-              All ({totalCount})
-            </TabsTrigger>
-            <TabsTrigger value="earned" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
-              Earned ({earnedCount})
-            </TabsTrigger>
-            <TabsTrigger value="locked" className="rounded-lg data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-pink-600 data-[state=active]:text-white">
-              Locked ({totalCount - earnedCount})
-            </TabsTrigger>
-          </TabsList>
+        <Box>
+          <Tabs 
+            value={tabValue} 
+            onChange={(e, val) => setTabValue(val)} 
+            sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
+          >
+            <Tab label={`All (${totalCount})`} value="all" />
+            <Tab label={`Earned (${earnedCount})`} value="earned" />
+            <Tab label={`Locked (${totalCount - earnedCount})`} value="locked" />
+          </Tabs>
 
-          <TabsContent value="all">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {allAchievements.map((achievement, idx) => (
-                <AchievementCard key={achievement.key} achievement={achievement} index={idx} />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="earned">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {allAchievements.filter(a => a.earned).map((achievement, idx) => (
-                <AchievementCard key={achievement.key} achievement={achievement} index={idx} />
-              ))}
-            </div>
-          </TabsContent>
-
-          <TabsContent value="locked">
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
-              {allAchievements.filter(a => !a.earned).map((achievement, idx) => (
-                <AchievementCard key={achievement.key} achievement={achievement} index={idx} />
-              ))}
-            </div>
-          </TabsContent>
-        </Tabs>
-      </div>
-    </div>
+          <Grid container spacing={2}>
+            {filteredAchievements.map((achievement, idx) => (
+              <Grid item xs={6} sm={4} lg={3} key={achievement.key}>
+                <AchievementCard achievement={achievement} index={idx} />
+              </Grid>
+            ))}
+          </Grid>
+        </Box>
+      </Container>
+    </Box>
   );
 }
 
@@ -211,26 +194,26 @@ function SuccessStoriesCarousel() {
     {
       category: 'Instructure',
       tag: 'Research',
-      tagColor: 'bg-red-600',
+      tagColor: '#dc2626',
       title: 'The Lifelong Learning Report',
       description: 'Explore the latest research on continuous education and lifelong learning strategies.',
-      bgColor: 'from-gray-900 via-red-950 to-gray-900'
+      bgColor: 'linear-gradient(to bottom right, #111827, #7f1d1d, #111827)'
     },
     {
       category: 'Lifelong Learning Report',
       tag: 'Case Study',
-      tagColor: 'bg-blue-600',
+      tagColor: '#2563eb',
       title: 'Trends and Insights from K-12 to Career',
       description: 'Learning today is a continuous journey. Explore what\'s needed to create an environment where every learner can flourish—no matter where they are in their educational path.',
-      bgColor: 'from-blue-950 via-slate-900 to-blue-950'
+      bgColor: 'linear-gradient(to bottom right, #0f172a, #1e3a8a, #0f172a)'
     },
     {
       category: 'Instructure',
       tag: 'Case Study',
-      tagColor: 'bg-orange-600',
+      tagColor: '#ea580c',
       title: 'Passaic County Technical Vocational Schools',
       description: 'Discover how technical schools are transforming education and preparing students for real-world careers.',
-      bgColor: 'from-gray-900 via-orange-950 to-gray-900'
+      bgColor: 'linear-gradient(to bottom right, #111827, #7c2d12, #111827)'
     }
   ];
 
@@ -254,76 +237,149 @@ function SuccessStoriesCarousel() {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.15 }}
-      className="mb-12"
     >
-      <h2 className="text-3xl font-bold text-gray-900 text-center mb-8">Success stories and resources</h2>
+      <Typography variant="h4" sx={{ fontWeight: 'bold', textAlign: 'center', mb: 4 }}>
+        Success stories and resources
+      </Typography>
       
-      <div className="relative">
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-6">
+      <Box sx={{ position: 'relative', mb: 3 }}>
+        <Box ref={emblaRef} sx={{ overflow: 'hidden' }}>
+          <Box sx={{ display: 'flex', gap: 3 }}>
             {stories.map((story, idx) => (
-              <div key={idx} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
-                <motion.div
-                  whileHover={{ y: -8 }}
-                  className={`relative h-80 rounded-3xl overflow-hidden bg-gradient-to-br ${story.bgColor} p-8 flex flex-col justify-between shadow-2xl`}
-                >
-                  <div>
-                    <div className="flex items-center gap-3 mb-6">
-                      <span className="text-white/90 text-sm font-medium">{story.category}</span>
-                      <span className={`${story.tagColor} text-white px-3 py-1 rounded text-xs font-bold uppercase`}>
-                        {story.tag}
-                      </span>
-                    </div>
-                    
-                    <h3 className="text-3xl font-bold text-white mb-4 leading-tight">
-                      {story.title}
-                    </h3>
-                    
-                    {story.description && (
-                      <p className="text-white/80 text-sm leading-relaxed">
-                        {story.description}
-                      </p>
-                    )}
-                  </div>
-                  
-                  <Button 
-                    variant="outline" 
-                    className="w-fit bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 rounded-full px-6"
+              <Box key={idx} sx={{ flex: { xs: '0 0 100%', md: '0 0 45%', lg: '0 0 30%' }, minWidth: 0 }}>
+                <motion.div whileHover={{ y: -8 }}>
+                  <Box
+                    sx={{
+                      position: 'relative',
+                      height: 320,
+                      borderRadius: 4,
+                      overflow: 'hidden',
+                      background: story.bgColor,
+                      p: 3,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      justifyContent: 'space-between',
+                      boxShadow: 6,
+                      color: 'white'
+                    }}
                   >
-                    Learn more
-                  </Button>
+                    <Box>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+                        <Typography variant="body2" sx={{ fontWeight: 500, color: 'rgba(255,255,255,0.9)' }}>
+                          {story.category}
+                        </Typography>
+                        <Chip
+                          label={story.tag}
+                          size="small"
+                          sx={{ bgcolor: story.tagColor, color: 'white', fontWeight: 700, textTransform: 'uppercase', fontSize: '0.7rem' }}
+                        />
+                      </Box>
+                      
+                      <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2, lineHeight: 1.2 }}>
+                        {story.title}
+                      </Typography>
+                      
+                      {story.description && (
+                        <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', lineHeight: 1.5 }}>
+                          {story.description}
+                        </Typography>
+                      )}
+                    </Box>
+                    
+                    <Button
+                      variant="outlined"
+                      sx={{
+                        width: 'fit-content',
+                        bgcolor: 'transparent',
+                        borderColor: 'white',
+                        borderWidth: 2,
+                        color: 'white',
+                        '&:hover': { bgcolor: 'white', color: '#111827', borderColor: 'white' },
+                        borderRadius: 50,
+                        px: 3,
+                        textTransform: 'none'
+                      }}
+                    >
+                      Learn more
+                    </Button>
+                  </Box>
                 </motion.div>
-              </div>
+              </Box>
             ))}
-          </div>
-        </div>
+          </Box>
+        </Box>
         
-        <button
+        <Box
+          component="button"
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          sx={{
+            position: 'absolute',
+            left: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 48,
+            height: 48,
+            bgcolor: '#2563eb',
+            border: 'none',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: 3,
+            zIndex: 10,
+            '&:hover': { bgcolor: '#1d4ed8', transform: 'translateY(-50%) scale(1.1)' },
+            transition: 'all 0.3s'
+          }}
         >
           <ChevronLeft className="w-6 h-6 text-white" />
-        </button>
+        </Box>
         
-        <button
+        <Box
+          component="button"
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 48,
+            height: 48,
+            bgcolor: '#2563eb',
+            border: 'none',
+            borderRadius: '50%',
+            display: 'flex',
+            alignItems: 'center',
+            justifyContent: 'center',
+            cursor: 'pointer',
+            boxShadow: 3,
+            zIndex: 10,
+            '&:hover': { bgcolor: '#1d4ed8', transform: 'translateY(-50%) scale(1.1)' },
+            transition: 'all 0.3s'
+          }}
         >
           <ChevronRight className="w-6 h-6 text-white" />
-        </button>
+        </Box>
         
-        <div className="flex justify-center gap-2 mt-6">
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 3 }}>
           {stories.map((_, idx) => (
-            <button
+            <Box
               key={idx}
+              component="button"
               onClick={() => emblaApi?.scrollTo(idx)}
-              className={`h-2 rounded-full transition-all ${
-                selectedIndex === idx ? 'w-8 bg-orange-500' : 'w-2 bg-gray-300'
-              }`}
+              sx={{
+                height: 8,
+                borderRadius: 50,
+                border: 'none',
+                cursor: 'pointer',
+                transition: 'all 0.3s',
+                bgcolor: selectedIndex === idx ? '#f97316' : '#d1d5db',
+                width: selectedIndex === idx ? 32 : 8
+              }}
             />
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
     </motion.div>
   );
 }
@@ -338,43 +394,60 @@ function AchievementCard({ achievement, index }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: index * 0.05 }}
     >
-      <Card className={`p-6 text-center transition-all ${
-        isEarned 
-          ? 'bg-white border-2 border-orange-200 hover:shadow-xl hover:scale-105' 
-          : 'bg-gray-50 border-gray-200 opacity-60'
-      }`}>
-        <div className="mb-4">
-          <div className={`w-20 h-20 mx-auto rounded-full flex items-center justify-center ${
-            isEarned 
-              ? `bg-gradient-to-br ${achievement.color} shadow-lg` 
-              : 'bg-gray-200'
-          }`}>
+      <Card
+        sx={{
+          p: 2,
+          textAlign: 'center',
+          transition: 'all 0.3s',
+          opacity: isEarned ? 1 : 0.6,
+          border: isEarned ? 2 : 1,
+          borderColor: isEarned ? '#fed7aa' : '#e5e7eb',
+          '&:hover': isEarned ? { boxShadow: 4, transform: 'scale(1.05)' } : {},
+        }}
+      >
+        <Box sx={{ mb: 2 }}>
+          <Box
+            sx={{
+              width: 80,
+              height: 80,
+              mx: 'auto',
+              borderRadius: '50%',
+              display: 'flex',
+              alignItems: 'center',
+              justifyContent: 'center',
+              background: isEarned ? achievement.color : 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)',
+              boxShadow: isEarned ? 3 : 0
+            }}
+          >
             {isEarned ? (
-              <Icon className="w-10 h-10 text-white" />
+              <Icon style={{ width: 40, height: 40, color: 'white' }} />
             ) : (
-              <Lock className="w-10 h-10 text-gray-400" />
+              <Lock style={{ width: 40, height: 40, color: '#9ca3af' }} />
             )}
-          </div>
-        </div>
+          </Box>
+        </Box>
 
-        <h3 className={`font-bold text-lg mb-1 ${isEarned ? 'text-gray-900' : 'text-gray-500'}`}>
+        <Typography variant="h6" sx={{ fontWeight: 'bold', mb: 0.5, color: isEarned ? '#111827' : '#6b7280' }}>
           {achievement.title}
-        </h3>
-        <p className={`text-sm mb-3 ${isEarned ? 'text-gray-600' : 'text-gray-400'}`}>
+        </Typography>
+        <Typography variant="body2" sx={{ mb: 1.5, color: isEarned ? '#4b5563' : '#9ca3af' }}>
           {achievement.description}
-        </p>
+        </Typography>
 
         {isEarned && achievement.earnedDate && (
-          <Badge variant="secondary" className="text-xs">
-            Earned {new Date(achievement.earnedDate).toLocaleDateString()}
-          </Badge>
+          <Chip
+            label={`Earned ${new Date(achievement.earnedDate).toLocaleDateString()}`}
+            size="small"
+            variant="outlined"
+            sx={{ fontSize: '0.75rem' }}
+          />
         )}
 
         {!isEarned && achievement.points > 0 && (
-          <div className="mt-3 flex items-center justify-center gap-1 text-sm text-gray-500">
-            <Zap className="w-3 h-3" />
+          <Box sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, fontSize: '0.875rem', color: '#6b7280' }}>
+            <Zap style={{ width: 12, height: 12 }} />
             <span>{achievement.points} points</span>
-          </div>
+          </Box>
         )}
       </Card>
     </motion.div>
