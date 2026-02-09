@@ -1051,7 +1051,7 @@ export default function LessonPlayerClassic() {
         </Box>
         </Box>
 
-      {/* Command Palette */}
+        {/* Command Palette */}
       <CommandPalette
         open={showCommandPalette}
         onOpenChange={setShowCommandPalette}
