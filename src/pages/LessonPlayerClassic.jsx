@@ -44,13 +44,11 @@ import StreakTracker from '@/components/lesson/StreakTracker';
 import XPProgressBar from '@/components/lesson/XPProgressBar';
 import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
 import DifficultyRating from '@/components/lesson/DifficultyRating';
-import { 
-  Box, Card, TextField, Button, Paper, Stack, Typography, Container, 
-  Drawer, AppBar, Toolbar, IconButton, Divider, CircularProgress
-} from '@mui/material';
+import { Card, TextField } from '@mui/material';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
+import { Button } from '@mui/material';
 import { motion } from 'framer-motion';
 
 export default function LessonPlayerClassic() {
@@ -592,13 +590,12 @@ export default function LessonPlayerClassic() {
         </div>
       )}
 
-      <Box 
-        sx={{
-          minHeight: '100vh',
-          display: 'flex',
-          flexDirection: 'column',
-          bgcolor: 'background.default',
-          fontSize: { xs: '0.875rem', md: '1rem' },
+      <div 
+        className={`min-h-screen flex flex-col bg-gray-100 ${
+          deviceType === 'mobile' ? 'text-sm' : 
+          deviceType === 'tablet' ? 'text-base' : 'text-base'
+        }`}
+        style={{
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
@@ -607,27 +604,27 @@ export default function LessonPlayerClassic() {
       >
         {/* Top Bar */}
                 <Box component="header" sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: 1, height: { xs: 56, md: 64 }, px: { xs: 1.5, md: 3 } }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton
-            sx={{ display: { lg: 'none' } }}
+        <div className="flex items-center gap-4">
+          <button
+            className="lg:hidden"
             onClick={() => setShowSidebar(!showSidebar)}
           >
             <Menu className="w-6 h-6" />
-          </IconButton>
-        </Box>
+          </button>
+        </div>
         
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+        <div className="flex items-center gap-4">
           {/* Progress Ring */}
-          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
+          <div className="hidden md:block">
             <ProgressRing progress={progressPercent} size={50} />
-          </Box>
-
+          </div>
+          
           {/* Estimated Time */}
           {estimatedMinutes > 0 && (
-            <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>
+            <div className="hidden lg:flex items-center gap-1 text-sm text-gray-600">
               <Clock className="w-4 h-4" />
-              <Typography variant="caption">{estimatedMinutes} min</Typography>
-            </Box>
+              <span>{estimatedMinutes} min</span>
+            </div>
           )}
           
           <AccessibilityControls />
@@ -679,31 +676,24 @@ export default function LessonPlayerClassic() {
           >
             EXIT COURSE
           </Button>
-        </Box>
+          </div>
+          </Box>
 
-        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
-          {/* Sidebar */}
-          <motion.div
-            initial={false}
-            animate={{ x: showSidebar ? 0 : '-100%' }}
-            transition={{ type: 'tween', duration: 0.3 }}
-            style={{
-              position: 'fixed',
-              insetInlineStart: 0,
-              insetBlockStart: deviceType === 'mobile' ? '56px' : '64px',
-              insetBlockEnd: 0,
-              width: deviceType === 'mobile' ? '288px' : '320px',
-              zIndex: 40,
-              display: 'flex',
-              flexDirection: 'column',
-              backgroundColor: '#1e3a8a',
-              color: 'white'
-            }}
-          >
+          <div className="flex flex-1 overflow-hidden">
+        {/* Sidebar - Tailwind only, not Material UI */}
+        <motion.aside
+          initial={false}
+          animate={{ x: showSidebar ? 0 : '-100%' }}
+          transition={{ type: 'tween', duration: 0.3 }}
+          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none ${
+            deviceType === 'mobile' ? 'w-72' : 'w-80'
+          }`}
+          style={{ marginTop: deviceType === 'mobile' ? '56px' : '64px' }}
+        >
           {/* Search */}
-          <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-            <Box sx={{ position: 'relative' }}>
-              <Search sx={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: 16, height: 16, color: 'rgba(255,255,255,0.6)', pointerEvents: 'none' }} />
+          <div className="p-4 border-b border-white/20">
+            <div className="relative">
+              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
               <TextField
                 inputRef={searchInputRef}
                 type="text"
@@ -713,43 +703,31 @@ export default function LessonPlayerClassic() {
                 size="small"
                 fullWidth
                 variant="outlined"
-                sx={{
-                  '& .MuiOutlinedInput-input': { color: 'white', pl: '28px' },
-                  '& .MuiOutlinedInput-root': { 
-                    color: 'white',
-                    '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' }
-                  }
-                }}
+                sx={{ '& .MuiOutlinedInput-root': { color: 'white', '& fieldset': { borderColor: 'white/20' } } }}
                 aria-label="Search lessons"
               />
-            </Box>
-          </Box>
+            </div>
+          </div>
 
           {/* Course Title and Progress */}
-          <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
-            <Typography variant="h6" sx={{ mb: 2, fontWeight: 'bold', color: 'white' }}>
+          <div className="p-6 border-b border-white/20">
+            <h2 className="text-lg font-bold mb-4 leading-tight">
               {course?.title || 'Course Content'}
-            </Typography>
+            </h2>
             {enrollment && (
-              <Stack spacing={1}>
-                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
-                  <Typography variant="body2" sx={{ fontWeight: 600, color: 'white' }}>
-                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
-                  </Typography>
-                </Box>
-                <Box sx={{ width: '100%', height: 8, bgcolor: 'rgba(255,255,255,0.2)', borderRadius: '4px', overflow: 'hidden' }}>
-                  <Box
-                    sx={{
-                      height: '100%',
-                      bgcolor: 'white',
-                      width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%`,
-                      transition: 'width 300ms ease-in-out'
-                    }}
+              <div className="space-y-2">
+                <div className="flex items-center justify-between text-sm">
+                  <span className="font-semibold">{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
+                </div>
+                <div className="w-full bg-white/20 rounded-full h-2">
+                  <div
+                    className="bg-white rounded-full h-2 transition-all duration-300"
+                    style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
                   />
-                </Box>
-              </Stack>
+                </div>
+              </div>
             )}
-          </Box>
+          </div>
 
           {/* Lessons */}
           <ScrollArea className="flex-1">
@@ -808,25 +786,25 @@ export default function LessonPlayerClassic() {
           </ScrollArea>
 
           {/* Close button for mobile */}
-          <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.2)', display: { lg: 'none' } }}>
-            <Button 
+          <div className="p-4 border-t border-white/20 lg:hidden">
+            <button 
               onClick={() => setShowSidebar(false)}
-              fullWidth
-              sx={{ display: 'flex', alignItems: 'center', gap: 1, bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, textTransform: 'none', fontSize: '0.875rem', fontWeight: 500 }}
+              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
             >
               <X className="w-5 h-5" />
-              Close Menu
-            </Button>
-          </Box>
-          </motion.div>
+              <span className="text-sm font-medium">Close Menu</span>
+            </button>
+          </div>
+        </motion.aside>
 
-          {/* Overlay for mobile */}
-          {showSidebar && (
-          <Box
+        {/* Overlay for mobile */}
+        {showSidebar && (
+          <div
+            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
             onClick={() => setShowSidebar(false)}
-            sx={{ position: 'fixed', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', zIndex: 30, display: { lg: 'none' }, mt: { xs: '56px', md: '64px' } }}
+            style={{ marginTop: '64px' }}
           />
-          )}
+        )}
 
         {/* Main Content */}
         <main 
@@ -865,44 +843,35 @@ export default function LessonPlayerClassic() {
                 </p>
               )}
 
-              {/* Media Player - with explicit sizing */}
-                {lesson.video_url && (
-                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
-                    <EnhancedMediaPlayer
-                      type="video"
-                      src={lesson.video_url}
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
+              {/* Media Player */}
+              {lesson.video_url && (
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                  <EnhancedMediaPlayer
+                    type="video"
+                    src={lesson.video_url}
+                  />
+                </div>
+              )}
 
-                {lesson.google_slides_url && !lesson.video_url && (
-                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
-                    <EnhancedMediaPlayer
-                      type="google-slides"
-                      src={lesson.google_slides_url.includes('/embed') 
-                        ? lesson.google_slides_url 
-                        : `https://docs.google.com/presentation/d/${lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}/embed?start=false&loop=false&delayms=3000`}
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
+              {lesson.google_slides_url && (
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                  <EnhancedMediaPlayer
+                    type="google-slides"
+                    src={lesson.google_slides_url.includes('/embed') 
+                      ? lesson.google_slides_url 
+                      : lesson.google_slides_url.replace('/edit', '/embed')}
+                  />
+                </div>
+              )}
 
-                {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                  <div className="my-8 w-full" style={{ aspectRatio: '16/9', minHeight: '400px' }}>
-                    <EnhancedMediaPlayer
-                      type="iframe"
-                      src={lesson.file_url}
-                      className="w-full h-full"
-                    />
-                  </div>
-                )}
-
-                {!lesson.video_url && !lesson.google_slides_url && !lesson.file_url && (
-                  <div className="my-8 p-6 bg-gray-50 rounded-lg border-2 border-dashed border-gray-300 text-center">
-                    <p className="text-gray-600">No video, slides, or file attached to this lesson yet.</p>
-                  </div>
-                )}
+              {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
+                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
+                  <EnhancedMediaPlayer
+                    type="iframe"
+                    src={lesson.file_url}
+                  />
+                </div>
+              )}
 
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
@@ -1057,12 +1026,11 @@ export default function LessonPlayerClassic() {
             </div>
           </div>
         </main>
-        </Box>
-        </Box>
-        </Box>
+      </div>
+      </div>
 
-        {/* Command Palette */}
-        <CommandPalette
+      {/* Command Palette */}
+      <CommandPalette
         open={showCommandPalette}
         onOpenChange={setShowCommandPalette}
         actions={{
