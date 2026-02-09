@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { usePullToRefresh } from '@/components/lesson/usePullToRefresh';
+import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -58,12 +58,12 @@ export default function Community() {
   const pinnedPosts = posts.filter(p => p.is_pinned);
   const regularPosts = posts.filter(p => !p.is_pinned);
 
-  const { pullToRefreshProps } = usePullToRefresh(() => {
+  usePullToRefresh(() => {
     queryClient.invalidateQueries(['community-posts']);
   });
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-8" {...pullToRefreshProps}>
+    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white py-8">
       <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex items-center justify-between mb-8">
           <div>
