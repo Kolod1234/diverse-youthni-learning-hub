@@ -116,10 +116,16 @@ export default function AdminDailyFacts() {
             <h1 className="text-3xl font-bold text-gray-900">Daily Facts</h1>
             <p className="text-gray-600">Manage educational facts</p>
           </div>
-          <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600">
-            <Plus className="w-4 h-4" />
-            Add Fact
-          </Button>
+          <div className="flex gap-3">
+            <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600">
+              <Plus className="w-4 h-4" />
+              Add Fact
+            </Button>
+            <Button onClick={() => { resetForm(); setShowDialog(true); generateFactWithAI(); }} className="gap-2 bg-purple-600 hover:bg-purple-700" disabled={generatingFact}>
+              <Sparkles className="w-4 h-4" />
+              {generatingFact ? 'Generating...' : 'Generate with AI'}
+            </Button>
+          </div>
         </div>
 
         <div className="space-y-4">
