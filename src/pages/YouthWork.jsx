@@ -161,13 +161,14 @@ export default function YouthWork() {
         </Box>
 
         {/* Qualifications */}
-        <Box sx={{ space: 3 }}>
+        <Box sx={{ mb: 4 }}>
           {filteredQualifications.map((qual, index) => (
             <motion.div
               key={qual.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ delay: index * 0.1 }}
+              style={{ marginBottom: 24 }}
             >
               <Card sx={{ overflow: 'hidden', '&:hover': { boxShadow: 6 }, transition: 'box-shadow 0.3s' }}>
                 <Box sx={{ background: 'linear-gradient(to right, #16a34a, #0d9488)', p: 3, color: 'white' }}>
@@ -203,9 +204,9 @@ export default function YouthWork() {
 
                   <Box sx={{ p: 2 }}>
                     {qual.curriculum && qual.curriculum.length > 0 ? (
-                        <Box sx={{ space: 2 }}>
+                        <Box sx={{ mb: 2 }}>
                           {qual.curriculum.map((unit, idx) => (
-                            <Card key={idx} sx={{ p: 2, bgcolor: '#f3f4f6' }}>
+                            <Card key={idx} sx={{ p: 2, bgcolor: '#f3f4f6', mb: 1 }}>
                               <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
                                 <Box>
                                   <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
@@ -246,9 +247,9 @@ export default function YouthWork() {
                       )}
 
                     {(qual.entry_requirements || qual.progression_routes) && (
-                      <Box sx={{ space: 3 }}>
+                      <Box sx={{ mb: 2 }}>
                         {qual.entry_requirements && (
-                          <Box>
+                          <Box sx={{ mb: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                               <BookOpen className="w-5 h-5" style={{ color: '#16a34a' }} />
                               <Typography variant="body2" sx={{ fontWeight: 'bold', m: 0 }}>Entry Requirements</Typography>
@@ -270,9 +271,9 @@ export default function YouthWork() {
                     )}
 
                     {qual.effective_practice_model ? (
-                      <Box sx={{ space: 3 }}>
+                      <Box>
                         {qual.effective_practice_model.purpose && (
-                          <Box>
+                          <Box sx={{ mb: 2 }}>
                             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
                               <Target className="w-5 h-5" style={{ color: '#16a34a' }} />
                               <Typography variant="body2" sx={{ fontWeight: 'bold', m: 0 }}>Purpose</Typography>
@@ -282,7 +283,7 @@ export default function YouthWork() {
                         )}
                         
                         {qual.effective_practice_model.principles && qual.effective_practice_model.principles.length > 0 && (
-                          <Box>
+                          <Box sx={{ mb: 2 }}>
                             <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>Principles</Typography>
                             <Box component="ul" sx={{ pl: 2 }}>
                               {qual.effective_practice_model.principles.map((principle, idx) => (
@@ -319,7 +320,7 @@ export default function YouthWork() {
               </Card>
             </motion.div>
           ))}
-        </div>
+        </Box>
 
         {filteredQualifications.length === 0 && (
           <Card sx={{ p: 6, textAlign: 'center' }}>
