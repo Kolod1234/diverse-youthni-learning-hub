@@ -883,11 +883,127 @@ export default function LessonPlayerClassic() {
                 </Box>
               ))}
             </List>
-            </Box>
-            </Box>
-            </Drawer>
+          </Box>
 
-        {/* Main Content */}
+          <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.2)', display: { xs: 'block', lg: 'none' } }}>
+            <Button 
+              onClick={() => setShowSidebar(false)}
+              fullWidth
+              startIcon={<X size={20} />}
+              sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, borderRadius: 2 }}
+            >
+              Close Menu
+            </Button>
+          </Box>
+        </Box>
+      </Drawer>
+
+      {/* Desktop Sidebar */}
+      <Box
+        component="aside"
+        sx={{
+          display: { xs: 'none', lg: 'flex' },
+          width: 320,
+          bgcolor: '#1e3a8a',
+          color: 'white',
+          flexDirection: 'column',
+          height: 'calc(100vh - 64px)'
+        }}
+      >
+        <Box sx={{ p: 2, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <TextField
+            inputRef={searchInputRef}
+            placeholder="Search... (Press /)"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={16} color="rgba(255,255,255,0.6)" />
+                </InputAdornment>
+              ),
+              sx: { bgcolor: 'rgba(255,255,255,0.1)', color: 'white', borderRadius: 2, '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' } }
+            }}
+            sx={{ '& input': { color: 'white', '&::placeholder': { color: 'rgba(255,255,255,0.6)' } } }}
+          />
+        </Box>
+
+        <Box sx={{ p: 3, borderBottom: '1px solid rgba(255,255,255,0.2)' }}>
+          <Typography variant="h6" fontWeight={700} sx={{ mb: 2 }}>
+            {course?.title || 'Course Content'}
+          </Typography>
+          {enrollment && (
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1, fontSize: '0.875rem' }}>
+                <Typography variant="body2" fontWeight={600}>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</Typography>
+              </Box>
+              <Box sx={{ width: '100%', bgcolor: 'rgba(255,255,255,0.2)', borderRadius: 50, height: 8 }}>
+                <Box
+                  sx={{ bgcolor: 'white', borderRadius: 50, height: 8, transition: 'width 0.3s', width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+                />
+              </Box>
+            </Box>
+          )}
+        </Box>
+
+        <Box sx={{ flex: 1, overflowY: 'auto', p: 2 }}>
+          <List>
+            {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
+              <Box key={section}>
+                <ListItemButton onClick={() => toggleSection(section)} sx={{ px: 1.5, py: 1.5, fontSize: '0.75rem', fontWeight: 700, letterSpacing: 0.5, '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }, borderRadius: 1 }}>
+                  <ListItemText primary={section} sx={{ '& .MuiTypography-root': { fontSize: '0.75rem', fontWeight: 700 } }} />
+                  {expandedSections[section] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                </ListItemButton>
+
+                <Collapse in={expandedSections[section]}>
+                  <List disablePadding sx={{ mt: 0.5 }}>
+                    {sectionLessons.filter(l => 
+                      !searchQuery || 
+                      l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).map((l) => {
+                      const completed = enrollment?.completed_lessons?.includes(l.id);
+                      const isCurrent = l.id === lessonId;
+
+                      return (
+                        <ListItemButton
+                          key={l.id}
+                          onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                          sx={{ 
+                            px: 1.5, 
+                            py: 1.5, 
+                            gap: 1.5, 
+                            borderRadius: 1,
+                            bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'transparent',
+                            '&:hover': { bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'rgba(255,255,255,0.1)' }
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 'auto' }}>
+                            <Menu size={16} color="rgba(255,255,255,0.6)" />
+                          </ListItemIcon>
+                          <ListItemText 
+                            primary={l.title} 
+                            sx={{ '& .MuiTypography-root': { fontSize: '0.875rem' } }}
+                          />
+                          {completed && (
+                            <Box sx={{ width: 24, height: 24, borderRadius: '50%', bgcolor: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                              <Check size={16} color="#1e3a8a" />
+                            </Box>
+                          )}
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                </Collapse>
+              </Box>
+            ))}
+          </List>
+        </Box>
+      </Box>
+
+      {/* Main Content */}
         <Box
           component="main" 
           ref={mainContentRef}
