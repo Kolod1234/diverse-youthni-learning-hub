@@ -18,9 +18,9 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 import { Button } from '@mui/material';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
+import { Card } from '@mui/material';
+import { TextField } from '@mui/material';
+import { Dialog, DialogContent, DialogTitle } from '@mui/material';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';

@@ -41,7 +41,7 @@ import StreakTracker from '@/components/lesson/StreakTracker';
 import XPProgressBar from '@/components/lesson/XPProgressBar';
 import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
 import DifficultyRating from '@/components/lesson/DifficultyRating';
-import { Card } from '@/components/ui/card';
+import { Card } from '@mui/material';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
