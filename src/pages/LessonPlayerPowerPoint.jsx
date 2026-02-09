@@ -174,8 +174,16 @@ export default function LessonPlayerPowerPoint() {
   }, []);
 
   const toggleFullscreen = () => {
-    if (!document.fullscreenElement) playerRef.current?.requestFullscreen();
-    else document.exitFullscreen();
+    if (!document.fullscreenElement) {
+      playerRef.current?.requestFullscreen?.().catch((err) => {
+        console.error('Fullscreen request failed:', err);
+        toast.error('Fullscreen not available');
+      });
+    } else {
+      document.exitFullscreen?.().catch((err) => {
+        console.error('Exit fullscreen failed:', err);
+      });
+    }
   };
 
   const togglePresentation = () => {

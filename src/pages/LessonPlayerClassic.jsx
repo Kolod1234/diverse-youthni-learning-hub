@@ -303,10 +303,15 @@ export default function LessonPlayerClassic() {
     onPrev: handlePrevLesson,
     onToggleFullscreen: () => {
       if (!document.fullscreenElement) {
-        mainContentRef.current?.requestFullscreen();
+        mainContentRef.current?.requestFullscreen?.().catch((err) => {
+          console.error('Fullscreen request failed:', err);
+          toast.error('Fullscreen not available');
+        });
         setIsFullscreen(true);
       } else {
-        document.exitFullscreen();
+        document.exitFullscreen?.().catch((err) => {
+          console.error('Exit fullscreen failed:', err);
+        });
         setIsFullscreen(false);
       }
     },
