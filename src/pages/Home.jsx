@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container } from '@mui/material';
+import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container, Avatar } from '@mui/material';
 import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock, Rss } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
@@ -716,51 +716,64 @@ export default function Home() {
               whileInView={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
               viewport={{ once: true }}
-              className="flex items-center justify-between mb-12"
             >
-              <div>
-                <motion.span 
-                  className="inline-block px-5 py-2.5 rounded-full bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-fuchsia-500/10 border-2 border-violet-500/30 text-sm font-bold mb-4"
-                  whileHover={{ scale: 1.05 }}
-                >
-                  <span className="bg-gradient-to-r from-violet-600 via-purple-600 to-fuchsia-600 bg-clip-text text-transparent flex items-center gap-2">
-                    <Award className="w-4 h-4 text-violet-600 dark:text-violet-400" />
-                    Top Picks
-                  </span>
-                </motion.span>
-                <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-3 bg-gradient-to-r from-foreground to-foreground/70 bg-clip-text">
-                  Featured Courses
-                </h2>
-                <p className="text-muted-foreground text-lg">Hand-picked by our expert instructors</p>
-              </div>
-              <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
-                <Button
-                  variant="contained"
-                  endIcon={<ArrowRight size={18} />}
-                  sx={{
-                    background: 'linear-gradient(to right, #2563eb, #9333ea, #ec4899)',
-                    color: 'white',
-                    borderRadius: 50,
-                    px: 3,
-                    py: 1.5,
-                    boxShadow: '0 4px 14px 0 rgba(37, 99, 235, 0.3)',
-                    '&:hover': {
-                      background: 'linear-gradient(to right, #1d4ed8, #7e22ce, #db2777)',
-                      transform: 'scale(1.05)',
-                      boxShadow: '0 6px 20px 0 rgba(147, 51, 234, 0.5)',
-                    },
-                  }}
-                >
-                  View all
-                </Button>
-              </Link>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 6 }}>
+                <Box>
+                  <motion.div whileHover={{ scale: 1.05 }}>
+                    <Chip
+                      icon={<Award size={16} />}
+                      label="Top Picks"
+                      sx={{
+                        px: 2.5,
+                        py: 1.25,
+                        borderRadius: 50,
+                        background: 'linear-gradient(to right, rgba(139, 92, 246, 0.1), rgba(168, 85, 247, 0.1), rgba(217, 70, 239, 0.1))',
+                        border: '2px solid rgba(139, 92, 246, 0.3)',
+                        fontWeight: 700,
+                        mb: 2,
+                        '& .MuiChip-label': {
+                          background: 'linear-gradient(to right, #7c3aed, #9333ea, #d946ef)',
+                          WebkitBackgroundClip: 'text',
+                          WebkitTextFillColor: 'transparent'
+                        },
+                        '& .MuiChip-icon': { color: '#8b5cf6' }
+                      }}
+                    />
+                  </motion.div>
+                  <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', sm: '3rem' }, fontWeight: 700, mb: 1.5 }}>
+                    Featured Courses
+                  </Typography>
+                  <Typography variant="h6" color="text.secondary">Hand-picked by our expert instructors</Typography>
+                </Box>
+                <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="contained"
+                    endIcon={<ArrowRight size={18} />}
+                    sx={{
+                      background: 'linear-gradient(to right, #2563eb, #9333ea, #ec4899)',
+                      color: 'white',
+                      borderRadius: 50,
+                      px: 3,
+                      py: 1.5,
+                      boxShadow: '0 4px 14px 0 rgba(37, 99, 235, 0.3)',
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #1d4ed8, #7e22ce, #db2777)',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 6px 20px 0 rgba(147, 51, 234, 0.5)',
+                      },
+                    }}
+                  >
+                    View all
+                  </Button>
+                </Link>
+              </Box>
             </motion.div>
             
-            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 4 }}>
               {featuredCourses.map((course, index) => (
                 <CourseCard key={course.id} course={course} />
               ))}
-            </div>
+            </Box>
           </Container>
         </Box>
       )}
@@ -772,42 +785,55 @@ export default function Home() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <motion.span 
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-primary/10 via-blue-500/10 to-purple-500/10 border-2 border-primary/30 text-sm font-bold mb-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className="bg-gradient-to-r from-primary via-blue-600 to-purple-600 bg-clip-text text-transparent flex items-center gap-2">
-              <TrendingUp className="w-4 h-4 text-primary" />
-              Popular Courses
-            </span>
-          </motion.span>
-          <h2 className="text-4xl md:text-6xl font-bold mb-6">
-            <span className="bg-gradient-to-r from-foreground via-foreground/90 to-foreground/70 bg-clip-text text-transparent">
-              Explore Our Online Courses
-            </span>
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-3xl mx-auto leading-relaxed">
-            Start learning today with our expert-led courses designed for your success
-          </p>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Chip
+                icon={<TrendingUp size={16} />}
+                label="Popular Courses"
+                sx={{
+                  px: 3,
+                  py: 1.5,
+                  borderRadius: 50,
+                  background: 'linear-gradient(to right, rgba(255, 140, 0, 0.1), rgba(59, 130, 246, 0.1), rgba(168, 85, 247, 0.1))',
+                  border: '2px solid rgba(255, 140, 0, 0.3)',
+                  fontWeight: 700,
+                  mb: 3,
+                  '& .MuiChip-label': {
+                    background: 'linear-gradient(to right, #FF8C00, #2563eb, #a855f7)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  },
+                  '& .MuiChip-icon': { color: '#FF8C00' }
+                }}
+              />
+            </motion.div>
+            <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '3.75rem' }, fontWeight: 700, mb: 3 }}>
+              <Box component="span" sx={{ background: 'linear-gradient(to right, currentColor, rgba(0,0,0,0.9), rgba(0,0,0,0.7))', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
+                Explore Our Online Courses
+              </Box>
+            </Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto', lineHeight: 1.75 }}>
+              Start learning today with our expert-led courses designed for your success
+            </Typography>
+          </Box>
         </motion.div>
         
         {isLoading ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 4 }}>
             {[...Array(6)].map((_, i) => (
-              <div key={i} className="bg-card rounded-xl overflow-hidden shadow-lg animate-pulse border border-border">
-                <div className="aspect-video bg-muted" />
-                <div className="p-6 space-y-3">
-                  <div className="h-6 bg-muted rounded" />
-                  <div className="h-4 bg-muted rounded w-2/3" />
-                  <div className="h-12 bg-muted rounded" />
-                </div>
-              </div>
+              <Card key={i} sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: 3, border: 1, borderColor: 'divider' }}>
+                <Box sx={{ aspectRatio: '16/9', bgcolor: 'action.hover' }} className="animate-pulse" />
+                <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  <Box sx={{ height: 24, bgcolor: 'action.hover', borderRadius: 1 }} className="animate-pulse" />
+                  <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '66%' }} className="animate-pulse" />
+                  <Box sx={{ height: 48, bgcolor: 'action.hover', borderRadius: 1 }} className="animate-pulse" />
+                </CardContent>
+              </Card>
             ))}
-          </div>
+          </Box>
         ) : sortedCourses.length > 0 ? (
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 4 }}>
             {sortedCourses.slice(0, 6).map((course) => (
               <motion.div
                 key={course.id}
@@ -815,91 +841,117 @@ export default function Home() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.3 }}
-                className="group bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl hover:shadow-blue-500/20 transition-all duration-300 border border-border relative hover:-translate-y-3"
-                >
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/0 via-purple-600/0 to-pink-600/0 group-hover:from-blue-600/5 group-hover:via-purple-600/5 group-hover:to-pink-600/5 transition-all duration-500" />
-                <div className="aspect-video overflow-hidden bg-gradient-to-br from-blue-500 to-purple-600 relative">
-                  <img
-                    src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
-                    alt={course.title}
-                    className="w-full h-full object-cover group-hover:scale-110 group-hover:rotate-1 transition-transform duration-700"
-                    loading="lazy"
-                    onError={(e) => {
-                      e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop';
-                    }}
-                  />
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                  {course.category && (
-                    <div className="absolute top-4 right-4 bg-gradient-to-r from-yellow-400 to-amber-500 text-gray-900 px-4 py-1 rounded-full text-sm font-bold uppercase shadow-lg group-hover:scale-110 transition-transform">
-                      {course.category}
-                    </div>
-                  )}
-                  {course.lesson_count > 0 && (
-                    <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-sm text-gray-900 px-3 py-1 rounded-full text-xs font-semibold flex items-center gap-1 shadow-lg">
-                      <BookOpen className="w-3 h-3" />
-                      {course.lesson_count} lessons
-                    </div>
-                  )}
-                </div>
-                <div className="p-6 relative">
-                  <h3 className="text-xl font-bold text-foreground mb-3 group-hover:text-primary transition-colors line-clamp-2 min-h-[3.5rem]">
-                    {course.title}
-                  </h3>
-                  <p className="text-muted-foreground mb-4 line-clamp-2 text-sm leading-relaxed">
-                    {course.description}
-                  </p>
-                  <div className="flex items-center gap-4 mb-4 text-xs text-muted-foreground">
-                    {course.duration_hours > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {course.duration_hours}h
-                      </span>
+              >
+                <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)', transform: 'translateY(-12px)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative' }}>
+                  <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom right, rgba(37,99,235,0), rgba(147,51,234,0), rgba(236,72,153,0))', '&:hover': { background: 'linear-gradient(to bottom right, rgba(37,99,235,0.05), rgba(147,51,234,0.05), rgba(236,72,153,0.05))' }, transition: 'all 0.5s' }} />
+                  <Box sx={{ aspectRatio: '16/9', overflow: 'hidden', background: 'linear-gradient(to bottom right, #3b82f6, #9333ea)', position: 'relative' }}>
+                    <CardMedia
+                      component="img"
+                      image={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
+                      alt={course.title}
+                      sx={{ width: '100%', height: '100%', objectFit: 'cover', '&:hover': { transform: 'scale(1.1) rotate(1deg)' }, transition: 'transform 0.7s' }}
+                      onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop'; }}
+                    />
+                    <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), transparent, transparent)', opacity: 0, '&:hover': { opacity: 1 }, transition: 'opacity 0.3s' }} />
+                    {course.category && (
+                      <Chip
+                        label={course.category}
+                        sx={{
+                          position: 'absolute',
+                          top: 16,
+                          right: 16,
+                          background: 'linear-gradient(to right, #fbbf24, #f59e0b)',
+                          color: '#1f2937',
+                          px: 2,
+                          py: 0.5,
+                          fontSize: '0.875rem',
+                          fontWeight: 700,
+                          textTransform: 'uppercase',
+                          boxShadow: 3,
+                          '&:hover': { transform: 'scale(1.1)' },
+                          transition: 'transform 0.3s'
+                        }}
+                      />
                     )}
-                    {course.enrolled_count > 0 && (
-                      <span className="flex items-center gap-1">
-                        <Users className="w-3 h-3" />
-                        {course.enrolled_count}
-                      </span>
+                    {course.lesson_count > 0 && (
+                      <Chip
+                        icon={<BookOpen size={12} />}
+                        label={`${course.lesson_count} lessons`}
+                        size="small"
+                        sx={{
+                          position: 'absolute',
+                          top: 16,
+                          left: 16,
+                          bgcolor: 'rgba(255,255,255,0.95)',
+                          backdropFilter: 'blur(8px)',
+                          color: '#1f2937',
+                          fontWeight: 600,
+                          fontSize: '0.75rem',
+                          boxShadow: 3
+                        }}
+                      />
                     )}
-                    {course.rating && (
-                      <span className="flex items-center gap-1">
-                        <Star className="w-3 h-3 fill-amber-400 text-amber-400" />
-                        {course.rating.toFixed(1)}
-                      </span>
-                    )}
-                  </div>
-                  <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
-                    <Button
-                      variant="contained"
-                      fullWidth
-                      endIcon={<ArrowRight size={18} />}
-                      sx={{
-                        background: 'linear-gradient(to right, #003366, #1d4ed8)',
-                        color: 'white',
-                        fontWeight: 700,
-                        py: 2,
-                        borderRadius: 3,
-                        fontSize: '1rem',
-                        boxShadow: 2,
-                        '&:hover': {
-                          background: 'linear-gradient(to right, #002244, #1e3a8a)',
-                          boxShadow: '0 8px 24px rgba(37, 99, 235, 0.3)',
-                        },
-                      }}
-                    >
-                      LEARN MORE
-                    </Button>
-                  </Link>
-                </div>
+                  </Box>
+                  <CardContent sx={{ p: 3, position: 'relative' }}>
+                    <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, '&:hover': { color: 'primary.main' }, transition: 'color 0.3s', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '3.5rem' }}>
+                      {course.title}
+                    </Typography>
+                    <Typography color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.875rem', lineHeight: 1.75 }}>
+                      {course.description}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, fontSize: '0.75rem', color: 'text.secondary' }}>
+                      {course.duration_hours > 0 && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Clock size={12} />
+                          <Typography variant="caption">{course.duration_hours}h</Typography>
+                        </Box>
+                      )}
+                      {course.enrolled_count > 0 && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Users size={12} />
+                          <Typography variant="caption">{course.enrolled_count}</Typography>
+                        </Box>
+                      )}
+                      {course.rating && (
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
+                          <Star size={12} style={{ fill: '#fbbf24', color: '#fbbf24' }} />
+                          <Typography variant="caption">{course.rating.toFixed(1)}</Typography>
+                        </Box>
+                      )}
+                    </Box>
+                    <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        endIcon={<ArrowRight size={18} />}
+                        sx={{
+                          background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                          color: 'white',
+                          fontWeight: 700,
+                          py: 2,
+                          borderRadius: 3,
+                          fontSize: '1rem',
+                          boxShadow: 2,
+                          '&:hover': {
+                            background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                            boxShadow: '0 8px 24px rgba(37, 99, 235, 0.3)',
+                          },
+                        }}
+                      >
+                        LEARN MORE
+                      </Button>
+                    </Link>
+                  </CardContent>
+                </Card>
               </motion.div>
             ))}
-          </div>
+          </Box>
         ) : (
-          <div className="text-center py-16">
-            <BookOpen className="w-16 h-16 text-muted-foreground/50 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-foreground mb-2">No courses found</h3>
-            <p className="text-muted-foreground">Check back soon for new courses</p>
-          </div>
+          <Box sx={{ textAlign: 'center', py: 8 }}>
+            <BookOpen size={64} color="rgba(156, 163, 175, 0.5)" style={{ margin: '0 auto 16px' }} />
+            <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>No courses found</Typography>
+            <Typography color="text.secondary">Check back soon for new courses</Typography>
+          </Box>
         )}
         
         {sortedCourses.length > 6 && (
@@ -1486,22 +1538,23 @@ function SuccessStoriesCarousel() {
   }, [emblaApi]);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-foreground mb-4">{section.title || 'Success stories and resources'}</h2>
-        {section.description && (
-          <p className="text-muted-foreground text-lg">{section.description}</p>
-        )}
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>{section.title || 'Success stories and resources'}</Typography>
+          {section.description && (
+            <Typography variant="h6" color="text.secondary">{section.description}</Typography>
+          )}
+        </Box>
       </motion.div>
       
-      <div className="relative">
-        <div className="overflow-hidden" ref={emblaRef}>
-          <div className="flex gap-6">
+      <Box sx={{ position: 'relative' }}>
+        <Box sx={{ overflow: 'hidden' }} ref={emblaRef}>
+          <Box sx={{ display: 'flex', gap: 3 }}>
             {stories.map((story, idx) => (
               <div key={idx} className="flex-[0_0_100%] md:flex-[0_0_45%] lg:flex-[0_0_30%] min-w-0">
                 <motion.div
@@ -1549,35 +1602,65 @@ function SuccessStoriesCarousel() {
               </div>
             ))}
           </div>
-        </div>
+        </Box>
         
-        <button
+        <IconButton
           onClick={() => emblaApi?.scrollPrev()}
-          className="absolute left-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          sx={{
+            position: 'absolute',
+            left: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 48,
+            height: 48,
+            bgcolor: 'white',
+            boxShadow: 4,
+            zIndex: 10,
+            '&:hover': { transform: 'translateY(-50%) scale(1.1)' },
+            transition: 'transform 0.3s'
+          }}
         >
-          <ChevronLeft className="w-6 h-6 text-gray-800" />
-        </button>
+          <ChevronLeft size={24} color="#1f2937" />
+        </IconButton>
         
-        <button
+        <IconButton
           onClick={() => emblaApi?.scrollNext()}
-          className="absolute right-4 top-1/2 -translate-y-1/2 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-transform z-10"
+          sx={{
+            position: 'absolute',
+            right: 16,
+            top: '50%',
+            transform: 'translateY(-50%)',
+            width: 48,
+            height: 48,
+            bgcolor: 'white',
+            boxShadow: 4,
+            zIndex: 10,
+            '&:hover': { transform: 'translateY(-50%) scale(1.1)' },
+            transition: 'transform 0.3s'
+          }}
         >
-          <ChevronRight className="w-6 h-6 text-gray-800" />
-        </button>
+          <ChevronRight size={24} color="#1f2937" />
+        </IconButton>
         
-        <div className="flex justify-center gap-2 mt-6">
+        <Box sx={{ display: 'flex', justifyContent: 'center', gap: 1, mt: 3 }}>
           {stories.map((_, idx) => (
-            <button
+            <Box
               key={idx}
+              component="button"
               onClick={() => emblaApi?.scrollTo(idx)}
-              className={`h-2 rounded-full transition-all ${
-                selectedIndex === idx ? 'w-8 bg-orange-500' : 'w-2 bg-gray-300'
-              }`}
+              sx={{
+                height: 8,
+                borderRadius: 50,
+                transition: 'all 0.3s',
+                border: 'none',
+                cursor: 'pointer',
+                ...(selectedIndex === idx ? { width: 32, bgcolor: '#f97316' } : { width: 8, bgcolor: '#d1d5db' })
+              }}
             />
           ))}
-        </div>
-      </div>
-    </section>
+        </Box>
+      </Box>
+    </Container>
   );
 }
 
@@ -1598,22 +1681,23 @@ function SolutionsSection() {
   })).filter(c => c.title);
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}
         viewport={{ once: true }}
-        className="text-center mb-12"
       >
-        <h2 className="text-4xl font-bold text-foreground mb-4">
-          {section.title || 'Solutions for every age, stage, and transitional moment'}
-        </h2>
-        {section.description && (
-          <p className="text-muted-foreground text-lg max-w-3xl mx-auto">{section.description}</p>
-        )}
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>
+            {section.title || 'Solutions for every age, stage, and transitional moment'}
+          </Typography>
+          {section.description && (
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 800, mx: 'auto' }}>{section.description}</Typography>
+          )}
+        </Box>
       </motion.div>
       
-      <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
         {cards.map((card, idx) => (
           <motion.div
             key={idx}
@@ -1622,32 +1706,34 @@ function SolutionsSection() {
             viewport={{ once: true }}
             transition={{ delay: idx * 0.1 }}
             whileHover={{ y: -8 }}
-            className="bg-card rounded-2xl overflow-hidden shadow-lg hover:shadow-2xl transition-all border border-border"
           >
-            {card.image && (
-              <div className="aspect-video overflow-hidden">
-                <img
-                  src={card.image}
-                  alt={card.title}
-                  className="w-full h-full object-cover"
-                />
-              </div>
-            )}
-            <div className="p-6">
-              <h3 className="text-2xl font-bold text-foreground mb-3">{card.title}</h3>
-              <p className="text-muted-foreground mb-4 leading-relaxed">{card.description}</p>
-              {card.link && (
-                <Link to={card.link} style={{ textDecoration: 'none' }}>
-                  <Button sx={{ color: '#2563eb', fontWeight: 600, p: 0, '&:hover': { color: '#1d4ed8' } }}>
-                    See how →
-                  </Button>
-                </Link>
+            <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider' }}>
+              {card.image && (
+                <Box sx={{ aspectRatio: '16/9', overflow: 'hidden' }}>
+                  <CardMedia
+                    component="img"
+                    image={card.image}
+                    alt={card.title}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
+                  />
+                </Box>
               )}
-            </div>
+              <CardContent sx={{ p: 3 }}>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 1.5 }}>{card.title}</Typography>
+                <Typography color="text.secondary" sx={{ mb: 2, lineHeight: 1.75 }}>{card.description}</Typography>
+                {card.link && (
+                  <Link to={card.link} style={{ textDecoration: 'none' }}>
+                    <Button sx={{ color: 'primary.main', fontWeight: 600, p: 0, '&:hover': { color: 'primary.dark' } }}>
+                      See how →
+                    </Button>
+                  </Link>
+                )}
+              </CardContent>
+            </Card>
           </motion.div>
         ))}
-      </div>
-    </section>
+      </Box>
+    </Container>
   );
 }
 
@@ -1662,66 +1748,78 @@ function LeadershipCTASection() {
   const section = sections[0];
 
   return (
-    <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+    <Container maxWidth="xl" sx={{ py: 10 }}>
       <motion.div
         initial={{ opacity: 0, y: 30 }}
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.8 }}
         viewport={{ once: true }}
-        className="relative overflow-hidden rounded-3xl bg-gradient-to-br from-violet-600 via-purple-600 to-fuchsia-600 p-12 shadow-2xl shadow-purple-500/50"
       >
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
+        <Box sx={{ position: 'relative', overflow: 'hidden', borderRadius: 6, background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', p: 6, boxShadow: '0 25px 50px -12px rgba(168, 85, 247, 0.5)' }}>
+          <Box sx={{ position: 'absolute', top: 0, right: 0, width: 256, height: 256, bgcolor: 'rgba(255,255,255,0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
+          <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: 384, height: 384, bgcolor: 'rgba(96, 165, 250, 0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
 
-        <div className="relative z-10 max-w-3xl">
-          {section.badge_text && (
-            <div className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-6">
-              <ClipboardList className="w-4 h-4" />
-              <span>{section.badge_text}</span>
-            </div>
-          )}
+          <Box sx={{ position: 'relative', zIndex: 10, maxWidth: 800 }}>
+            {section.badge_text && (
+              <Chip
+                icon={<ClipboardList size={16} />}
+                label={section.badge_text}
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 50,
+                  bgcolor: 'rgba(255,255,255,0.2)',
+                  backdropFilter: 'blur(8px)',
+                  color: 'white',
+                  fontWeight: 500,
+                  mb: 3,
+                  '& .MuiChip-icon': { color: 'white' }
+                }}
+              />
+            )}
 
-          <h2 className="text-4xl sm:text-5xl font-bold text-white mb-6 leading-tight">
-            {section.title || 'Join Our Leadership Empowerment Programmes'}
-          </h2>
+            <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', sm: '3rem' }, fontWeight: 700, color: 'white', mb: 3, lineHeight: 1.2 }}>
+              {section.title || 'Join Our Leadership Empowerment Programmes'}
+            </Typography>
 
-          {section.description && (
-            <p className="text-xl text-purple-100 mb-8 leading-relaxed">
-              {section.description}
-            </p>
-          )}
+            {section.description && (
+              <Typography sx={{ fontSize: '1.25rem', color: '#e9d5ff', mb: 4, lineHeight: 1.75 }}>
+                {section.description}
+              </Typography>
+            )}
 
-          {section.cta_text && section.cta_link && (
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
-              <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
-                <Button
-                  variant="contained"
-                  size="large"
-                  endIcon={<ArrowRight size={20} />}
-                  sx={{
-                    bgcolor: 'white',
-                    color: '#7c3aed',
-                    fontSize: '1.125rem',
-                    fontWeight: 700,
-                    px: 5,
-                    py: 2,
-                    borderRadius: 50,
-                    boxShadow: '0 10px 30px rgba(255, 255, 255, 0.4)',
-                    '&:hover': {
-                      bgcolor: '#ede9fe',
-                      transform: 'scale(1.05)',
-                      boxShadow: '0 15px 40px rgba(139, 92, 246, 0.7)',
-                    },
-                  }}
-                >
-                  {section.cta_text}
-                </Button>
-              </Link>
-            </Box>
-          )}
-        </div>
+            {section.cta_text && section.cta_link && (
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowRight size={20} />}
+                    sx={{
+                      bgcolor: 'white',
+                      color: '#7c3aed',
+                      fontSize: '1.125rem',
+                      fontWeight: 700,
+                      px: 5,
+                      py: 2,
+                      borderRadius: 50,
+                      boxShadow: '0 10px 30px rgba(255, 255, 255, 0.4)',
+                      '&:hover': {
+                        bgcolor: '#ede9fe',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 15px 40px rgba(139, 92, 246, 0.7)',
+                      },
+                    }}
+                  >
+                    {section.cta_text}
+                  </Button>
+                </Link>
+              </Box>
+            )}
+          </Box>
+        </Box>
       </motion.div>
-    </section>
+    </Container>
   );
 }
 
@@ -1736,13 +1834,13 @@ function FinalCTASection() {
   const section = sections[0];
 
   return (
-    <section className="relative overflow-hidden bg-gradient-to-br from-slate-900 via-blue-900 to-purple-900 py-24">
-      <div className="absolute inset-0">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-500/20 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl" />
-      </div>
+    <Box component="section" sx={{ position: 'relative', overflow: 'hidden', background: 'linear-gradient(to bottom right, #0f172a, #1e3a8a, #581c87)', py: 12 }}>
+      <Box sx={{ position: 'absolute', inset: 0 }}>
+        <Box sx={{ position: 'absolute', top: 0, right: 0, width: 384, height: 384, bgcolor: 'rgba(59, 130, 246, 0.2)', borderRadius: '50%', filter: 'blur(96px)' }} />
+        <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: 384, height: 384, bgcolor: 'rgba(168, 85, 247, 0.2)', borderRadius: '50%', filter: 'blur(96px)' }} />
+      </Box>
       
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+      <Container maxWidth="xl" sx={{ position: 'relative', textAlign: 'center' }}>
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -1750,25 +1848,36 @@ function FinalCTASection() {
           viewport={{ once: true }}
         >
           {section.badge_text && (
-            <div className="inline-flex items-center gap-2 px-5 py-2.5 rounded-full bg-white/20 backdrop-blur-md text-white text-sm font-medium mb-8">
-              <Zap className="w-4 h-4 text-yellow-300" />
-              <span>{section.badge_text}</span>
-            </div>
+            <Chip
+              icon={<Zap size={16} color="#fde047" />}
+              label={section.badge_text}
+              sx={{
+                px: 2.5,
+                py: 1.25,
+                borderRadius: 50,
+                bgcolor: 'rgba(255,255,255,0.2)',
+                backdropFilter: 'blur(8px)',
+                color: 'white',
+                fontWeight: 500,
+                mb: 4,
+                '& .MuiChip-icon': { color: '#fde047' }
+              }}
+            />
           )}
           
-          <h2 className="text-4xl sm:text-5xl lg:text-6xl font-extrabold text-white mb-6 leading-tight">
+          <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', sm: '3rem', lg: '3.75rem' }, fontWeight: 800, color: 'white', mb: 3, lineHeight: 1.2 }}>
             {section.title || 'Ready to Transform'}
             {section.subtitle && (
-              <span className="block mt-2 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 bg-clip-text text-transparent">
+              <Box component="span" sx={{ display: 'block', mt: 1, background: 'linear-gradient(to right, #60a5fa, #a78bfa, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>
                 {section.subtitle}
-              </span>
+              </Box>
             )}
-          </h2>
+          </Typography>
           
           {section.description && (
-            <p className="text-xl text-slate-300 mb-10 max-w-3xl mx-auto leading-relaxed">
+            <Typography sx={{ fontSize: '1.25rem', color: '#cbd5e1', mb: 5, maxWidth: 800, mx: 'auto', lineHeight: 1.75 }}>
               {section.description}
-            </p>
+            </Typography>
           )}
           
           <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
@@ -1827,9 +1936,9 @@ function FinalCTASection() {
               </Link>
             )}
           </Box>
-        </motion.div>
-      </div>
-    </section>
+        </Box>
+      </motion.div>
+    </Container>
   );
 }
 
@@ -1845,79 +1954,81 @@ function EcosystemSection() {
   const section = ecosystem[0];
 
   return (
-    <section className="relative py-20 bg-[#003B5C] overflow-hidden">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Box component="section" sx={{ position: 'relative', py: 10, bgcolor: '#003B5C', overflow: 'hidden' }}>
+      <Container maxWidth="xl">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
-          className="text-center mb-16"
         >
-          <h2 className="text-4xl md:text-5xl font-bold text-white mb-6">
-            {section.title || 'Explore the Instructure ecosystem'}
-          </h2>
-          <p className="text-xl text-gray-300 mb-8 max-w-4xl mx-auto">
-            {section.description || 'Our capabilities, partner network, services, and community are here to help you create your ideal edtech environment and deliver on important outcomes.'}
-          </p>
-          {section.cta_text && section.cta_link && (
-            <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
-              <Button
-                variant="outlined"
-                size="large"
-                sx={{
-                  borderColor: 'white',
-                  borderWidth: 2,
-                  color: 'white',
-                  fontSize: '1.125rem',
-                  fontWeight: 600,
-                  px: 4,
-                  py: 2,
-                  borderRadius: 50,
-                  '&:hover': {
-                    bgcolor: 'white',
-                    color: '#003B5C',
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <Typography variant="h3" sx={{ fontSize: { xs: '2.5rem', md: '3rem' }, fontWeight: 700, color: 'white', mb: 3 }}>
+              {section.title || 'Explore the Instructure ecosystem'}
+            </Typography>
+            <Typography sx={{ fontSize: '1.25rem', color: '#d1d5db', mb: 4, maxWidth: 1000, mx: 'auto' }}>
+              {section.description || 'Our capabilities, partner network, services, and community are here to help you create your ideal edtech environment and deliver on important outcomes.'}
+            </Typography>
+            {section.cta_text && section.cta_link && (
+              <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  sx={{
                     borderColor: 'white',
-                  },
-                }}
-              >
-                {section.cta_text}
-              </Button>
-            </Link>
-          )}
+                    borderWidth: 2,
+                    color: 'white',
+                    fontSize: '1.125rem',
+                    fontWeight: 600,
+                    px: 4,
+                    py: 2,
+                    borderRadius: 50,
+                    '&:hover': {
+                      bgcolor: 'white',
+                      color: '#003B5C',
+                      borderColor: 'white',
+                    },
+                  }}
+                >
+                  {section.cta_text}
+                </Button>
+              </Link>
+            )}
+          </Box>
         </motion.div>
 
-        <div className="grid md:grid-cols-3 gap-12 mt-20">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 6, mt: 10 }}>
           {/* Product 1 - Red */}
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.1 }}
-            className="text-center"
           >
-            <div className="relative mb-8">
-              <div className="w-full aspect-[2/1] overflow-hidden">
-                <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[300px] h-[150px] bg-[#FF6B6B] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
-                  <div className="w-[240px] h-[120px] bg-[#EE5A5A] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
-                  <div className="w-[180px] h-[90px] bg-[#D84848] rounded-t-full"></div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <BookOpen className="w-10 h-10 text-white" />
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-white">{section.product1_name || 'Canvas'}</h3>
-                <p className="text-sm text-gray-400">{section.product1_subtitle || 'By Instructure'}</p>
-              </div>
-            </div>
-            <p className="text-xl font-semibold text-white">
-              {section.product1_desc1 || 'Teaching'}<br />{section.product1_desc2 || 'and learning'}
-            </p>
+            <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ position: 'relative', mb: 4 }}>
+                <Box sx={{ width: '100%', aspectRatio: '2/1', overflow: 'hidden' }}>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                    <Box sx={{ width: 300, height: 150, bgcolor: '#FF6B6B', borderRadius: '150px 150px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '25px' }}>
+                    <Box sx={{ width: 240, height: 120, bgcolor: '#EE5A5A', borderRadius: '120px 120px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '50px' }}>
+                    <Box sx={{ width: 180, height: 90, bgcolor: '#D84848', borderRadius: '90px 90px 0 0' }} />
+                  </Box>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 2 }}>
+                <BookOpen size={40} color="white" />
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="h5" fontWeight={700} sx={{ color: 'white' }}>{section.product1_name || 'Canvas'}</Typography>
+                  <Typography variant="body2" sx={{ color: '#9ca3af' }}>{section.product1_subtitle || 'By Instructure'}</Typography>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: '1.25rem', fontWeight: 600, color: 'white' }}>
+                {section.product1_desc1 || 'Teaching'}<br />{section.product1_desc2 || 'and learning'}
+              </Typography>
+            </Box>
           </motion.div>
 
           {/* Product 2 - Green */}
@@ -1926,31 +2037,32 @@ function EcosystemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.2 }}
-            className="text-center"
           >
-            <div className="relative mb-8">
-              <div className="w-full aspect-[2/1] overflow-hidden">
-                <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[300px] h-[150px] bg-[#51CF66] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
-                  <div className="w-[240px] h-[120px] bg-[#40C057] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
-                  <div className="w-[180px] h-[90px] bg-[#2F9E44] rounded-t-full"></div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Target className="w-10 h-10 text-white" />
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-white">{section.product2_name || 'Mastery'}</h3>
-                <p className="text-sm text-gray-400">{section.product2_subtitle || 'By Instructure'}</p>
-              </div>
-            </div>
-            <p className="text-xl font-semibold text-white">
-              {section.product2_desc1 || 'Assessment'}<br />{section.product2_desc2 || 'and growth'}
-            </p>
+            <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ position: 'relative', mb: 4 }}>
+                <Box sx={{ width: '100%', aspectRatio: '2/1', overflow: 'hidden' }}>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                    <Box sx={{ width: 300, height: 150, bgcolor: '#51CF66', borderRadius: '150px 150px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '25px' }}>
+                    <Box sx={{ width: 240, height: 120, bgcolor: '#40C057', borderRadius: '120px 120px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '50px' }}>
+                    <Box sx={{ width: 180, height: 90, bgcolor: '#2F9E44', borderRadius: '90px 90px 0 0' }} />
+                  </Box>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 2 }}>
+                <Target size={40} color="white" />
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="h5" fontWeight={700} sx={{ color: 'white' }}>{section.product2_name || 'Mastery'}</Typography>
+                  <Typography variant="body2" sx={{ color: '#9ca3af' }}>{section.product2_subtitle || 'By Instructure'}</Typography>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: '1.25rem', fontWeight: 600, color: 'white' }}>
+                {section.product2_desc1 || 'Assessment'}<br />{section.product2_desc2 || 'and growth'}
+              </Typography>
+            </Box>
           </motion.div>
 
           {/* Product 3 - Blue */}
@@ -1959,31 +2071,32 @@ function EcosystemSection() {
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
             transition={{ delay: 0.3 }}
-            className="text-center"
           >
-            <div className="relative mb-8">
-              <div className="w-full aspect-[2/1] overflow-hidden">
-                <div className="absolute inset-0 flex items-end justify-center">
-                  <div className="w-[300px] h-[150px] bg-[#74C0FC] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '25px' }}>
-                  <div className="w-[240px] h-[120px] bg-[#4DABF7] rounded-t-full"></div>
-                </div>
-                <div className="absolute inset-0 flex items-end justify-center" style={{ paddingBottom: '50px' }}>
-                  <div className="w-[180px] h-[90px] bg-[#339AF0] rounded-t-full"></div>
-                </div>
-              </div>
-            </div>
-            <div className="flex items-center justify-center gap-3 mb-4">
-              <Award className="w-10 h-10 text-white" />
-              <div className="text-left">
-                <h3 className="text-2xl font-bold text-white">{section.product3_name || 'Parchment'}</h3>
-                <p className="text-sm text-gray-400">{section.product3_subtitle || 'By Instructure'}</p>
-              </div>
-            </div>
-            <p className="text-xl font-semibold text-white">
-              {section.product3_desc1 || 'Credentials'}<br />{section.product3_desc2 || 'and opportunity'}
-            </p>
+            <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ position: 'relative', mb: 4 }}>
+                <Box sx={{ width: '100%', aspectRatio: '2/1', overflow: 'hidden' }}>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center' }}>
+                    <Box sx={{ width: 300, height: 150, bgcolor: '#74C0FC', borderRadius: '150px 150px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '25px' }}>
+                    <Box sx={{ width: 240, height: 120, bgcolor: '#4DABF7', borderRadius: '120px 120px 0 0' }} />
+                  </Box>
+                  <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'flex-end', justifyContent: 'center', pb: '50px' }}>
+                    <Box sx={{ width: 180, height: 90, bgcolor: '#339AF0', borderRadius: '90px 90px 0 0' }} />
+                  </Box>
+                </Box>
+              </Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1.5, mb: 2 }}>
+                <Award size={40} color="white" />
+                <Box sx={{ textAlign: 'left' }}>
+                  <Typography variant="h5" fontWeight={700} sx={{ color: 'white' }}>{section.product3_name || 'Parchment'}</Typography>
+                  <Typography variant="body2" sx={{ color: '#9ca3af' }}>{section.product3_subtitle || 'By Instructure'}</Typography>
+                </Box>
+              </Box>
+              <Typography sx={{ fontSize: '1.25rem', fontWeight: 600, color: 'white' }}>
+                {section.product3_desc1 || 'Credentials'}<br />{section.product3_desc2 || 'and opportunity'}
+              </Typography>
+            </Box>
           </motion.div>
         </div>
       </div>
@@ -2006,61 +2119,90 @@ function PartnersSection() {
   if (logos.length === 0) return null;
 
   return (
-    <section className="py-16 bg-muted/30">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-3xl font-bold text-foreground mb-4">Our Partners</h2>
-          <p className="text-muted-foreground">Working together to empower youth</p>
-        </div>
+    <Box component="section" sx={{ py: 8, bgcolor: 'rgba(0,0,0,0.02)' }}>
+      <Container maxWidth="xl">
+        <Box sx={{ textAlign: 'center', mb: 6 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>Our Partners</Typography>
+          <Typography color="text.secondary">Working together to empower youth</Typography>
+        </Box>
         
-        <div className="relative">
-          <div className="overflow-hidden" ref={partnersEmblaRef}>
-            <div className="flex gap-8">
+        <Box sx={{ position: 'relative' }}>
+          <Box sx={{ overflow: 'hidden' }} ref={partnersEmblaRef}>
+            <Box sx={{ display: 'flex', gap: 4 }}>
               {logos.map((logo, idx) => (
-                <div key={logo.id} className="flex-[0_0_calc(50%-16px)] min-w-0">
+                <Box key={logo.id} sx={{ flex: '0 0 calc(50% - 16px)', minWidth: 0 }}>
                   <motion.div
                     initial={{ opacity: 0, y: 20 }}
                     whileInView={{ opacity: 1, y: 0 }}
                     viewport={{ once: true }}
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     whileHover={{ y: -8, scale: 1.03 }}
-                    className="bg-white dark:bg-white border border-border rounded-xl p-12 shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center h-52"
                   >
-                    {logo.website_url ? (
-                      <a href={logo.website_url} target="_blank" rel="noopener noreferrer" className="block w-full h-full flex items-center justify-center">
-                        <img
+                    <Card sx={{ bgcolor: 'white', border: 1, borderColor: 'divider', borderRadius: 3, p: 6, boxShadow: 3, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 208 }}>
+                      {logo.website_url ? (
+                        <a href={logo.website_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <Box
+                            component="img"
+                            src={logo.logo_url}
+                            alt={logo.name}
+                            sx={{ maxHeight: 144, width: 'auto', objectFit: 'contain', '&:hover': { transform: 'scale(1.1)' }, transition: 'all 0.3s' }}
+                          />
+                        </a>
+                      ) : (
+                        <Box
+                          component="img"
                           src={logo.logo_url}
                           alt={logo.name}
-                          className="max-h-36 w-auto object-contain hover:scale-110 transition-all duration-300"
+                          sx={{ maxHeight: 144, width: 'auto', objectFit: 'contain' }}
                         />
-                      </a>
-                    ) : (
-                      <img
-                        src={logo.logo_url}
-                        alt={logo.name}
-                        className="max-h-36 w-auto object-contain"
-                      />
-                    )}
+                      )}
+                    </Card>
                   </motion.div>
-                </div>
+                </Box>
               ))}
-            </div>
-          </div>
+            </Box>
+          </Box>
           
-          <button
+          <IconButton
             onClick={() => partnersEmblaApi?.scrollPrev()}
-            className="absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+            sx={{
+              position: 'absolute',
+              left: 0,
+              top: '50%',
+              transform: 'translate(-16px, -50%)',
+              width: 48,
+              height: 48,
+              bgcolor: '#2563eb',
+              color: 'white',
+              boxShadow: 4,
+              zIndex: 10,
+              '&:hover': { bgcolor: '#1d4ed8', transform: 'translate(-16px, -50%) scale(1.1)' },
+              transition: 'all 0.3s'
+            }}
           >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-          <button
+            <ChevronLeft size={24} />
+          </IconButton>
+          <IconButton
             onClick={() => partnersEmblaApi?.scrollNext()}
-            className="absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 w-12 h-12 bg-blue-600 hover:bg-blue-700 rounded-full flex items-center justify-center shadow-xl hover:scale-110 transition-all z-10"
+            sx={{
+              position: 'absolute',
+              right: 0,
+              top: '50%',
+              transform: 'translate(16px, -50%)',
+              width: 48,
+              height: 48,
+              bgcolor: '#2563eb',
+              color: 'white',
+              boxShadow: 4,
+              zIndex: 10,
+              '&:hover': { bgcolor: '#1d4ed8', transform: 'translate(16px, -50%) scale(1.1)' },
+              transition: 'all 0.3s'
+            }}
           >
-            <ChevronRight className="w-6 h-6 text-white" />
-          </button>
-        </div>
-      </div>
-    </section>
+            <ChevronRight size={24} />
+          </IconButton>
+        </Box>
+      </Container>
+    </Box>
   );
 }
