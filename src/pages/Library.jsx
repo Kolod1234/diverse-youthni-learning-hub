@@ -3,11 +3,8 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { 
   Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
-  Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment
+  Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem
 } from '@mui/material';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
 import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
@@ -441,37 +438,42 @@ export default function Library() {
 
         {/* Tag Filters */}
         {allTags.length > 0 && (
-          <div className="mb-6">
-            <h2 className="text-xl font-bold text-gray-900 mb-4">Filter by Tags</h2>
-            <div className="flex flex-wrap gap-2">
-              {allTags.slice(0, 15).map((tag) => (
-                <Badge
-                  key={tag}
-                  variant={selectedTags.includes(tag) ? "default" : "outline"}
-                  className="cursor-pointer hover:bg-indigo-100 transition-colors"
-                  onClick={() => {
-                    setSelectedTags(prev => 
-                      prev.includes(tag) 
-                        ? prev.filter(t => t !== tag)
-                        : [...prev, tag]
-                    );
-                  }}
-                >
-                  {tag}
-                </Badge>
-              ))}
-              {selectedTags.length > 0 && (
-                <Button
-                  variant="ghost"
-                  size="sm"
-                  onClick={() => setSelectedTags([])}
-                  className="text-xs"
-                >
-                  Clear filters
-                </Button>
-              )}
-            </div>
+        <div className="mb-6">
+          <h2 className="text-xl font-bold text-gray-900 mb-4">Filter by Tags</h2>
+          <div className="flex flex-wrap gap-2">
+            {allTags.slice(0, 15).map((tag) => (
+              <Chip
+                key={tag}
+                label={tag}
+                onClick={() => {
+                  setSelectedTags(prev => 
+                    prev.includes(tag) 
+                      ? prev.filter(t => t !== tag)
+                      : [...prev, tag]
+                  );
+                }}
+                sx={{
+                  cursor: 'pointer',
+                  bgcolor: selectedTags.includes(tag) ? 'primary.main' : 'transparent',
+                  color: selectedTags.includes(tag) ? 'white' : 'text.primary',
+                  border: 1,
+                  borderColor: selectedTags.includes(tag) ? 'primary.main' : 'divider',
+                  '&:hover': { bgcolor: selectedTags.includes(tag) ? 'primary.dark' : '#eef2ff' }
+                }}
+              />
+            ))}
+            {selectedTags.length > 0 && (
+              <Button
+                variant="text"
+                size="small"
+                onClick={() => setSelectedTags([])}
+                sx={{ fontSize: '0.75rem' }}
+              >
+                Clear filters
+              </Button>
+            )}
           </div>
+        </div>
         )}
 
         {/* All Books Grid */}
@@ -656,71 +658,69 @@ export default function Library() {
               </div>
 
               {/* Book Details & Collaboration */}
-              <div className="md:w-2/3 flex flex-col overflow-hidden">
-                <div className="p-6 border-b">
-                  <button
+              <Box sx={{ width: { xs: '100%', md: '66.666%' }, display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+                <Box sx={{ p: 3, borderBottom: 1, borderColor: 'divider' }}>
+                  <IconButton
                     onClick={() => setSelectedBook(null)}
-                    className="absolute top-4 right-4 p-2 hover:bg-gray-100 rounded-full transition"
+                    sx={{ position: 'absolute', top: 16, right: 16 }}
                   >
-                    <X className="w-5 h-5" />
-                  </button>
+                    <X size={20} />
+                  </IconButton>
 
-                  <h1 className="text-2xl font-bold text-gray-900 mb-2">{selectedBook.title}</h1>
-                  <p className="text-gray-600 mb-4">{selectedBook.author || 'Unknown Author'}</p>
+                  <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>{selectedBook.title}</Typography>
+                  <Typography color="text.secondary" sx={{ mb: 2 }}>{selectedBook.author || 'Unknown Author'}</Typography>
 
-                  <div className="flex items-center gap-6 text-sm">
-                    <div className="text-center">
-                      <div className="text-xl font-bold text-gray-900">{selectedBook.downloads_count || 0}</div>
-                      <div className="text-gray-500">Downloads</div>
-                    </div>
-                    <Badge className="capitalize">{selectedBook.category}</Badge>
-                  </div>
-                </div>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
+                    <Box sx={{ textAlign: 'center' }}>
+                      <Typography variant="h6" fontWeight={700}>{selectedBook.downloads_count || 0}</Typography>
+                      <Typography variant="caption" color="text.secondary">Downloads</Typography>
+                    </Box>
+                    <Chip label={selectedBook.category} sx={{ textTransform: 'capitalize' }} />
+                  </Box>
+                </Box>
 
-                <div className="flex-1 overflow-y-auto">
-                  <Tabs defaultValue="details" className="w-full">
-                    <TabsList className="w-full justify-start border-b rounded-none h-auto p-0">
-                      <TabsTrigger value="details" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
-                        Details
-                      </TabsTrigger>
-                      <TabsTrigger value="comments" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
-                        Comments
-                      </TabsTrigger>
-                      <TabsTrigger value="activity" className="rounded-none border-b-2 border-transparent data-[state=active]:border-indigo-600">
-                        Activity
-                      </TabsTrigger>
-                    </TabsList>
+                <Box sx={{ flex: 1, overflowY: 'auto' }}>
+                  <Tabs value={detailTabValue} onChange={(e, newValue) => setDetailTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tab value="details" label="Details" />
+                    <Tab value="comments" label="Comments" />
+                    <Tab value="activity" label="Activity" />
+                  </Tabs>
 
-                    <TabsContent value="details" className="p-6 space-y-4">
+                  {detailTabValue === 'details' && (
+                    <Box sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 2 }}>
                       {selectedBook.description && (
-                        <div>
-                          <h3 className="font-semibold text-gray-900 mb-2">Description</h3>
-                          <p className="text-gray-600 text-sm leading-relaxed">{selectedBook.description}</p>
-                        </div>
+                        <Box>
+                          <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Description</Typography>
+                          <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.6 }}>{selectedBook.description}</Typography>
+                        </Box>
                       )}
 
                       {selectedBook.tags && selectedBook.tags.length > 0 && (
-                        <div>
-                          <h3 className="font-semibold text-gray-900 mb-2">Tags</h3>
-                          <div className="flex flex-wrap gap-2">
+                        <Box>
+                          <Typography variant="subtitle2" fontWeight={600} sx={{ mb: 1 }}>Tags</Typography>
+                          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
                             {selectedBook.tags.map((tag, i) => (
-                              <Badge key={i} variant="outline">{tag}</Badge>
+                              <Chip key={i} label={tag} variant="outlined" size="small" />
                             ))}
-                          </div>
-                        </div>
+                          </Box>
+                        </Box>
                       )}
-                    </TabsContent>
+                    </Box>
+                  )}
 
-                    <TabsContent value="comments" className="p-6">
+                  {detailTabValue === 'comments' && (
+                    <Box sx={{ p: 3 }}>
                       <CommentsSection resourceId={selectedBook.id} />
-                    </TabsContent>
+                    </Box>
+                  )}
 
-                    <TabsContent value="activity" className="p-6">
+                  {detailTabValue === 'activity' && (
+                    <Box sx={{ p: 3 }}>
                       <ActivityHistory resourceId={selectedBook.id} />
-                    </TabsContent>
-                  </Tabs>
-                </div>
-              </div>
+                    </Box>
+                  )}
+                </Box>
+              </Box>
             </div>
           )}
       </DialogContent>
@@ -823,12 +823,11 @@ export default function Library() {
           </Typography>
         </DialogTitle>
         <DialogContent sx={{ maxHeight: '70vh', overflowY: 'auto' }}>
-          <div className="space-y-4 mt-4">
-            <div className="flex justify-end mb-2">
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 2 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'flex-end', mb: 1 }}>
               <Button
-                type="button"
-                variant="outline"
-                size="sm"
+                variant="outlined"
+                size="small"
                 onClick={async () => {
                   if (!formData.file_url) return;
                   setAnalyzing(true);
@@ -860,99 +859,106 @@ export default function Library() {
                 {analyzing ? 'Analyzing...' : '✨ AI Analyze Book'}
               </Button>
             </div>
-            <div>
-              <Label>Title *</Label>
-              <Input 
+            <Box>
+              <InputLabel>Title *</InputLabel>
+              <TextField 
+                fullWidth
                 value={formData.title} 
                 onChange={(e) => setFormData({ ...formData, title: e.target.value })} 
                 placeholder="Book title"
+                sx={{ mt: 1 }}
               />
-            </div>
-            <div>
-              <Label>Author</Label>
-              <Input 
+            </Box>
+            <Box>
+              <InputLabel>Author</InputLabel>
+              <TextField 
+                fullWidth
                 value={formData.author} 
                 onChange={(e) => setFormData({ ...formData, author: e.target.value })} 
                 placeholder="Author name"
+                sx={{ mt: 1 }}
               />
-            </div>
-            <div>
-              <Label>Description</Label>
-              <Textarea 
+            </Box>
+            <Box>
+              <InputLabel>Description</InputLabel>
+              <TextField 
+                fullWidth
+                multiline
+                rows={3}
                 value={formData.description} 
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })} 
-                rows={3}
                 placeholder="Brief description of the book"
+                sx={{ mt: 1 }}
               />
-            </div>
-            <div>
-              <Label>Category</Label>
-              <select 
+            </Box>
+            <Box>
+              <InputLabel>Category</InputLabel>
+              <Select 
+                fullWidth
                 value={formData.category} 
                 onChange={(e) => setFormData({ ...formData, category: e.target.value })} 
-                className="w-full px-3 py-2 border rounded-lg bg-white"
+                sx={{ mt: 1 }}
               >
-                <option value="youth_work">Youth Work</option>
-                <option value="gcse_books">GCSE Books</option>
-                <option value="gcse_past_questions">GCSE Past Questions</option>
-                <option value="a_level_books">A-Level Books</option>
-                <option value="inspirational">Inspirational</option>
-                <option value="dyni_books">DYNI Books</option>
-                <option value="workbooks_logbooks">Workbooks & Logbooks</option>
-                <option value="history_books">History Books</option>
-              </select>
-            </div>
+                <MenuItem value="youth_work">Youth Work</MenuItem>
+                <MenuItem value="gcse_books">GCSE Books</MenuItem>
+                <MenuItem value="gcse_past_questions">GCSE Past Questions</MenuItem>
+                <MenuItem value="a_level_books">A-Level Books</MenuItem>
+                <MenuItem value="inspirational">Inspirational</MenuItem>
+                <MenuItem value="dyni_books">DYNI Books</MenuItem>
+                <MenuItem value="workbooks_logbooks">Workbooks & Logbooks</MenuItem>
+                <MenuItem value="history_books">History Books</MenuItem>
+              </Select>
+            </Box>
             <CoverPicker
               fileUrl={formData.file_url}
               currentCover={formData.cover_image}
               onCoverChange={(url) => setFormData({ ...formData, cover_image: url })}
             />
-            <div>
-              <div className="flex items-center justify-between mb-2">
-                <Label>Tags</Label>
+            <Box>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                <InputLabel>Tags</InputLabel>
                 <Button
-                  type="button"
-                  variant="outline"
-                  size="sm"
+                  variant="outlined"
+                  size="small"
                   onClick={handleSuggestTags}
                   disabled={suggestingTags || !formData.title}
                 >
                   {suggestingTags ? 'Suggesting...' : '✨ AI Suggest Tags'}
                 </Button>
-              </div>
+              </Box>
               <TagInput
                 tags={formData.tags}
                 onChange={(tags) => setFormData({ ...formData, tags })}
                 suggestions={tagSuggestions}
               />
-            </div>
-            <div className="flex items-center gap-2">
+            </Box>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
               <input 
                 type="checkbox" 
                 checked={formData.is_featured} 
                 onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} 
                 id="featured"
               />
-              <Label htmlFor="featured">Feature this book</Label>
-            </div>
-            <div className="flex gap-3">
-              <Button 
-                variant="outline" 
-                onClick={() => { setShowUploadDialog(false); resetForm(); }} 
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button 
-                onClick={handleSubmit} 
-                disabled={uploadingCover} 
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                Save Book
-              </Button>
-            </div>
-          </div>
+              <InputLabel htmlFor="featured">Feature this book</InputLabel>
+            </Box>
+          </Box>
         </DialogContent>
+        <DialogActions>
+          <Button 
+            variant="outlined"
+            onClick={() => { setShowUploadDialog(false); resetForm(); }}
+          >
+            Cancel
+          </Button>
+          <Button 
+            variant="contained"
+            onClick={handleSubmit} 
+            disabled={uploadingCover}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+          >
+            Save Book
+          </Button>
+        </DialogActions>
       </Dialog>
     </Box>
   );
