@@ -3,7 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
+import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container } from '@mui/material';
 import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock, Rss } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
@@ -336,13 +336,30 @@ export default function Home() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: 0.5 }}
               >
-                <Link to={createPageUrl('Explore')}>
-                  <Button size="lg" className="bg-gradient-to-r from-yellow-400 via-amber-400 to-orange-500 text-[#003366] hover:from-yellow-300 hover:via-amber-300 hover:to-orange-400 text-2xl px-12 py-8 h-auto font-black rounded-full shadow-2xl hover:shadow-yellow-500/50 hover:scale-110 transition-all duration-300 relative overflow-hidden group">
-                    <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/30 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-                    <span className="relative z-10 flex items-center gap-3">
-                      {getContent('hero_button', 'BROWSE COURSES')}
-                      <ArrowRight className="w-8 h-8 group-hover:translate-x-2 transition-transform" />
-                    </span>
+                <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+                  <Button
+                    variant="contained"
+                    size="large"
+                    endIcon={<ArrowRight size={32} />}
+                    sx={{
+                      background: 'linear-gradient(to right, #fbbf24, #f59e0b, #f97316)',
+                      color: '#003366',
+                      fontSize: '1.5rem',
+                      fontWeight: 900,
+                      px: 6,
+                      py: 3,
+                      borderRadius: 50,
+                      boxShadow: '0 10px 40px rgba(251, 191, 36, 0.5)',
+                      textTransform: 'uppercase',
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #fcd34d, #fbbf24, #f59e0b)',
+                        transform: 'scale(1.05)',
+                        boxShadow: '0 15px 50px rgba(251, 191, 36, 0.6)',
+                      },
+                      transition: 'all 0.3s ease',
+                    }}
+                  >
+                    {getContent('hero_button', 'BROWSE COURSES')}
                   </Button>
                 </Link>
               </motion.div>
@@ -439,10 +456,28 @@ export default function Home() {
                 {getContent('leadership_title', 'Leadership Programmes')}
                 <span className="block text-white/90">{getContent('leadership_subtitle', 'available here.')}</span>
               </h2>
-              <Link to={createPageUrl('Programs')}>
-                <Button size="lg" className="bg-[#e91e63] hover:bg-[#c2185b] text-white text-lg px-10 py-7 h-auto font-bold rounded-full shadow-xl hover:scale-105 transition-all">
+              <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowRight size={24} />}
+                  sx={{
+                    bgcolor: '#e91e63',
+                    color: 'white',
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    px: 5,
+                    py: 2.5,
+                    borderRadius: 50,
+                    boxShadow: 3,
+                    '&:hover': {
+                      bgcolor: '#c2185b',
+                      transform: 'scale(1.05)',
+                      boxShadow: 6,
+                    },
+                  }}
+                >
                   {getContent('leadership_button', 'FIND OUT MORE')}
-                  <ArrowRight className="w-6 h-6 ml-3" />
                 </Button>
               </Link>
             </motion.div>
@@ -657,9 +692,25 @@ export default function Home() {
                 </h2>
                 <p className="text-muted-foreground text-lg">Hand-picked by our expert instructors</p>
               </div>
-              <Link to={createPageUrl('Explore')}>
-                <Button className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 hover:from-blue-700 hover:via-purple-700 hover:to-pink-700 text-white rounded-full shadow-lg shadow-blue-500/30 hover:shadow-xl hover:shadow-purple-500/50 hover:scale-105 transition-all duration-300 px-6 h-12">
-                  View all <ArrowRight className="w-4 h-4 ml-2" />
+              <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="contained"
+                  endIcon={<ArrowRight size={18} />}
+                  sx={{
+                    background: 'linear-gradient(to right, #2563eb, #9333ea, #ec4899)',
+                    color: 'white',
+                    borderRadius: 50,
+                    px: 3,
+                    py: 1.5,
+                    boxShadow: '0 4px 14px 0 rgba(37, 99, 235, 0.3)',
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #1d4ed8, #7e22ce, #db2777)',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 6px 20px 0 rgba(147, 51, 234, 0.5)',
+                    },
+                  }}
+                >
+                  View all
                 </Button>
               </Link>
             </motion.div>
@@ -776,13 +827,26 @@ export default function Home() {
                       </span>
                     )}
                   </div>
-                  <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-                    <Button className="w-full bg-gradient-to-r from-[#003366] to-blue-700 hover:from-[#002244] hover:to-blue-800 text-white font-bold py-6 rounded-xl text-base shadow-lg group-hover:shadow-xl group-hover:shadow-blue-500/30 transition-all relative overflow-hidden">
-                      <span className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-200%] group-hover:translate-x-[200%] transition-transform duration-700" />
-                      <span className="relative z-10 flex items-center justify-center gap-2">
-                        LEARN MORE
-                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                      </span>
+                  <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
+                    <Button
+                      variant="contained"
+                      fullWidth
+                      endIcon={<ArrowRight size={18} />}
+                      sx={{
+                        background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                        color: 'white',
+                        fontWeight: 700,
+                        py: 2,
+                        borderRadius: 3,
+                        fontSize: '1rem',
+                        boxShadow: 2,
+                        '&:hover': {
+                          background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                          boxShadow: '0 8px 24px rgba(37, 99, 235, 0.3)',
+                        },
+                      }}
+                    >
+                      LEARN MORE
                     </Button>
                   </Link>
                 </div>
@@ -804,10 +868,28 @@ export default function Home() {
             viewport={{ once: true }}
             className="text-center mt-12"
           >
-            <Link to={createPageUrl('Explore')}>
-              <Button size="lg" className="bg-[#003366] hover:bg-[#002244] text-white px-12 py-7 h-auto text-lg font-bold rounded-full shadow-xl hover:scale-105 transition-all">
+            <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+              <Button
+                variant="contained"
+                size="large"
+                endIcon={<ArrowRight size={24} />}
+                sx={{
+                  bgcolor: '#003366',
+                  color: 'white',
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  px: 6,
+                  py: 2.5,
+                  borderRadius: 50,
+                  boxShadow: 4,
+                  '&:hover': {
+                    bgcolor: '#002244',
+                    transform: 'scale(1.05)',
+                    boxShadow: 6,
+                  },
+                }}
+              >
                 View All Courses
-                <ArrowRight className="w-6 h-6 ml-3" />
               </Button>
             </Link>
           </motion.div>
@@ -1091,10 +1173,28 @@ function HeroCarousel({ items }) {
                           animate={currentIndex === idx ? { x: 0, opacity: 1 } : { x: 50, opacity: 0 }}
                           transition={{ duration: 0.7, delay: 0.3, ease: "easeInOut" }}
                         >
-                          <Link to={item.cta_link}>
-                            <Button size="lg" className="bg-yellow-400 text-[#003366] hover:bg-yellow-300 text-xl md:text-2xl px-10 md:px-12 py-6 md:py-8 h-auto font-black rounded-full shadow-2xl hover:scale-110 transition-all">
+                          <Link to={item.cta_link} style={{ textDecoration: 'none' }}>
+                            <Button
+                              variant="contained"
+                              size="large"
+                              endIcon={<ArrowRight size={32} />}
+                              sx={{
+                                bgcolor: '#fbbf24',
+                                color: '#003366',
+                                fontSize: { xs: '1.25rem', md: '1.5rem' },
+                                fontWeight: 900,
+                                px: { xs: 5, md: 6 },
+                                py: { xs: 2.5, md: 3 },
+                                borderRadius: 50,
+                                boxShadow: 6,
+                                '&:hover': {
+                                  bgcolor: '#fcd34d',
+                                  transform: 'scale(1.1)',
+                                  boxShadow: 8,
+                                },
+                              }}
+                            >
                               {item.cta_text}
-                              <ArrowRight className="w-6 h-6 md:w-8 md:h-8 ml-3" />
                             </Button>
                           </Link>
                         </motion.div>
@@ -1326,9 +1426,21 @@ function SuccessStoriesCarousel() {
                     )}
                   </div>
                   
-                  <Button 
-                    variant="outline" 
-                    className="w-fit bg-transparent border-2 border-white text-white hover:bg-white hover:text-gray-900 rounded-full px-6"
+                  <Button
+                    variant="outlined"
+                    sx={{
+                      borderColor: 'white',
+                      borderWidth: 2,
+                      color: 'white',
+                      bgcolor: 'transparent',
+                      borderRadius: 50,
+                      px: 3,
+                      '&:hover': {
+                        bgcolor: 'white',
+                        color: '#1f2937',
+                        borderColor: 'white',
+                      },
+                    }}
                   >
                     Learn more
                   </Button>
@@ -1424,8 +1536,8 @@ function SolutionsSection() {
               <h3 className="text-2xl font-bold text-foreground mb-3">{card.title}</h3>
               <p className="text-muted-foreground mb-4 leading-relaxed">{card.description}</p>
               {card.link && (
-                <Link to={card.link}>
-                  <Button variant="link" className="text-blue-600 hover:text-blue-700 p-0 font-semibold">
+                <Link to={card.link} style={{ textDecoration: 'none' }}>
+                  <Button sx={{ color: '#2563eb', fontWeight: 600, p: 0, '&:hover': { color: '#1d4ed8' } }}>
                     See how →
                   </Button>
                 </Link>
@@ -1479,14 +1591,32 @@ function LeadershipCTASection() {
           )}
 
           {section.cta_text && section.cta_link && (
-            <div className="flex flex-wrap gap-4">
-              <Link to={section.cta_link}>
-                <Button size="lg" className="bg-white text-violet-700 hover:bg-violet-50 rounded-full px-10 h-14 text-lg font-bold shadow-xl shadow-white/40 hover:shadow-violet-400/70 hover:scale-105 transition-all">
+            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
+              <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowRight size={20} />}
+                  sx={{
+                    bgcolor: 'white',
+                    color: '#7c3aed',
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    px: 5,
+                    py: 2,
+                    borderRadius: 50,
+                    boxShadow: '0 10px 30px rgba(255, 255, 255, 0.4)',
+                    '&:hover': {
+                      bgcolor: '#ede9fe',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 15px 40px rgba(139, 92, 246, 0.7)',
+                    },
+                  }}
+                >
                   {section.cta_text}
-                  <ArrowRight className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
-            </div>
+            </Box>
           )}
         </div>
       </motion.div>
@@ -1540,24 +1670,62 @@ function FinalCTASection() {
             </p>
           )}
           
-          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
+          <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, gap: 2, justifyContent: 'center', alignItems: 'center' }}>
             {section.cta1_text && section.cta1_link && (
-              <Link to={section.cta1_link}>
-                <Button size="lg" className="bg-gradient-to-r from-blue-600 to-purple-600 text-white hover:from-blue-700 hover:to-purple-700 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-2xl shadow-blue-500/50 hover:shadow-purple-500/70 transition-all duration-300">
+              <Link to={section.cta1_link} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="contained"
+                  size="large"
+                  endIcon={<ArrowRight size={24} />}
+                  sx={{
+                    background: 'linear-gradient(to right, #2563eb, #9333ea)',
+                    color: 'white',
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    px: 5,
+                    py: 2,
+                    borderRadius: 50,
+                    boxShadow: '0 10px 30px rgba(37, 99, 235, 0.5)',
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #1d4ed8, #7e22ce)',
+                      transform: 'scale(1.05)',
+                      boxShadow: '0 15px 40px rgba(147, 51, 234, 0.7)',
+                    },
+                  }}
+                >
                   {section.cta1_text}
-                  <ArrowRight className="w-6 h-6 ml-2" />
                 </Button>
               </Link>
             )}
             {section.cta2_text && section.cta2_link && (
-              <Link to={section.cta2_link}>
-                <Button size="lg" variant="outline" className="border-2 border-white/30 bg-white/5 text-white hover:bg-white/10 hover:border-white/50 hover:scale-105 rounded-full px-10 h-16 text-lg font-bold shadow-xl transition-all duration-300">
+              <Link to={section.cta2_link} style={{ textDecoration: 'none' }}>
+                <Button
+                  variant="outlined"
+                  size="large"
+                  endIcon={<TrendingUp size={20} />}
+                  sx={{
+                    borderColor: 'rgba(255, 255, 255, 0.3)',
+                    borderWidth: 2,
+                    bgcolor: 'rgba(255, 255, 255, 0.05)',
+                    color: 'white',
+                    fontSize: '1.125rem',
+                    fontWeight: 700,
+                    px: 5,
+                    py: 2,
+                    borderRadius: 50,
+                    boxShadow: 4,
+                    '&:hover': {
+                      bgcolor: 'rgba(255, 255, 255, 0.1)',
+                      borderColor: 'rgba(255, 255, 255, 0.5)',
+                      transform: 'scale(1.05)',
+                    },
+                  }}
+                >
                   {section.cta2_text}
-                  <TrendingUp className="w-5 h-5 ml-2" />
                 </Button>
               </Link>
             )}
-          </div>
+          </Box>
         </motion.div>
       </div>
     </section>
@@ -1591,8 +1759,26 @@ function EcosystemSection() {
             {section.description || 'Our capabilities, partner network, services, and community are here to help you create your ideal edtech environment and deliver on important outcomes.'}
           </p>
           {section.cta_text && section.cta_link && (
-            <Link to={section.cta_link}>
-              <Button size="lg" variant="outline" className="border-2 border-white text-white hover:bg-white hover:text-[#003B5C] rounded-full px-8 py-6 h-auto text-lg font-semibold">
+            <Link to={section.cta_link} style={{ textDecoration: 'none' }}>
+              <Button
+                variant="outlined"
+                size="large"
+                sx={{
+                  borderColor: 'white',
+                  borderWidth: 2,
+                  color: 'white',
+                  fontSize: '1.125rem',
+                  fontWeight: 600,
+                  px: 4,
+                  py: 2,
+                  borderRadius: 50,
+                  '&:hover': {
+                    bgcolor: 'white',
+                    color: '#003B5C',
+                    borderColor: 'white',
+                  },
+                }}
+              >
                 {section.cta_text}
               </Button>
             </Link>
