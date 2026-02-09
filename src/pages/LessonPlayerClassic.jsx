@@ -769,14 +769,14 @@ export default function LessonPlayerClassic() {
                 </Box>
 
                 <Box sx={{ p: 2, borderTop: '1px solid rgba(255,255,255,0.2)', display: { xs: 'block', lg: 'none' } }}>
-                <Button 
-                onClick={() => setShowSidebar(false)}
-                fullWidth
-                startIcon={<X size={20} />}
-                sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, borderRadius: 2 }}
-                >
-                Close Menu
-                </Button>
+                  <Button 
+                    onClick={() => setShowSidebar(false)}
+                    fullWidth
+                    startIcon={<X size={20} />}
+                    sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, borderRadius: 2 }}
+                  >
+                    Close Menu
+                  </Button>
                 </Box>
                 </Box>
                 </Drawer>
