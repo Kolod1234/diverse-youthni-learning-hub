@@ -66,11 +66,25 @@ export default function MUIThemeProvider({ children }) {
         styleOverrides: {
           root: {
             borderRadius: 16,
-            boxShadow: isDark ? '0px 4px 12px rgba(0,0,0,0.4)' : '0px 4px 12px rgba(0,0,0,0.08)',
+            background: isDark 
+              ? 'linear-gradient(135deg, rgba(255,255,255,0.08) 0%, rgba(255,255,255,0.02) 100%)'
+              : 'linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)',
+            backdropFilter: 'blur(10px)',
+            border: isDark
+              ? '1px solid rgba(255,255,255,0.1)'
+              : '1px solid rgba(255,255,255,0.4)',
+            boxShadow: isDark 
+              ? '0px 8px 32px 0px rgba(0,0,0,0.3)'
+              : '0px 8px 32px 0px rgba(0,0,0,0.1)',
             transition: 'all 0.3s ease',
             '&:hover': {
-              boxShadow: isDark ? '0px 8px 24px rgba(0,0,0,0.6)' : '0px 8px 24px rgba(0,0,0,0.12)',
+              boxShadow: isDark 
+                ? '0px 12px 40px 0px rgba(0,0,0,0.4)'
+                : '0px 12px 40px 0px rgba(0,0,0,0.15)',
               transform: 'translateY(-4px)',
+              border: isDark
+                ? '1px solid rgba(255,255,255,0.15)'
+                : '1px solid rgba(255,255,255,0.5)',
             },
           },
         },
