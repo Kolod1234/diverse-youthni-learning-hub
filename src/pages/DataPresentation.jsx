@@ -97,35 +97,37 @@ export default function DataPresentation() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-white to-purple-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        <div className="mb-8">
-          <div className="flex items-center gap-4 mb-3">
-            <div className="w-14 h-14 bg-gradient-to-br from-indigo-600 to-purple-600 rounded-2xl flex items-center justify-center">
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #eef2ff, #fdf2f8, #f3e8ff)' }}>
+      <Container maxWidth="lg" sx={{ py: 4 }}>
+        <Box sx={{ mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2 }}>
+            <Box sx={{ width: 56, height: 56, background: 'linear-gradient(to bottom right, #4f46e5, #7c3aed)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
               <Sparkles className="w-7 h-7 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">AI Slide Generator</h1>
-              <p className="text-gray-500">Create beautiful presentations with AI</p>
-            </div>
-          </div>
-        </div>
+            </Box>
+            <Box>
+              <Typography variant="h4" sx={{ fontWeight: 'bold', m: 0 }}>AI Slide Generator</Typography>
+              <Typography variant="body2" color="textSecondary">Create beautiful presentations with AI</Typography>
+            </Box>
+          </Box>
+        </Box>
 
         {generatedSlides.length === 0 ? (
-          <div className="max-w-2xl mx-auto">
-            <Card className="p-6">
-              <AIGenerateMode onSlidesGenerated={setGeneratedSlides} />
+          <Box sx={{ maxWidth: 800, mx: 'auto' }}>
+            <Card sx={{ p: 3 }}>
+              <CardContent>
+                <AIGenerateMode onSlidesGenerated={setGeneratedSlides} />
+              </CardContent>
             </Card>
-          </div>
+          </Box>
         ) : (
-          <div className="fixed inset-0 z-50 bg-white">
+          <Box sx={{ position: 'fixed', inset: 0, zIndex: 50, bgcolor: 'white' }}>
             <SlideWorkspace
               initialSlides={generatedSlides}
               onChange={setGeneratedSlides}
             />
-          </div>
+          </Box>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }
