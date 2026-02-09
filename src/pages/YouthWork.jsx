@@ -333,7 +333,6 @@ export default function YouthWork() {
             </Typography>
           </Card>
         )}
-        </Box>
 
         {/* Coordinator View */}
         {isCoordinator && assignedProgress.length > 0 && (
