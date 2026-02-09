@@ -1867,9 +1867,9 @@ function LeadershipCTASection() {
               </Box>
             )}
           </Box>
-        </Box>
-      </motion.div>
-    </Container>
+        </motion.div>
+      </Container>
+    </Box>
   );
 }
 
