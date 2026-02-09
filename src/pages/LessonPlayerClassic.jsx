@@ -1214,9 +1214,9 @@ export default function LessonPlayerClassic() {
           <SheetHeader>
             <SheetTitle>My Notes</SheetTitle>
           </SheetHeader>
-          <div className="mt-6">
+          <Box sx={{ mt: 3 }}>
             <LessonNotes lessonId={lessonId} />
-          </div>
+          </Box>
         </SheetContent>
       </Sheet>
 
