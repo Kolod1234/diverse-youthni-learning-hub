@@ -444,20 +444,20 @@ export default function Home() {
       </Box>
 
       {/* Snap Finance Style Promo Banner */}
-      <section className="relative bg-gradient-to-br from-[#003366] via-[#004488] to-[#0055aa] py-16 md:py-20 overflow-hidden">
-        <div className="absolute top-0 right-0 w-96 h-96 bg-blue-400/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 left-0 w-96 h-96 bg-purple-400/10 rounded-full blur-3xl" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
-          <div className="grid md:grid-cols-2 gap-12 items-center">
+      <Box component="section" sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #003366, #004488, #0055aa)', py: { xs: 8, md: 10 }, overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: 0, right: 0, width: 384, height: 384, bgcolor: 'rgba(96, 165, 250, 0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
+        <Box sx={{ position: 'absolute', bottom: 0, left: 0, width: 384, height: 384, bgcolor: 'rgba(168, 85, 247, 0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 10 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 6, alignItems: 'center' }}>
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
               viewport={{ once: true }}
             >
-              <h2 className="text-4xl md:text-5xl font-bold text-white mb-6 leading-tight">
+              <Typography variant="h2" sx={{ fontSize: { xs: '2rem', md: '3rem' }, fontWeight: 700, color: 'white', mb: 3, lineHeight: 1.2 }}>
                 {getContent('leadership_title', 'Leadership Programmes')}
-                <span className="block text-white/90">{getContent('leadership_subtitle', 'available here.')}</span>
-              </h2>
+                <Box component="span" sx={{ display: 'block', color: 'rgba(255,255,255,0.9)' }}>{getContent('leadership_subtitle', 'available here.')}</Box>
+              </Typography>
               <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
                 <Button
                   variant="contained"
@@ -553,9 +553,9 @@ export default function Home() {
                 </Box>
               </Box>
             </motion.div>
-          </div>
-        </div>
-      </section>
+          </Box>
+        </Container>
+      </Box>
 
       {/* Funders Section */}
       {funderLogos.length > 0 && (
@@ -732,11 +732,10 @@ export default function Home() {
           >
             <ChevronRight size={28} color="#1f2937" />
           </IconButton>
-          </motion.div>
-          </Container>
-          </Box>
+        </motion.div>
+      </Container>
 
-          {/* Leadership Programmes CTA */}
+      {/* Leadership Programmes CTA */}
       <LeadershipCTASection />
 
       {/* Solutions Section */}
