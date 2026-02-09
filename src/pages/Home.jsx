@@ -364,8 +364,9 @@ export default function Home() {
                 </Link>
               </motion.div>
               </Box>
-              </motion.div>
-              </Container>
+            </motion.div>
+          </Container>
+        </Box>
       )}
 
       {/* Quick Stats Banner - For logged in users */}
