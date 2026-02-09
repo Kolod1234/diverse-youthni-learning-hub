@@ -49,6 +49,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { Stack } from '@mui/material';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
