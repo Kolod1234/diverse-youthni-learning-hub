@@ -388,59 +388,60 @@ export default function Home() {
       <TrendingCoursesCarousel />
 
       {/* Home Widgets */}
-      <section className="relative bg-gradient-to-br from-slate-950 via-blue-950 to-slate-950 py-16 overflow-hidden">
-        <div className="absolute top-0 left-1/4 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl" />
-        <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-600/10 rounded-full blur-3xl" />
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+      <Box component="section" sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #1e293b, #172554, #1e293b)', py: 16, overflow: 'hidden' }}>
+        <Box sx={{ position: 'absolute', top: 0, left: '25%', width: 384, height: 384, bgcolor: 'rgba(37, 99, 235, 0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
+        <Box sx={{ position: 'absolute', bottom: 0, right: '25%', width: 384, height: 384, bgcolor: 'rgba(147, 51, 234, 0.1)', borderRadius: '50%', filter: 'blur(96px)' }} />
+        <Container maxWidth="xl" sx={{ position: 'relative', zIndex: 10 }}>
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="flex items-center justify-between mb-8"
           >
-            <div>
-              <h2 className="text-3xl font-bold text-white mb-2">Your Dashboard</h2>
-              <p className="text-blue-200">Stay updated with your personalized widgets</p>
-            </div>
-            {user && <WidgetCustomizer user={user} widgetPreferences={user.widget_preferences || {}} />}
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 8 }}>
+              <Box>
+                <Typography variant="h4" sx={{ color: 'white', mb: 1, fontWeight: 700 }}>Your Dashboard</Typography>
+                <Typography sx={{ color: '#93c5fd' }}>Stay updated with your personalized widgets</Typography>
+              </Box>
+              {user && <WidgetCustomizer user={user} widgetPreferences={user.widget_preferences || {}} />}
+            </Box>
           </motion.div>
           
           {userLoading ? (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2, mb: 2 }}>
                 <WidgetSkeleton />
                 <WidgetSkeleton />
                 <WidgetSkeleton />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2, mb: 2 }}>
                 <WidgetSkeleton />
                 <WidgetSkeleton />
-              </div>
+              </Box>
             </>
           ) : (
             <>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2, mb: 2 }}>
                 {(!user?.widget_preferences?.weather || user.widget_preferences.weather.enabled !== false) && <WeatherWidget />}
                 {(!user?.widget_preferences?.clock || user.widget_preferences.clock.enabled !== false) && <ClockWidget />}
                 {(!user?.widget_preferences?.calendar || user.widget_preferences.calendar.enabled !== false) && <CalendarWidget />}
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2, mb: 2 }}>
                 {(!user?.widget_preferences?.upcoming_lessons || user.widget_preferences.upcoming_lessons.enabled !== false) && <UpcomingLessonsWidget />}
                 {(!user?.widget_preferences?.rss_notifications || user.widget_preferences.rss_notifications.enabled !== false) && <RSSNotificationsWidget />}
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-4">
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 2, mb: 2 }}>
                 {(!user?.widget_preferences?.quote || user.widget_preferences.quote.enabled !== false) && <QuoteWidget />}
                 {(!user?.widget_preferences?.fact || user.widget_preferences.fact.enabled !== false) && <FactOfDayWidget />}
                 {(!user?.widget_preferences?.discover || user.widget_preferences.discover.enabled !== false) && <DiscoverWidget />}
-              </div>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)' }, gap: 2, mb: 2 }}>
                 {(!user?.widget_preferences?.student_of_month || user.widget_preferences.student_of_month.enabled !== false) && <StudentOfMonthWidget />}
                 {(!user?.widget_preferences?.social_feed || user.widget_preferences.social_feed.enabled !== false) && <SocialFeedWidget />}
-              </div>
+              </Box>
             </>
           )}
-        </div>
-      </section>
+        </Container>
+      </Box>
 
       {/* Snap Finance Style Promo Banner */}
       <section className="relative bg-gradient-to-br from-[#003366] via-[#004488] to-[#0055aa] py-16 md:py-20 overflow-hidden">
@@ -558,13 +559,13 @@ export default function Home() {
 
       {/* Funders Section */}
       {funderLogos.length > 0 && (
-        <section className="py-16 bg-background">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-12">
-              <h2 className="text-3xl font-bold text-foreground mb-4">{getContent('funders_heading', 'Proudly Supported By')}</h2>
-              <p className="text-muted-foreground">{getContent('funders_description', 'Our funders who make this possible')}</p>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8">
+        <Box component="section" sx={{ py: 8, bgcolor: 'background.default' }}>
+          <Container maxWidth="xl">
+            <Box sx={{ textAlign: 'center', mb: 12 }}>
+              <Typography variant="h4" sx={{ fontWeight: 700, mb: 2, color: 'text.primary' }}>{getContent('funders_heading', 'Proudly Supported By')}</Typography>
+              <Typography color="text.secondary">{getContent('funders_description', 'Our funders who make this possible')}</Typography>
+            </Box>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(6, 1fr)' }, gap: 4 }}>
               {funderLogos.map((logo, idx) => (
                 <motion.div
                   key={logo.id}
@@ -573,33 +574,38 @@ export default function Home() {
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1, duration: 0.5 }}
                   whileHover={{ scale: 1.1, y: -5 }}
-                  className="flex items-center justify-center"
                 >
-                  {logo.website_url ? (
-                    <a 
-                      href={logo.website_url} 
-                      target="_blank" 
-                      rel="noopener noreferrer" 
-                      className="block grayscale hover:grayscale-0 transition-all duration-300 opacity-70 hover:opacity-100"
-                    >
-                      <img
+                  <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    {logo.website_url ? (
+                      <a 
+                        href={logo.website_url} 
+                        target="_blank" 
+                        rel="noopener noreferrer" 
+                        style={{ display: 'block', opacity: 0.7, transition: 'all 0.3s', textDecoration: 'none' }}
+                        onMouseEnter={(e) => e.currentTarget.style.opacity = '1'}
+                        onMouseLeave={(e) => e.currentTarget.style.opacity = '0.7'}
+                      >
+                        <Box
+                          component="img"
+                          src={logo.logo_url}
+                          alt={logo.name}
+                          sx={{ height: 80, width: 'auto', objectFit: 'contain' }}
+                        />
+                      </a>
+                    ) : (
+                      <Box
+                        component="img"
                         src={logo.logo_url}
                         alt={logo.name}
-                        className="h-20 w-auto object-contain"
+                        sx={{ height: 80, width: 'auto', objectFit: 'contain', opacity: 0.7 }}
                       />
-                    </a>
-                  ) : (
-                    <img
-                      src={logo.logo_url}
-                      alt={logo.name}
-                      className="h-20 w-auto object-contain opacity-70"
-                    />
-                  )}
+                    )}
+                  </Box>
                 </motion.div>
               ))}
-            </div>
-          </div>
-        </section>
+            </Box>
+          </Container>
+        </Box>
       )}
 
       {/* Partners Section */}
@@ -609,29 +615,41 @@ export default function Home() {
       <SuccessStoriesCarousel />
 
       {/* Image Carousel */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-20">
+      <Container maxWidth="xl" sx={{ py: 10 }}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6 }}
           viewport={{ once: true }}
-          className="text-center mb-12"
         >
-          <motion.span 
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-orange-500/10 via-rose-500/10 to-pink-500/10 border-2 border-orange-500/20 text-sm font-semibold mb-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className="bg-gradient-to-r from-orange-600 to-rose-600 bg-clip-text text-transparent flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-orange-500" />
-              Our Community
-            </span>
-          </motion.span>
-          <h2 className="text-4xl sm:text-5xl font-bold text-foreground mb-4">
-            Experience the <span className="bg-gradient-to-r from-orange-600 via-rose-600 to-pink-600 bg-clip-text text-transparent">Diverse Youth NI</span> Journey
-          </h2>
-          <p className="text-muted-foreground text-lg max-w-2xl mx-auto leading-relaxed">
-            See what's happening in our vibrant learning community through inspiring moments and achievements
-          </p>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Chip
+                icon={<Sparkles size={16} className="text-orange-500" />}
+                label="Our Community"
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 50,
+                  background: 'linear-gradient(to right, rgba(255, 102, 0, 0.1), rgba(244, 63, 94, 0.1), rgba(244, 114, 182, 0.1))',
+                  border: '2px solid rgba(255, 102, 0, 0.2)',
+                  fontWeight: 600,
+                  mb: 2,
+                  '& .MuiChip-label': {
+                    background: 'linear-gradient(to right, #ff6600, #f43f5e)',
+                    WebkitBackgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent'
+                  }
+                }}
+              />
+            </motion.div>
+            <Typography variant="h3" sx={{ fontSize: { xs: '2rem', sm: '3rem' }, fontWeight: 700, mb: 2, color: 'text.primary' }}>
+              Experience the <Box component="span" sx={{ background: 'linear-gradient(to right, #ff6600, #f43f5e, #f472b6)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent' }}>Diverse Youth NI</Box> Journey
+            </Typography>
+            <Typography sx={{ fontSize: '1.125rem', color: 'text.secondary', maxWidth: 800, mx: 'auto', lineHeight: 1.75 }}>
+              See what's happening in our vibrant learning community through inspiring moments and achievements
+            </Typography>
+          </Box>
         </motion.div>
         
         <motion.div 
@@ -1020,41 +1038,62 @@ export default function Home() {
       <FeaturesSection />
 
       {/* RSS Feed Section */}
-      <section id="news" className="py-20 bg-gradient-to-b from-purple-500/5 to-background">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+      <Box component="section" sx={{ py: 10, background: 'linear-gradient(to bottom, rgba(168, 85, 247, 0.05), transparent)' }}>
+        <Container maxWidth="xl">
           <motion.div 
             initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
           >
-            <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-600 dark:text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
-              <Rss className="w-4 h-4 inline-block mr-2" />
-              Latest Updates
-            </span>
-            <h2 className="text-3xl md:text-4xl font-bold text-foreground mb-4">
-              News & Announcements
-            </h2>
-            <p className="text-lg text-muted-foreground">Stay informed with our latest news and updates</p>
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip
+                icon={<Rss size={16} />}
+                label="Latest Updates"
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 50,
+                  bgcolor: 'rgba(37, 99, 235, 0.1)',
+                  color: 'primary.main',
+                  fontWeight: 600,
+                  mb: 2,
+                  border: '1px solid rgba(37, 99, 235, 0.2)'
+                }}
+              />
+              <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.25rem' }, fontWeight: 700, mb: 2 }}>
+                News & Announcements
+              </Typography>
+              <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>Stay informed with our latest news and updates</Typography>
+            </Box>
           </motion.div>
           <RSSFeedWidget limit={6} />
-        </div>
-      </section>
+        </Container>
+      </Box>
 
       {/* Blog Section */}
       {blogPosts.length > 0 && (
-        <section className="py-20 bg-slate-900">
-          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div className="text-center mb-16">
-              <span className="inline-block px-4 py-2 rounded-full bg-blue-500/10 text-blue-400 text-sm font-semibold mb-4 border border-blue-500/20">
-                Latest Insights
-              </span>
-              <h2 className="text-3xl md:text-4xl font-bold text-white mb-4">
+        <Box component="section" sx={{ py: 10, bgcolor: '#1e293b' }}>
+          <Container maxWidth="xl">
+            <Box sx={{ textAlign: 'center', mb: 8 }}>
+              <Chip
+                label="Latest Insights"
+                sx={{
+                  px: 2,
+                  py: 1,
+                  borderRadius: 50,
+                  bgcolor: 'rgba(37, 99, 235, 0.1)',
+                  color: '#60a5fa',
+                  fontWeight: 600,
+                  mb: 2,
+                  border: '1px solid rgba(37, 99, 235, 0.2)'
+                }}
+              />
+              <Typography variant="h3" sx={{ fontSize: { xs: '2rem', md: '2.25rem' }, fontWeight: 700, color: 'white', mb: 2 }}>
                 From Our Blog
-              </h2>
-              <p className="text-lg text-slate-400">Stay updated with the latest news and tips</p>
-            </div>
-            <div className="grid md:grid-cols-3 gap-8">
+              </Typography>
+              <Typography sx={{ fontSize: '1.125rem', color: '#94a3b8' }}>Stay updated with the latest news and tips</Typography>
+            </Box>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
               {blogPosts.map((post, idx) => (
                 <motion.div
                   key={post.id}
@@ -1106,9 +1145,9 @@ export default function Home() {
                   </Card>
                 </motion.div>
               ))}
-            </div>
-          </div>
-        </section>
+            </Box>
+          </Container>
+        </Box>
       )}
 
       {/* Ecosystem Section - Dynamic */}
