@@ -351,7 +351,7 @@ export default function Library() {
               </Button>
             </>
           )}
-        </div>
+        </Box>
 
         {/* Featured Section */}
         {featuredBooks.length > 0 && (
@@ -532,7 +532,7 @@ export default function Library() {
             <p className="text-gray-500">No resources found</p>
           </div>
         )}
-        </div>
+      </Container>
 
         {/* Upload Progress Dialog */}
         <Dialog open={uploadingFile} onOpenChange={() => {}}>
@@ -947,6 +947,6 @@ export default function Library() {
           </div>
         </DialogContent>
       </Dialog>
-    </div>
+    </Box>
   );
 }
