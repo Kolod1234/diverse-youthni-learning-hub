@@ -1170,8 +1170,9 @@ export default function LessonPlayerClassic() {
               />
             </Box>
           </Container>
-        </Box>
-      </Box>
+          </Box>
+          </Box>
+          </Box>
 
       {/* Command Palette */}
       <CommandPalette
