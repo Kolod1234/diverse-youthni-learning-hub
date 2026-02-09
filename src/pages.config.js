@@ -91,6 +91,7 @@ import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
+import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import LessonPlayerRise from './pages/LessonPlayerRise';
 import Library from './pages/Library';
@@ -120,7 +121,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import __Layout from './Layout.jsx';
 
 
@@ -169,6 +169,7 @@ export const PAGES = {
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
     "LessonPlayer": LessonPlayer,
+    "LessonPlayerClassic": LessonPlayerClassic,
     "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
     "LessonPlayerRise": LessonPlayerRise,
     "Library": Library,
@@ -198,7 +199,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "LessonPlayerClassic": LessonPlayerClassic,
 }
 
 export const pagesConfig = {

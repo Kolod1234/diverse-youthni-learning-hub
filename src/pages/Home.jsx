@@ -2232,7 +2232,7 @@ function PartnersSection() {
                             component="img"
                             src={logo.logo_url}
                             alt={logo.name}
-                            sx={{ maxHeight: 144, width: 'auto', objectFit: 'contain', '&:hover': { transform: 'scale(1.1)' }, transition: 'all 0.3s' }}
+                            sx={{ maxHeight: { xs: 80, sm: 120, md: 144 }, width: 'auto', objectFit: 'contain', '&:hover': { transform: 'scale(1.1)' }, transition: 'all 0.3s' }}
                           />
                         </a>
                       ) : (
@@ -2240,7 +2240,7 @@ function PartnersSection() {
                           component="img"
                           src={logo.logo_url}
                           alt={logo.name}
-                          sx={{ maxHeight: 144, width: 'auto', objectFit: 'contain' }}
+                          sx={{ maxHeight: { xs: 80, sm: 120, md: 144 }, width: 'auto', objectFit: 'contain' }}
                         />
                       )}
                     </Card>
