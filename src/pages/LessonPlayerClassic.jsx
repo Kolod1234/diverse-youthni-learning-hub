@@ -607,16 +607,16 @@ export default function LessonPlayerClassic() {
       >
         {/* Top Bar */}
                 <Box component="header" sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: 1, height: { xs: 56, md: 64 }, px: { xs: 1.5, md: 3 } }}>
-        <div className="flex items-center gap-4">
-          <button
-            className="lg:hidden"
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+          <IconButton
+            sx={{ display: { lg: 'none' } }}
             onClick={() => setShowSidebar(!showSidebar)}
           >
             <Menu className="w-6 h-6" />
-          </button>
-        </div>
+          </IconButton>
+        </Box>
         
-        <div className="flex items-center gap-4">
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* Progress Ring */}
           <div className="hidden md:block">
             <ProgressRing progress={progressPercent} size={50} />
