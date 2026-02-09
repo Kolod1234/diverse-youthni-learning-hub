@@ -19,11 +19,17 @@ import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [tabValue, setTabValue] = useState('in-progress');
+  const [accessDenied, setAccessDenied] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
+      
+      // Block tutors and non-admins from accessing this student dashboard
+      if (userData?.is_tutor || userData?.is_coordinator) {
+        setAccessDenied(true);
+      }
     };
     loadUser();
   }, []);
