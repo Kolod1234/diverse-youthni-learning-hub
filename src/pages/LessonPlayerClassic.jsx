@@ -1022,7 +1022,7 @@ export default function LessonPlayerClassic() {
                         primary={objective}
                         primaryTypographyProps={{
                           variant: 'body1',
-                          sx={{ fontSize: { xs: '1rem', sm: '1.125rem' }, color: 'text.primary' }
+                          sx: { fontSize: { xs: '1rem', sm: '1.125rem' }, color: 'text.primary' }
                         }}
                       />
                     </ListItem>
