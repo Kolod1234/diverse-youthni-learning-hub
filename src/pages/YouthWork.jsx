@@ -192,15 +192,16 @@ export default function YouthWork() {
                   <Typography sx={{ opacity: 0.9 }}>{qual.description}</Typography>
                 </Box>
 
-                <div className="p-6">
-                  <Tabs defaultValue="curriculum" className="w-full">
-                    <TabsList className="mb-6">
-                      <TabsTrigger value="curriculum">Curriculum</TabsTrigger>
-                      <TabsTrigger value="requirements">Requirements</TabsTrigger>
-                      <TabsTrigger value="practice">Effective Practice</TabsTrigger>
-                    </TabsList>
+                <CardContent>
+                  <Box sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>
+                    <Tabs defaultValue={0}>
+                      <Tab label="Curriculum" />
+                      <Tab label="Requirements" />
+                      <Tab label="Effective Practice" />
+                    </Tabs>
+                  </Box>
 
-                    <TabsContent value="curriculum">
+                  <Box sx={{ p: 2 }}>
                       {qual.curriculum && qual.curriculum.length > 0 ? (
                         <div className="space-y-4">
                           {qual.curriculum.map((unit, idx) => (
