@@ -39,6 +39,7 @@ import SubjectMasteryRoadmaps from '@/components/home/SubjectMasteryRoadmaps';
 import InstructorShowcase from '@/components/home/InstructorShowcase';
 import LearningStatisticsSection from '@/components/home/LearningStatisticsSection';
 import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
+import AboutUsSection from '@/components/home/AboutUsSection';
 
 export default function Home() {
   const [category, setCategory] = useState('all');
@@ -929,6 +930,9 @@ export default function Home() {
 
       {/* Free Resources Center */}
       <FreeResourcesCenter />
+
+      {/* About Us Section */}
+      <AboutUsSection />
 
       {/* Student Success Stories */}
       <StudentSuccessStories />
