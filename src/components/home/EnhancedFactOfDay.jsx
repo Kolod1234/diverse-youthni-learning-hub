@@ -111,7 +111,7 @@ export default function EnhancedFactOfDay() {
              transition={{ duration: 0.5 }}
              className="mb-8"
            >
-             <p className="text-3xl md:text-4xl font-bold text-gray-900 leading-relaxed">
+             <p className="text-3xl md:text-4xl font-bold text-white leading-relaxed">
                {selectedFact.fact}
              </p>
            </motion.div>
