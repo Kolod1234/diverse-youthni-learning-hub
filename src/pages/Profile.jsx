@@ -20,7 +20,9 @@ export default function Profile() {
   const [user, setUser] = useState(null);
   const [isEditing, setIsEditing] = useState(false);
   const [formData, setFormData] = useState({});
+  const [isUploadingAvatar, setIsUploadingAvatar] = useState(false);
   const queryClient = useQueryClient();
+  const fileInputRef = React.useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -69,6 +71,30 @@ export default function Profile() {
     updateProfileMutation.mutate(formData);
   };
 
+  const handleAvatarClick = () => {
+    fileInputRef.current?.click();
+  };
+
+  const handleAvatarUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setIsUploadingAvatar(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      await base44.auth.updateMe({ avatar: file_url });
+      const updatedUser = await base44.auth.me();
+      setUser(updatedUser);
+      toast.success('Profile picture updated!');
+    } catch (error) {
+      toast.error('Failed to upload profile picture');
+      console.error(error);
+    } finally {
+      setIsUploadingAvatar(false);
+      if (fileInputRef.current) fileInputRef.current.value = '';
+    }
+  };
+
   const totalHours = enrollments.reduce((acc, e) => {
     return acc + (e.progress_percent || 0) * 0.5; // Estimate
   }, 0);
@@ -86,14 +112,22 @@ export default function Profile() {
         >
           <Card sx={{ p: 4, mb: 4, boxShadow: 2 }}>
             <Box sx={{ display: 'flex', flexDirection: { xs: 'column', sm: 'row' }, alignItems: { xs: 'flex-start', sm: 'center' }, gap: 3 }}>
-              <Box sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }}>
-                <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: 'linear-gradient(to bottom right, #6366f1, #8b5cf6)', fontSize: '2rem', fontWeight: 600 }}>
+              <Box sx={{ position: 'relative', '&:hover .avatar-overlay': { opacity: 1 } }} onClick={handleAvatarClick}>
+                <Avatar src={user?.avatar} sx={{ width: 96, height: 96, border: 4, borderColor: 'white', boxShadow: 3, bgcolor: 'linear-gradient(to bottom right, #6366f1, #8b5cf6)', fontSize: '2rem', fontWeight: 600, cursor: 'pointer' }}>
                   {user?.full_name?.charAt(0) || 'U'}
                 </Avatar>
                 <Box className="avatar-overlay" sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', opacity: 0, transition: 'opacity 0.3s', cursor: 'pointer' }}>
                   <Camera size={24} color="white" />
                 </Box>
               </Box>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleAvatarUpload}
+                disabled={isUploadingAvatar}
+                style={{ display: 'none' }}
+              />
               
               <Box sx={{ flex: 1 }}>
                 <Typography variant="h4" fontWeight={700} sx={{ mb: 1 }}>{user?.full_name || 'User'}</Typography>
