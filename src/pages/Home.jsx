@@ -1012,6 +1012,7 @@ export default function Home() {
                 View All Courses
               </Button>
             </Link>
+            </Box>
           </motion.div>
         )}
       </Container>
