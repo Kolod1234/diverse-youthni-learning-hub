@@ -363,7 +363,8 @@ export default function Home() {
                   </Button>
                 </Link>
               </motion.div>
-            </Box>
+              </Box>
+            </motion.div>
           </Container>
         </Box>
       )}
