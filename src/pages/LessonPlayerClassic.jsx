@@ -524,31 +524,35 @@ export default function LessonPlayerClassic() {
   if (isLessonLocked && !lessonLoading) {
     return (
       <>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
-          <Card className="max-w-md p-8 text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-orange-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Lesson Locked</h2>
-            <p className="text-gray-600 mb-6">
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(135deg, #fef2f2 0%, #fee2e2 100%)' }}>
+          <Card sx={{ maxWidth: 400, p: 4, textAlign: 'center' }}>
+            <Box sx={{ width: 64, height: 64, bgcolor: '#fed7aa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+              <Lock style={{ width: 32, height: 32, color: '#d97706' }} />
+            </Box>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 1 }}>Lesson Locked</Typography>
+            <Typography color="text.secondary" sx={{ mb: 3 }}>
               This lesson requires an unlock key. Contact your tutor to get access.
-            </p>
-            <Button
-              onClick={() => setShowUnlockDialog(true)}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 gap-2"
-            >
-              <Key className="w-4 h-4" />
-              Enter Unlock Key
-            </Button>
-            <Button
-              variant="outline"
-              onClick={() => navigate(-1)}
-              className="w-full mt-3"
-            >
-              Back to Course
-            </Button>
+            </Typography>
+            <Stack spacing={2}>
+              <Button
+                onClick={() => setShowUnlockDialog(true)}
+                variant="contained"
+                fullWidth
+                sx={{ background: 'linear-gradient(90deg, #ea580c 0%, #dc2626 100%)', gap: 1 }}
+              >
+                <Key className="w-4 h-4" />
+                Enter Unlock Key
+              </Button>
+              <Button
+                onClick={() => navigate(-1)}
+                variant="outlined"
+                fullWidth
+              >
+                Back to Course
+              </Button>
+            </Stack>
           </Card>
-        </div>
+        </Box>
         <LessonUnlockDialog
           open={showUnlockDialog}
           onOpenChange={setShowUnlockDialog}
