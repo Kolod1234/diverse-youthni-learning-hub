@@ -618,16 +618,16 @@ export default function LessonPlayerClassic() {
         
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
           {/* Progress Ring */}
-          <div className="hidden md:block">
+          <Box sx={{ display: { xs: 'none', md: 'block' } }}>
             <ProgressRing progress={progressPercent} size={50} />
-          </div>
-          
+          </Box>
+
           {/* Estimated Time */}
           {estimatedMinutes > 0 && (
-            <div className="hidden lg:flex items-center gap-1 text-sm text-gray-600">
+            <Box sx={{ display: { xs: 'none', lg: 'flex' }, alignItems: 'center', gap: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>
               <Clock className="w-4 h-4" />
-              <span>{estimatedMinutes} min</span>
-            </div>
+              <Typography variant="caption">{estimatedMinutes} min</Typography>
+            </Box>
           )}
           
           <AccessibilityControls />
