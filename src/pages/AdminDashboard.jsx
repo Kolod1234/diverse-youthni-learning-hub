@@ -114,17 +114,17 @@ export default function AdminDashboard() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
+          style={{ marginBottom: 32 }}
         >
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-12 h-12 bg-gradient-to-br from-red-600 to-orange-600 rounded-xl flex items-center justify-center">
-              <Shield className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-              <p className="text-gray-500">Complete control over the platform</p>
-            </div>
-          </div>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 1 }}>
+            <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #dc2626, #ea580c)', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+              <Shield sx={{ width: 24, height: 24, color: 'white' }} />
+            </Box>
+            <Box>
+              <h1 style={{ fontSize: '1.875rem', fontWeight: 'bold', color: '#111827', margin: 0 }}>Admin Dashboard</h1>
+              <p style={{ color: '#6b7280', margin: '4px 0 0' }}>Complete control over the platform</p>
+            </Box>
+          </Box>
         </motion.div>
 
         {/* Quick Access Widgets */}
