@@ -858,7 +858,7 @@ export default function Library() {
               >
                 {analyzing ? 'Analyzing...' : '✨ AI Analyze Book'}
               </Button>
-            </div>
+            </Box>
             <Box>
               <InputLabel>Title *</InputLabel>
               <TextField 
