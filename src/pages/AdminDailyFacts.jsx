@@ -17,6 +17,7 @@ export default function AdminDailyFacts() {
     category: 'science',
     is_active: true
   });
+  const [generatingFact, setGeneratingFact] = useState(false);
 
   const queryClient = useQueryClient();
 
