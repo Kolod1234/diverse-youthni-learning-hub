@@ -679,10 +679,9 @@ export default function LessonPlayerClassic() {
           >
             EXIT COURSE
           </Button>
-          </div>
-          </Box>
+        </Box>
 
-          <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
           {/* Sidebar */}
           <motion.div
             initial={false}
