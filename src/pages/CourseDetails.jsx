@@ -245,8 +245,8 @@ export default function CourseDetails() {
                   <Chip icon={<Globe size={16} />} label="English" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                   <Chip icon={<Award size={16} />} label="Certificate" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                 </Box>
-              </motion.div>
-            </div>
+                </motion.div>
+                </Box>
             
             {/* Enrollment Card */}
             <Box>
