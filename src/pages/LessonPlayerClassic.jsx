@@ -44,11 +44,13 @@ import StreakTracker from '@/components/lesson/StreakTracker';
 import XPProgressBar from '@/components/lesson/XPProgressBar';
 import ThemeCustomizer from '@/components/lesson/ThemeCustomizer';
 import DifficultyRating from '@/components/lesson/DifficultyRating';
-import { Card, TextField } from '@mui/material';
+import { 
+  Box, Card, TextField, Button, Paper, Stack, Typography, Container, 
+  Drawer, AppBar, Toolbar, IconButton, Divider, CircularProgress
+} from '@mui/material';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
-import { Button } from '@mui/material';
 import { motion } from 'framer-motion';
 
 export default function LessonPlayerClassic() {
