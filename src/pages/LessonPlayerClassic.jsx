@@ -1049,8 +1049,8 @@ export default function LessonPlayerClassic() {
             </div>
           </div>
         </main>
-      </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Command Palette */}
       <CommandPalette
