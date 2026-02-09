@@ -20,6 +20,7 @@ import StudentOfMonthWidget from '@/components/home/StudentOfMonthWidget';
 import CalendarWidget from '@/components/home/CalendarWidget';
 import UpcomingLessonsWidget from '@/components/home/UpcomingLessonsWidget';
 import FactOfDayWidget from '@/components/home/FactOfDayWidget';
+import EnhancedFactOfDay from '@/components/home/EnhancedFactOfDay';
 import RSSNotificationsWidget from '@/components/home/RSSNotificationsWidget';
 import SocialFeedWidget from '@/components/home/SocialFeedWidget';
 import DiscoverWidget from '@/components/home/DiscoverWidget';
