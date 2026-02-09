@@ -1651,8 +1651,8 @@ function SuccessStoriesCarousel() {
                 </motion.div>
               </Box>
             ))}
-          </div>
-        </Box>
+            </Box>
+            </Box>
         
         <IconButton
           onClick={() => emblaApi?.scrollPrev()}
