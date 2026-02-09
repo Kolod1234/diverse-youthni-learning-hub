@@ -135,7 +135,11 @@ function RichTextRenderer({ slides }) {
           {slide.title && <h2 className="text-2xl font-bold mb-4 text-slate-900">{slide.title}</h2>}
           <div 
             className="prose prose-slate max-w-none"
-            dangerouslySetInnerHTML={{ __html: slide.content }}
+            dangerouslySetInnerHTML={{ 
+              __html: typeof slide.content === 'string' 
+                ? slide.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                : slide.content 
+            }}
           />
         </div>
       ))}

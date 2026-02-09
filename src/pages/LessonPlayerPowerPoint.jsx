@@ -856,7 +856,11 @@ export default function LessonPlayerPowerPoint() {
                         }}>
                           <div className="max-w-4xl w-full">
                             <h2 className="text-xl sm:text-3xl font-bold mb-4 text-foreground">{sortedSlides[currentSlideIndex]?.title}</h2>
-                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
+                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ 
+                              __html: typeof sortedSlides[currentSlideIndex]?.content === 'string'
+                                ? sortedSlides[currentSlideIndex].content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                                : sortedSlides[currentSlideIndex]?.content
+                            }} />
                           </div>
                         </div>
                       </TransformComponent>
