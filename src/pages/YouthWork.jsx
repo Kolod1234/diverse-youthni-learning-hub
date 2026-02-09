@@ -336,42 +336,42 @@ export default function YouthWork() {
 
         {/* Coordinator View */}
         {isCoordinator && assignedProgress.length > 0 && (
-        <Box sx={{ mt: 6 }}>
-          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>Your Assigned Participants</Typography>
-          <Grid container spacing={2}>
-            {assignedProgress.map(progress => {
-              const qual = qualifications.find(q => q.id === progress.qualification_id);
-              return (
-                <Grid item xs={12} key={progress.id}>
-                  <Card sx={{ p: 3 }}>
-                    <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
-                      <Box sx={{ flex: 1 }}>
-                        <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{progress.participant_name}</Typography>
-                        <Typography variant="caption" color="textSecondary">{progress.participant_email}</Typography>
-                        <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
-                          {qual?.title} - Unit {progress.unit_index + 1}
-                        </Typography>
-                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
-                          <LinearProgress variant="determinate" value={progress.progress_percent} sx={{ width: 128, height: 8 }} />
-                          <Typography variant="caption" color="textSecondary">{progress.progress_percent}%</Typography>
+          <Box sx={{ mt: 6 }}>
+            <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 3 }}>Your Assigned Participants</Typography>
+            <Grid container spacing={2}>
+              {assignedProgress.map(progress => {
+                const qual = qualifications.find(q => q.id === progress.qualification_id);
+                return (
+                  <Grid item xs={12} key={progress.id}>
+                    <Card sx={{ p: 3 }}>
+                      <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between' }}>
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" sx={{ fontWeight: 'bold' }}>{progress.participant_name}</Typography>
+                          <Typography variant="caption" color="textSecondary">{progress.participant_email}</Typography>
+                          <Typography variant="caption" color="textSecondary" sx={{ display: 'block', mt: 0.5 }}>
+                            {qual?.title} - Unit {progress.unit_index + 1}
+                          </Typography>
+                          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
+                            <LinearProgress variant="determinate" value={progress.progress_percent} sx={{ width: 128, height: 8 }} />
+                            <Typography variant="caption" color="textSecondary">{progress.progress_percent}%</Typography>
+                          </Box>
+                        </Box>
+                        <Box sx={{ display: 'flex', gap: 1 }}>
+                          <Chip 
+                            label={progress.is_approved ? 'Approved' : 'Pending Review'} 
+                            color={progress.is_approved ? 'success' : 'warning'} 
+                            size="small"
+                          />
                         </Box>
                       </Box>
-                      <Box sx={{ display: 'flex', gap: 1 }}>
-                        <Chip 
-                          label={progress.is_approved ? 'Approved' : 'Pending Review'} 
-                          color={progress.is_approved ? 'success' : 'warning'} 
-                          size="small"
-                        />
-                      </Box>
-                    </Box>
-                  </Card>
-                </Grid>
-              );
-            })}
-          </Grid>
-        </Box>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </Box>
         )}
       </Container>
     </Box>
-    );
-        }
+  );
+}
