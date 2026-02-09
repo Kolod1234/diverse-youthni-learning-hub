@@ -866,34 +866,40 @@ export default function LessonPlayerClassic() {
               )}
 
               {/* Media Player */}
-              {lesson.video_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="video"
-                    src={lesson.video_url}
-                  />
-                </div>
-              )}
+               {lesson.video_url && (
+                 <div className="my-4 sm:my-8">
+                   <div className="bg-black rounded-lg overflow-hidden">
+                     <EnhancedMediaPlayer
+                       type="video"
+                       src={lesson.video_url}
+                     />
+                   </div>
+                 </div>
+               )}
 
-              {lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="google-slides"
-                    src={lesson.google_slides_url.includes('/embed') 
-                      ? lesson.google_slides_url 
-                      : lesson.google_slides_url.replace('/edit', '/embed')}
-                  />
-                </div>
-              )}
+               {lesson.google_slides_url && !lesson.video_url && (
+                 <div className="my-4 sm:my-8">
+                   <div className="bg-black rounded-lg overflow-hidden">
+                     <EnhancedMediaPlayer
+                       type="google-slides"
+                       src={lesson.google_slides_url.includes('/embed') 
+                         ? lesson.google_slides_url 
+                         : `https://docs.google.com/presentation/d/${lesson.google_slides_url.match(/\/d\/([a-zA-Z0-9-_]+)/)?.[1]}/embed?start=false&loop=false&delayms=3000`}
+                     />
+                   </div>
+                 </div>
+               )}
 
-              {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
-                <div className="my-4 sm:my-8 -mx-4 sm:mx-0">
-                  <EnhancedMediaPlayer
-                    type="iframe"
-                    src={lesson.file_url}
-                  />
-                </div>
-              )}
+               {lesson.file_url && !lesson.video_url && !lesson.google_slides_url && (
+                 <div className="my-4 sm:my-8">
+                   <div className="bg-black rounded-lg overflow-hidden">
+                     <EnhancedMediaPlayer
+                       type="iframe"
+                       src={lesson.file_url}
+                     />
+                   </div>
+                 </div>
+               )}
 
               {/* Learning Objectives */}
               {lesson.learning_objectives && lesson.learning_objectives.length > 0 && (
