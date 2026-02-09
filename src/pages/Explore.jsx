@@ -1,17 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Slider } from '@/components/ui/slider';
-import { Checkbox } from '@/components/ui/checkbox';
-import { Label } from '@/components/ui/label';
-import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
+import { 
+  Slider, Checkbox, FormControlLabel, Button, Drawer, Box, Typography, Chip, Card, IconButton
+} from '@mui/material';
 import { Filter, X, BookOpen, Sparkles, TrendingUp, Award, Star, Clock, Users } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
-import { Badge } from '@/components/ui/badge';
 
 const categories = [
   { id: 'mathematics', label: 'Mathematics', icon: '🔢', color: 'from-blue-500 to-cyan-500' },
@@ -135,160 +132,191 @@ export default function Explore() {
   const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || showFreeOnly || searchQuery;
 
   const FilterContent = () => (
-    <div className="space-y-8">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
       {/* Categories */}
-      <div>
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <BookOpen className="w-4 h-4 text-primary" />
+      <Box>
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BookOpen size={16} color="#FF8C00" />
           Category
-        </h3>
-        <div className="space-y-2">
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {categories.map((category) => (
             <motion.div 
-              key={category.id} 
-              className={`flex items-center p-3 rounded-xl transition-all cursor-pointer ${
-                selectedCategories.includes(category.id) 
-                  ? `bg-gradient-to-r ${category.color} text-white shadow-md` 
-                  : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-border'
-              }`}
+              key={category.id}
               whileHover={{ scale: 1.02, x: 4 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setSelectedCategories(prev => 
-                  prev.includes(category.id)
-                    ? prev.filter(c => c !== category.id)
-                    : [...prev, category.id]
-                );
-              }}
             >
-              <Checkbox
-                id={`cat-${category.id}`}
-                checked={selectedCategories.includes(category.id)}
-                onCheckedChange={(checked) => {
-                  setSelectedCategories(prev => 
-                    checked 
-                      ? [...prev, category.id]
-                      : prev.filter(c => c !== category.id)
-                  );
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedCategories.includes(category.id)}
+                    onChange={(e) => {
+                      setSelectedCategories(prev => 
+                        e.target.checked
+                          ? [...prev, category.id]
+                          : prev.filter(c => c !== category.id)
+                      );
+                    }}
+                  />
+                }
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    <span style={{ fontSize: '1.125rem' }}>{category.icon}</span>
+                    <span>{category.label}</span>
+                  </Box>
+                }
+                sx={{
+                  width: '100%',
+                  m: 0,
+                  p: 1.5,
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  background: selectedCategories.includes(category.id) 
+                    ? 'linear-gradient(to right, #2563eb, #3b82f6)' 
+                    : 'background.paper',
+                  color: selectedCategories.includes(category.id) ? 'white' : 'text.primary',
+                  border: selectedCategories.includes(category.id) ? 0 : 1,
+                  borderColor: 'divider',
+                  '&:hover': { bgcolor: selectedCategories.includes(category.id) ? undefined : 'action.hover' },
+                  transition: 'all 0.2s'
                 }}
-                className={selectedCategories.includes(category.id) ? 'border-white' : ''}
               />
-              <Label htmlFor={`cat-${category.id}`} className={`ml-3 cursor-pointer font-medium flex items-center gap-2 ${
-                selectedCategories.includes(category.id) ? 'text-white' : 'text-foreground'
-              }`}>
-                <span className="text-lg">{category.icon}</span>
-                {category.label}
-              </Label>
             </motion.div>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Level */}
-      <div>
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <TrendingUp className="w-4 h-4 text-primary" />
+      <Box>
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <TrendingUp size={16} color="#FF8C00" />
           Level
-        </h3>
-        <div className="space-y-2">
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
           {levels.map((level) => (
             <motion.div 
-              key={level.id} 
-              className={`flex items-center p-3 rounded-xl transition-all cursor-pointer ${
-                selectedLevels.includes(level.id)
-                  ? 'bg-gradient-to-r from-indigo-600 to-purple-600 text-white shadow-md'
-                  : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-border'
-              }`}
+              key={level.id}
               whileHover={{ scale: 1.02, x: 4 }}
               whileTap={{ scale: 0.98 }}
-              onClick={() => {
-                setSelectedLevels(prev => 
-                  prev.includes(level.id)
-                    ? prev.filter(l => l !== level.id)
-                    : [...prev, level.id]
-                );
-              }}
             >
-              <Checkbox
-                id={`level-${level.id}`}
-                checked={selectedLevels.includes(level.id)}
-                onCheckedChange={(checked) => {
-                  setSelectedLevels(prev => 
-                    checked 
-                      ? [...prev, level.id]
-                      : prev.filter(l => l !== level.id)
-                  );
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedLevels.includes(level.id)}
+                    onChange={(e) => {
+                      setSelectedLevels(prev => 
+                        e.target.checked
+                          ? [...prev, level.id]
+                          : prev.filter(l => l !== level.id)
+                      );
+                    }}
+                  />
+                }
+                label={level.label}
+                sx={{
+                  width: '100%',
+                  m: 0,
+                  p: 1.5,
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  background: selectedLevels.includes(level.id) 
+                    ? 'linear-gradient(to right, #4f46e5, #7c3aed)' 
+                    : 'background.paper',
+                  color: selectedLevels.includes(level.id) ? 'white' : 'text.primary',
+                  border: selectedLevels.includes(level.id) ? 0 : 1,
+                  borderColor: 'divider',
+                  '&:hover': { bgcolor: selectedLevels.includes(level.id) ? undefined : 'action.hover' }
                 }}
-                className={selectedLevels.includes(level.id) ? 'border-white' : ''}
               />
-              <Label htmlFor={`level-${level.id}`} className={`ml-3 cursor-pointer font-medium ${
-                selectedLevels.includes(level.id) ? 'text-white' : 'text-foreground'
-              }`}>
-                {level.label}
-              </Label>
             </motion.div>
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
 
       {/* Price Range */}
-      <div>
-        <h3 className="font-semibold text-foreground mb-4 flex items-center gap-2">
-          <Award className="w-4 h-4 text-primary" />
+      <Box>
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Award size={16} color="#FF8C00" />
           Price Range
-        </h3>
-        <div className="bg-white dark:bg-slate-800 rounded-xl p-4 border border-border">
+        </Typography>
+        <Card sx={{ p: 2, border: 1, borderColor: 'divider' }}>
           <Slider
             value={priceRange}
-            onValueChange={setPriceRange}
+            onChange={(e, newValue) => setPriceRange(newValue)}
             max={200}
             step={10}
-            className="mb-4"
             disabled={showFreeOnly}
+            valueLabelDisplay="auto"
+            sx={{ mb: 2 }}
           />
-          <div className="flex justify-between text-sm font-semibold text-foreground mb-4">
-            <span className="px-3 py-1 bg-gradient-to-r from-green-100 to-emerald-100 dark:from-green-900 dark:to-emerald-900 rounded-full">£{priceRange[0]}</span>
-            <span className="px-3 py-1 bg-gradient-to-r from-blue-100 to-indigo-100 dark:from-blue-900 dark:to-indigo-900 rounded-full">£{priceRange[1]}</span>
-          </div>
-        </div>
-        <motion.div 
-          className={`flex items-center mt-4 p-3 rounded-xl cursor-pointer transition-all ${
-            showFreeOnly 
-              ? 'bg-gradient-to-r from-green-600 to-emerald-600 text-white shadow-lg' 
-              : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-border'
-          }`}
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 2 }}>
+            <Chip label={`£${priceRange[0]}`} sx={{ bgcolor: '#d1fae5', color: '#059669', fontWeight: 600 }} />
+            <Chip label={`£${priceRange[1]}`} sx={{ bgcolor: '#dbeafe', color: '#1e40af', fontWeight: 600 }} />
+          </Box>
+        </Card>
+        <motion.div
           whileHover={{ scale: 1.02, x: 4 }}
           whileTap={{ scale: 0.98 }}
-          onClick={() => setShowFreeOnly(!showFreeOnly)}
         >
-          <Checkbox
-            id="free-only"
-            checked={showFreeOnly}
-            onCheckedChange={setShowFreeOnly}
-            className={showFreeOnly ? 'border-white' : ''}
+          <FormControlLabel
+            control={
+              <Checkbox
+                checked={showFreeOnly}
+                onChange={(e) => setShowFreeOnly(e.target.checked)}
+              />
+            }
+            label={
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                <Sparkles size={16} />
+                <span>Free courses only</span>
+              </Box>
+            }
+            sx={{
+              width: '100%',
+              m: 0,
+              mt: 2,
+              p: 1.5,
+              borderRadius: 3,
+              cursor: 'pointer',
+              background: showFreeOnly 
+                ? 'linear-gradient(to right, #059669, #10b981)' 
+                : 'background.paper',
+              color: showFreeOnly ? 'white' : 'text.primary',
+              border: showFreeOnly ? 0 : 1,
+              borderColor: 'divider',
+              boxShadow: showFreeOnly ? 3 : 0
+            }}
           />
-          <Label htmlFor="free-only" className={`ml-3 cursor-pointer font-medium flex items-center gap-2 ${
-            showFreeOnly ? 'text-white' : 'text-foreground'
-          }`}>
-            <Sparkles className="w-4 h-4" />
-            Free courses only
-          </Label>
         </motion.div>
-      </div>
+      </Box>
 
       {hasActiveFilters && (
         <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
           <Button 
-            variant="outline" 
+            variant="outlined" 
             onClick={clearFilters}
-            className="w-full bg-gradient-to-r from-red-50 to-orange-50 dark:from-red-950 dark:to-orange-950 border-2 border-red-200 dark:border-red-800 hover:border-red-400 text-red-700 dark:text-red-300 font-semibold rounded-xl h-11 shadow-lg hover:shadow-xl transition-all"
+            startIcon={<X size={16} />}
+            fullWidth
+            sx={{
+              background: 'linear-gradient(to right, #fef2f2, #ffedd5)',
+              border: 2,
+              borderColor: '#fecaca',
+              color: '#b91c1c',
+              fontWeight: 600,
+              borderRadius: 3,
+              py: 1.5,
+              boxShadow: 2,
+              '&:hover': {
+                borderColor: '#fca5a5',
+                boxShadow: 3
+              }
+            }}
           >
-            <X className="w-4 h-4 mr-2" />
             Clear All Filters
           </Button>
         </motion.div>
       )}
-    </div>
+    </Box>
   );
 
   const stats = [
@@ -300,58 +328,71 @@ export default function Explore() {
 
   const featuredCourses = coursesWithActualData.filter(c => c.rating && c.rating >= 4.5).slice(0, 3);
 
+  const [mobileFilterOpen, setMobileFilterOpen] = useState(false);
+
   return (
     <CoursePasswordProtection user={user}>
-      <div className="min-h-screen bg-gradient-to-b from-slate-50 via-blue-50/30 to-white dark:from-slate-950 dark:via-blue-950/30 dark:to-slate-900">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, #eff6ff, white)' }}>
+        <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, sm: 3, lg: 4 }, py: 6 }}>
         {/* Header with Stats */}
         <motion.div 
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-16 text-center"
         >
-          <motion.span 
-            className="inline-block px-6 py-3 rounded-full bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 border-2 border-blue-500/30 text-sm font-bold mb-6"
-            whileHover={{ scale: 1.05 }}
-          >
-            <span className="bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent flex items-center gap-2">
-              <Sparkles className="w-4 h-4 text-blue-600" />
-              Discover Learning
-            </span>
-          </motion.span>
-          <h1 className="text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-gray-900 via-blue-900 to-purple-900 dark:from-white dark:via-blue-100 dark:to-purple-100 bg-clip-text text-transparent">
-            Explore Courses
-          </h1>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-            Discover courses tailored to your interests and start your learning journey today
-          </p>
+          <Box sx={{ textAlign: 'center', mb: 8 }}>
+            <motion.div whileHover={{ scale: 1.05 }}>
+              <Chip 
+                icon={<Sparkles size={16} color="#2563eb" />}
+                label="Discover Learning" 
+                sx={{ 
+                  px: 3, 
+                  py: 2.5, 
+                  borderRadius: 50, 
+                  background: 'linear-gradient(to right, rgba(37,99,235,0.1), rgba(147,51,234,0.1), rgba(236,72,153,0.1))',
+                  border: 2,
+                  borderColor: 'rgba(37,99,235,0.3)',
+                  fontWeight: 700,
+                  mb: 3,
+                  color: 'primary.main'
+                }}
+              />
+            </motion.div>
+            <Typography variant="h2" fontWeight={700} sx={{ mb: 2, fontSize: { xs: '2.5rem', md: '3.75rem' } }}>
+              Explore Courses
+            </Typography>
+            <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 600, mx: 'auto' }}>
+              Discover courses tailored to your interests and start your learning journey today
+            </Typography>
+          </Box>
         </motion.div>
 
         {/* Stats Grid */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid md:grid-cols-2 lg:grid-cols-4 gap-4 mb-12"
         >
-          {stats.map((stat, i) => {
-            const Icon = stat.icon;
-            return (
-              <motion.div
-                key={i}
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.1 }}
-                whileHover={{ y: -4 }}
-                className="bg-gradient-to-br from-white to-blue-50/50 dark:from-slate-800 dark:to-blue-950/30 rounded-2xl p-5 border border-border shadow-md hover:shadow-lg transition-all"
-              >
-                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${stat.color} flex items-center justify-center mb-3 shadow-lg`}>
-                  <Icon className="w-6 h-6 text-white" />
-                </div>
-                <p className="text-sm text-muted-foreground mb-1">{stat.label}</p>
-                <p className="text-2xl font-bold text-foreground">{stat.value}</p>
-              </motion.div>
-            );
-          })}
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 2, mb: 6 }}>
+            {stats.map((stat, i) => {
+              const Icon = stat.icon;
+              return (
+                <motion.div
+                  key={i}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.1 }}
+                  whileHover={{ y: -4 }}
+                >
+                  <Card sx={{ p: 2.5, border: 1, borderColor: 'divider', boxShadow: 2, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', borderRadius: 4 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: 3, background: 'linear-gradient(to bottom right, #2563eb, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 3 }}>
+                      <Icon className="w-6 h-6 text-white" style={{ color: 'white' }} />
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{stat.label}</Typography>
+                    <Typography variant="h5" fontWeight={700}>{stat.value}</Typography>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </Box>
         </motion.div>
 
         {/* Featured Courses Section */}
@@ -359,32 +400,31 @@ export default function Explore() {
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            className="mb-14"
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-2xl font-bold bg-gradient-to-r from-yellow-600 to-orange-600 bg-clip-text text-transparent flex items-center gap-2">
-                <Star className="w-6 h-6 text-yellow-500" />
-                Featured Courses
-              </h2>
-              <Badge className="bg-yellow-100 text-yellow-800">Top Rated</Badge>
-            </div>
-            <div className="grid md:grid-cols-3 gap-6">
-              <AnimatePresence>
-                {featuredCourses.map((course, i) => (
-                  <motion.div
-                    key={course.id}
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    transition={{ delay: i * 0.1 }}
-                    className="relative group"
-                  >
-                    <div className="absolute -inset-0.5 bg-gradient-to-r from-yellow-400 to-orange-400 rounded-2xl blur opacity-20 group-hover:opacity-40 transition-all" />
-                    <CourseCard course={course} index={i} />
-                  </motion.div>
-                ))}
-              </AnimatePresence>
-            </div>
+            <Box sx={{ mb: 7 }}>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                <Typography variant="h4" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Star size={24} color="#eab308" />
+                  Featured Courses
+                </Typography>
+                <Chip label="Top Rated" sx={{ bgcolor: '#fef3c7', color: '#a16207' }} />
+              </Box>
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
+                <AnimatePresence>
+                  {featuredCourses.map((course, i) => (
+                    <motion.div
+                      key={course.id}
+                      initial={{ opacity: 0, scale: 0.9 }}
+                      animate={{ opacity: 1, scale: 1 }}
+                      exit={{ opacity: 0, scale: 0.9 }}
+                      transition={{ delay: i * 0.1 }}
+                    >
+                      <CourseCard course={course} index={i} />
+                    </motion.div>
+                  ))}
+                </AnimatePresence>
+              </Box>
+            </Box>
           </motion.div>
         )}
 
@@ -392,200 +432,272 @@ export default function Explore() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-14"
         >
-          <h2 className="text-2xl font-bold mb-6">Browse by Category</h2>
-          <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-3">
-            {categories.map((cat, i) => (
-              <motion.button
-                key={cat.id}
-                initial={{ opacity: 0, y: 10 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ delay: i * 0.05 }}
-                whileHover={{ scale: 1.05, y: -2 }}
-                onClick={() => setSelectedCategories([cat.id])}
-                className={`p-3 rounded-xl transition-all ${
-                  selectedCategories.includes(cat.id)
-                    ? `bg-gradient-to-br ${cat.color} text-white shadow-lg`
-                    : 'bg-white dark:bg-slate-800 hover:bg-gray-50 dark:hover:bg-slate-700 border border-border shadow-sm hover:shadow-md'
-                }`}
-              >
-                <div className="text-2xl mb-1">{cat.icon}</div>
-                <div className="text-xs font-semibold line-clamp-2">{cat.label}</div>
-              </motion.button>
-            ))}
-          </div>
+          <Box sx={{ mb: 7 }}>
+            <Typography variant="h4" fontWeight={700} sx={{ mb: 3 }}>Browse by Category</Typography>
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)', lg: 'repeat(8, 1fr)' }, gap: 1.5 }}>
+              {categories.map((cat, i) => (
+                <motion.div
+                  key={cat.id}
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: i * 0.05 }}
+                  whileHover={{ scale: 1.05, y: -2 }}
+                >
+                  <Button
+                    onClick={() => setSelectedCategories([cat.id])}
+                    sx={{
+                      p: 1.5,
+                      borderRadius: 3,
+                      display: 'flex',
+                      flexDirection: 'column',
+                      alignItems: 'center',
+                      minWidth: 0,
+                      width: '100%',
+                      background: selectedCategories.includes(cat.id)
+                        ? 'linear-gradient(to bottom right, #2563eb, #3b82f6)'
+                        : 'background.paper',
+                      color: selectedCategories.includes(cat.id) ? 'white' : 'text.primary',
+                      border: selectedCategories.includes(cat.id) ? 0 : 1,
+                      borderColor: 'divider',
+                      boxShadow: selectedCategories.includes(cat.id) ? 3 : 1,
+                      '&:hover': { 
+                        boxShadow: selectedCategories.includes(cat.id) ? 4 : 2,
+                        bgcolor: selectedCategories.includes(cat.id) ? undefined : 'action.hover'
+                      }
+                    }}
+                  >
+                    <Typography sx={{ fontSize: '1.5rem', mb: 0.5 }}>{cat.icon}</Typography>
+                    <Typography variant="caption" fontWeight={600} sx={{ textAlign: 'center', lineHeight: 1.2 }}>
+                      {cat.label}
+                    </Typography>
+                  </Button>
+                </motion.div>
+              ))}
+            </Box>
+          </Box>
         </motion.div>
 
         {/* Search and Mobile Filter */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="flex gap-3 mb-12"
         >
-          <div className="flex-1">
-            <SearchBar 
-              value={searchQuery} 
-              onChange={setSearchQuery}
-              sortBy={sortBy}
-              onSortChange={setSortBy}
-            />
-          </div>
-          
-          {/* Mobile Filter Button */}
-          <Sheet>
-            <SheetTrigger asChild>
-              <Button variant="outline" className="lg:hidden h-12 px-5 rounded-xl border-2 border-primary/20 bg-gradient-to-r from-white to-blue-50 dark:from-slate-800 dark:to-blue-950 hover:border-primary/40 shadow-lg hover:shadow-xl transition-all">
-                <Filter className="w-5 h-5 text-primary" />
+          <Box sx={{ display: 'flex', gap: 1.5, mb: 6 }}>
+            <Box sx={{ flex: 1 }}>
+              <SearchBar 
+                value={searchQuery} 
+                onChange={setSearchQuery}
+                sortBy={sortBy}
+                onSortChange={setSortBy}
+              />
+            </Box>
+            
+            {/* Mobile Filter Button */}
+            <Box sx={{ display: { xs: 'block', lg: 'none' } }}>
+              <Button 
+                variant="outlined"
+                onClick={() => setMobileFilterOpen(true)}
+                startIcon={<Filter size={20} color="#FF8C00" />}
+                sx={{
+                  height: 48,
+                  px: 2.5,
+                  borderRadius: 3,
+                  border: 2,
+                  borderColor: 'rgba(255,140,0,0.2)',
+                  background: 'linear-gradient(to right, white, #eff6ff)',
+                  boxShadow: 3,
+                  '&:hover': {
+                    borderColor: 'rgba(255,140,0,0.4)',
+                    boxShadow: 4
+                  }
+                }}
+              >
                 {hasActiveFilters && (
-                  <Badge className="ml-2 bg-primary">{selectedCategories.length + selectedLevels.length + (showFreeOnly ? 1 : 0)}</Badge>
+                  <Chip 
+                    label={selectedCategories.length + selectedLevels.length + (showFreeOnly ? 1 : 0)} 
+                    size="small"
+                    sx={{ ml: 1, bgcolor: 'primary.main', color: 'white', height: 20 }}
+                  />
                 )}
               </Button>
-            </SheetTrigger>
-            <SheetContent side="left" className="w-80">
-              <SheetHeader>
-                <SheetTitle className="flex items-center gap-2">
-                  <Filter className="w-5 h-5" />
-                  Filters
-                </SheetTitle>
-              </SheetHeader>
-              <div className="mt-6">
-                <FilterContent />
-              </div>
-            </SheetContent>
-          </Sheet>
+            </Box>
+            <Drawer
+              anchor="left"
+              open={mobileFilterOpen}
+              onClose={() => setMobileFilterOpen(false)}
+              PaperProps={{ sx: { width: 320, p: 3 } }}
+            >
+              <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
+                <Filter size={20} />
+                <Typography variant="h6" fontWeight={600}>Filters</Typography>
+              </Box>
+              <FilterContent />
+            </Drawer>
+          </Box>
         </motion.div>
 
-        <div className="flex gap-8">
+        <Box sx={{ display: 'flex', gap: 4 }}>
           {/* Desktop Sidebar */}
-          <aside className="hidden lg:block w-72 shrink-0">
+          <Box sx={{ display: { xs: 'none', lg: 'block' }, width: 288, flexShrink: 0 }}>
             <motion.div 
               initial={{ opacity: 0, x: -20 }}
               animate={{ opacity: 1, x: 0 }}
-              className="sticky top-24 bg-gradient-to-br from-white via-blue-50/30 to-purple-50/30 dark:from-slate-800 dark:via-blue-950/30 dark:to-purple-950/30 rounded-2xl p-6 shadow-xl border-2 border-primary/10 backdrop-blur-sm"
             >
-              <h2 className="font-bold text-lg mb-6 flex items-center gap-2 bg-gradient-to-r from-gray-900 to-blue-900 dark:from-white dark:to-blue-100 bg-clip-text text-transparent">
-                <Filter className="w-5 h-5 text-primary" />
-                Filters
-              </h2>
-              <FilterContent />
+              <Card sx={{ position: 'sticky', top: 96, background: 'linear-gradient(to bottom right, white, rgba(239,246,255,0.3), rgba(243,232,255,0.3))', p: 3, boxShadow: 4, border: 2, borderColor: 'rgba(255,140,0,0.1)', borderRadius: 4, backdropFilter: 'blur(10px)' }}>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Filter size={20} color="#FF8C00" />
+                  Filters
+                </Typography>
+                <FilterContent />
+              </Card>
             </motion.div>
-          </aside>
+          </Box>
 
           {/* Course Grid */}
-          <div className="flex-1">
+          <Box sx={{ flex: 1 }}>
             <motion.div 
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="flex items-center justify-between mb-8 bg-gradient-to-r from-white via-blue-50/50 to-purple-50/50 dark:from-slate-800 dark:via-blue-950/50 dark:to-purple-950/50 p-4 rounded-2xl border border-border shadow-md"
             >
-              <div className="flex items-center gap-3">
-                <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-600 to-purple-600 flex items-center justify-center shadow-lg">
-                  <BookOpen className="w-6 h-6 text-white" />
-                </div>
-                <div>
-                  <p className="text-sm text-muted-foreground">Available Courses</p>
-                  <p className="text-2xl font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent">
-                    {sortedCourses.length}
-                  </p>
-                </div>
-              </div>
+              <Card sx={{ mb: 4, p: 2, background: 'linear-gradient(to right, white, rgba(239,246,255,0.5), rgba(243,232,255,0.5))', border: 1, borderColor: 'divider', boxShadow: 2, borderRadius: 4 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                    <Box sx={{ width: 48, height: 48, borderRadius: '50%', background: 'linear-gradient(to bottom right, #2563eb, #7c3aed)', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
+                      <BookOpen size={24} color="white" style={{ color: 'white' }} />
+                    </Box>
+                    <Box>
+                      <Typography variant="caption" color="text.secondary">Available Courses</Typography>
+                      <Typography variant="h5" fontWeight={700} color="primary">
+                        {sortedCourses.length}
+                      </Typography>
+                    </Box>
+                  </Box>
               
-              {/* Active Filters Pills */}
-              {hasActiveFilters && (
-                <div className="hidden md:flex items-center gap-2 flex-wrap">
-                  {selectedCategories.map(cat => {
-                    const category = categories.find(c => c.id === cat);
-                    return (
-                      <motion.span 
-                        key={cat}
-                        initial={{ scale: 0 }}
-                        animate={{ scale: 1 }}
-                        exit={{ scale: 0 }}
-                        whileHover={{ scale: 1.05 }}
-                        className={`inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r ${category.color} text-white rounded-full text-sm font-semibold shadow-lg`}
-                      >
-                        <span>{category.icon}</span>
-                        {category.label}
-                        <button onClick={(e) => {
-                          e.stopPropagation();
-                          setSelectedCategories(prev => prev.filter(c => c !== cat));
-                        }} className="hover:bg-white/20 rounded-full p-0.5 transition-colors">
-                          <X className="w-3 h-3" />
-                        </button>
-                      </motion.span>
-                    );
-                  })}
-                  {selectedLevels.map(lev => (
-                    <motion.span 
-                      key={lev}
-                      initial={{ scale: 0 }}
-                      animate={{ scale: 1 }}
-                      exit={{ scale: 0 }}
-                      whileHover={{ scale: 1.05 }}
-                      className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-indigo-600 to-purple-600 text-white rounded-full text-sm font-semibold shadow-lg"
-                    >
-                      {levels.find(l => l.id === lev)?.label}
-                      <button onClick={(e) => {
-                        e.stopPropagation();
-                        setSelectedLevels(prev => prev.filter(l => l !== lev));
-                      }} className="hover:bg-white/20 rounded-full p-0.5 transition-colors">
-                        <X className="w-3 h-3" />
-                      </button>
-                    </motion.span>
-                  ))}
-                </div>
-              )}
+                  {/* Active Filters Pills */}
+                  {hasActiveFilters && (
+                    <Box sx={{ display: { xs: 'none', md: 'flex' }, alignItems: 'center', gap: 1, flexWrap: 'wrap' }}>
+                      {selectedCategories.map(cat => {
+                        const category = categories.find(c => c.id === cat);
+                        return (
+                          <motion.div
+                            key={cat}
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                            whileHover={{ scale: 1.05 }}
+                          >
+                            <Chip
+                              label={
+                                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                                  <span>{category.icon}</span>
+                                  <span>{category.label}</span>
+                                </Box>
+                              }
+                              onDelete={() => setSelectedCategories(prev => prev.filter(c => c !== cat))}
+                              sx={{
+                                background: 'linear-gradient(to right, #2563eb, #3b82f6)',
+                                color: 'white',
+                                fontWeight: 600,
+                                boxShadow: 3,
+                                '& .MuiChip-deleteIcon': { color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }
+                              }}
+                            />
+                          </motion.div>
+                        );
+                      })}
+                      {selectedLevels.map(lev => (
+                        <motion.div
+                          key={lev}
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          exit={{ scale: 0 }}
+                          whileHover={{ scale: 1.05 }}
+                        >
+                          <Chip
+                            label={levels.find(l => l.id === lev)?.label}
+                            onDelete={() => setSelectedLevels(prev => prev.filter(l => l !== lev))}
+                            sx={{
+                              background: 'linear-gradient(to right, #4f46e5, #7c3aed)',
+                              color: 'white',
+                              fontWeight: 600,
+                              boxShadow: 3,
+                              '& .MuiChip-deleteIcon': { color: 'rgba(255,255,255,0.8)', '&:hover': { color: 'white' } }
+                            }}
+                          />
+                        </motion.div>
+                      ))}
+                    </Box>
+                  )}
+                </Box>
+              </Card>
             </motion.div>
 
             {isLoading ? (
-              <div className="grid md:grid-cols-2 xl:grid-cols-3 gap-6">
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }, gap: 3 }}>
                 {[...Array(9)].map((_, i) => (
-                  <div key={i} className="bg-white rounded-2xl overflow-hidden animate-pulse">
-                    <div className="aspect-video bg-gray-200" />
-                    <div className="p-5 space-y-3">
-                      <div className="h-4 bg-gray-200 rounded w-1/3" />
-                      <div className="h-5 bg-gray-200 rounded" />
-                      <div className="h-4 bg-gray-200 rounded w-2/3" />
-                    </div>
-                  </div>
+                  <Card key={i} sx={{ borderRadius: 4, overflow: 'hidden' }}>
+                    <Box sx={{ aspectRatio: '16/9', bgcolor: 'grey.200' }} className="animate-pulse" />
+                    <Box sx={{ p: 2.5, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                      <Box sx={{ height: 16, bgcolor: 'grey.200', borderRadius: 1, width: '33%' }} className="animate-pulse" />
+                      <Box sx={{ height: 20, bgcolor: 'grey.200', borderRadius: 1 }} className="animate-pulse" />
+                      <Box sx={{ height: 16, bgcolor: 'grey.200', borderRadius: 1, width: '66%' }} className="animate-pulse" />
+                    </Box>
+                  </Card>
                 ))}
-              </div>
+              </Box>
             ) : sortedCourses.length > 0 ? (
-              <motion.div 
-                className="grid md:grid-cols-2 xl:grid-cols-3 gap-8"
-                layout
-              >
-                <AnimatePresence>
-                  {sortedCourses.map((course, index) => (
-                    <CourseCard key={course.id} course={course} index={index} />
-                  ))}
-                </AnimatePresence>
+              <motion.div layout>
+                <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }, gap: 4 }}>
+                  <AnimatePresence>
+                    {sortedCourses.map((course, index) => (
+                      <CourseCard key={course.id} course={course} index={index} />
+                    ))}
+                  </AnimatePresence>
+                </Box>
               </motion.div>
             ) : (
               <motion.div 
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
-                className="text-center py-20 bg-gradient-to-br from-white via-blue-50 to-purple-50 dark:from-slate-800 dark:via-blue-950 dark:to-purple-950 rounded-3xl border-2 border-dashed border-border shadow-xl"
               >
-                <motion.div
-                  animate={{ y: [0, -10, 0] }}
-                  transition={{ repeat: Infinity, duration: 2 }}
-                >
-                  <BookOpen className="w-20 h-20 text-primary/50 mx-auto mb-6" />
-                </motion.div>
-                <h3 className="text-2xl font-bold text-foreground mb-3">No courses found</h3>
-                <p className="text-muted-foreground mb-8 text-lg">Try adjusting your search or filter criteria</p>
-                <Button onClick={clearFilters} className="bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white rounded-full px-8 h-12 font-semibold shadow-lg hover:shadow-xl hover:scale-105 transition-all">
-                  <X className="w-4 h-4 mr-2" />
-                  Clear all filters
-                </Button>
+                <Card sx={{ textAlign: 'center', py: 10, background: 'linear-gradient(to bottom right, white, #eff6ff, #faf5ff)', borderRadius: 6, border: 2, borderStyle: 'dashed', borderColor: 'divider', boxShadow: 4 }}>
+                  <motion.div
+                    animate={{ y: [0, -10, 0] }}
+                    transition={{ repeat: Infinity, duration: 2 }}
+                  >
+                    <BookOpen size={80} color="rgba(255,140,0,0.5)" style={{ margin: '0 auto 24px' }} />
+                  </motion.div>
+                  <Typography variant="h4" fontWeight={700} sx={{ mb: 1.5 }}>No courses found</Typography>
+                  <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>Try adjusting your search or filter criteria</Typography>
+                  <Button 
+                    onClick={clearFilters}
+                    variant="contained"
+                    startIcon={<X size={16} />}
+                    sx={{
+                      background: 'linear-gradient(to right, #2563eb, #7c3aed)',
+                      color: 'white',
+                      borderRadius: 50,
+                      px: 4,
+                      py: 1.5,
+                      fontWeight: 600,
+                      boxShadow: 3,
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #1d4ed8, #6d28d9)',
+                        boxShadow: 4,
+                        transform: 'scale(1.05)'
+                      }
+                    }}
+                  >
+                    Clear all filters
+                  </Button>
+                </Card>
               </motion.div>
             )}
-          </div>
-        </div>
-      </div>
-      </div>
+          </Box>
+        </Box>
+        </Box>
+      </Box>
     </CoursePasswordProtection>
   );
 }

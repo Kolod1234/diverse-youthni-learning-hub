@@ -1,8 +1,7 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Card, CardMedia, CardContent, Chip, Box, Typography, Button } from '@mui/material';
 import { Star, Clock, Users, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -17,9 +16,9 @@ const categoryColors = {
 };
 
 const levelColors = {
-  beginner: 'bg-green-100 text-green-700',
-  intermediate: 'bg-yellow-100 text-yellow-700',
-  advanced: 'bg-red-100 text-red-700',
+  beginner: { bgcolor: '#dcfce7', color: '#15803d' },
+  intermediate: { bgcolor: '#fef3c7', color: '#a16207' },
+  advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
 export default function CourseCard({ course }) {
@@ -56,108 +55,188 @@ export default function CourseCard({ course }) {
       viewport={{ once: true, margin: "-50px" }}
       transition={{ duration: 0.4 }}
     >
-      <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-        <div className={`group bg-white rounded-2xl overflow-hidden shadow-md hover:shadow-2xl transition-all duration-500 border-2 border-transparent hover:border-gradient-to-r ${getCategoryColor(course.category)} relative h-full`}>
-          {/* Gradient border on hover */}
-          <div className={`absolute inset-0 bg-gradient-to-r ${getCategoryColor(course.category)} rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity duration-500 pointer-events-none`} />
-          
+      <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
+        <Card 
+          sx={{ 
+            borderRadius: 4, 
+            overflow: 'hidden', 
+            boxShadow: 2, 
+            border: 2, 
+            borderColor: 'transparent',
+            position: 'relative',
+            height: '100%',
+            '&:hover': { 
+              boxShadow: 6,
+              borderColor: 'primary.main',
+              '& img': { transform: 'scale(1.1)' }
+            },
+            transition: 'all 0.5s'
+          }}
+        >
           {/* Image Section */}
-          <div className="relative overflow-hidden aspect-video bg-gradient-to-br from-gray-200 to-gray-300">
+          <CardMedia
+            component="div"
+            sx={{ position: 'relative', paddingTop: '56.25%', background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)' }}
+          >
             <img
               src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80')}
               alt={course.title}
-              className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700"
+              style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent, transparent)' }} />
             
             {/* Top-left badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-2">
+            <Box sx={{ position: 'absolute', top: 12, left: 12, display: 'flex', flexDirection: 'column', gap: 1 }}>
               {course.is_featured && (
-                <div className="bg-gradient-to-r from-amber-500 to-orange-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                  ⭐ Featured
-                </div>
+                <Chip 
+                  label="⭐ Featured" 
+                  sx={{ 
+                    background: 'linear-gradient(to right, #f59e0b, #f97316)', 
+                    color: 'white', 
+                    fontWeight: 700, 
+                    fontSize: '0.75rem',
+                    boxShadow: 3 
+                  }} 
+                />
               )}
-              <Badge className={`${getCategoryBgColor(course.category)} border-0 text-xs font-semibold capitalize shadow-md`}>
-                {course.category}
-              </Badge>
-            </div>
+              <Chip 
+                label={course.category} 
+                sx={{ 
+                  ...getCategoryBgColor(course.category), 
+                  border: 0, 
+                  textTransform: 'capitalize', 
+                  fontWeight: 600, 
+                  fontSize: '0.75rem',
+                  boxShadow: 2 
+                }} 
+              />
+            </Box>
             
             {/* Top-right badges */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-              <Badge className={`${levelColors[course.level] || levelColors.beginner} border-0 capitalize font-semibold shadow-md`}>
-                {course.level}
-              </Badge>
+            <Box sx={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-end' }}>
+              <Chip 
+                label={course.level} 
+                sx={{ 
+                  bgcolor: levelColors[course.level]?.bgcolor || levelColors.beginner.bgcolor,
+                  color: levelColors[course.level]?.color || levelColors.beginner.color,
+                  border: 0, 
+                  textTransform: 'capitalize', 
+                  fontWeight: 600,
+                  boxShadow: 2 
+                }} 
+              />
               {!course.price || course.price === 0 ? (
-                <div className="bg-green-500 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                  Free
-                </div>
+                <Chip label="Free" sx={{ bgcolor: '#22c55e', color: 'white', fontWeight: 700, fontSize: '0.75rem', boxShadow: 3 }} />
               ) : (
-                <div className="bg-indigo-600 text-white px-3 py-1 rounded-full text-xs font-bold shadow-lg">
-                  £{course.price}
-                </div>
+                <Chip label={`£${course.price}`} sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.75rem', boxShadow: 3 }} />
               )}
-            </div>
-          </div>
+            </Box>
+          </CardMedia>
           
           {/* Content Section */}
-          <div className="p-6 relative z-10">
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 10 }}>
             {/* Title */}
-            <h3 className="font-bold text-lg mb-2 line-clamp-2 group-hover:text-indigo-600 transition-colors text-gray-900">
+            <Typography 
+              variant="h6" 
+              fontWeight={700} 
+              sx={{ 
+                mb: 1, 
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                '&:hover': { color: 'primary.main' },
+                transition: 'color 0.3s'
+              }}
+            >
               {course.title}
-            </h3>
+            </Typography>
             
             {/* Description */}
-            <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+            <Typography 
+              variant="body2" 
+              color="text.secondary" 
+              sx={{ 
+                mb: 2,
+                overflow: 'hidden',
+                textOverflow: 'ellipsis',
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical'
+              }}
+            >
               {course.description}
-            </p>
+            </Typography>
             
 
             {/* Stats Row 1 */}
-            <div className="grid grid-cols-3 gap-3 mb-4">
-              <div className="text-center">
-                <div className="text-sm font-bold text-gray-900">{course.duration_hours || 0}h</div>
-                <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
-                  <Clock className="w-3 h-3" /> Duration
-                </div>
-              </div>
-              <div className="text-center">
-                <div className="text-sm font-bold text-gray-900">{course.lesson_count || course.total_lessons || 0}</div>
-                <div className="text-xs text-gray-500 flex items-center justify-center gap-1">
-                  <BookOpen className="w-3 h-3" /> Lessons
-                </div>
-              </div>
-              <div className="text-center">
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="body2" fontWeight={700}>{course.duration_hours || 0}h</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                  <Clock size={12} color="#6b7280" />
+                  <Typography variant="caption" color="text.secondary">Duration</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
+                <Typography variant="body2" fontWeight={700}>{course.lesson_count || course.total_lessons || 0}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                  <BookOpen size={12} color="#6b7280" />
+                  <Typography variant="caption" color="text.secondary">Lessons</Typography>
+                </Box>
+              </Box>
+              <Box sx={{ textAlign: 'center' }}>
                 {course.rating ? (
                   <>
-                    <div className="text-sm font-bold text-gray-900">{course.rating.toFixed(1)}</div>
-                    <div className="text-xs text-amber-500 flex items-center justify-center gap-1">
-                      <Star className="w-3 h-3 fill-amber-400" /> Rating
-                    </div>
+                    <Typography variant="body2" fontWeight={700}>{course.rating.toFixed(1)}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
+                      <Star size={12} className="fill-amber-400 text-amber-400" />
+                      <Typography variant="caption" sx={{ color: '#f59e0b' }}>Rating</Typography>
+                    </Box>
                   </>
                 ) : (
                   <>
-                    <div className="text-sm font-bold text-gray-400">N/A</div>
-                    <div className="text-xs text-gray-500">No Rating</div>
+                    <Typography variant="body2" fontWeight={700} color="text.disabled">N/A</Typography>
+                    <Typography variant="caption" color="text.secondary">No Rating</Typography>
                   </>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Box>
             
             {/* Enrollment count */}
             {course.enrolled_count > 0 && (
-              <div className="flex items-center justify-center gap-2 text-sm text-gray-600 mb-4 py-2 bg-gray-50 rounded-lg">
-                <Users className="w-4 h-4 text-indigo-600" />
-                <span className="font-semibold">{course.enrolled_count.toLocaleString()}</span>
-                <span className="text-gray-500">students enrolled</span>
-              </div>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2, py: 1, bgcolor: '#f9fafb', borderRadius: 2 }}>
+                <Users size={16} color="#4f46e5" />
+                <Typography variant="body2" fontWeight={600}>{course.enrolled_count.toLocaleString()}</Typography>
+                <Typography variant="body2" color="text.secondary">students enrolled</Typography>
+              </Box>
             )}
             
             {/* CTA Button */}
-            <button className={`w-full py-3 px-4 rounded-xl font-bold text-white transition-all duration-300 transform group-hover:scale-[1.02] shadow-md hover:shadow-lg bg-gradient-to-r ${getCategoryColor(course.category)}`}>
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{
+                py: 1.5,
+                px: 2,
+                borderRadius: 3,
+                fontWeight: 700,
+                background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                color: 'white',
+                boxShadow: 2,
+                '&:hover': {
+                  background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                  boxShadow: 3,
+                  transform: 'scale(1.02)'
+                },
+                transition: 'all 0.3s'
+              }}
+            >
               View Course →
-            </button>
-          </div>
-        </div>
+            </Button>
+          </CardContent>
+        </Card>
       </Link>
     </motion.div>
   );
