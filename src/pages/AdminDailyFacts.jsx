@@ -85,23 +85,17 @@ export default function AdminDailyFacts() {
   const generateFactWithAI = async () => {
     setGeneratingFact(true);
     try {
-      const categoryDescriptions = {
-        science: 'an interesting scientific fact about physics, chemistry, biology, or natural sciences',
-        history: 'a fascinating historical event or fact about world history',
-        nature: 'an interesting fact about wildlife, plants, ecosystems, or natural phenomena',
-        technology: 'a fact about technological innovations, computers, or modern technology',
-        space: 'a fascinating fact about space, astronomy, planets, or the universe'
-      };
-
-      const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Generate ${categoryDescriptions[formData.category]}. Make it educational, concise (1-3 sentences), and accurate. Format: just the fact itself, no extra text.`,
-        add_context_from_internet: true
-      });
-
-      setFormData({ ...formData, fact: result });
-      toast.success('Fact generated!');
+      const result = await base44.functions.invoke('fetchDailyFactsFromSources');
+      
+      if (result.data.success) {
+        queryClient.invalidateQueries(['daily-facts']);
+        toast.success(`Added ${result.data.factsAdded} unique facts from ${result.data.sourcesAttempted} sources!`);
+        setShowDialog(false);
+      } else {
+        toast.error('Failed to fetch facts from sources');
+      }
     } catch (error) {
-      toast.error('Failed to generate fact');
+      toast.error('Failed to generate facts from sources');
       console.error(error);
     } finally {
       setGeneratingFact(false);
