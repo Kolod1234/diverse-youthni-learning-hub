@@ -979,9 +979,40 @@ export default function LessonPlayerClassic() {
                     color: 'text.secondary',
                     mb: { xs: 2, sm: 3 }
                   }}
-                >
-                  {lesson.description}
-                </Typography>
+                  dangerouslySetInnerHTML={{
+                    __html: typeof lesson.description === 'string'
+                      ? lesson.description.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                      : lesson.description
+                  }}
+                />
+              )}
+
+              {/* Lesson Slides */}
+              {lesson.slides && lesson.slides.length > 0 && (
+                <Box sx={{ mt: { xs: 4, sm: 6 } }}>
+                  {lesson.slides.map((slide, idx) => (
+                    <Box key={idx} sx={{ mb: 4 }}>
+                      {slide.title && (
+                        <Typography 
+                          variant="h4" 
+                          sx={{ fontSize: { xs: '1.5rem', sm: '1.875rem' }, fontWeight: 600, mb: 2, color: 'text.primary' }}
+                        >
+                          {slide.title}
+                        </Typography>
+                      )}
+                      {slide.content && (
+                        <Box
+                          sx={{ prose: true, color: 'text.primary', lineHeight: 1.7 }}
+                          dangerouslySetInnerHTML={{
+                            __html: typeof slide.content === 'string'
+                              ? slide.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                              : slide.content
+                          }}
+                        />
+                      )}
+                    </Box>
+                  ))}
+                </Box>
               )}
 
               {/* Media Player */}
