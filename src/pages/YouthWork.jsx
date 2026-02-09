@@ -202,123 +202,120 @@ export default function YouthWork() {
                   </Box>
 
                   <Box sx={{ p: 2 }}>
-                      {qual.curriculum && qual.curriculum.length > 0 ? (
-                        <div className="space-y-4">
+                    {qual.curriculum && qual.curriculum.length > 0 ? (
+                        <Box sx={{ space: 2 }}>
                           {qual.curriculum.map((unit, idx) => (
-                            <Card key={idx} className="p-4 bg-gray-50">
-                              <div className="flex items-start justify-between mb-3">
-                                <div>
-                                  <h3 className="font-semibold text-gray-900 mb-1">
+                            <Card key={idx} sx={{ p: 2, bgcolor: '#f3f4f6' }}>
+                              <Box sx={{ display: 'flex', alignItems: 'flex-start', justifyContent: 'space-between', mb: 2 }}>
+                                <Box>
+                                  <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 0.5 }}>
                                     {unit.unit_title}
-                                  </h3>
+                                  </Typography>
                                   {unit.unit_code && (
-                                    <p className="text-sm text-gray-500">Code: {unit.unit_code}</p>
+                                    <Typography variant="caption" color="textSecondary">Code: {unit.unit_code}</Typography>
                                   )}
-                                </div>
-                                <div className="flex items-center gap-3 text-sm">
-                                  <Badge variant="outline">{unit.level}</Badge>
-                                  <Badge variant="outline">{unit.credits} Credits</Badge>
-                                </div>
-                              </div>
+                                </Box>
+                                <Box sx={{ display: 'flex', gap: 1 }}>
+                                  <Chip label={unit.level} size="small" variant="outlined" />
+                                  <Chip label={`${unit.credits} Credits`} size="small" variant="outlined" />
+                                </Box>
+                              </Box>
                               
                               {unit.learning_outcomes && unit.learning_outcomes.length > 0 && (
-                                <div>
-                                  <p className="text-sm font-medium text-gray-700 mb-2">
+                                <Box>
+                                  <Typography variant="caption" sx={{ fontWeight: 'bold', color: 'text.secondary', display: 'block', mb: 1 }}>
                                     Learning Outcomes:
-                                  </p>
-                                  <ul className="space-y-1">
+                                  </Typography>
+                                  <Box component="ul" sx={{ pl: 2 }}>
                                     {unit.learning_outcomes.map((outcome, oIdx) => (
-                                      <li key={oIdx} className="flex items-start gap-2 text-sm text-gray-600">
-                                        <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                                        {outcome}
-                                      </li>
+                                      <Box component="li" key={oIdx} sx={{ display: 'flex', gap: 1, mb: 0.5, color: 'text.secondary' }}>
+                                        <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#16a34a' }} />
+                                        <Typography variant="caption">{outcome}</Typography>
+                                      </Box>
                                     ))}
-                                  </ul>
-                                </div>
+                                  </Box>
+                                </Box>
                               )}
                             </Card>
                           ))}
-                        </div>
+                        </Box>
                       ) : (
-                        <p className="text-gray-500 text-center py-8">
+                        <Typography color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
                           Curriculum details coming soon
-                        </p>
+                        </Typography>
                       )}
-                    </TabsContent>
 
-                    <TabsContent value="requirements">
-                      <div className="space-y-6">
+                    {(qual.entry_requirements || qual.progression_routes) && (
+                      <Box sx={{ space: 3 }}>
                         {qual.entry_requirements && (
-                          <div>
-                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                              <BookOpen className="w-5 h-5 text-emerald-600" />
-                              Entry Requirements
-                            </h3>
-                            <p className="text-gray-700">{qual.entry_requirements}</p>
-                          </div>
+                          <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                              <BookOpen className="w-5 h-5" style={{ color: '#16a34a' }} />
+                              <Typography variant="body2" sx={{ fontWeight: 'bold', m: 0 }}>Entry Requirements</Typography>
+                            </Box>
+                            <Typography color="textSecondary">{qual.entry_requirements}</Typography>
+                          </Box>
                         )}
                         
                         {qual.progression_routes && (
-                          <div>
-                            <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                              <TrendingUp className="w-5 h-5 text-emerald-600" />
-                              Progression Routes
-                            </h3>
-                            <p className="text-gray-700">{qual.progression_routes}</p>
-                          </div>
+                          <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                              <TrendingUp className="w-5 h-5" style={{ color: '#16a34a' }} />
+                              <Typography variant="body2" sx={{ fontWeight: 'bold', m: 0 }}>Progression Routes</Typography>
+                            </Box>
+                            <Typography color="textSecondary">{qual.progression_routes}</Typography>
+                          </Box>
                         )}
-                      </div>
-                    </TabsContent>
+                      </Box>
+                    )}
 
-                    <TabsContent value="practice">
-                      {qual.effective_practice_model ? (
-                        <div className="space-y-6">
-                          {qual.effective_practice_model.purpose && (
-                            <div>
-                              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                                <Target className="w-5 h-5 text-emerald-600" />
-                                Purpose
-                              </h3>
-                              <p className="text-gray-700">{qual.effective_practice_model.purpose}</p>
-                            </div>
-                          )}
-                          
-                          {qual.effective_practice_model.principles && qual.effective_practice_model.principles.length > 0 && (
-                            <div>
-                              <h3 className="font-semibold text-gray-900 mb-3">Principles</h3>
-                              <ul className="space-y-2">
-                                {qual.effective_practice_model.principles.map((principle, idx) => (
-                                  <li key={idx} className="flex items-start gap-2 text-gray-700">
-                                    <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                                    {principle}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          
-                          {qual.effective_practice_model.key_processes && qual.effective_practice_model.key_processes.length > 0 && (
-                            <div>
-                              <h3 className="font-semibold text-gray-900 mb-3">Key Processes</h3>
-                              <ul className="space-y-2">
-                                {qual.effective_practice_model.key_processes.map((process, idx) => (
-                                  <li key={idx} className="flex items-start gap-2 text-gray-700">
-                                    <ArrowRight className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                                    {process}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <p className="text-gray-500 text-center py-8">
-                          Effective practice model details coming soon
-                        </p>
-                      )}
-                    </TabsContent>
-                  </Tabs>
-                </div>
+                    {qual.effective_practice_model ? (
+                      <Box sx={{ space: 3 }}>
+                        {qual.effective_practice_model.purpose && (
+                          <Box>
+                            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                              <Target className="w-5 h-5" style={{ color: '#16a34a' }} />
+                              <Typography variant="body2" sx={{ fontWeight: 'bold', m: 0 }}>Purpose</Typography>
+                            </Box>
+                            <Typography color="textSecondary">{qual.effective_practice_model.purpose}</Typography>
+                          </Box>
+                        )}
+                        
+                        {qual.effective_practice_model.principles && qual.effective_practice_model.principles.length > 0 && (
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>Principles</Typography>
+                            <Box component="ul" sx={{ pl: 2 }}>
+                              {qual.effective_practice_model.principles.map((principle, idx) => (
+                                <Box component="li" key={idx} sx={{ display: 'flex', gap: 1, mb: 1, color: 'text.secondary' }}>
+                                  <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#16a34a' }} />
+                                  <Typography variant="body2">{principle}</Typography>
+                                </Box>
+                              ))}
+                            </Box>
+                          </Box>
+                        )}
+                        
+                        {qual.effective_practice_model.key_processes && qual.effective_practice_model.key_processes.length > 0 && (
+                          <Box>
+                            <Typography variant="body2" sx={{ fontWeight: 'bold', mb: 1 }}>Key Processes</Typography>
+                            <Box component="ul" sx={{ pl: 2 }}>
+                              {qual.effective_practice_model.key_processes.map((process, idx) => (
+                                <Box component="li" key={idx} sx={{ display: 'flex', gap: 1, mb: 1, color: 'text.secondary' }}>
+                                  <ArrowRight className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#16a34a' }} />
+                                  <Typography variant="body2">{process}</Typography>
+                                </Box>
+                              ))}
+                            </Box>
+                          </Box>
+                        )}
+                      </Box>
+                    ) : (
+                      <Typography color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
+                        Effective practice model details coming soon
+                      </Typography>
+                    )}
+                  </Box>
+                </CardContent>
               </Card>
             </motion.div>
           ))}
