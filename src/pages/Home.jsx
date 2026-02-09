@@ -54,6 +54,7 @@ export default function Home() {
   const { data: currentUser, isLoading: userLoading } = useQuery({
     queryKey: ['user'],
     queryFn: () => base44.auth.me(),
+    staleTime: 1000 * 60 * 5, // 5 minutes
     onSuccess: (data) => setUser(data),
   });
 
@@ -64,6 +65,7 @@ export default function Home() {
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
     queryFn: () => base44.entities.SiteContent.list('key', 1000),
+    staleTime: 1000 * 60 * 30, // 30 minutes
   });
 
   const getContent = (key, defaultValue) => {
@@ -74,46 +76,45 @@ export default function Home() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const courses = await base44.entities.Course.list('-created_date', 100);
-      // Fetch lesson counts for all courses
-      const coursesWithCounts = await Promise.all(
-        courses.map(async (course) => {
-          const lessons = await base44.entities.Lesson.filter({ course_id: course.id });
-          return { ...course, lesson_count: lessons.length };
-        })
-      );
-      return coursesWithCounts;
+      const courses = await base44.entities.Course.list('-created_date', 50);
+      return courses;
     },
+    staleTime: 1000 * 60 * 10, // 10 minutes
   });
 
   const { data: carouselImages = [] } = useQuery({
     queryKey: ['carousel-images'],
     queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'main' }, 'order', 20),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: leadershipCarouselImages = [] } = useQuery({
     queryKey: ['leadership-carousel-images'],
     queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'leadership' }, 'order', 20),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: heroCarouselImages = [] } = useQuery({
     queryKey: ['hero-carousel-images'],
     queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'hero' }, 'order', 20),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: heroSections = [] } = useQuery({
     queryKey: ['page-sections-home'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true, section_type: 'hero_carousel' }, 'order', 10),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: allPageSections = [] } = useQuery({
     queryKey: ['page-sections-home-all'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true }, 'order', 100),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const defaultHeroBackgroundImages = [
@@ -130,48 +131,56 @@ export default function Home() {
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+    queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
+    staleTime: 1000 * 60 * 10,
   });
 
   const { data: allReviews = [] } = useQuery({
     queryKey: ['all-reviews'],
-    queryFn: () => base44.entities.Review.list('-created_date', 1000),
+    queryFn: () => base44.entities.Review.list('-created_date', 500),
+    staleTime: 1000 * 60 * 10,
   });
 
   const { data: blogPosts = [] } = useQuery({
     queryKey: ['blog-posts'],
     queryFn: () => base44.entities.BlogPost.filter({ is_published: true }, '-published_date', 3),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: funderLogos = [] } = useQuery({
     queryKey: ['funder-logos'],
     queryFn: () => base44.entities.PartnerLogo.filter({ type: 'funder', is_active: true }, 'order', 50),
     initialData: [],
+    staleTime: 1000 * 60 * 60,
   });
 
   const { data: gallerySection = [] } = useQuery({
     queryKey: ['page-sections-gallery'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'image_gallery', is_active: true }, 'order', 1),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: videoSection = [] } = useQuery({
     queryKey: ['page-sections-video'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'video_embed', is_active: true }, 'order', 1),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: teamSection = [] } = useQuery({
     queryKey: ['page-sections-team'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'team_members', is_active: true }, 'order', 1),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   const { data: faqSection = [] } = useQuery({
     queryKey: ['page-sections-faq'],
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'faq_section', is_active: true }, 'order', 1),
     initialData: [],
+    staleTime: 1000 * 60 * 30,
   });
 
   // Calculate actual ratings and enrollments for each course
