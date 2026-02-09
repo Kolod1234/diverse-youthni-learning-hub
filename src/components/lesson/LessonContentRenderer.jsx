@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertCircle, FileText, Film, PuzzleIcon, Zap } from 'lucide-react';
 import DocumentViewer from './DocumentViewer';
 import GoogleSlidePlayer from './GoogleSlidePlayer';
+import DOMPurify from 'isomorphic-dompurify';
 
 /**
  * Unified content renderer for different lesson content types
@@ -135,7 +136,7 @@ function RichTextRenderer({ slides }) {
           {slide.title && <h2 className="text-2xl font-bold mb-4 text-slate-900">{slide.title}</h2>}
           <div 
             className="prose prose-slate max-w-none"
-            dangerouslySetInnerHTML={{ __html: slide.content }}
+            dangerouslySetInnerHTML={{ __html: DOMPurify.sanitize(slide.content) }}
           />
         </div>
       ))}
