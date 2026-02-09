@@ -714,9 +714,8 @@ export default function Home() {
           >
             <ChevronRight size={28} color="#1f2937" />
           </IconButton>
-        </Box>
         </motion.div>
-      </Container>
+      </section>
 
       {/* Leadership Programmes CTA */}
       <LeadershipCTASection />
