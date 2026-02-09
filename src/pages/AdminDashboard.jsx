@@ -1,14 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
+import {
+  Button, Card, CardContent, CardHeader, TextField, Box, Container,
+  Chip, Avatar, Tabs, Tab, Paper, Table, TableBody, TableCell, TableHead,
+  TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem,
+  FormControl, InputLabel, AlertTitle, Alert, IconButton
+} from '@mui/material';
 import { 
   Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
   Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
