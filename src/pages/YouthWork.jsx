@@ -95,53 +95,55 @@ export default function YouthWork() {
         </motion.div>
 
         {/* Model of Effective Practice Overview */}
-        <Card className="p-8 mb-12 bg-gradient-to-br from-emerald-50 to-teal-50 border-emerald-200">
-          <div className="flex items-center gap-3 mb-6">
-            <Target className="w-8 h-8 text-emerald-600" />
-            <h2 className="text-2xl font-bold text-gray-900">Model of Effective Practice</h2>
-          </div>
-          
-          <div className="space-y-6">
-            <div>
-              <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                <Lightbulb className="w-5 h-5 text-emerald-600" />
-                Purpose
-              </h3>
-              <p className="text-gray-700 leading-relaxed">{modelOfEffectivePractice.purpose}</p>
-            </div>
+        <Card sx={{ p: 4, mb: 6, background: 'linear-gradient(to bottom right, #f0fdf4, #f0f9ff)', borderColor: '#a7f3d0', border: 1 }}>
+          <CardContent>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 3 }}>
+              <Target className="w-7 h-7" style={{ color: '#16a34a' }} />
+              <Typography variant="h5" sx={{ fontWeight: 'bold', m: 0 }}>Model of Effective Practice</Typography>
+            </Box>
+            
+            <Box sx={{ space: 3 }}>
+              <Box sx={{ mb: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                  <Lightbulb className="w-5 h-5" style={{ color: '#16a34a' }} />
+                  <Typography variant="h6" sx={{ fontWeight: 'bold', m: 0 }}>Purpose</Typography>
+                </Box>
+                <Typography color="textSecondary">{modelOfEffectivePractice.purpose}</Typography>
+              </Box>
 
-            <div className="grid md:grid-cols-2 gap-6">
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <CheckCircle className="w-5 h-5 text-emerald-600" />
-                  Core Principles
-                </h3>
-                <ul className="space-y-2">
-                  {modelOfEffectivePractice.principles.map((principle, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-gray-700">
-                      <CheckCircle className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                      <span className="text-sm">{principle}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
+              <Grid container spacing={3}>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                    <CheckCircle className="w-5 h-5" style={{ color: '#16a34a' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', m: 0 }}>Core Principles</Typography>
+                  </Box>
+                  <Box component="ul" sx={{ pl: 2, space: 1 }}>
+                    {modelOfEffectivePractice.principles.map((principle, idx) => (
+                      <Box component="li" key={idx} sx={{ display: 'flex', gap: 1, mb: 1, color: 'text.secondary' }}>
+                        <CheckCircle className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#16a34a' }} />
+                        <Typography variant="body2">{principle}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Grid>
 
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
-                  <TrendingUp className="w-5 h-5 text-emerald-600" />
-                  Key Processes
-                </h3>
-                <ul className="space-y-2">
-                  {modelOfEffectivePractice.keyProcesses.map((process, idx) => (
-                    <li key={idx} className="flex items-start gap-2 text-gray-700">
-                      <ArrowRight className="w-4 h-4 text-emerald-600 mt-0.5 shrink-0" />
-                      <span className="text-sm">{process}</span>
-                    </li>
-                  ))}
-                </ul>
-              </div>
-            </div>
-          </div>
+                <Grid item xs={12} md={6}>
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                    <TrendingUp className="w-5 h-5" style={{ color: '#16a34a' }} />
+                    <Typography variant="h6" sx={{ fontWeight: 'bold', m: 0 }}>Key Processes</Typography>
+                  </Box>
+                  <Box component="ul" sx={{ pl: 2, space: 1 }}>
+                    {modelOfEffectivePractice.keyProcesses.map((process, idx) => (
+                      <Box component="li" key={idx} sx={{ display: 'flex', gap: 1, mb: 1, color: 'text.secondary' }}>
+                        <ArrowRight className="w-4 h-4 mt-0.5 flex-shrink-0" style={{ color: '#16a34a' }} />
+                        <Typography variant="body2">{process}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Grid>
+              </Grid>
+            </Box>
+          </CardContent>
         </Card>
 
         {/* Level Filter */}
