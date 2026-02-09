@@ -113,7 +113,8 @@
     "@emotion/react": "^11.11.0",
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.0",
-    "@fontsource/roboto": "^5.0.0"
+    "@fontsource/roboto": "^5.0.0",
+    "isomorphic-dompurify": "^1.11.0"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
