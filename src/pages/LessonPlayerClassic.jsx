@@ -1033,14 +1033,14 @@ export default function LessonPlayerClassic() {
 
               {/* Interactive Elements - Generated from Learning Objectives */}
               {loadingInteractives && (
-                <div className="mt-8 sm:mt-12 text-center py-8">
-                  <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-                  <p className="text-gray-600">Generating interactive activities...</p>
-                </div>
+                <Box sx={{ mt: { xs: 4, sm: 6 }, textAlign: 'center', py: 4 }}>
+                  <Box sx={{ width: 32, height: 32, border: '3px solid', borderColor: 'primary.main', borderRadius: '50%', borderTop: '3px solid', borderTopColor: 'transparent', animation: 'spin 1s linear infinite', mx: 'auto', mb: 2 }} />
+                  <Typography color="text.secondary">Generating interactive activities...</Typography>
+                </Box>
               )}
 
               {!loadingInteractives && interactiveContent && (
-                <div className="space-y-6 mt-8 sm:mt-12">
+                <Stack spacing={3} sx={{ mt: { xs: 4, sm: 6 } }}>
                   {interactiveContent.matchingPairs?.length > 0 && (
                     <MatchingGame
                       pairs={interactiveContent.matchingPairs}
