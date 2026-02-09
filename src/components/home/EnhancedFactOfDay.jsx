@@ -74,47 +74,47 @@ export default function EnhancedFactOfDay() {
           />
         </div>
 
-        <div className="relative p-8 md:p-10">
-          {/* Header */}
-          <div className="flex items-center justify-between mb-6">
-            <motion.div
-              animate={{ y: [0, -4, 0] }}
-              transition={{ duration: 3, repeat: Infinity }}
-              className="flex items-center gap-3"
-            >
-              <div
-                className="w-12 h-12 rounded-lg flex items-center justify-center"
-                style={{ background: config.color + '20' }}
-              >
-                <IconComponent className={`w-6 h-6 ${config.accent}`} />
-              </div>
-              <div>
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Today's Fact</p>
-                <p className={`text-sm font-bold capitalize ${config.accent}`}>{selectedFact.category}</p>
-              </div>
-            </motion.div>
-            <motion.button
-              whileHover={{ rotate: 180 }}
-              transition={{ duration: 0.5 }}
-              onClick={handleRefresh}
-              className="p-2 hover:bg-white/50 rounded-lg transition-colors"
-            >
-              <Sparkles className="w-5 h-5 text-gray-600" />
-            </motion.button>
-          </div>
+        <div className="relative p-10 md:p-16">
+           {/* Header */}
+           <div className="flex items-center justify-between mb-8">
+             <motion.div
+               animate={{ y: [0, -4, 0] }}
+               transition={{ duration: 3, repeat: Infinity }}
+               className="flex items-center gap-4"
+             >
+               <div
+                 className="w-16 h-16 rounded-lg flex items-center justify-center"
+                 style={{ background: config.color + '20' }}
+               >
+                 <IconComponent className={`w-8 h-8 ${config.accent}`} />
+               </div>
+               <div>
+                 <p className="text-xs font-semibold text-gray-500 uppercase tracking-widest">Today's Fact</p>
+                 <p className={`text-lg font-bold capitalize ${config.accent}`}>{selectedFact.category}</p>
+               </div>
+             </motion.div>
+             <motion.button
+               whileHover={{ rotate: 180 }}
+               transition={{ duration: 0.5 }}
+               onClick={handleRefresh}
+               className="p-3 hover:bg-white/50 rounded-lg transition-colors"
+             >
+               <Sparkles className="w-6 h-6 text-gray-600" />
+             </motion.button>
+           </div>
 
-          {/* Fact Content */}
-          <motion.div
-            key={selectedFact.id}
-            initial={{ opacity: 0, y: 10 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
-            className="mb-6"
-          >
-            <p className="text-lg md:text-xl font-bold text-gray-900 leading-relaxed">
-              {selectedFact.fact}
-            </p>
-          </motion.div>
+           {/* Fact Content */}
+           <motion.div
+             key={selectedFact.id}
+             initial={{ opacity: 0, y: 10 }}
+             animate={{ opacity: 1, y: 0 }}
+             transition={{ duration: 0.5 }}
+             className="mb-8"
+           >
+             <p className="text-2xl md:text-3xl font-bold text-gray-900 leading-relaxed">
+               {selectedFact.fact}
+             </p>
+           </motion.div>
 
           {/* Footer with source */}
           {selectedFact.source_url && (
