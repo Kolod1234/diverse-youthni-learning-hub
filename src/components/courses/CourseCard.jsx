@@ -5,48 +5,26 @@ import { Card, CardMedia, CardContent, Chip, Box, Typography, Button } from '@mu
 import { Star, Clock, Users, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-const categoryColors = {
-  mathematics: 'bg-blue-500/10 text-blue-600',
-  english: 'bg-purple-500/10 text-purple-600',
-  biology: 'bg-emerald-500/10 text-emerald-600',
-  chemistry: 'bg-amber-500/10 text-amber-600',
-  physics: 'bg-indigo-500/10 text-indigo-600',
-  history: 'bg-rose-500/10 text-rose-600',
-  geography: 'bg-teal-500/10 text-teal-600',
-};
-
 const levelColors = {
   beginner: { bgcolor: '#dcfce7', color: '#15803d' },
   intermediate: { bgcolor: '#fef3c7', color: '#a16207' },
   advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
-export default function CourseCard({ course }) {
-  const getCategoryColor = (category) => {
-    const colors = {
-      mathematics: 'from-blue-600 to-blue-400',
-      english: 'from-purple-600 to-purple-400',
-      biology: 'from-emerald-600 to-emerald-400',
-      chemistry: 'from-amber-600 to-amber-400',
-      physics: 'from-indigo-600 to-indigo-400',
-      history: 'from-rose-600 to-rose-400',
-      geography: 'from-teal-600 to-teal-400',
-    };
-    return colors[category] || 'from-gray-600 to-gray-400';
+const getCategoryBgColor = (category) => {
+  const colors = {
+    mathematics: { bgcolor: 'rgba(37,99,235,0.1)', color: '#2563eb' },
+    english: { bgcolor: 'rgba(147,51,234,0.1)', color: '#9333ea' },
+    biology: { bgcolor: 'rgba(5,150,105,0.1)', color: '#059669' },
+    chemistry: { bgcolor: 'rgba(245,158,11,0.1)', color: '#f59e0b' },
+    physics: { bgcolor: 'rgba(79,70,229,0.1)', color: '#4f46e5' },
+    history: { bgcolor: 'rgba(244,63,94,0.1)', color: '#f43f5e' },
+    geography: { bgcolor: 'rgba(20,184,166,0.1)', color: '#14b8a6' },
   };
+  return colors[category] || { bgcolor: '#f3f4f6', color: '#4b5563' };
+};
 
-  const getCategoryBgColor = (category) => {
-    const colors = {
-      mathematics: 'bg-blue-500/10 text-blue-600',
-      english: 'bg-purple-500/10 text-purple-600',
-      biology: 'bg-emerald-500/10 text-emerald-600',
-      chemistry: 'bg-amber-500/10 text-amber-600',
-      physics: 'bg-indigo-500/10 text-indigo-600',
-      history: 'bg-rose-500/10 text-rose-600',
-      geography: 'bg-teal-500/10 text-teal-600',
-    };
-    return colors[category] || 'bg-gray-100 text-gray-600';
-  };
+export default function CourseCard({ course }) {
 
   return (
     <motion.div
