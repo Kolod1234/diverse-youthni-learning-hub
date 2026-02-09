@@ -895,8 +895,8 @@ export default function LessonPlayerClassic() {
               Close Menu
             </Button>
           </Box>
-        </Box>
-      </Drawer>
+          </Box>
+        </Drawer>
 
       {/* Desktop Sidebar */}
       <Box
