@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { Key, Copy, CheckCircle, Plus, Search, Filter } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 export default function LessonKeyManager() {
@@ -124,15 +125,16 @@ export default function LessonKeyManager() {
               className="pl-10"
             />
           </div>
-          <select
-            value={filterStatus}
-            onChange={(e) => setFilterStatus(e.target.value)}
-            className="px-3 py-2 border rounded-lg"
-          >
-            <option value="all">All Keys</option>
-            <option value="active">Active</option>
-            <option value="inactive">Inactive</option>
-          </select>
+          <Select value={filterStatus} onValueChange={setFilterStatus}>
+             <SelectTrigger className="w-32">
+               <SelectValue placeholder="Filter" />
+             </SelectTrigger>
+             <SelectContent>
+               <SelectItem value="all">All Keys</SelectItem>
+               <SelectItem value="active">Active</SelectItem>
+               <SelectItem value="inactive">Inactive</SelectItem>
+             </SelectContent>
+           </Select>
         </div>
       </Card>
 
@@ -236,31 +238,30 @@ export default function LessonKeyManager() {
           <div className="space-y-4 mt-4">
             <div>
               <Label>Course *</Label>
-              <select
-                value={formData.course_id}
-                onChange={(e) => setFormData({ ...formData, course_id: e.target.value, lesson_id: '' })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-              >
-                <option value="">Select course</option>
-                {courses.map(course => (
-                  <option key={course.id} value={course.id}>{course.title}</option>
-                ))}
-              </select>
+              <Select value={formData.course_id} onValueChange={(value) => setFormData({ ...formData, course_id: value, lesson_id: '' })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select course" />
+                </SelectTrigger>
+                <SelectContent>
+                  {courses.map(course => (
+                    <SelectItem key={course.id} value={course.id}>{course.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <Label>Lesson *</Label>
-              <select
-                value={formData.lesson_id}
-                onChange={(e) => setFormData({ ...formData, lesson_id: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-                disabled={!formData.course_id}
-              >
-                <option value="">Select lesson</option>
-                {courseLessons.map(lesson => (
-                  <option key={lesson.id} value={lesson.id}>{lesson.title}</option>
-                ))}
-              </select>
+              <Select value={formData.lesson_id} onValueChange={(value) => setFormData({ ...formData, lesson_id: value })} disabled={!formData.course_id}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select lesson" />
+                </SelectTrigger>
+                <SelectContent>
+                  {courseLessons.map(lesson => (
+                    <SelectItem key={lesson.id} value={lesson.id}>{lesson.title}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>

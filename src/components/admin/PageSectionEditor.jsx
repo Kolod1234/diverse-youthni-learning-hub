@@ -283,7 +283,7 @@ export default function PageSectionEditor({ section, onSave, isSaving, onClose }
                 <div>
                   <Label>Layout Style</Label>
                   <Select value={formData.gallery_layout} onValueChange={(v) => setFormData({ ...formData, gallery_layout: v })}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectTrigger className="min-h-[44px]"><SelectValue /></SelectTrigger>
                     <SelectContent>
                       <SelectItem value="grid">Grid</SelectItem>
                       <SelectItem value="masonry">Masonry</SelectItem>

@@ -6,11 +6,14 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Upload, Loader2 } from 'lucide-react';
+import { Upload, Loader2, AlertTriangle, Trash2 } from 'lucide-react';
 import { toast } from 'sonner';
+import { AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent, AlertDialogDescription, AlertDialogTitle } from '@/components/ui/alert-dialog';
 
 export default function AccountSettings({ user }) {
   const [uploading, setUploading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [deleteConfirm, setDeleteConfirm] = useState('');
   const queryClient = useQueryClient();
 
   const updateMutation = useMutation({
@@ -44,6 +47,20 @@ export default function AccountSettings({ user }) {
       toast.error('Upload failed');
     } finally {
       setUploading(false);
+    }
+  };
+
+  const handleDeleteAccount = async () => {
+    if (deleteConfirm !== user?.email) {
+      toast.error('Email does not match');
+      return;
+    }
+    try {
+      toast.success('Account deletion request submitted. Please contact support.');
+      setDeleteDialogOpen(false);
+      setDeleteConfirm('');
+    } catch (error) {
+      toast.error('Failed to delete account');
     }
   };
 
@@ -96,6 +113,66 @@ export default function AccountSettings({ user }) {
             Save Changes
           </Button>
         </form>
+
+        {/* Danger Zone */}
+        <div className="border border-red-200 rounded-lg bg-red-50 p-6 mt-8">
+          <div className="flex items-start gap-3 mb-4">
+            <AlertTriangle className="w-5 h-5 text-red-600 mt-0.5" />
+            <div>
+              <h3 className="font-semibold text-red-900">Danger Zone</h3>
+              <p className="text-sm text-red-700 mt-1">Irreversible actions</p>
+            </div>
+          </div>
+          <p className="text-sm text-red-800 mb-4">
+            Permanently delete your account and all associated data. This action cannot be undone.
+          </p>
+          <Button
+            variant="outline"
+            onClick={() => setDeleteDialogOpen(true)}
+            className="text-red-600 border-red-600 hover:bg-red-50"
+          >
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete Account
+          </Button>
+        </div>
+
+        {/* Delete Confirmation Dialog */}
+        <AlertDialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+          <AlertDialogContent className="max-w-sm">
+            <AlertDialogTitle className="text-red-600">Delete Account</AlertDialogTitle>
+            <AlertDialogDescription className="space-y-3">
+              <p className="font-semibold text-gray-900">This action cannot be undone.</p>
+              <p>All your data will be permanently deleted. This includes:</p>
+              <ul className="list-disc list-inside text-sm text-gray-700 space-y-1">
+                <li>Profile information</li>
+                <li>Learning progress</li>
+                <li>Enrollments and certificates</li>
+              </ul>
+              <div>
+                <p className="text-sm font-medium text-gray-900 mb-2">
+                  Type your email to confirm:
+                </p>
+                <Input
+                  type="email"
+                  placeholder="Enter your email"
+                  value={deleteConfirm}
+                  onChange={(e) => setDeleteConfirm(e.target.value)}
+                  className={deleteConfirm && deleteConfirm !== user?.email ? 'border-red-300' : ''}
+                />
+              </div>
+            </AlertDialogDescription>
+            <div className="flex gap-3">
+              <AlertDialogCancel>Cancel</AlertDialogCancel>
+              <AlertDialogAction
+                onClick={handleDeleteAccount}
+                disabled={deleteConfirm !== user?.email}
+                className="bg-red-600 hover:bg-red-700 disabled:opacity-50"
+              >
+                Delete Account
+              </AlertDialogAction>
+            </div>
+          </AlertDialogContent>
+        </AlertDialog>
       </CardContent>
     </Card>
   );

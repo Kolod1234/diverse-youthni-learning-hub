@@ -7,6 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { GraduationCap, Upload, CheckCircle, AlertCircle } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { toast } from 'sonner';
 
 export default function CurriculumImporter({ open, onOpenChange }) {
@@ -83,16 +84,16 @@ export default function CurriculumImporter({ open, onOpenChange }) {
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Exam Board / Organization *</Label>
-              <select
-                value={formData.examBoard}
-                onChange={(e) => setFormData({ ...formData, examBoard: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-              >
-                <option value="">Select exam board</option>
-                {examBoards.map(board => (
-                  <option key={board} value={board}>{board}</option>
-                ))}
-              </select>
+              <Select value={formData.examBoard} onValueChange={(value) => setFormData({ ...formData, examBoard: value })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select exam board" />
+                </SelectTrigger>
+                <SelectContent>
+                  {examBoards.map(board => (
+                    <SelectItem key={board} value={board}>{board}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
                 value={formData.examBoard}
                 onChange={(e) => setFormData({ ...formData, examBoard: e.target.value })}
@@ -103,16 +104,16 @@ export default function CurriculumImporter({ open, onOpenChange }) {
 
             <div>
               <Label>Subject / Course *</Label>
-              <select
-                value={formData.subject}
-                onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-              >
-                <option value="">Select subject</option>
-                {subjects.map(subject => (
-                  <option key={subject} value={subject}>{subject}</option>
-                ))}
-              </select>
+              <Select value={formData.subject} onValueChange={(value) => setFormData({ ...formData, subject: value })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select subject" />
+                </SelectTrigger>
+                <SelectContent>
+                  {subjects.map(subject => (
+                    <SelectItem key={subject} value={subject}>{subject}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
               <Input
                 value={formData.subject}
                 onChange={(e) => setFormData({ ...formData, subject: e.target.value })}
@@ -123,29 +124,31 @@ export default function CurriculumImporter({ open, onOpenChange }) {
 
             <div>
               <Label>Level</Label>
-              <select
-                value={formData.courseLevel}
-                onChange={(e) => setFormData({ ...formData, courseLevel: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-              >
-                {levels.map(level => (
-                  <option key={level} value={level}>{level}</option>
-                ))}
-              </select>
+              <Select value={formData.courseLevel} onValueChange={(value) => setFormData({ ...formData, courseLevel: value })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select level" />
+                </SelectTrigger>
+                <SelectContent>
+                  {levels.map(level => (
+                    <SelectItem key={level} value={level}>{level}</SelectItem>
+                  ))}
+                </SelectContent>
+              </Select>
             </div>
 
             <div>
               <Label>Type</Label>
-              <select
-                value={formData.courseType}
-                onChange={(e) => setFormData({ ...formData, courseType: e.target.value })}
-                className="w-full px-3 py-2 border rounded-lg mt-1"
-              >
-                <option value="Academic">Academic</option>
-                <option value="Vocational">Vocational</option>
-                <option value="Professional">Professional (CPD/ILM)</option>
-                <option value="Youth Work">Youth Work (OCN)</option>
-              </select>
+              <Select value={formData.courseType} onValueChange={(value) => setFormData({ ...formData, courseType: value })}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select type" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="Academic">Academic</SelectItem>
+                  <SelectItem value="Vocational">Vocational</SelectItem>
+                  <SelectItem value="Professional">Professional (CPD/ILM)</SelectItem>
+                  <SelectItem value="Youth Work">Youth Work (OCN)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
           </div>
 

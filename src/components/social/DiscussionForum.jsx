@@ -58,6 +58,19 @@ export default function DiscussionForum({ courseId, lessonId = null }) {
         likes_count: (currentLikes || 0) + 1
       });
     },
+    onMutate: async ({ id, currentLikes }) => {
+      await queryClient.cancelQueries(['discussions']);
+      const previousData = queryClient.getQueryData(['discussions']);
+      queryClient.setQueryData(['discussions'], (old) => 
+        old.map(d => d.id === id ? { ...d, likes_count: (currentLikes || 0) + 1 } : d)
+      );
+      return { previousData };
+    },
+    onError: (err, newData, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['discussions'], context.previousData);
+      }
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['discussions']);
     }

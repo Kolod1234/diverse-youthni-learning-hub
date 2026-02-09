@@ -1,20 +1,45 @@
 import React, { useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { Progress } from '@/components/ui/progress';
-import { Share2, Trophy, TrendingUp, Award } from 'lucide-react';
+import { Share2, Trophy, TrendingUp, Award, Heart } from 'lucide-react';
 import { toast } from 'sonner';
 import moment from 'moment';
 
 export default function ProgressSharing({ courseId }) {
   const [user, setUser] = useState(null);
+  const queryClient = useQueryClient();
 
   React.useEffect(() => {
     base44.auth.me().then(setUser);
   }, []);
+
+  const likeEnrollmentMutation = useMutation({
+    mutationFn: async ({ enrollmentId, currentLikes }) => {
+      await base44.entities.Enrollment.update(enrollmentId, {
+        likes_count: (currentLikes || 0) + 1
+      });
+    },
+    onMutate: async ({ enrollmentId, currentLikes }) => {
+      await queryClient.cancelQueries(['all-enrollments']);
+      const previousData = queryClient.getQueryData(['all-enrollments']);
+      queryClient.setQueryData(['all-enrollments'], (old) =>
+        old.map(e => e.id === enrollmentId ? { ...e, likes_count: (currentLikes || 0) + 1 } : e)
+      );
+      return { previousData };
+    },
+    onError: (err, newData, context) => {
+      if (context?.previousData) {
+        queryClient.setQueryData(['all-enrollments'], context.previousData);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-enrollments']);
+    }
+  });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['all-enrollments', courseId],
@@ -130,9 +155,18 @@ export default function ProgressSharing({ courseId }) {
               </div>
             </div>
             <Progress value={enrollment.progress_percent || 0} className="h-2" />
-          </Card>
-        ))}
-      </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => likeEnrollmentMutation.mutate({ enrollmentId: enrollment.id, currentLikes: enrollment.likes_count })}
+              className="mt-2 text-red-500 hover:text-red-600"
+            >
+              <Heart className="w-4 h-4 mr-1" />
+              {enrollment.likes_count || 0}
+            </Button>
+            </Card>
+            ))}
+            </div>
 
       {activeEnrollments.length === 0 && (
         <Card className="p-12 text-center">

@@ -442,7 +442,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('text')}
           title="Add Text"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <Type className="w-5 h-5" />
           <span className="text-xs">Text</span>
@@ -452,7 +452,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('image')}
           title="Add Image"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <ImageIcon className="w-5 h-5" />
           <span className="text-xs">Image</span>
@@ -462,7 +462,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('video')}
           title="Add Video"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <Video className="w-5 h-5" />
           <span className="text-xs">Video</span>
@@ -472,7 +472,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('shape')}
           title="Add Shape"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <Square className="w-5 h-5" />
           <span className="text-xs">Shape</span>
@@ -482,7 +482,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('card')}
           title="Add Card"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <StickyNote className="w-5 h-5" />
           <span className="text-xs">Card</span>
@@ -492,7 +492,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('graph')}
           title="Add Graph"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <BarChart3 className="w-5 h-5" />
           <span className="text-xs">Graph</span>
@@ -502,20 +502,20 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => addElement('icon', { icon: 'star' })}
           title="Add Icon"
-          className="h-14 w-full flex-col gap-1 p-2"
+          className="h-14 w-full flex-col gap-1 p-2 min-h-[44px] min-w-[44px]"
         >
           <Star className="w-5 h-5" />
           <span className="text-xs">Icon</span>
         </Button>
-        
+
         <div className="h-px bg-gray-200 my-2" />
-        
+
         <Button
           variant="outline"
           size="icon"
           onClick={() => setZoom(Math.min(2, zoom + 0.1))}
           title="Zoom In"
-          className="h-10 w-full"
+          className="h-11 w-full min-h-[44px]"
         >
           <ZoomIn className="w-4 h-4" />
         </Button>
@@ -524,7 +524,7 @@ export default function CanvasSlideEditor({ slide, onChange }) {
           size="icon"
           onClick={() => setZoom(Math.max(0.2, zoom - 0.1))}
           title="Zoom Out"
-          className="h-10 w-full"
+          className="h-11 w-full min-h-[44px]"
         >
           <ZoomOut className="w-4 h-4" />
         </Button>
