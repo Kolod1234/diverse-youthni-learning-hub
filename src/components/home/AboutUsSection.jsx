@@ -87,7 +87,7 @@ export default function AboutUsSection() {
                       transition={{ delay: idx * 0.1 }}
                       className="bg-muted/50 rounded-xl p-4 text-center"
                     >
-                      <Icon className="w-6 h-6 text-primary mx-auto mb-2" />
+                      <Icon sx={{ fontSize: 32, color: 'primary.main', mx: 'auto', mb: 1 }} />
                       <div className="text-2xl font-bold text-foreground">{stat.value}</div>
                       <div className="text-sm text-muted-foreground">{stat.label}</div>
                     </motion.div>
