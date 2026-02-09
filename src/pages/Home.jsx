@@ -91,9 +91,9 @@ export default function Home() {
 
   const { data: leadershipCarouselImages = [] } = useQuery({
     queryKey: ['leadership-carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'leadership' }, 'order', 20),
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'leadership', is_active: true }, 'order', 100),
     initialData: [],
-    staleTime: 1000 * 60 * 30,
+    staleTime: 1000 * 60 * 5,
   });
 
   const { data: heroCarouselImages = [] } = useQuery({
