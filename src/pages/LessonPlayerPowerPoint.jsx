@@ -9,18 +9,12 @@ import {
   CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck, ZoomIn, ZoomOut, Minimize2,
   Bookmark, BookmarkCheck, Search, Sparkles, Pencil, Eraser, Settings, Volume2, Eye, Brain, List, Plus, Trash2, Lock, Key, ChevronDown, ChevronUp, Info
 } from 'lucide-react';
-import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
+import { 
+  Box, Button, Card, CardContent, IconButton, Typography, Chip, TextField,
+  Dialog, DialogTitle, DialogContent, Menu, MenuItem, Divider, Collapse,
+  CircularProgress, InputAdornment, Select, FormControl, InputLabel
+} from '@mui/material';
 import { toast } from 'sonner';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger,
-} from '@/components/ui/dropdown-menu';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
@@ -515,53 +509,57 @@ export default function LessonPlayerPowerPoint() {
 
   if (lessonLoading || lessonsLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-orange-500 mx-auto mb-4"></div>
-          <p className="text-white">Loading lesson...</p>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0f172a' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <CircularProgress sx={{ color: '#f97316', mb: 2 }} />
+          <Typography sx={{ color: 'white' }}>Loading lesson...</Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (!lesson && !lessonLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#0f172a]">
-        <div className="text-center text-white">
-          <BookOpen className="w-16 h-16 text-slate-500 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
-          <button onClick={() => navigate(-1)} className="mt-4 px-6 py-2 bg-slate-800 hover:bg-slate-700 rounded-lg">
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#0f172a' }}>
+        <Box sx={{ textAlign: 'center', color: 'white' }}>
+          <BookOpen size={64} color="#64748b" style={{ margin: '0 auto 16px' }} />
+          <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>Lesson not found</Typography>
+          <Button variant="contained" onClick={() => navigate(-1)} sx={{ mt: 2, bgcolor: '#1e293b', '&:hover': { bgcolor: '#334155' } }}>
             Go Back
-          </button>
-        </div>
-      </div>
+          </Button>
+        </Box>
+      </Box>
     );
   }
 
   if (isLessonLocked && !lessonLoading) {
     return (
       <>
-        <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-orange-50 to-red-50">
-          <Card className="max-w-md p-8 text-center">
-            <div className="w-16 h-16 bg-orange-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-orange-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Lesson Locked</h2>
-            <p className="text-gray-600 mb-6">
-              This lesson requires an unlock key. Contact your tutor to get access.
-            </p>
-            <Button
-              onClick={() => setShowUnlockDialog(true)}
-              className="w-full bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 gap-2"
-            >
-              <Key className="w-4 h-4" />
-              Enter Unlock Key
-            </Button>
-            <Button variant="outline" onClick={() => navigate(-1)} className="w-full mt-3">
-              Back to Course
-            </Button>
+        <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', background: 'linear-gradient(to bottom right, #fff7ed, #fee2e2)' }}>
+          <Card sx={{ maxWidth: 448 }}>
+            <CardContent sx={{ p: 4, textAlign: 'center' }}>
+              <Box sx={{ width: 64, height: 64, bgcolor: '#fed7aa', borderRadius: '50%', display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                <Lock size={32} color="#ea580c" />
+              </Box>
+              <Typography variant="h5" fontWeight={700} sx={{ mb: 1 }}>Lesson Locked</Typography>
+              <Typography color="text.secondary" sx={{ mb: 3 }}>
+                This lesson requires an unlock key. Contact your tutor to get access.
+              </Typography>
+              <Button
+                onClick={() => setShowUnlockDialog(true)}
+                variant="contained"
+                fullWidth
+                startIcon={<Key size={16} />}
+                sx={{ background: 'linear-gradient(to right, #ea580c, #dc2626)', mb: 1.5, '&:hover': { background: 'linear-gradient(to right, #c2410c, #b91c1c)' } }}
+              >
+                Enter Unlock Key
+              </Button>
+              <Button variant="outlined" onClick={() => navigate(-1)} fullWidth>
+                Back to Course
+              </Button>
+            </CardContent>
           </Card>
-        </div>
+        </Box>
         <LessonUnlockDialog
           open={showUnlockDialog}
           onOpenChange={setShowUnlockDialog}
@@ -577,103 +575,120 @@ export default function LessonPlayerPowerPoint() {
     );
   }
 
-  // Reusable Content Component for Quiz/Objectives
   const LessonInfoContent = () => (
-    <div className="space-y-4">
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
       {quizzes.length > 0 && (
-        <button onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)} className="w-full bg-gradient-to-r from-purple-600 to-pink-600 text-white rounded-xl p-3 sm:p-4 flex items-center justify-between shadow-sm">
-          <div className="flex items-center gap-3"><ClipboardCheck className="w-5 h-5" /><span className="font-semibold text-sm sm:text-base">Take Quiz</span></div><ChevronRight className="w-5 h-5" />
-        </button>
+        <Button
+          onClick={() => navigate(createPageUrl('Quiz') + `?id=${quizzes[0].id}&course=${courseId}`)}
+          variant="contained"
+          fullWidth
+          endIcon={<ChevronRight size={20} />}
+          sx={{ background: 'linear-gradient(to right, #9333ea, #ec4899)', p: { xs: 1.5, sm: 2 }, borderRadius: 3, boxShadow: 1, '&:hover': { background: 'linear-gradient(to right, #7e22ce, #db2777)' } }}
+        >
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <ClipboardCheck size={20} />
+            <Typography sx={{ fontWeight: 600, fontSize: { xs: '0.875rem', sm: '1rem' } }}>Take Quiz</Typography>
+          </Box>
+        </Button>
       )}
       {lesson.learning_objectives?.length > 0 && (
-        <div className="bg-card rounded-xl p-4 shadow-sm border border-border">
-          <h3 className="font-semibold mb-2 flex items-center gap-2 text-sm sm:text-base text-foreground"><Target className="w-4 h-4 text-blue-600"/> Learning Objectives</h3>
-          <div className="space-y-2">
-            {lesson.learning_objectives.map((obj, i) => (
-              <p key={i} className="text-xs sm:text-sm text-muted-foreground flex gap-2 items-start">
-                <CheckCircle size={14} className="mt-0.5 text-green-500 shrink-0"/> 
-                <span>{obj}</span>
-              </p>
-            ))}
-          </div>
-        </div>
+        <Card sx={{ borderRadius: 3, boxShadow: 1, border: 1, borderColor: 'divider' }}>
+          <CardContent sx={{ p: 2 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1, display: 'flex', alignItems: 'center', gap: 1, fontSize: { xs: '0.875rem', sm: '1rem' } }}>
+              <Target size={16} color="#2563eb" /> Learning Objectives
+            </Typography>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {lesson.learning_objectives.map((obj, i) => (
+                <Typography key={i} variant="body2" sx={{ fontSize: { xs: '0.75rem', sm: '0.875rem' }, color: 'text.secondary', display: 'flex', gap: 1, alignItems: 'flex-start' }}>
+                  <CheckCircle size={14} color="#22c55e" style={{ marginTop: 2, flexShrink: 0 }} />
+                  <span>{obj}</span>
+                </Typography>
+              ))}
+            </Box>
+          </CardContent>
+        </Card>
       )}
-    </div>
+    </Box>
   );
 
-  return (
-    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
+  const [mobileMenuAnchor, setMobileMenuAnchor] = useState(null);
 
-      {/* HEADER: Slim on Mobile */}
+  return (
+    <Box ref={playerRef} sx={{ height: '100vh', display: 'flex', flexDirection: 'column', overflow: 'hidden', userSelect: 'none', bgcolor: isPresenting ? 'black' : 'background.default' }}>
+
       {!isPresenting && (
-        <div className="flex-none z-50 shadow-md">
-          <div className="bg-[#FF8C00] text-white h-12 sm:h-10 flex items-center justify-between px-3 sm:px-4">
-            <div className="flex items-center gap-3 flex-1 min-w-0">
-               <button onClick={() => navigate(-1)} className="sm:hidden p-1 active:bg-white/20 rounded"><ChevronLeft size={20}/></button>
-              <Presentation size={16} className="hidden sm:block" />
-              <span className="font-semibold text-sm truncate">{lesson?.title}</span>
-            </div>
-            <div className="flex gap-2">
-                <DropdownMenu>
-                  <DropdownMenuTrigger asChild>
-                    <button className="sm:hidden p-2 active:bg-white/20 rounded"><Layout size={18}/></button>
-                  </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end">
-                    <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
-                      <Presentation className="w-4 h-4 mr-2" />
-                      PowerPoint
-                    </DropdownMenuItem>
-                    <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
-                      <Layout className="w-4 h-4 mr-2" />
-                      Classic
-                    </DropdownMenuItem>
-                  </DropdownMenuContent>
-                </DropdownMenu>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={togglePresentation}><Presentation size={18}/></button>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={toggleFullscreen}>{isFullscreen ? <Minimize size={18}/> : <Maximize size={18}/>}</button>
-                <button className="sm:hidden p-2 active:bg-white/20 rounded" onClick={generateAISummary}><Sparkles size={18}/></button>
-                <button className="hidden sm:block hover:bg-white/10 px-3 py-1 rounded transition-colors text-xs" onClick={() => navigate(-1)}>Exit</button>
-            </div>
-          </div>
+        <Box sx={{ flexShrink: 0, zIndex: 50, boxShadow: 2 }}>
+          <Box sx={{ bgcolor: '#FF8C00', color: 'white', height: { xs: 48, sm: 40 }, display: 'flex', alignItems: 'center', justifyContent: 'space-between', px: { xs: 1.5, sm: 2 } }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flex: 1, minWidth: 0 }}>
+              <IconButton size="small" onClick={() => navigate(-1)} sx={{ display: { xs: 'inline-flex', sm: 'none' }, color: 'white', '&:active': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                <ChevronLeft size={20} />
+              </IconButton>
+              <Presentation size={16} style={{ display: 'none' }} className="sm:block" />
+              <Typography sx={{ fontWeight: 600, fontSize: '0.875rem', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>{lesson?.title}</Typography>
+            </Box>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <IconButton size="small" onClick={(e) => setMobileMenuAnchor(e.currentTarget)} sx={{ display: { xs: 'inline-flex', sm: 'none' }, color: 'white', '&:active': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                <Layout size={18} />
+              </IconButton>
+              <Menu anchorEl={mobileMenuAnchor} open={Boolean(mobileMenuAnchor)} onClose={() => setMobileMenuAnchor(null)}>
+                <MenuItem onClick={() => { navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`); setMobileMenuAnchor(null); }}>
+                  <Presentation size={16} style={{ marginRight: 8 }} /> PowerPoint
+                </MenuItem>
+                <MenuItem onClick={() => { navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`); setMobileMenuAnchor(null); }}>
+                  <Layout size={16} style={{ marginRight: 8 }} /> Classic
+                </MenuItem>
+              </Menu>
+              <IconButton size="small" onClick={togglePresentation} sx={{ display: { xs: 'inline-flex', sm: 'none' }, color: 'white', '&:active': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                <Presentation size={18} />
+              </IconButton>
+              <IconButton size="small" onClick={toggleFullscreen} sx={{ display: { xs: 'inline-flex', sm: 'none' }, color: 'white', '&:active': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                {isFullscreen ? <Minimize size={18} /> : <Maximize size={18} />}
+              </IconButton>
+              <IconButton size="small" onClick={generateAISummary} sx={{ display: { xs: 'inline-flex', sm: 'none' }, color: 'white', '&:active': { bgcolor: 'rgba(255,255,255,0.2)' } }}>
+                <Sparkles size={18} />
+              </IconButton>
+              <Button onClick={() => navigate(-1)} size="small" sx={{ display: { xs: 'none', sm: 'inline-flex' }, color: 'white', '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }, fontSize: '0.75rem', px: 1.5 }}>
+                Exit
+              </Button>
+            </Box>
+          </Box>
           
-          {/* DESKTOP TOOLBAR (Hidden on Mobile) */}
-          <div className="hidden sm:flex h-16 bg-card border-b border-border items-center px-5 gap-4 overflow-x-auto">
-             <div onClick={() => navigate(`/CourseDetails?id=${courseId}`)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Home size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Exit</span></div>
-             <div className="w-[1px] h-10 bg-border" />
-             <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <div className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">
-                  <Layout size={20} className="text-foreground" />
-                  <span className="text-[11px] mt-1 text-muted-foreground">Style</span>
-                </div>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent>
-                <DropdownMenuItem onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`)}>
-                  <Presentation className="w-4 h-4 mr-2" />
-                  PowerPoint (Default)
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`)}>
-                  <Layout className="w-4 h-4 mr-2" />
-                  Classic Style
-                </DropdownMenuItem>
+          <Box sx={{ display: { xs: 'none', sm: 'flex' }, height: 64, bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', alignItems: 'center', px: 2.5, gap: 2, overflowX: 'auto' }}>
+            <Box onClick={() => navigate(`/CourseDetails?id=${courseId}`)} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <Home size={20} />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Exit</Typography>
+            </Box>
+            <Box sx={{ width: 1, height: 40, bgcolor: 'divider' }} />
+            <Box>
+              <Box onClick={(e) => setMobileMenuAnchor(e.currentTarget)} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+                <Layout size={20} />
+                <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Style</Typography>
+              </Box>
+              <Menu anchorEl={mobileMenuAnchor} open={Boolean(mobileMenuAnchor)} onClose={() => setMobileMenuAnchor(null)}>
+                <MenuItem onClick={() => { navigate(`/LessonPlayerPowerPoint?lesson=${lessonId}&course=${courseId}`); setMobileMenuAnchor(null); }}>
+                  <Presentation size={16} style={{ marginRight: 8 }} /> PowerPoint (Default)
+                </MenuItem>
+                <MenuItem onClick={() => { navigate(`/LessonPlayerClassic?lesson=${lessonId}&course=${courseId}`); setMobileMenuAnchor(null); }}>
+                  <Layout size={16} style={{ marginRight: 8 }} /> Classic Style
+                </MenuItem>
                 {(user?.role === 'admin' || user?.is_tutor) && lesson && (
                   <>
-                    <DropdownMenuSeparator />
-                    <DropdownMenuItem 
+                    <Divider />
+                    <MenuItem 
                       onClick={async () => {
                         await base44.entities.Lesson.update(lessonId, { default_player: 'LessonPlayerPowerPoint' });
                         toast.success('PowerPoint set as default for this lesson');
+                        setMobileMenuAnchor(null);
                       }}
                     >
-                      <CheckCircle className="w-4 h-4 mr-2" />
-                      Set PowerPoint as Default
-                    </DropdownMenuItem>
+                      <CheckCircle size={16} style={{ marginRight: 8 }} /> Set PowerPoint as Default
+                    </MenuItem>
                   </>
                 )}
-              </DropdownMenuContent>
-            </DropdownMenu>
+              </Menu>
+            </Box>
             {lesson?.google_slides_url && !hasSlides && (user?.role === 'admin' || user?.is_tutor) && (
-              <div onClick={async () => {
+              <Box onClick={async () => {
                 if (!confirm('Convert this Google Slides presentation to custom slides? This will extract text and images. Some formatting may be lost.')) return;
                 toast.loading('Converting Google Slides...');
                 try {
@@ -686,118 +701,181 @@ export default function LessonPlayerPowerPoint() {
                 } catch (error) {
                   toast.error('Failed to convert Google Slides');
                 }
-              }} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><FileText size={20} className="text-indigo-600"/><span className="text-[11px] mt-1 text-muted-foreground">Convert</span></div>
+              }} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+                <FileText size={20} color="#6366f1" />
+                <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Convert</Typography>
+              </Box>
             )}
-            <div onClick={togglePresentation} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Presentation size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Present</span></div>
-             <div onClick={toggleFullscreen} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]">{isFullscreen ? <Minimize size={20} className="text-foreground"/> : <Maximize size={20} className="text-foreground"/>}<span className="text-[11px] mt-1 text-muted-foreground">Full</span></div>
-             <div onClick={() => setShowSearch(!showSearch)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Search size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Search</span></div>
-             <div onClick={generateAISummary} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Sparkles size={20} className="text-purple-600"/><span className="text-[11px] mt-1 text-muted-foreground">AI</span></div>
-             <div onClick={() => setShowNotes(!showNotes)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><BookOpen size={20} className="text-blue-600"/><span className="text-[11px] mt-1 text-muted-foreground">Notes</span></div>
-             <div onClick={() => setShowOutline(!showOutline)} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><Layout size={20} className="text-foreground"/><span className="text-[11px] mt-1 text-muted-foreground">Outline</span></div>
-             {!isCompleted && <div onClick={() => markCompleteMutation.mutate()} className="flex flex-col items-center p-2 hover:bg-accent rounded cursor-pointer min-w-[64px]"><CheckCircle size={20} className="text-green-600"/><span className="text-[11px] mt-1 text-muted-foreground">Done</span></div>}
-          </div>
-        </div>
+            <Box onClick={togglePresentation} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <Presentation size={20} />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Present</Typography>
+            </Box>
+            <Box onClick={toggleFullscreen} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              {isFullscreen ? <Minimize size={20} /> : <Maximize size={20} />}
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Full</Typography>
+            </Box>
+            <Box onClick={() => setShowSearch(!showSearch)} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <Search size={20} />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Search</Typography>
+            </Box>
+            <Box onClick={generateAISummary} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <Sparkles size={20} color="#9333ea" />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>AI</Typography>
+            </Box>
+            <Box onClick={() => setShowNotes(!showNotes)} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <BookOpen size={20} color="#2563eb" />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Notes</Typography>
+            </Box>
+            <Box onClick={() => setShowOutline(!showOutline)} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+              <Layout size={20} />
+              <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Outline</Typography>
+            </Box>
+            {!isCompleted && (
+              <Box onClick={() => markCompleteMutation.mutate()} sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center', p: 1, '&:hover': { bgcolor: 'action.hover' }, borderRadius: 1, cursor: 'pointer', minWidth: 64 }}>
+                <CheckCircle size={20} color="#16a34a" />
+                <Typography variant="caption" sx={{ fontSize: '0.6875rem', mt: 0.5, color: 'text.secondary' }}>Done</Typography>
+              </Box>
+            )}
+          </Box>
+        </Box>
       )}
 
-      {/* Exit Buttons in Presentation Mode */}
       {isPresenting && (
-        <div className="fixed top-6 right-6 z-[100] flex gap-3">
-          <button onClick={() => navigate(-1)} className="bg-black/70 hover:bg-black/90 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105">
-            <ChevronLeft size={18} /> <span className="hidden sm:inline">Back</span>
-          </button>
-          <button onClick={togglePresentation} className="bg-red-600/80 hover:bg-red-600 text-white border-2 border-white/50 px-5 py-2.5 rounded-lg flex items-center gap-2 text-sm font-medium shadow-2xl backdrop-blur-md transition-all hover:scale-105">
-            <X size={18} /> <span className="hidden sm:inline">Exit</span>
-          </button>
-        </div>
+        <Box sx={{ position: 'fixed', top: 24, right: 24, zIndex: 100, display: 'flex', gap: 1.5 }}>
+          <Button
+            onClick={() => navigate(-1)}
+            startIcon={<ChevronLeft size={18} />}
+            sx={{ bgcolor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', px: 2.5, py: 1.25, borderRadius: 2, boxShadow: 8, '&:hover': { bgcolor: 'rgba(0,0,0,0.9)', transform: 'scale(1.05)' }, transition: 'all 0.3s' }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Back</Box>
+          </Button>
+          <Button
+            onClick={togglePresentation}
+            startIcon={<X size={18} />}
+            sx={{ bgcolor: 'rgba(220, 38, 38, 0.8)', backdropFilter: 'blur(12px)', color: 'white', border: '2px solid rgba(255,255,255,0.5)', px: 2.5, py: 1.25, borderRadius: 2, boxShadow: 8, '&:hover': { bgcolor: '#dc2626', transform: 'scale(1.05)' }, transition: 'all 0.3s' }}
+          >
+            <Box component="span" sx={{ display: { xs: 'none', sm: 'inline' } }}>Exit</Box>
+          </Button>
+        </Box>
       )}
 
-      {/* WORKSPACE AREA */}
-      <div className="flex flex-1 overflow-hidden relative flex-col sm:flex-row" style={{ minHeight: 0 }}>
+      <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden', position: 'relative', flexDirection: { xs: 'column', sm: 'row' }, minHeight: 0 }}>
         
-        {/* SIDEBAR (Desktop Only) */}
         {!isPresenting && showOutline && (
-          <aside className="hidden md:flex w-52 border-r border-border bg-card overflow-y-auto flex-col p-3 gap-3 z-40">
+          <Box component="aside" sx={{ display: { xs: 'none', md: 'flex' }, width: 208, borderRight: 1, borderColor: 'divider', bgcolor: 'background.paper', overflowY: 'auto', flexDirection: 'column', p: 1.5, gap: 1.5, zIndex: 40 }}>
             {sortedLessons.map((l, idx) => (
-              <div key={l.id} onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)} className={`aspect-video border rounded p-1 cursor-pointer ${l.id === lessonId ? 'border-orange-500 bg-orange-50 border-2' : 'border-border'}`}>
-                 <div className="w-full h-full bg-muted flex items-center justify-center text-[10px] text-center p-1 font-medium text-foreground">{l.title}</div>
-              </div>
+              <Box 
+                key={l.id} 
+                onClick={() => navigate(`/LessonPlayerPowerPoint?lesson=${l.id}&course=${courseId}`)} 
+                sx={{ 
+                  aspectRatio: '16/9', 
+                  border: l.id === lessonId ? '2px solid #f97316' : 1, 
+                  borderColor: l.id === lessonId ? '#f97316' : 'divider',
+                  bgcolor: l.id === lessonId ? '#fff7ed' : 'transparent',
+                  borderRadius: 1, 
+                  p: 0.5, 
+                  cursor: 'pointer',
+                  '&:hover': { borderColor: '#f97316' }
+                }}
+              >
+                <Box sx={{ width: '100%', height: '100%', bgcolor: 'action.hover', display: 'flex', alignItems: 'center', justifyContent: 'center', fontSize: '0.625rem', textAlign: 'center', p: 0.5, fontWeight: 500 }}>
+                  <Typography sx={{ fontSize: '0.625rem' }}>{l.title}</Typography>
+                </Box>
+              </Box>
             ))}
-          </aside>
+          </Box>
         )}
 
-        {/* MAIN STAGE */}
-        <main 
-          className={`flex-1 flex flex-col items-center transition-all relative
-            ${isPresenting ? 'bg-black justify-center p-0 overflow-hidden' : 'bg-black sm:bg-muted p-0 sm:p-6 md:p-10 overflow-y-auto'}
-          `}
-          style={{ minHeight: 0 }}
+        <Box
+          component="main"
+          sx={{
+            flex: 1,
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'center',
+            transition: 'all 0.3s',
+            position: 'relative',
+            bgcolor: isPresenting ? 'black' : { xs: 'black', sm: 'action.hover' },
+            justifyContent: isPresenting ? 'center' : 'flex-start',
+            p: isPresenting ? 0 : { xs: 0, sm: 3, md: 5 },
+            overflowY: isPresenting ? 'hidden' : 'auto',
+            minHeight: 0
+          }}
           onTouchStart={onTouchStart}
           onTouchMove={onTouchMove}
           onTouchEnd={onTouchEnd}
           onMouseMove={handleShowControls}
           tabIndex={0}
         >
-          {/* MOBILE INFO ACCORDION */}
           {!isPresenting && (
-             <div className="md:hidden w-full bg-card border-b border-border shadow-sm z-20 flex-none flex-shrink-0">
-                <button 
-                  onClick={() => setIsMobileInfoOpen(!isMobileInfoOpen)}
-                  className="w-full flex items-center justify-between px-4 py-2.5 text-xs font-semibold text-foreground bg-muted hover:bg-accent transition-colors"
-                >
-                  <span className="flex items-center gap-2">
-                    <Info size={14} className="text-blue-500"/>
-                    Lesson Info & Quiz
-                  </span>
-                  {isMobileInfoOpen ? <ChevronUp size={16}/> : <ChevronDown size={16}/>}
-                </button>
+            <Box sx={{ display: { xs: 'block', md: 'none' }, width: '100%', bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', boxShadow: 1, zIndex: 20, flexShrink: 0 }}>
+              <Button
+                onClick={() => setIsMobileInfoOpen(!isMobileInfoOpen)}
+                fullWidth
+                sx={{ justifyContent: 'space-between', px: 2, py: 1.25, fontSize: '0.75rem', fontWeight: 600, bgcolor: 'action.hover', '&:hover': { bgcolor: 'action.selected' }, borderRadius: 0 }}
+              >
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Info size={14} color="#3b82f6" />
+                  <Typography sx={{ fontSize: '0.75rem', fontWeight: 600 }}>Lesson Info & Quiz</Typography>
+                </Box>
+                {isMobileInfoOpen ? <ChevronUp size={16} /> : <ChevronDown size={16} />}
+              </Button>
 
-                {isMobileInfoOpen && (
-                  <div className="p-3 bg-muted border-t border-border max-h-[35vh] overflow-y-auto">
-                    <LessonInfoContent />
-                  </div>
-                )}
-             </div>
+              <Collapse in={isMobileInfoOpen}>
+                <Box sx={{ p: 1.5, bgcolor: 'action.hover', borderTop: 1, borderColor: 'divider', maxHeight: '35vh', overflowY: 'auto' }}>
+                  <LessonInfoContent />
+                </Box>
+              </Collapse>
+            </Box>
           )}
 
-          {/* DESKTOP INFO BLOCKS */}
           {!isPresenting && (
-             <div className="hidden md:block w-full max-w-[960px] mb-4">
-                <LessonInfoContent />
-             </div>
+            <Box sx={{ display: { xs: 'none', md: 'block' }, width: '100%', maxWidth: 960, mb: 2 }}>
+              <LessonInfoContent />
+            </Box>
           )}
 
-          {/* MAIN LESSON VIDEO */}
           {!isPresenting && lesson?.video_url && (
-            <div className="w-full max-w-[960px] mb-4 sm:mb-6 flex-none">
-              <div className="bg-gradient-to-br from-white via-blue-50/20 to-indigo-50/20 dark:from-slate-800 dark:via-slate-800/20 dark:to-slate-900/20 rounded-xl sm:rounded-2xl shadow-2xl shadow-indigo-200/50 dark:shadow-indigo-900/30 overflow-hidden border-2 border-indigo-100 dark:border-indigo-900/50 ring-2 sm:ring-4 ring-indigo-50 dark:ring-indigo-950/50">
-                <div className="aspect-video bg-black">
-                  <video 
-                    src={lesson.video_url} 
-                    controls 
-                    className="w-full h-full"
+            <Box sx={{ width: '100%', maxWidth: 960, mb: { xs: 2, sm: 3 }, flexShrink: 0 }}>
+              <Box sx={{ background: 'linear-gradient(to bottom right, white, rgba(239, 246, 255, 0.2), rgba(238, 242, 255, 0.2))', borderRadius: { xs: 3, sm: 4 }, boxShadow: 8, overflow: 'hidden', border: 2, borderColor: '#e0e7ff', outline: { xs: '2px solid #eef2ff', sm: '4px solid #eef2ff' }, outlineOffset: { xs: 2, sm: 4 } }}>
+                <Box sx={{ aspectRatio: '16/9', bgcolor: 'black' }}>
+                  <Box
+                    component="video"
+                    src={lesson.video_url}
+                    controls
                     controlsList="nodownload"
+                    sx={{ width: '100%', height: '100%' }}
                   />
-                </div>
-              </div>
-            </div>
+                </Box>
+              </Box>
+            </Box>
           )}
 
-          {/* SLIDE CONTAINER */}
-          <div className={`relative flex flex-col transition-all duration-500 bg-black mb-6
-            ${isPresenting 
-              ? 'w-full h-full min-h-screen' 
-              : 'w-full sm:max-w-[960px] aspect-video sm:shadow-2xl sm:rounded-lg sm:bg-card' 
-            }`}
-          >
+          <Box sx={{ 
+            position: 'relative', 
+            display: 'flex', 
+            flexDirection: 'column', 
+            transition: 'all 0.5s', 
+            bgcolor: 'black', 
+            mb: 3,
+            width: isPresenting ? '100%' : { xs: '100%', sm: 960 },
+            height: isPresenting ? '100%' : 'auto',
+            minHeight: isPresenting ? '100vh' : 0,
+            aspectRatio: isPresenting ? 'auto' : '16/9',
+            boxShadow: isPresenting ? 0 : { xs: 0, sm: 8 },
+            borderRadius: isPresenting ? 0 : { xs: 0, sm: 2 }
+          }}>
             
-            {/* Drawing Canvas */}
             {isPresenting && (
-              <canvas
+              <Box
+                component="canvas"
                 ref={canvasRef}
                 width={window.innerWidth}
                 height={window.innerHeight}
-                className="absolute inset-0 z-50"
-                style={{ 
+                sx={{ 
+                  position: 'absolute', 
+                  inset: 0, 
+                  zIndex: 50,
                   cursor: isDrawing ? 'crosshair' : 'default',
                   pointerEvents: isDrawing ? 'auto' : 'none'
                 }}
@@ -806,8 +884,7 @@ export default function LessonPlayerPowerPoint() {
               />
             )}
 
-            {/* Slide Content */}
-            <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
+            <Box sx={{ flex: 1, width: '100%', height: '100%', overflow: 'hidden', bgcolor: 'black', position: 'relative', minHeight: 0 }}>
               {lesson?.file_url && lesson?.file_type === 'pptx' ? (
                 <DocumentViewer fileUrl={lesson.file_url} fileType={lesson.file_type} />
               ) : slideUrl ? (
@@ -842,259 +919,371 @@ export default function LessonPlayerPowerPoint() {
                   {({ zoomIn, zoomOut, resetTransform }) => (
                     <>
                       {!isPresenting && (
-                        <div className="absolute top-2 right-2 z-10 hidden sm:flex gap-2">
-                          <button onClick={() => zoomIn()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><ZoomIn className="w-4 h-4 text-foreground" /></button>
-                          <button onClick={() => zoomOut()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><ZoomOut className="w-4 h-4 text-foreground" /></button>
-                          <button onClick={() => resetTransform()} className="p-2 bg-card/90 hover:bg-card border border-border rounded shadow"><Minimize2 className="w-4 h-4 text-foreground" /></button>
-                        </div>
+                        <Box sx={{ position: 'absolute', top: 8, right: 8, zIndex: 10, display: { xs: 'none', sm: 'flex' }, gap: 1 }}>
+                          <IconButton onClick={() => zoomIn()} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'white' }, border: 1, borderColor: 'divider', boxShadow: 1 }}>
+                            <ZoomIn size={16} />
+                          </IconButton>
+                          <IconButton onClick={() => zoomOut()} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'white' }, border: 1, borderColor: 'divider', boxShadow: 1 }}>
+                            <ZoomOut size={16} />
+                          </IconButton>
+                          <IconButton onClick={() => resetTransform()} size="small" sx={{ bgcolor: 'rgba(255,255,255,0.9)', '&:hover': { bgcolor: 'white' }, border: 1, borderColor: 'divider', boxShadow: 1 }}>
+                            <Minimize2 size={16} />
+                          </IconButton>
+                        </Box>
                       )}
                       <TransformComponent wrapperClass="w-full h-full" contentClass="w-full h-full">
-                        <div className="w-full h-full bg-card text-foreground p-4 sm:p-12 overflow-y-auto flex flex-col justify-center items-center" style={{
+                        <Box sx={{ 
+                          width: '100%', 
+                          height: '100%', 
+                          bgcolor: 'background.paper', 
+                          color: 'text.primary', 
+                          p: { xs: 2, sm: 6 }, 
+                          overflowY: 'auto', 
+                          display: 'flex', 
+                          flexDirection: 'column', 
+                          justifyContent: 'center', 
+                          alignItems: 'center',
                           fontSize: `${accessibilityMode.fontSize}%`,
                           filter: accessibilityMode.contrast === 'high' ? 'contrast(1.5)' : accessibilityMode.contrast === 'inverted' ? 'invert(1)' : 'none',
                           fontFamily: accessibilityMode.dyslexiaFont ? 'Comic Sans MS, cursive' : 'inherit'
                         }}>
-                          <div className="max-w-4xl w-full">
-                            <h2 className="text-xl sm:text-3xl font-bold mb-4 text-foreground">{sortedSlides[currentSlideIndex]?.title}</h2>
-                            <div className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
-                          </div>
-                        </div>
+                          <Box sx={{ maxWidth: 1024, width: '100%' }}>
+                            <Typography variant="h4" sx={{ fontSize: { xs: '1.25rem', sm: '1.875rem' }, fontWeight: 700, mb: 2 }}>{sortedSlides[currentSlideIndex]?.title}</Typography>
+                            <Box className="prose prose-sm sm:prose-lg max-w-none dark:prose-invert" dangerouslySetInnerHTML={{ __html: sortedSlides[currentSlideIndex]?.content }} />
+                          </Box>
+                        </Box>
                       </TransformComponent>
                     </>
                   )}
                 </TransformWrapper>
               ) : (
-                <div className="absolute inset-0 flex items-center justify-center text-white bg-gray-800">
-                  <div className="text-center"><FileText className="w-16 h-16 mx-auto mb-4 text-gray-500" /><p className="text-gray-400">No Content</p></div>
-                </div>
+                <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: 'white', bgcolor: '#374151' }}>
+                  <Box sx={{ textAlign: 'center' }}>
+                    <FileText size={64} color="#6b7280" style={{ margin: '0 auto 16px' }} />
+                    <Typography color="#9ca3af">No Content</Typography>
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
 
-            {/* FLOATING MOBILE CONTROLS */}
             {!isPresenting && (
-              <div className="absolute bottom-4 left-0 right-0 px-4 flex justify-between items-center sm:hidden z-50 pointer-events-none">
-                 <div className="flex gap-2 pointer-events-auto">
-                   {hasSlides && (
-                     <button 
-                       onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
-                       disabled={currentSlideIndex === 0}
-                       className="w-10 h-10 bg-gray-900/80 text-white rounded-full flex items-center justify-center backdrop-blur-md active:bg-orange-500 disabled:opacity-30 border border-white/20"
-                     >
-                       <ChevronLeft size={20} />
-                     </button>
-                   )}
-                 </div>
-                 
-                 <div className="bg-black/60 text-white px-3 py-1.5 rounded-full text-xs font-mono backdrop-blur-md border border-white/10">
-                    {currentSlideIndex + 1} / {sortedSlides.length || 1}
-                 </div>
+              <Box sx={{ position: 'absolute', bottom: 16, left: 0, right: 0, px: 2, display: { xs: 'flex', sm: 'none' }, justifyContent: 'space-between', alignItems: 'center', zIndex: 50, pointerEvents: 'none' }}>
+                <Box sx={{ display: 'flex', gap: 1, pointerEvents: 'auto' }}>
+                  {hasSlides && (
+                    <IconButton
+                      onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))}
+                      disabled={currentSlideIndex === 0}
+                      sx={{ width: 40, height: 40, bgcolor: 'rgba(17, 24, 39, 0.8)', color: 'white', borderRadius: '50%', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', '&:active': { bgcolor: '#f97316' }, '&:disabled': { opacity: 0.3 } }}
+                    >
+                      <ChevronLeft size={20} />
+                    </IconButton>
+                  )}
+                </Box>
+                
+                <Chip
+                  label={`${currentSlideIndex + 1} / ${sortedSlides.length || 1}`}
+                  sx={{ bgcolor: 'rgba(0,0,0,0.6)', backdropFilter: 'blur(12px)', color: 'white', fontSize: '0.75rem', fontFamily: 'monospace', border: '1px solid rgba(255,255,255,0.1)' }}
+                />
 
-                 <div className="flex gap-2 pointer-events-auto">
-                   {hasSlides && (
-                     <button 
-                       onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
-                       disabled={currentSlideIndex === sortedSlides.length - 1}
-                       className="w-10 h-10 bg-gray-900/80 text-white rounded-full flex items-center justify-center backdrop-blur-md active:bg-orange-500 disabled:opacity-30 border border-white/20"
-                     >
-                       <ChevronRight size={20} />
-                     </button>
-                   )}
-                   <button 
-                     onClick={toggleFullscreen}
-                     className="w-10 h-10 bg-gray-900/80 text-white rounded-full flex items-center justify-center backdrop-blur-md active:bg-blue-600 border border-white/20"
-                   >
-                     {isFullscreen ? <Minimize2 size={18}/> : <Maximize size={18}/>}
-                   </button>
-                 </div>
-              </div>
+                <Box sx={{ display: 'flex', gap: 1, pointerEvents: 'auto' }}>
+                  {hasSlides && (
+                    <IconButton
+                      onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))}
+                      disabled={currentSlideIndex === sortedSlides.length - 1}
+                      sx={{ width: 40, height: 40, bgcolor: 'rgba(17, 24, 39, 0.8)', color: 'white', borderRadius: '50%', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', '&:active': { bgcolor: '#f97316' }, '&:disabled': { opacity: 0.3 } }}
+                    >
+                      <ChevronRight size={20} />
+                    </IconButton>
+                  )}
+                  <IconButton
+                    onClick={toggleFullscreen}
+                    sx={{ width: 40, height: 40, bgcolor: 'rgba(17, 24, 39, 0.8)', color: 'white', borderRadius: '50%', backdropFilter: 'blur(12px)', border: '1px solid rgba(255,255,255,0.2)', '&:active': { bgcolor: '#2563eb' } }}
+                  >
+                    {isFullscreen ? <Minimize2 size={18} /> : <Maximize size={18} />}
+                  </IconButton>
+                </Box>
+              </Box>
             )}
 
-          </div>
-          </main>
+          </Box>
+        </Box>
 
-          {/* Feedback Section - Below Main Player */}
-          {!isPresenting && lesson && (
-          <div className="bg-card border-t border-border px-4 sm:px-6 py-3 flex justify-end">
+        {!isPresenting && lesson && (
+          <Box sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', px: { xs: 2, sm: 3 }, py: 1.5, display: 'flex', justifyContent: 'flex-end' }}>
             <FeedbackButton lesson={lesson} courseId={courseId} />
-          </div>
-          )}
-          </div>
+          </Box>
+        )}
+      </Box>
 
-      {/* DESKTOP FOOTER */}
       {!isPresenting && (
-        <footer className="hidden sm:flex h-12 bg-card border-t border-border items-center justify-between px-4 text-xs text-muted-foreground flex-none">
-          <div className="flex items-center gap-5">
-            <span>Lesson {currentLessonIndex + 1} of {sortedLessons.length}</span>
-            <div className="flex gap-2">
-                <button onClick={handlePrevLesson} disabled={!prevLesson} className="flex items-center gap-1 hover:text-orange-500 disabled:opacity-50"><ChevronLeft size={14}/> Prev Lesson</button>
-                <button onClick={handleNextLesson} disabled={!nextLesson} className="flex items-center gap-1 hover:text-orange-500 disabled:opacity-50">Next Lesson <ChevronRight size={14}/></button>
-            </div>
-          </div>
+        <Box component="footer" sx={{ display: { xs: 'none', sm: 'flex' }, height: 48, bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', alignItems: 'center', justifyContent: 'space-between', px: 2, fontSize: '0.75rem', color: 'text.secondary', flexShrink: 0 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2.5 }}>
+            <Typography variant="caption">Lesson {currentLessonIndex + 1} of {sortedLessons.length}</Typography>
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <Button size="small" onClick={handlePrevLesson} disabled={!prevLesson} startIcon={<ChevronLeft size={14} />} sx={{ fontSize: '0.75rem', '&:hover': { color: '#f97316' }, '&:disabled': { opacity: 0.5 } }}>
+                Prev Lesson
+              </Button>
+              <Button size="small" onClick={handleNextLesson} disabled={!nextLesson} endIcon={<ChevronRight size={14} />} sx={{ fontSize: '0.75rem', '&:hover': { color: '#f97316' }, '&:disabled': { opacity: 0.5 } }}>
+                Next Lesson
+              </Button>
+            </Box>
+          </Box>
           
-          <div className="flex items-center gap-4">
-             {hasSlides && (
-               <div className="flex items-center bg-muted rounded-lg p-1">
-                 <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} className="p-1 hover:bg-accent rounded disabled:opacity-30" disabled={currentSlideIndex === 0}><ChevronLeft size={16}/></button>
-                 <span className="px-2 font-mono text-foreground">{currentSlideIndex + 1} / {sortedSlides.length}</span>
-                 <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} className="p-1 hover:bg-accent rounded disabled:opacity-30" disabled={currentSlideIndex === sortedSlides.length - 1}><ChevronRight size={16}/></button>
-               </div>
-             )}
-             <button onClick={togglePresentation} className="flex items-center gap-1 hover:bg-accent px-2 py-1 rounded"><Presentation size={14}/><span>Present</span></button>
-             <button onClick={toggleFullscreen} className="flex items-center gap-1 hover:bg-accent px-2 py-1 rounded">{isFullscreen ? <Minimize size={14}/> : <Maximize size={14}/>}</button>
-          </div>
-        </footer>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+            {hasSlides && (
+              <Box sx={{ display: 'flex', alignItems: 'center', bgcolor: 'action.hover', borderRadius: 2, p: 0.5 }}>
+                <IconButton size="small" onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} sx={{ '&:hover': { bgcolor: 'action.selected' }, '&:disabled': { opacity: 0.3 } }}>
+                  <ChevronLeft size={16} />
+                </IconButton>
+                <Typography sx={{ px: 1, fontFamily: 'monospace', fontSize: '0.75rem' }}>{currentSlideIndex + 1} / {sortedSlides.length}</Typography>
+                <IconButton size="small" onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} disabled={currentSlideIndex === sortedSlides.length - 1} sx={{ '&:hover': { bgcolor: 'action.selected' }, '&:disabled': { opacity: 0.3 } }}>
+                  <ChevronRight size={16} />
+                </IconButton>
+              </Box>
+            )}
+            <Button size="small" onClick={togglePresentation} startIcon={<Presentation size={14} />} sx={{ fontSize: '0.75rem', '&:hover': { bgcolor: 'action.hover' } }}>
+              Present
+            </Button>
+            <IconButton size="small" onClick={toggleFullscreen} sx={{ '&:hover': { bgcolor: 'action.hover' } }}>
+              {isFullscreen ? <Minimize size={14} /> : <Maximize size={14} />}
+            </IconButton>
+          </Box>
+        </Box>
       )}
 
-      {/* Slide Nav in Presentation Mode - Show on hover/interaction */}
       {isPresenting && showPresentationControls && (
-        <div className="fixed bottom-6 left-1/2 -translate-x-1/2 flex gap-3 z-[90] bg-black/80 backdrop-blur-md border-2 border-white/50 rounded-lg p-3 shadow-2xl transition-opacity duration-300">
+        <Box sx={{ position: 'fixed', bottom: 24, left: '50%', transform: 'translateX(-50%)', display: 'flex', gap: 1.5, zIndex: 90, bgcolor: 'rgba(0,0,0,0.8)', backdropFilter: 'blur(12px)', border: '2px solid rgba(255,255,255,0.5)', borderRadius: 2, p: 1.5, boxShadow: 8, transition: 'opacity 0.3s' }}>
           {hasSlides && (
             <>
-              <button onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30 transition-all active:scale-95">
+              <IconButton onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0} sx={{ width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, color: 'white', borderRadius: 2, '&:disabled': { opacity: 0.3 }, '&:active': { transform: 'scale(0.95)' }, transition: 'all 0.3s' }}>
                 <ChevronLeft size={24} />
-              </button>
-              <span className="px-6 py-2 text-white text-base font-medium flex items-center bg-white/5 rounded-lg">{currentSlideIndex + 1} / {sortedSlides.length}</span>
-              <button onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} disabled={currentSlideIndex === sortedSlides.length - 1} className="w-12 h-12 bg-white/10 hover:bg-white/20 text-white rounded-lg flex items-center justify-center disabled:opacity-30 transition-all active:scale-95">
+              </IconButton>
+              <Chip label={`${currentSlideIndex + 1} / ${sortedSlides.length}`} sx={{ px: 3, py: 1, color: 'white', bgcolor: 'rgba(255,255,255,0.05)', fontSize: '1rem', fontWeight: 500, borderRadius: 2 }} />
+              <IconButton onClick={() => setCurrentSlideIndex(Math.min(sortedSlides.length - 1, currentSlideIndex + 1))} disabled={currentSlideIndex === sortedSlides.length - 1} sx={{ width: 48, height: 48, bgcolor: 'rgba(255,255,255,0.1)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, color: 'white', borderRadius: 2, '&:disabled': { opacity: 0.3 }, '&:active': { transform: 'scale(0.95)' }, transition: 'all 0.3s' }}>
                 <ChevronRight size={24} />
-              </button>
+              </IconButton>
             </>
           )}
           {!hasSlides && slideUrl && (
-            <span className="px-6 py-3 text-white text-sm font-medium flex items-center gap-2">
-              <Presentation size={16} />
-              Presentation Mode
-            </span>
+            <Chip icon={<Presentation size={16} />} label="Presentation Mode" sx={{ px: 3, py: 1.5, color: 'white', fontSize: '0.875rem', fontWeight: 500 }} />
           )}
-        </div>
+        </Box>
       )}
 
-      {/* Drawing Tools in Presentation - Show on hover/interaction */}
       {isPresenting && showPresentationControls && (
-        <div className="fixed bottom-24 left-1/2 -translate-x-1/2 z-[100] flex gap-2 bg-black/70 backdrop-blur-md border-2 border-white/50 rounded-lg p-2 transition-opacity duration-300">
-          <button onClick={() => setIsDrawing(!isDrawing)} className={`px-4 py-2 rounded-lg flex items-center gap-2 text-sm font-medium ${isDrawing ? 'bg-blue-600 text-white' : 'bg-white/10 text-white hover:bg-white/20'}`}>
-            <Pencil size={16} />{isDrawing ? 'Drawing' : 'Draw'}
-          </button>
+        <Box sx={{ position: 'fixed', bottom: 96, left: '50%', transform: 'translateX(-50%)', zIndex: 100, display: 'flex', gap: 1, bgcolor: 'rgba(0,0,0,0.7)', backdropFilter: 'blur(12px)', border: '2px solid rgba(255,255,255,0.5)', borderRadius: 2, p: 1, transition: 'opacity 0.3s' }}>
+          <Button
+            onClick={() => setIsDrawing(!isDrawing)}
+            variant={isDrawing ? 'contained' : 'outlined'}
+            startIcon={<Pencil size={16} />}
+            size="small"
+            sx={{ 
+              bgcolor: isDrawing ? '#2563eb' : 'rgba(255,255,255,0.1)', 
+              color: 'white', 
+              borderColor: isDrawing ? 'transparent' : 'rgba(255,255,255,0.2)',
+              '&:hover': { bgcolor: isDrawing ? '#1d4ed8' : 'rgba(255,255,255,0.2)' },
+              fontSize: '0.875rem'
+            }}
+          >
+            {isDrawing ? 'Drawing' : 'Draw'}
+          </Button>
           {isDrawing && (
             <>
-              <input type="color" value={drawColor} onChange={(e) => setDrawColor(e.target.value)} className="w-10 h-10 rounded cursor-pointer" />
-              <button onClick={clearDrawings} className="px-4 py-2 rounded-lg bg-white/10 text-white hover:bg-white/20 flex items-center gap-2 text-sm"><Eraser size={16} />Clear</button>
+              <Box component="input" type="color" value={drawColor} onChange={(e) => setDrawColor(e.target.value)} sx={{ width: 40, height: 40, borderRadius: 1, cursor: 'pointer', border: 'none' }} />
+              <Button onClick={clearDrawings} variant="outlined" size="small" startIcon={<Eraser size={16} />} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', borderColor: 'rgba(255,255,255,0.2)', '&:hover': { bgcolor: 'rgba(255,255,255,0.2)' }, fontSize: '0.875rem' }}>
+                Clear
+              </Button>
             </>
           )}
-        </div>
+        </Box>
       )}
 
-      {/* Dialogs */}
-      <Dialog open={showSearch} onOpenChange={setShowSearch}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Search className="w-5 h-5" />Search</DialogTitle></DialogHeader>
-          <Input placeholder="Search..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} />
+      <Dialog open={showSearch} onClose={() => setShowSearch(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Search size={20} /> Search
+        </DialogTitle>
+        <DialogContent>
+          <TextField placeholder="Search..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} fullWidth autoFocus sx={{ mb: 2 }} />
           {searchQuery && searchResults.length > 0 && (
-            <div className="space-y-2 mt-4">
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
               {searchResults.map(r => (
-                <button key={r.index} onClick={() => { setCurrentSlideIndex(r.index); setShowSearch(false); }} className="w-full p-3 bg-muted hover:bg-accent rounded text-left">
-                  <span className="font-medium text-foreground">Slide {r.index + 1}: {r.title}</span>
-                </button>
+                <Button key={r.index} onClick={() => { setCurrentSlideIndex(r.index); setShowSearch(false); }} sx={{ p: 1.5, bgcolor: 'action.hover', '&:hover': { bgcolor: 'action.selected' }, borderRadius: 1, justifyContent: 'flex-start' }}>
+                  <Typography fontWeight={500}>Slide {r.index + 1}: {r.title}</Typography>
+                </Button>
               ))}
-            </div>
+            </Box>
           )}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAISummary} onOpenChange={setShowAISummary}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-600"/>AI Summary</DialogTitle></DialogHeader>
+      <Dialog open={showAISummary} onClose={() => setShowAISummary(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Sparkles size={20} color="#9333ea" /> AI Summary
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
           {loadingSummary ? (
-            <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress sx={{ color: '#9333ea' }} />
+            </Box>
           ) : aiSummary ? (
-            <div className="space-y-4">
-              <div><h3 className="font-semibold mb-2 text-foreground">Summary</h3><p className="text-foreground">{aiSummary.summary}</p></div>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Summary</Typography>
+                <Typography>{aiSummary.summary}</Typography>
+              </Box>
               {aiSummary.key_points?.length > 0 && (
-                <div><h3 className="font-semibold mb-2 text-foreground">Key Points</h3>
-                  <ul className="space-y-2">{aiSummary.key_points.map((p, i) => <li key={i} className="flex gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5"/><span className="text-foreground">{p}</span></li>)}</ul>
-                </div>
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Key Points</Typography>
+                  <Box component="ul" sx={{ listStyle: 'none', p: 0, display: 'flex', flexDirection: 'column', gap: 1 }}>
+                    {aiSummary.key_points.map((p, i) => (
+                      <Box component="li" key={i} sx={{ display: 'flex', gap: 1 }}>
+                        <CheckCircle size={16} color="#16a34a" style={{ marginTop: 2 }} />
+                        <Typography>{p}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
               )}
-            </div>
+            </Box>
           ) : null}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showNotes} onOpenChange={setShowNotes}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><BookOpen className="w-5 h-5 text-blue-600"/>Notes ({notes.length})</DialogTitle></DialogHeader>
-          <div className="flex gap-2">
-            <Input value={currentNote} onChange={(e)=>setCurrentNote(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&addNote()} placeholder="Add a note..."/>
-            <Button onClick={addNote} className="gap-2"><Plus className="w-4 h-4"/>Add</Button>
-          </div>
-          <div className="mt-4 space-y-2">
-            {notes.length === 0 ? <p className="text-center text-muted-foreground py-8">No notes yet</p> : notes.map(n=><div key={n.id} className="p-3 bg-muted rounded border border-border"><div className="flex justify-between mb-1"><span className="text-xs font-semibold text-indigo-600">Slide {n.slideNumber}</span><button onClick={()=>setNotes(notes.filter(x=>x.id!==n.id))} className="text-red-500"><Trash2 size={14}/></button></div><p className="text-sm text-foreground">{n.content}</p></div>)}
-          </div>
+      <Dialog open={showNotes} onClose={() => setShowNotes(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <BookOpen size={20} color="#2563eb" /> Notes ({notes.length})
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <TextField value={currentNote} onChange={(e)=>setCurrentNote(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&addNote()} placeholder="Add a note..." fullWidth />
+            <Button onClick={addNote} variant="contained" startIcon={<Plus size={16} />}>Add</Button>
+          </Box>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {notes.length === 0 ? (
+              <Typography sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>No notes yet</Typography>
+            ) : notes.map(n => (
+              <Card key={n.id} sx={{ p: 1.5, bgcolor: 'action.hover', border: 1, borderColor: 'divider' }}>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', mb: 0.5 }}>
+                  <Chip label={`Slide ${n.slideNumber}`} size="small" sx={{ bgcolor: '#6366f1', color: 'white', fontSize: '0.75rem', fontWeight: 600 }} />
+                  <IconButton size="small" onClick={()=>setNotes(notes.filter(x=>x.id!==n.id))} sx={{ color: '#ef4444' }}>
+                    <Trash2 size={14} />
+                  </IconButton>
+                </Box>
+                <Typography variant="body2">{n.content}</Typography>
+              </Card>
+            ))}
+          </Box>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showOutline} onOpenChange={setShowOutline}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><List className="w-5 h-5"/>Outline</DialogTitle></DialogHeader>
-          <div className="space-y-2">
+      <Dialog open={showOutline} onClose={() => setShowOutline(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <List size={20} /> Outline
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
             {lesson?.slides && lesson.slides.length > 0 && (() => {
               const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
               return slides.map((s, i) => (
-                <button key={i} onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} className={`w-full p-3 rounded text-left ${i === currentSlideIndex ? 'bg-indigo-500/10 border-2 border-indigo-600' : 'bg-muted hover:bg-accent'}`}>
-                  <span className="font-medium text-foreground">{i + 1}. {s.title}</span>
-                </button>
+                <Button 
+                  key={i} 
+                  onClick={() => { setCurrentSlideIndex(i); setShowOutline(false); }} 
+                  sx={{ 
+                    p: 1.5, 
+                    borderRadius: 1, 
+                    justifyContent: 'flex-start',
+                    bgcolor: i === currentSlideIndex ? 'rgba(99, 102, 241, 0.1)' : 'action.hover',
+                    border: i === currentSlideIndex ? '2px solid #6366f1' : 'none',
+                    '&:hover': { bgcolor: i === currentSlideIndex ? 'rgba(99, 102, 241, 0.1)' : 'action.selected' }
+                  }}
+                >
+                  <Typography fontWeight={500}>{i + 1}. {s.title}</Typography>
+                </Button>
               ));
             })()}
-          </div>
+          </Box>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAIHelp} onOpenChange={setShowAIHelp}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Brain className="w-5 h-5 text-purple-600"/>AI Tutor</DialogTitle></DialogHeader>
-          <div className="flex gap-2">
-            <Input placeholder="Ask a question..." value={aiHelpQuery} onChange={(e)=>setAIHelpQuery(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&askAIAboutSlide(aiHelpQuery)}/>
-            <Button onClick={() => askAIAboutSlide(aiHelpQuery)} disabled={aiHelpLoading}>Ask</Button>
-          </div>
-          {aiHelpLoading ? <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div> : aiHelpResponse && (
-            <div className="space-y-3 mt-4">
-              <div><h3 className="font-semibold mb-2 text-foreground">Answer</h3><p className="text-foreground">{aiHelpResponse.answer}</p></div>
-              {aiHelpResponse.key_points?.length > 0 && <div><h3 className="font-semibold mb-2 text-foreground">Key Points</h3><ul>{aiHelpResponse.key_points.map((p, i) => <li key={i} className="flex gap-2 mb-1"><CheckCircle size={16} className="text-green-600 mt-0.5"/><span className="text-foreground">{p}</span></li>)}</ul></div>}
-            </div>
+      <Dialog open={showAIHelp} onClose={() => setShowAIHelp(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Brain size={20} color="#9333ea" /> AI Tutor
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+            <TextField placeholder="Ask a question..." value={aiHelpQuery} onChange={(e)=>setAIHelpQuery(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&askAIAboutSlide(aiHelpQuery)} fullWidth />
+            <Button onClick={() => askAIAboutSlide(aiHelpQuery)} disabled={aiHelpLoading} variant="contained">Ask</Button>
+          </Box>
+          {aiHelpLoading ? (
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress sx={{ color: '#9333ea' }} />
+            </Box>
+          ) : aiHelpResponse && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+              <Box>
+                <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Answer</Typography>
+                <Typography>{aiHelpResponse.answer}</Typography>
+              </Box>
+              {aiHelpResponse.key_points?.length > 0 && (
+                <Box>
+                  <Typography variant="subtitle1" fontWeight={600} sx={{ mb: 1 }}>Key Points</Typography>
+                  <Box component="ul" sx={{ listStyle: 'none', p: 0 }}>
+                    {aiHelpResponse.key_points.map((p, i) => (
+                      <Box component="li" key={i} sx={{ display: 'flex', gap: 1, mb: 0.5 }}>
+                        <CheckCircle size={16} color="#16a34a" style={{ marginTop: 2 }} />
+                        <Typography variant="body2">{p}</Typography>
+                      </Box>
+                    ))}
+                  </Box>
+                </Box>
+              )}
+            </Box>
           )}
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAccessibility} onOpenChange={setShowAccessibility}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Eye className="w-5 h-5"/>Accessibility</DialogTitle></DialogHeader>
-          <div className="space-y-4">
-            <div>
-              <label className="text-sm font-medium mb-2 block">Font Size: {accessibilityMode.fontSize}%</label>
-              <input type="range" min="80" max="150" value={accessibilityMode.fontSize} onChange={(e) => setAccessibilityMode({...accessibilityMode, fontSize: parseInt(e.target.value)})} className="w-full"/>
-            </div>
-            <div>
-              <label className="text-sm font-medium mb-2 block">Contrast</label>
-              <select value={accessibilityMode.contrast} onChange={(e) => setAccessibilityMode({...accessibilityMode, contrast: e.target.value})} className="w-full p-2 border rounded">
-                <option value="normal">Normal</option>
-                <option value="high">High</option>
-                <option value="inverted">Inverted</option>
-              </select>
-            </div>
-            <Button onClick={speakSlideContent} className="w-full gap-2"><Volume2 className="w-4 h-4"/>Read Aloud</Button>
-          </div>
+      <Dialog open={showAccessibility} onClose={() => setShowAccessibility(false)} maxWidth="sm" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Eye size={20} /> Accessibility
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <Box>
+              <Typography variant="body2" fontWeight={500} sx={{ mb: 1 }}>Font Size: {accessibilityMode.fontSize}%</Typography>
+              <Box component="input" type="range" min="80" max="150" value={accessibilityMode.fontSize} onChange={(e) => setAccessibilityMode({...accessibilityMode, fontSize: parseInt(e.target.value)})} sx={{ width: '100%' }} />
+            </Box>
+            <FormControl fullWidth size="small">
+              <InputLabel>Contrast</InputLabel>
+              <Select value={accessibilityMode.contrast} onChange={(e) => setAccessibilityMode({...accessibilityMode, contrast: e.target.value})} label="Contrast">
+                <MenuItem value="normal">Normal</MenuItem>
+                <MenuItem value="high">High</MenuItem>
+                <MenuItem value="inverted">Inverted</MenuItem>
+              </Select>
+            </FormControl>
+            <Button onClick={speakSlideContent} variant="contained" fullWidth startIcon={<Volume2 size={16} />}>
+              Read Aloud
+            </Button>
+          </Box>
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showFlashcards} onOpenChange={setShowFlashcards}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-green-600"/>Flashcards ({flashcards.length})</DialogTitle></DialogHeader>
-          <div className="space-y-3">
-            {flashcards.length === 0 ? <p className="text-center text-muted-foreground py-8">No flashcards yet</p> : flashcards.map((c, i) => (
-              <div key={i} className="p-4 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded border border-green-500/20">
-                <p className="font-semibold mb-3 text-foreground">{c.question}</p>
-                <div className="p-3 bg-card border border-border rounded"><p className="text-sm text-foreground">{c.answer}</p></div>
-              </div>
+      <Dialog open={showFlashcards} onClose={() => setShowFlashcards(false)} maxWidth="md" fullWidth>
+        <DialogTitle sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Target size={20} color="#16a34a" /> Flashcards ({flashcards.length})
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '80vh', overflowY: 'auto' }}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+            {flashcards.length === 0 ? (
+              <Typography sx={{ textAlign: 'center', color: 'text.secondary', py: 4 }}>No flashcards yet</Typography>
+            ) : flashcards.map((c, i) => (
+              <Card key={i} sx={{ p: 2, background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.1), rgba(59, 130, 246, 0.1))', border: '1px solid rgba(34, 197, 94, 0.2)' }}>
+                <Typography fontWeight={600} sx={{ mb: 1.5 }}>{c.question}</Typography>
+                <Card sx={{ p: 1.5, bgcolor: 'background.paper', border: 1, borderColor: 'divider' }}>
+                  <Typography variant="body2">{c.answer}</Typography>
+                </Card>
+              </Card>
             ))}
-          </div>
+          </Box>
         </DialogContent>
       </Dialog>
 
@@ -1109,6 +1298,6 @@ export default function LessonPlayerPowerPoint() {
           setIsLessonLocked(false);
         }}
       />
-    </div>
+    </Box>
   );
 }

@@ -1,9 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
+import { Card, CardContent, Chip, Button, Box, Typography, IconButton, ButtonGroup, CircularProgress } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -101,14 +99,14 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-4">
-        <div className="h-96 bg-gray-200 rounded-2xl animate-pulse" />
-        <div className="grid md:grid-cols-2 gap-4">
+      <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+        <Box sx={{ height: 384, bgcolor: 'grey.200', borderRadius: 4 }} className="animate-pulse" />
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
           {[...Array(4)].map((_, i) => (
-            <div key={i} className="h-72 bg-gray-200 rounded-xl animate-pulse" />
+            <Box key={i} sx={{ height: 288, bgcolor: 'grey.200', borderRadius: 3 }} className="animate-pulse" />
           ))}
-        </div>
-      </div>
+        </Box>
+      </Box>
     );
   }
 
@@ -120,35 +118,34 @@ function RSSFeedWidget({ initialLimit = 6 }) {
   const gridItems = displayedItems.slice(1);
 
   return (
-    <div className="space-y-6">
-      {/* Category Filters */}
-      <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-2 text-gray-600">
-          <Filter className="w-4 h-4" />
-          <span className="text-sm font-medium">Filter:</span>
-        </div>
-        {categories.map((category) => (
-          <Button
-            key={category}
-            size="sm"
-            variant={selectedCategory === category ? 'default' : 'outline'}
-            onClick={() => {
-              setSelectedCategory(category);
-              setDisplayCount(initialLimit);
-            }}
-            className={`transition-all ${
-              selectedCategory === category 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'hover:bg-gray-100'
-            }`}
-          >
-            {category === 'all' ? 'All' : category}
-          </Button>
-        ))}
-      </div>
+    <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
+      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, flexWrap: 'wrap' }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+          <Filter size={16} />
+          <Typography variant="body2" fontWeight={500}>Filter:</Typography>
+        </Box>
+        <ButtonGroup size="small">
+          {categories.map((category) => (
+            <Button
+              key={category}
+              variant={selectedCategory === category ? 'contained' : 'outlined'}
+              onClick={() => {
+                setSelectedCategory(category);
+                setDisplayCount(initialLimit);
+              }}
+              sx={{ 
+                bgcolor: selectedCategory === category ? '#2563eb' : 'transparent',
+                color: selectedCategory === category ? 'white' : 'text.primary',
+                '&:hover': { bgcolor: selectedCategory === category ? '#1d4ed8' : 'grey.100' }
+              }}
+            >
+              {category === 'all' ? 'All' : category}
+            </Button>
+          ))}
+        </ButtonGroup>
+      </Box>
 
       <AnimatePresence mode="popLayout">
-        {/* Featured Story - Large Card */}
         {featuredItem && (
           <motion.div
             key="featured-item"
@@ -156,77 +153,70 @@ function RSSFeedWidget({ initialLimit = 6 }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.5 }}
           >
-            <a
+            <Box
+              component="a"
               href={featuredItem.link}
               target="_blank"
               rel="noopener noreferrer"
-              className="block group"
+              sx={{ display: 'block', textDecoration: 'none', '&:hover': { '& img': { transform: 'scale(1.05)' }, '& .MuiCard-root': { boxShadow: 12 } } }}
             >
-              <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
-                <div className="relative h-96 overflow-hidden bg-black">
-                  {featuredItem.image_url ? (
-                    <img
-                      src={featuredItem.image_url}
-                      alt={featuredItem.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        e.target.src = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`;
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={`https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`}
-                      alt={featuredItem.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
-                  )}
+              <Card sx={{ overflow: 'hidden', transition: 'all 0.3s', border: 0, boxShadow: 4 }}>
+                <Box sx={{ position: 'relative', height: 384, overflow: 'hidden', bgcolor: 'black' }}>
+                  <Box
+                    component="img"
+                    src={featuredItem.image_url || `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`}
+                    alt={featuredItem.title}
+                    sx={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.5s' }}
+                    onError={(e) => {
+                      e.target.src = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`;
+                    }}
+                  />
                   
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.9), rgba(0,0,0,0.4), transparent)' }} />
                   
-                  {/* Content overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                    <div className="mb-3">
-                      <Badge className={`${getSourceStyle(featuredItem.category).badge} text-white border-0 px-3 py-1 text-xs font-medium`}>
-                        {featuredItem.category || 'Newsflare'}
-                      </Badge>
-                    </div>
+                  <Box sx={{ position: 'absolute', bottom: 0, left: 0, right: 0, p: 4, color: 'white' }}>
+                    <Box sx={{ mb: 1.5 }}>
+                      <Chip
+                        label={featuredItem.category || 'Newsflare'}
+                        size="small"
+                        sx={{ bgcolor: getSourceStyle(featuredItem.category).badge.replace('bg-', '#'), color: 'white', fontWeight: 500, fontSize: '0.75rem' }}
+                      />
+                    </Box>
                     
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
+                    <Typography variant="h4" sx={{ fontSize: { xs: '1.875rem', md: '2.25rem' }, fontWeight: 700, mb: 2, lineHeight: 1.2, '&:hover': { color: '#93c5fd' }, transition: 'color 0.3s' }}>
                       {decodeHTMLEntities(featuredItem.title)}
-                    </h2>
+                    </Typography>
                     
                     {featuredItem.description && (
-                      <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
+                      <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontSize: { xs: '0.875rem', md: '1rem' }, mb: 2, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', maxWidth: 1024 }}>
                         {decodeHTMLEntities(featuredItem.description)}
-                      </p>
+                      </Typography>
                     )}
                     
-                    <div className="flex items-center gap-6 text-white/80 text-sm">
-                      <button className="flex items-center gap-2 hover:text-white transition-colors">
-                        <ThumbsUp className="w-4 h-4" />
-                        <span>{Math.floor(Math.random() * 500) + 100}</span>
-                      </button>
-                      <button className="flex items-center gap-2 hover:text-white transition-colors">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>{Math.floor(Math.random() * 50) + 5}</span>
-                      </button>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 3, color: 'rgba(255,255,255,0.8)', fontSize: '0.875rem' }}>
+                      <Box component="button" sx={{ display: 'flex', alignItems: 'center', gap: 1, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', '&:hover': { color: 'white' }, transition: 'color 0.3s' }}>
+                        <ThumbsUp size={16} />
+                        <Typography variant="body2">{Math.floor(Math.random() * 500) + 100}</Typography>
+                      </Box>
+                      <Box component="button" sx={{ display: 'flex', alignItems: 'center', gap: 1, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', '&:hover': { color: 'white' }, transition: 'color 0.3s' }}>
+                        <MessageCircle size={16} />
+                        <Typography variant="body2">{Math.floor(Math.random() * 50) + 5}</Typography>
+                      </Box>
                       {featuredItem.published_date && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          {getTimeAgo(featuredItem.published_date)}
-                        </div>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                          <Clock size={16} />
+                          <Typography variant="body2">{getTimeAgo(featuredItem.published_date)}</Typography>
+                        </Box>
                       )}
-                    </div>
-                  </div>
-                </div>
+                    </Box>
+                  </Box>
+                </Box>
               </Card>
-            </a>
+            </Box>
           </motion.div>
         )}
 
-        {/* Grid of Stories */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
           {gridItems.map((item, index) => {
             const sourceStyle = getSourceStyle(item.category);
             return (
@@ -238,98 +228,91 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                 exit={{ opacity: 0, scale: 0.95 }}
                 transition={{ duration: 0.3 }}
               >
-                <a
+                <Box
+                  component="a"
                   href={item.link}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="block group h-full"
+                  sx={{ display: 'block', textDecoration: 'none', height: '100%', '&:hover': { '& img': { transform: 'scale(1.05)' }, '& .MuiCard-root': { boxShadow: 8 } } }}
                 >
-                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 h-full flex flex-col">
-                    <div className="relative h-48 overflow-hidden bg-gray-200">
-                      <img
+                  <Card sx={{ overflow: 'hidden', transition: 'all 0.3s', border: 0, height: '100%', display: 'flex', flexDirection: 'column', boxShadow: 2 }}>
+                    <Box sx={{ position: 'relative', height: 192, overflow: 'hidden', bgcolor: 'grey.200' }}>
+                      <Box
+                        component="img"
                         src={item.image_url || `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`}
                         alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                        sx={{ width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.3s' }}
                         onError={(e) => {
                           e.target.src = `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`;
                         }}
                       />
-                    </div>
+                    </Box>
                     
-                    <div className="p-5 flex-1 flex flex-col bg-white">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
-                          {item.category || 'News'}
-                        </Badge>
+                    <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', bgcolor: 'white' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                        <Chip
+                          label={item.category || 'News'}
+                          size="small"
+                          sx={{ bgcolor: sourceStyle.badge.replace('bg-', '#'), color: 'white', fontSize: '0.75rem', height: 20 }}
+                        />
                         {item.published_date && (
-                          <span className="text-xs text-gray-500">
+                          <Typography variant="caption" color="text.secondary">
                             {getTimeAgo(item.published_date)}
-                          </span>
+                          </Typography>
                         )}
-                      </div>
+                      </Box>
                       
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <Typography variant="h6" sx={{ fontSize: '1.125rem', fontWeight: 700, color: 'grey.900', mb: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', '&:hover': { color: '#2563eb' }, transition: 'color 0.3s' }}>
                         {decodeHTMLEntities(item.title)}
-                      </h3>
+                      </Typography>
                       
                       {item.description && (
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-1">
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2, flex: 1, overflow: 'hidden', textOverflow: 'ellipsis', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical' }}>
                           {decodeHTMLEntities(item.description)}
-                        </p>
+                        </Typography>
                       )}
                       
-                      <div className="flex items-center gap-4 text-gray-500 text-sm pt-3 border-t border-gray-100">
-                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
-                          <ThumbsUp className="w-3.5 h-3.5" />
-                          <span>{Math.floor(Math.random() * 100) + 10}</span>
-                        </button>
-                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>{Math.floor(Math.random() * 30) + 1}</span>
-                        </button>
-                      </div>
-                    </div>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, color: 'text.secondary', fontSize: '0.875rem', pt: 1.5, borderTop: 1, borderColor: 'grey.100' }}>
+                        <Box component="button" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', '&:hover': { color: '#2563eb' }, transition: 'color 0.3s' }}>
+                          <ThumbsUp size={14} />
+                          <Typography variant="caption">{Math.floor(Math.random() * 100) + 10}</Typography>
+                        </Box>
+                        <Box component="button" sx={{ display: 'flex', alignItems: 'center', gap: 0.5, background: 'none', border: 'none', color: 'inherit', cursor: 'pointer', '&:hover': { color: '#2563eb' }, transition: 'color 0.3s' }}>
+                          <MessageCircle size={14} />
+                          <Typography variant="caption">{Math.floor(Math.random() * 30) + 1}</Typography>
+                        </Box>
+                      </Box>
+                    </CardContent>
                   </Card>
-                </a>
+                </Box>
               </motion.div>
             );
           })}
-        </div>
+        </Box>
       </AnimatePresence>
 
-      {/* Load More Button */}
       {hasMore && (
-        <div className="flex justify-center pt-6">
+        <Box sx={{ display: 'flex', justifyContent: 'center', pt: 3 }}>
           <Button
             onClick={handleLoadMore}
             disabled={isLoadingMore}
-            variant="outline"
-            size="lg"
-            className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+            variant="outlined"
+            size="large"
+            endIcon={isLoadingMore ? <Loader2 size={16} className="animate-spin" /> : <ArrowRight size={16} />}
+            sx={{ '&:hover': { bgcolor: '#eff6ff', color: '#1d4ed8', borderColor: '#93c5fd' } }}
           >
-            {isLoadingMore ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Loading...
-              </>
-            ) : (
-              <>
-                See more
-                <ArrowRight className="w-4 h-4 ml-2" />
-              </>
-            )}
+            {isLoadingMore ? 'Loading...' : 'See more'}
           </Button>
-        </div>
+        </Box>
       )}
 
-      {/* No Results */}
       {filteredItems.length === 0 && (
-        <div className="text-center py-12">
-          <Rss className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-          <p className="text-gray-500">No recent news items found</p>
-        </div>
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <Rss size={48} color="#d1d5db" style={{ margin: '0 auto 12px' }} />
+          <Typography color="text.secondary">No recent news items found</Typography>
+        </Box>
       )}
-    </div>
+    </Box>
   );
 }
 
