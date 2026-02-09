@@ -2,9 +2,12 @@ import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { 
-  Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, 
+  Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
   Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment
 } from '@mui/material';
+import { Label } from '@/components/ui/label';
+import { Textarea } from '@/components/ui/textarea';
+import { Badge } from '@/components/ui/badge';
 import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
@@ -535,34 +538,36 @@ export default function Library() {
       </Container>
 
         {/* Upload Progress Dialog */}
-        <Dialog open={uploadingFile} onOpenChange={() => {}}>
-        <DialogContent className="sm:max-w-md" onPointerDownOutside={(e) => e.preventDefault()}>
-          <DialogHeader>
-            <DialogTitle>Uploading Book</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4">
-            <div className="space-y-2">
-              <div className="flex items-center justify-between text-sm">
-                <span className="text-gray-600">Progress</span>
-                <span className="font-semibold text-indigo-600">{Math.round(uploadProgress)}%</span>
-              </div>
-              <div className="w-full bg-gray-200 rounded-full h-2 overflow-hidden">
-                <div 
-                  className="bg-indigo-600 h-full transition-all duration-300 ease-out"
-                  style={{ width: `${uploadProgress}%` }}
-                />
-              </div>
-            </div>
-            <p className="text-sm text-gray-500 text-center">
-              Please wait while your book is being uploaded...
-            </p>
-          </div>
-        </DialogContent>
+        <Dialog open={uploadingFile} onClose={() => {}}>
+          <DialogTitle>Uploading Book</DialogTitle>
+          <DialogContent>
+            <Box sx={{ py: 2, display: 'flex', flexDirection: 'column', gap: 2 }}>
+              <Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+                  <Typography variant="body2" color="text.secondary">Progress</Typography>
+                  <Typography variant="body2" fontWeight={600} color="primary">{Math.round(uploadProgress)}%</Typography>
+                </Box>
+                <Box sx={{ width: '100%', bgcolor: '#e5e7eb', borderRadius: 50, height: 8, overflow: 'hidden' }}>
+                  <Box 
+                    sx={{ 
+                      bgcolor: '#4f46e5', 
+                      height: '100%', 
+                      transition: 'width 0.3s ease-out',
+                      width: `${uploadProgress}%`
+                    }}
+                  />
+                </Box>
+              </Box>
+              <Typography variant="body2" color="text.secondary" textAlign="center">
+                Please wait while your book is being uploaded...
+              </Typography>
+            </Box>
+          </DialogContent>
         </Dialog>
 
       {/* Book Detail Modal */}
-      <Dialog open={!!selectedBook} onOpenChange={() => setSelectedBook(null)}>
-        <DialogContent className="max-w-6xl max-h-[90vh] overflow-hidden p-0">
+      <Dialog open={!!selectedBook} onClose={() => setSelectedBook(null)} maxWidth="lg" fullWidth>
+        <DialogContent sx={{ p: 0, maxHeight: '90vh', overflow: 'hidden' }}>
           {selectedBook && (
             <div className="flex flex-col md:flex-row h-full">
               {/* Book Cover */}
@@ -736,8 +741,8 @@ export default function Library() {
       />
 
       {/* PDF Viewer Dialog */}
-      <Dialog open={showPdfViewer} onOpenChange={setShowPdfViewer}>
-        <DialogContent className="max-w-[95vw] max-h-[95vh] w-full h-[95vh] p-0">
+      <Dialog open={showPdfViewer} onClose={() => setShowPdfViewer(false)} maxWidth={false} fullWidth>
+        <DialogContent sx={{ p: 0, maxWidth: '95vw', height: '95vh', overflow: 'hidden' }}>
           {viewingBook && (
             <div className="flex flex-col h-full">
               <div className="flex items-center justify-between p-4 border-b bg-white">
@@ -810,12 +815,14 @@ export default function Library() {
       </Dialog>
 
       {/* Upload Book Dialog - Shows after AI analysis */}
-      <Dialog open={showUploadDialog} onOpenChange={setShowUploadDialog}>
-        <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Book Details</DialogTitle>
-            <p className="text-sm text-gray-500 mt-1">Fill in the book information below, or click "AI Analyze" to auto-fill.</p>
-          </DialogHeader>
+      <Dialog open={showUploadDialog} onClose={() => setShowUploadDialog(false)} maxWidth="md" fullWidth>
+        <DialogTitle>
+          Add Book Details
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 0.5 }}>
+            Fill in the book information below, or click "AI Analyze" to auto-fill.
+          </Typography>
+        </DialogTitle>
+        <DialogContent sx={{ maxHeight: '70vh', overflowY: 'auto' }}>
           <div className="space-y-4 mt-4">
             <div className="flex justify-end mb-2">
               <Button
