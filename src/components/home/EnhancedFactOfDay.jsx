@@ -57,7 +57,7 @@ export default function EnhancedFactOfDay() {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <div className={`bg-gradient-to-br ${config.gradient} rounded-2xl overflow-hidden border border-gray-200/50 backdrop-blur-sm hover:shadow-xl transition-shadow duration-300`}>
+      <div className={`bg-gradient-to-br ${config.gradient} rounded-3xl overflow-hidden border border-gray-200/50 backdrop-blur-sm hover:shadow-2xl transition-shadow duration-300 w-full`}>
         {/* Animated background elements */}
         <div className="absolute inset-0 overflow-hidden">
           <motion.div
