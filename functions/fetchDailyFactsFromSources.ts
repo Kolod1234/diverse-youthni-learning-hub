@@ -98,8 +98,8 @@ Rules:
           }
         });
 
-        if (Array.isArray(response)) {
-          response.forEach(item => {
+        if (response.facts && Array.isArray(response.facts)) {
+          response.facts.forEach(item => {
             if (item.fact && item.fact.length > 10) {
               factsToAdd.push({
                 fact: item.fact,
