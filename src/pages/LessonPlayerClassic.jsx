@@ -499,24 +499,24 @@ export default function LessonPlayerClassic() {
 
   if (lessonLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading lesson...</p>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Box sx={{ width: 48, height: 48, border: '3px solid', borderColor: 'primary.main', borderRadius: '50%', borderTop: '3px solid', borderTopColor: 'transparent', animation: 'spin 1s linear infinite', mx: 'auto', mb: 2 }} />
+          <Typography color="text.secondary">Loading lesson...</Typography>
+        </Box>
+      </Box>
     );
   }
 
   if (!lesson) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-slate-50">
-        <div className="text-center">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h2 className="text-xl font-semibold mb-2">Lesson not found</h2>
-          <Button onClick={() => navigate(-1)}>Go Back</Button>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <BookOpen style={{ width: 64, height: 64, color: 'rgba(0,0,0,0.2)', margin: '0 auto 16px' }} />
+          <Typography variant="h6" sx={{ mb: 2 }}>Lesson not found</Typography>
+          <Button onClick={() => navigate(-1)} variant="contained">Go Back</Button>
+        </Box>
+      </Box>
     );
   }
 
