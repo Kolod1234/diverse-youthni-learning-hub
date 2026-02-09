@@ -984,10 +984,10 @@ export default function LessonPlayerPowerPoint() {
       )}
 
       {/* Dialogs */}
-      <Dialog open={showSearch} onOpenChange={setShowSearch}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Search className="w-5 h-5" />Search</DialogTitle></DialogHeader>
-          <Input placeholder="Search..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} />
+      <Dialog open={showSearch} onClose={() => setShowSearch(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><Search className="w-5 h-5" />Search</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
+          <TextField placeholder="Search..." value={searchQuery} onChange={(e)=>setSearchQuery(e.target.value)} size="small" fullWidth />
           {searchQuery && searchResults.length > 0 && (
             <div className="space-y-2 mt-4">
               {searchResults.map(r => (
@@ -1000,9 +1000,9 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAISummary} onOpenChange={setShowAISummary}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-600"/>AI Summary</DialogTitle></DialogHeader>
+      <Dialog open={showAISummary} onClose={() => setShowAISummary(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-600"/>AI Summary</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           {loadingSummary ? (
             <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>
           ) : aiSummary ? (
@@ -1018,11 +1018,11 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showNotes} onOpenChange={setShowNotes}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><BookOpen className="w-5 h-5 text-blue-600"/>Notes ({notes.length})</DialogTitle></DialogHeader>
+      <Dialog open={showNotes} onClose={() => setShowNotes(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><BookOpen className="w-5 h-5 text-blue-600"/>Notes ({notes.length})</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <div className="flex gap-2">
-            <Input value={currentNote} onChange={(e)=>setCurrentNote(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&addNote()} placeholder="Add a note..."/>
+            <TextField value={currentNote} onChange={(e)=>setCurrentNote(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&addNote()} placeholder="Add a note..." size="small" fullWidth />
             <Button onClick={addNote} className="gap-2"><Plus className="w-4 h-4"/>Add</Button>
           </div>
           <div className="mt-4 space-y-2">
@@ -1031,9 +1031,9 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showOutline} onOpenChange={setShowOutline}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><List className="w-5 h-5"/>Outline</DialogTitle></DialogHeader>
+      <Dialog open={showOutline} onClose={() => setShowOutline(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><List className="w-5 h-5"/>Outline</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <div className="space-y-2">
             {lesson?.slides && lesson.slides.length > 0 && (() => {
               const slides = [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -1047,11 +1047,11 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAIHelp} onOpenChange={setShowAIHelp}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Brain className="w-5 h-5 text-purple-600"/>AI Tutor</DialogTitle></DialogHeader>
+      <Dialog open={showAIHelp} onClose={() => setShowAIHelp(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><Brain className="w-5 h-5 text-purple-600"/>AI Tutor</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <div className="flex gap-2">
-            <Input placeholder="Ask a question..." value={aiHelpQuery} onChange={(e)=>setAIHelpQuery(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&askAIAboutSlide(aiHelpQuery)}/>
+            <TextField placeholder="Ask a question..." value={aiHelpQuery} onChange={(e)=>setAIHelpQuery(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&askAIAboutSlide(aiHelpQuery)} size="small" fullWidth />
             <Button onClick={() => askAIAboutSlide(aiHelpQuery)} disabled={aiHelpLoading}>Ask</Button>
           </div>
           {aiHelpLoading ? <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div> : aiHelpResponse && (
@@ -1063,9 +1063,9 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAccessibility} onOpenChange={setShowAccessibility}>
-        <DialogContent className="max-w-md">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Eye className="w-5 h-5"/>Accessibility</DialogTitle></DialogHeader>
+      <Dialog open={showAccessibility} onClose={() => setShowAccessibility(false)} maxWidth="xs" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><Eye className="w-5 h-5"/>Accessibility</DialogTitle>
+        <DialogContent>
           <div className="space-y-4">
             <div>
               <label className="text-sm font-medium mb-2 block">Font Size: {accessibilityMode.fontSize}%</label>
@@ -1084,9 +1084,9 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showFlashcards} onOpenChange={setShowFlashcards}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader><DialogTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-green-600"/>Flashcards ({flashcards.length})</DialogTitle></DialogHeader>
+      <Dialog open={showFlashcards} onClose={() => setShowFlashcards(false)} maxWidth="sm" fullWidth>
+        <DialogTitle className="flex items-center gap-2"><Target className="w-5 h-5 text-green-600"/>Flashcards ({flashcards.length})</DialogTitle>
+        <DialogContent className="max-h-[80vh] overflow-y-auto">
           <div className="space-y-3">
             {flashcards.length === 0 ? <p className="text-center text-muted-foreground py-8">No flashcards yet</p> : flashcards.map((c, i) => (
               <div key={i} className="p-4 bg-gradient-to-br from-green-500/10 to-blue-500/10 rounded border border-green-500/20">
