@@ -60,7 +60,7 @@ export default function AboutUsSection() {
               </div>
               
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
-                {getContent('about_title', 'Empowering Youth Through Education')}
+                {getContent('about_title', 'Providing The Platform For Young People To Thrive')}
               </h2>
               
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
