@@ -386,8 +386,8 @@ export default function Explore() {
                     <Box sx={{ width: 48, height: 48, borderRadius: 3, background: 'linear-gradient(to bottom right, #2563eb, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 3 }}>
                       <Icon className="w-6 h-6 text-white" style={{ color: 'white' }} />
                     </Box>
-                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5 }}>{stat.label}</Typography>
-                    <Typography variant="h5" fontWeight={700}>{stat.value}</Typography>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 0.5, fontSize: '0.875rem' }}>{stat.label}</Typography>
+                     <Typography variant="h5" fontWeight={700} sx={{ color: 'text.primary', fontSize: { xs: '1.5rem', sm: '1.875rem' } }}>{stat.value}</Typography>
                   </Card>
                 </motion.div>
               );
