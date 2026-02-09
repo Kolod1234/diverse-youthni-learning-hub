@@ -592,12 +592,13 @@ export default function LessonPlayerClassic() {
         </div>
       )}
 
-      <div 
-        className={`min-h-screen flex flex-col bg-gray-100 ${
-          deviceType === 'mobile' ? 'text-sm' : 
-          deviceType === 'tablet' ? 'text-base' : 'text-base'
-        }`}
-        style={{
+      <Box 
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          flexDirection: 'column',
+          bgcolor: 'background.default',
+          fontSize: { xs: '0.875rem', md: '1rem' },
           paddingTop: 'env(safe-area-inset-top)',
           paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
