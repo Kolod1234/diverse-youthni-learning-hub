@@ -446,10 +446,14 @@ function LayoutContent({ children, currentPageName }) {
             {/* Right Side */}
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
               {/* Theme Toggle */}
-              <ThemeToggle />
+                <Box sx={{ color: 'white' }}>
+                  <ThemeToggle />
+                </Box>
 
               {/* Notifications */}
-              <NotificationBell />
+                <Box sx={{ color: 'white' }}>
+                  <NotificationBell />
+                </Box>
 
               {/* User Menu */}
               <IconButton onClick={(e) => setUserMenuAnchor(e.currentTarget)} sx={{ p: 0 }}>
