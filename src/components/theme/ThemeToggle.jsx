@@ -36,9 +36,9 @@ export default function ThemeToggle() {
   }
 
   const themeConfig = {
-    light: { icon: Sun, label: 'Light', color: 'text-yellow-600' },
-    dark: { icon: Moon, label: 'Dark', color: 'text-slate-400' },
-    system: { icon: Monitor, label: 'System', color: 'text-gray-600' },
+    light: { icon: Sun, label: 'Light', color: 'text-white' },
+    dark: { icon: Moon, label: 'Dark', color: 'text-white' },
+    system: { icon: Monitor, label: 'System', color: 'text-white' },
   };
 
   const currentConfig = themeConfig[theme] || themeConfig.system;

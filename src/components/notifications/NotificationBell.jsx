@@ -66,7 +66,7 @@ export default function NotificationBell() {
         variant="ghost"
         size="icon"
         onClick={() => setShowNotifications(!showNotifications)}
-        className="relative"
+        className="relative text-white hover:text-white"
       >
         <Bell className="w-5 h-5" />
         {unreadCount > 0 && (
