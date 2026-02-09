@@ -1,14 +1,11 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
+import { 
+  Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, 
+  Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment
+} from '@mui/material';
 import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
 import TagInput from '@/components/library/TagInput';
@@ -17,7 +14,6 @@ import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
 import CoverPicker from '@/components/library/CoverPicker';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
@@ -37,6 +33,7 @@ export default function Library() {
   const [uploadProgress, setUploadProgress] = useState(0);
   const [suggestingTags, setSuggestingTags] = useState(false);
   const [tagSuggestions, setTagSuggestions] = useState([]);
+  const [detailTabValue, setDetailTabValue] = useState('details');
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -307,28 +304,33 @@ export default function Library() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center gap-3">
-            <div className="bg-indigo-600 p-2 rounded-lg">
-              <BookOpen className="w-6 h-6 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">BookBase</h1>
-          </div>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Box sx={{ bgcolor: '#4f46e5', p: 1, borderRadius: 2 }}>
+              <BookOpen size={24} color="white" />
+            </Box>
+            <Typography variant="h4" fontWeight={700}>BookBase</Typography>
+          </Box>
           
-          <div className="flex-1 max-w-md mx-8">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
-              <Input
-                placeholder="Search your favourite books"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10 bg-white"
-              />
-            </div>
-          </div>
+          <Box sx={{ flex: 1, maxWidth: 450, mx: 4 }}>
+            <TextField
+              placeholder="Search your favourite books"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              fullWidth
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <Search size={20} color="#9ca3af" />
+                  </InputAdornment>
+                ),
+              }}
+              sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+            />
+          </Box>
 
           {canUpload && (
             <>

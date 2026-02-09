@@ -3,11 +3,9 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
+import { Button, Tabs, Tab, Card, Box, Typography, Container } from '@mui/material';
 import { BookOpen, Clock, Award, ArrowRight, Sparkles, TrendingUp, Target, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { Card } from '@/components/ui/card';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
@@ -20,6 +18,7 @@ import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
+  const [tabValue, setTabValue] = useState('in-progress');
 
   useEffect(() => {
     const loadUser = async () => {
@@ -89,45 +88,48 @@ export default function Dashboard() {
   const completedEnrollments = enrollments.filter(e => e.is_completed);
 
   return (
-    <div className="min-h-screen bg-background">
-      <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Container maxWidth="xl" sx={{ py: 5 }}>
         {/* Enhanced Header */}
         <motion.div 
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
-          className="mb-10"
         >
-          <div className="flex items-center justify-between flex-wrap gap-6">
-            <div className="flex-1">
-              <motion.h1 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.1 }}
-                className="text-4xl md:text-5xl font-bold text-foreground mb-3"
+          <Box sx={{ mb: 5 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: 3 }}>
+              <Box sx={{ flex: 1 }}>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 }}
+                >
+                  <Typography variant="h3" fontWeight={700} sx={{ mb: 1.5, fontSize: { xs: '2rem', md: '3rem' } }}>
+                    {getGreeting()}, {user?.full_name?.split(' ')[0] || 'Learner'}! 👋
+                  </Typography>
+                </motion.div>
+                <motion.div
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.2 }}
+                >
+                  <Typography variant="h6" color="text.secondary">
+                    Track your progress and continue your learning journey.
+                  </Typography>
+                </motion.div>
+              </Box>
+              <motion.div
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.3 }}
               >
-                {getGreeting()}, {user?.full_name?.split(' ')[0] || 'Learner'}! 👋
-              </motion.h1>
-              <motion.p 
-                initial={{ opacity: 0, x: -20 }}
-                animate={{ opacity: 1, x: 0 }}
-                transition={{ delay: 0.2 }}
-                className="text-muted-foreground text-lg"
-              >
-                Track your progress and continue your learning journey.
-              </motion.p>
-            </div>
-            <motion.div
-              initial={{ opacity: 0, scale: 0.9 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ delay: 0.3 }}
-            >
-              <PointsDisplay 
-                points={userProgress?.points || 0} 
-                level={userProgress?.level || 1}
-              />
-            </motion.div>
-          </div>
+                <PointsDisplay 
+                  points={userProgress?.points || 0} 
+                  level={userProgress?.level || 1}
+                />
+              </motion.div>
+            </Box>
+          </Box>
         </motion.div>
 
         {enrollments.length === 0 ? (
@@ -135,29 +137,46 @@ export default function Dashboard() {
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
-            className="relative overflow-hidden text-center py-20 px-6 bg-card rounded-3xl shadow-xl border border-border"
           >
-            <div className="absolute inset-0" />
-            <div className="relative">
-              <motion.div
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-                className="w-24 h-24 bg-gradient-to-br from-indigo-500 to-violet-600 rounded-3xl flex items-center justify-center mx-auto mb-8 shadow-2xl shadow-indigo-500/20"
-              >
-                <Sparkles className="w-12 h-12 text-white" />
-              </motion.div>
-              <h2 className="text-3xl font-bold text-foreground mb-4">Start Your Learning Journey</h2>
-              <p className="text-muted-foreground max-w-md mx-auto mb-8 text-lg">
-                Explore our catalog of expert-led courses and begin building new skills today.
-              </p>
-              <Link to={createPageUrl('Explore')}>
-                <Button size="lg" className="bg-gradient-to-r from-indigo-600 to-violet-600 hover:from-indigo-700 hover:to-violet-700 text-white rounded-full px-10 py-6 text-lg shadow-lg shadow-indigo-500/30 hover:shadow-xl transition-all">
-                  Browse Courses
-                  <ArrowRight className="w-5 h-5 ml-2" />
-                </Button>
-              </Link>
-            </div>
+            <Card sx={{ position: 'relative', overflow: 'hidden', textAlign: 'center', py: 10, px: 3, borderRadius: 6, boxShadow: 4, border: 1, borderColor: 'divider' }}>
+              <Box sx={{ position: 'relative' }}>
+                <motion.div
+                  initial={{ scale: 0 }}
+                  animate={{ scale: 1 }}
+                  transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
+                >
+                  <Box sx={{ width: 96, height: 96, background: 'linear-gradient(to bottom right, #6366f1, #7c3aed)', borderRadius: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4, boxShadow: '0 20px 25px -5px rgba(99, 102, 241, 0.2)' }}>
+                    <Sparkles size={48} color="white" />
+                  </Box>
+                </motion.div>
+                <Typography variant="h4" fontWeight={700} sx={{ mb: 2 }}>Start Your Learning Journey</Typography>
+                <Typography variant="h6" color="text.secondary" sx={{ maxWidth: 450, mx: 'auto', mb: 4 }}>
+                  Explore our catalog of expert-led courses and begin building new skills today.
+                </Typography>
+                <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+                  <Button 
+                    size="large"
+                    variant="contained"
+                    endIcon={<ArrowRight size={20} />}
+                    sx={{
+                      background: 'linear-gradient(to right, #4f46e5, #7c3aed)',
+                      color: 'white',
+                      borderRadius: 50,
+                      px: 5,
+                      py: 2,
+                      fontSize: '1.125rem',
+                      boxShadow: '0 10px 15px -3px rgba(79, 70, 229, 0.3)',
+                      '&:hover': {
+                        background: 'linear-gradient(to right, #4338ca, #6d28d9)',
+                        boxShadow: 4
+                      }
+                    }}
+                  >
+                    Browse Courses
+                  </Button>
+                </Link>
+              </Box>
+            </Card>
           </motion.div>
         ) : (
           <>
@@ -175,103 +194,107 @@ export default function Dashboard() {
               />
             </motion.div>
             
-            <div className="grid lg:grid-cols-3 gap-8">
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4 }}>
               {/* Main Content */}
-              <div className="lg:col-span-2 space-y-6">
+              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
-                  <Tabs defaultValue="in-progress" className="w-full">
-                    <TabsList className="bg-card border border-border p-1.5 rounded-2xl shadow-lg">
-                      <TabsTrigger 
-                        value="in-progress" 
-                        className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-indigo-600 data-[state=active]:to-violet-600 data-[state=active]:text-white data-[state=active]:shadow-lg px-6 py-2.5 font-medium transition-all"
-                      >
-                        <Clock className="w-4 h-4 mr-2" />
-                        In Progress ({inProgressEnrollments.length})
-                      </TabsTrigger>
-                      <TabsTrigger 
+                  <Card sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 4, boxShadow: 3 }}>
+                    <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
+                      <Tab 
+                        value="in-progress"
+                        icon={<Clock size={16} />}
+                        iconPosition="start"
+                        label={`In Progress (${inProgressEnrollments.length})`}
+                        sx={{ fontWeight: 500, px: 3, py: 1.5 }}
+                      />
+                      <Tab 
                         value="completed"
-                        className="rounded-xl data-[state=active]:bg-gradient-to-r data-[state=active]:from-green-600 data-[state=active]:to-emerald-600 data-[state=active]:text-white data-[state=active]:shadow-lg px-6 py-2.5 font-medium transition-all"
-                      >
-                        <Award className="w-4 h-4 mr-2" />
-                        Completed ({completedEnrollments.length})
-                      </TabsTrigger>
-                    </TabsList>
+                        icon={<Award size={16} />}
+                        iconPosition="start"
+                        label={`Completed (${completedEnrollments.length})`}
+                        sx={{ fontWeight: 500, px: 3, py: 1.5 }}
+                      />
+                    </Tabs>
 
-                    <TabsContent value="in-progress" className="mt-6">
-                      {loadingEnrollments ? (
-                        <div className="space-y-5">
-                          {[1, 2, 3].map(i => (
-                            <div key={i} className="bg-card rounded-2xl p-6 animate-pulse border border-border">
-                              <div className="flex gap-6">
-                                <div className="w-56 h-32 bg-muted rounded-xl" />
-                                <div className="flex-1 space-y-4">
-                                  <div className="h-6 bg-muted rounded w-2/3" />
-                                  <div className="h-4 bg-muted rounded w-1/3" />
-                                  <div className="h-3 bg-muted rounded" />
-                                </div>
-                              </div>
-                            </div>
-                          ))}
-                        </div>
-                      ) : inProgressEnrollments.length > 0 ? (
-                        <div className="space-y-5">
-                          {inProgressEnrollments.map((enrollment, index) => (
-                            <ProgressCard
-                              key={enrollment.id}
-                              enrollment={enrollment}
-                              course={courses.find(c => c.id === enrollment.course_id)}
-                              index={index}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-16 bg-card rounded-2xl border border-border">
-                           <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-                             <BookOpen className="w-8 h-8 text-muted-foreground" />
-                           </div>
-                           <p className="text-foreground text-lg">No courses in progress</p>
-                           <p className="text-muted-foreground text-sm mt-2">Start learning to see your progress here</p>
-                        </div>
-                      )}
-                    </TabsContent>
+                    {tabValue === 'in-progress' && (
+                      <Box sx={{ mt: 3 }}>
+                        {loadingEnrollments ? (
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                            {[1, 2, 3].map(i => (
+                              <Card key={i} sx={{ p: 3, borderRadius: 4, border: 1, borderColor: 'divider' }} className="animate-pulse">
+                                <Box sx={{ display: 'flex', gap: 3 }}>
+                                  <Box sx={{ width: 224, height: 128, bgcolor: 'action.hover', borderRadius: 3 }} />
+                                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                    <Box sx={{ height: 24, bgcolor: 'action.hover', borderRadius: 1, width: '66%' }} />
+                                    <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '33%' }} />
+                                    <Box sx={{ height: 12, bgcolor: 'action.hover', borderRadius: 1 }} />
+                                  </Box>
+                                </Box>
+                              </Card>
+                            ))}
+                          </Box>
+                        ) : inProgressEnrollments.length > 0 ? (
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                            {inProgressEnrollments.map((enrollment, index) => (
+                              <ProgressCard
+                                key={enrollment.id}
+                                enrollment={enrollment}
+                                course={courses.find(c => c.id === enrollment.course_id)}
+                                index={index}
+                              />
+                            ))}
+                          </Box>
+                        ) : (
+                          <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
+                            <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                              <BookOpen size={32} color="#9ca3af" />
+                            </Box>
+                            <Typography variant="h6" sx={{ mb: 1 }}>No courses in progress</Typography>
+                            <Typography variant="body2" color="text.secondary">Start learning to see your progress here</Typography>
+                          </Card>
+                        )}
+                      </Box>
+                    )}
 
-                    <TabsContent value="completed" className="mt-6">
-                      {completedEnrollments.length > 0 ? (
-                        <div className="space-y-5">
-                          {completedEnrollments.map((enrollment, index) => (
-                            <ProgressCard
-                              key={enrollment.id}
-                              enrollment={enrollment}
-                              course={courses.find(c => c.id === enrollment.course_id)}
-                              index={index}
-                            />
-                          ))}
-                        </div>
-                      ) : (
-                        <div className="text-center py-16 bg-card rounded-2xl border border-border">
-                           <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-                             <Award className="w-8 h-8 text-muted-foreground" />
-                           </div>
-                           <p className="text-foreground text-lg">No completed courses yet</p>
-                           <p className="text-muted-foreground text-sm mt-2">Complete your first course to earn achievements</p>
-                        </div>
-                      )}
-                    </TabsContent>
-                  </Tabs>
+                    {tabValue === 'completed' && (
+                      <Box sx={{ mt: 3 }}>
+                        {completedEnrollments.length > 0 ? (
+                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                            {completedEnrollments.map((enrollment, index) => (
+                              <ProgressCard
+                                key={enrollment.id}
+                                enrollment={enrollment}
+                                course={courses.find(c => c.id === enrollment.course_id)}
+                                index={index}
+                              />
+                            ))}
+                          </Box>
+                        ) : (
+                          <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
+                            <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                              <Award size={32} color="#9ca3af" />
+                            </Box>
+                            <Typography variant="h6" sx={{ mb: 1 }}>No completed courses yet</Typography>
+                            <Typography variant="body2" color="text.secondary">Complete your first course to earn achievements</Typography>
+                          </Card>
+                        )}
+                      </Box>
+                    )}
+                  </Card>
                 </motion.div>
-              </div>
+              </Box>
 
               {/* Sidebar */}
               <motion.div 
                 initial={{ opacity: 0, x: 20 }}
                 animate={{ opacity: 1, x: 0 }}
                 transition={{ delay: 0.6 }}
-                className="space-y-6"
               >
+                <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                 {/* Streak Tracker */}
                 <StreakTracker 
                   streakDays={userProgress?.streak_days || 0}
@@ -290,60 +313,75 @@ export default function Dashboard() {
                 {/* Recommended Courses */}
                 <RecommendedCourses userEnrollments={enrollments} />
 
-                {/* Achievements */}
-                 <div className="bg-card rounded-2xl p-6 shadow-lg border border-border">
-                   <div className="flex items-center justify-between mb-6">
-                     <h3 className="font-semibold text-foreground text-lg">Achievements</h3>
-                    <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-orange-600 rounded-xl flex items-center justify-center shadow-lg">
-                      <Award className="w-5 h-5 text-white" />
-                    </div>
-                  </div>
-                  
-                  {achievements.length > 0 ? (
-                    <div className="grid grid-cols-2 gap-3">
-                      {achievements.slice(0, 6).map((achievement, index) => (
-                        <AchievementBadge 
-                          key={achievement.id} 
-                          achievement={achievement}
-                          index={index}
-                        />
-                      ))}
-                    </div>
-                  ) : (
-                    <div className="text-center py-8">
-                       <div className="w-16 h-16 bg-muted rounded-2xl flex items-center justify-center mx-auto mb-4">
-                         <Award className="w-8 h-8 text-muted-foreground" />
-                       </div>
-                       <p className="text-muted-foreground text-sm">
-                        Complete courses to earn achievements!
-                      </p>
-                    </div>
-                  )}
-                </div>
+                  {/* Achievements */}
+                  <Card sx={{ p: 3, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
+                      <Typography variant="h6" fontWeight={600}>Achievements</Typography>
+                      <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #f59e0b, #ea580c)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
+                        <Award size={20} color="white" />
+                      </Box>
+                    </Box>
+                    
+                    {achievements.length > 0 ? (
+                      <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(2, 1fr)', gap: 1.5 }}>
+                        {achievements.slice(0, 6).map((achievement, index) => (
+                          <AchievementBadge 
+                            key={achievement.id} 
+                            achievement={achievement}
+                            index={index}
+                          />
+                        ))}
+                      </Box>
+                    ) : (
+                      <Box sx={{ textAlign: 'center', py: 4 }}>
+                        <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                          <Award size={32} color="#9ca3af" />
+                        </Box>
+                        <Typography variant="body2" color="text.secondary">
+                          Complete courses to earn achievements!
+                        </Typography>
+                      </Box>
+                    )}
+                  </Card>
 
-                {/* Call to Action */}
-                 <div className="relative overflow-hidden bg-primary rounded-2xl p-6 text-primary-foreground shadow-2xl">
-                   <div className="relative">
-                     <div className="flex items-center gap-2 mb-3">
-                       <Zap className="w-5 h-5" />
-                       <h3 className="font-bold text-lg">Continue Learning</h3>
-                     </div>
-                     <p className="text-primary-foreground/80 text-sm mb-5 leading-relaxed">
-                      Discover new courses that match your interests and accelerate your growth.
-                    </p>
-                    <Link to={createPageUrl('Explore')}>
-                      <Button className="w-full bg-primary-foreground text-primary hover:opacity-90 hover:scale-105 transition-all shadow-lg font-semibold">
-                        Explore More
-                        <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
-                    </Link>
-                  </div>
-                </div>
+                  {/* Call to Action */}
+                  <Card sx={{ position: 'relative', overflow: 'hidden', bgcolor: 'primary.main', color: 'primary.contrastText', p: 3, borderRadius: 4, boxShadow: 6 }}>
+                    <Box sx={{ position: 'relative' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
+                        <Zap size={20} />
+                        <Typography variant="h6" fontWeight={700}>Continue Learning</Typography>
+                      </Box>
+                      <Typography variant="body2" sx={{ color: 'rgba(255,255,255,0.8)', mb: 2.5, lineHeight: 1.6 }}>
+                        Discover new courses that match your interests and accelerate your growth.
+                      </Typography>
+                      <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+                        <Button 
+                          fullWidth
+                          variant="contained"
+                          endIcon={<ArrowRight size={16} />}
+                          sx={{
+                            bgcolor: 'background.paper',
+                            color: 'primary.main',
+                            fontWeight: 600,
+                            boxShadow: 3,
+                            '&:hover': {
+                              bgcolor: 'background.paper',
+                              opacity: 0.9,
+                              transform: 'scale(1.05)'
+                            }
+                          }}
+                        >
+                          Explore More
+                        </Button>
+                      </Link>
+                    </Box>
+                  </Card>
+                </Box>
               </motion.div>
-            </div>
+            </Box>
           </>
         )}
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

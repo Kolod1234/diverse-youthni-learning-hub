@@ -1,10 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
+import { Button, Card, Tabs, Tab, Chip, Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
 import { 
   Calendar as CalendarIcon, ClipboardList, Users, BookOpen,
   Plus, Settings, Clock, MapPin, User
@@ -24,6 +21,7 @@ export default function Programs() {
   const [selectedProgram, setSelectedProgram] = useState(null);
   const [showProgramForm, setShowProgramForm] = useState(false);
   const [showSignUpDialog, setShowSignUpDialog] = useState(false);
+  const [tabValue, setTabValue] = useState('calendar');
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -104,55 +102,61 @@ export default function Programs() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
+      <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="mb-8"
         >
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900">Leadership Employment Programmes</h1>
-              <p className="text-gray-500 mt-1">Manage programmes, activities, and participant progress</p>
-            </div>
-            <div className="flex gap-2">
-              {!isAdmin && !isMentor && selectedProgram && !isEnrolled && (
-                <Button 
-                  onClick={() => setShowSignUpDialog(true)}
-                  className="bg-green-600 hover:bg-green-700"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  Sign Up for Programme
-                </Button>
-              )}
-              {isAdmin && (
-                <Button 
-                  onClick={() => setShowProgramForm(true)}
-                  className="bg-[#FF8C00] hover:bg-[#CC7000]"
-                >
-                  <Plus className="w-4 h-4 mr-2" />
-                  New Programme
-                </Button>
-              )}
-            </div>
-          </div>
+          <Box sx={{ mb: 4 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+              <Box>
+                <Typography variant="h3" fontWeight={700}>Leadership Employment Programmes</Typography>
+                <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage programmes, activities, and participant progress</Typography>
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                {!isAdmin && !isMentor && selectedProgram && !isEnrolled && (
+                  <Button 
+                    onClick={() => setShowSignUpDialog(true)}
+                    variant="contained"
+                    startIcon={<Plus size={16} />}
+                    sx={{ bgcolor: '#22c55e', '&:hover': { bgcolor: '#16a34a' } }}
+                  >
+                    Sign Up for Programme
+                  </Button>
+                )}
+                {isAdmin && (
+                  <Button 
+                    onClick={() => setShowProgramForm(true)}
+                    variant="contained"
+                    startIcon={<Plus size={16} />}
+                    sx={{ bgcolor: '#FF8C00', '&:hover': { bgcolor: '#CC7000' } }}
+                  >
+                    New Programme
+                  </Button>
+                )}
+              </Box>
+            </Box>
 
-          {/* Program Selector */}
-          <div className="flex gap-2 flex-wrap">
-            {programs.map(program => (
-              <Button
-                key={program.id}
-                variant={selectedProgram?.id === program.id ? 'default' : 'outline'}
-                onClick={() => setSelectedProgram(program)}
-                className={selectedProgram?.id === program.id ? 'bg-[#FF8C00]' : ''}
-              >
-                {program.name}
-                <Badge className="ml-2" variant="secondary">{program.status}</Badge>
-              </Button>
-            ))}
-          </div>
+            {/* Program Selector */}
+            <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap' }}>
+              {programs.map(program => (
+                <Button
+                  key={program.id}
+                  variant={selectedProgram?.id === program.id ? 'contained' : 'outlined'}
+                  onClick={() => setSelectedProgram(program)}
+                  sx={{
+                    bgcolor: selectedProgram?.id === program.id ? '#FF8C00' : 'transparent',
+                    '&:hover': { bgcolor: selectedProgram?.id === program.id ? '#CC7000' : 'action.hover' }
+                  }}
+                  endIcon={<Chip label={program.status} size="small" sx={{ ml: 1 }} />}
+                >
+                  {program.name}
+                </Button>
+              ))}
+            </Box>
+          </Box>
         </motion.div>
 
         {selectedProgram ? (
@@ -161,104 +165,75 @@ export default function Programs() {
             <ProgramDetailsCard program={selectedProgram} participants={participants} />
 
             {/* Main Tabs */}
-            <Tabs defaultValue="calendar" className="mt-6">
-              <TabsList className="bg-white border border-gray-200 p-1 rounded-xl mb-6">
-                <TabsTrigger value="calendar">
-                  <CalendarIcon className="w-4 h-4 mr-2" />
-                  Calendar
-                </TabsTrigger>
-                <TabsTrigger value="activities">
-                  <ClipboardList className="w-4 h-4 mr-2" />
-                  Activities
-                </TabsTrigger>
-                <TabsTrigger value="rota">
-                  <Clock className="w-4 h-4 mr-2" />
-                  Rota
-                </TabsTrigger>
-                <TabsTrigger value="participants">
-                  <Users className="w-4 h-4 mr-2" />
-                  Participants
-                </TabsTrigger>
-                <TabsTrigger value="logbook">
-                  <BookOpen className="w-4 h-4 mr-2" />
-                  Logbook
-                </TabsTrigger>
-              </TabsList>
+            <Box sx={{ mt: 3 }}>
+              <Card sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 3, boxShadow: 3, mb: 3 }}>
+                <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)}>
+                  <Tab value="calendar" icon={<CalendarIcon size={16} />} iconPosition="start" label="Calendar" />
+                  <Tab value="activities" icon={<ClipboardList size={16} />} iconPosition="start" label="Activities" />
+                  <Tab value="rota" icon={<Clock size={16} />} iconPosition="start" label="Rota" />
+                  <Tab value="participants" icon={<Users size={16} />} iconPosition="start" label="Participants" />
+                  <Tab value="logbook" icon={<BookOpen size={16} />} iconPosition="start" label="Logbook" />
+                </Tabs>
+              </Card>
 
-              <TabsContent value="calendar">
-                <ProgramCalendar programId={selectedProgram.id} isAdmin={isAdmin} />
-              </TabsContent>
-
-              <TabsContent value="activities">
-                <ActivitySchedule programId={selectedProgram.id} isAdmin={isAdmin} participants={participants} />
-              </TabsContent>
-
-              <TabsContent value="rota">
-                <RotaManager programId={selectedProgram.id} isAdmin={isAdmin} participants={participants} />
-              </TabsContent>
-
-              <TabsContent value="participants">
-                <ParticipantManager programId={selectedProgram.id} isAdmin={isAdmin} isMentor={isMentor} />
-              </TabsContent>
-
-              <TabsContent value="logbook">
+              {tabValue === 'calendar' && <ProgramCalendar programId={selectedProgram.id} isAdmin={isAdmin} />}
+              {tabValue === 'activities' && <ActivitySchedule programId={selectedProgram.id} isAdmin={isAdmin} participants={participants} />}
+              {tabValue === 'rota' && <RotaManager programId={selectedProgram.id} isAdmin={isAdmin} participants={participants} />}
+              {tabValue === 'participants' && <ParticipantManager programId={selectedProgram.id} isAdmin={isAdmin} isMentor={isMentor} />}
+              {tabValue === 'logbook' && (
                 <LogbookManager 
                   programId={selectedProgram.id} 
                   isAdmin={isAdmin}
                   isMentor={isMentor}
                   userEmail={user.email}
                 />
-              </TabsContent>
-            </Tabs>
+              )}
+            </Box>
           </>
         ) : (
-          <Card className="p-12 text-center">
-            <ClipboardList className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-900 mb-2">No Programmes Yet</h3>
-            <p className="text-gray-500 mb-6">Create your first leadership employment programme to get started</p>
+          <Card sx={{ p: 6, textAlign: 'center' }}>
+            <ClipboardList size={64} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
+            <Typography variant="h5" fontWeight={600} sx={{ mb: 1 }}>No Programmes Yet</Typography>
+            <Typography color="text.secondary" sx={{ mb: 3 }}>Create your first leadership employment programme to get started</Typography>
             {isAdmin && (
               <Button 
                 onClick={() => setShowProgramForm(true)}
-                className="bg-[#FF8C00] hover:bg-[#CC7000]"
+                variant="contained"
+                startIcon={<Plus size={16} />}
+                sx={{ bgcolor: '#FF8C00', '&:hover': { bgcolor: '#CC7000' } }}
               >
-                <Plus className="w-4 h-4 mr-2" />
                 Create Programme
               </Button>
             )}
           </Card>
         )}
-      </div>
+      </Container>
 
       {/* Program Form Dialog */}
       <ProgramForm open={showProgramForm} onOpenChange={setShowProgramForm} />
 
       {/* Sign Up Confirmation Dialog */}
-      {showSignUpDialog && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowSignUpDialog(false)}>
-          <div className="bg-white rounded-2xl p-6 w-96 shadow-xl" onClick={(e) => e.stopPropagation()}>
-            <h3 className="text-xl font-bold mb-4">Sign Up for Programme</h3>
-            <p className="text-gray-600 mb-6">
-              Are you sure you want to sign up for <strong>{selectedProgram?.name}</strong>?
-            </p>
-            <div className="flex gap-3">
-              <Button 
-                onClick={handleSignUp} 
-                disabled={enrollMutation.isPending}
-                className="flex-1 bg-green-600 hover:bg-green-700"
-              >
-                {enrollMutation.isPending ? 'Enrolling...' : 'Confirm Sign Up'}
-              </Button>
-              <Button 
-                onClick={() => setShowSignUpDialog(false)} 
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog open={showSignUpDialog} onClose={() => setShowSignUpDialog(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Sign Up for Programme</DialogTitle>
+        <DialogContent>
+          <Typography>
+            Are you sure you want to sign up for <strong>{selectedProgram?.name}</strong>?
+          </Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setShowSignUpDialog(false)} color="inherit">
+            Cancel
+          </Button>
+          <Button 
+            onClick={handleSignUp} 
+            disabled={enrollMutation.isPending}
+            variant="contained"
+            sx={{ bgcolor: '#22c55e', '&:hover': { bgcolor: '#16a34a' } }}
+          >
+            {enrollMutation.isPending ? 'Enrolling...' : 'Confirm Sign Up'}
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }
