@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Box, Typography, ButtonGroup } from '@mui/material';
+import { Button } from '@/components/ui/button';
 import { Timer, Play, Pause, RotateCcw, Coffee } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
@@ -56,85 +56,87 @@ export default function StudyTimer() {
   };
 
   return (
-    <Box sx={{ bgcolor: 'white', border: 1, borderColor: 'divider', borderRadius: 2, boxShadow: 1, p: 3 }}>
-      <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+    <div className="bg-white border rounded-lg shadow-sm p-6">
+      <div className="flex items-center justify-between mb-4">
+        <div className="flex items-center gap-2">
           {isBreak ? (
-            <Coffee size={20} color="#16a34a" />
+            <Coffee className="w-5 h-5 text-green-600" />
           ) : (
-            <Timer size={20} color="#2563eb" />
+            <Timer className="w-5 h-5 text-blue-600" />
           )}
-          <Typography variant="h6" fontWeight={600}>
+          <h3 className="font-semibold">
             {isBreak ? 'Break Time' : 'Study Session'}
-          </Typography>
-        </Box>
-      </Box>
+          </h3>
+        </div>
+      </div>
 
+      {/* Duration Selector */}
       {!isBreak && !isActive && (
-        <Box sx={{ mb: 2 }}>
-          <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>Session Duration</Typography>
-          <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+        <div className="mb-4">
+          <label className="text-sm text-gray-600 mb-2 block">Session Duration</label>
+          <div className="flex flex-wrap gap-2">
             {[25, 30, 35, 40, 45, 50, 55, 60].map(mins => (
-              <Button
+              <button
                 key={mins}
                 onClick={() => changeDuration(mins)}
-                size="small"
-                variant={duration === mins ? 'contained' : 'outlined'}
-                sx={{ 
-                  minWidth: 44,
-                  bgcolor: duration === mins ? '#2563eb' : 'transparent',
-                  color: duration === mins ? 'white' : 'grey.700',
-                  '&:hover': { bgcolor: duration === mins ? '#1d4ed8' : 'grey.100' }
-                }}
+                className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                  duration === mins 
+                    ? 'bg-blue-600 text-white' 
+                    : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+                }`}
               >
                 {mins}m
-              </Button>
+              </button>
             ))}
-          </Box>
-        </Box>
+          </div>
+        </div>
       )}
 
-      <Box sx={{ position: 'relative', width: 192, height: 192, mx: 'auto', mb: 3 }}>
-        <svg style={{ transform: 'rotate(-90deg)', width: 192, height: 192 }}>
+      <div className="relative w-48 h-48 mx-auto mb-6">
+        <svg className="transform -rotate-90 w-48 h-48">
           <circle
             cx="96"
             cy="96"
             r="88"
-            stroke="#e5e7eb"
+            stroke="currentColor"
             strokeWidth="8"
             fill="none"
+            className="text-gray-200"
           />
           <motion.circle
             cx="96"
             cy="96"
             r="88"
-            stroke={isBreak ? '#22c55e' : '#2563eb'}
+            stroke="currentColor"
             strokeWidth="8"
             fill="none"
             strokeDasharray={2 * Math.PI * 88}
             strokeDashoffset={2 * Math.PI * 88 * (1 - progress / 100)}
+            className={isBreak ? 'text-green-500' : 'text-blue-600'}
             strokeLinecap="round"
           />
         </svg>
-        <Box sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-          <Typography variant="h3" fontWeight={700}>
-            {String(minutes).padStart(2, '0')}:{String(secs).padStart(2, '0')}
-          </Typography>
-        </Box>
-      </Box>
+        <div className="absolute inset-0 flex items-center justify-center">
+          <div className="text-center">
+            <div className="text-4xl font-bold">
+              {String(minutes).padStart(2, '0')}:{String(secs).padStart(2, '0')}
+            </div>
+          </div>
+        </div>
+      </div>
 
-      <Box sx={{ display: 'flex', gap: 1, justifyContent: 'center' }}>
+      <div className="flex gap-2 justify-center">
         <Button
           onClick={() => setIsActive(!isActive)}
-          variant="contained"
-          startIcon={isActive ? <Pause size={16} /> : <Play size={16} />}
+          className="gap-2"
         >
+          {isActive ? <Pause className="w-4 h-4" /> : <Play className="w-4 h-4" />}
           {isActive ? 'Pause' : 'Start'}
         </Button>
-        <Button variant="outlined" onClick={reset}>
-          <RotateCcw size={16} />
+        <Button variant="outline" onClick={reset}>
+          <RotateCcw className="w-4 h-4" />
         </Button>
-      </Box>
-    </Box>
+      </div>
+    </div>
   );
 }
