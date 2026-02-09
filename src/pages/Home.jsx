@@ -84,23 +84,23 @@ export default function Home() {
 
   const { data: carouselImages = [] } = useQuery({
     queryKey: ['carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'main' }, 'order', 20),
-    initialData: [],
-    staleTime: 1000 * 60 * 30,
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'main', is_active: true }, 'order', 500),
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   const { data: leadershipCarouselImages = [] } = useQuery({
     queryKey: ['leadership-carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'leadership', is_active: true }, 'order', 100),
-    initialData: [],
-    staleTime: 1000 * 60 * 5,
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'leadership', is_active: true }, 'order', 500),
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   const { data: heroCarouselImages = [] } = useQuery({
     queryKey: ['hero-carousel-images'],
-    queryFn: () => base44.entities.CarouselImage.filter({ is_active: true, carousel_type: 'hero' }, 'order', 20),
-    initialData: [],
-    staleTime: 1000 * 60 * 30,
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'hero', is_active: true }, 'order', 500),
+    staleTime: 0,
+    refetchOnMount: true
   });
 
   const { data: heroSections = [] } = useQuery({
@@ -668,11 +668,7 @@ export default function Home() {
           <Box sx={{ position: 'relative' }}>
             <Box sx={{ overflow: 'hidden', borderRadius: 6, boxShadow: 6 }} ref={emblaRef}>
               <Box sx={{ display: 'flex' }}>
-              {(carouselImages.length > 0 ? carouselImages : [
-                { image_url: 'https://images.unsplash.com/photo-1523240795612-9a054b0db644?w=2400&q=95&auto=format&fit=crop' },
-                { image_url: 'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?w=2400&q=95&auto=format&fit=crop' },
-                { image_url: 'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?w=2400&q=95&auto=format&fit=crop' },
-              ]).map((img, idx) => (
+              {carouselImages.map((img, idx) => (
                 <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
                   <Box sx={{ position: 'relative', aspectRatio: { xs: '4/3', sm: '16/9', lg: '16/9' }, overflow: 'hidden' }}>
                     <CardMedia
