@@ -2,7 +2,10 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Award, Users, Target, Heart } from 'lucide-react';
+import PeopleIcon from '@mui/icons-material/People';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export default function AboutUsSection() {
   const { data: siteContent = [] } = useQuery({
