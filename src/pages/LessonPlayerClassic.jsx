@@ -667,132 +667,259 @@ export default function LessonPlayerClassic() {
           </Toolbar>
         </AppBar>
 
-          <div className="flex flex-1 overflow-hidden">
-        {/* Sidebar - Tailwind only, not Material UI */}
-        <motion.aside
-          initial={false}
-          animate={{ x: showSidebar ? 0 : '-100%' }}
-          transition={{ type: 'tween', duration: 0.3 }}
-          className={`lg:translate-x-0 fixed lg:static inset-y-0 left-0 z-40 bg-[#1e3a8a] text-white flex flex-col lg:!transform-none ${
-            deviceType === 'mobile' ? 'w-72' : 'w-80'
-          }`}
-          style={{ marginTop: deviceType === 'mobile' ? '56px' : '64px' }}
+        <Box sx={{ display: 'flex', flex: 1, overflow: 'hidden' }}>
+        {/* Sidebar Navigation Drawer */}
+        <Drawer
+          variant="temporary"
+          anchor="left"
+          open={showSidebar}
+          onClose={() => setShowSidebar(false)}
+          sx={{
+            display: { xs: 'block', lg: 'none' },
+            '& .MuiDrawer-paper': {
+              width: deviceType === 'mobile' ? 288 : 320,
+              bgcolor: '#1e3a8a',
+              color: 'white',
+              mt: { xs: '56px', md: '64px' }
+            }
+          }}
         >
           {/* Search */}
-          <div className="p-4 border-b border-white/20">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-white/60" />
-              <TextField
-                inputRef={searchInputRef}
-                type="text"
-                placeholder="Search... (Press /)"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                size="small"
-                fullWidth
-                variant="outlined"
-                sx={{ '& .MuiOutlinedInput-root': { color: 'white', '& fieldset': { borderColor: 'white/20' } } }}
-                aria-label="Search lessons"
-              />
-            </div>
-          </div>
+          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'rgba(255,255,255,0.2)' }}>
+            <TextField
+              inputRef={searchInputRef}
+              type="text"
+              placeholder="Search... (Press /)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="small"
+              fullWidth
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' }
+                }
+              }}
+              InputProps={{ startAdornment: <Search className="w-4 h-4 mr-2 opacity-60" /> }}
+              aria-label="Search lessons"
+            />
+          </Box>
 
           {/* Course Title and Progress */}
-          <div className="p-6 border-b border-white/20">
-            <h2 className="text-lg font-bold mb-4 leading-tight">
+          <Box sx={{ p: 3, borderBottom: 1, borderColor: 'rgba(255,255,255,0.2)' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
               {course?.title || 'Course Content'}
-            </h2>
+            </Typography>
             {enrollment && (
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-semibold">{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE</span>
-                </div>
-                <div className="w-full bg-white/20 rounded-full h-2">
-                  <div
-                    className="bg-white rounded-full h-2 transition-all duration-300"
-                    style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
-                  />
-                </div>
-              </div>
+              <Stack spacing={1}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}
+                  sx={{ height: 8, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.2)' }}
+                />
+              </Stack>
             )}
-          </div>
+          </Box>
 
-          {/* Lessons */}
-          <ScrollArea className="flex-1">
-            <div className="p-4 space-y-2">
-              {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
-                <div key={section}>
-                  <button
-                    onClick={() => toggleSection(section)}
-                    className="w-full flex items-center justify-between px-3 py-3 text-xs font-bold tracking-wide hover:bg-white/10 rounded transition-colors text-left"
-                  >
-                    <span className="flex-1">{section}</span>
-                    {expandedSections[section] ? (
-                      <ChevronDown className="w-4 h-4 flex-shrink-0" />
-                    ) : (
-                      <ChevronRight className="w-4 h-4 flex-shrink-0" />
-                    )}
-                  </button>
+          {/* Lessons List */}
+          <List sx={{ flex: 1, overflow: 'auto', py: 0 }}>
+            {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
+              <Box key={section}>
+                <ListItemButton
+                  onClick={() => toggleSection(section)}
+                  sx={{
+                    py: 1.5,
+                    px: 1.5,
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                  }}
+                >
+                  <ListItemText primary={section} />
+                  {expandedSections[section] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                </ListItemButton>
 
-                  {expandedSections[section] && (
-                    <div className="space-y-1 mt-1">
-                      {sectionLessons.filter(l => 
-                        !searchQuery || 
-                        l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-                        l.section?.toLowerCase().includes(searchQuery.toLowerCase())
-                      ).map((l) => {
-                        const completed = enrollment?.completed_lessons?.includes(l.id);
-                        const isCurrent = l.id === lessonId;
+                {expandedSections[section] && (
+                  <List sx={{ py: 0.5, pl: 0 }}>
+                    {sectionLessons.filter(l => 
+                      !searchQuery || 
+                      l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).map((l) => {
+                      const completed = enrollment?.completed_lessons?.includes(l.id);
+                      const isCurrent = l.id === lessonId;
 
-                        return (
-                          <div
-                            key={l.id}
-                            onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
-                            className={`flex items-start gap-3 px-3 py-3 rounded cursor-pointer transition-colors ${
-                              isCurrent ? 'bg-white/20' : 'hover:bg-white/10'
-                            }`}
-                          >
-                            <div className="w-5 h-5 flex-shrink-0 mt-0.5">
-                              <Menu className="w-4 h-4 text-white/60" />
-                            </div>
-                            <p className="flex-1 text-sm leading-relaxed">
-                              {l.title}
-                            </p>
-                            {completed && (
-                              <div className="w-6 h-6 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-                                <Check className="w-4 h-4 text-[#1e3a8a]" />
-                              </div>
-                            )}
-                          </div>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </ScrollArea>
+                      return (
+                        <ListItemButton
+                          key={l.id}
+                          onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                          sx={{
+                            py: 1.5,
+                            px: 2,
+                            bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'transparent',
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 24, color: 'inherit', opacity: 0.6 }}>
+                            <Menu className="w-4 h-4" />
+                          </ListItemIcon>
+                          <ListItemText primary={l.title} />
+                          {completed && (
+                            <CheckCircle size={20} style={{ color: 'white' }} />
+                          )}
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                )}
+              </Box>
+            ))}
+          </List>
 
           {/* Close button for mobile */}
-          <div className="p-4 border-t border-white/20 lg:hidden">
-            <button 
+          <Divider sx={{ borderColor: 'rgba(255,255,255,0.2)' }} />
+          <Box sx={{ p: 2 }}>
+            <Button
+              fullWidth
+              variant="outlined"
               onClick={() => setShowSidebar(false)}
-              className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-white/10 hover:bg-white/20 rounded-lg transition-colors"
+              sx={{ color: 'white', borderColor: 'rgba(255,255,255,0.2)' }}
             >
-              <X className="w-5 h-5" />
-              <span className="text-sm font-medium">Close Menu</span>
-            </button>
-          </div>
-        </motion.aside>
+              <X className="w-5 h-5 mr-2" />
+              Close Menu
+            </Button>
+          </Box>
+        </Drawer>
 
-        {/* Overlay for mobile */}
-        {showSidebar && (
-          <div
-            className="fixed inset-0 bg-black/50 z-30 lg:hidden"
-            onClick={() => setShowSidebar(false)}
-            style={{ marginTop: '64px' }}
-          />
-        )}
+        {/* Desktop Sidebar */}
+        <Box
+          sx={{
+            display: { xs: 'none', lg: 'flex' },
+            width: 320,
+            bgcolor: '#1e3a8a',
+            color: 'white',
+            flexDirection: 'column',
+            borderRight: 1,
+            borderColor: 'divider'
+          }}
+        >
+          {/* Search */}
+          <Box sx={{ p: 2, borderBottom: 1, borderColor: 'rgba(255,255,255,0.2)' }}>
+            <TextField
+              inputRef={searchInputRef}
+              type="text"
+              placeholder="Search... (Press /)"
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              size="small"
+              fullWidth
+              variant="outlined"
+              sx={{
+                '& .MuiOutlinedInput-root': {
+                  color: 'white',
+                  '& fieldset': { borderColor: 'rgba(255,255,255,0.2)' },
+                  '&:hover fieldset': { borderColor: 'rgba(255,255,255,0.4)' }
+                }
+              }}
+              InputProps={{ startAdornment: <Search className="w-4 h-4 mr-2 opacity-60" /> }}
+              aria-label="Search lessons"
+            />
+          </Box>
+
+          {/* Course Title and Progress */}
+          <Box sx={{ p: 3, borderBottom: 1, borderColor: 'rgba(255,255,255,0.2)' }}>
+            <Typography variant="h6" sx={{ mb: 2, fontWeight: 700 }}>
+              {course?.title || 'Course Content'}
+            </Typography>
+            {enrollment && (
+              <Stack spacing={1}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
+                  <Typography variant="caption" sx={{ fontWeight: 600 }}>
+                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
+                  </Typography>
+                </Box>
+                <LinearProgress
+                  variant="determinate"
+                  value={(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}
+                  sx={{ height: 8, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.2)' }}
+                />
+              </Stack>
+            )}
+          </Box>
+
+          {/* Lessons List */}
+          <List sx={{ flex: 1, overflow: 'auto', py: 0 }}>
+            {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
+              <Box key={section}>
+                <ListItemButton
+                  onClick={() => toggleSection(section)}
+                  sx={{
+                    py: 1.5,
+                    px: 1.5,
+                    fontSize: '0.75rem',
+                    fontWeight: 700,
+                    textTransform: 'uppercase',
+                    letterSpacing: '0.05em',
+                    '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                  }}
+                >
+                  <ListItemText primary={section} />
+                  {expandedSections[section] ? <ChevronDown size={16} /> : <ChevronRight size={16} />}
+                </ListItemButton>
+
+                {expandedSections[section] && (
+                  <List sx={{ py: 0.5, pl: 0 }}>
+                    {sectionLessons.filter(l => 
+                      !searchQuery || 
+                      l.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                      l.section?.toLowerCase().includes(searchQuery.toLowerCase())
+                    ).map((l) => {
+                      const completed = enrollment?.completed_lessons?.includes(l.id);
+                      const isCurrent = l.id === lessonId;
+
+                      return (
+                        <ListItemButton
+                          key={l.id}
+                          onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                          sx={{
+                            py: 1.5,
+                            px: 2,
+                            bgcolor: isCurrent ? 'rgba(255,255,255,0.2)' : 'transparent',
+                            '&:hover': { bgcolor: 'rgba(255,255,255,0.1)' }
+                          }}
+                        >
+                          <ListItemIcon sx={{ minWidth: 24, color: 'inherit', opacity: 0.6 }}>
+                            <Menu className="w-4 h-4" />
+                          </ListItemIcon>
+                          <ListItemText primary={l.title} />
+                          {completed && (
+                            <CheckCircle size={20} style={{ color: 'white' }} />
+                          )}
+                        </ListItemButton>
+                      );
+                    })}
+                  </List>
+                )}
+              </Box>
+            ))}
+          </List>
+        </Box>
+
+        {/* Mobile Overlay */}
+        <Backdrop
+          open={showSidebar}
+          onClick={() => setShowSidebar(false)}
+          sx={{ display: { xs: 'block', lg: 'none' }, zIndex: 30 }}
+        />
 
         {/* Main Content */}
         <main 
