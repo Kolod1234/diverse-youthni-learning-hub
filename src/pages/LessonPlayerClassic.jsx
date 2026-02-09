@@ -603,9 +603,7 @@ export default function LessonPlayerClassic() {
         }}
       >
         {/* Top Bar */}
-        <header className={`bg-white border-b flex items-center justify-between sticky top-0 z-50 shadow-sm ${
-          deviceType === 'mobile' ? 'h-14 px-3' : 'h-16 px-6'
-        }`}>
+                <Box component="header" sx={{ bgcolor: 'background.paper', borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between', position: 'sticky', top: 0, zIndex: 50, boxShadow: 1, height: { xs: 56, md: 64 }, px: { xs: 1.5, md: 3 } }}>
         <div className="flex items-center gap-4">
           <button
             className="lg:hidden"
