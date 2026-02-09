@@ -15,6 +15,8 @@ import Leaderboard from '@/components/gamification/Leaderboard';
 import StreakTracker from '@/components/gamification/StreakTracker';
 import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';
 import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
+import PersonalizedSubjects from '@/components/dashboard/PersonalizedSubjects';
+import StudentReminders from '@/components/dashboard/StudentReminders';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
