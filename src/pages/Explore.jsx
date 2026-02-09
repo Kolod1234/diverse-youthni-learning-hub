@@ -35,6 +35,7 @@ export default function Explore() {
   const [selectedLevels, setSelectedLevels] = useState([]);
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [showFreeOnly, setShowFreeOnly] = useState(false);
+  const [selectedQualification, setSelectedQualification] = useState(['gcse', 'alevel']);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -109,8 +110,9 @@ export default function Explore() {
     const matchesPrice = showFreeOnly 
       ? course.price === 0 
       : (course.price || 0) >= priceRange[0] && (course.price || 0) <= priceRange[1];
+    const matchesQualification = selectedQualification.includes(course.qualification_type || 'gcse');
     
-    return matchesSearch && matchesCategory && matchesLevel && matchesPrice;
+    return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesQualification;
   });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -127,12 +129,63 @@ export default function Explore() {
     setPriceRange([0, 200]);
     setShowFreeOnly(false);
     setSearchQuery('');
+    setSelectedQualification(['gcse', 'alevel']);
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || showFreeOnly || searchQuery;
+  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || showFreeOnly || searchQuery || selectedQualification.length < 2;
 
   const FilterContent = () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
+      {/* Qualification Type */}
+      <Box>
+        <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Award size={16} color="#FF8C00" />
+          Qualification
+        </Typography>
+        <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+          {[
+            { id: 'gcse', label: 'GCSE' },
+            { id: 'alevel', label: 'A-Level' }
+          ].map((qual) => (
+            <motion.div 
+              key={qual.id}
+              whileHover={{ scale: 1.02, x: 4 }}
+              whileTap={{ scale: 0.98 }}
+            >
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    checked={selectedQualification.includes(qual.id)}
+                    onChange={(e) => {
+                      setSelectedQualification(prev => 
+                        e.target.checked
+                          ? [...prev, qual.id]
+                          : prev.filter(q => q !== qual.id)
+                      );
+                    }}
+                  />
+                }
+                label={qual.label}
+                sx={{
+                  width: '100%',
+                  m: 0,
+                  p: 1.5,
+                  borderRadius: 3,
+                  cursor: 'pointer',
+                  background: selectedQualification.includes(qual.id) 
+                    ? 'linear-gradient(to right, #10b981, #34d399)' 
+                    : 'background.paper',
+                  color: selectedQualification.includes(qual.id) ? 'white' : 'text.primary',
+                  border: selectedQualification.includes(qual.id) ? 0 : 1,
+                  borderColor: 'divider',
+                  '&:hover': { bgcolor: selectedQualification.includes(qual.id) ? undefined : 'action.hover' }
+                }}
+              />
+            </motion.div>
+          ))}
+        </Box>
+      </Box>
+
       {/* Categories */}
       <Box>
         <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
