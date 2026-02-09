@@ -136,6 +136,10 @@ export default function AdminDailyFacts() {
             <p className="text-gray-600">Manage engaging facts across multiple categories</p>
           </div>
           <div className="flex gap-3">
+            <Button onClick={() => queryClient.invalidateQueries(['daily-facts'])} className="gap-2 bg-gray-600 hover:bg-gray-700">
+              <RotateCw className="w-4 h-4" />
+              Refresh
+            </Button>
             <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600 hover:bg-blue-700">
               <Plus className="w-4 h-4" />
               Add Fact
