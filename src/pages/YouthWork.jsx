@@ -61,39 +61,37 @@ export default function YouthWork() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f0fdf4, white)', py: 6 }}>
+      <Container maxWidth="lg">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="text-center mb-12"
+          style={{ textAlign: 'center', marginBottom: 48 }}
         >
-          <div className="w-20 h-20 bg-emerald-600 rounded-2xl flex items-center justify-center mx-auto mb-6 shadow-lg">
+          <Box sx={{ width: 80, height: 80, bgcolor: '#16a34a', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 4, boxShadow: 3 }}>
             <Users className="w-10 h-10 text-white" />
-          </div>
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">
+          </Box>
+          <Typography variant="h3" sx={{ fontWeight: 'bold', mb: 2 }}>
             Youth Work Qualifications
-          </h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto mb-6">
+          </Typography>
+          <Typography variant="h6" color="textSecondary" sx={{ maxWidth: 800, mx: 'auto', mb: 3 }}>
             OCN Accredited qualifications aligned with the Model of Effective Practice in Youth Work (OCNI)
-          </p>
-          <div className="flex justify-center gap-4">
-            <Link to={createPageUrl('YouthWorkWorkbook')}>
-              <Button className="bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white px-8 py-6 text-lg rounded-xl shadow-lg">
-                <BookOpen className="w-6 h-6 mr-3" />
+          </Typography>
+          <Box sx={{ display: 'flex', justifyContent: 'center', gap: 2, flexWrap: 'wrap' }}>
+            <Link to={createPageUrl('YouthWorkWorkbook')} style={{ textDecoration: 'none' }}>
+              <Button variant="contained" sx={{ background: 'linear-gradient(to right, #9333ea, #ec4899)', px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<BookOpen />}>
                 Start Your Interactive Workbook
               </Button>
             </Link>
             {isAdmin && (
-              <Link to={createPageUrl('AdminYouthWork')}>
-                <Button variant="outline" className="px-8 py-6 text-lg rounded-xl shadow-lg">
-                  <Settings className="w-6 h-6 mr-3" />
+              <Link to={createPageUrl('AdminYouthWork')} style={{ textDecoration: 'none' }}>
+                <Button variant="outlined" sx={{ px: 4, py: 1.5, fontSize: '1rem', borderRadius: 2, boxShadow: 3 }} startIcon={<Settings />}>
                   Admin Management
                 </Button>
               </Link>
             )}
-          </div>
+          </Box>
         </motion.div>
 
         {/* Model of Effective Practice Overview */}
