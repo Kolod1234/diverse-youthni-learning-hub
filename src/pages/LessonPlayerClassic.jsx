@@ -922,17 +922,22 @@ export default function LessonPlayerClassic() {
         />
 
         {/* Main Content */}
-        <main 
+        <Box
+          component="main"
           ref={mainContentRef}
           id="lesson-content"
-          className="flex-1 overflow-y-auto bg-gray-100"
+          sx={{
+            flex: 1,
+            overflowY: 'auto',
+            bgcolor: 'background.default'
+          }}
           onTouchStart={handleTouchStart}
           onTouchMove={handleTouchMove}
           onTouchEnd={handleTouchEnd}
           role="main"
           aria-label="Lesson content"
         >
-          <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-12 pb-24 md:pb-12">
+          <Container maxWidth="lg" sx={{ py: { xs: 3, sm: 6, md: 12 }, pb: { xs: 12, md: 6 } }}>
             {/* Breadcrumb Navigation */}
             <div className="no-print mb-4">
               <BreadcrumbNav 
