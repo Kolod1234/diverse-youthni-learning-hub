@@ -358,6 +358,10 @@ export default function AdminDashboard() {
               <Settings className="w-4 h-4 mr-2" />
               Page Builder
             </TabsTrigger>
+            <TabsTrigger value="about-us" className="rounded-lg">
+              <Users className="w-4 h-4 mr-2" />
+              About Us
+            </TabsTrigger>
           </TabsList>
 
           <TabsContent value="users">
@@ -463,6 +467,10 @@ export default function AdminDashboard() {
                 </Button>
               </Link>
             </Card>
+          </TabsContent>
+
+          <TabsContent value="about-us">
+            <AboutUsManagement siteContent={siteContent} />
           </TabsContent>
         </Tabs>
       </div>
@@ -3073,6 +3081,196 @@ function TutorRequestsManagement() {
         </Card>
       )}
     </div>
+  );
+}
+
+function AboutUsManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [formData, setFormData] = useState({
+    about_image: '',
+    about_title: '',
+    about_description: '',
+    about_mission: '',
+    about_stat_students: '',
+    about_stat_courses: '',
+    about_stat_success: '',
+    about_stat_years: ''
+  });
+  const [uploadingImage, setUploadingImage] = useState(false);
+
+  useEffect(() => {
+    const data = {};
+    Object.keys(formData).forEach(key => {
+      const item = siteContent.find(c => c.key === key);
+      data[key] = item?.value || '';
+    });
+    setFormData(data);
+  }, [siteContent]);
+
+  const updateContentMutation = useMutation({
+    mutationFn: async (updates) => {
+      const promises = Object.entries(updates).map(async ([key, value]) => {
+        const existing = siteContent.find(c => c.key === key);
+        if (existing) {
+          return base44.entities.SiteContent.update(existing.id, { value });
+        } else {
+          return base44.entities.SiteContent.create({
+            key,
+            value,
+            section: 'about',
+            description: `About Us - ${key.replace('about_', '')}`
+          });
+        }
+      });
+      await Promise.all(promises);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      toast.success('About Us section updated!');
+    },
+  });
+
+  const handleImageUpload = async (e) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData({ ...formData, about_image: file_url });
+      toast.success('Image uploaded!');
+    } catch (error) {
+      toast.error('Upload failed');
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleSave = () => {
+    updateContentMutation.mutate(formData);
+  };
+
+  return (
+    <Card className="p-6">
+      <div className="mb-6">
+        <h2 className="text-xl font-semibold mb-2">About Us Section</h2>
+        <p className="text-gray-500">Manage the About Us content displayed on the homepage</p>
+      </div>
+
+      <div className="space-y-6 max-w-3xl">
+        {/* Image */}
+        <div>
+          <Label>About Image</Label>
+          <div className="space-y-2">
+            <Input
+              value={formData.about_image}
+              onChange={(e) => setFormData({ ...formData, about_image: e.target.value })}
+              placeholder="https://example.com/image.jpg"
+            />
+            <div className="flex items-center gap-2">
+              <div className="h-px bg-gray-300 flex-1" />
+              <span className="text-xs text-gray-500">OR</span>
+              <div className="h-px bg-gray-300 flex-1" />
+            </div>
+            <input
+              type="file"
+              accept="image/*"
+              onChange={handleImageUpload}
+              disabled={uploadingImage}
+              className="hidden"
+              id="about-image-upload"
+            />
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => document.getElementById('about-image-upload').click()}
+              disabled={uploadingImage}
+              className="w-full"
+            >
+              {uploadingImage ? 'Uploading...' : 'Upload Image'}
+            </Button>
+          </div>
+          {formData.about_image && (
+            <img src={formData.about_image} alt="Preview" className="mt-3 w-full h-48 object-cover rounded-lg border" />
+          )}
+        </div>
+
+        {/* Title */}
+        <div>
+          <Label>Title</Label>
+          <Input
+            value={formData.about_title}
+            onChange={(e) => setFormData({ ...formData, about_title: e.target.value })}
+            placeholder="Empowering Youth Through Education"
+          />
+        </div>
+
+        {/* Description */}
+        <div>
+          <Label>Description (Main Paragraph)</Label>
+          <Textarea
+            value={formData.about_description}
+            onChange={(e) => setFormData({ ...formData, about_description: e.target.value })}
+            placeholder="Main description about the organization..."
+            rows={4}
+          />
+        </div>
+
+        {/* Mission */}
+        <div>
+          <Label>Mission Statement (Second Paragraph)</Label>
+          <Textarea
+            value={formData.about_mission}
+            onChange={(e) => setFormData({ ...formData, about_mission: e.target.value })}
+            placeholder="Our mission and goals..."
+            rows={4}
+          />
+        </div>
+
+        {/* Stats */}
+        <div className="border-t pt-6">
+          <h3 className="font-semibold mb-4">Statistics</h3>
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <Label>Active Students</Label>
+              <Input
+                value={formData.about_stat_students}
+                onChange={(e) => setFormData({ ...formData, about_stat_students: e.target.value })}
+                placeholder="500+"
+              />
+            </div>
+            <div>
+              <Label>Courses Offered</Label>
+              <Input
+                value={formData.about_stat_courses}
+                onChange={(e) => setFormData({ ...formData, about_stat_courses: e.target.value })}
+                placeholder="50+"
+              />
+            </div>
+            <div>
+              <Label>Success Rate</Label>
+              <Input
+                value={formData.about_stat_success}
+                onChange={(e) => setFormData({ ...formData, about_stat_success: e.target.value })}
+                placeholder="95%"
+              />
+            </div>
+            <div>
+              <Label>Years Experience</Label>
+              <Input
+                value={formData.about_stat_years}
+                onChange={(e) => setFormData({ ...formData, about_stat_years: e.target.value })}
+                placeholder="10+"
+              />
+            </div>
+          </div>
+        </div>
+
+        <Button onClick={handleSave} disabled={updateContentMutation.isPending} className="w-full">
+          {updateContentMutation.isPending ? 'Saving...' : 'Save About Us Section'}
+        </Button>
+      </div>
+    </Card>
   );
 }
 
