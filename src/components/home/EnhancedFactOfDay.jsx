@@ -74,7 +74,7 @@ export default function EnhancedFactOfDay() {
           />
         </div>
 
-        <div className="relative p-10 md:p-16">
+        <div className="relative p-12 md:p-20">
            {/* Header */}
            <div className="flex items-center justify-between mb-8">
              <motion.div
