@@ -121,6 +121,7 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import AdminAttendance from './pages/AdminAttendance';
 import __Layout from './Layout.jsx';
 
 
@@ -199,6 +200,7 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "AdminAttendance": AdminAttendance,
 }
 
 export const pagesConfig = {
