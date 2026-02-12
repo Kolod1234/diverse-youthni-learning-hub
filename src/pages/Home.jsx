@@ -598,7 +598,7 @@ export default function Home() {
                           component="img"
                           src={logo.logo_url}
                           alt={logo.name}
-                          sx={{ height: 80, width: 'auto', objectFit: 'contain' }}
+                          sx={{ maxHeight: 120, width: '100%', objectFit: 'contain' }}
                         />
                       </a>
                     ) : (
@@ -606,7 +606,7 @@ export default function Home() {
                         component="img"
                         src={logo.logo_url}
                         alt={logo.name}
-                        sx={{ height: 80, width: 'auto', objectFit: 'contain', opacity: 0.7 }}
+                        sx={{ maxHeight: 120, width: '100%', objectFit: 'contain', opacity: 0.7 }}
                       />
                     )}
                   </Box>
