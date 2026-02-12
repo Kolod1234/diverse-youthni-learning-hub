@@ -940,10 +940,10 @@ export default function Home() {
                     )}
                   </Box>
                   <CardContent sx={{ p: 3, position: 'relative' }}>
-                    <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, '&:hover': { color: 'primary.main' }, transition: 'color 0.3s', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '3.5rem' }}>
+                    <Typography variant="h6" fontWeight={700} sx={{ color: 'text.primary', mb: 1.5, '&:hover': { color: 'primary.main' }, transition: 'color 0.3s', display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: '3.5rem' }}>
                       {course.title}
                     </Typography>
-                    <Typography color="text.secondary" sx={{ mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.875rem', lineHeight: 1.75 }}>
+                    <Typography sx={{ color: 'text.secondary', mb: 2, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', fontSize: '0.875rem', lineHeight: 1.75 }}>
                       {course.description}
                     </Typography>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 2, fontSize: '0.75rem', color: 'text.secondary' }}>
@@ -1237,7 +1237,7 @@ export default function Home() {
                       ))}
                     </Box>
                     <Box sx={{ mb: 3 }}>
-                      <Typography sx={{ fontSize: '4rem', color: 'rgba(37, 99, 235, 0.2)', fontFamily: 'serif', mb: 1 }}>"</Typography>
+                      <Typography sx={{ fontSize: '4rem', color: 'primary.main', opacity: 0.2, fontFamily: 'serif', mb: 1 }}>"</Typography>
                       <Typography sx={{ color: 'text.primary', lineHeight: 1.75, fontStyle: 'italic' }}>{review.comment}</Typography>
                     </Box>
                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pt: 2, borderTop: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
@@ -1573,8 +1573,8 @@ function FeaturesSection() {
                 <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, background: `linear-gradient(to bottom right, ${feature.color_from}, ${feature.color_to})`, borderRadius: 3, mb: 2, boxShadow: 2 }}>
                   <Typography sx={{ fontSize: '2rem' }}>{feature.icon}</Typography>
                 </Box>
-                <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5 }}>{feature.title}</Typography>
-                <Typography color="text.secondary" sx={{ lineHeight: 1.75 }}>{feature.description}</Typography>
+                <Typography variant="h6" fontWeight={700} sx={{ mb: 1.5, color: 'text.primary' }}>{feature.title}</Typography>
+                <Typography sx={{ lineHeight: 1.75, color: 'text.secondary' }}>{feature.description}</Typography>
               </Card>
             </motion.div>
           ))}
@@ -1811,8 +1811,8 @@ function SolutionsSection() {
                 </Box>
               )}
               <CardContent sx={{ p: 3 }}>
-                <Typography variant="h5" fontWeight={700} sx={{ mb: 1.5 }}>{card.title}</Typography>
-                <Typography color="text.secondary" sx={{ mb: 2, lineHeight: 1.75 }}>{card.description}</Typography>
+                <Typography variant="h5" fontWeight={700} sx={{ mb: 1.5, color: 'text.primary' }}>{card.title}</Typography>
+                <Typography sx={{ mb: 2, lineHeight: 1.75, color: 'text.secondary' }}>{card.description}</Typography>
                 {card.link && (
                   <Link to={card.link} style={{ textDecoration: 'none' }}>
                     <Button sx={{ color: 'primary.main', fontWeight: 600, p: 0, '&:hover': { color: 'primary.dark' } }}>
