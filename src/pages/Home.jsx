@@ -869,7 +869,7 @@ export default function Home() {
         {isLoading ? (
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 4 }}>
             {[...Array(6)].map((_, i) => (
-              <Card key={i} sx={{ borderRadius: 3, overflow: 'hidden', boxShadow: 3, border: 1, borderColor: 'divider' }}>
+              <Card key={i} sx={{ bgcolor: 'background.paper', borderRadius: 3, overflow: 'hidden', boxShadow: 3, border: 1, borderColor: 'divider' }}>
                 <Box sx={{ aspectRatio: '16/9', bgcolor: 'action.hover' }} className="animate-pulse" />
                 <CardContent sx={{ p: 3, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
                   <Box sx={{ height: 24, bgcolor: 'action.hover', borderRadius: 1 }} className="animate-pulse" />
@@ -889,7 +889,7 @@ export default function Home() {
                 viewport={{ once: true, margin: "-100px" }}
                 transition={{ duration: 0.3 }}
               >
-                <Card sx={{ borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)', transform: 'translateY(-12px)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative' }}>
+                <Card sx={{ bgcolor: 'background.paper', borderRadius: 4, overflow: 'hidden', boxShadow: 3, '&:hover': { boxShadow: 6, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)', transform: 'translateY(-12px)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative' }}>
                   <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom right, rgba(37,99,235,0), rgba(147,51,234,0), rgba(236,72,153,0))', '&:hover': { background: 'linear-gradient(to bottom right, rgba(37,99,235,0.05), rgba(147,51,234,0.05), rgba(236,72,153,0.05))' }, transition: 'all 0.5s' }} />
                   <Box sx={{ aspectRatio: '16/9', overflow: 'hidden', background: 'linear-gradient(to bottom right, #3b82f6, #9333ea)', position: 'relative' }}>
                     <CardMedia
@@ -1228,7 +1228,7 @@ export default function Home() {
                 transition={{ delay: idx * 0.1 }}
                 whileHover={{ y: -8, scale: 1.02 }}
               >
-                <Card sx={{ position: 'relative', borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 8, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', overflow: 'hidden' }}>
+                <Card sx={{ bgcolor: 'background.paper', position: 'relative', borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 8, boxShadow: '0 25px 50px -12px rgba(59, 130, 246, 0.2)' }, transition: 'all 0.3s', border: 1, borderColor: 'divider', overflow: 'hidden' }}>
                   <Box sx={{ position: 'absolute', top: 0, right: 0, width: 128, height: 128, background: 'linear-gradient(to bottom right, rgba(59, 130, 246, 0.05), rgba(168, 85, 247, 0.05))', borderRadius: '50%', filter: 'blur(64px)', '&:hover': { transform: 'scale(1.5)' }, transition: 'transform 0.5s' }} />
                   <Box sx={{ position: 'relative', zIndex: 10 }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 0.5, mb: 2 }}>
@@ -1568,7 +1568,7 @@ function FeaturesSection() {
               transition={{ delay: idx * 0.1 }}
               whileHover={{ y: -8, scale: 1.02 }}
             >
-              <Card sx={{ borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative', overflow: 'hidden' }}>
+              <Card sx={{ bgcolor: 'background.paper', borderRadius: 4, p: 4, boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s', border: 1, borderColor: 'divider', position: 'relative', overflow: 'hidden' }}>
                 <Box sx={{ position: 'absolute', inset: 0, background: `linear-gradient(to bottom right, ${feature.color_from}, ${feature.color_to})`, opacity: 0, '&:hover': { opacity: 0.05 }, transition: 'opacity 0.3s' }} />
                 <Box sx={{ display: 'inline-flex', alignItems: 'center', justifyContent: 'center', width: 56, height: 56, background: `linear-gradient(to bottom right, ${feature.color_from}, ${feature.color_to})`, borderRadius: 3, mb: 2, boxShadow: 2 }}>
                   <Typography sx={{ fontSize: '2rem' }}>{feature.icon}</Typography>
@@ -2230,7 +2230,7 @@ function PartnersSection() {
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     whileHover={{ y: -8, scale: 1.03 }}
                   >
-                    <Card sx={{ bgcolor: 'white', border: 1, borderColor: 'divider', borderRadius: 3, p: 6, boxShadow: 3, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 208 }}>
+                    <Card sx={{ bgcolor: 'background.paper', border: 1, borderColor: 'divider', borderRadius: 3, p: 6, boxShadow: 3, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 208 }}>
                       {logo.website_url ? (
                         <a href={logo.website_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Box
