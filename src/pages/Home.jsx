@@ -2230,7 +2230,7 @@ function PartnersSection() {
                     transition={{ delay: idx * 0.1, duration: 0.5 }}
                     whileHover={{ y: -8, scale: 1.03 }}
                   >
-                    <Card sx={{ bgcolor: 'background.paper', border: 1, borderColor: 'divider', borderRadius: 3, p: 6, boxShadow: 3, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 208 }}>
+                    <Card sx={{ bgcolor: 'background.paper', border: 1, borderColor: 'divider', borderRadius: 3, p: 3, boxShadow: 3, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', display: 'flex', alignItems: 'center', justifyContent: 'center', height: 160 }}>
                       {logo.website_url ? (
                         <a href={logo.website_url} target="_blank" rel="noopener noreferrer" style={{ display: 'block', width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                           <Box
