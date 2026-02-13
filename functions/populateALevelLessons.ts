@@ -38,6 +38,10 @@ Deno.serve(async (req) => {
       lessonStructure = getPhysicsASLessons();
     } else if (structureKey === 'physics_a2') {
       lessonStructure = getPhysicsA2Lessons();
+    } else if (structureKey === 'further_mathematics_as') {
+      lessonStructure = getFurtherMathematicsASLessons();
+    } else if (structureKey === 'further_mathematics_a2') {
+      lessonStructure = getFurtherMathematicsA2Lessons();
     } else {
       return Response.json({ error: `No lesson structure found for ${structureKey}` }, { status: 400 });
     }
@@ -914,5 +918,126 @@ function getPhysicsA2Lessons() {
     { section: 'A2 2: Fundamental Particles', title: 'Quark Structure', objectives: ['Describe structure of hadrons in terms of quarks', 'Understand quark combinations', 'Apply to protons neutrons mesons'], order: 74 },
     { section: 'A2 2: Fundamental Particles', title: 'Conservation Laws', objectives: ['Understand conservation of charge', 'Apply lepton number conservation', 'Use baryon number conservation'], order: 75 },
     { section: 'A2 2: Fundamental Particles', title: 'Beta Decay and Quarks', objectives: ['Describe beta-decay in quark model', 'Explain quark transformations', 'Understand W boson role'], order: 76 },
+  ];
+}
+
+function getFurtherMathematicsASLessons() {
+  return [
+    // AS1: Complex Numbers (12 lessons)
+    { section: 'AS1: Complex Numbers', title: 'Introduction to Complex Numbers', objectives: ['Define imaginary unit i where i squared equals minus 1', 'Express complex numbers in form a plus bi', 'Understand real and imaginary parts'], order: 1 },
+    { section: 'AS1: Complex Numbers', title: 'Addition and Subtraction of Complex Numbers', objectives: ['Add complex numbers by adding real and imaginary parts separately', 'Subtract complex numbers', 'Simplify expressions'], order: 2 },
+    { section: 'AS1: Complex Numbers', title: 'Multiplication of Complex Numbers', objectives: ['Multiply complex numbers using distributive law', 'Apply i squared equals minus 1', 'Simplify products'], order: 3 },
+    { section: 'AS1: Complex Numbers', title: 'Complex Conjugates', objectives: ['Define complex conjugate of a plus bi as a minus bi', 'Use conjugates to simplify expressions', 'Understand properties of conjugates'], order: 4 },
+    { section: 'AS1: Complex Numbers', title: 'Division of Complex Numbers', objectives: ['Divide complex numbers by multiplying by conjugate', 'Express results in form a plus bi', 'Rationalize denominators'], order: 5 },
+    { section: 'AS1: Complex Numbers', title: 'Argand Diagrams', objectives: ['Represent complex numbers on Argand diagram', 'Plot points with real part on x-axis and imaginary on y-axis', 'Interpret geometric representation'], order: 6 },
+    { section: 'AS1: Complex Numbers', title: 'Modulus of Complex Numbers', objectives: ['Define modulus as distance from origin', 'Calculate modulus using r equals sqrt of a squared plus b squared', 'Understand geometric interpretation'], order: 7 },
+    { section: 'AS1: Complex Numbers', title: 'Argument of Complex Numbers', objectives: ['Define argument as angle from positive real axis', 'Calculate argument using tan theta equals b over a', 'Express in radians'], order: 8 },
+    { section: 'AS1: Complex Numbers', title: 'Polar Form of Complex Numbers', objectives: ['Express complex number as r cos theta plus i sin theta', 'Convert between Cartesian and polar forms', 'Use modulus-argument form'], order: 9 },
+    { section: 'AS1: Complex Numbers', title: 'Solving Quadratic Equations with Complex Roots', objectives: ['Solve quadratic equations with negative discriminant', 'Express solutions as complex conjugates', 'Apply quadratic formula'], order: 10 },
+    { section: 'AS1: Complex Numbers', title: 'Solving Polynomial Equations', objectives: ['Find complex roots of polynomial equations', 'Use factor theorem with complex numbers', 'Understand conjugate root theorem'], order: 11 },
+    { section: 'AS1: Complex Numbers', title: 'Complex Number Applications', objectives: ['Apply complex numbers to solve equations', 'Use in geometric problems', 'Understand practical applications'], order: 12 },
+
+    // AS1: Matrices (15 lessons)
+    { section: 'AS1: Matrices', title: 'Matrix Notation and Order', objectives: ['Define matrix as rectangular array of numbers', 'Specify order as rows by columns', 'Identify elements using subscript notation'], order: 13 },
+    { section: 'AS1: Matrices', title: 'Types of Matrices', objectives: ['Identify square matrices row matrices column matrices', 'Define zero matrix and identity matrix', 'Recognize diagonal matrices'], order: 14 },
+    { section: 'AS1: Matrices', title: 'Matrix Equality', objectives: ['Define when two matrices are equal', 'Understand corresponding elements must be equal', 'Apply to solve for unknowns'], order: 15 },
+    { section: 'AS1: Matrices', title: 'Matrix Addition and Subtraction', objectives: ['Add matrices of same order by adding corresponding elements', 'Subtract matrices element by element', 'Understand commutativity of addition'], order: 16 },
+    { section: 'AS1: Matrices', title: 'Scalar Multiplication', objectives: ['Multiply matrix by scalar', 'Multiply each element by scalar', 'Apply distributive properties'], order: 17 },
+    { section: 'AS1: Matrices', title: 'Matrix Multiplication', objectives: ['Multiply two matrices using row by column method', 'Understand order compatibility requirement', 'Recognize non-commutativity of multiplication'], order: 18 },
+    { section: 'AS1: Matrices', title: 'Properties of Matrix Multiplication', objectives: ['Verify associativity of matrix multiplication', 'Apply distributive law over addition', 'Understand identity matrix property'], order: 19 },
+    { section: 'AS1: Matrices', title: 'Determinant of 2x2 Matrix', objectives: ['Calculate determinant of 2 by 2 matrix', 'Use formula ad minus bc', 'Understand geometric interpretation'], order: 20 },
+    { section: 'AS1: Matrices', title: 'Determinant of 3x3 Matrix', objectives: ['Calculate determinant using cofactor expansion', 'Apply to first row or any row column', 'Understand properties of determinants'], order: 21 },
+    { section: 'AS1: Matrices', title: 'Inverse of 2x2 Matrix', objectives: ['Find inverse using formula with determinant', 'Verify inverse by multiplication', 'Understand condition for invertibility'], order: 22 },
+    { section: 'AS1: Matrices', title: 'Inverse of 3x3 Matrix', objectives: ['Calculate inverse using adjugate method', 'Find matrix of cofactors and transpose', 'Apply determinant in denominator'], order: 23 },
+    { section: 'AS1: Matrices', title: 'Solving Linear Equations with Matrices', objectives: ['Express system as matrix equation AX equals B', 'Solve using inverse matrix X equals A inverse B', 'Apply to 2 by 2 and 3 by 3 systems'], order: 24 },
+    { section: 'AS1: Matrices', title: 'Geometric Transformations', objectives: ['Represent transformations using matrices', 'Apply rotation reflection enlargement', 'Understand transformation composition'], order: 25 },
+    { section: 'AS1: Matrices', title: 'Matrix Transformations Composition', objectives: ['Combine transformations by matrix multiplication', 'Understand order matters', 'Apply successive transformations'], order: 26 },
+    { section: 'AS1: Matrices', title: 'Matrix Applications', objectives: ['Use matrices to solve systems of equations', 'Apply to real-world problems', 'Understand limitations of matrix methods'], order: 27 },
+
+    // AS1: Further Algebra and Functions (8 lessons)
+    { section: 'AS1: Further Algebra', title: 'Summation Notation', objectives: ['Use sigma notation for sums', 'Evaluate finite series using summation', 'Apply properties of summation'], order: 28 },
+    { section: 'AS1: Further Algebra', title: 'Method of Differences', objectives: ['Apply method of differences to series', 'Express terms as difference of consecutive terms', 'Simplify telescoping series'], order: 29 },
+    { section: 'AS1: Further Algebra', title: 'Proof by Mathematical Induction - Summation', objectives: ['Prove summation formulae by induction', 'Verify base case and inductive step', 'Apply to series of powers'], order: 30 },
+    { section: 'AS1: Further Algebra', title: 'Proof by Mathematical Induction - Divisibility', objectives: ['Prove divisibility results by induction', 'Show expression divisible by given number', 'Apply inductive reasoning'], order: 31 },
+    { section: 'AS1: Further Algebra', title: 'Proof by Mathematical Induction - Inequalities', objectives: ['Prove inequalities using induction', 'Establish base case and inductive step', 'Apply to exponential and polynomial inequalities'], order: 32 },
+    { section: 'AS1: Further Algebra', title: 'Proof by Mathematical Induction - Matrices', objectives: ['Prove matrix results by induction', 'Apply to powers of matrices', 'Verify matrix identities'], order: 33 },
+    { section: 'AS1: Further Algebra', title: 'Partial Fractions', objectives: ['Express rational functions as partial fractions', 'Handle linear factors in denominator', 'Apply to integration and series'], order: 34 },
+    { section: 'AS1: Further Algebra', title: 'Partial Fractions with Repeated Factors', objectives: ['Decompose fractions with repeated linear factors', 'Use appropriate partial fraction form', 'Solve for unknown coefficients'], order: 35 },
+
+    // AS1: Series (5 lessons)
+    { section: 'AS1: Series', title: 'Finite Series Summation', objectives: ['Sum finite arithmetic and geometric series', 'Use standard formulae', 'Apply to problem solving'], order: 36 },
+    { section: 'AS1: Series', title: 'Summation of Powers', objectives: ['Use formulae for sum of first n integers', 'Apply sum of squares and cubes', 'Derive using method of differences'], order: 37 },
+    { section: 'AS1: Series', title: 'Series Applications', objectives: ['Apply series to real-world problems', 'Model situations with arithmetic or geometric series', 'Solve practical applications'], order: 38 },
+    { section: 'AS1: Series', title: 'Maclaurin Series', objectives: ['Understand Maclaurin series expansion', 'Expand functions as power series', 'Apply to exponential sine cosine'], order: 39 },
+    { section: 'AS1: Series', title: 'Series Convergence', objectives: ['Test series for convergence', 'Use ratio test and comparison test', 'Determine radius of convergence'], order: 40 },
+  ];
+}
+
+function getFurtherMathematicsA2Lessons() {
+  return [
+    // A2 1: Further Calculus (12 lessons)
+    { section: 'A2 1: Further Calculus', title: 'Hyperbolic Functions Definitions', objectives: ['Define hyperbolic sine and cosine functions', 'Use sinh x equals e to x minus e to minus x over 2', 'Use cosh x equals e to x plus e to minus x over 2'], order: 1 },
+    { section: 'A2 1: Further Calculus', title: 'Hyperbolic Function Properties', objectives: ['Define tanh x as sinh x over cosh x', 'Prove cosh squared x minus sinh squared x equals 1', 'Apply hyperbolic identities'], order: 2 },
+    { section: 'A2 1: Further Calculus', title: 'Graphs of Hyperbolic Functions', objectives: ['Sketch graphs of sinh cosh and tanh', 'Understand domain and range', 'Compare with trigonometric functions'], order: 3 },
+    { section: 'A2 1: Further Calculus', title: 'Differentiation of Hyperbolic Functions', objectives: ['Differentiate sinh x cosh x and tanh x', 'Apply chain rule to hyperbolic functions', 'Use in calculus problems'], order: 4 },
+    { section: 'A2 1: Further Calculus', title: 'Integration of Hyperbolic Functions', objectives: ['Integrate sinh x cosh x and tanh x', 'Apply substitution with hyperbolic functions', 'Solve integration problems'], order: 5 },
+    { section: 'A2 1: Further Calculus', title: 'Inverse Hyperbolic Functions', objectives: ['Define inverse hyperbolic functions', 'Express in logarithmic form', 'Differentiate inverse hyperbolic functions'], order: 6 },
+    { section: 'A2 1: Further Calculus', title: 'First Order Differential Equations', objectives: ['Solve first order equations by separation of variables', 'Apply to exponential growth and decay', 'Find particular solutions'], order: 7 },
+    { section: 'A2 1: Further Calculus', title: 'Second Order Differential Equations', objectives: ['Solve homogeneous second order equations', 'Find complementary function', 'Apply auxiliary equation method'], order: 8 },
+    { section: 'A2 1: Further Calculus', title: 'Particular Integrals', objectives: ['Find particular integral for non-homogeneous equations', 'Use trial function method', 'Combine with complementary function'], order: 9 },
+    { section: 'A2 1: Further Calculus', title: 'Applications of Differential Equations', objectives: ['Model physical situations with differential equations', 'Apply to simple harmonic motion', 'Solve damped oscillations'], order: 10 },
+    { section: 'A2 1: Further Calculus', title: 'Maclaurin and Taylor Series', objectives: ['Derive Maclaurin series for standard functions', 'Use Taylor series for approximations', 'Apply series expansions'], order: 11 },
+    { section: 'A2 1: Further Calculus', title: 'Integration Techniques', objectives: ['Apply integration by parts multiple times', 'Use reduction formulae', 'Solve complex integrals'], order: 12 },
+
+    // A2 1: Vectors (10 lessons)
+    { section: 'A2 1: Vectors', title: 'Vectors in Three Dimensions', objectives: ['Extend vector notation to 3D', 'Use i j k unit vectors', 'Calculate magnitude in 3D'], order: 13 },
+    { section: 'A2 1: Vectors', title: 'Scalar Product', objectives: ['Define scalar product a dot b', 'Use a dot b equals magnitude a times magnitude b times cos theta', 'Apply to find angle between vectors'], order: 14 },
+    { section: 'A2 1: Vectors', title: 'Vector Product', objectives: ['Define vector product a cross b', 'Calculate using determinant method', 'Understand perpendicular direction'], order: 15 },
+    { section: 'A2 1: Vectors', title: 'Equation of a Line in 3D', objectives: ['Express line in vector form r equals a plus lambda b', 'Use parametric equations', 'Find intersection of lines'], order: 16 },
+    { section: 'A2 1: Vectors', title: 'Equation of a Plane', objectives: ['Define plane using position vector and normal', 'Use scalar product form r dot n equals a dot n', 'Convert to Cartesian form'], order: 17 },
+    { section: 'A2 1: Vectors', title: 'Angle Between Line and Plane', objectives: ['Calculate angle between line and plane', 'Use scalar product of direction and normal', 'Apply trigonometry'], order: 18 },
+    { section: 'A2 1: Vectors', title: 'Intersection of Line and Plane', objectives: ['Find point of intersection', 'Substitute line equation into plane', 'Solve for parameter'], order: 19 },
+    { section: 'A2 1: Vectors', title: 'Distance from Point to Line', objectives: ['Calculate perpendicular distance', 'Use vector projection method', 'Apply scalar and vector products'], order: 20 },
+    { section: 'A2 1: Vectors', title: 'Distance from Point to Plane', objectives: ['Calculate perpendicular distance from point to plane', 'Use formula with normal vector', 'Apply to geometric problems'], order: 21 },
+    { section: 'A2 1: Vectors', title: 'Vector Applications', objectives: ['Apply vectors to geometry problems', 'Solve 3D coordinate geometry', 'Use in mechanics and physics'], order: 22 },
+
+    // A2 1: Further Complex Numbers (8 lessons)
+    { section: 'A2 1: Further Complex Numbers', title: 'Exponential Form of Complex Numbers', objectives: ['Express complex number as r e to i theta', 'Use Euler formula e to i theta equals cos theta plus i sin theta', 'Convert between forms'], order: 23 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Multiplication and Division in Exponential Form', objectives: ['Multiply complex numbers by adding arguments', 'Divide by subtracting arguments', 'Simplify using exponential form'], order: 24 },
+    { section: 'A2 1: Further Complex Numbers', title: 'De Moivre Theorem', objectives: ['State De Moivre theorem for integer powers', 'Use cos theta plus i sin theta to power n', 'Apply to find powers of complex numbers'], order: 25 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Roots of Complex Numbers', objectives: ['Find nth roots of complex numbers', 'Use De Moivre theorem for fractional powers', 'Represent roots on Argand diagram'], order: 26 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Solving Polynomial Equations', objectives: ['Find all roots of polynomial equations', 'Use complex roots to factorize', 'Apply conjugate root theorem'], order: 27 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Loci in the Complex Plane', objectives: ['Describe loci satisfying conditions', 'Plot circles and lines in complex plane', 'Use modulus and argument conditions'], order: 28 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Complex Number Transformations', objectives: ['Apply transformations in complex plane', 'Use multiplication and addition geometrically', 'Understand rotation and enlargement'], order: 29 },
+    { section: 'A2 1: Further Complex Numbers', title: 'Applications of Complex Numbers', objectives: ['Apply to alternating current circuits', 'Use in signal processing', 'Solve engineering problems'], order: 30 },
+
+    // A2 1: Polar Coordinates (6 lessons)
+    { section: 'A2 1: Polar Coordinates', title: 'Polar Coordinate System', objectives: ['Define polar coordinates r and theta', 'Convert between Cartesian and polar', 'Use x equals r cos theta and y equals r sin theta'], order: 31 },
+    { section: 'A2 1: Polar Coordinates', title: 'Sketching Polar Curves', objectives: ['Sketch curves given in polar form', 'Plot r equals f of theta', 'Identify symmetries'], order: 32 },
+    { section: 'A2 1: Polar Coordinates', title: 'Standard Polar Curves', objectives: ['Recognize circles spirals and roses', 'Sketch r equals a and r equals a theta', 'Understand cardioids and limaçons'], order: 33 },
+    { section: 'A2 1: Polar Coordinates', title: 'Area in Polar Coordinates', objectives: ['Calculate area using integral half r squared d theta', 'Apply to sectors and regions', 'Find areas enclosed by polar curves'], order: 34 },
+    { section: 'A2 1: Polar Coordinates', title: 'Tangents to Polar Curves', objectives: ['Find tangent lines to polar curves', 'Use dy over dx in polar form', 'Determine horizontal and vertical tangents'], order: 35 },
+    { section: 'A2 1: Polar Coordinates', title: 'Polar Coordinate Applications', objectives: ['Apply to physics and engineering', 'Model circular motion', 'Use in navigation and astronomy'], order: 36 },
+
+    // A2 2: Mechanics Options (Select Two from Three Sections)
+    // Section A: Mechanics
+    { section: 'A2 2: Mechanics', title: 'Circular Motion Dynamics', objectives: ['Apply Newton second law to circular motion', 'Calculate centripetal force and acceleration', 'Solve problems with banked curves'], order: 37 },
+    { section: 'A2 2: Mechanics', title: 'Relative Motion', objectives: ['Understand relative velocity between moving objects', 'Use vector addition for relative motion', 'Apply to navigation and collision problems'], order: 38 },
+    { section: 'A2 2: Mechanics', title: 'Elastic Collisions in One Dimension', objectives: ['Apply conservation of momentum and energy', 'Solve for velocities after elastic collision', 'Understand coefficient of restitution'], order: 39 },
+
+    // Section B: Statistics
+    { section: 'A2 2: Statistics', title: 'Continuous Probability Distributions', objectives: ['Define continuous random variables', 'Use probability density functions', 'Calculate probabilities using integrals'], order: 40 },
+    { section: 'A2 2: Statistics', title: 'Expectation and Variance', objectives: ['Calculate expectation E of X', 'Find variance Var of X using integrals', 'Apply to continuous distributions'], order: 41 },
+    { section: 'A2 2: Statistics', title: 'Normal Distribution Advanced', objectives: ['Use normal distribution with unknown parameters', 'Apply z-scores and standardization', 'Solve problems with sample means'], order: 42 },
+    { section: 'A2 2: Statistics', title: 'Estimation Theory', objectives: ['Understand point and interval estimation', 'Calculate confidence intervals for mean', 'Use t-distribution when appropriate'], order: 43 },
+    { section: 'A2 2: Statistics', title: 'Hypothesis Testing Advanced', objectives: ['Perform hypothesis tests for means', 'Use p-values and critical regions', 'Test for difference between two means'], order: 44 },
+    { section: 'A2 2: Statistics', title: 'Chi-Squared Tests', objectives: ['Apply chi-squared test for goodness of fit', 'Test for independence in contingency tables', 'Use degrees of freedom correctly'], order: 45 },
+
+    // Section C: Discrete and Decision Mathematics
+    { section: 'A2 2: Decision Mathematics', title: 'Linear Programming', objectives: ['Formulate linear programming problems', 'Use graphical method for two variables', 'Apply simplex algorithm'], order: 46 },
+    { section: 'A2 2: Decision Mathematics', title: 'Critical Path Analysis', objectives: ['Construct activity networks', 'Find critical path and minimum completion time', 'Calculate float times'], order: 47 },
+    { section: 'A2 2: Decision Mathematics', title: 'Travelling Salesman Problem', objectives: ['Understand TSP and its applications', 'Use nearest neighbour algorithm', 'Apply minimum spanning tree method'], order: 48 },
+    { section: 'A2 2: Decision Mathematics', title: 'Matchings and Allocation', objectives: ['Solve bipartite matching problems', 'Use Hungarian algorithm', 'Apply to job assignment problems'], order: 49 },
+    { section: 'A2 2: Decision Mathematics', title: 'Network Flows', objectives: ['Understand maximum flow problems', 'Apply Ford-Fulkerson algorithm', 'Solve minimum cut problems'], order: 50 },
   ];
 }
