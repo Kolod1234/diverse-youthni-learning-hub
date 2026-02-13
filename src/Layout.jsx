@@ -24,6 +24,7 @@ import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import { motion } from 'framer-motion';
+import { MathJaxContext } from 'better-react-mathjax';
 
 function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -739,12 +740,23 @@ function LayoutContent({ children, currentPageName }) {
     );
     }
 
+const mathJaxConfig = {
+  loader: { load: ['[tex]/mhchem', '[tex]/physics'] },
+  tex: {
+    packages: { '[+]': ['mhchem', 'physics'] },
+    inlineMath: [['$', '$']],
+    displayMath: [['$$', '$$']]
+  }
+};
+
 export default function Layout({ children, currentPageName }) {
   return (
-    <ThemeProvider>
-      <MUIThemeProvider>
-        <LayoutContent children={children} currentPageName={currentPageName} />
-      </MUIThemeProvider>
-    </ThemeProvider>
+    <MathJaxContext config={mathJaxConfig}>
+      <ThemeProvider>
+        <MUIThemeProvider>
+          <LayoutContent children={children} currentPageName={currentPageName} />
+        </MUIThemeProvider>
+      </ThemeProvider>
+    </MathJaxContext>
   );
 }
