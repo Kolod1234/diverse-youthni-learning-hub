@@ -49,52 +49,80 @@ export default function CourseDetails() {
       return courses[0];
     },
     enabled: !!courseId,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['lessons', courseId],
     queryFn: () => base44.entities.Lesson.filter({ course_id: courseId }, 'order', 500),
-    enabled: !!courseId,
+    enabled: !!courseId && !!course,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: allQuizzes = [] } = useQuery({
     queryKey: ['quizzes', courseId],
     queryFn: () => base44.entities.Quiz.filter({ course_id: courseId }),
-    enabled: !!courseId,
+    enabled: !!courseId && !!course,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: reviews = [] } = useQuery({
     queryKey: ['reviews', courseId],
     queryFn: () => base44.entities.Review.filter({ course_id: courseId }, '-created_date', 20),
-    enabled: !!courseId,
+    enabled: !!courseId && !!course,
+    staleTime: 2 * 60 * 1000,
   });
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollment', courseId, user?.email],
     queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
-    enabled: !!courseId && !!user?.email,
+    enabled: !!courseId && !!user?.email && !!course,
+    staleTime: 1 * 60 * 1000,
+  });
+
+  const { data: courseEnrollments = [] } = useQuery({
+    queryKey: ['course-enrollments', courseId],
+    queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId }),
+    enabled: !!courseId && !!course,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: allCourses = [] } = useQuery({
-    queryKey: ['all-courses'],
-    queryFn: () => base44.entities.Course.list('-created_date', 100),
+    queryKey: ['instructor-courses', course?.instructor],
+    queryFn: () => base44.entities.Course.filter({ instructor: course?.instructor }),
+    enabled: !!course?.instructor,
+    staleTime: 10 * 60 * 1000,
   });
 
-  const { data: allEnrollments = [] } = useQuery({
-    queryKey: ['all-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
+  const { data: instructorEnrollments = [] } = useQuery({
+    queryKey: ['instructor-enrollments', course?.instructor],
+    queryFn: async () => {
+      if (!course?.instructor) return [];
+      const courses = await base44.entities.Course.filter({ instructor: course.instructor });
+      const courseIds = courses.map(c => c.id);
+      const enrollments = [];
+      for (const id of courseIds) {
+        const e = await base44.entities.Enrollment.filter({ course_id: id });
+        enrollments.push(...e);
+      }
+      return enrollments;
+    },
+    enabled: !!course?.instructor,
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: instructorReviews = [] } = useQuery({
     queryKey: ['instructor-reviews', course?.instructor],
     queryFn: () => base44.entities.Review.filter({ instructor_name: course?.instructor || '', rating_type: 'tutor' }),
-    enabled: !!courseId && !!course?.instructor,
+    enabled: !!course?.instructor,
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: lessonKeys = [] } = useQuery({
     queryKey: ['lesson-keys', courseId],
     queryFn: () => base44.entities.LessonUnlockKey.filter({ course_id: courseId }),
-    enabled: !!courseId,
+    enabled: !!courseId && !!course && !!user,
+    staleTime: 2 * 60 * 1000,
   });
 
   const enrollMutation = useMutation({
@@ -131,14 +159,11 @@ export default function CourseDetails() {
     : null;
 
   // Calculate actual student count from enrollments
-  const actualStudentCount = allEnrollments.filter(e => e.course_id === courseId).length;
+  const actualStudentCount = courseEnrollments.length;
 
   // Calculate real instructor statistics from enrollment data
-  const instructorCourses = allCourses.filter(c => c.instructor === course?.instructor);
-  const instructorCourseIds = instructorCourses.map(c => c.id);
-  const instructorStudents = new Set(
-    allEnrollments.filter(e => instructorCourseIds.includes(e.course_id)).map(e => e.created_by)
-  ).size;
+  const instructorCourses = allCourses;
+  const instructorStudents = new Set(instructorEnrollments.map(e => e.created_by)).size;
   const instructorRating = instructorReviews.length > 0
     ? (instructorReviews.reduce((sum, r) => sum + r.rating, 0) / instructorReviews.length).toFixed(1)
     : null;
