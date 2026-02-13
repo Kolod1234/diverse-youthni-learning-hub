@@ -558,3 +558,189 @@ function getBiologyA2Lessons() {
     { section: 'A2 2: Practical', title: 'Study of Kingdom Specimens', objectives: ['Examine plant specimens moss fern angiosperm', 'Study animal phyla specimens and slides', 'Identify key features and structures'], order: 108 },
   ];
 }
+
+function getChemistryA2Lessons() {
+  return [
+    // A2 1: Further Physical and Organic Chemistry
+    // 4.1 Lattice enthalpy (3 lessons)
+    { section: 'A2 1: Lattice Enthalpy', title: 'Lattice Enthalpy Definition', objectives: ['Define lattice enthalpy', 'Understand enthalpy of formation of ionic solid', 'Apply to Group I and II halides'], order: 1 },
+    { section: 'A2 1: Lattice Enthalpy', title: 'Born-Haber Cycles', objectives: ['Construct Born-Haber cycles', 'Carry out associated calculations', 'Apply to halides and oxides'], order: 2 },
+    { section: 'A2 1: Lattice Enthalpy', title: 'Dissolving Ionic Compounds', objectives: ['Define enthalpy changes in dissolving', 'Understand lattice and hydration enthalpies', 'Carry out calculations'], order: 3 },
+
+    // 4.2 Enthalpy entropy and free energy (7 lessons)
+    { section: 'A2 1: Thermodynamics', title: 'Feasible Change Limitations', objectives: ['Recall enthalpy alone insufficient', 'Explain endothermic feasible reactions', 'Use ammonium carbonate example'], order: 4 },
+    { section: 'A2 1: Thermodynamics', title: 'Entropy and Enthalpy Balance', objectives: ['Understand balance determines feasibility', 'Relate entropy to disorder', 'Define entropy change'], order: 5 },
+    { section: 'A2 1: Thermodynamics', title: 'Entropy as Disorder', objectives: ['Recall entropy measures disorder', 'Understand entropy increase', 'Apply to phase changes'], order: 6 },
+    { section: 'A2 1: Thermodynamics', title: 'Standard Entropy Change', objectives: ['Calculate delta S from data', 'Use standard entropy values', 'Apply to chemical reactions'], order: 7 },
+    { section: 'A2 1: Thermodynamics', title: 'Free Energy Equation', objectives: ['Use delta G equals delta H minus T delta S', 'Calculate standard free energy changes', 'Understand temperature dependence'], order: 8 },
+    { section: 'A2 1: Thermodynamics', title: 'Feasibility Conditions', objectives: ['Recall processes feasible when delta G negative', 'Understand spontaneity', 'Apply to reactions'], order: 9 },
+    { section: 'A2 1: Thermodynamics', title: 'Temperature Dependent Feasibility', objectives: ['Calculate temperature for feasibility change', 'Understand same sign delta H and delta S', 'Determine start or cease temperatures'], order: 10 },
+
+    // 4.3 Rates of reaction (7 lessons)
+    { section: 'A2 1: Reaction Rates', title: 'Rate Equations', objectives: ['Use rate equals k[A]^x[B]^y', 'Understand x and y as 0 1 or 2', 'Apply to simple systems'], order: 11 },
+    { section: 'A2 1: Reaction Rates', title: 'Rate Equation Terms', objectives: ['Define rate of reaction', 'Understand order', 'Define rate constant'], order: 12 },
+    { section: 'A2 1: Reaction Rates', title: 'Deducing Rate Equations', objectives: ['Deduce rate equations from data', 'Use experimental results', 'Determine orders'], order: 13 },
+    { section: 'A2 1: Reaction Rates', title: 'Concentration-Time Graphs', objectives: ['Deduce rate from graphs', 'Determine order from concentration-time', 'Use rate-concentration graphs'], order: 14 },
+    { section: 'A2 1: Reaction Rates', title: 'Mechanism and Rate Equation', objectives: ['Relate rate equation to mechanism', 'Explain SN1 and SN2 mechanisms', 'Apply to halogenoalkane hydrolysis'], order: 15 },
+    { section: 'A2 1: Reaction Rates', title: 'Rate Determining Step', objectives: ['Define rate determining step', 'Understand slowest step controls rate', 'Deduce from rate equation'], order: 16 },
+    { section: 'A2 1: Reaction Rates', title: 'Experimental Methods', objectives: ['Suggest methods to study rate', 'Use iodine titrations', 'Apply colorimetry'], order: 17 },
+
+    // 4.4 Equilibrium (2 lessons)
+    { section: 'A2 1: Advanced Equilibrium', title: 'Equilibrium Calculations', objectives: ['Calculate equilibrium concentrations', 'Use given data', 'Apply to homogeneous systems'], order: 18 },
+    { section: 'A2 1: Advanced Equilibrium', title: 'Calculating Kc Values', objectives: ['Calculate numerical Kc with units', 'Use equilibrium data', 'Determine appropriate units'], order: 19 },
+
+    // 4.5 Acid-base equilibria (8 lessons)
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Bronsted-Lowry Theory', objectives: ['Use proton transfer concept', 'Describe acid-base equilibria', 'Identify conjugate acid-base pairs'], order: 20 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Equilibrium Constants', objectives: ['Define Kw Ka pH pKw pKa', 'Recall associated units', 'Apply to calculations'], order: 21 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'pH Calculations', objectives: ['Calculate pH for strong acids', 'Determine pH for strong bases', 'Apply to weak acids'], order: 22 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Buffer Solutions', objectives: ['Define buffer solution', 'Explain qualitatively how buffers work', 'Understand resistance to pH change'], order: 23 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Buffer pH Calculations', objectives: ['Calculate pH of buffer solution', 'Use weak acid and sodium hydroxide', 'Apply Henderson-Hasselbalch'], order: 24 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Titration Curves', objectives: ['Recall experimental determination', 'Plot pH versus volume', 'Interpret curve shapes'], order: 25 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Indicator Selection', objectives: ['Use titration curves for indicator choice', 'Understand end point range', 'Apply to different titration types'], order: 26 },
+    { section: 'A2 1: Acid-Base Equilibria', title: 'Salt Solution pH', objectives: ['Predict if salt solution acidic alkaline neutral', 'Base on parent acid and base strengths', 'Apply hydrolysis concepts'], order: 27 },
+
+    // 4.6 Isomerism (6 lessons)
+    { section: 'A2 1: Isomerism', title: 'Structural Isomerism Types', objectives: ['Understand structural isomers in different families', 'Distinguish chain positional functional', 'Apply to compounds'], order: 28 },
+    { section: 'A2 1: Isomerism', title: 'Optical Isomerism', objectives: ['Recall asymmetric chiral centres', 'Understand non-superimposable mirror images', 'Identify chiral molecules'], order: 29 },
+    { section: 'A2 1: Isomerism', title: '3D Representations', objectives: ['Draw 3D optical isomers', 'Use wedge and dash notation', 'Show tetrahedral arrangement'], order: 30 },
+    { section: 'A2 1: Isomerism', title: 'Plane Polarised Light', objectives: ['Recall rotation of plane polarised light', 'Understand opposite directions', 'Define dextrorotatory and laevorotatory'], order: 31 },
+    { section: 'A2 1: Isomerism', title: 'Optical Activity', objectives: ['Define optically active', 'Explain racemic mixtures', 'Understand optical inactivity'], order: 32 },
+    { section: 'A2 1: Isomerism', title: 'Drug Stereochemistry', objectives: ['Understand drug action and stereochemistry', 'Explain receptor site stereospecificity', 'Apply to pharmaceuticals'], order: 33 },
+
+    // 4.7 Aldehydes and ketones (10 lessons)
+    { section: 'A2 1: Carbonyl Compounds', title: 'Aldehyde and Ketone Formulae', objectives: ['Recall molecular and structural formulae', 'Include branched structures up to six carbons', 'Distinguish aldehyde from ketone'], order: 34 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Physical Properties', objectives: ['Explain boiling points', 'Describe solubility', 'Reference intermolecular forces'], order: 35 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Preparation by Oxidation', objectives: ['Recall preparation from alcohols', 'Use suitable oxidising agents', 'Distinguish primary and secondary'], order: 36 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Reaction with Hydrogen Cyanide', objectives: ['Recall HCN addition', 'Understand nucleophilic attack', 'Form hydroxynitriles'], order: 37 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Nucleophilic Addition Mechanism', objectives: ['Describe mechanism with HCN and propanone', 'Use curly arrows', 'Show intermediate'], order: 38 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Racemic Mixtures', objectives: ['Explain formation of racemic mixtures', 'Understand planar carbonyl group', 'Apply to HCN reactions'], order: 39 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Reaction with 2,4-DNP', objectives: ['Recall reaction with 2,4-dinitrophenylhydrazine', 'Form orange precipitate', 'Use for identification'], order: 40 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Derivative Preparation', objectives: ['Prepare 2,4-dinitrophenylhydrazones', 'Recrystallise product', 'Determine melting point'], order: 41 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Distinguishing Aldehydes and Ketones', objectives: ['Use acidified potassium dichromate VI', 'Apply Fehling solution', 'Use Tollens reagent'], order: 42 },
+    { section: 'A2 1: Carbonyl Compounds', title: 'Reduction with Lithal', objectives: ['Reduce using lithium tetrahydridoaluminate III', 'Form primary alcohols from aldehydes', 'Form secondary alcohols from ketones'], order: 43 },
+
+    // 4.8 Carboxylic acids (6 lessons)
+    { section: 'A2 1: Carboxylic Acids', title: 'Carboxylic Acid Formulae', objectives: ['Recall molecular and structural formulae', 'Include branched structures up to six carbons', 'Identify carboxyl group'], order: 44 },
+    { section: 'A2 1: Carboxylic Acids', title: 'Physical Properties', objectives: ['Explain boiling points', 'Describe solubility', 'Reference hydrogen bonding'], order: 45 },
+    { section: 'A2 1: Carboxylic Acids', title: 'Preparation Methods', objectives: ['Prepare from primary alcohols', 'Oxidise aldehydes', 'Use appropriate oxidising agents'], order: 46 },
+    { section: 'A2 1: Carboxylic Acids', title: 'Hydrolysis Routes', objectives: ['Form from ester hydrolysis', 'Prepare from nitrile hydrolysis', 'Use acid or base catalysis'], order: 47 },
+    { section: 'A2 1: Carboxylic Acids', title: 'Salt Formation', objectives: ['Form salts with sodium carbonate', 'React with sodium hydroxide', 'Use ammonia'], order: 48 },
+    { section: 'A2 1: Carboxylic Acids', title: 'Carboxylic Acid Reactions', objectives: ['React with alcohols', 'Use phosphorus pentachloride', 'Reduce with lithal'], order: 49 },
+
+    // 4.9 Derivatives of carboxylic acids (8 lessons)
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Esters and Acyl Chlorides', objectives: ['Recall esters and acyl chlorides as derivatives', 'Understand functional groups', 'Distinguish structures'], order: 50 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Ester and Acyl Chloride Formulae', objectives: ['Recall molecular and structural formulae', 'Identify monoesters', 'Recognize acyl chloride group'], order: 51 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Ester Physical Properties', objectives: ['Explain boiling points', 'Describe solubility', 'Reference intermolecular forces'], order: 52 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Ester Formation', objectives: ['Form from carboxylic acids and alcohols', 'Use acyl chlorides', 'Understand esterification'], order: 53 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Laboratory Ester Preparation', objectives: ['Prepare liquid ester', 'Use carboxylic acid and alcohol', 'Apply heating and acid catalyst'], order: 54 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Fats and Oils', objectives: ['Understand structure as esters of glycerol', 'Identify fatty acids', 'Distinguish saturated and unsaturated'], order: 55 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Transesterification', objectives: ['Recall reactions with alcohols and acids', 'Produce biodiesel', 'Form margarines'], order: 56 },
+    { section: 'A2 1: Carboxylic Derivatives', title: 'Acyl Chloride Reactions', objectives: ['React with water', 'React with alcohols', 'Understand vigorous nature'], order: 57 },
+
+    // 4.10 Aromatic chemistry (5 lessons)
+    { section: 'A2 1: Aromatic Chemistry', title: 'Benzene Structure', objectives: ['Explain delocalised pi electrons', 'Understand resonance stability', 'Describe hexagonal structure'], order: 58 },
+    { section: 'A2 1: Aromatic Chemistry', title: 'Benzene Reactivity', objectives: ['Explain resistance to addition', 'Compare with alkene reactivity', 'Relate to pi electron stability'], order: 59 },
+    { section: 'A2 1: Aromatic Chemistry', title: 'Electrophilic Substitution Mechanisms', objectives: ['Explain monobromination mechanism', 'Describe mononitration', 'Understand monoalkylation and monoacylation'], order: 60 },
+    { section: 'A2 1: Aromatic Chemistry', title: 'Electrophile Formation', objectives: ['Write equations for electrophile generation', 'Recall Br+ and NO2+ as electrophiles', 'Understand catalyst role'], order: 61 },
+    { section: 'A2 1: Aromatic Chemistry', title: 'Nitration Practical', objectives: ['Prepare methyl-3-nitrobenzoate', 'Start from methyl benzoate', 'Illustrate nitration'], order: 62 },
+
+    // A2 2: Analytical, Transition Metals, Electrochemistry and Organic Nitrogen
+    // 5.1 Mass spectrometry (3 lessons)
+    { section: 'A2 2: Mass Spectrometry', title: 'Mass Spectrum Features', objectives: ['Identify base peak molecular ion M+1', 'Recognize fragmentation ions', 'Interpret peak heights'], order: 63 },
+    { section: 'A2 2: Mass Spectrometry', title: 'Fragmentation Patterns', objectives: ['Suggest formulae for fragment ions', 'Analyze fragmentation', 'Apply to structure determination'], order: 64 },
+    { section: 'A2 2: Mass Spectrometry', title: 'High Resolution MS', objectives: ['Distinguish molecules of same RMM', 'Use accurate mass', 'Apply to molecular formula'], order: 65 },
+
+    // 5.2 NMR spectroscopy (7 lessons)
+    { section: 'A2 2: NMR Spectroscopy', title: 'Low vs High Resolution NMR', objectives: ['Understand difference in resolution', 'Explain information from each', 'Apply to structure determination'], order: 66 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'TMS as Standard', objectives: ['Understand reasons for using TMS', 'Define chemical shift scale', 'Explain zero reference'], order: 67 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'Chemical Equivalence', objectives: ['Recognize chemically equivalent hydrogens', 'Understand symmetry', 'Identify unique environments'], order: 68 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'Chemical Shifts', objectives: ['Understand shifts depend on environment', 'Use chemical shift tables', 'Identify functional groups'], order: 69 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'Integration Curves', objectives: ['Use integration to determine relative numbers', 'Understand peak area', 'Apply to hydrogen count'], order: 70 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'Spin-Spin Splitting', objectives: ['Apply n+1 rule', 'Analyze doublets triplets quartets', 'Understand adjacent hydrogen effect'], order: 71 },
+    { section: 'A2 2: NMR Spectroscopy', title: 'Structure Deduction', objectives: ['Deduce molecular structure from NMR', 'Combine splitting and shifts', 'Apply to simple patterns'], order: 72 },
+
+    // 5.3 Volumetric analysis (4 lessons)
+    { section: 'A2 2: Volumetric Analysis', title: 'Iodine Thiosulfate Titrations', objectives: ['Titrate iodine with sodium thiosulfate', 'Use starch indicator', 'Estimate oxidising agents'], order: 73 },
+    { section: 'A2 2: Volumetric Analysis', title: 'Manganate VII Titrations', objectives: ['Titrate acidified potassium manganate VII', 'Use with iron II and reducing agents', 'Self-indicating'], order: 74 },
+    { section: 'A2 2: Volumetric Analysis', title: 'Redox Titration Equations', objectives: ['Deduce titration equations', 'Use half-equations', 'Combine oxidant and reductant'], order: 75 },
+    { section: 'A2 2: Volumetric Analysis', title: 'Back Titration', objectives: ['Understand back titration method', 'Determine purity of Group II compounds', 'Apply to metal oxides and carbonates'], order: 76 },
+
+    // 5.4 Chromatography (3 lessons)
+    { section: 'A2 2: Chromatography', title: 'Paper and TLC', objectives: ['Describe one-way and two-way paper', 'Explain thin-layer chromatography', 'Carry out qualitatively and quantitatively'], order: 77 },
+    { section: 'A2 2: Chromatography', title: 'Gas-Liquid Chromatography', objectives: ['Describe GLC technique', 'Interpret percentage composition', 'Understand retention time'], order: 78 },
+    { section: 'A2 2: Chromatography', title: 'Rf Values', objectives: ['Interpret chromatograms', 'Calculate Rf values', 'Apply to one-way and two-way'], order: 79 },
+
+    // 5.5 Transition metals (14 lessons)
+    { section: 'A2 2: Transition Metals', title: 'Transition Metal Properties', objectives: ['Recall incomplete d-shell', 'Understand variable oxidation states', 'Identify catalytic activity and coloured complexes'], order: 80 },
+    { section: 'A2 2: Transition Metals', title: 'Electronic Configuration', objectives: ['Deduce configuration of metals and ions', 'Explain stability from subshell filling', 'Apply to scandium to zinc'], order: 81 },
+    { section: 'A2 2: Transition Metals', title: 'Complex Formation', objectives: ['Understand complexes with central metal', 'Define ligands as lone pair donors', 'Identify coordination'], order: 82 },
+    { section: 'A2 2: Transition Metals', title: 'Ligands', objectives: ['Explain ligands contain lone pairs', 'Understand donation to metal', 'Distinguish anions and molecules'], order: 83 },
+    { section: 'A2 2: Transition Metals', title: 'Coordination Numbers', objectives: ['Define coordination number', 'Deduce from complex structure', 'Apply to various complexes'], order: 84 },
+    { section: 'A2 2: Transition Metals', title: 'Oxidation Numbers in Complexes', objectives: ['Deduce oxidation number', 'Explain redox and disproportionation', 'Apply to complex ions'], order: 85 },
+    { section: 'A2 2: Transition Metals', title: 'Ligand Types', objectives: ['Distinguish monodentate Cl H2O NH3', 'Understand bidentate en', 'Explain polydentate edta'], order: 86 },
+    { section: 'A2 2: Transition Metals', title: 'Ligand Strength', objectives: ['Explain relative strengths', 'Understand lone pair availability', 'Apply to displacement'], order: 87 },
+    { section: 'A2 2: Transition Metals', title: 'Ligand Replacement', objectives: ['Understand hexaaquacopper II reactions', 'Use concentrated HCl and ammonia', 'Observe colours and shapes'], order: 88 },
+    { section: 'A2 2: Transition Metals', title: 'Entropy and Ligand Exchange', objectives: ['Explain positive entropy changes', 'Understand bidentate displacing monodentate', 'Apply thermodynamics'], order: 89 },
+    { section: 'A2 2: Transition Metals', title: 'Complex Colours', objectives: ['Recall colours of aqueous complexes', 'Identify Cr3+ Mn2+ Fe2+ Fe3+ Co2+ Ni2+ Cu2+', 'Include vanadium oxidation states'], order: 90 },
+    { section: 'A2 2: Transition Metals', title: 'Hydroxide Precipitation', objectives: ['Use NaOH and NH3 for detection', 'Form precipitates of hydroxides', 'Observe subsequent dissolution'], order: 91 },
+    { section: 'A2 2: Transition Metals', title: 'Vanadium Reduction', objectives: ['Reduce VO2+ with zinc', 'Form VO2+ V3+ V2+', 'Observe colour sequence'], order: 92 },
+    { section: 'A2 2: Transition Metals', title: 'Vanadium Interconversion', objectives: ['Deduce reagents from emf values', 'Combine half-cells', 'Write overall equations'], order: 93 },
+
+    // 5.6 Electrode potentials (8 lessons)
+    { section: 'A2 2: Electrochemistry', title: 'Standard Electrode Potential', objectives: ['Define standard electrode potential', 'Explain hydrogen electrode construction', 'Understand importance of conditions'], order: 94 },
+    { section: 'A2 2: Electrochemistry', title: 'Predicting Reactions', objectives: ['Use electrode potentials for feasibility', 'Predict direction of reactions', 'Calculate emf'], order: 95 },
+    { section: 'A2 2: Electrochemistry', title: 'Limitations of Predictions', objectives: ['Understand concentration effects', 'Explain kinetic limitations', 'Apply to real systems'], order: 96 },
+    { section: 'A2 2: Electrochemistry', title: 'Cell Representations', objectives: ['Use conventional cell notation', 'Understand double line for salt bridge', 'Write half-cells correctly'], order: 97 },
+    { section: 'A2 2: Electrochemistry', title: 'Cell Types', objectives: ['Classify non-rechargeable cells', 'Identify rechargeable cells', 'Understand fuel cells'], order: 98 },
+    { section: 'A2 2: Electrochemistry', title: 'Lithium Cells', objectives: ['Understand electrode reactions', 'Explain lithium oxidation', 'Describe cathode reduction'], order: 99 },
+    { section: 'A2 2: Electrochemistry', title: 'Fuel Cells', objectives: ['Understand fuel plus oxygen generates voltage', 'Explain energy from reaction', 'Apply to hydrogen-oxygen'], order: 100 },
+    { section: 'A2 2: Electrochemistry', title: 'Environmental Issues', objectives: ['Recall electrode reactions in alkaline fuel cell', 'Understand disposal problems', 'Explain environmental concerns'], order: 101 },
+
+    // 5.7 Amines (8 lessons)
+    { section: 'A2 2: Amines', title: 'Amine Formulae and Classification', objectives: ['Recall formulae up to six carbons', 'Distinguish primary secondary tertiary', 'Understand amine structures'], order: 102 },
+    { section: 'A2 2: Amines', title: 'Amine Physical Properties', objectives: ['Explain hydrogen bonding effect', 'Describe boiling points', 'Understand solubility in water'], order: 103 },
+    { section: 'A2 2: Amines', title: 'Preparation from Nitriles', objectives: ['Reduce nitriles with lithal', 'Form primary aliphatic amines', 'Understand mechanism'], order: 104 },
+    { section: 'A2 2: Amines', title: 'Preparation from Halides', objectives: ['React ammonia with alkyl halides', 'Form primary amines', 'Understand excess ammonia need'], order: 105 },
+    { section: 'A2 2: Amines', title: 'Phenylamine Preparation', objectives: ['Reduce nitrobenzene with tin and HCl', 'Form phenylammonium salt', 'Liberate amine with alkali'], order: 106 },
+    { section: 'A2 2: Amines', title: 'Amine Salts', objectives: ['Form salts with mineral acids', 'Liberate amines using alkali', 'Understand protonation'], order: 107 },
+    { section: 'A2 2: Amines', title: 'Relative Basicity', objectives: ['Explain basic strengths', 'Compare ammonia and aliphatic amines', 'Understand phenylamine weakness'], order: 108 },
+    { section: 'A2 2: Amines', title: 'Amine Reactions', objectives: ['React with ethanoyl chloride', 'Use to identify amines', 'Form amides'], order: 109 },
+
+    // 5.7 Amines cont. and 5.8 Amides (5 lessons)
+    { section: 'A2 2: Diazo Compounds', title: 'Diazonium Salt Formation', objectives: ['Form benzenediazonium chloride', 'Use phenylamine', 'Understand coupling reactions'], order: 110 },
+    { section: 'A2 2: Diazo Compounds', title: 'Azo Dye Formation', objectives: ['Couple diazonium ions with phenol', 'React with phenylamine', 'Understand delocalisation and colour'], order: 111 },
+    { section: 'A2 2: Amides', title: 'Amide Preparation', objectives: ['Form from carboxylic acids and ammonia', 'React amines with acyl chlorides', 'Understand condensation'], order: 112 },
+    { section: 'A2 2: Amides', title: 'Amide Hydrolysis', objectives: ['Hydrolyse with acids', 'Use alkalis', 'Form carboxylic acids'], order: 113 },
+    { section: 'A2 2: Amides', title: 'Amide Dehydration and Basicity', objectives: ['Dehydrate with phosphorus pentoxide', 'Form nitriles', 'Explain weak basicity'], order: 114 },
+
+    // 5.9 Amino acids (10 lessons)
+    { section: 'A2 2: Amino Acids', title: 'Glycine and Alanine', objectives: ['Recall formulae of glycine and alanine', 'Identify amino and carboxyl groups', 'Understand structure'], order: 115 },
+    { section: 'A2 2: Amino Acids', title: 'Optical Activity', objectives: ['Explain optical activity', 'Identify chiral centres', 'Understand enantiomers'], order: 116 },
+    { section: 'A2 2: Amino Acids', title: 'Zwitterions', objectives: ['Explain dipolar ion formation', 'Understand internal proton transfer', 'Define zwitterion'], order: 117 },
+    { section: 'A2 2: Amino Acids', title: 'Solubility and Melting Point', objectives: ['Explain solubility in water', 'Understand high melting points', 'Relate to ionic nature'], order: 118 },
+    { section: 'A2 2: Amino Acids', title: 'Amino Acid Reactions', objectives: ['React with sodium carbonate', 'Use copper II sulfate', 'Apply nitrous acid test'], order: 119 },
+    { section: 'A2 2: Amino Acids', title: 'Protein Structure', objectives: ['Recall primary secondary tertiary', 'Understand peptide link formation', 'Explain folding'], order: 120 },
+    { section: 'A2 2: Amino Acids', title: 'Enzymes as Catalysts', objectives: ['Define enzymes as biological catalysts', 'Use induced fit concept', 'Explain enzyme action'], order: 121 },
+    { section: 'A2 2: Amino Acids', title: 'Enzyme Applications', objectives: ['Recall use in washing powders', 'Understand economic advantage', 'Explain lower temperature operation'], order: 122 },
+    { section: 'A2 2: Amino Acids', title: 'Enzyme Mechanism', objectives: ['Explain enzyme as protein', 'Provide lower activation energy path', 'Understand catalysis'], order: 123 },
+    { section: 'A2 2: Amino Acids', title: 'Factors Affecting Enzymes', objectives: ['Explain pH effect', 'Understand temperature effect', 'Relate to denaturation'], order: 124 },
+
+    // 5.10 Polymer chemistry (4 lessons)
+    { section: 'A2 2: Polymers', title: 'Condensation Polymers', objectives: ['Understand formation from COOH OH NH2', 'Draw polymer structures from monomers', 'Deduce monomers from polymers'], order: 125 },
+    { section: 'A2 2: Polymers', title: 'Polyester PET', objectives: ['Understand formation of polyethylene terephthalate', 'Describe structure', 'Recall uses'], order: 126 },
+    { section: 'A2 2: Polymers', title: 'Polyamide Nylon', objectives: ['Understand nylon formation', 'Describe structure', 'Recall uses'], order: 127 },
+    { section: 'A2 2: Polymers', title: 'Polymer Biodegradability', objectives: ['Recall polyesters and polyamides can hydrolyse', 'Understand biodegradability', 'Compare with addition polymers'], order: 128 },
+
+    // 5.11 Chemistry in medicine (10 lessons)
+    { section: 'A2 2: Chemistry in Medicine', title: 'Indigestion Remedies', objectives: ['Recall use of hydroxides and carbonates', 'Cure excess stomach acid', 'Link to acid-base'], order: 129 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Back Titration Analysis', objectives: ['Determine percentage active ingredient', 'Use back titration', 'Apply to indigestion remedies'], order: 130 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Skin pH', objectives: ['Recall methods for excessive pH', 'Explain corrosive chemicals for warts', 'Link to acid-base'], order: 131 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Silver Nitrate Uses', objectives: ['Recall use in eye disease treatment', 'Explain antimicrobial properties', 'Understand applications'], order: 132 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Anticancer Drugs', objectives: ['Explain cisplatin action', 'Prevent DNA replication', 'Understand structure variation effects'], order: 133 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Aspirin Analysis', objectives: ['Use volumetric analysis', 'Determine aspirin concentration', 'Link to volumetric analysis'], order: 134 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Aspirin Synthesis', objectives: ['Synthesise from salicylic acid', 'Use ethanoic anhydride', 'Understand sodium salt use'], order: 135 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Drug Purity Analysis', objectives: ['Use TLC and GLC MS', 'Identify drugs and purity', 'Link to chromatography'], order: 136 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'Haemoglobin and Oxygen', objectives: ['Explain iron II role', 'Understand oxygen transportation', 'Describe carbon monoxide poisoning'], order: 137 },
+    { section: 'A2 2: Chemistry in Medicine', title: 'EDTA as Sequestering Agent', objectives: ['Explain sequestering calcium ions', 'Prevent blood clotting', 'Link to transition metals'], order: 138 },
+  ];
+}
