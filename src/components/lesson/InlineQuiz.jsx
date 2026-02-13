@@ -5,6 +5,7 @@ import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Label } from '@/components/ui/label';
 import { CheckCircle, XCircle, Brain } from 'lucide-react';
 import { motion } from 'framer-motion';
+import MathRenderer from './MathRenderer';
 
 export default function InlineQuiz({ quiz, onComplete }) {
   const [selectedAnswer, setSelectedAnswer] = useState(null);
@@ -31,7 +32,9 @@ export default function InlineQuiz({ quiz, onComplete }) {
           <h3 className="text-lg font-semibold text-gray-900">Quick Check</h3>
         </div>
         
-        <p className="text-gray-700 font-medium mb-4">{quiz.question}</p>
+        <div className="text-gray-700 font-medium mb-4">
+          <MathRenderer content={quiz.question} />
+        </div>
         
         <RadioGroup
           value={selectedAnswer?.toString()}
@@ -52,7 +55,7 @@ export default function InlineQuiz({ quiz, onComplete }) {
               >
                 <RadioGroupItem value={idx.toString()} id={`inline-${idx}`} />
                 <Label htmlFor={`inline-${idx}`} className="ml-3 flex-1 cursor-pointer">
-                  {option}
+                  <MathRenderer content={option} />
                 </Label>
                 {showResult && idx === quiz.correctAnswer && (
                   <CheckCircle className="w-5 h-5 text-emerald-600" />
@@ -79,7 +82,9 @@ export default function InlineQuiz({ quiz, onComplete }) {
               {isCorrect ? '✓ Correct!' : '✗ Not quite right'}
             </p>
             {quiz.explanation && (
-              <p className="text-sm text-gray-700 mt-2">{quiz.explanation}</p>
+              <div className="text-sm text-gray-700 mt-2">
+                <MathRenderer content={quiz.explanation} />
+              </div>
             )}
           </div>
         )}

@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CheckCircle, XCircle, RotateCcw, Trophy, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import MathRenderer from './MathRenderer';
 
 export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
   const [leftItems, setLeftItems] = useState([]);
@@ -156,7 +157,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
               >
                 <div className="flex items-center gap-2">
                   {item.matched && <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />}
-                  <span className="text-sm sm:text-base font-medium text-gray-800">{item.text}</span>
+                  <MathRenderer content={item.text} className="text-sm sm:text-base font-medium text-gray-800" />
                 </div>
               </motion.button>
             ))}

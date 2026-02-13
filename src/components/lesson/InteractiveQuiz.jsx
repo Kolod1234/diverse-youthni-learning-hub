@@ -4,6 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { CheckCircle, XCircle, Trophy, ArrowRight, RefreshCw } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import MathRenderer from './MathRenderer';
 
 export default function InteractiveQuiz({ questions, onComplete, onRegenerate }) {
   const [currentQuestion, setCurrentQuestion] = useState(0);
@@ -94,9 +95,9 @@ export default function InteractiveQuiz({ questions, onComplete, onRegenerate })
         </div>
       </div>
 
-      <h3 className="text-lg sm:text-xl font-bold text-gray-800 mb-6">
-        {question.question}
-      </h3>
+      <div className="text-lg sm:text-xl font-bold text-gray-800 mb-6">
+        <MathRenderer content={question.question} />
+      </div>
 
       <div className="space-y-3 mb-6">
         {question.options.map((option, index) => {
@@ -123,7 +124,7 @@ export default function InteractiveQuiz({ questions, onComplete, onRegenerate })
               }`}
             >
               <div className="flex items-center justify-between">
-                <span className="text-sm sm:text-base font-medium text-gray-800">{option}</span>
+                <MathRenderer content={option} className="text-sm sm:text-base font-medium text-gray-800" />
                 {showCorrect && <CheckCircle className="w-5 h-5 text-green-600" />}
                 {showWrong && <XCircle className="w-5 h-5 text-red-600" />}
               </div>
@@ -140,7 +141,9 @@ export default function InteractiveQuiz({ questions, onComplete, onRegenerate })
         >
           {question.explanation && (
             <div className="p-4 bg-blue-50 rounded-lg border border-blue-200">
-              <p className="text-sm text-gray-700">{question.explanation}</p>
+              <div className="text-sm text-gray-700">
+                <MathRenderer content={question.explanation} />
+              </div>
             </div>
           )}
           <Button onClick={handleNext} className="w-full bg-gradient-to-r from-orange-600 to-pink-600">

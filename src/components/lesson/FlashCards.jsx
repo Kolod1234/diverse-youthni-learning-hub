@@ -3,6 +3,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { ChevronLeft, ChevronRight, RotateCcw, Sparkles, RefreshCw } from 'lucide-react';
+import MathRenderer from './MathRenderer';
 
 export default function FlashCards({ cards, onRegenerate }) {
   const [currentCard, setCurrentCard] = useState(0);
@@ -76,9 +77,9 @@ export default function FlashCards({ cards, onRegenerate }) {
                 >
                   <div className="text-center">
                     <Sparkles className="w-8 h-8 text-indigo-500 mx-auto mb-4" />
-                    <p className="text-xl sm:text-2xl font-bold text-gray-800">
-                      {card.front}
-                    </p>
+                    <div className="text-xl sm:text-2xl font-bold text-gray-800">
+                      <MathRenderer content={card.front} />
+                    </div>
                     <p className="text-sm text-gray-500 mt-4">Tap to reveal</p>
                   </div>
                 </div>
@@ -89,9 +90,9 @@ export default function FlashCards({ cards, onRegenerate }) {
                   style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
                 >
                   <div className="text-center">
-                    <p className="text-xl sm:text-2xl font-bold text-white">
-                      {card.back}
-                    </p>
+                    <div className="text-xl sm:text-2xl font-bold text-white">
+                      <MathRenderer content={card.back} />
+                    </div>
                     <p className="text-sm text-white/80 mt-4">Tap to flip back</p>
                   </div>
                 </div>
