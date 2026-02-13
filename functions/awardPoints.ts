@@ -9,7 +9,18 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { action, value, metadata } = await req.json();
+    let action, value, metadata;
+    try {
+      const body = await req.json();
+      action = body.action;
+      value = body.value;
+      metadata = body.metadata;
+    } catch (jsonError) {
+      return Response.json({ 
+        error: 'Invalid request body',
+        details: jsonError.message 
+      }, { status: 400 });
+    }
 
     // Get or create user progress
     let progressRecords = await base44.entities.UserProgress.filter({ created_by: user.email });
