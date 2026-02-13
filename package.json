@@ -116,7 +116,8 @@
     "@fontsource/roboto": "^5.0.0",
     "isomorphic-dompurify": "^1.11.0",
     "katex": "^0.16.9",
-    "react-katex": "^3.0.1"
+    "react-katex": "^3.0.1",
+    "better-react-mathjax": "^2.0.3"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
