@@ -34,6 +34,10 @@ Deno.serve(async (req) => {
       lessonStructure = getChemistryASLessons();
     } else if (structureKey === 'chemistry_a2') {
       lessonStructure = getChemistryA2Lessons();
+    } else if (structureKey === 'physics_as') {
+      lessonStructure = getPhysicsASLessons();
+    } else if (structureKey === 'physics_a2') {
+      lessonStructure = getPhysicsA2Lessons();
     } else {
       return Response.json({ error: `No lesson structure found for ${structureKey}` }, { status: 400 });
     }
@@ -684,5 +688,231 @@ function getChemistryA2Lessons() {
     { section: 'A2 2: Chemistry in Medicine', title: 'Drug Purity Analysis', objectives: ['Use TLC and GLC MS', 'Identify drugs and purity', 'Link to chromatography'], order: 136 },
     { section: 'A2 2: Chemistry in Medicine', title: 'Haemoglobin and Oxygen', objectives: ['Explain iron II role', 'Understand oxygen transportation', 'Describe carbon monoxide poisoning'], order: 137 },
     { section: 'A2 2: Chemistry in Medicine', title: 'EDTA as Sequestering Agent', objectives: ['Explain sequestering calcium ions', 'Prevent blood clotting', 'Link to transition metals'], order: 138 },
+  ];
+}
+
+function getPhysicsASLessons() {
+  return [
+    // AS1: Physical Quantities and Scalars/Vectors (5 lessons)
+    { section: 'AS1: Physical Quantities', title: 'Physical Quantities and Units', objectives: ['Describe physical quantities as magnitude and unit', 'State base units mass length time current temperature amount', 'Use prefixes T G M k c m µ n p f and standard form'], order: 1 },
+    { section: 'AS1: Scalars and Vectors', title: 'Scalars and Vectors', objectives: ['Distinguish between scalar and vector quantities', 'Give examples of each type', 'Understand vector direction importance'], order: 2 },
+    { section: 'AS1: Scalars and Vectors', title: 'Vector Resolution', objectives: ['Resolve vector into perpendicular components', 'Calculate resultant of coplanar vectors', 'Use scale drawing or calculation'], order: 3 },
+    { section: 'AS1: Scalars and Vectors', title: 'Forces in Equilibrium', objectives: ['Solve problems with coplanar forces at point', 'Apply equilibrium conditions', 'Use two or three forces'], order: 4 },
+    { section: 'AS1: Moments', title: 'Principle of Moments', objectives: ['Define moment of force about point', 'Use concept of centre of gravity', 'Apply principle of moments'], order: 5 },
+
+    // AS1: Linear Motion (4 lessons)
+    { section: 'AS1: Linear Motion', title: 'Displacement Velocity and Acceleration', objectives: ['Define displacement velocity average velocity', 'Define acceleration', 'Distinguish from distance and speed'], order: 6 },
+    { section: 'AS1: Linear Motion', title: 'Equations of Motion', objectives: ['Recall and use equations for uniform acceleration', 'Apply to vertical and horizontal motion', 'Solve kinematics problems'], order: 7 },
+    { section: 'AS1: Linear Motion', title: 'Measuring Acceleration of Free Fall', objectives: ['Describe experiment with light gates', 'Use computer software for data collection', 'Determine g experimentally'], order: 8 },
+    { section: 'AS1: Linear Motion', title: 'Motion Graphs', objectives: ['Interpret velocity-time graphs qualitatively', 'Interpret displacement-time graphs quantitatively', 'Analyze uniform and non-uniform acceleration'], order: 9 },
+
+    // AS1: Dynamics (3 lessons)
+    { section: 'AS1: Dynamics', title: 'Projectile Motion', objectives: ['Describe projectile motion', 'Explain uniform velocity in one direction', 'Understand uniform acceleration perpendicular'], order: 10 },
+    { section: 'AS1: Dynamics', title: 'Projectile Equations', objectives: ['Apply equations of motion to projectiles', 'Exclude air resistance', 'Solve trajectory problems'], order: 11 },
+    { section: 'AS1: Dynamics', title: 'Newton Laws of Motion', objectives: ['State Newton three laws of motion', 'Apply laws to simple situations', 'Use F equals ma with constant mass'], order: 12 },
+
+    // AS1: Dynamics and Friction (2 lessons)
+    { section: 'AS1: Dynamics', title: 'Friction Forces', objectives: ['Understand friction opposes motion', 'Apply to real-world scenarios', 'Calculate with friction present'], order: 13 },
+    { section: 'AS1: Momentum', title: 'Linear Momentum', objectives: ['Define momentum', 'Calculate momentum', 'Apply conservation of linear momentum'], order: 14 },
+
+    // AS1: Momentum and Impulse (6 lessons)
+    { section: 'AS1: Momentum', title: 'Collisions in One Dimension', objectives: ['Perform calculations for one-dimensional collisions', 'Apply momentum conservation', 'Solve collision problems'], order: 15 },
+    { section: 'AS1: Momentum', title: 'Elastic and Inelastic Collisions', objectives: ['Describe and confirm elastic collisions', 'Identify inelastic collisions by calculation', 'Understand kinetic energy changes'], order: 16 },
+    { section: 'AS1: Momentum', title: 'Impulse', objectives: ['Define impulse as F times t', 'Recall and use Ft equals mv minus mu', 'Apply impulse-momentum relationship'], order: 17 },
+    { section: 'AS1: Momentum', title: 'Impact Situations', objectives: ['Apply impulse to impact scenarios', 'Calculate forces in collisions', 'Understand safety applications'], order: 18 },
+    { section: 'AS1: Momentum', title: 'Newton Second Law and Momentum', objectives: ['Define Newton second law in terms of momentum', 'Relate force to rate of change of momentum', 'Apply to variable mass systems'], order: 19 },
+
+    // AS1: Work Energy and Power (8 lessons)
+    { section: 'AS1: Work and Energy', title: 'Work Done and Energy Transfer', objectives: ['Define work done potential energy kinetic energy', 'Show work transfers energy between forms', 'Calculate work for constant forces'], order: 20 },
+    { section: 'AS1: Work and Energy', title: 'Work at Angles', objectives: ['Calculate work for forces not along line of motion', 'Use component of force', 'Apply to inclined planes'], order: 21 },
+    { section: 'AS1: Work and Energy', title: 'Potential and Kinetic Energy', objectives: ['Recall and use delta PE equals mg delta h', 'Use KE equals half mv squared', 'Convert between energy forms'], order: 22 },
+    { section: 'AS1: Work and Energy', title: 'Conservation of Energy', objectives: ['State principle of conservation of energy', 'Calculate exchanges between gravitational PE and KE', 'Apply to pendulums and falling objects'], order: 23 },
+    { section: 'AS1: Work and Energy', title: 'Work-Energy Equation', objectives: ['Use half mv squared minus half mu squared equals Fs', 'Apply for constant force', 'Solve energy problems'], order: 24 },
+    { section: 'AS1: Work and Energy', title: 'Power Definitions', objectives: ['Recall P equals work done over time', 'Use P equals Fv', 'Calculate power in various situations'], order: 25 },
+    { section: 'AS1: Work and Energy', title: 'Efficiency', objectives: ['Define efficiency as useful energy output over input', 'Calculate power efficiency', 'Understand energy conservation importance'], order: 26 },
+    { section: 'AS1: Work and Energy', title: 'Energy Conservation in Society', objectives: ['Demonstrate understanding of energy conservation importance', 'Explain energy efficiency benefits', 'Apply to societal contexts'], order: 27 },
+
+    // AS1: Electricity - Current and Voltage (5 lessons)
+    { section: 'AS1: Electric Current', title: 'Current and Charge', objectives: ['Recall and use I equals Q over t', 'Define electric current', 'Calculate charge flow'], order: 28 },
+    { section: 'AS1: Electric Current', title: 'Potential Difference and EMF', objectives: ['Recall and use V equals W over q', 'Use V equals P over I', 'Define the volt'], order: 29 },
+    { section: 'AS1: Electric Current', title: 'Electromotive Force', objectives: ['Define electromotive force E', 'Distinguish between EMF and potential difference', 'Understand energy per unit charge'], order: 30 },
+
+    // AS1: Resistance (11 lessons)
+    { section: 'AS1: Resistance', title: 'Series and Parallel Circuits', objectives: ['Perform experiments on current voltage resistance', 'Confirm relationships in series and parallel', 'Use equations for resistors'], order: 31 },
+    { section: 'AS1: Resistance', title: 'Ohm Law', objectives: ['State Ohm law', 'Recall and use R equals V over I', 'Apply to circuit calculations'], order: 32 },
+    { section: 'AS1: Resistance', title: 'Resistivity', objectives: ['Define resistivity', 'Recall and use R equals rho l over A', 'Perform experiment to measure resistivity'], order: 33 },
+    { section: 'AS1: Resistance', title: 'Superconductivity', objectives: ['Demonstrate knowledge of superconductivity', 'Understand zero resistance below critical temperature', 'Apply to modern technologies'], order: 34 },
+    { section: 'AS1: Resistance', title: 'Ohmic and Non-Ohmic Behaviour', objectives: ['Distinguish ohmic from non-ohmic conductors', 'Identify linear and non-linear IV characteristics', 'Understand Ohm law limitations'], order: 35 },
+    { section: 'AS1: Resistance', title: 'Current-Voltage Characteristics', objectives: ['Perform experiments for IV characteristics', 'Test metallic conductors and filament bulbs', 'Plot and interpret graphs'], order: 36 },
+    { section: 'AS1: Resistance', title: 'Diodes and Thermistors', objectives: ['Sketch IV for metallic conductor diode NTC thermistor', 'Describe current-voltage behaviour', 'Explain semiconductor properties'], order: 37 },
+    { section: 'AS1: Resistance', title: 'Temperature and Resistance', objectives: ['Sketch resistance variation with temperature', 'Compare metallic conductor and NTC thermistor', 'Explain atomic vibrations and charge carriers'], order: 38 },
+    { section: 'AS1: Resistance', title: 'NTC Thermistor Experiment', objectives: ['Perform experiment on thermistor resistance', 'Show variation with temperature', 'Plot and analyze results'], order: 39 },
+    { section: 'AS1: Resistance', title: 'Internal Resistance', objectives: ['Understand consequences of internal resistance', 'Use V equals E minus Ir', 'Apply to real power sources'], order: 40 },
+    { section: 'AS1: Resistance', title: 'Measuring Internal Resistance', objectives: ['Perform experiment to measure internal resistance', 'Determine EMF experimentally', 'Plot terminal PD versus current'], order: 41 },
+
+    // AS1: Potential Divider (2 lessons)
+    { section: 'AS1: Potential Divider', title: 'Potential Divider Circuits', objectives: ['Understand use of potential divider', 'Supply variable PD from fixed supply', 'Calculate output voltages'], order: 42 },
+    { section: 'AS1: Potential Divider', title: 'Control Circuits', objectives: ['Demonstrate use in lighting and heating control', 'Calculate output in loaded circuits', 'Apply to sensor circuits'], order: 43 },
+
+    // AS2: Waves (8 lessons)
+    { section: 'AS2: Waves', title: 'Transverse and Longitudinal Waves', objectives: ['Demonstrate knowledge of transverse and longitudinal waves', 'Categorise waves by type', 'Give examples of each'], order: 44 },
+    { section: 'AS2: Waves', title: 'Wave Properties from Graphs', objectives: ['Analyze graphs for amplitude period frequency', 'Obtain wavelength and phase data', 'Interpret wave representations'], order: 45 },
+    { section: 'AS2: Waves', title: 'Polarisation', objectives: ['Understand polarisation in transverse waves', 'Demonstrate polarisation phenomenon', 'Apply to light and radio waves'], order: 46 },
+    { section: 'AS2: Waves', title: 'Wave Equations', objectives: ['Recall and use f equals one over T', 'Use v equals f lambda', 'Solve wave speed problems'], order: 47 },
+    { section: 'AS2: Waves', title: 'Electromagnetic Spectrum', objectives: ['Recall regions radio micro infrared visible UV X-ray gamma', 'State typical wavelengths for each region', 'Recall violet 400 nm red 700 nm'], order: 48 },
+
+    // AS2: Refraction (5 lessons)
+    { section: 'AS2: Refraction', title: 'Snell Law and Refractive Index', objectives: ['Perform experiment to verify Snell law', 'Measure refractive index', 'Recall and use n equals c over v and sin i over sin r'], order: 49 },
+    { section: 'AS2: Refraction', title: 'Total Internal Reflection', objectives: ['Demonstrate knowledge of total internal reflection', 'Understand critical angle', 'Apply to optical fibres'], order: 50 },
+    { section: 'AS2: Refraction', title: 'Critical Angle', objectives: ['Recall and use sin c equals one over n', 'Calculate critical angles', 'Apply to different media'], order: 51 },
+    { section: 'AS2: Refraction', title: 'Optical Fibres', objectives: ['Understand step index optical fibre principle', 'Explain total internal reflection at core-cladding boundary', 'Describe speed in core'], order: 52 },
+    { section: 'AS2: Refraction', title: 'Flexible Endoscope', objectives: ['Describe structure of flexible endoscope', 'Discuss medical applications', 'Understand industrial uses'], order: 53 },
+
+    // AS2: Lenses (6 lessons)
+    { section: 'AS2: Lenses', title: 'Ray Diagrams for Lenses', objectives: ['Draw ray diagrams for converging lenses', 'Draw diagrams for diverging lenses', 'Locate images'], order: 54 },
+    { section: 'AS2: Lenses', title: 'Lens Equation', objectives: ['Use lens equation one over f equals one over u plus one over v', 'Apply to converging and diverging lenses', 'Calculate image positions'], order: 55 },
+    { section: 'AS2: Lenses', title: 'Experimental Verification', objectives: ['Verify lens equation experimentally', 'Evaluate focal length f', 'Work with real images only'], order: 56 },
+    { section: 'AS2: Lenses', title: 'Magnification', objectives: ['Define m as image height over object height', 'Recall and use m equals v over u', 'Calculate magnifications'], order: 57 },
+    { section: 'AS2: Lenses', title: 'Vision Correction', objectives: ['Describe lenses to correct myopia', 'Explain correction of hypermetropia', 'Understand near and far sight'], order: 58 },
+    { section: 'AS2: Lenses', title: 'Vision Calculations', objectives: ['Perform calculations on vision correction', 'Calculate new range of vision', 'Determine lens power'], order: 59 },
+
+    // AS2: Superposition and Interference (11 lessons)
+    { section: 'AS2: Superposition', title: 'Superposition Principle', objectives: ['Illustrate superposition by graphical addition', 'Add two sinusoidal waves', 'Understand resultant wave'], order: 60 },
+    { section: 'AS2: Superposition', title: 'Standing Waves', objectives: ['Understand conditions for standing waves', 'Explain node and antinode formation', 'Distinguish from progressive waves'], order: 61 },
+    { section: 'AS2: Superposition', title: 'Standing Waves in Strings and Pipes', objectives: ['Demonstrate knowledge of standing waves in strings', 'Understand air in pipes closed at one end', 'Use graphical representations'], order: 62 },
+    { section: 'AS2: Superposition', title: 'Modes of Vibration', objectives: ['Identify modes in stretched strings', 'Identify modes in air columns', 'Recognize fundamental and higher modes'], order: 63 },
+    { section: 'AS2: Superposition', title: 'Nodes and Antinodes', objectives: ['Identify node positions', 'Identify antinode positions', 'Relate to wavelength'], order: 64 },
+    { section: 'AS2: Superposition', title: 'Speed of Sound Experiment', objectives: ['Perform experiment with resonance tube', 'Measure speed of sound in air', 'Apply standing wave principles'], order: 65 },
+    { section: 'AS2: Interference', title: 'Conditions for Interference', objectives: ['Understand conditions for observable interference', 'Explain coherent sources requirement', 'Apply to wave phenomena'], order: 66 },
+    { section: 'AS2: Interference', title: 'Path and Phase Difference', objectives: ['Understand significance of path difference', 'Explain phase difference in interference', 'Relate constructive and destructive interference'], order: 67 },
+    { section: 'AS2: Interference', title: 'Young Slits Experiment', objectives: ['Describe Young slits interference', 'Measure wavelength of monochromatic light', 'Use lambda equals ay over d'], order: 68 },
+    { section: 'AS2: Diffraction', title: 'Single Slit Diffraction', objectives: ['Describe and explain diffraction at single slit', 'State effect of aperture size qualitatively', 'Draw diffraction patterns'], order: 69 },
+    { section: 'AS2: Diffraction', title: 'Diffraction Grating', objectives: ['Use d sin theta equals n lambda for grating', 'Describe use with laser to measure wavelength', 'Calculate grating spacings'], order: 70 },
+
+    // AS2: Quantum Physics (7 lessons)
+    { section: 'AS2: Quantum Physics', title: 'Photon Energy', objectives: ['Recall and use E photon equals hf', 'Calculate photon energies', 'Apply Planck constant'], order: 71 },
+    { section: 'AS2: Quantum Physics', title: 'Photoelectric Effect', objectives: ['Use photon model to explain photoelectric effect', 'Understand photon energy and work function', 'Explain threshold frequency'], order: 72 },
+    { section: 'AS2: Quantum Physics', title: 'Photoelectric Equation', objectives: ['Use half m v max squared equals hf minus phi', 'Calculate maximum kinetic energy', 'Determine work function'], order: 73 },
+    { section: 'AS2: Quantum Physics', title: 'Energy Levels in Atoms', objectives: ['Understand electrons exist in energy levels', 'Explain discrete energy states', 'Relate to atomic spectra'], order: 74 },
+    { section: 'AS2: Quantum Physics', title: 'Photon Emission and Absorption', objectives: ['Recall and use hf equals delta E', 'Calculate energy transitions', 'Explain line spectra'], order: 75 },
+    { section: 'AS2: Quantum Physics', title: 'Laser Action', objectives: ['Provide explanation of laser action', 'Use terms population inversion stimulated emission', 'Understand metastable state'], order: 76 },
+    { section: 'AS2: Quantum Physics', title: 'X-Ray Production', objectives: ['Understand X-ray production by electron transitions', 'Describe physical principles of CT scanning', 'Compare with conventional X-rays'], order: 77 },
+
+    // AS2: Wave-Particle Duality (3 lessons)
+    { section: 'AS2: Wave-Particle Duality', title: 'Wave and Photon Models', objectives: ['Categorise EM phenomena by wave or photon model', 'Understand dual nature of light', 'Apply appropriate model'], order: 78 },
+    { section: 'AS2: Wave-Particle Duality', title: 'Electron Diffraction', objectives: ['Describe electron diffraction', 'Understand wave nature of particles', 'Explain diffraction patterns'], order: 79 },
+    { section: 'AS2: Wave-Particle Duality', title: 'de Broglie Equation', objectives: ['Use de Broglie equation lambda equals h over p', 'Calculate wavelengths of particles', 'Apply to electrons and matter waves'], order: 80 },
+
+    // AS2: Astronomy (4 lessons)
+    { section: 'AS2: Astronomy', title: 'Doppler Shift', objectives: ['Recall classical Doppler shift equations', 'Find wavelength from moving source to stationary observer', 'Apply to sound and light'], order: 81 },
+    { section: 'AS2: Astronomy', title: 'Cosmological Red Shift', objectives: ['Understand difference between cosmological and Doppler red shift', 'Relate to expanding universe', 'Explain wavelength stretching'], order: 82 },
+    { section: 'AS2: Astronomy', title: 'Red Shift Parameter', objectives: ['Calculate red shift parameter z equals delta lambda over lambda', 'Use z equals v over c for recession speed', 'Apply where v much less than c'], order: 83 },
+    { section: 'AS2: Astronomy', title: 'Hubble Law and Age of Universe', objectives: ['Use Hubble Law v equals H0 d to estimate distance', 'Use Hubble constant H0 approximately 2.4 times 10 to minus 18 s-1', 'Recall age equals one over H0 to estimate universe age'], order: 84 },
+  ];
+}
+
+function getPhysicsA2Lessons() {
+  return [
+    // A2 1: Deformation of Solids (6 lessons)
+    { section: 'A2 1: Deformation of Solids', title: 'Hooke Law', objectives: ['State Hooke law', 'Use F equals kx to solve problems', 'Understand spring constant'], order: 1 },
+    { section: 'A2 1: Deformation of Solids', title: 'Elastic and Plastic Deformation', objectives: ['Understand elastic and plastic deformation', 'Define elastic limit', 'Distinguish limit of proportionality from elastic limit'], order: 2 },
+    { section: 'A2 1: Deformation of Solids', title: 'Stress Strain and Young Modulus', objectives: ['Define stress strain and Young modulus', 'Perform experiment to determine Young modulus', 'Calculate material properties'], order: 3 },
+    { section: 'A2 1: Deformation of Solids', title: 'Strain Energy', objectives: ['Use equation E equals half Fx equals half kx squared', 'Calculate elastic potential energy', 'Apply to springs and materials'], order: 4 },
+    { section: 'A2 1: Deformation of Solids', title: 'Material Selection', objectives: ['Understand importance of stress strain Young modulus', 'Make design decisions about materials', 'Apply economic considerations'], order: 5 },
+
+    // A2 1: Thermal Physics (9 lessons)
+    { section: 'A2 1: Thermal Physics', title: 'Gas Behaviour Experiments', objectives: ['Describe experiments on gas behaviour', 'Show pV constant at fixed temperature', 'Show p over T constant and V over T constant'], order: 6 },
+    { section: 'A2 1: Thermal Physics', title: 'Ideal Gas Equation', objectives: ['Recall and use pV over T equals constant', 'Use ideal gas equation pV equals nRT', 'Apply to gas calculations'], order: 7 },
+    { section: 'A2 1: Thermal Physics', title: 'Alternative Gas Equation', objectives: ['Recall and use pV equals NkT', 'Understand Boltzmann constant', 'Compare with pV equals nRT'], order: 8 },
+    { section: 'A2 1: Thermal Physics', title: 'Internal Energy', objectives: ['Understand concept of internal energy', 'Explain random distribution of PE and KE', 'Relate to molecular motion'], order: 9 },
+    { section: 'A2 1: Thermal Physics', title: 'Kinetic Theory Equation', objectives: ['Use pV equals one third Nm c squared', 'Derive from kinetic theory', 'Relate pressure to molecular motion'], order: 10 },
+    { section: 'A2 1: Thermal Physics', title: 'Average Molecular Kinetic Energy', objectives: ['Use equation for average KE', 'Relate to temperature', 'Apply to gas molecules'], order: 11 },
+    { section: 'A2 1: Thermal Physics', title: 'Absolute Zero', objectives: ['Understand concept of absolute zero', 'Explain zero Kelvin', 'Relate to kinetic energy'], order: 12 },
+    { section: 'A2 1: Thermal Physics', title: 'Specific Heat Capacity', objectives: ['Perform electrical method to determine SHC', 'Use Q equals mc delta theta', 'Calculate heat capacity'], order: 13 },
+
+    // A2 1: Circular Motion (3 lessons)
+    { section: 'A2 1: Circular Motion', title: 'Angular Velocity', objectives: ['Understand concept of angular velocity', 'Recall and use v equals r omega', 'Relate linear and angular motion'], order: 14 },
+    { section: 'A2 1: Circular Motion', title: 'Centripetal Force', objectives: ['Apply F equals ma equals mv squared over r', 'Understand motion in circle at constant speed', 'Calculate centripetal forces'], order: 15 },
+
+    // A2 1: Simple Harmonic Motion (7 lessons)
+    { section: 'A2 1: SHM', title: 'Defining Simple Harmonic Motion', objectives: ['Define SHM as a equals minus omega squared x', 'Recall omega equals 2 pi f', 'Understand restoring force'], order: 16 },
+    { section: 'A2 1: SHM', title: 'SHM Displacement Equation', objectives: ['Perform calculations with x equals A cos omega t', 'Understand amplitude and angular frequency', 'Apply to oscillators'], order: 17 },
+    { section: 'A2 1: SHM', title: 'Pendulum and Spring Experiments', objectives: ['Investigate simple pendulum experimentally', 'Investigate loaded spiral spring', 'Plot and analyze graphs'], order: 18 },
+    { section: 'A2 1: SHM', title: 'SHM Period Equations', objectives: ['Use T equals 2 pi sqrt l over g for pendulum', 'Use T equals 2 pi sqrt m over k for spring', 'Calculate periods'], order: 19 },
+    { section: 'A2 1: SHM', title: 'SHM Graphs', objectives: ['Understand SHM displacement velocity acceleration graphs', 'Measure velocity from gradient', 'Interpret oscillation patterns'], order: 20 },
+    { section: 'A2 1: SHM', title: 'Vibrations and Resonance', objectives: ['Use terms free vibrations forced vibrations', 'Understand resonance and damping', 'Apply to oscillating systems'], order: 21 },
+    { section: 'A2 1: SHM', title: 'Damping Types', objectives: ['Understand light damping over-damping critical damping', 'Describe mechanical examples of resonance', 'Apply damping concepts'], order: 22 },
+
+    // A2 1: Nuclear Physics (12 lessons)
+    { section: 'A2 1: The Nucleus', title: 'Alpha Scattering Evidence', objectives: ['Describe alpha-particle scattering', 'Understand evidence for atomic nuclei', 'Explain Rutherford experiment'], order: 23 },
+    { section: 'A2 1: The Nucleus', title: 'Nuclear Radius', objectives: ['Interpret variation of nuclear radius with nucleon number', 'Use R equals r0 A to one third', 'Estimate nuclear density'], order: 24 },
+    { section: 'A2 1: Nuclear Decay', title: 'Radiation Properties', objectives: ['Understand nature of alpha beta gamma radiation', 'Explain penetration and range differences', 'Apply to shielding'], order: 25 },
+    { section: 'A2 1: Nuclear Decay', title: 'Nucleon and Proton Number Changes', objectives: ['Calculate changes from alpha emission', 'Calculate changes from beta emission', 'Write decay equations'], order: 26 },
+    { section: 'A2 1: Nuclear Decay', title: 'Random and Exponential Decay', objectives: ['Understand random nature of decay', 'Explain exponential decay pattern', 'Apply statistical behavior'], order: 27 },
+    { section: 'A2 1: Nuclear Decay', title: 'Decay Constant', objectives: ['Use A equals minus lambda N', 'Define lambda as fraction per second', 'Calculate decay rates'], order: 28 },
+    { section: 'A2 1: Nuclear Decay', title: 'Activity Equation', objectives: ['Use A equals A0 e to minus lambda t', 'Calculate activity over time', 'Apply exponential decay'], order: 29 },
+    { section: 'A2 1: Nuclear Decay', title: 'Half-Life', objectives: ['Define half-life', 'Use t half equals ln 2 over lambda', 'Perform experiment to measure half-life'], order: 30 },
+    { section: 'A2 1: Nuclear Energy', title: 'Mass-Energy Equivalence', objectives: ['Understand equivalence of mass and energy', 'Recall and use E equals delta m c squared', 'Apply to all energy changes'], order: 31 },
+    { section: 'A2 1: Nuclear Energy', title: 'Binding Energy', objectives: ['Describe binding energy per nucleon variation', 'Relate to mass number', 'Understand stability curve'], order: 32 },
+    { section: 'A2 1: Nuclear Energy', title: 'Fission and Fusion', objectives: ['Describe principles of fission', 'Explain fusion processes', 'Reference binding energy curve'], order: 33 },
+    { section: 'A2 1: Nuclear Reactors', title: 'Fission Reactor Components', objectives: ['Understand chain reaction and critical size', 'Explain moderators control rods cooling system', 'Describe reactor shielding'], order: 34 },
+
+    // A2 1: Nuclear Issues (2 lessons)
+    { section: 'A2 1: Nuclear Power', title: 'Nuclear Power Issues', objectives: ['Understand social environmental security issues', 'Explain economic aspects of nuclear power', 'Discuss future energy crisis solutions'], order: 35 },
+    { section: 'A2 1: Fusion', title: 'ITER Fusion Reactor', objectives: ['Describe ITER tokamak concept', 'Explain D-T reaction and plasma heating', 'Understand magnetic confinement and advantages'], order: 36 },
+
+    // A2 2: Gravitational Fields (7 lessons)
+    { section: 'A2 2: Force Fields', title: 'Concept of Force Fields', objectives: ['Explain field of force concept', 'Use field lines to describe field', 'Indicate direction and strength'], order: 37 },
+    { section: 'A2 2: Gravitational Fields', title: 'Gravitational Field Strength', objectives: ['Define gravitational field strength', 'Recall and use g equals F over m', 'Apply to planets'], order: 38 },
+    { section: 'A2 2: Gravitational Fields', title: 'Newton Law of Gravitation', objectives: ['State Newton law of universal gravitation', 'Recall F equals GMm over r squared', 'Calculate gravitational forces'], order: 39 },
+    { section: 'A2 2: Gravitational Fields', title: 'Field Strength from Mass', objectives: ['Apply g equals GM over r squared', 'Calculate mass from field strength', 'Use for planetary calculations'], order: 40 },
+    { section: 'A2 2: Gravitational Fields', title: 'Planetary and Satellite Motion', objectives: ['Apply circular motion to planets and satellites', 'Use gravitation for orbital motion', 'Calculate orbital speeds'], order: 41 },
+    { section: 'A2 2: Gravitational Fields', title: 'Kepler Third Law', objectives: ['Show T squared proportional to r cubed', 'Demonstrate consistency with Newton gravitation', 'Apply to orbital periods'], order: 42 },
+    { section: 'A2 2: Gravitational Fields', title: 'Geostationary Satellites', objectives: ['Understand unique conditions for geostationary orbit', 'Explain period position and direction requirements', 'Apply to communications'], order: 43 },
+
+    // A2 2: Electric Fields (6 lessons)
+    { section: 'A2 2: Electric Fields', title: 'Electric Field Strength', objectives: ['Define electric field strength', 'Recall and use E equals F over Q', 'Apply to charged particles'], order: 44 },
+    { section: 'A2 2: Electric Fields', title: 'Coulomb Law', objectives: ['State Coulomb law for point charges', 'Recall F equals kq1q2 over r squared', 'Use k equals one over 4 pi epsilon 0'], order: 45 },
+    { section: 'A2 2: Electric Fields', title: 'Field from Point Charge', objectives: ['Recall E equals kQ over r squared', 'Calculate field strength', 'Apply to point charges'], order: 46 },
+    { section: 'A2 2: Electric Fields', title: 'Uniform Electric Fields', objectives: ['Understand constant field strength', 'Recall and use E equals V over d', 'Apply to parallel plates'], order: 47 },
+    { section: 'A2 2: Electric Fields', title: 'Comparing Fields', objectives: ['State similarities in gravitational and electric fields', 'Identify differences', 'Compare field equations'], order: 48 },
+
+    // A2 2: Capacitors (9 lessons)
+    { section: 'A2 2: Capacitors', title: 'Capacitance Definition', objectives: ['Define capacitance', 'Recall and use C equals Q over V', 'Define farad'], order: 49 },
+    { section: 'A2 2: Capacitors', title: 'Energy in Capacitors', objectives: ['Recall and use E equals half QV', 'Calculate stored energy', 'Apply to charged capacitors'], order: 50 },
+    { section: 'A2 2: Capacitors', title: 'Capacitors in Circuits', objectives: ['Recall equations for capacitors in series and parallel', 'Calculate total capacitance', 'Apply to circuits'], order: 51 },
+    { section: 'A2 2: Capacitors', title: 'Charge and Discharge Experiments', objectives: ['Perform experiments on capacitor charge', 'Demonstrate capacitor discharge', 'Plot voltage and current curves'], order: 52 },
+    { section: 'A2 2: Capacitors', title: 'Exponential Discharge', objectives: ['Confirm exponential nature of discharge', 'Use V or I discharge curves', 'Analyze decay patterns'], order: 53 },
+    { section: 'A2 2: Capacitors', title: 'Discharge Equations', objectives: ['Use Q equals Q0 e to minus t over CR', 'Use V equals V0 e to minus t over CR', 'Apply exponential decay'], order: 54 },
+    { section: 'A2 2: Capacitors', title: 'Time Constant', objectives: ['Define time constant tau equals CR', 'Perform experiment to determine time constant', 'Understand significance'], order: 55 },
+    { section: 'A2 2: Capacitors', title: 'Capacitor Applications', objectives: ['Apply knowledge to electronic flash guns', 'Understand use in defibrillators', 'Relate time constants and stored energy'], order: 56 },
+
+    // A2 2: Magnetic Fields (10 lessons)
+    { section: 'A2 2: Magnetic Fields', title: 'Magnetic Field Patterns', objectives: ['Describe shape of field from current in coil', 'Describe field from long straight wire', 'Indicate field directions'], order: 57 },
+    { section: 'A2 2: Magnetic Fields', title: 'Force on Current-Carrying Conductor', objectives: ['Understand force on conductor in perpendicular field', 'Predict direction of force', 'Apply Fleming left hand rule'], order: 58 },
+    { section: 'A2 2: Magnetic Fields', title: 'Electric Motor Principle', objectives: ['Understand forces on current-carrying coil', 'Explain principle behind electric motor', 'Describe rotation mechanism'], order: 59 },
+    { section: 'A2 2: Magnetic Fields', title: 'Magnetic Force Equation', objectives: ['Recall and use F equals BIl', 'Define magnetic flux density', 'Calculate forces on conductors'], order: 60 },
+    { section: 'A2 2: Magnetic Fields', title: 'Magnetic Flux', objectives: ['Understand magnetic flux and flux linkage', 'Recall flux equals BA', 'Use N flux equals NBA'], order: 61 },
+    { section: 'A2 2: Magnetic Fields', title: 'Electromagnetic Induction', objectives: ['State Faraday law', 'State Lenz law', 'Demonstrate experimentally'], order: 62 },
+    { section: 'A2 2: Magnetic Fields', title: 'Induced EMF', objectives: ['Calculate average induced EMF', 'Use rate of change of flux linkage', 'Apply to moving conductors'], order: 63 },
+    { section: 'A2 2: Magnetic Fields', title: 'AC Generator', objectives: ['Understand simple AC generator', 'Use E equals BAN omega sin omega t', 'Explain rotating coil'], order: 64 },
+    { section: 'A2 2: Magnetic Fields', title: 'Transformers', objectives: ['Describe how transformer works', 'Recall and use Vs over Vp equals Ns over Np', 'Apply to voltage conversion'], order: 65 },
+    { section: 'A2 2: Magnetic Fields', title: 'Transformer Efficiency', objectives: ['Explain power losses in transformers', 'Understand eddy currents and resistance heating', 'Describe advantages of high-voltage transmission'], order: 66 },
+
+    // A2 2: Charged Particles in Fields (4 lessons)
+    { section: 'A2 2: Particle Deflection', title: 'Force on Charge in Electric Field', objectives: ['Understand charge in uniform electric field experiences force', 'Recall and use F equals qE', 'Determine force direction'], order: 67 },
+    { section: 'A2 2: Particle Deflection', title: 'Force on Moving Charge in Magnetic Field', objectives: ['Understand moving charge in perpendicular magnetic field', 'Recall and use F equals Bqv', 'Determine force direction'], order: 68 },
+
+    // A2 2: Particle Accelerators (3 lessons)
+    { section: 'A2 2: Particle Accelerators', title: 'Synchrotron Principles', objectives: ['Describe basic principles of synchrotron', 'Understand particle acceleration', 'Explain magnetic field synchronisation'], order: 69 },
+    { section: 'A2 2: Particle Accelerators', title: 'Relativistic Mass Increase', objectives: ['Understand relativistic mass increase', 'Explain as particles approach speed of light', 'Apply to high-energy physics'], order: 70 },
+    { section: 'A2 2: Particle Accelerators', title: 'Antimatter and Annihilation', objectives: ['Understand antimatter concept', 'Explain production in collisions', 'Describe annihilation as photon emission'], order: 71 },
+
+    // A2 2: Fundamental Particles (6 lessons)
+    { section: 'A2 2: Fundamental Particles', title: 'Concept of Fundamental Particles', objectives: ['Explain fundamental particle concept', 'Identify four fundamental forces', 'State associated exchange particles'], order: 72 },
+    { section: 'A2 2: Fundamental Particles', title: 'Particle Classification', objectives: ['Classify particles as gauge bosons leptons hadrons', 'Distinguish mesons and baryons', 'State examples of each class'], order: 73 },
+    { section: 'A2 2: Fundamental Particles', title: 'Quark Structure', objectives: ['Describe structure of hadrons in terms of quarks', 'Understand quark combinations', 'Apply to protons neutrons mesons'], order: 74 },
+    { section: 'A2 2: Fundamental Particles', title: 'Conservation Laws', objectives: ['Understand conservation of charge', 'Apply lepton number conservation', 'Use baryon number conservation'], order: 75 },
+    { section: 'A2 2: Fundamental Particles', title: 'Beta Decay and Quarks', objectives: ['Describe beta-decay in quark model', 'Explain quark transformations', 'Understand W boson role'], order: 76 },
   ];
 }
