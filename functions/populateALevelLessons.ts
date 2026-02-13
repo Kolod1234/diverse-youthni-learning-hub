@@ -325,10 +325,144 @@ function generateBiologyASLessons() {
 
 function generateBiologyA2Lessons() {
   return [
-    // A2 content - similar comprehensive structure
-    { section: 'A21: Physiology and Ecosystems', title: 'Photosynthesis - Light-Dependent Reactions', objectives: ['Describe chloroplast structure', 'Explain light absorption', 'Understand photophosphorylation'], order: 1 },
-    { section: 'A21: Physiology and Ecosystems', title: 'Photosynthesis - Light-Independent Reactions', objectives: ['Describe Calvin cycle', 'Explain carbon fixation', 'Understand limiting factors'], order: 2 },
-    // Add 20+ more A2 lessons...
+    // A2 1: Homeostasis - Principles (2 lessons)
+    { section: 'A2 1: Homeostasis Principles', title: 'Concept of Homeostasis', objectives: ['Define homeostasis as constant state maintenance', 'Identify sensor (receptor) and corrective mechanism', 'Explain negative feedback system'], order: 1 },
+    { section: 'A2 1: Homeostasis Principles', title: 'The Kidney and Excretion', objectives: ['Understand removal of urea and creatine', 'Explain osmoregulation role', 'Describe gross kidney structure'], order: 2 },
+    
+    // A2 1: Kidney Structure and Function (8 lessons)
+    { section: 'A2 1: The Kidney', title: 'Nephron Structure', objectives: ['Describe Bowman's capsule with podocytes', 'Identify proximal convoluted tubule features', 'Explain loop of Henle structure'], order: 3 },
+    { section: 'A2 1: The Kidney', title: 'The Filter - Ultrafiltration', objectives: ['Describe squamous endothelium and basement membrane', 'Explain podocyte structure', 'Understand glomerular filtration'], order: 4 },
+    { section: 'A2 1: The Kidney', title: 'Mechanism of Ultrafiltration', objectives: ['Explain afferent vs efferent arteriole diameter', 'Describe high blood pressure driving filtration', 'Understand osmotic and back pressure'], order: 5 },
+    { section: 'A2 1: The Kidney', title: 'Selective Reabsorption - PCT', objectives: ['Explain active transport in proximal tubule', 'Describe glucose and amino acid reabsorption', 'Understand osmotic water recovery'], order: 6 },
+    { section: 'A2 1: The Kidney', title: 'Selective Reabsorption - DCT', objectives: ['Explain facultative water reabsorption', 'Understand ADH-dependent permeability', 'Describe distal tubule and collecting duct'], order: 7 },
+    { section: 'A2 1: The Kidney', title: 'Loop of Henle Function', objectives: ['Explain water loss from descending limb', 'Describe Na⁺ and Cl⁻ exit from ascending limb', 'Understand salt gradient in medulla'], order: 8 },
+    { section: 'A2 1: The Kidney', title: 'Osmoregulation Mechanism', objectives: ['Describe hypothalamus osmoreceptors', 'Explain ADH synthesis and release', 'Understand ADH effect on permeability'], order: 9 },
+    { section: 'A2 1: The Kidney', title: 'Negative Feedback - ADH', objectives: ['Explain decreased water potential triggers', 'Describe ADH corrective mechanism', 'Understand negative feedback loop'], order: 10 },
+    
+    // A2 1: Immunity (12 lessons)
+    { section: 'A2 1: Immunity', title: 'Natural Barriers to Infection', objectives: ['Describe skin, acid, tears (lysozyme)', 'Explain mucus and blood clotting barriers', 'Understand first line of defence'], order: 11 },
+    { section: 'A2 1: Immunity', title: 'Antigens and Antibodies', objectives: ['Define antigen as stimulating antibody production', 'Describe antibodies as specific globular proteins', 'Understand antigen-antibody complementarity'], order: 12 },
+    { section: 'A2 1: Immunity', title: 'Antibody-Mediated Immunity', objectives: ['Explain B-lymphocyte division', 'Describe plasma cells secreting antibodies', 'Understand memory cells providing long-term immunity'], order: 13 },
+    { section: 'A2 1: Immunity', title: 'Cell-Mediated Immunity', objectives: ['Explain T-lymphocyte sensitisation', 'Describe killer T-cells, helper T-cells', 'Understand memory T-cells and suppressor T-cells'], order: 14 },
+    { section: 'A2 1: Immunity', title: 'Antigen-Antibody Reaction', objectives: ['Explain agglutination and complex formation', 'Describe phagocytosis by polymorphs', 'Understand lysosomal enzyme destruction'], order: 15 },
+    { section: 'A2 1: Immunity', title: 'Active and Passive Immunity', objectives: ['Compare active vs passive immunity', 'Describe natural (placental, colostral) transfer', 'Explain artificial immunity and monoclonal antibodies'], order: 16 },
+    { section: 'A2 1: Immunity', title: 'Vaccination', objectives: ['Understand importance of vaccination', 'Explain long-term vs short-term immunity', 'Describe societal and economic benefits'], order: 17 },
+    { section: 'A2 1: Immunity', title: 'Transplant Rejection', objectives: ['Explain foreign antigen exposure', 'Describe T-cell and B-cell attack', 'Understand tissue rejection'], order: 18 },
+    { section: 'A2 1: Immunity', title: 'Immunosuppression', objectives: ['Explain X-ray or drug-induced immunosuppression', 'Describe inhibition of DNA replication', 'Understand increased infection susceptibility'], order: 19 },
+    { section: 'A2 1: Immunity', title: 'Blood Groups - ABO System', objectives: ['Explain ABO antigens on RBC surface', 'Understand antibody-antigen compatibility', 'Describe four blood groups'], order: 20 },
+    { section: 'A2 1: Immunity', title: 'Rhesus Factor', objectives: ['Describe rhesus antigen (antigen D)', 'Explain anti-D antibody production', 'Understand rhesus negative mother risks'], order: 21 },
+    { section: 'A2 1: Immunity', title: 'Blood Transfusion and Antibiotic Resistance', objectives: ['Apply transfusion compatibility principles', 'Explain agglutination consequences', 'Understand antibiotic resistance and ELISA'], order: 22 },
+    
+    // A2 1: Co-ordination - Plants (2 lessons)
+    { section: 'A2 1: Plant Control', title: 'Phytochromes and Flowering', objectives: ['Describe P₆₆₀ and P₇₃₀ interconversion', 'Explain critical night length', 'Understand long-day and short-day plants'], order: 23 },
+    { section: 'A2 1: Plant Control', title: 'Plant Growth Substances', objectives: ['Explain auxins promote cell elongation', 'Describe cytokinins promote division', 'Understand gibberellins and internode elongation'], order: 24 },
+    
+    // A2 1: Co-ordination - Nervous System (8 lessons)
+    { section: 'A2 1: Nervous System', title: 'Neurone Structure', objectives: ['Identify dendrons, dendrites, cell body', 'Describe axon, Schwann cell, myelin sheath', 'Understand nodes of Ranvier'], order: 25 },
+    { section: 'A2 1: Nervous System', title: 'Resting and Action Potential', objectives: ['Explain resting potential (polarisation)', 'Understand threshold stimulus', 'Describe all-or-nothing law'], order: 26 },
+    { section: 'A2 1: Nervous System', title: 'Propagation of Action Potentials', objectives: ['Explain depolarisation and action potential', 'Describe propagation via local circuits', 'Understand refractory period'], order: 27 },
+    { section: 'A2 1: Nervous System', title: 'Speed of Conduction', objectives: ['Explain axon diameter effect', 'Describe myelination benefit', 'Understand saltatory conduction'], order: 28 },
+    { section: 'A2 1: Nervous System', title: 'Synapse Structure', objectives: ['Identify synaptic bulb and vesicles', 'Describe pre-synaptic and post-synaptic membranes', 'Understand synaptic cleft'], order: 29 },
+    { section: 'A2 1: Nervous System', title: 'Synaptic Transmission', objectives: ['Explain neurotransmitter exocytosis', 'Describe acetylcholine, noradrenaline, GABA', 'Understand receptor binding'], order: 30 },
+    { section: 'A2 1: Nervous System', title: 'Excitatory and Inhibitory Synapses', objectives: ['Explain EPSP and action potential generation', 'Describe role of acetylcholinesterase', 'Understand IPSP and hyperpolarisation'], order: 31 },
+    { section: 'A2 1: Nervous System', title: 'The Mammalian Eye', objectives: ['Identify eye structures (cornea, iris, lens, retina)', 'Explain accommodation mechanism', 'Understand rods vs cones distribution'], order: 32 },
+    
+    // A2 1: Vision (3 lessons)
+    { section: 'A2 1: Vision', title: 'Pupil Control and Visual Acuity', objectives: ['Explain iris muscle control of pupil', 'Describe rod convergence and sensitivity', 'Understand cone visual acuity and colour'], order: 33 },
+    { section: 'A2 1: Vision', title: 'Dark Adaptation', objectives: ['Explain rhodopsin breakdown and re-synthesis', 'Understand adaptation to low light', 'Describe rod function in darkness'], order: 34 },
+    { section: 'A2 1: Vision', title: 'Binocular Vision', objectives: ['Explain distance and depth perception', 'Understand wide visual fields', 'Describe stereoscopic vision'], order: 35 },
+    
+    // A2 1: Muscle (2 lessons)
+    { section: 'A2 1: Effectors', title: 'Skeletal Muscle Structure', objectives: ['Distinguish muscle, fibres, myofibrils', 'Identify sarcomere bands (A, I, H, Z, M)', 'Recognize changes during contraction'], order: 36 },
+    { section: 'A2 1: Effectors', title: 'Sliding Filament Theory', objectives: ['Explain myosin head attachment to actin', 'Describe Ca²⁺ role in contraction', 'Understand ATP requirement for movement'], order: 37 },
+    
+    // A2 1: Ecosystems (12 lessons)
+    { section: 'A2 1: Ecosystems', title: 'Population Growth Curves', objectives: ['Describe exponential (log) and stationary phases', 'Explain competition and resource availability', 'Define carrying capacity and environmental resistance'], order: 38 },
+    { section: 'A2 1: Ecosystems', title: 'r-Selected and K-Selected Species', objectives: ['Describe features of r-selected species', 'Explain K-selected species characteristics', 'Compare population growth curves'], order: 39 },
+    { section: 'A2 1: Ecosystems', title: 'Population Interactions', objectives: ['Explain competition (-/-)', 'Describe mutualism (+/+)', 'Understand predation and parasitism (+/-)'], order: 40 },
+    { section: 'A2 1: Ecosystems', title: 'Biological Control', objectives: ['Define pest species', 'Explain use of predators/competitors', 'Compare biological vs chemical control'], order: 41 },
+    { section: 'A2 1: Ecosystems', title: 'Community Development', objectives: ['Describe pioneer species and colonisation', 'Explain succession to climax community', 'Understand primary vs secondary succession'], order: 42 },
+    { section: 'A2 1: Ecosystems', title: 'Food Chains and Webs', objectives: ['Identify producers and consumers', 'Explain grazing and detritus food chains', 'Understand role of decomposers'], order: 43 },
+    { section: 'A2 1: Ecosystems', title: 'Trophic Levels', objectives: ['Define primary producers (1st trophic level)', 'Calculate net primary production (NPP = GPP - respiration)', 'Identify consumer trophic levels'], order: 44 },
+    { section: 'A2 1: Ecosystems', title: 'Ecological Pyramids', objectives: ['Construct pyramids of numbers, biomass, energy', 'Calculate energy transfer efficiency', 'Understand pyramid usefulness'], order: 45 },
+    { section: 'A2 1: Ecosystems', title: 'Energy Losses in Ecosystems', objectives: ['Explain low solar radiation absorption', 'Describe losses via egestion, excretion, respiration', 'Understand endotherm vs ectotherm losses'], order: 46 },
+    { section: 'A2 1: Ecosystems', title: 'Agriculture and Energy', objectives: ['Explain extra energy cost of animal products', 'Describe intensive farming (confinement, high energy foods)', 'Understand fertiliser use'], order: 47 },
+    { section: 'A2 1: Ecosystems', title: 'Carbon Cycle', objectives: ['Describe respiration, combustion, decomposition adding CO₂', 'Explain photosynthesis removing CO₂', 'Understand carbon cycling'], order: 48 },
+    { section: 'A2 1: Ecosystems', title: 'Nitrogen Cycle', objectives: ['Explain decomposer role releasing NH₄⁺', 'Describe nitrifying bacteria producing NO₃⁻', 'Understand N₂-fixing bacteria and denitrification'], order: 49 },
+    
+    // A2 1: Practical (2 lessons)
+    { section: 'A2 1: Practical', title: 'Yeast Population Growth', objectives: ['Use haemocytometer to count cells', 'Calculate cell density', 'Understand culture medium components'], order: 50 },
+    { section: 'A2 1: Practical', title: 'Capture-Mark-Recapture', objectives: ['Apply marking techniques', 'Understand assumptions in method', 'Estimate animal population size'], order: 51 },
+    
+    // A2 2: Respiration (9 lessons)
+    { section: 'A2 2: Respiration', title: 'ATP - Nature and Function', objectives: ['Describe ATP structure (adenine, ribose, phosphate)', 'Explain ATP/ADP cycle', 'Understand uses in synthesis, transport, mechanical work'], order: 52 },
+    { section: 'A2 2: Respiration', title: 'Glycolysis', objectives: ['Explain glucose phosphorylation to fructose bisphosphate', 'Describe formation of 2 triose phosphates', 'Calculate net yield of 2 ATP and NADH'], order: 53 },
+    { section: 'A2 2: Respiration', title: 'Aerobic Respiration Overview', objectives: ['Explain glycolysis followed by Krebs cycle', 'Describe electron transport at cristae', 'Understand complete glucose oxidation'], order: 54 },
+    { section: 'A2 2: Respiration', title: 'Anaerobic Respiration', objectives: ['Explain NAD regeneration without ATP yield', 'Compare ethanol production (plants/fungi) vs lactate (animals)', 'Understand oxygen-independent pathways'], order: 55 },
+    { section: 'A2 2: Respiration', title: 'Link Reaction and Krebs Cycle', objectives: ['Describe pyruvate oxidative decarboxylation', 'Explain acetyl CoA entering Krebs cycle', 'Calculate NADH, FADH₂, ATP yields'], order: 56 },
+    { section: 'A2 2: Respiration', title: 'Electron Transport Chain', objectives: ['Identify NAD, flavoprotein, CoQ, cytochromes', 'Explain oxygen as final H acceptor', 'Calculate ATP synthesis points'], order: 57 },
+    { section: 'A2 2: Respiration', title: 'Aerobic vs Anaerobic Comparison', objectives: ['Compare ATP yields', 'Explain oxygen debt concept', 'Understand survival strategies'], order: 58 },
+    { section: 'A2 2: Respiration', title: 'Respiratory Quotient (RQ)', objectives: ['Calculate RQ = CO₂/O₂ ratio', 'Use RQ to identify respiratory substrates', 'Detect anaerobic respiration'], order: 59 },
+    { section: 'A2 2: Practical', title: 'Respirometer and Redox Indicators', objectives: ['Calculate O₂ uptake and CO₂ production', 'Determine RQ values', 'Use methylene blue as hydrogen acceptor'], order: 60 },
+    
+    // A2 2: Photosynthesis (6 lessons)
+    { section: 'A2 2: Photosynthesis', title: 'Chloroplast Sites of Reactions', objectives: ['Identify light-dependent stage on thylakoids', 'Explain light-independent stage in stroma', 'Understand spatial organization'], order: 61 },
+    { section: 'A2 2: Photosynthesis', title: 'Light-Dependent Stage - Z Scheme', objectives: ['Explain photoactivation of PSI and PSII', 'Describe electron flow producing ATP', 'Understand NADP reduction to NADPH'], order: 62 },
+    { section: 'A2 2: Photosynthesis', title: 'Photolysis of Water', objectives: ['Explain water dissociation (OH⁻ + H⁺)', 'Describe electron replacement in PSII', 'Understand oxygen release'], order: 63 },
+    { section: 'A2 2: Photosynthesis', title: 'Light-Independent Stage - Calvin Cycle', objectives: ['Explain CO₂ fixation by rubisco', 'Describe GP (C₃) reduction to triose phosphate', 'Understand RuBP regeneration (5/6) and glucose synthesis (1/6)'], order: 64 },
+    { section: 'A2 2: Photosynthesis', title: 'Chlorophyll and Light Absorption', objectives: ['Describe absorption spectra of pigments', 'Explain action spectrum', 'Understand optimal wavelengths'], order: 65 },
+    { section: 'A2 2: Photosynthesis', title: 'Limiting Factors', objectives: ['Measure as CO₂ uptake or O₂ production', 'Explain gross vs net photosynthesis', 'Understand light, CO₂, temperature as limiting factors'], order: 66 },
+    
+    // A2 2: Practical Photosynthesis (1 lesson)
+    { section: 'A2 2: Practical', title: 'Chromatography and DCPIP', objectives: ['Separate plant pigments by chromatography', 'Calculate Rf values', 'Use DCPIP as hydrogen acceptor indicator'], order: 67 },
+    
+    // A2 2: DNA as Genetic Code (4 lessons)
+    { section: 'A2 2: Genetic Code', title: 'Nature of Genetic Code', objectives: ['Define gene as DNA base sequence', 'Explain non-overlapping, degenerate triplet code', 'Understand exons and introns'], order: 68 },
+    { section: 'A2 2: Genetic Code', title: 'Transcription', objectives: ['Describe mRNA synthesis from DNA template', 'Explain RNA polymerase role', 'Understand complementary base pairing'], order: 69 },
+    { section: 'A2 2: Genetic Code', title: 'Translation', objectives: ['Explain tRNA anticodon-codon pairing', 'Describe ribosome peptidyl and aminoacyl sites', 'Understand polypeptide formation'], order: 70 },
+    { section: 'A2 2: Genetic Code', title: 'One Gene/One Polypeptide and Epigenetics', objectives: ['Apply one gene codes for one polypeptide', 'Explain enzyme control of phenotype', 'Understand epigenetic methylation and histone modification'], order: 71 },
+    
+    // A2 2: Gene Technology (10 lessons)
+    { section: 'A2 2: Gene Technology', title: 'Polymerase Chain Reaction (PCR)', objectives: ['Explain PCR amplification technique', 'Describe heating, annealing primers, extension cycle', 'Understand PCR applications'], order: 72 },
+    { section: 'A2 2: Gene Technology', title: 'DNA Probes', objectives: ['Define DNA probe as known sequence', 'Explain fluorescent markers', 'Understand complementary base pairing'], order: 73 },
+    { section: 'A2 2: Gene Technology', title: 'Genetic Variation - Markers', objectives: ['Use microsatellite repeat sequences (MRSs)', 'Apply single nucleotide polymorphisms (SNPs)', 'Assess nucleotide sequence differences'], order: 74 },
+    { section: 'A2 2: Gene Technology', title: 'Microarray Technology', objectives: ['Explain gene expression profiling', 'Describe DNA hybridisation to chip', 'Analyze fluorescent/chemiluminescent signals'], order: 75 },
+    { section: 'A2 2: Gene Technology', title: 'Genetic Fingerprinting', objectives: ['Use restriction endonucleases', 'Apply gel electrophoresis separation', 'Understand forensic and paternity applications'], order: 76 },
+    { section: 'A2 2: Gene Technology', title: 'Gene Transfer Stages', objectives: ['Obtain donor DNA (restriction enzymes, reverse transcriptase)', 'Use vectors (phages, plasmids)', 'Transform E. coli or yeast'], order: 77 },
+    { section: 'A2 2: Gene Technology', title: 'Marker Genes', objectives: ['Use antibiotic resistance markers', 'Apply fluorescent markers', 'Identify transformed cells'], order: 78 },
+    { section: 'A2 2: Gene Technology', title: 'GM Microorganisms and Transgenic Organisms', objectives: ['Explain GM bacteria producing substances', 'Describe transgenic animals and plants', 'Understand improved traits and applications'], order: 79 },
+    { section: 'A2 2: Gene Technology', title: 'Gene Therapy', objectives: ['Explain somatic-cell gene therapy', 'Describe vectors for gene transfer', 'Understand germ-line therapy ethics'], order: 80 },
+    { section: 'A2 2: Gene Technology', title: 'Gene Sequencing and Pharmacogenetics', objectives: ['Explain genome sequencing', 'Describe Human Genome Project', 'Understand personalised medicine and designer drugs'], order: 81 },
+    
+    // A2 2: Genetics and Inheritance (8 lessons)
+    { section: 'A2 2: Inheritance', title: 'Genotype and Phenotype', objectives: ['Define genotype and phenotype', 'Explain environmental influence', 'Understand homozygosity and heterozygosity'], order: 82 },
+    { section: 'A2 2: Inheritance', title: 'Chromosomes, Genes and Alleles', objectives: ['Define genes on chromosomes', 'Explain alleles at same locus', 'Understand homologous chromosomes'], order: 83 },
+    { section: 'A2 2: Inheritance', title: 'Monohybrid Inheritance', objectives: ['Apply Mendel's law of segregation', 'Explain dominance and recessiveness', 'Understand codominance and lethal alleles'], order: 84 },
+    { section: 'A2 2: Inheritance', title: 'Dihybrid Inheritance', objectives: ['Apply Mendel's law of independent assortment', 'Use Punnett squares', 'Solve genetic diagram problems'], order: 85 },
+    { section: 'A2 2: Inheritance', title: 'Test Crosses and Multiple Alleles', objectives: ['Use test crosses to determine genotype', 'Explain multiple allele inheritance', 'Apply to blood groups'], order: 86 },
+    { section: 'A2 2: Inheritance', title: 'Sex Determination and Sex Linkage', objectives: ['Explain XX/XY sex chromosomes', 'Describe sex-linked inheritance', 'Solve sex-linked genetic problems'], order: 87 },
+    { section: 'A2 2: Inheritance', title: 'Gene Interaction and Epistasis', objectives: ['Explain gene interaction', 'Describe epistasis', 'Solve epistatic inheritance patterns'], order: 88 },
+    { section: 'A2 2: Inheritance', title: 'Polygenic Inheritance', objectives: ['Explain continuous variation', 'Describe additive effects of polygenes', 'Understand environmental contribution'], order: 89 },
+    
+    // A2 2: Population Genetics (6 lessons)
+    { section: 'A2 2: Population Genetics', title: 'Gene Pool Concept', objectives: ['Define gene pool as sum of alleles', 'Understand allele frequencies', 'Explain population genetics'], order: 90 },
+    { section: 'A2 2: Population Genetics', title: 'Hardy-Weinberg Equation', objectives: ['Apply p² + 2pq + q² = 1', 'Calculate allele frequencies (p + q = 1)', 'Determine genotype frequencies'], order: 91 },
+    { section: 'A2 2: Population Genetics', title: 'Hardy-Weinberg Equilibrium', objectives: ['Understand equilibrium conditions', 'Explain random fertilisation', 'Describe effects of mutation, migration, selection'], order: 92 },
+    { section: 'A2 2: Population Genetics', title: 'Sources of Genetic Variation', objectives: ['Explain heterozygotes as variation reservoirs', 'Describe mutation (base deletions/substitutions)', 'Understand chromosome mutation'], order: 93 },
+    { section: 'A2 2: Population Genetics', title: 'Natural Selection', objectives: ['Define fitness and adaptation', 'Explain differential allele perpetuation', 'Describe stabilising vs directional selection'], order: 94 },
+    { section: 'A2 2: Population Genetics', title: 'Speciation', objectives: ['Define species as interbreeding group', 'Explain allopatric speciation', 'Understand reproductive isolating mechanisms'], order: 95 },
+    
+    // A2 2: Kingdom Plantae (3 lessons)
+    { section: 'A2 2: Kingdom Plantae', title: 'Mosses - Features and Restrictions', objectives: ['Describe multicellular undifferentiated structure', 'Explain rhizoids and lack of vascular tissue', 'Understand restriction to moist habitats'], order: 96 },
+    { section: 'A2 2: Kingdom Plantae', title: 'Ferns - Adaptations', objectives: ['Describe differentiation (roots, stems, leaves)', 'Explain vascular system presence', 'Understand cuticle and stomatal control'], order: 97 },
+    { section: 'A2 2: Kingdom Plantae', title: 'Angiosperms - Advanced Adaptations', objectives: ['Explain seed dispersal advantage', 'Describe xylem forming wood', 'Understand desiccation-resistant seeds'], order: 98 },
+    
+    // A2 2: Kingdom Animalia (5 lessons)
+    { section: 'A2 2: Kingdom Animalia', title: 'Phylum Cnidaria', objectives: ['Describe radial symmetry', 'Explain hydrostatic skeleton', 'Identify features in hydra and jellyfish'], order: 99 },
+    { section: 'A2 2: Kingdom Animalia', title: 'Phylum Platyhelminthes', objectives: ['Describe bilateral symmetry and flattened body', 'Explain single gut opening', 'Identify features in planarian and liver fluke'], order: 100 },
+    { section: 'A2 2: Kingdom Animalia', title: 'Phylum Annelida', objectives: ['Describe metameric segmentation', 'Explain gut with mouth and anus', 'Understand hydrostatic skeleton in earthworm'], order: 101 },
+    { section: 'A2 2: Kingdom Animalia', title: 'Phylum Arthropoda', objectives: ['Describe jointed limbs and fixed segments', 'Explain regional specialisation (head, thorax, abdomen)', 'Understand success of insects'], order: 102 },
+    { section: 'A2 2: Kingdom Animalia', title: 'Phylum Chordata', objectives: ['Describe bilateral symmetry and segmentation', 'Explain spinal column and jointed skeleton', 'Identify features in mammals and birds'], order: 103 },
   ];
 }
 
