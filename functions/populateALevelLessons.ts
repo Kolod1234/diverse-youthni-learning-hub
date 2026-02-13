@@ -42,6 +42,10 @@ Deno.serve(async (req) => {
       lessonStructure = getFurtherMathematicsASLessons();
     } else if (structureKey === 'further_mathematics_a2') {
       lessonStructure = getFurtherMathematicsA2Lessons();
+    } else if (structureKey === 'mathematics_as') {
+      lessonStructure = getMathematicsASLessons();
+    } else if (structureKey === 'mathematics_a2') {
+      lessonStructure = getMathematicsA2Lessons();
     } else {
       return Response.json({ error: `No lesson structure found for ${structureKey}` }, { status: 400 });
     }
@@ -1039,5 +1043,201 @@ function getFurtherMathematicsA2Lessons() {
     { section: 'A2 2: Decision Mathematics', title: 'Travelling Salesman Problem', objectives: ['Understand TSP and its applications', 'Use nearest neighbour algorithm', 'Apply minimum spanning tree method'], order: 48 },
     { section: 'A2 2: Decision Mathematics', title: 'Matchings and Allocation', objectives: ['Solve bipartite matching problems', 'Use Hungarian algorithm', 'Apply to job assignment problems'], order: 49 },
     { section: 'A2 2: Decision Mathematics', title: 'Network Flows', objectives: ['Understand maximum flow problems', 'Apply Ford-Fulkerson algorithm', 'Solve minimum cut problems'], order: 50 },
+  ];
+}
+
+function getMathematicsASLessons() {
+  return [
+    // AS1: Pure Mathematics - Algebra and Functions
+    { section: 'AS1: Algebra and Functions', title: 'Laws of Indices', objectives: ['Demonstrate understanding and use laws of indices for rational exponents', 'Apply index laws to simplify expressions', 'Solve equations using index laws'], order: 1 },
+    { section: 'AS1: Algebra and Functions', title: 'Surds and Rationalisation', objectives: ['Use and manipulate surds', 'Rationalise denominators', 'Simplify surd expressions'], order: 2 },
+    { section: 'AS1: Algebra and Functions', title: 'Quadratic Functions', objectives: ['Work with quadratic functions and their graphs', 'Understand shape and properties', 'Identify vertex and axis of symmetry'], order: 3 },
+    { section: 'AS1: Algebra and Functions', title: 'Discriminant of Quadratics', objectives: ['Use discriminant b squared minus 4ac', 'Determine conditions for real and repeated roots', 'Apply to solving problems'], order: 4 },
+    { section: 'AS1: Algebra and Functions', title: 'Completing the Square', objectives: ['Complete the square in quadratic functions', 'Express in form a times x minus h squared plus k', 'Find maximum or minimum values'], order: 5 },
+    { section: 'AS1: Algebra and Functions', title: 'Solving Quadratic Equations', objectives: ['Solve quadratic equations by factorisation', 'Use quadratic formula', 'Solve equations in function of unknown'], order: 6 },
+    { section: 'AS1: Algebra and Functions', title: 'Simultaneous Equations', objectives: ['Solve simultaneous equations by elimination and substitution', 'Solve one linear and one quadratic', 'Solve in three variables'], order: 7 },
+    { section: 'AS1: Algebra and Functions', title: 'Inequalities', objectives: ['Solve linear and quadratic inequalities', 'Interpret inequalities graphically', 'Handle inequalities with brackets and fractions'], order: 8 },
+    { section: 'AS1: Algebra and Functions', title: 'Polynomial Manipulation', objectives: ['Expand brackets and collect like terms', 'Factorise polynomials', 'Perform simple algebraic division'], order: 9 },
+    { section: 'AS1: Algebra and Functions', title: 'Remainder and Factor Theorems', objectives: ['Use remainder theorem', 'Apply factor theorem', 'Solve polynomial problems'], order: 10 },
+    { section: 'AS1: Algebra and Functions', title: 'Curve Sketching - Polynomials', objectives: ['Sketch curves of polynomials', 'Identify turning points and intercepts', 'Analyze end behaviour'], order: 11 },
+    { section: 'AS1: Algebra and Functions', title: 'Rational Functions', objectives: ['Sketch curves y equals a over x', 'Identify vertical and horizontal asymptotes', 'Understand behaviour near asymptotes'], order: 12 },
+    { section: 'AS1: Algebra and Functions', title: 'Graphical Solutions', objectives: ['Interpret algebraic solutions graphically', 'Use intersection points to solve equations', 'Understand graphical interpretation'], order: 13 },
+    { section: 'AS1: Algebra and Functions', title: 'Graph Transformations', objectives: ['Understand transformations of y equals f of x', 'Sketch y equals af of x, y equals f of x plus a', 'Sketch y equals f of x plus a and y equals f of ax'], order: 14 },
+
+    // AS1: Coordinate Geometry
+    { section: 'AS1: Coordinate Geometry', title: 'Equations of Straight Lines', objectives: ['Use equation y minus y1 equals m times x minus x1', 'Use form ax plus by plus c equals 0', 'Convert between forms'], order: 15 },
+    { section: 'AS1: Coordinate Geometry', title: 'Midpoint and Distance', objectives: ['Find midpoint of line segment', 'Calculate distance between points', 'Apply coordinate geometry formulas'], order: 16 },
+    { section: 'AS1: Coordinate Geometry', title: 'Parallel and Perpendicular Lines', objectives: ['Use gradient conditions for parallel lines', 'Apply perpendicular gradient condition', 'Solve problems involving line relationships'], order: 17 },
+    { section: 'AS1: Coordinate Geometry', title: 'Straight Line Models', objectives: ['Use straight line models in contexts', 'Apply to real-world situations', 'Interpret gradients and intercepts'], order: 18 },
+    { section: 'AS1: Coordinate Geometry', title: 'Circle Equations', objectives: ['Use equation x minus a squared plus y minus b squared equals r squared', 'Use expanded form x squared plus y squared plus 2gx plus 2fy plus c equals 0', 'Convert between forms'], order: 19 },
+    { section: 'AS1: Coordinate Geometry', title: 'Circle Properties', objectives: ['Find centre and radius by completing square', 'Use angle in semicircle is right angle', 'Apply perpendicular from centre bisects chord'], order: 20 },
+    { section: 'AS1: Coordinate Geometry', title: 'Tangents to Circles', objectives: ['Understand radius perpendicular to tangent', 'Find equation of tangent at given point', 'Apply circle properties'], order: 21 },
+
+    // AS1: Sequences and Series
+    { section: 'AS1: Sequences and Series', title: 'Binomial Expansion', objectives: ['Use binomial expansion of a plus bx to power n', 'Apply for positive integer n', 'Expand and simplify binomial expressions'], order: 22 },
+    { section: 'AS1: Sequences and Series', title: 'Factorial and Combinations', objectives: ['Use notation n factorial', 'Use nCr notation', 'Calculate combinations'], order: 23 },
+
+    // AS1: Trigonometry
+    { section: 'AS1: Trigonometry', title: 'Trigonometric Definitions', objectives: ['Use definitions of sine, cosine and tangent for all arguments', 'Understand trigonometric ratios', 'Apply to all quadrants'], order: 24 },
+    { section: 'AS1: Trigonometry', title: 'Sine and Cosine Rules', objectives: ['Use sine rule for non-right triangles', 'Apply cosine rule', 'Solve triangle problems'], order: 25 },
+    { section: 'AS1: Trigonometry', title: 'Area of Triangle', objectives: ['Calculate area using half ab sin C', 'Apply to various triangles', 'Solve area problems'], order: 26 },
+    { section: 'AS1: Trigonometry', title: 'Trigonometric Graphs', objectives: ['Understand graphs of sine, cosine and tangent', 'Identify symmetries and periodicity', 'Sketch transformed trig graphs'], order: 27 },
+    { section: 'AS1: Trigonometry', title: 'Trigonometric Identities', objectives: ['Use tan theta equals sin theta over cos theta', 'Apply sin squared theta plus cos squared theta equals 1', 'Solve using identities'], order: 28 },
+    { section: 'AS1: Trigonometry', title: 'Solving Trigonometric Equations', objectives: ['Solve simple trig equations in given interval', 'Solve quadratic equations in sin, cos, tan', 'Handle equations with multiples of unknown angle'], order: 29 },
+
+    // AS1: Exponentials and Logarithms
+    { section: 'AS1: Exponentials and Logarithms', title: 'Exponential Functions', objectives: ['Use function a to power x and its graph', 'Use function e to power x and its graph', 'Apply exponential functions'], order: 30 },
+    { section: 'AS1: Exponentials and Logarithms', title: 'Logarithmic Functions', objectives: ['Define log base a of x as inverse of a to power x', 'Use function ln x and its graph', 'Understand ln x as inverse of e to power x'], order: 31 },
+    { section: 'AS1: Exponentials and Logarithms', title: 'Laws of Logarithms', objectives: ['Prove and use log laws', 'Apply log a x plus log a y equals log a xy', 'Use log a x minus log a y equals log a of x over y'], order: 32 },
+    { section: 'AS1: Exponentials and Logarithms', title: 'Solving Exponential Equations', objectives: ['Solve equations a to power x equals b', 'Use logarithms to solve', 'Apply to various bases'], order: 33 },
+    { section: 'AS1: Exponentials and Logarithms', title: 'Exponential Inequalities', objectives: ['Solve inequalities involving exponentials', 'Apply logarithmic methods', 'Understand solution sets'], order: 34 },
+    { section: 'AS1: Exponentials and Logarithms', title: 'Exponential Growth and Decay', objectives: ['Use exponential growth and decay models', 'Apply to continuous compound interest', 'Model population growth and radioactive decay'], order: 35 },
+
+    // AS1: Differentiation
+    { section: 'AS1: Differentiation', title: 'Derivative as Gradient', objectives: ['Understand derivative of f of x as gradient function', 'Interpret gradient of tangent at general point', 'Use derivative notation'], order: 36 },
+    { section: 'AS1: Differentiation', title: 'Gradient as Limit', objectives: ['Understand gradient of tangent as limit', 'Use first principles', 'Define differentiation'], order: 37 },
+    { section: 'AS1: Differentiation', title: 'Rate of Change', objectives: ['Interpret gradient as rate of change', 'Apply to distance-time and velocity-time', 'Use in real contexts'], order: 38 },
+    { section: 'AS1: Differentiation', title: 'Second Derivatives', objectives: ['Find second derivatives', 'Use second derivative as rate of change of gradient', 'Apply to acceleration'], order: 39 },
+    { section: 'AS1: Differentiation', title: 'Power Rule', objectives: ['Differentiate x to power n for rational n', 'Apply to constant multiples, sums and differences', 'Simplify derivatives'], order: 40 },
+    { section: 'AS1: Differentiation', title: 'Applications of Differentiation', objectives: ['Find gradients, tangents and normals', 'Determine maxima and minima', 'Identify stationary points'], order: 41 },
+    { section: 'AS1: Differentiation', title: 'Increasing and Decreasing Functions', objectives: ['Identify increasing functions where derivative positive', 'Identify decreasing functions where derivative negative', 'Analyze function behaviour'], order: 42 },
+
+    // AS1: Integration
+    { section: 'AS1: Integration', title: 'Indefinite Integration', objectives: ['Understand integration as reverse of differentiation', 'Add constant of integration', 'Find indefinite integrals'], order: 43 },
+    { section: 'AS1: Integration', title: 'Integration of Powers', objectives: ['Integrate x to power n excluding n equals minus 1', 'Apply to sums, differences and constant multiples', 'Simplify integrals'], order: 44 },
+    { section: 'AS1: Integration', title: 'Definite Integrals', objectives: ['Evaluate definite integrals', 'Use limits of integration', 'Calculate exact values'], order: 45 },
+    { section: 'AS1: Integration', title: 'Area Under Curve', objectives: ['Use definite integral to find area', 'Calculate area between curve and x-axis', 'Apply to y-axis bounded regions'], order: 46 },
+
+    // AS1: Vectors
+    { section: 'AS1: Vectors', title: 'Vectors in Two Dimensions', objectives: ['Use vectors in 2D including i and j unit vectors', 'Represent vectors in component form', 'Apply vector notation'], order: 47 },
+    { section: 'AS1: Vectors', title: 'Magnitude and Direction', objectives: ['Calculate magnitude of vector', 'Find direction of vector', 'Convert between component and magnitude-direction forms'], order: 48 },
+    { section: 'AS1: Vectors', title: 'Vector Operations', objectives: ['Perform vector addition', 'Multiply vectors by scalars', 'Understand geometrical interpretations'], order: 49 },
+    { section: 'AS1: Vectors', title: 'Position Vectors', objectives: ['Use position vectors', 'Calculate distance between two points', 'Apply to coordinate geometry'], order: 50 },
+
+    // AS2: Applied Mathematics - Mechanics
+    { section: 'AS2: Mechanics - Quantities and Units', title: 'Fundamental Quantities', objectives: ['Use fundamental SI quantities length, time, mass', 'Apply base units metre, second, kilogram', 'Understand SI system'], order: 51 },
+    { section: 'AS2: Mechanics - Quantities and Units', title: 'Derived Quantities', objectives: ['Use derived quantities velocity, acceleration, force, weight', 'Apply derived units', 'Convert between units'], order: 52 },
+    { section: 'AS2: Mechanics - Kinematics', title: 'Kinematics Language', objectives: ['Use language of kinematics', 'Define position, displacement, distance travelled', 'Define velocity, speed and acceleration'], order: 53 },
+    { section: 'AS2: Mechanics - Kinematics', title: 'Motion Graphs', objectives: ['Use and interpret displacement-time graphs', 'Interpret velocity-time graphs', 'Understand gradient and area under graph'], order: 54 },
+    { section: 'AS2: Mechanics - Kinematics', title: 'Constant Acceleration Equations', objectives: ['Use formulae for constant acceleration', 'Apply to motion in straight line', 'Solve kinematics problems'], order: 55 },
+    { section: 'AS2: Mechanics - Kinematics', title: 'Vectors in Kinematics', objectives: ['Use constant acceleration formulae in 2D', 'Apply vectors to motion', 'Solve vector kinematics problems'], order: 56 },
+    { section: 'AS2: Mechanics - Forces', title: 'Newton First Law', objectives: ['Understand Newton first law', 'Use concept of force', 'Apply to stationary and constant velocity'], order: 57 },
+    { section: 'AS2: Mechanics - Forces', title: 'Resolving Forces', objectives: ['Resolve forces in two dimensions', 'Use components of forces', 'Apply to inclined planes'], order: 58 },
+    { section: 'AS2: Mechanics - Forces', title: 'Resultant Forces', objectives: ['Add forces to find resultant', 'Use system of forces', 'Calculate magnitude and direction'], order: 59 },
+    { section: 'AS2: Mechanics - Forces', title: 'Newton Second Law', objectives: ['Use Newton second law F equals ma', 'Apply to constant mass', 'Include forces as 2D vectors'], order: 60 },
+    { section: 'AS2: Mechanics - Forces', title: 'Gravitational Acceleration', objectives: ['Use gravitational acceleration g', 'Apply value in SI units to varying accuracy', 'Understand weight and motion under gravity'], order: 61 },
+    { section: 'AS2: Mechanics - Forces', title: 'Newton Third Law', objectives: ['Use Newton third law', 'Understand action-reaction pairs', 'Apply to connected particles'], order: 62 },
+    { section: 'AS2: Mechanics - Forces', title: 'Connected Particles', objectives: ['Solve problems with connected particles', 'Use Newton second and third laws', 'Apply to pulleys and strings'], order: 63 },
+    { section: 'AS2: Mechanics - Forces', title: 'Equilibrium Problems', objectives: ['Solve problems involving equilibrium of forces', 'Apply condition for equilibrium', 'Use vector methods'], order: 64 },
+    { section: 'AS2: Mechanics - Forces', title: 'Friction Model', objectives: ['Use F less than or equal to mu R model', 'Understand coefficient of friction', 'Apply to limiting friction'], order: 65 },
+    { section: 'AS2: Mechanics - Forces', title: 'Motion on Rough Surfaces', objectives: ['Solve problems with rough surfaces', 'Apply friction model', 'Combine with Newton laws'], order: 66 },
+
+    // AS2: Statistics
+    { section: 'AS2: Statistics - Sampling', title: 'Population and Sample', objectives: ['Use terms population and sample', 'Make informal inferences about population', 'Understand sampling purpose'], order: 67 },
+    { section: 'AS2: Statistics - Sampling', title: 'Sampling Techniques', objectives: ['Use simple random sampling', 'Apply stratified sampling', 'Select appropriate sampling technique'], order: 68 },
+    { section: 'AS2: Statistics - Sampling', title: 'Sample Validity', objectives: ['Critique sampling techniques', 'Understand different samples give different conclusions', 'Apply to statistical problems'], order: 69 },
+    { section: 'AS2: Statistics - Data', title: 'Histograms', objectives: ['Interpret histograms', 'Understand area represents frequency', 'Connect to probability distributions'], order: 70 },
+    { section: 'AS2: Statistics - Data', title: 'Measures of Central Tendency', objectives: ['Interpret mean, median and mode', 'Calculate from data sets', 'Apply to real data'], order: 71 },
+    { section: 'AS2: Statistics - Data', title: 'Standard Deviation and Variance', objectives: ['Interpret standard deviation and variance', 'Calculate for population or sample', 'Use summary statistics'], order: 72 },
+    { section: 'AS2: Statistics - Data', title: 'Scatter Diagrams', objectives: ['Interpret scatter diagrams for bivariate data', 'Recognize distinct population sections', 'Understand regression lines'], order: 73 },
+    { section: 'AS2: Statistics - Data', title: 'Correlation', objectives: ['Interpret correlation informally', 'Calculate product-moment correlation coefficient', 'Understand correlation does not imply causation'], order: 74 },
+    { section: 'AS2: Statistics - Data', title: 'Outliers', objectives: ['Recognize possible outliers in data', 'Interpret outliers in diagrams', 'Apply appropriate treatment'], order: 75 },
+    { section: 'AS2: Statistics - Data', title: 'Data Presentation Techniques', objectives: ['Select data presentation techniques', 'Critique presentation methods', 'Apply to statistical problems'], order: 76 },
+    { section: 'AS2: Statistics - Data', title: 'Data Cleaning', objectives: ['Clean data including missing values', 'Deal with errors', 'Handle outliers appropriately'], order: 77 },
+    { section: 'AS2: Statistics - Probability', title: 'Probability Laws', objectives: ['Use addition and multiplication laws', 'Apply to combined events', 'Understand mutually exclusive and independent events'], order: 78 },
+    { section: 'AS2: Statistics - Probability', title: 'Probability Concepts', objectives: ['Understand mutually exclusive events', 'Apply exhaustive events', 'Use statistical dependence and independence'], order: 79 },
+    { section: 'AS2: Statistics - Probability', title: 'Combined Probabilities', objectives: ['Calculate combined probabilities of up to three events', 'Use tree diagrams', 'Apply Venn diagrams and two-way tables'], order: 80 },
+    { section: 'AS2: Statistics - Distributions', title: 'Binomial Distribution', objectives: ['Use binomial distribution as discrete probability distribution', 'Calculate binomial probabilities', 'Apply conditions for binomial model'], order: 81 },
+    { section: 'AS2: Statistics - Distributions', title: 'Binomial Applications', objectives: ['Link binomial to binomial expansion', 'Use tree diagrams', 'Apply to real situations'], order: 82 },
+  ];
+}
+
+function getMathematicsA2Lessons() {
+  return [
+    // A2 1: Pure Mathematics - Algebra and Functions
+    { section: 'A2 1: Algebra and Functions', title: 'Rational Expressions', objectives: ['Simplify rational expressions', 'Factorise and cancel', 'Perform algebraic division'], order: 1 },
+    { section: 'A2 1: Algebra and Functions', title: 'Functions Definition', objectives: ['Use definition of function', 'Understand mapping from domain to range', 'Apply function notation'], order: 2 },
+    { section: 'A2 1: Algebra and Functions', title: 'Domain and Range', objectives: ['Use terms domain and range', 'Determine domain and range from functions', 'Apply restrictions'], order: 3 },
+    { section: 'A2 1: Algebra and Functions', title: 'Composite Functions', objectives: ['Understand and use composite functions', 'Calculate fg of x and gf of x', 'Apply function composition'], order: 4 },
+    { section: 'A2 1: Algebra and Functions', title: 'Inverse Functions', objectives: ['Use inverse functions', 'Find inverse algebraically', 'Sketch graphs of inverse functions'], order: 5 },
+    { section: 'A2 1: Algebra and Functions', title: 'Modulus Function', objectives: ['Use modulus function', 'Solve inequalities involving modulus', 'Apply absolute value x minus a less than b'], order: 6 },
+    { section: 'A2 1: Algebra and Functions', title: 'Combined Transformations', objectives: ['Understand combinations of transformations', 'Apply y equals af of x, y equals f of x plus a', 'Sketch y equals f of x plus a and y equals f of ax'], order: 7 },
+    { section: 'A2 1: Algebra and Functions', title: 'Partial Fractions', objectives: ['Decompose rational functions into partial fractions', 'Handle linear and squared linear denominators', 'Apply to integration'], order: 8 },
+    { section: 'A2 1: Algebra and Functions', title: 'Functions in Modelling', objectives: ['Use functions in modelling', 'Consider limitations of models', 'Refine models appropriately'], order: 9 },
+
+    // A2 1: Coordinate Geometry
+    { section: 'A2 1: Coordinate Geometry', title: 'Parametric Equations', objectives: ['Use parametric equations of curves', 'Convert between Cartesian and parametric', 'Apply to curve sketching'], order: 10 },
+    { section: 'A2 1: Coordinate Geometry', title: 'Parametric Modelling', objectives: ['Use parametric equations in modelling', 'Apply to various contexts', 'Understand advantages of parametric form'], order: 11 },
+
+    // A2 1: Sequences and Series
+    { section: 'A2 1: Sequences and Series', title: 'Sequences and Recurrence Relations', objectives: ['Work with sequences given by nth term', 'Use recurrence relations x sub n plus 1 equals f of x sub n', 'Generate sequence terms'], order: 12 },
+    { section: 'A2 1: Sequences and Series', title: 'Sequence Behaviour', objectives: ['Understand convergence of sequences', 'Identify divergence and oscillation', 'Analyze long-term behaviour'], order: 13 },
+    { section: 'A2 1: Sequences and Series', title: 'Sigma Notation', objectives: ['Use sigma notation for series sums', 'Evaluate summations', 'Apply properties of sigma'], order: 14 },
+    { section: 'A2 1: Sequences and Series', title: 'Arithmetic Sequences', objectives: ['Work with arithmetic sequences', 'Use formula for nth term', 'Calculate sum to n terms'], order: 15 },
+    { section: 'A2 1: Sequences and Series', title: 'Geometric Sequences', objectives: ['Work with geometric sequences', 'Use formula for nth term', 'Calculate sum of finite series'], order: 16 },
+    { section: 'A2 1: Sequences and Series', title: 'Proving Series Formulae', objectives: ['Prove formula for sum of arithmetic series', 'Prove sum of geometric series', 'Use mathematical induction'], order: 17 },
+    { section: 'A2 1: Sequences and Series', title: 'Sum to Infinity', objectives: ['Find sum to infinity of convergent geometric series', 'Apply condition absolute value of r less than 1', 'Determine convergence'], order: 18 },
+    { section: 'A2 1: Sequences and Series', title: 'Binomial Expansion General', objectives: ['Use expansion of a plus bx to power n for rational n', 'Apply for approximation', 'Understand validity condition absolute value of bx over a less than 1'], order: 19 },
+    { section: 'A2 1: Sequences and Series', title: 'Series in Modelling', objectives: ['Use sequences and series in modelling', 'Apply to real-world contexts', 'Understand applications'], order: 20 },
+
+    // A2 1: Trigonometry
+    { section: 'A2 1: Trigonometry', title: 'Radian Measure', objectives: ['Work with radian measure', 'Use for arc length', 'Calculate area of sector'], order: 21 },
+    { section: 'A2 1: Trigonometry', title: 'Reciprocal Trig Functions', objectives: ['Define secant, cosecant and cotangent', 'Understand relationships to sine, cosine, tangent', 'Use sec, cosec, cot'], order: 22 },
+    { section: 'A2 1: Trigonometry', title: 'Inverse Trig Functions', objectives: ['Define arcsin, arccos and arctan', 'Understand graphs and domains', 'Apply restricted domains and ranges'], order: 23 },
+    { section: 'A2 1: Trigonometry', title: 'Reciprocal and Inverse Graphs', objectives: ['Sketch graphs of sec, cosec, cot', 'Sketch arcsin, arccos, arctan', 'Understand appropriate domains'], order: 24 },
+    { section: 'A2 1: Trigonometry', title: 'Pythagorean Identities', objectives: ['Use sec squared theta equals 1 plus tan squared theta', 'Apply cosec squared theta equals 1 plus cot squared theta', 'Prove and use identities'], order: 25 },
+    { section: 'A2 1: Trigonometry', title: 'Compound Angle Formulae', objectives: ['Use formulae for sin of A plus or minus B', 'Apply cos of A plus or minus B', 'Use tan of A plus or minus B'], order: 26 },
+    { section: 'A2 1: Trigonometry', title: 'Double Angle Formulae', objectives: ['Use and prove double angle formulae', 'Apply sin 2A, cos 2A, tan 2A', 'Solve equations using double angles'], order: 27 },
+    { section: 'A2 1: Trigonometry', title: 'R-Formulae', objectives: ['Express a cos theta plus b sin theta as r cos of theta plus or minus alpha', 'Use r sin of theta plus or minus alpha form', 'Apply to solve equations and find maxima'], order: 28 },
+    { section: 'A2 1: Trigonometry', title: 'Trigonometric Proofs', objectives: ['Construct proofs involving trig functions', 'Use identities systematically', 'Prove given identities'], order: 29 },
+    { section: 'A2 1: Trigonometry', title: 'Trig in Context', objectives: ['Use trigonometric functions to solve problems in context', 'Apply to real-world situations', 'Model using trigonometry'], order: 30 },
+
+    // A2 1: Differentiation
+    { section: 'A2 1: Differentiation', title: 'Differentiating Exponentials and Logs', objectives: ['Differentiate e to power kx', 'Differentiate ln of kx', 'Apply to related functions'], order: 31 },
+    { section: 'A2 1: Differentiation', title: 'Differentiating Trig Functions', objectives: ['Differentiate sin kx, cos kx, tan kx', 'Apply to sums, differences and multiples', 'Use in calculus problems'], order: 32 },
+    { section: 'A2 1: Differentiation', title: 'Product and Quotient Rules', objectives: ['Use product rule for differentiation', 'Apply quotient rule', 'Combine with other rules'], order: 33 },
+    { section: 'A2 1: Differentiation', title: 'Differentiating Reciprocal Trig', objectives: ['Differentiate cosec x, sec x, cot x', 'Apply derivative rules', 'Use in problems'], order: 34 },
+    { section: 'A2 1: Differentiation', title: 'Implicit Differentiation', objectives: ['Differentiate functions defined implicitly', 'Find dy over dx for implicit relations', 'Calculate second derivative'], order: 35 },
+    { section: 'A2 1: Differentiation', title: 'Parametric Differentiation', objectives: ['Differentiate parametric equations', 'Find dy over dx using dy over dt and dx over dt', 'Calculate second derivative'], order: 36 },
+    { section: 'A2 1: Differentiation', title: 'Differential Equations', objectives: ['Construct simple differential equations', 'Apply in pure mathematics and context', 'Form equations from rates of change'], order: 37 },
+
+    // A2 1: Integration
+    { section: 'A2 1: Integration', title: 'Standard Integrals', objectives: ['Integrate e to power kx', 'Integrate 1 over x', 'Integrate sin kx and cos kx'], order: 38 },
+    { section: 'A2 1: Integration', title: 'Area Between Curves', objectives: ['Find area between two curves', 'Use definite integrals', 'Apply subtraction method'], order: 39 },
+    { section: 'A2 1: Integration', title: 'Integration as Limit of Sum', objectives: ['Understand integration as limit of sum', 'Use Riemann sums', 'Apply to area calculations'], order: 40 },
+    { section: 'A2 1: Integration', title: 'Integration by Substitution', objectives: ['Use integration by substitution', 'Apply inverse of chain rule', 'Solve integrals using substitution'], order: 41 },
+    { section: 'A2 1: Integration', title: 'Integration by Parts', objectives: ['Use integration by parts', 'Apply inverse of product rule', 'Solve integrals by parts'], order: 42 },
+    { section: 'A2 1: Integration', title: 'Integration with Partial Fractions', objectives: ['Integrate using partial fractions', 'Decompose then integrate', 'Apply to rational functions'], order: 43 },
+    { section: 'A2 1: Integration', title: 'Solving Differential Equations', objectives: ['Solve first order equations with separable variables', 'Find particular solutions', 'Apply initial conditions'], order: 44 },
+    { section: 'A2 1: Integration', title: 'Differential Equations in Context', objectives: ['Interpret solution in context', 'Identify limitations of solution', 'Apply to real problems'], order: 45 },
+    { section: 'A2 1: Integration', title: 'Volumes of Revolution', objectives: ['Evaluate volume by rotation about x-axis', 'Use pi times integral of y squared dx', 'Calculate solid volumes'], order: 46 },
+
+    // A2 1: Numerical Methods
+    { section: 'A2 1: Numerical Methods', title: 'Locating Roots', objectives: ['Locate roots of f of x equals 0', 'Use sign changes of f of x', 'Apply to continuous functions'], order: 47 },
+    { section: 'A2 1: Numerical Methods', title: 'Iterative Methods', objectives: ['Solve equations using iterative methods', 'Apply Newton-Raphson method', 'Understand convergence'], order: 48 },
+    { section: 'A2 1: Numerical Methods', title: 'Trapezium Rule', objectives: ['Use trapezium rule for numerical integration', 'Approximate area under curve', 'Understand error and accuracy'], order: 49 },
+    { section: 'A2 1: Numerical Methods', title: 'Numerical Methods in Context', objectives: ['Use numerical methods to solve problems', 'Apply to real contexts', 'Understand when analytical solutions impossible'], order: 50 },
+
+    // A2 2: Applied Mathematics - Mechanics
+    { section: 'A2 2: Mechanics - Kinematics', title: 'Calculus in Kinematics', objectives: ['Use v equals ds over dt', 'Apply a equals dv over dt equals d squared s over dt squared', 'Use s equals integral of v dt and v equals integral of a dt'], order: 51 },
+    { section: 'A2 2: Mechanics - Kinematics', title: 'Vector Kinematics with Calculus', objectives: ['Use bold v equals d bold r over dt', 'Apply bold a equals d bold v over dt', 'Use vector calculus in 2D'], order: 52 },
+    { section: 'A2 2: Mechanics - Kinematics', title: 'Motion Under Gravity in 2D', objectives: ['Model motion under gravity using vectors', 'Apply to projectile problems', 'Solve for range, height and time'], order: 53 },
+    { section: 'A2 2: Mechanics - Kinematics', title: 'Projectile Problems', objectives: ['Solve problems involving projectiles', 'Apply constant acceleration under gravity', 'Use vector methods'], order: 54 },
+    { section: 'A2 2: Mechanics - Moments', title: 'Moments in Statics', objectives: ['Use moments in simple static contexts', 'Apply to rods and ladders', 'Solve hinged beam problems'], order: 55 },
+    { section: 'A2 2: Mechanics - Impulse', title: 'Impulse and Momentum', objectives: ['Use impulse and momentum', 'Apply impulse-momentum theorem', 'Solve impact problems'], order: 56 },
+    { section: 'A2 2: Mechanics - Impulse', title: 'Conservation of Momentum', objectives: ['Use principle of conservation of linear momentum', 'Solve direct collision problems', 'Apply to explosions'], order: 57 },
+
+    // A2 2: Statistics
+    { section: 'A2 2: Statistics - Probability', title: 'Conditional Probability', objectives: ['Use conditional probability', 'Apply tree diagrams, Venn diagrams and two-way tables', 'Solve conditional problems'], order: 58 },
+    { section: 'A2 2: Statistics - Probability', title: 'Conditional Probability Formula', objectives: ['Use P of A given B equals P of A intersection B over P of B', 'Apply conditional probability formula', 'Solve using formula'], order: 59 },
+    { section: 'A2 2: Statistics - Probability', title: 'Probability Modelling', objectives: ['Model with probability', 'Critique assumptions made', 'Consider effect of realistic assumptions'], order: 60 },
+    { section: 'A2 2: Statistics - Distributions', title: 'Normal Distribution', objectives: ['Use normal distribution as continuous probability distribution', 'Understand properties of normal curve', 'Apply to real data'], order: 61 },
+    { section: 'A2 2: Statistics - Distributions', title: 'Normal Probabilities', objectives: ['Find probabilities using normal distribution', 'Use tables or calculator', 'Apply standardisation'], order: 62 },
+    { section: 'A2 2: Statistics - Distributions', title: 'Selecting Distributions', objectives: ['Select appropriate probability distribution', 'Provide reasoning for choice', 'Recognize when binomial or normal inappropriate'], order: 63 },
+    { section: 'A2 2: Statistics - Hypothesis Testing', title: 'Hypothesis Testing Language', objectives: ['Use language of hypothesis testing', 'Understand null and alternative hypotheses', 'Define significance level and acceptance region'], order: 64 },
+    { section: 'A2 2: Statistics - Hypothesis Testing', title: 'Inference and Significance', objectives: ['Understand sample used for inference about population', 'Appreciate significance level meaning', 'Understand probability of incorrectly rejecting null'], order: 65 },
+    { section: 'A2 2: Statistics - Hypothesis Testing', title: 'Binomial Hypothesis Test', objectives: ['Conduct hypothesis test for binomial proportion', 'Interpret results in context', 'Apply to real situations'], order: 66 },
+    { section: 'A2 2: Statistics - Hypothesis Testing', title: 'Normal Mean Hypothesis Test', objectives: ['Conduct hypothesis test for mean of normal distribution', 'Use known, given or assumed variance', 'Interpret results in context'], order: 67 },
+    { section: 'A2 2: Statistics - Hypothesis Testing', title: 'Correlation Testing', objectives: ['Interpret correlation coefficient', 'Use given p-value or critical value', 'Test for significance'], order: 68 },
   ];
 }
