@@ -6,7 +6,7 @@ Deno.serve(async (req) => {
     const user = await base44.auth.me();
     
     if (!user || user.role !== 'admin') {
-      return Response.json({ error: 'Unauthorized - Admin access required' }, { status: 403 });
+      return Response.json({ error: 'Unauthorized - Admin only' }, { status: 403 });
     }
 
     // A-Level curriculum mapping based on CCEA specification
