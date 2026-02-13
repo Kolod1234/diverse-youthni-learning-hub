@@ -30,6 +30,10 @@ Deno.serve(async (req) => {
       lessonStructure = getBiologyASLessons();
     } else if (structureKey === 'biology_a2') {
       lessonStructure = getBiologyA2Lessons();
+    } else if (structureKey === 'chemistry_as') {
+      lessonStructure = getChemistryASLessons();
+    } else if (structureKey === 'chemistry_a2') {
+      lessonStructure = getChemistryA2Lessons();
     } else {
       return Response.json({ error: `No lesson structure found for ${structureKey}` }, { status: 400 });
     }
