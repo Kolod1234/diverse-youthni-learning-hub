@@ -114,7 +114,9 @@
     "@emotion/styled": "^11.11.0",
     "@mui/icons-material": "^5.15.0",
     "@fontsource/roboto": "^5.0.0",
-    "isomorphic-dompurify": "^1.11.0"
+    "isomorphic-dompurify": "^1.11.0",
+    "katex": "^0.16.9",
+    "react-katex": "^3.0.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.19.0",
