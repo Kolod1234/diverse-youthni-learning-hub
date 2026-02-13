@@ -27,14 +27,14 @@ Deno.serve(async (req) => {
     const randomSeed = Math.floor(Math.random() * 10000);
     const timestamp = Date.now();
     
-    const prompt = `You are an educational content creator. Based on the following lesson, create engaging interactive learning materials.
+    const prompt = `You are an A-level examination board content creator. Based on the following lesson, create rigorous A-level standard assessment materials.
 
 Lesson Title: ${lessonTitle}
 Lesson Description: ${lessonDescription}
 Learning Objectives:
 ${learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-CRITICAL: This is generation #${randomSeed} at ${timestamp}. Create COMPLETELY NEW and DIFFERENT questions from any previous generations. Use varied examples, different question phrasings, alternative perspectives, and diverse scenarios to cover ALL aspects of the topic comprehensively.
+CRITICAL: This is generation #${randomSeed} at ${timestamp}. Create COMPLETELY NEW and DIFFERENT questions from any previous generations. Use varied examples, different question phrasings, alternative perspectives, and diverse scenarios.
 
 Generate the following in valid JSON format:
 
@@ -44,26 +44,32 @@ Generate the following in valid JSON format:
   ],
   "quizQuestions": [
     {
-      "question": "question text",
-      "options": ["option1", "option2", "option3", "option4"],
+      "question": "question text with mathematical notation in LaTeX format where appropriate (e.g., $x^2$, $$E=mc^2$$, \\ce{H2O})",
+      "options": ["option A", "option B", "option C", "option D"],
       "correctAnswer": 0,
-      "explanation": "why this is correct"
+      "explanation": "detailed explanation with reasoning"
     }
   ],
   "flashCards": [
-    { "front": "question or term", "back": "answer or definition" }
+    { "front": "question or term (use LaTeX for math/science)", "back": "answer or definition (use LaTeX for math/science)" }
   ]
 }
 
-Requirements:
-- Create exactly 4 UNIQUE matching pairs (use different concepts each time)
-- Create exactly 5 FRESH quiz questions with varied approaches
-- Create exactly 10 NEW flashcards exploring different angles
-- Cover different aspects of the learning objectives each generation
-- Vary difficulty levels (easy, medium, hard)
-- Use real-world examples and practical applications
-- Never repeat the same questions or terms
-- Ensure educational value and accuracy`;
+STRICT A-LEVEL REQUIREMENTS:
+- Create exactly 6 matching pairs with A-level terminology
+- Create exactly 10 challenging quiz questions at A-level standard
+- Each quiz question MUST have exactly 4 options (A, B, C, D)
+- Distribute correct answers randomly across all 4 options (not just A or B)
+- Questions must require deep understanding, not just recall
+- Include questions requiring: analysis, evaluation, application of knowledge
+- Use mathematical notation with LaTeX where appropriate: $...$$ for inline, $$...$$ for display
+- For chemistry: use \\ce{...} for chemical formulas (e.g., \\ce{H2SO4})
+- For physics: include units, calculations, and equations
+- Create exactly 12 flashcards for key concepts
+- Make questions exam-style: clear, unambiguous, academically rigorous
+- Include real-world applications and problem-solving scenarios
+- Ensure plausible distractors (wrong answers that seem reasonable)
+- Vary difficulty: 3 challenging, 4 medium, 3 advanced questions`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -74,10 +80,10 @@ Requirements:
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are an expert educational content creator who specializes in creating VARIED and UNIQUE learning materials. Each generation must be completely different, exploring the topic from new angles with fresh examples and varied difficulty levels. Always respond with valid JSON only.' },
+          { role: 'system', content: 'You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: When providing 4 options, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Distribute correct answers evenly across all four positions. Always respond with valid JSON only.' },
           { role: 'user', content: prompt }
         ],
-        temperature: 1.0,
+        temperature: 0.9,
         response_format: { type: "json_object" }
       }),
     });
