@@ -183,7 +183,7 @@ Deno.serve(async (req) => {
 // Helper functions for other subjects
 function generateBiologyASLessons() {
   return [
-    // AS1: Molecules (12 lessons)
+    // AS1: Molecules (11 lessons)
     { section: 'AS1: Molecules', title: 'Water as a Biological Molecule', objectives: ['Demonstrate importance of water as solvent', 'Explain hydrogen bonding in water', 'Relate water properties to biological roles'], order: 1 },
     { section: 'AS1: Molecules', title: 'Inorganic Ions in Biology', objectives: ['Outline role of K⁺, Ca²⁺, Mg²⁺, Fe²⁺ ions', 'Explain role of HCO₃⁻, NO₃⁻, PO₄³⁻', 'Understand ions in compounds and buffering'], order: 2 },
     { section: 'AS1: Molecules', title: 'Carbohydrates - Monosaccharides and Disaccharides', objectives: ['Describe α-glucose, β-glucose, fructose structure', 'Explain condensation and hydrolysis reactions', 'Understand glycosidic bonds in maltose and sucrose'], order: 3 },
