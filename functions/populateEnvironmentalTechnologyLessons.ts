@@ -198,7 +198,7 @@ Deno.serve(async (req) => {
       });
     }
 
-    // Create lessons for each course
+    // Create lessons for each course using bulkCreate
     const allLessons = [
       { courseId: singleAwardAS.id, lessons: [...as1Lessons, ...as2Lessons] },
       { courseId: doubleAwardAS.id, lessons: [...as1Lessons, ...as2Lessons] },
@@ -209,6 +209,8 @@ Deno.serve(async (req) => {
     let createdCount = 0;
 
     for (const { courseId, lessons } of allLessons) {
+      const lessonsToCreate = [];
+      
       for (const lesson of lessons) {
         const existing = await base44.entities.Lesson.filter({
           course_id: courseId,
@@ -216,7 +218,7 @@ Deno.serve(async (req) => {
         });
 
         if (existing.length === 0) {
-          await base44.entities.Lesson.create({
+          lessonsToCreate.push({
             course_id: courseId,
             title: lesson.title,
             description: lesson.title,
@@ -230,8 +232,12 @@ Deno.serve(async (req) => {
               order: 1
             }]
           });
-          createdCount++;
         }
+      }
+
+      if (lessonsToCreate.length > 0) {
+        await base44.entities.Lesson.bulkCreate(lessonsToCreate);
+        createdCount += lessonsToCreate.length;
       }
     }
 
