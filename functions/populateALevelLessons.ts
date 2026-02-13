@@ -1156,10 +1156,74 @@ function getMathematicsASLessons() {
   ];
 }
 
-function getMathematicsA2Lessons() {
+function getLifeHealthSciencesASLessons() {
   return [
-    // A2 1: Pure Mathematics - Algebra and Functions
-    { section: 'A2 1: Algebra and Functions', title: 'Rational Expressions', objectives: ['Simplify rational expressions', 'Factorise and cancel', 'Perform algebraic division'], order: 1 },
+    // AS1: Human Body Systems and Health
+    { section: 'AS1: Cardiovascular System', title: 'Heart Structure and Function', objectives: ['Describe heart chambers and blood vessels', 'Explain cardiac cycle', 'Understand ECG and heart sounds'], order: 1 },
+    { section: 'AS1: Cardiovascular System', title: 'Blood Vessels and Circulation', objectives: ['Describe artery vein and capillary structure', 'Explain double circulation', 'Understand blood flow and regulation'], order: 2 },
+    { section: 'AS1: Respiratory System', title: 'Breathing and Gas Exchange', objectives: ['Describe respiratory system structure', 'Explain breathing mechanism', 'Understand alveolar gas exchange'], order: 3 },
+    { section: 'AS1: Respiratory System', title: 'Lung Function Tests', objectives: ['Measure vital capacity and FEV1', 'Interpret spirometry traces', 'Apply to respiratory health'], order: 4 },
+    { section: 'AS1: Nutrition', title: 'Balanced Diet and Metabolism', objectives: ['Understand macronutrients and micronutrients', 'Explain energy balance and BMI', 'Apply dietary guidelines'], order: 5 },
+    { section: 'AS1: Nutrition', title: 'Digestive System and Nutrient Absorption', objectives: ['Describe organs of digestion', 'Explain enzyme action in digestion', 'Understand nutrient absorption'], order: 6 },
+    { section: 'AS1: Hormones and Homeostasis', title: 'Endocrine System', objectives: ['Identify major glands and hormones', 'Explain hormone action', 'Understand hormone feedback'], order: 7 },
+    { section: 'AS1: Hormones and Homeostasis', title: 'Blood Glucose Regulation', objectives: ['Describe insulin and glucagon function', 'Explain blood glucose control', 'Understand diabetes type 1 and 2'], order: 8 },
+    { section: 'AS1: Immunity', title: 'Immune System Overview', objectives: ['Describe innate and adaptive immunity', 'Explain antibodies and antigens', 'Understand immune response'], order: 9 },
+    { section: 'AS1: Immunity', title: 'Vaccination and Disease Prevention', objectives: ['Explain vaccine function', 'Understand immunisation programmes', 'Apply to public health'], order: 10 },
+    { section: 'AS1: Nervous System', title: 'Nervous System Structure', objectives: ['Describe central and peripheral nervous system', 'Explain neurons and synapses', 'Understand neurotransmitters'], order: 11 },
+    { section: 'AS1: Nervous System', title: 'Sense Organs and Perception', objectives: ['Describe eye and ear structure', 'Explain sensory transduction', 'Understand sensory perception'], order: 12 },
+    { section: 'AS1: Exercise and Health', title: 'Physical Fitness and Health', objectives: ['Define cardiovascular fitness', 'Measure fitness indicators', 'Apply to health promotion'], order: 13 },
+    { section: 'AS1: Exercise and Health', title: 'Effects of Exercise on Body Systems', objectives: ['Explain exercise effects on cardiovascular system', 'Describe respiratory adaptations', 'Understand muscular changes'], order: 14 },
+    { section: 'AS1: Health and Disease', title: 'Infectious Diseases', objectives: ['Describe pathogenic organisms', 'Explain disease transmission', 'Understand prevention strategies'], order: 15 },
+    { section: 'AS1: Health and Disease', title: 'Non-Communicable Diseases', objectives: ['Describe cardiovascular disease and cancer', 'Explain risk factors', 'Understand prevention and treatment'], order: 16 },
+    { section: 'AS1: Lifestyle Factors', title: 'Smoking and Alcohol Effects', objectives: ['Explain harmful effects of smoking', 'Describe alcohol impacts on health', 'Understand prevention strategies'], order: 17 },
+    { section: 'AS1: Lifestyle Factors', title: 'Stress and Mental Health', objectives: ['Describe stress response', 'Explain mental health conditions', 'Apply stress management techniques'], order: 18 },
+    { section: 'AS1: Practical Skills', title: 'Measuring Health Indicators', objectives: ['Measure blood pressure and pulse', 'Calculate BMI', 'Evaluate health measurements'], order: 19 },
+    { section: 'AS1: Practical Skills', title: 'Investigating Body Functions', objectives: ['Perform practical investigations', 'Measure physiological parameters', 'Analyze health data'], order: 20 },
+  ];
+}
+
+function getLifeHealthSciencesA2Lessons() {
+  return [
+    // A2 1: Advanced Human Physiology
+    { section: 'A2 1: Advanced Physiology', title: 'Neural Control Systems', objectives: ['Explain reflex arcs and pathways', 'Understand brain structure and function', 'Describe central nervous system control'], order: 1 },
+    { section: 'A2 1: Advanced Physiology', title: 'Hormonal Regulation', objectives: ['Describe hormone action mechanisms', 'Explain second messenger systems', 'Understand hormone interactions'], order: 2 },
+    { section: 'A2 1: Advanced Physiology', title: 'Muscle Contraction Mechanism', objectives: ['Explain sliding filament model', 'Describe sarcomere structure', 'Understand calcium role in contraction'], order: 3 },
+    { section: 'A2 1: Advanced Physiology', title: 'Energy Supply in Muscle', objectives: ['Explain ATP production during exercise', 'Describe aerobic and anaerobic pathways', 'Understand lactate and fatigue'], order: 4 },
+    { section: 'A2 1: Immune Mechanisms', title: 'Adaptive Immunity', objectives: ['Describe T cells and B cells', 'Explain primary and secondary responses', 'Understand immunological memory'], order: 5 },
+    { section: 'A2 1: Immune Mechanisms', title: 'Immunity to Infection', objectives: ['Explain immunity to specific pathogens', 'Describe antibody types and functions', 'Apply to disease resistance'], order: 6 },
+    { section: 'A2 1: Cell Signalling', title: 'Cell Communication', objectives: ['Describe cellular signalling pathways', 'Explain receptor mechanisms', 'Understand signal transduction'], order: 7 },
+    { section: 'A2 1: Homeostasis', title: 'Thermoregulation', objectives: ['Explain heat production and loss', 'Describe temperature control mechanisms', 'Understand hypothalamic regulation'], order: 8 },
+    { section: 'A2 1: Homeostasis', title: 'Osmoregulation and Excretion', objectives: ['Describe kidney structure and function', 'Explain ultrafiltration and reabsorption', 'Understand ADH and water balance'], order: 9 },
+    { section: 'A2 1: Organ Systems Integration', title: 'Respiratory-Circulatory Integration', objectives: ['Explain gas transport in blood', 'Describe oxygen-haemoglobin binding', 'Understand ventilation-perfusion matching'], order: 10 },
+    { section: 'A2 1: Organ Systems Integration', title: 'Digestive-Circulatory Integration', objectives: ['Explain nutrient absorption mechanisms', 'Describe nutrient transport in blood', 'Understand metabolic distribution'], order: 11 },
+    { section: 'A2 1: Disease Mechanisms', title: 'Pathophysiology of Major Diseases', objectives: ['Explain disease mechanisms', 'Describe organ dysfunction', 'Understand treatment approaches'], order: 12 },
+    { section: 'A2 1: Pharmacology', title: 'Drug Action and Therapeutics', objectives: ['Describe drug mechanisms of action', 'Explain drug interactions', 'Understand therapeutic application'], order: 13 },
+    { section: 'A2 1: Research Methods', title: 'Epidemiology and Research', objectives: ['Understand epidemiological studies', 'Describe research methodology', 'Apply statistical analysis to health data'], order: 14 },
+    { section: 'A2 1: Public Health', title: 'Health Promotion and Disease Prevention', objectives: ['Explain health promotion strategies', 'Describe disease prevention programmes', 'Apply to public health policy'], order: 15 },
+
+    // A2 2: Medical Science and Applied Topics
+    { section: 'A2 2: Medical Conditions', title: 'Cardiovascular Disease Pathophysiology', objectives: ['Explain atherosclerosis development', 'Describe heart attack and stroke', 'Understand hypertension and treatment'], order: 16 },
+    { section: 'A2 2: Medical Conditions', title: 'Cancer Biology and Treatment', objectives: ['Explain cancer development', 'Describe oncogenes and tumor suppressors', 'Understand cancer treatment options'], order: 17 },
+    { section: 'A2 2: Respiratory Conditions', title: 'Asthma and Obstructive Diseases', objectives: ['Explain asthma pathophysiology', 'Describe COPD and emphysema', 'Understand management strategies'], order: 18 },
+    { section: 'A2 2: Metabolic Disorders', title: 'Diabetes Mellitus Type 2', objectives: ['Explain insulin resistance', 'Describe metabolic complications', 'Understand prevention and management'], order: 19 },
+    { section: 'A2 2: Metabolic Disorders', title: 'Obesity and Weight Management', objectives: ['Explain metabolic basis of obesity', 'Describe health consequences', 'Apply nutritional interventions'], order: 20 },
+    { section: 'A2 2: Nervous System Disorders', title: 'Neurodegenerative Diseases', objectives: ['Describe Alzheimer and Parkinson diseases', 'Explain neuronal degeneration', 'Understand therapeutic approaches'], order: 21 },
+    { section: 'A2 2: Mental Health', title: 'Mental Disorders and Treatment', objectives: ['Explain depression and anxiety disorders', 'Describe psychotic disorders', 'Understand psychiatric treatments'], order: 22 },
+    { section: 'A2 2: Genetic Diseases', title: 'Genetic Disorders and Inheritance', objectives: ['Describe genetic disease mechanisms', 'Explain inheritance patterns', 'Apply genetic counselling principles'], order: 23 },
+    { section: 'A2 2: Reproductive Health', title: 'Reproduction and Development', objectives: ['Describe reproductive systems', 'Explain fertilisation and implantation', 'Understand fetal development'], order: 24 },
+    { section: 'A2 2: Reproductive Health', title: 'Contraception and STI Prevention', objectives: ['Describe contraceptive methods', 'Explain STI transmission and prevention', 'Apply sexual health strategies'], order: 25 },
+    { section: 'A2 2: Pharmacology', title: 'Drug Development and Clinical Trials', objectives: ['Explain drug discovery process', 'Describe clinical trial phases', 'Understand regulatory approval'], order: 26 },
+    { section: 'A2 2: Toxicology', title: 'Toxins and Poisons in Health', objectives: ['Describe toxic substances', 'Explain dose-response relationships', 'Understand antidotes and treatments'], order: 27 },
+    { section: 'A2 2: Sports Medicine', title: 'Exercise Physiology and Injury', objectives: ['Explain exercise adaptations', 'Describe sports injuries', 'Understand rehabilitation strategies'], order: 28 },
+    { section: 'A2 2: Environmental Health', title: 'Environmental Hazards and Health', objectives: ['Describe environmental pollutants', 'Explain health impacts', 'Apply environmental protection strategies'], order: 29 },
+    { section: 'A2 2: Healthcare Systems', title: 'Healthcare Delivery and Ethics', objectives: ['Explain healthcare systems', 'Describe healthcare ethics', 'Apply to clinical decision-making'], order: 30 },
+  ];
+}
+
+function getMathematicsA2Lessons() {
+   return [
+     // A2 1: Pure Mathematics - Algebra and Functions
+     { section: 'A2 1: Algebra and Functions', title: 'Rational Expressions', objectives: ['Simplify rational expressions', 'Factorise and cancel', 'Perform algebraic division'], order: 1 },
     { section: 'A2 1: Algebra and Functions', title: 'Functions Definition', objectives: ['Use definition of function', 'Understand mapping from domain to range', 'Apply function notation'], order: 2 },
     { section: 'A2 1: Algebra and Functions', title: 'Domain and Range', objectives: ['Use terms domain and range', 'Determine domain and range from functions', 'Apply restrictions'], order: 3 },
     { section: 'A2 1: Algebra and Functions', title: 'Composite Functions', objectives: ['Understand and use composite functions', 'Calculate fg of x and gf of x', 'Apply function composition'], order: 4 },
