@@ -183,43 +183,143 @@ Deno.serve(async (req) => {
 // Helper functions for other subjects
 function generateBiologyASLessons() {
   return [
-    // AS1: Molecules and Cells (18 lessons)
-    { section: 'AS1: Biological Molecules', title: 'Water and Its Properties', objectives: ['Describe structure of water molecule', 'Explain hydrogen bonding', 'Relate properties to biological functions'], order: 1 },
-    { section: 'AS1: Biological Molecules', title: 'Carbohydrates - Monosaccharides', objectives: ['Define monosaccharides', 'Identify glucose, fructose, galactose', 'Understand isomerism'], order: 2 },
-    { section: 'AS1: Biological Molecules', title: 'Carbohydrates - Disaccharides', objectives: ['Explain condensation reactions', 'Form glycosidic bonds', 'Identify maltose, sucrose, lactose'], order: 3 },
-    { section: 'AS1: Biological Molecules', title: 'Carbohydrates - Polysaccharides', objectives: ['Describe starch structure and function', 'Explain glycogen structure', 'Compare cellulose structure'], order: 4 },
-    { section: 'AS1: Biological Molecules', title: 'Lipids - Triglycerides', objectives: ['Describe triglyceride structure', 'Explain ester bond formation', 'Compare saturated and unsaturated fats'], order: 5 },
-    { section: 'AS1: Biological Molecules', title: 'Lipids - Phospholipids', objectives: ['Describe phospholipid structure', 'Explain amphipathic nature', 'Relate to membrane formation'], order: 6 },
-    { section: 'AS1: Biological Molecules', title: 'Proteins - Amino Acids', objectives: ['Describe amino acid structure', 'Explain peptide bond formation', 'Identify 20 common amino acids'], order: 7 },
-    { section: 'AS1: Biological Molecules', title: 'Protein Structure', objectives: ['Describe primary structure', 'Explain secondary structure', 'Understand tertiary and quaternary'], order: 8 },
-    { section: 'AS1: Biological Molecules', title: 'Enzymes - Structure and Function', objectives: ['Explain enzyme specificity', 'Describe active site', 'Understand induced fit model'], order: 9 },
-    { section: 'AS1: Biological Molecules', title: 'Enzyme Action and Kinetics', objectives: ['Investigate factors affecting enzyme activity', 'Analyze rate of reaction', 'Interpret enzyme kinetics graphs'], order: 10 },
+    // AS1: Molecules (12 lessons)
+    { section: 'AS1: Molecules', title: 'Water as a Biological Molecule', objectives: ['Demonstrate importance of water as solvent', 'Explain hydrogen bonding in water', 'Relate water properties to biological roles'], order: 1 },
+    { section: 'AS1: Molecules', title: 'Inorganic Ions in Biology', objectives: ['Outline role of K⁺, Ca²⁺, Mg²⁺, Fe²⁺ ions', 'Explain role of HCO₃⁻, NO₃⁻, PO₄³⁻', 'Understand ions in compounds and buffering'], order: 2 },
+    { section: 'AS1: Molecules', title: 'Carbohydrates - Monosaccharides and Disaccharides', objectives: ['Describe α-glucose, β-glucose, fructose structure', 'Explain condensation and hydrolysis reactions', 'Understand glycosidic bonds in maltose and sucrose'], order: 3 },
+    { section: 'AS1: Molecules', title: 'Carbohydrates - Polysaccharides', objectives: ['Describe starch and glycogen as storage polymers', 'Explain cellulose as structural polymer of β-glucose', 'Understand pentoses in nucleic acids (ribose, deoxyribose)'], order: 4 },
+    { section: 'AS1: Molecules', title: 'Lipids - Structure and Function', objectives: ['Describe triglyceride structure as glycerol + fatty acids', 'Compare saturated and unsaturated fatty acids', 'Explain phospholipid structure and membrane role'], order: 5 },
+    { section: 'AS1: Molecules', title: 'Proteins - Amino Acids and Structure', objectives: ['Describe general amino acid structure', 'Explain primary, secondary, tertiary, quaternary structure', 'Understand peptide bonds and H-bonds'], order: 6 },
+    { section: 'AS1: Molecules', title: 'Proteins - Fibrous and Globular', objectives: ['Compare collagen (fibrous) and enzymes (globular)', 'Explain conjugated proteins (glycoprotein, haemoglobin)', 'Understand prions as disease-causing proteins'], order: 7 },
+    { section: 'AS1: Molecules', title: 'Nucleic Acids - DNA and RNA', objectives: ['Describe nucleotide structure (pentose, base, phosphate)', 'Explain DNA helical structure with base pairing', 'Compare DNA and RNA structure'], order: 8 },
+    { section: 'AS1: Molecules', title: 'DNA Replication', objectives: ['Explain semi-conservative replication', 'Understand role of DNA helicase and DNA polymerase', 'Describe Meselson-Stahl experiment'], order: 9 },
+    { section: 'AS1: Molecules', title: 'Biochemical Tests', objectives: ['Carry out iodine test for starch', 'Use Benedict's test for reducing sugars', 'Apply Biuret test for proteins'], order: 10 },
+    { section: 'AS1: Molecules', title: 'Chromatography of Amino Acids', objectives: ['Prepare and run paper chromatogram', 'Develop chromatogram correctly', 'Calculate Rf values for amino acids'], order: 11 },
     
-    { section: 'AS1: Cell Structure', title: 'Prokaryotic Cells', objectives: ['Describe bacterial cell structure', 'Identify key organelles', 'Compare to eukaryotic cells'], order: 11 },
-    { section: 'AS1: Cell Structure', title: 'Eukaryotic Cells - Animal', objectives: ['Identify organelles in animal cells', 'Describe functions of organelles', 'Use microscopy techniques'], order: 12 },
-    { section: 'AS1: Cell Structure', title: 'Eukaryotic Cells - Plant', objectives: ['Identify plant cell structures', 'Explain chloroplast and cell wall', 'Compare to animal cells'], order: 13 },
-    { section: 'AS1: Cell Structure', title: 'Cell Membranes', objectives: ['Describe fluid mosaic model', 'Explain membrane proteins', 'Understand membrane permeability'], order: 14 },
-    { section: 'AS1: Cell Structure', title: 'Transport Across Membranes', objectives: ['Explain diffusion and osmosis', 'Describe active transport', 'Understand facilitated diffusion'], order: 15 },
-    { section: 'AS1: Cell Structure', title: 'Cell Division - Mitosis', objectives: ['Describe stages of mitosis', 'Explain chromosome behavior', 'Understand significance'], order: 16 },
-    { section: 'AS1: Cell Structure', title: 'Cell Division - Meiosis', objectives: ['Describe stages of meiosis', 'Explain genetic variation', 'Compare to mitosis'], order: 17 },
-    { section: 'AS1: Cell Structure', title: 'Cell Cycle and Cancer', objectives: ['Describe cell cycle phases', 'Explain checkpoints', 'Understand cancer development'], order: 18 },
-
-    // AS2: Organisms and Biodiversity (15 lessons)
-    { section: 'AS2: Gas Exchange', title: 'Gas Exchange in Humans', objectives: ['Describe respiratory system structure', 'Explain ventilation mechanism', 'Understand gas exchange at alveoli'], order: 19 },
-    { section: 'AS2: Gas Exchange', title: 'Gas Exchange in Plants', objectives: ['Describe leaf structure', 'Explain stomatal function', 'Understand adaptations'], order: 20 },
-    { section: 'AS2: Circulation', title: 'Blood and Blood Vessels', objectives: ['Describe components of blood', 'Explain structure of arteries, veins, capillaries', 'Understand blood functions'], order: 21 },
-    { section: 'AS2: Circulation', title: 'The Heart', objectives: ['Describe heart structure', 'Explain cardiac cycle', 'Understand control of heart rate'], order: 22 },
-    { section: 'AS2: Digestion', title: 'Digestive System', objectives: ['Describe digestive tract structure', 'Explain enzyme action in digestion', 'Understand absorption'], order: 23 },
-    { section: 'AS2: Classification', title: 'Classification Systems', objectives: ['Understand taxonomic hierarchy', 'Apply binomial nomenclature', 'Compare classification systems'], order: 24 },
-    { section: 'AS2: Classification', title: 'Biodiversity', objectives: ['Calculate biodiversity indices', 'Understand species richness', 'Explain importance of biodiversity'], order: 25 },
-    { section: 'AS2: Ecology', title: 'Ecosystems and Energy Flow', objectives: ['Define ecosystem components', 'Explain trophic levels', 'Understand energy transfer'], order: 26 },
-    { section: 'AS2: Ecology', title: 'Nutrient Cycles', objectives: ['Describe carbon cycle', 'Explain nitrogen cycle', 'Understand human impacts'], order: 27 },
-    { section: 'AS2: Ecology', title: 'Population Ecology', objectives: ['Analyze population growth curves', 'Understand limiting factors', 'Apply sampling techniques'], order: 28 },
-    { section: 'AS2: Evolution', title: 'Natural Selection', objectives: ['Explain Darwin\'s theory', 'Provide evidence for evolution', 'Understand adaptation'], order: 29 },
-    { section: 'AS2: Evolution', title: 'Speciation', objectives: ['Define species', 'Explain speciation mechanisms', 'Understand reproductive isolation'], order: 30 },
-    { section: 'AS2: Genetics', title: 'DNA Structure and Replication', objectives: ['Describe DNA structure', 'Explain semi-conservative replication', 'Understand DNA polymerase'], order: 31 },
-    { section: 'AS2: Genetics', title: 'Protein Synthesis', objectives: ['Explain transcription', 'Describe translation', 'Understand genetic code'], order: 32 },
-    { section: 'AS2: Genetics', title: 'Gene Expression', objectives: ['Understand gene regulation', 'Explain epigenetics', 'Describe mutations'], order: 33 },
+    // AS1: Enzymes (6 lessons)
+    { section: 'AS1: Enzymes', title: 'Enzyme Structure and Active Site', objectives: ['Describe enzymes as globular proteins', 'Explain active site specificity', 'Understand role of cofactors and coenzymes'], order: 12 },
+    { section: 'AS1: Enzymes', title: 'Enzyme Action - Lock and Key vs Induced Fit', objectives: ['Explain lock and key hypothesis', 'Understand induced-fit hypothesis', 'Describe enzyme-substrate complex formation'], order: 13 },
+    { section: 'AS1: Enzymes', title: 'Factors Affecting Enzyme Activity', objectives: ['Investigate effect of temperature on enzymes', 'Analyze pH effects on enzyme activity', 'Understand substrate and enzyme concentration effects'], order: 14 },
+    { section: 'AS1: Enzymes', title: 'Enzyme Inhibition', objectives: ['Explain competitive inhibition', 'Describe non-competitive inhibition', 'Apply inhibitors as therapeutic drugs'], order: 15 },
+    { section: 'AS1: Enzymes', title: 'Enzymes as Biomarkers', objectives: ['Understand enzymes in disease processes', 'Explain elastase in respiratory infections', 'Apply enzyme detection in diagnosis'], order: 16 },
+    { section: 'AS1: Enzymes', title: 'Immobilised Enzymes', objectives: ['Describe methods of enzyme immobilisation', 'Explain benefits in biotechnology', 'Use biosensors (glucose strips, pregnancy tests)'], order: 17 },
+    
+    // AS1: Viruses (2 lessons)
+    { section: 'AS1: Viruses', title: 'Virus Structure - Bacteriophages and HIV', objectives: ['Describe bacteriophage structure (DNA + protein coat)', 'Explain HIV structure (RNA, protein, lipid bilayer, glycoprotein)', 'Understand HIV as retrovirus with reverse transcriptase'], order: 18 },
+    { section: 'AS1: Viruses', title: 'Viral Replication', objectives: ['Understand phages invade and destroy bacteria', 'Explain HIV invasion of helper T-cells', 'Describe viral replication in host cells'], order: 19 },
+    
+    // AS1: Cells (12 lessons)
+    { section: 'AS1: Cells', title: 'Prokaryotic vs Eukaryotic Cells', objectives: ['Compare prokaryotic cell structure (bacteria)', 'Describe eukaryotic cell features', 'Identify naked circular DNA vs chromosomes'], order: 20 },
+    { section: 'AS1: Cells', title: 'Membrane Structure - Fluid Mosaic Model', objectives: ['Describe phospholipid bilayer', 'Explain intrinsic and extrinsic proteins', 'Understand glycocalyx, glycoproteins, glycolipids'], order: 21 },
+    { section: 'AS1: Cells', title: 'Membrane Function', objectives: ['Explain proteins as carriers and channels', 'Understand recognition features', 'Describe cholesterol role in membrane stability'], order: 22 },
+    { section: 'AS1: Cells', title: 'Cell Organelles - Mitochondria and Chloroplasts', objectives: ['Describe mitochondria (envelope, cristae, matrix)', 'Explain chloroplast structure (grana, stroma, thylakoids)', 'Understand double membrane organelles'], order: 23 },
+    { section: 'AS1: Cells', title: 'Cell Organelles - ER, Ribosomes, Golgi', objectives: ['Describe rough ER with ribosomes', 'Explain smooth ER and Golgi apparatus', 'Understand ribosome role in protein synthesis'], order: 24 },
+    { section: 'AS1: Cells', title: 'Cell Organelles - Lysosomes and Cytoskeleton', objectives: ['Explain lysosome function', 'Describe microtubules, centrioles, spindle', 'Understand plasmodesmata in plant cells'], order: 25 },
+    { section: 'AS1: Cells', title: 'Nuclear Structure', objectives: ['Describe chromosomes (DNA + histones)', 'Explain nucleolus and rRNA coding', 'Understand nuclear envelope with pores'], order: 26 },
+    { section: 'AS1: Cells', title: 'Plant, Fungal and Animal Cells', objectives: ['Compare plant cells (cell wall, chloroplasts, vacuole)', 'Describe fungal cells (chitin wall, multinucleate)', 'Identify animal cell features (centrioles, no wall)'], order: 27 },
+    { section: 'AS1: Cells', title: 'Microscopy Techniques', objectives: ['Use light microscope effectively', 'Understand TEM vs SEM', 'Explain magnification vs resolution'], order: 28 },
+    { section: 'AS1: Cells', title: 'Cell Fractionation', objectives: ['Demonstrate homogenisation technique', 'Use centrifugation to separate organelles', 'Understand differential centrifugation'], order: 29 },
+    { section: 'AS1: Cells', title: 'Microscopy Practical Skills', objectives: ['Examine photomicrographs and electron micrographs', 'Draw cells and calculate magnification', 'Use graticule and stage micrometer'], order: 30 },
+    { section: 'AS1: Cells', title: 'Staining and Measurement', objectives: ['Stain tissues (iodine, methylene blue)', 'Calculate true size in μm', 'Measure cell length accurately'], order: 31 },
+    
+    // AS1: Cell Physiology (4 lessons)
+    { section: 'AS1: Cell Physiology', title: 'Diffusion and Osmosis', objectives: ['Explain diffusion across membranes', 'Understand osmosis and water potential (ψ)', 'Calculate ψ_cell = ψ_s + ψ_p'], order: 32 },
+    { section: 'AS1: Cell Physiology', title: 'Water Relations in Cells', objectives: ['Describe lysis and crenation in animal cells', 'Explain turgor, plasmolysis in plant cells', 'Understand incipient plasmolysis'], order: 33 },
+    { section: 'AS1: Cell Physiology', title: 'Facilitated Diffusion and Active Transport', objectives: ['Explain facilitated diffusion via proteins', 'Describe active transport using carriers and ATP', 'Understand endocytosis and exocytosis'], order: 34 },
+    { section: 'AS1: Cell Physiology', title: 'Membrane Permeability', objectives: ['Explain fat-soluble substance movement', 'Describe water movement through bilayer', 'Understand hydrophilic channels for polar molecules'], order: 35 },
+    
+    // AS1: Practical - Water Potential (2 lessons)
+    { section: 'AS1: Practical', title: 'Measuring Water Potential - Weighing Method', objectives: ['Use potato tissue in different solutions', 'Calculate percentage change in mass', 'Determine average water potential from graph'], order: 36 },
+    { section: 'AS1: Practical', title: 'Measuring Solute Potential - Plasmolysis', objectives: ['Use onion epidermis in solutions', 'Calculate percentage plasmolysis', 'Determine average solute potential at 50% plasmolysis'], order: 37 },
+    
+    // AS1: Continuity of Cells (6 lessons)
+    { section: 'AS1: Continuity of Cells', title: 'The Cell Cycle - Interphase', objectives: ['Describe G₁, S, G₂ phases', 'Explain DNA replication in S phase', 'Understand G₀ resting state'], order: 38 },
+    { section: 'AS1: Continuity of Cells', title: 'Mitosis - Nuclear Division', objectives: ['Describe prophase, metaphase, anaphase, telophase', 'Explain chromosome behavior during mitosis', 'Understand significance in genetic constancy'], order: 39 },
+    { section: 'AS1: Continuity of Cells', title: 'Cytokinesis and Cancer', objectives: ['Compare cytokinesis in animal vs plant cells', 'Explain cell cycle checkpoints', 'Understand cancer and loss of control'], order: 40 },
+    { section: 'AS1: Continuity of Cells', title: 'Anticancer Drugs', objectives: ['Describe vincristine (microtubule inhibitor)', 'Explain 5-Fluorouracil (S-phase inhibitor)', 'Understand drug action on cell cycle'], order: 41 },
+    { section: 'AS1: Continuity of Cells', title: 'Chromosome Number - Haploidy and Diploidy', objectives: ['Define haploid (n) and diploid (2n)', 'Identify chromosomes in photomicrographs', 'Analyze human karyotype'], order: 42 },
+    { section: 'AS1: Continuity of Cells', title: 'Meiosis and Genetic Variation', objectives: ['Describe meiosis I and meiosis II stages', 'Explain crossing-over and chiasma formation', 'Understand independent assortment'], order: 43 },
+    
+    // AS1: Practical - Mitosis (1 lesson)
+    { section: 'AS1: Practical', title: 'Root Tip Squash and Mitosis Observation', objectives: ['Prepare and stain root tip squashes', 'Recognize chromosomes at different stages', 'Identify mitosis stages in slides'], order: 44 },
+    
+    // AS1: Tissues and Organs (6 lessons)
+    { section: 'AS1: Tissues and Organs', title: 'Tissues and Organs Defined', objectives: ['Define tissue as cells with same function', 'Explain organ as grouped tissues', 'Understand specialisation of cells'], order: 45 },
+    { section: 'AS1: Tissues and Organs', title: 'Ileum Structure - Tissue Layers', objectives: ['Identify mucosa, submucosa, muscularis', 'Describe serosa protective layer', 'Understand tissue organization'], order: 46 },
+    { section: 'AS1: Tissues and Organs', title: 'Ileum - Absorption Adaptations', objectives: ['Describe villi and microvilli', 'Explain crypts of Lieberkühn and Paneth cells', 'Understand blood capillaries and lacteals'], order: 47 },
+    { section: 'AS1: Tissues and Organs', title: 'Ileum - Absorption Mechanisms', objectives: ['Explain diffusion, active transport, pinocytosis', 'Describe amino acid and monosaccharide absorption', 'Understand fat absorption into lacteals'], order: 48 },
+    { section: 'AS1: Tissues and Organs', title: 'Leaf Structure - Mesophytic Leaf', objectives: ['Identify upper/lower epidermis, palisade, spongy mesophyll', 'Describe xylem and phloem in veins', 'Explain stomata and guard cells'], order: 49 },
+    { section: 'AS1: Tissues and Organs', title: 'Leaf Adaptations', objectives: ['Explain waxy cuticle for water conservation', 'Understand palisade arrangement for photosynthesis', 'Describe gas exchange via stomata'], order: 50 },
+    
+    // AS1: Practical - Tissues (1 lesson)
+    { section: 'AS1: Practical', title: 'Examining Ileum and Leaf Sections', objectives: ['Identify ileum structures under microscope', 'Recognize leaf tissues in sections', 'Draw accurate block diagrams'], order: 51 },
+    
+    // AS2: Transport - Principles (5 lessons)
+    { section: 'AS2: Transport Principles', title: 'Surface Area to Volume Ratio', objectives: ['Explain SA:V relationship with organism size', 'Understand metabolic demand vs supply', 'Compare small vs large organisms'], order: 52 },
+    { section: 'AS2: Transport Principles', title: 'Features of Exchange Surfaces', objectives: ['Describe methods to increase surface area', 'Explain thin separating surfaces', 'Understand concentration gradients'], order: 53 },
+    { section: 'AS2: Transport Principles', title: 'Mass Transport Systems', objectives: ['Explain need for mass transport', 'Describe xylem water transport', 'Understand phloem translocation'], order: 54 },
+    { section: 'AS2: Transport Principles', title: 'Gas Exchange - Fick's Law', objectives: ['Apply Fick's law to gas exchange', 'Understand factors affecting diffusion rate', 'Calculate diffusion rates'], order: 55 },
+    { section: 'AS2: Transport Principles', title: 'Gas Exchange in Plants', objectives: ['Explain O₂ and CO₂ exchange', 'Understand compensation point', 'Describe mesophyll as exchange surface'], order: 56 },
+    
+    // AS2: Gas Exchange Mammals (3 lessons)
+    { section: 'AS2: Gas Exchange Mammals', title: 'Mammalian Gas Exchange Surface', objectives: ['Describe alveoli structure', 'Explain thin respiratory surface', 'Understand surfactant role'], order: 57 },
+    { section: 'AS2: Gas Exchange Mammals', title: 'Breathing System Structure', objectives: ['Identify trachea, bronchi, bronchioles, alveoli', 'Describe intercostal muscles and diaphragm', 'Understand breathing mechanism'], order: 58 },
+    { section: 'AS2: Gas Exchange Mammals', title: 'Effects of Smoking', objectives: ['Explain cilia damage from smoking', 'Describe bronchitis and emphysema', 'Understand lung cancer risk'], order: 59 },
+    
+    // AS2: Practical - Respirometer (1 lesson)
+    { section: 'AS2: Practical', title: 'Using a Respirometer', objectives: ['Measure O₂ consumption with KOH', 'Calculate CO₂ production without KOH', 'Determine net gas exchange'], order: 60 },
+    
+    // AS2: Transport in Plants (8 lessons)
+    { section: 'AS2: Plant Transport', title: 'Plant Tissues - Xylem and Phloem', objectives: ['Describe xylem vessel structure', 'Explain phloem sieve tubes and companion cells', 'Identify protoxylem and metaxylem'], order: 61 },
+    { section: 'AS2: Plant Transport', title: 'Root Hair Uptake', objectives: ['Explain water uptake via osmosis', 'Describe ion uptake via active transport', 'Understand root hair adaptations'], order: 62 },
+    { section: 'AS2: Plant Transport', title: 'Apoplast and Symplast Pathways', objectives: ['Describe apoplast pathway (cell walls)', 'Explain symplast pathway (plasmodesmata)', 'Understand endodermis forcing symplast route'], order: 63 },
+    { section: 'AS2: Plant Transport', title: 'Transpiration and Factors', objectives: ['Explain stomata as main transpiration route', 'Describe internal factors (surface area, density, cuticle)', 'Understand external factors (light, wind, temperature)'], order: 64 },
+    { section: 'AS2: Plant Transport', title: 'Water Movement in Xylem', objectives: ['Explain cohesion-tension theory', 'Describe transpiration stream', 'Understand root pressure hypothesis'], order: 65 },
+    { section: 'AS2: Plant Transport', title: 'Translocation in Phloem', objectives: ['Understand two-way flow in phloem', 'Explain energy requirement', 'Provide evidence for translocation'], order: 66 },
+    { section: 'AS2: Plant Transport', title: 'Xerophytes - Adaptations', objectives: ['Describe leaf curvature and reduced area', 'Explain sunken stomata and hairs', 'Understand succulent tissue and spines'], order: 67 },
+    { section: 'AS2: Plant Transport', title: 'Hydrophytes - Adaptations', objectives: ['Explain stomata on upper surface', 'Describe aerenchyma tissue', 'Understand adaptations for aquatic life'], order: 68 },
+    
+    // AS2: Circulatory System (10 lessons)
+    { section: 'AS2: Circulation', title: 'Layout of Cardiovascular System', objectives: ['Describe double circulation', 'Identify major thoracic and abdominal vessels', 'Understand pulmonary and systemic circuits'], order: 69 },
+    { section: 'AS2: Circulation', title: 'Blood Vessels - Arteries and Veins', objectives: ['Compare artery and vein structure', 'Explain elastic fibres in arteries', 'Understand valves and large lumen in veins'], order: 70 },
+    { section: 'AS2: Circulation', title: 'Capillaries and Atherosclerosis', objectives: ['Describe capillary squamous endothelium', 'Explain atherosclerosis development', 'Understand atheroma formation'], order: 71 },
+    { section: 'AS2: Circulation', title: 'Heart Structure', objectives: ['Identify atria, ventricles, septa', 'Describe AV valves (tricuspid, bicuspid)', 'Explain chordae tendinae and papillary muscles'], order: 72 },
+    { section: 'AS2: Circulation', title: 'Cardiac Cycle', objectives: ['Describe diastole, atrial systole, ventricular systole', 'Explain blood flow along pressure gradients', 'Understand valve operation'], order: 73 },
+    { section: 'AS2: Circulation', title: 'Cardiac Control', objectives: ['Explain myogenic stimulation', 'Describe SA node, AV node, Bundle of His', 'Understand Purkinje fibres'], order: 74 },
+    { section: 'AS2: Circulation', title: 'Heart Sounds and ECG', objectives: ['Understand heart sounds', 'Interpret ECG traces', 'Explain angiography for diagnosis'], order: 75 },
+    { section: 'AS2: Practical', title: 'Heart Dissection', objectives: ['Dissect mammalian heart', 'Identify chambers and valves', 'Recognize major blood vessels'], order: 76 },
+    { section: 'AS2: Circulation', title: 'Blood Composition', objectives: ['Describe red blood cell adaptations', 'Identify polymorphs, monocytes, lymphocytes', 'Explain plasma components'], order: 77 },
+    { section: 'AS2: Circulation', title: 'Blood Clotting', objectives: ['Describe platelet role', 'Explain prothrombin to thrombin conversion', 'Understand fibrinogen to fibrin formation'], order: 78 },
+    
+    // AS2: Haemoglobin (5 lessons)
+    { section: 'AS2: Haemoglobin', title: 'Haemoglobin Structure', objectives: ['Describe conjugated protein structure', 'Explain haem groups with Fe²⁺', 'Understand four O₂ binding sites'], order: 79 },
+    { section: 'AS2: Haemoglobin', title: 'Oxygen Dissociation Curve', objectives: ['Explain loading at high pO₂', 'Describe unloading at low pO₂', 'Understand cooperative binding'], order: 80 },
+    { section: 'AS2: Haemoglobin', title: 'Bohr Effect', objectives: ['Explain right shift with increased CO₂/temperature', 'Understand increased O₂ release to tissues', 'Describe physiological advantage'], order: 81 },
+    { section: 'AS2: Haemoglobin', title: 'Myoglobin', objectives: ['Compare myoglobin and haemoglobin affinity', 'Explain left-shifted dissociation curve', 'Understand aerobic respiration in muscle'], order: 82 },
+    { section: 'AS2: Haemoglobin', title: 'Altitude Effects', objectives: ['Explain lower pO₂ at altitude', 'Describe haemoglobin adaptation', 'Understand increased RBC production'], order: 83 },
+    
+    // AS2: Adaptation (2 lessons)
+    { section: 'AS2: Adaptation', title: 'Organism Adaptations', objectives: ['Define behavioural, physiological, morphological adaptations', 'Study organisms in habitat', 'Apply xerophytic and hydrophytic examples'], order: 84 },
+    { section: 'AS2: Adaptation', title: 'Ecological Factors', objectives: ['Explain climatic factors (temperature, water, light)', 'Describe edaphic factors (pH, nutrients, aeration)', 'Understand biotic factors and ecological niche'], order: 85 },
+    
+    // AS2: Practical - Field Work (1 lesson)
+    { section: 'AS2: Practical', title: 'Sampling Techniques', objectives: ['Use quadrats, pin frames, pitfall traps', 'Estimate abundance, density, frequency', 'Measure abiotic and biotic factors'], order: 86 },
+    
+    // AS2: Biodiversity (8 lessons)
+    { section: 'AS2: Biodiversity', title: 'Biochemical Basis of Life', objectives: ['Understand all organisms contain same biochemicals', 'Identify carbohydrates, lipids, nucleic acids, proteins', 'Explain universal biochemistry'], order: 87 },
+    { section: 'AS2: Biodiversity', title: 'Levels of Biodiversity', objectives: ['Define genetic diversity', 'Explain species diversity', 'Understand ecosystem diversity'], order: 88 },
+    { section: 'AS2: Biodiversity', title: 'Measuring Biodiversity - Simpson's Index', objectives: ['Calculate Simpson's index D', 'Use formula D = (N(N-1))/(Σn(n-1))', 'Apply to percentage cover or count data'], order: 89 },
+    { section: 'AS2: Biodiversity', title: 'Taxonomy Principles', objectives: ['Apply binomial nomenclature', 'Understand systematics', 'Classify organisms by similarities'], order: 90 },
+    { section: 'AS2: Biodiversity', title: 'Species and Taxa', objectives: ['Define species concept', 'List taxa: genus, family, order, class, phylum, kingdom', 'Understand taxonomic hierarchy'], order: 91 },
+    { section: 'AS2: Biodiversity', title: 'Phylogenetic Taxonomy', objectives: ['Explain phylogenetic relationships', 'Use morphology, cell structure, biochemistry', 'Compare DNA, RNA, protein sequences'], order: 92 },
+    { section: 'AS2: Biodiversity', title: 'Five Kingdom System', objectives: ['Identify Prokaryotae, Protoctista, Fungi, Plantae, Animalia', 'Describe key features of each kingdom', 'Understand archaea as separate domain'], order: 93 },
+    { section: 'AS2: Biodiversity', title: 'Kingdom Features', objectives: ['Describe prokaryote and protoctist features', 'Explain fungi as lysotrophs with chitin walls', 'Understand plant and animal characteristics'], order: 94 },
+    
+    // AS2: Human Impact (4 lessons)
+    { section: 'AS2: Human Impact', title: 'Agricultural Practices and Biodiversity', objectives: ['Compare polyculture vs monoculture', 'Explain hedgerow conservation', 'Understand integrated pest management'], order: 95 },
+    { section: 'AS2: Human Impact', title: 'Pollution of Waterways', objectives: ['Describe organic pollution (slurry, silage)', 'Explain eutrophication from fertiliser run-off', 'Understand mineral enrichment'], order: 96 },
+    { section: 'AS2: Human Impact', title: 'BOD and Aquatic Ecosystems', objectives: ['Explain biological oxygen demand (BOD)', 'Describe effects on flora and fauna', 'Understand pollution reduction strategies'], order: 97 },
+    { section: 'AS2: Human Impact', title: 'Conservation Initiatives', objectives: ['Describe ASSI and Special Areas of Conservation', 'Explain Biodiversity Action Plans', 'Understand global warming effects on biodiversity'], order: 98 },
   ];
 }
 
