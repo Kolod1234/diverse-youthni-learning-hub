@@ -19,6 +19,7 @@ const categories = [
   { id: 'science', label: 'Science', icon: '🔬', color: 'from-teal-500 to-cyan-500' },
   { id: 'history', label: 'History', icon: '📜', color: 'from-amber-500 to-orange-500' },
   { id: 'geography', label: 'Geography', icon: '🌍', color: 'from-emerald-500 to-teal-500' },
+  { id: 'life_health_sciences', label: 'Life & Health Sciences', icon: '🫀', color: 'from-red-500 to-pink-500' },
 ];
 
 const levels = [
