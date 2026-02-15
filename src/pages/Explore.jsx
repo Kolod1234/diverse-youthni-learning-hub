@@ -37,6 +37,7 @@ export default function Explore() {
   const [priceRange, setPriceRange] = useState([0, 200]);
   const [showFreeOnly, setShowFreeOnly] = useState(false);
   const [selectedQualification, setSelectedQualification] = useState(['gcse', 'alevel']);
+  const [selectedALevelStage, setSelectedALevelStage] = useState(['as', 'a2', 'full']);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -112,8 +113,9 @@ export default function Explore() {
       ? course.price === 0 
       : (course.price || 0) >= priceRange[0] && (course.price || 0) <= priceRange[1];
     const matchesQualification = selectedQualification.includes(course.qualification_type || 'gcse');
+    const matchesALevelStage = course.qualification_type !== 'alevel' || !course.alevel_stage || selectedALevelStage.includes(course.alevel_stage);
     
-    return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesQualification;
+    return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesQualification && matchesALevelStage;
   });
 
   const sortedCourses = [...filteredCourses].sort((a, b) => {
@@ -131,9 +133,10 @@ export default function Explore() {
     setShowFreeOnly(false);
     setSearchQuery('');
     setSelectedQualification(['gcse', 'alevel']);
+    setSelectedALevelStage(['as', 'a2', 'full']);
   };
 
-  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || showFreeOnly || searchQuery || selectedQualification.length < 2;
+  const hasActiveFilters = selectedCategories.length > 0 || selectedLevels.length > 0 || showFreeOnly || searchQuery || selectedQualification.length < 2 || selectedALevelStage.length < 3;
 
   const FilterContent = () => (
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 4 }}>
@@ -186,6 +189,59 @@ export default function Explore() {
           ))}
         </Box>
       </Box>
+
+      {/* A-Level Stage */}
+      {selectedQualification.includes('alevel') && (
+        <Box>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <TrendingUp size={16} color="#FF8C00" />
+            A-Level Stage
+          </Typography>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
+            {[
+              { id: 'as', label: 'AS-Level' },
+              { id: 'a2', label: 'A2-Level' },
+              { id: 'full', label: 'Full A-Level' }
+            ].map((stage) => (
+              <motion.div 
+                key={stage.id}
+                whileHover={{ scale: 1.02, x: 4 }}
+                whileTap={{ scale: 0.98 }}
+              >
+                <FormControlLabel
+                  control={
+                    <Checkbox
+                      checked={selectedALevelStage.includes(stage.id)}
+                      onChange={(e) => {
+                        setSelectedALevelStage(prev => 
+                          e.target.checked
+                            ? [...prev, stage.id]
+                            : prev.filter(s => s !== stage.id)
+                        );
+                      }}
+                    />
+                  }
+                  label={stage.label}
+                  sx={{
+                    width: '100%',
+                    m: 0,
+                    p: 1.5,
+                    borderRadius: 3,
+                    cursor: 'pointer',
+                    background: selectedALevelStage.includes(stage.id) 
+                      ? 'linear-gradient(to right, #6366f1, #8b5cf6)' 
+                      : 'background.paper',
+                    color: selectedALevelStage.includes(stage.id) ? 'white' : 'text.primary',
+                    border: selectedALevelStage.includes(stage.id) ? 0 : 1,
+                    borderColor: 'divider',
+                    '&:hover': { bgcolor: selectedALevelStage.includes(stage.id) ? undefined : 'action.hover' }
+                  }}
+                />
+              </motion.div>
+            ))}
+          </Box>
+        </Box>
+      )}
 
       {/* Categories */}
       <Box>
