@@ -209,36 +209,23 @@ Deno.serve(async (req) => {
     let createdCount = 0;
 
     for (const { courseId, lessons } of allLessons) {
-      const lessonsToCreate = [];
-      
-      for (const lesson of lessons) {
-        const existing = await base44.entities.Lesson.filter({
-          course_id: courseId,
-          title: lesson.title
-        });
+      const lessonsToCreate = lessons.map(lesson => ({
+        course_id: courseId,
+        title: lesson.title,
+        description: lesson.title,
+        order: lesson.order,
+        section: lesson.section,
+        is_preview: true,
+        content_type: 'richtext',
+        slides: [{
+          title: lesson.title,
+          content: `<p>This lesson covers: ${lesson.title}</p>`,
+          order: 1
+        }]
+      }));
 
-        if (existing.length === 0) {
-          lessonsToCreate.push({
-            course_id: courseId,
-            title: lesson.title,
-            description: lesson.title,
-            order: lesson.order,
-            section: lesson.section,
-            is_preview: true,
-            content_type: 'richtext',
-            slides: [{
-              title: lesson.title,
-              content: `<p>This lesson covers: ${lesson.title}</p>`,
-              order: 1
-            }]
-          });
-        }
-      }
-
-      if (lessonsToCreate.length > 0) {
-        await base44.entities.Lesson.bulkCreate(lessonsToCreate);
-        createdCount += lessonsToCreate.length;
-      }
+      await base44.entities.Lesson.bulkCreate(lessonsToCreate);
+      createdCount += lessonsToCreate.length;
     }
 
     return Response.json({
