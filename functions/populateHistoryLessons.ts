@@ -465,10 +465,13 @@ Deno.serve(async (req) => {
         });
       }
 
-      // Delete existing lessons for this course first
+      // Delete existing lessons for this course first (batch delete to avoid rate limits)
       const existingLessons = await base44.entities.Lesson.filter({ course_id: course.id });
-      for (const lesson of existingLessons) {
-        await base44.asServiceRole.entities.Lesson.delete(lesson.id);
+      if (existingLessons.length > 0) {
+        const deletePromises = existingLessons.map(lesson => 
+          base44.asServiceRole.entities.Lesson.delete(lesson.id)
+        );
+        await Promise.all(deletePromises);
       }
 
       // Create lessons using bulkCreate
