@@ -494,11 +494,131 @@ Deno.serve(async (req) => {
       totalLessons += lessonsToCreate.length;
     }
 
+    // Now consolidate into 2 main courses
+    const asLessons = [];
+    const a2Lessons = [];
+
+    for (const courseData of courses) {
+      const prefix = `${courseData.title.split(':')[0].trim()}: `;
+      courseData.lessons.forEach(lesson => {
+        const lessonData = {
+          title: `${prefix}${lesson.title}`,
+          description: `${courseData.unit}: ${lesson.title}`,
+          order: lesson.order + (courseData.stage === 'as' ? 
+            (courseData.unit === 'AS 1' ? 0 : 1000) : 
+            (courseData.unit === 'A2 1' ? 0 : 10000)),
+          section: courseData.unit,
+          is_preview: true,
+          content_type: 'richtext',
+          slides: [{
+            title: lesson.title,
+            content: `<p>This lesson covers: ${lesson.title}</p>`,
+            order: 1
+          }]
+        };
+
+        if (courseData.stage === 'as') {
+          asLessons.push(lessonData);
+        } else {
+          a2Lessons.push(lessonData);
+        }
+      });
+    }
+
+    // Create or update consolidated courses
+    const asCourseName = 'A-Level History AS (CCEA)';
+    const a2CourseName = 'A-Level History A2 (CCEA)';
+
+    const existingConsolidated = await base44.entities.Course.filter({
+      title: { $in: [asCourseName, a2CourseName] }
+    });
+
+    let asCourse = existingConsolidated.find(c => c.title === asCourseName);
+    let a2Course = existingConsolidated.find(c => c.title === a2CourseName);
+
+    if (!asCourse) {
+      asCourse = await base44.entities.Course.create({
+        title: asCourseName,
+        description: 'CCEA A-Level History AS - All AS 1 and AS 2 options covering England, Ireland, Europe, Germany, Russia and more.',
+        instructor: 'DYNI History Team',
+        instructor_avatar: 'https://ui-avatars.com/api/?name=DYNI%20History&background=dc2626&color=fff',
+        thumbnail: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800',
+        qualification_type: 'alevel',
+        alevel_stage: 'as',
+        category: 'history',
+        level: 'advanced',
+        duration_hours: 180,
+        total_lessons: asLessons.length,
+        price: 0,
+        is_featured: true,
+        exam_board: 'CCEA'
+      });
+    } else {
+      await base44.asServiceRole.entities.Course.update(asCourse.id, {
+        total_lessons: asLessons.length
+      });
+    }
+
+    if (!a2Course) {
+      a2Course = await base44.entities.Course.create({
+        title: a2CourseName,
+        description: 'CCEA A-Level History A2 - All A2 1 and A2 2 options covering Crown and Parliament, Ireland, Great Powers, American Presidency and more.',
+        instructor: 'DYNI History Team',
+        instructor_avatar: 'https://ui-avatars.com/api/?name=DYNI%20History&background=dc2626&color=fff',
+        thumbnail: 'https://images.unsplash.com/photo-1461360370896-922624d12aa1?w=800',
+        qualification_type: 'alevel',
+        alevel_stage: 'a2',
+        category: 'history',
+        level: 'advanced',
+        duration_hours: 240,
+        total_lessons: a2Lessons.length,
+        price: 0,
+        is_featured: true,
+        exam_board: 'CCEA'
+      });
+    } else {
+      await base44.asServiceRole.entities.Course.update(a2Course.id, {
+        total_lessons: a2Lessons.length
+      });
+    }
+
+    // Delete old lessons from consolidated courses
+    const asExistingLessons = await base44.entities.Lesson.filter({ course_id: asCourse.id });
+    const a2ExistingLessons = await base44.entities.Lesson.filter({ course_id: a2Course.id });
+
+    if (asExistingLessons.length > 0) {
+      await Promise.all(asExistingLessons.map(l => base44.asServiceRole.entities.Lesson.delete(l.id)));
+    }
+    if (a2ExistingLessons.length > 0) {
+      await Promise.all(a2ExistingLessons.map(l => base44.asServiceRole.entities.Lesson.delete(l.id)));
+    }
+
+    // Create lessons for consolidated courses
+    const asLessonsToCreate = asLessons.map(l => ({ ...l, course_id: asCourse.id }));
+    const a2LessonsToCreate = a2Lessons.map(l => ({ ...l, course_id: a2Course.id }));
+
+    await base44.entities.Lesson.bulkCreate(asLessonsToCreate);
+    await base44.entities.Lesson.bulkCreate(a2LessonsToCreate);
+
+    // Delete old individual courses
+    const oldCourseIds = courses.map(cd => {
+      const existing = await base44.entities.Course.filter({ title: cd.title });
+      return existing.length > 0 ? existing[0].id : null;
+    }).filter(id => id !== null);
+
+    for (const courseId of oldCourseIds) {
+      const lessons = await base44.entities.Lesson.filter({ course_id: courseId });
+      await Promise.all(lessons.map(l => base44.asServiceRole.entities.Lesson.delete(l.id)));
+      await base44.asServiceRole.entities.Course.delete(courseId);
+    }
+
     return Response.json({
       success: true,
-      message: `Created ${createdCourses.length} History courses with ${totalLessons} lessons`,
-      coursesCreated: createdCourses.length,
-      lessonsCreated: totalLessons
+      message: `Created 2 consolidated History courses with ${asLessons.length + a2Lessons.length} lessons`,
+      asCourse: asCourse.id,
+      a2Course: a2Course.id,
+      asLessons: asLessons.length,
+      a2Lessons: a2Lessons.length
     });
   } catch (error) {
     return Response.json({ error: error.message }, { status: 500 });
