@@ -9,14 +9,160 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 403 });
     }
 
-    // Course definitions with lessons
+    // Delete existing History courses first
+    const existingCourses = await base44.entities.Course.filter({ category: 'history' });
+    for (const course of existingCourses) {
+      // Delete lessons first
+      const lessons = await base44.entities.Lesson.filter({ course_id: course.id });
+      for (const lesson of lessons) {
+        await base44.asServiceRole.entities.Lesson.delete(lesson.id);
+      }
+      // Delete course
+      await base44.asServiceRole.entities.Course.delete(course.id);
+    }
+
+    // Course definitions - AS and A2 with all options as lessons
     const courses = [
-      // AS 1 Options
+      // AS Level Course
       {
-        title: 'A-Level History AS 1: England 1509-58',
-        description: 'CCEA A-Level History - The rule of English monarchs including Henry VIII, covering the English Reformation, religious reforms under Edward VI and Mary I.',
+        title: 'A-Level History AS',
+        description: 'CCEA A-Level History AS - Includes AS 1 and AS 2 units with all option topics.',
         stage: 'as',
-        unit: 'AS 1',
+        lessons: [
+          // AS 1 Option A: England 1509-58
+          { title: 'AS 1A: Religious Belief and Practice on the Eve of the Reformation', order: 1, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Henry VIII and the Divorce Question', order: 2, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: The Break with Rome', order: 3, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: The English Reformation and Religious Change', order: 4, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Opposition to Religious Change', order: 5, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: The Pilgrimage of Grace', order: 6, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Political Developments 1547-58', order: 7, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Religious Developments under Edward VI', order: 8, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Religious Developments under Mary I', order: 9, section: 'AS 1 - England 1509-58' },
+          { title: 'AS 1A: Economic and Social Problems of the Period', order: 10, section: 'AS 1 - England 1509-58' },
+
+          // AS 1 Option B: England 1603-49
+          { title: 'AS 1B: James I 1603-25: Early Reign and Problems', order: 11, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: James I: Financial and Foreign Policy', order: 12, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: James I: Religious Policy', order: 13, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: Charles I 1625-40: Personal Rule', order: 14, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: Charles I: Financial and Religious Policies', order: 15, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: The Road to Civil War 1640-42', order: 16, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: The English Civil War 1642-46', order: 17, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: The First Civil War: Key Battles', order: 18, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: Revolution 1646-49: Trial and Execution', order: 19, section: 'AS 1 - England 1603-49' },
+          { title: 'AS 1B: Political Revolution and the New Commonwealth', order: 20, section: 'AS 1 - England 1603-49' },
+
+          // AS 1 Option C: Britain in the Age of Reform 1830-80
+          { title: 'AS 1C: The Reform Crisis and Parliamentary Reform Act 1830-32', order: 21, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: The Whig Reforms under Grey and Melbourne 1833-40', order: 22, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: Social and Economic Reforms 1833-40', order: 23, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: The Rise of the Chartists 1838-48', order: 24, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: The Anti-Corn Law League 1838-48', order: 25, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: Robert Peel and the Modern Conservative Party 1833-46', order: 26, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: The Repeal of the Corn Laws 1846', order: 27, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: Benjamin Disraeli and Tory Democracy 1846-80', order: 28, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: Disraeli\'s Social Reforms', order: 29, section: 'AS 1 - Britain 1830-80' },
+          { title: 'AS 1C: William Gladstone and the Liberal Party 1849-80', order: 30, section: 'AS 1 - Britain 1830-80' },
+
+          // AS 1 Option D: Italy and Germany 1815-71
+          { title: 'AS 1D: Germany 1815-48: Liberalism and Nationalism', order: 31, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: The 1848 Revolutions in Germany', order: 32, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: German Unification 1849-71: Bismarck\'s Rise', order: 33, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: German Unification: The Wars of Unification', order: 34, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: The Creation of the German Empire 1871', order: 35, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: Italy 1815-48: Political and Cultural Movements', order: 36, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: The 1848 Revolutions in Italy', order: 37, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: Italian Unification 1849-70: Cavour and Piedmont', order: 38, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: Italian Unification: Garibaldi and the South', order: 39, section: 'AS 1 - Italy and Germany 1815-71' },
+          { title: 'AS 1D: The Completion of Italian Unification 1866-70', order: 40, section: 'AS 1 - Italy and Germany 1815-71' },
+
+          // AS 1 Option E: Germany 1919-45
+          { title: 'AS 1E: The Weimar Republic 1919-29: Foundation and Early Challenges', order: 41, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Political and Economic Developments in Weimar Germany', order: 42, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: The Golden Years of Weimar 1924-29', order: 43, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: The Decline of Weimar 1929-33', order: 44, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: The Rise of the Nazi Party', order: 45, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Hitler\'s Rise to Power 1933', order: 46, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Nazi Germany 1933-39: Political Developments', order: 47, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Nazi Economic Policies', order: 48, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Nazi Social Policies and Propaganda', order: 49, section: 'AS 1 - Germany 1919-45' },
+          { title: 'AS 1E: Persecution and the Holocaust', order: 50, section: 'AS 1 - Germany 1919-45' },
+
+          // AS 2 Option A: Spain and Europe 1556-98
+          { title: 'AS 2A: Philip II: Political Control and Authority', order: 51, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Philip II and the Spanish Economy', order: 52, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Philip II and Religion: The Inquisition', order: 53, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Foreign Policy: Relations with France and Portugal', order: 54, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Foreign Policy: The Dutch Revolt', order: 55, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Foreign Policy: Relations with England', order: 56, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: The Spanish Armada 1588', order: 57, section: 'AS 2 - Spain 1556-98' },
+          { title: 'AS 2A: Assessment of Philip II\'s Foreign Policy', order: 58, section: 'AS 2 - Spain 1556-98' },
+
+          // AS 2 Option B: France 1660-1714
+          { title: 'AS 2B: The Growing Power of France 1660-89', order: 59, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: Louis XIV\'s Domestic and Foreign Policies', order: 60, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The Outbreak of the Nine Years\' War', order: 61, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The Nine Years\' War 1688-97', order: 62, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The Peace of Ryswick 1697', order: 63, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The Problem of Spanish Succession 1697-1702', order: 64, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The War of the Spanish Succession 1702-14', order: 65, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: Marlborough and the Grand Alliance', order: 66, section: 'AS 2 - France 1660-1714' },
+          { title: 'AS 2B: The Treaty of Utrecht 1713', order: 67, section: 'AS 2 - France 1660-1714' },
+
+          // AS 2 Option C: Ireland 1823-67
+          { title: 'AS 2C: O\'Connell and Catholic Emancipation 1823-34', order: 68, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: The Catholic Association', order: 69, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: Reform, Repeal and Failure 1835-47', order: 70, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: O\'Connell\'s Repeal Campaign', order: 71, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: Causes of the Irish Famine 1824-67', order: 72, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: The Course of the Irish Famine', order: 73, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: Impact of the Irish Famine: Economic and Social', order: 74, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: Impact of the Irish Famine: Political Consequences', order: 75, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: The Young Irelanders and the 1848 Rebellion', order: 76, section: 'AS 2 - Ireland 1823-67' },
+          { title: 'AS 2C: The Fenian Movement', order: 77, section: 'AS 2 - Ireland 1823-67' },
+
+          // AS 2 Option D: France 1815-70
+          { title: 'AS 2D: The Bourbon Monarchy 1815-30: Restoration', order: 78, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: The Reign of Louis XVIII and Charles X', order: 79, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: The July Revolution 1830', order: 80, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: The Reign of Louis Philippe 1830-48', order: 81, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: The 1848 Revolution in France', order: 82, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: The Second Republic 1848-52', order: 83, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: Louis Napoleon and the Second Empire 1852-70', order: 84, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: Economic and Social Policies of Napoleon III', order: 85, section: 'AS 2 - France 1815-70' },
+          { title: 'AS 2D: Foreign Policy of the Second Empire', order: 86, section: 'AS 2 - France 1815-70' },
+
+          // AS 2 Option E: Russia 1914-41
+          { title: 'AS 2E: The Collapse of Tsarist Russia 1914-17', order: 87, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: The February Revolution 1917', order: 88, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: The October Revolution 1917', order: 89, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: Lenin\'s Russia 1917-24: Civil War', order: 90, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: War Communism and the New Economic Policy', order: 91, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: Lenin\'s Political System', order: 92, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: Stalin\'s Rise to Power 1924-29', order: 93, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: The Great Purges 1934-38', order: 94, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: Stalinist Dictatorship: Politics and Society', order: 95, section: 'AS 2 - Russia 1914-41' },
+          { title: 'AS 2E: Stalin\'s Economic Policies: Collectivization', order: 96, section: 'AS 2 - Russia 1914-41' },
+
+          // AS 2 Option F: Italy 1871-1943
+          { title: 'AS 2F: Italy\'s Quest for Great Power Status 1871-1914', order: 97, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Italian Colonial Ambitions', order: 98, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Italy and the Triple Alliance', order: 99, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: The First World War and Italy 1914-19', order: 100, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: The Paris Peace Settlement and Italy', order: 101, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: The Rise of Fascism 1919-26', order: 102, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Mussolini\'s Consolidation of Power', order: 103, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Mussolini\'s Foreign Policy 1922-43: Objectives', order: 104, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Mussolini and Ethiopia', order: 105, section: 'AS 2 - Italy 1871-1943' },
+          { title: 'AS 2F: Italy and the Second World War', order: 106, section: 'AS 2 - Italy 1871-1943' },
+        ]
+      },
+      // A2 Level Course
+      {
+        title: 'A-Level History A2',
+        description: 'CCEA A-Level History A2 - Includes A2 1 and A2 2 units with all option topics.',
+        stage: 'a2',
         lessons: [
           { title: 'Religious Belief and Practice on the Eve of the Reformation', order: 1 },
           { title: 'Henry VIII and the Divorce Question', order: 2 },
