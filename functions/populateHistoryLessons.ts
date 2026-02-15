@@ -456,6 +456,19 @@ Deno.serve(async (req) => {
         createdCourses.push(course.id);
       } else {
         course = existing[0];
+        // Update the course to ensure correct metadata
+        await base44.asServiceRole.entities.Course.update(course.id, {
+          category: 'history',
+          qualification_type: 'alevel',
+          alevel_stage: courseData.stage,
+          total_lessons: courseData.lessons.length
+        });
+      }
+
+      // Delete existing lessons for this course first
+      const existingLessons = await base44.entities.Lesson.filter({ course_id: course.id });
+      for (const lesson of existingLessons) {
+        await base44.asServiceRole.entities.Lesson.delete(lesson.id);
       }
 
       // Create lessons using bulkCreate
