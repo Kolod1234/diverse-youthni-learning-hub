@@ -342,7 +342,6 @@ export default function Library() {
           </Box>
 
           <Box sx={{ display: 'flex', gap: 2 }}>
-            <AILibraryAssistant resources={resources} />
             {canUpload && (
               <>
                 <input
