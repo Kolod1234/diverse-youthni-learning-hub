@@ -1,8 +1,9 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Box, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActions, Chip, CircularProgress, Tabs, Tab } from '@mui/material';
-import { Send, Sparkles, BookOpen, HelpCircle, Settings } from 'lucide-react';
+import { Send, Sparkles, BookOpen, HelpCircle, Settings, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
+import { createPageUrl } from '@/utils';
 
 export default function AILibraryAssistant({ resources = [] }) {
   const [open, setOpen] = useState(false);
