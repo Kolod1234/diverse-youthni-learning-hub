@@ -385,36 +385,33 @@ export default function Library() {
           </Box>
 
           <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', order: { xs: 2, md: 3 } }}>
-            {canUpload && (
-              <>
-                <input
-                  ref={fileInputRef}
-                  type="file"
-                  accept=".pdf,.epub,.mobi,.doc,.docx"
-                  onChange={handleFileSelected}
-                  className="hidden"
-                />
-                <Button 
-                  onClick={() => setShowBulkUpload(true)}
-                  variant="outlined"
-                  size="small"
-                  sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1 }}
-                >
-                  <Upload className="w-4 h-4" />
-                  Bulk Import
-                </Button>
-                <Button 
-                  onClick={handleInitiateUpload}
-                  disabled={uploadingFile || analyzing}
-                  variant="contained"
-                  size="small"
-                  sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
-                >
-                  <Plus className="w-4 h-4" />
-                  Upload
-                </Button>
-              </>
-            )}
+            <input
+              ref={fileInputRef}
+              type="file"
+              accept=".pdf,.epub,.mobi,.doc,.docx"
+              onChange={handleFileSelected}
+              className="hidden"
+            />
+            <Button 
+              onClick={() => setShowBulkUpload(true)}
+              variant="outlined"
+              size="small"
+              disabled={!canUpload}
+              sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1 }}
+            >
+              <Upload className="w-4 h-4" />
+              Bulk Import
+            </Button>
+            <Button 
+              onClick={handleInitiateUpload}
+              disabled={uploadingFile || analyzing || !canUpload}
+              variant="contained"
+              size="small"
+              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
+            >
+              <Plus className="w-4 h-4" />
+              Upload
+            </Button>
           </Box>
         </Box>
 
