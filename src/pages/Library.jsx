@@ -63,6 +63,11 @@ export default function Library() {
     loadUser();
   }, []);
 
+  const { data: resources = [] } = useQuery({
+    queryKey: ['library-resources'],
+    queryFn: () => base44.entities.LibraryResource.list('-created_date', 500)
+  });
+
   // Check for book ID in sessionStorage from AI assistant
   useEffect(() => {
     const bookId = sessionStorage.getItem('openLibraryBookId');
@@ -74,11 +79,6 @@ export default function Library() {
       }
     }
   }, [resources]);
-
-  const { data: resources = [] } = useQuery({
-    queryKey: ['library-resources'],
-    queryFn: () => base44.entities.LibraryResource.list('-created_date', 500)
-  });
 
   const [selectedTags, setSelectedTags] = useState([]);
 
