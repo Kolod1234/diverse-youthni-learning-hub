@@ -43,13 +43,6 @@ Deno.serve(async (req) => {
           continue;
         }
 
-        const existing = await base44.entities.Lesson.filter({ course_id: course.id });
-        if (existing.length > 0) {
-          for (const lesson of existing) {
-            await base44.asServiceRole.entities.Lesson.delete(lesson.id);
-          }
-        }
-
         await base44.entities.Lesson.bulkCreate(lessons.map(l => ({
           course_id: course.id,
           title: l.title,
@@ -72,8 +65,6 @@ Deno.serve(async (req) => {
           lessons: lessons.length,
           status: 'success'
         });
-
-        await new Promise(r => setTimeout(r, 2000));
 
       } catch (error) {
         results.push({
