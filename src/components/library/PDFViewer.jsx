@@ -285,36 +285,56 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
                 </div>
               )}
 
-              <Document
-                file={fileUrl}
-                onLoadSuccess={({ numPages }) => {
-                  setNumPages(numPages);
-                  setIsLoading(false);
-                }}
-                onLoadError={(error) => {
-                  console.error('PDF load error:', error);
-                  setIsLoading(false);
-                }}
-                loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+              <TransformWrapper
+                initialScale={1}
+                initialPositionX={0}
+                initialPositionY={0}
+                panning={{ disabled: false }}
+                pinch={{ disabled: false }}
+                doubleClick={{ disabled: false }}
+                wheel={{ disabled: false, step: 50 }}
               >
-                <div style={{ 
-                  backgroundColor: 'white', 
-                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
-                  margin: isFullscreen ? '0' : '16px auto', 
-                  width: isFullscreen ? '100%' : 'fit-content',
-                  height: isFullscreen ? '100%' : 'auto',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center'
-                }}>
-                  <Page 
-                    pageNumber={currentPage}
-                    renderTextLayer={true}
-                    renderAnnotationLayer={true}
-                    width={isFullscreen ? window.innerWidth : undefined}
-                  />
-                </div>
-              </Document>
+                {({ zoomIn, zoomOut, resetTransform }) => (
+                  <TransformComponent
+                    wrapperStyle={{
+                      width: '100%',
+                      height: '100%',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center'
+                    }}
+                  >
+                    <Document
+                      file={fileUrl}
+                      onLoadSuccess={({ numPages }) => {
+                        setNumPages(numPages);
+                        setIsLoading(false);
+                      }}
+                      onLoadError={(error) => {
+                        console.error('PDF load error:', error);
+                        setIsLoading(false);
+                      }}
+                      loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+                    >
+                      <div style={{ 
+                        backgroundColor: 'white', 
+                        boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
+                        padding: '16px',
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center'
+                      }}>
+                        <Page 
+                          pageNumber={currentPage}
+                          renderTextLayer={true}
+                          renderAnnotationLayer={true}
+                          width={isFullscreen ? window.innerWidth - 32 : undefined}
+                        />
+                      </div>
+                    </Document>
+                  </TransformComponent>
+                )}
+              </TransformWrapper>
             </>
           )}
         </div>
