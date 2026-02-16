@@ -152,7 +152,7 @@ Please generate:
 
     const result = await base44.integrations.Core.InvokeLLM({
       prompt,
-      add_context_from_internet: true,
+      add_context_from_internet: false,
       response_json_schema: responseSchema
     });
 
