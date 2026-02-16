@@ -317,6 +317,27 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           </>
         )}
       </div>
+      
+      {/* Annotations Panel */}
+      {showAnnotations && resourceId && (
+        <Box sx={{ 
+          width: 350,
+          bgcolor: '#ffffff',
+          borderLeft: 1,
+          borderColor: '#e5e7eb',
+          overflowY: 'auto',
+          display: { xs: 'none', md: 'block' }
+        }}>
+          <AnnotationTools
+            resourceId={resourceId}
+            pageNumber={currentPage}
+            annotations={annotations}
+            onAnnotationCreate={(data) => createAnnotationMutation.mutate(data)}
+            onAnnotationDelete={(id) => deleteAnnotationMutation.mutate(id)}
+          />
+        </Box>
+      )}
+      </div>
     </div>
   );
 }
