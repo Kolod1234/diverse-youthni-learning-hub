@@ -14,6 +14,7 @@ export default function AdminCourseBuilder() {
   const params = new URLSearchParams(location.search);
   const courseId = params.get('course');
   const [editingSection, setEditingSection] = useState(null);
+  const [editingBasicInfo, setEditingBasicInfo] = useState(false);
   const queryClient = useQueryClient();
 
   const { data: course } = useQuery({
