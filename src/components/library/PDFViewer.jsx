@@ -205,6 +205,35 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           </Button>
         )}
 
+        {/* Font Size Control */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, minWidth: 200 }}>
+          <ZoomOut className="w-4 h-4 text-gray-600" />
+          <Slider
+            value={fontSize}
+            onChange={(e, newValue) => setFontSize(newValue)}
+            min={75}
+            max={150}
+            step={5}
+            sx={{ flex: 1 }}
+          />
+          <ZoomIn className="w-4 h-4 text-gray-600" />
+          <span className="text-sm font-medium text-gray-700 w-8 text-right">{fontSize}%</span>
+        </Box>
+
+        {/* Layout Mode */}
+        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+          <Layout className="w-4 h-4 text-gray-600" />
+          <Select
+            value={layoutMode}
+            onChange={(e) => setLayoutMode(e.target.value)}
+            size="small"
+            sx={{ fontSize: '0.875rem' }}
+          >
+            <MenuItem value="single">Single Page</MenuItem>
+            <MenuItem value="continuous">Continuous</MenuItem>
+          </Select>
+        </Box>
+
         {/* Fullscreen Button */}
         <Button
           size="sm"
