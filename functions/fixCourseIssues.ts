@@ -9,7 +9,19 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const { issues_found } = await req.json();
+    let requestBody;
+    try {
+      requestBody = await req.json();
+    } catch (parseError) {
+      return Response.json({ error: 'Invalid request body' }, { status: 400 });
+    }
+
+    const { issues_found } = requestBody;
+    
+    if (!issues_found || !Array.isArray(issues_found)) {
+      return Response.json({ error: 'issues_found must be an array' }, { status: 400 });
+    }
+
     const fixes = {
       courses_fixed: 0,
       lessons_fixed: 0,
@@ -22,54 +34,44 @@ Deno.serve(async (req) => {
       const courseId = courseIssue.course_id;
       
       try {
-        // Fetch course and lessons
-        const course = await base44.asServiceRole.entities.Course.filter({ id: courseId });
-        if (course.length === 0) continue;
-
-        const currentCourse = course[0];
+        // Fetch lessons for this course
         const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId });
 
         // Fix 1: Add missing learning objectives to lessons
         for (const lesson of lessons) {
+          let updateData = {};
+          
           if (!lesson.learning_objectives || lesson.learning_objectives.length === 0) {
-            const defaultObjectives = [
-              `Understand the key concepts of ${lesson.title}`,
-              `Apply knowledge of ${lesson.title} to practical scenarios`,
-              `Evaluate and analyze ${lesson.title} in different contexts`
+            updateData.learning_objectives = [
+              `Understand the key concepts of ${lesson.title || 'this lesson'}`,
+              `Apply knowledge of ${lesson.title || 'this lesson'} to practical scenarios`,
+              `Evaluate and analyze ${lesson.title || 'this lesson'} in different contexts`
             ];
-            
-            await base44.asServiceRole.entities.Lesson.update(lesson.id, {
-              learning_objectives: defaultObjectives
-            });
             fixes.objectives_added++;
           }
 
-          // Fix 2: Add missing content_type
           if (!lesson.content_type) {
-            await base44.asServiceRole.entities.Lesson.update(lesson.id, {
-              content_type: 'richtext'
-            });
+            updateData.content_type = 'richtext';
             fixes.lessons_fixed++;
           }
 
-          // Fix 3: Add title if missing
           if (!lesson.title || lesson.title.trim() === '') {
-            await base44.asServiceRole.entities.Lesson.update(lesson.id, {
-              title: `Lesson ${lesson.order || 1}`
-            });
+            updateData.title = `Lesson ${lesson.order || 1}`;
             fixes.lessons_fixed++;
+          }
+
+          if (Object.keys(updateData).length > 0) {
+            await base44.asServiceRole.entities.Lesson.update(lesson.id, updateData);
           }
         }
 
-        // Fix 4: Update course lesson count
+        // Fix 2: Update course lesson count
         const actualLessonCount = lessons.length;
-        if (currentCourse.total_lessons !== actualLessonCount) {
-          await base44.asServiceRole.entities.Course.update(courseId, {
-            total_lessons: actualLessonCount
-          });
-        }
+        await base44.asServiceRole.entities.Course.update(courseId, {
+          total_lessons: actualLessonCount
+        });
 
-        // Fix 5: Add basic lesson if course has none
+        // Fix 3: Add basic lesson if course has none
         if (lessons.length === 0) {
           await base44.asServiceRole.entities.Lesson.create({
             course_id: courseId,
@@ -93,7 +95,10 @@ Deno.serve(async (req) => {
 
         fixes.courses_fixed++;
       } catch (error) {
-        fixes.errors.push({ course_id: courseId, error: error.message });
+        fixes.errors.push({ 
+          course_id: courseId, 
+          error: error.message || String(error)
+        });
       }
     }
 
@@ -103,8 +108,8 @@ Deno.serve(async (req) => {
     });
   } catch (error) {
     return Response.json({ 
-      error: error.message,
-      stack: error.stack 
+      error: error.message || 'Unknown error',
+      type: error.constructor.name
     }, { status: 500 });
   }
 });
