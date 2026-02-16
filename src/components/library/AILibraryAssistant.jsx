@@ -214,23 +214,27 @@ export default function AILibraryAssistant({ resources = [] }) {
           zIndex: 1000,
           display: 'flex',
           alignItems: 'center',
+          justifyContent: 'center',
           gap: 1,
-          px: 2.5,
-          py: 1.5,
-          bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
-          borderRadius: 3,
+          px: 4,
+          py: 2,
+          bgcolor: 'rgba(229, 231, 235, 0.8)',
+          color: '#6b7280',
+          borderRadius: '50px',
           cursor: 'pointer',
-          boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)',
+          boxShadow: '0 4px 12px rgba(0, 0, 0, 0.1)',
           transition: 'all 0.3s ease',
+          fontSize: '0.875rem',
+          fontWeight: 600,
+          backdropFilter: 'blur(10px)',
           '&:hover': { 
-            transform: 'translateY(-4px)',
-            boxShadow: '0 15px 40px rgba(102, 126, 234, 0.6)'
+            transform: 'translateY(-2px)',
+            boxShadow: '0 6px 20px rgba(0, 0, 0, 0.15)',
+            bgcolor: 'rgba(243, 244, 246, 0.9)'
           }
         }}
       >
-        <Sparkles className="w-5 h-5" />
-        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>AI Assistant</span>
+        Ask me
       </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
