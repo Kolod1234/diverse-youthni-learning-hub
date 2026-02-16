@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Document, Page } from 'react-pdf';
-import { Loader2, Search, Bookmark, FileImage, ChevronLeft, ChevronRight } from 'lucide-react';
+import { Loader2, Search, Bookmark, FileImage, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Box, TextField, Chip } from '@mui/material';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
