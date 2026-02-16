@@ -169,11 +169,17 @@ Please generate:
     });
 
     // Log search activity
-    await base44.entities.FileActivity.create({
-      action: 'ai_search',
-      user_name: user.full_name,
-      details: `Query: ${query}, Mode: ${mode}`
-    });
+    try {
+      await base44.entities.FileActivity.create({
+        resource_id: resourcesToSearch[0]?.id || '',
+        action: 'ai_search',
+        user_name: user.full_name,
+        details: `Query: ${query}, Mode: ${mode}`
+      });
+    } catch (e) {
+      // Silently fail if logging doesn't work
+      console.log('Activity log failed:', e.message);
+    }
 
     return Response.json({
       success: true,
