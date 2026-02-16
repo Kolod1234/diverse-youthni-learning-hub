@@ -44,40 +44,57 @@ Deno.serve(async (req) => {
     let responseSchema = {};
 
     if (mode === 'answer') {
-      prompt = `You are a library research assistant. Your job is to help users find answers from their library textbooks.
+      // Filter books that match the query
+      const queryLower = query.toLowerCase();
+      const relevantBooks = resourcesToSearch.filter(r => {
+        const titleMatch = r.title.toLowerCase().includes(queryLower);
+        const descMatch = r.description?.toLowerCase().includes(queryLower);
+        const tagsMatch = r.tags?.some(t => t.toLowerCase().includes(queryLower));
+        const categoryMatch = r.category?.toLowerCase().includes(queryLower);
+        return titleMatch || descMatch || tagsMatch || categoryMatch;
+      });
 
-AVAILABLE LIBRARY BOOKS:
-${resourceContext}
+      // If no exact matches, show all available books
+      const booksToShow = relevantBooks.length > 0 ? relevantBooks : resourcesToSearch;
 
-USER QUESTION: "${query}"
+      const booksList = booksToShow
+        .slice(0, 15)
+        .map(r => `- "${r.title}" by ${r.author || 'Unknown'} (Category: ${r.category}, Tags: ${r.tags?.join(', ') || 'N/A'})\n  Description: ${r.description || 'No description'}`)
+        .join('\n\n');
 
-Instructions:
-1. Search through the available library books by title, description, category, and tags
-2. Identify which books are most relevant to answer this question
-3. Provide a brief answer based on what topics these books cover
-4. Rank books by relevance (highest first)
-5. Explain why each book would help answer the question
+      prompt = `You are a library research assistant helping a student find answers using textbooks.
 
-If no relevant books exist, say so clearly and suggest what type of books would help.`;
+STUDENT QUESTION: "${query}"
+
+AVAILABLE TEXTBOOKS IN THE LIBRARY:
+${booksList}
+
+Your task:
+1. List which books from above are relevant to answer this question
+2. For each relevant book, explain what topic or chapter would help
+3. Rate each book's relevance (0-100)
+4. Suggest the best reading order
+
+Be specific about which books match the question. Only recommend books that are actually listed above.`;
 
       responseSchema = {
         type: 'object',
         properties: {
-          summary: { type: 'string', description: 'Brief overview of the topic based on available library books' },
           relevantBooks: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
-                title: { type: 'string' },
+                title: { type: 'string', description: 'Exact title from the library list' },
                 author: { type: 'string' },
-                relevance: { type: 'string', description: 'Why this book answers the question' },
-                matchScore: { type: 'number', description: 'Relevance score 0-100' }
+                matchScore: { type: 'number', description: 'Relevance 0-100' },
+                why: { type: 'string', description: 'Why this book answers the question' },
+                suggestedTopics: { type: 'array', items: { type: 'string' } }
               }
             }
           },
-          suggestedReadingOrder: { type: 'array', items: { type: 'string' }, description: 'Order to read the books' },
-          needsAdditionalBooks: { type: 'boolean', description: 'Whether additional books are needed for complete coverage' }
+          readingOrder: { type: 'array', items: { type: 'string' } },
+          summary: { type: 'string', description: 'How these books collectively answer the question' }
         }
       };
     } else if (mode === 'search') {
