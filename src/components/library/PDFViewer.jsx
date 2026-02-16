@@ -7,6 +7,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import AnnotationTools from './AnnotationTools';
+import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
