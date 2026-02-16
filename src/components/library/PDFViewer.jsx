@@ -150,15 +150,15 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
       )}
 
       {/* PDF Viewer */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#111827', padding: '16px' }}>
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'auto', backgroundColor: '#111827', padding: '16px', minHeight: 0 }}>
         {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
             <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
           </div>
         )}
 
         {!isLoading && (
-          <div style={{ display: 'flex', justifyContent: 'center' }}>
+          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
             <Document
               file={fileUrl}
               onLoadSuccess={({ numPages }) => {
@@ -171,10 +171,9 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
               }}
               loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
             >
-              <div style={{ backgroundColor: 'white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', margin: '16px 0', display: 'inline-block' }}>
+              <div style={{ backgroundColor: 'white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', margin: '16px auto', width: 'fit-content' }}>
                 <Page 
                   pageNumber={currentPage}
-                  scale={1.5}
                   renderTextLayer={true}
                   renderAnnotationLayer={true}
                 />
