@@ -1,19 +1,17 @@
-import React, { useState, useRef } from 'react';
-import { Loader2, Search, Bookmark, Highlighter, StickyNote, FileImage } from 'lucide-react';
+import React, { useState } from 'react';
+import { Document, Page } from 'react-pdf';
+import { Loader2, Search, Bookmark, FileImage, ChevronLeft, ChevronRight } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { TextField, Box, Chip } from '@mui/material';
+import { Box, TextField, Chip } from '@mui/material';
+import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
+import 'react-pdf/dist/esm/Page/TextLayer.css';
 
 export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
-  const [isLoading, setIsLoading] = useState(true);
+  const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(0);
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedPages, setBookmarkedPages] = useState([]);
-  const [annotationMode, setAnnotationMode] = useState(null);
-  const [noteText, setNoteText] = useState('');
-  const iframeRef = useRef(null);
-
-  const viewerUrl = `https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(fileUrl)}`;
+  const [isLoading, setIsLoading] = useState(true);
 
   const toggleBookmark = () => {
     setBookmarkedPages(prev =>
@@ -23,18 +21,15 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
     );
   };
 
-  const handleSearch = () => {
-    if (iframeRef.current && searchQuery) {
-      iframeRef.current.contentWindow.postMessage({
-        type: 'SEARCH_PDF',
-        query: searchQuery
-      }, '*');
-    }
-  };
-
   const handleSetCover = async () => {
     if (onCoverCapture) {
       await onCoverCapture(currentPage);
+    }
+  };
+
+  const goToPage = (page) => {
+    if (page > 0 && page <= numPages) {
+      setCurrentPage(page);
     }
   };
 
@@ -52,36 +47,45 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
         overflowX: 'auto',
         flexWrap: 'wrap'
       }}>
-        {/* Search Bar */}
-        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', minWidth: 250 }}>
-          <TextField
-            size="small"
-            placeholder="Search text..."
-            value={searchQuery}
-            onChange={(e) => setSearchQuery(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && handleSearch()}
-            sx={{ 
-              bgcolor: '#374151',
-              input: { color: 'white', fontSize: '0.875rem' },
-              '& .MuiOutlinedInput-root': { 
-                '& fieldset': { borderColor: '#4b5563' },
-                '&:hover fieldset': { borderColor: '#6b7280' }
-              }
-            }}
-          />
+        {/* Page Navigation */}
+        <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
           <Button
             size="sm"
-            onClick={handleSearch}
-            className="bg-indigo-600 hover:bg-indigo-700 text-white"
+            onClick={() => goToPage(currentPage - 1)}
+            disabled={currentPage <= 1}
+            className="bg-gray-700 hover:bg-gray-600 text-white"
           >
-            <Search className="w-4 h-4" />
+            <ChevronLeft className="w-4 h-4" />
+          </Button>
+          <Box sx={{ color: '#e5e7eb', fontSize: '0.875rem', minWidth: 120, textAlign: 'center' }}>
+            Page {currentPage} of {numPages || '...'}
+          </Box>
+          <Button
+            size="sm"
+            onClick={() => goToPage(currentPage + 1)}
+            disabled={!numPages || currentPage >= numPages}
+            className="bg-gray-700 hover:bg-gray-600 text-white"
+          >
+            <ChevronRight className="w-4 h-4" />
           </Button>
         </Box>
 
-        {/* Page Info */}
-        <Box sx={{ color: '#e5e7eb', fontSize: '0.875rem', minWidth: 120 }}>
-          Page {currentPage} of {totalPages}
-        </Box>
+        {/* Search Bar */}
+        <TextField
+          size="small"
+          placeholder="Search text..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          sx={{ 
+            width: 200,
+            bgcolor: '#374151',
+            input: { color: 'white', fontSize: '0.875rem' },
+            '& .MuiOutlinedInput-root': { 
+              '& fieldset': { borderColor: '#4b5563' },
+              '&:hover fieldset': { borderColor: '#6b7280' }
+            }
+          }}
+        />
 
         {/* Bookmark Button */}
         <Button
@@ -97,34 +101,6 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
           <Bookmark className="w-4 h-4" />
           {bookmarkedPages.includes(currentPage) ? 'Bookmarked' : 'Bookmark'}
         </Button>
-
-        {/* Annotation Mode */}
-        <Box sx={{ display: 'flex', gap: 1 }}>
-          <Button
-            size="sm"
-            onClick={() => setAnnotationMode(annotationMode === 'highlight' ? null : 'highlight')}
-            className={`gap-2 ${
-              annotationMode === 'highlight'
-                ? 'bg-yellow-500 hover:bg-yellow-600'
-                : 'bg-gray-700 hover:bg-gray-600'
-            } text-white`}
-            title="Highlight text (select text to highlight)"
-          >
-            <Highlighter className="w-4 h-4" />
-          </Button>
-          <Button
-            size="sm"
-            onClick={() => setAnnotationMode(annotationMode === 'note' ? null : 'note')}
-            className={`gap-2 ${
-              annotationMode === 'note'
-                ? 'bg-purple-500 hover:bg-purple-600'
-                : 'bg-gray-700 hover:bg-gray-600'
-            } text-white`}
-            title="Add note"
-          >
-            <StickyNote className="w-4 h-4" />
-          </Button>
-        </Box>
 
         {/* Set as Cover */}
         <Button
@@ -155,13 +131,7 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
             <Chip
               key={page}
               label={`Page ${page}`}
-              onClick={() => {
-                iframeRef.current?.contentWindow.postMessage({
-                  type: 'GOTO_PAGE',
-                  page: page - 1
-                }, '*');
-                setCurrentPage(page);
-              }}
+              onClick={() => goToPage(page)}
               onDelete={() => setBookmarkedPages(prev => prev.filter(p => p !== page))}
               sx={{ 
                 bgcolor: '#4f46e5', 
@@ -175,81 +145,35 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
         </Box>
       )}
 
-      {/* Note Input */}
-      {annotationMode === 'note' && (
-        <Box sx={{ 
-          bgcolor: '#374151', 
-          borderBottom: 1, 
-          borderColor: '#4b5563',
-          p: 2, 
-          display: 'flex', 
-          gap: 2 
-        }}>
-          <TextField
-            fullWidth
-            size="small"
-            placeholder={`Add note for page ${currentPage}...`}
-            value={noteText}
-            onChange={(e) => setNoteText(e.target.value)}
-            multiline
-            rows={2}
-            sx={{ 
-              bgcolor: '#1f2937',
-              input: { color: 'white' },
-              '& .MuiOutlinedInput-root': { 
-                '& fieldset': { borderColor: '#4b5563' },
-                '&:hover fieldset': { borderColor: '#6b7280' }
-              }
-            }}
-          />
-          <Button
-            size="sm"
-            onClick={() => {
-              if (noteText.trim()) {
-                // Store note (can be extended with local storage or backend)
-                console.log(`Note on page ${currentPage}: ${noteText}`);
-                setNoteText('');
-              }
-            }}
-            className="bg-purple-600 hover:bg-purple-700 text-white"
-          >
-            Save
-          </Button>
-        </Box>
-      )}
-
       {/* PDF Viewer */}
-      <div className="relative flex-1 overflow-hidden">
+      <div className="relative flex-1 overflow-auto flex items-center justify-center bg-gray-950">
         {isLoading && (
-          <div className="absolute inset-0 flex items-center justify-center z-10 bg-gray-900/80">
+          <div className="flex items-center justify-center">
             <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
           </div>
         )}
 
-        <iframe
-          ref={iframeRef}
-          src={viewerUrl}
-          title={title || 'PDF Viewer'}
-          className="w-full h-full border-none"
-          onLoad={() => {
+        <Document
+          file={fileUrl}
+          onLoadSuccess={({ numPages }) => {
+            setNumPages(numPages);
             setIsLoading(false);
-            // Try to detect page changes
-            const checkPage = setInterval(() => {
-              try {
-                const viewer = iframeRef.current?.contentWindow?.PDFViewerApplication;
-                if (viewer?.page) {
-                  setCurrentPage(viewer.page);
-                  setTotalPages(viewer.pagesCount || 0);
-                }
-              } catch (e) {
-                // Cross-origin restriction
-              }
-            }, 1000);
-            return () => clearInterval(checkPage);
           }}
-          sandbox="allow-scripts allow-same-origin allow-forms"
-          allowFullScreen
-        />
+          onLoadError={(error) => {
+            console.error('PDF load error:', error);
+            setIsLoading(false);
+          }}
+          loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+        >
+          <div className="bg-white shadow-lg">
+            <Page 
+              pageNumber={currentPage}
+              width={Math.min(900, typeof window !== 'undefined' ? window.innerWidth - 40 : 900)}
+              renderTextLayer={true}
+              renderAnnotationLayer={true}
+            />
+          </div>
+        </Document>
       </div>
     </div>
   );
