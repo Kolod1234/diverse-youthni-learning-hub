@@ -78,6 +78,7 @@ Please provide:
         type: 'object',
         properties: {
           answer: { type: 'string', description: 'Comprehensive answer to the question' },
+          imagePrompt: { type: 'string', description: 'A detailed prompt for generating a visual illustration of the answer' },
           relevantBooks: {
             type: 'array',
             items: {
