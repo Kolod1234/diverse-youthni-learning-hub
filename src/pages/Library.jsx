@@ -290,7 +290,7 @@ export default function Library() {
     });
   };
 
-  const canUpload = user && (user.role === 'admin' || user.is_tutor);
+
 
   const handleSuggestTags = async () => {
     setSuggestingTags(true);
