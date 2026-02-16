@@ -826,6 +826,16 @@ export default function Library() {
       </DialogContent>
     </Dialog>
 
+      {/* Bulk Upload Manager */}
+      <BulkUploadManager
+        open={showBulkUpload}
+        onOpenChange={setShowBulkUpload}
+        onSuccess={() => {
+          queryClient.invalidateQueries(['library-resources']);
+          setShowBulkUpload(false);
+        }}
+      />
+
       {/* Upload Book Dialog - Shows after AI analysis */}
       <Dialog open={showUploadDialog} onClose={() => setShowUploadDialog(false)} maxWidth="md" fullWidth>
         <DialogTitle>
