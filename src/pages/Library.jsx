@@ -785,7 +785,7 @@ export default function Library() {
                 </div>
               </div>
               <div className="flex-1 flex flex-col" id="pdf-viewer-container">
-                {canEditBook(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
+                {canEditBookUI(viewingBook) && viewingBook.file_url?.toLowerCase().endsWith('.pdf') && (
                   <div className="p-3 bg-gradient-to-r from-blue-50 to-indigo-50 border-b flex items-center justify-center gap-3">
                     <Button 
                       size="sm"
