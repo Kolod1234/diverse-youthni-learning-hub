@@ -71,16 +71,48 @@ export default function AILibraryAssistant({ resources = [] }) {
               <Box>
                 <h3 className="font-semibold text-gray-900 mb-2">Relevant Books</h3>
                 <div className="space-y-2">
-                  {result.relevantBooks.map((book, idx) => (
-                    <Box key={idx} sx={{ p: 2, bgcolor: '#f3f4f6', borderRadius: 1, border: '1px solid #e5e7eb' }}>
-                      <div className="font-medium text-gray-900">{book.title}</div>
-                      <div className="text-sm text-gray-600 mb-1">{book.author}</div>
-                      <div className="text-sm text-gray-700 mb-1">{book.relevance}</div>
-                      {book.estimatedPages && book.estimatedPages.length > 0 && (
-                        <div className="text-xs text-indigo-600">Pages: {book.estimatedPages.join(', ')}</div>
-                      )}
-                    </Box>
-                  ))}
+                  {result.relevantBooks.map((book, idx) => {
+                    const matchedBook = resources.find(r => r.title.toLowerCase().includes(book.title.toLowerCase()));
+                    const handleClick = () => {
+                      if (matchedBook) {
+                        setOpen(false);
+                        setTimeout(() => {
+                          window.location.href = createPageUrl('Library');
+                        }, 100);
+                      }
+                    };
+                    return (
+                      <Box 
+                        key={idx} 
+                        onClick={handleClick}
+                        sx={{ 
+                          p: 2, 
+                          bgcolor: matchedBook ? '#dbeafe' : '#f3f4f6', 
+                          borderRadius: 1, 
+                          border: matchedBook ? '1.5px solid #3b82f6' : '1px solid #e5e7eb',
+                          cursor: matchedBook ? 'pointer' : 'default',
+                          transition: 'all 0.2s ease',
+                          '&:hover': matchedBook ? { 
+                            bgcolor: '#bfdbfe', 
+                            transform: 'translateY(-1px)',
+                            boxShadow: '0 4px 12px rgba(59, 130, 246, 0.2)'
+                          } : {}
+                        }}
+                      >
+                        <div className="flex items-start justify-between gap-2">
+                          <div>
+                            <div className={`font-medium ${matchedBook ? 'text-blue-600 underline' : 'text-gray-900'}`}>
+                              {book.title}
+                            </div>
+                            <div className="text-sm text-gray-600 mb-1">{book.author}</div>
+                            <div className="text-sm text-gray-700 mb-1">{book.why}</div>
+                            {matchedBook && <div className="text-xs text-blue-600 mt-1">📖 Click to view in library</div>}
+                          </div>
+                          {matchedBook && <ExternalLink className="w-4 h-4 text-blue-600 mt-1 flex-shrink-0" />}
+                        </div>
+                      </Box>
+                    );
+                  })}
                 </div>
               </Box>
             )}
