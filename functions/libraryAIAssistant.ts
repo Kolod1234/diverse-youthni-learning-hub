@@ -44,25 +44,26 @@ Deno.serve(async (req) => {
     let responseSchema = {};
 
     if (mode === 'answer') {
-      prompt = `You are a helpful library assistant. You have access to a library with the following books:
+      prompt = `You are a library research assistant. Your job is to help users find answers from their library textbooks.
 
-LIBRARY BOOKS:
+AVAILABLE LIBRARY BOOKS:
 ${resourceContext}
 
-The user is asking: "${query}"
+USER QUESTION: "${query}"
 
-Your task:
-1. Answer the question based on general knowledge and the library context
-2. Recommend relevant books from the library that would help with this topic
-3. Explain why each recommended book is relevant
-4. List key concepts the user should understand
+Instructions:
+1. Search through the available library books by title, description, category, and tags
+2. Identify which books are most relevant to answer this question
+3. Provide a brief answer based on what topics these books cover
+4. Rank books by relevance (highest first)
+5. Explain why each book would help answer the question
 
-Be specific about which books from the library match the user's needs.`;
+If no relevant books exist, say so clearly and suggest what type of books would help.`;
 
       responseSchema = {
         type: 'object',
         properties: {
-          answer: { type: 'string', description: 'Comprehensive answer to the question' },
+          summary: { type: 'string', description: 'Brief overview of the topic based on available library books' },
           relevantBooks: {
             type: 'array',
             items: {
@@ -70,13 +71,13 @@ Be specific about which books from the library match the user's needs.`;
               properties: {
                 title: { type: 'string' },
                 author: { type: 'string' },
-                relevance: { type: 'string', description: 'Why this book is relevant' },
-                estimatedPages: { type: 'array', items: { type: 'number' }, description: 'Estimated page numbers' },
-                reasoning: { type: 'string' }
+                relevance: { type: 'string', description: 'Why this book answers the question' },
+                matchScore: { type: 'number', description: 'Relevance score 0-100' }
               }
             }
           },
-          keyConcepts: { type: 'array', items: { type: 'string' } }
+          suggestedReadingOrder: { type: 'array', items: { type: 'string' }, description: 'Order to read the books' },
+          needsAdditionalBooks: { type: 'boolean', description: 'Whether additional books are needed for complete coverage' }
         }
       };
     } else if (mode === 'search') {
