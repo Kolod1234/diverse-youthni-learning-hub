@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Admin access required' }, { status: 403 });
     }
 
-    const targetSubjects = ['geography', 'government_politics', 'religious_studies', 'digital_technology', 'software_systems_development', 'technology_design', 'english_literature'];
+    const targetSubjects = ['geography', 'government_politics', 'religious_studies', 'digital_technology', 'software_systems_development', 'technology_design', 'english_literature', 'english_language', 'mathematics', 'further_mathematics', 'life_health_sciences', 'environmental_technology'];
     
     const courses = await base44.asServiceRole.entities.Course.filter({
       qualification_type: 'alevel',
@@ -98,7 +98,27 @@ function getLessonData(category, stage) {
     
     // ENGLISH LITERATURE
     english_literature_as: getEnglishLiteratureAS(),
-    english_literature_a2: getEnglishLiteratureA2()
+    english_literature_a2: getEnglishLiteratureA2(),
+    
+    // ENGLISH LANGUAGE
+    english_language_as: getEnglishLanguageAS(),
+    english_language_a2: getEnglishLanguageA2(),
+    
+    // MATHEMATICS
+    mathematics_as: getMathematicsAS(),
+    mathematics_a2: getMathematicsA2(),
+    
+    // FURTHER MATHEMATICS
+    further_mathematics_as: getFurtherMathematicsAS(),
+    further_mathematics_a2: getFurtherMathematicsA2(),
+    
+    // LIFE & HEALTH SCIENCES
+    life_health_sciences_as: getLifeHealthSciencesAS(),
+    life_health_sciences_a2: getLifeHealthSciencesA2(),
+    
+    // ENVIRONMENTAL TECHNOLOGY
+    environmental_technology_as: getEnvironmentalTechnologyAS(),
+    environmental_technology_a2: getEnvironmentalTechnologyA2()
   };
   
   return lessonMap[key] || [];
@@ -409,5 +429,158 @@ function getEnglishLiteratureA2() {
     
     { s: 'A2-2: Coursework', o: o++, t: 'Extended Essay', d: 'Independent critical writing', obj: ['Plan extended essay', 'Develop critical argument', 'Support with evidence'] },
     { s: 'A2-2: Coursework', o: o++, t: 'Research Skills', d: 'Academic research', obj: ['Use critical sources', 'Reference appropriately', 'Synthesize arguments'] }
+  ];
+}
+
+// ENGLISH LANGUAGE LESSONS
+function getEnglishLanguageAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Language Study', o: o++, t: 'Language Frameworks', d: 'Lexis grammar phonology', obj: ['Analyze lexical choices', 'Examine grammatical structures', 'Understand phonological features'] },
+    { s: 'AS1: Language Study', o: o++, t: 'Language Variation', d: 'Regional and social dialects', obj: ['Identify regional dialects', 'Analyze social variation', 'Understand accent vs dialect'] },
+    { s: 'AS1: Language Study', o: o++, t: 'Spoken Language', d: 'Conversation analysis', obj: ['Analyze spoken discourse', 'Examine turn-taking', 'Understand pragmatics'] },
+    { s: 'AS1: Language Study', o: o++, t: 'Written Language', d: 'Text analysis', obj: ['Analyze written texts', 'Examine cohesion coherence', 'Understand text types'] },
+    
+    { s: 'AS2: Language Change', o: o++, t: 'Language Change Over Time', d: 'Historical development', obj: ['Trace language evolution', 'Analyze Old Middle Modern English', 'Understand semantic change'] },
+    { s: 'AS2: Language Change', o: o++, t: 'Contemporary Language Change', d: 'Modern developments', obj: ['Identify current changes', 'Analyze technology impact', 'Understand neologisms'] },
+    { s: 'AS2: Language Change', o: o++, t: 'Language and Gender', d: 'Gender differences in language', obj: ['Analyze gender language use', 'Examine theories Lakoff Tannen', 'Understand gender representation'] },
+    { s: 'AS2: Language Change', o: o++, t: 'Language and Power', d: 'Power relationships in discourse', obj: ['Analyze power in language', 'Examine institutional discourse', 'Understand persuasive techniques'] }
+  ];
+}
+
+function getEnglishLanguageA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Language Investigation', o: o++, t: 'Research Methods', d: 'Linguistic research', obj: ['Design research questions', 'Collect language data', 'Analyze findings'] },
+    { s: 'A2-1: Language Investigation', o: o++, t: 'Data Analysis', d: 'Qualitative and quantitative', obj: ['Analyze language data', 'Apply linguistic frameworks', 'Present findings'] },
+    
+    { s: 'A2-2: Language Production', o: o++, t: 'Original Writing', d: 'Creative writing skills', obj: ['Produce original texts', 'Apply stylistic techniques', 'Reflect on choices'] },
+    { s: 'A2-2: Language Production', o: o++, t: 'Commentary Writing', d: 'Analytical commentary', obj: ['Write language commentary', 'Analyze own writing', 'Justify linguistic choices'] }
+  ];
+}
+
+// MATHEMATICS LESSONS
+function getMathematicsAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Pure Maths', o: o++, t: 'Algebra Fundamentals', d: 'Algebraic manipulation', obj: ['Expand and factorize', 'Solve linear equations', 'Manipulate algebraic fractions'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Quadratic Equations', d: 'Solving and graphing', obj: ['Solve quadratic equations', 'Complete the square', 'Use quadratic formula'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Inequalities', d: 'Linear and quadratic', obj: ['Solve linear inequalities', 'Solve quadratic inequalities', 'Represent solutions graphically'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Indices and Surds', d: 'Laws of indices', obj: ['Apply index laws', 'Rationalize surds', 'Simplify expressions'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Coordinate Geometry', d: 'Lines and circles', obj: ['Find equation of line', 'Find equation of circle', 'Solve coordinate problems'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Functions', d: 'Domain range composition', obj: ['Define functions notation', 'Find domain and range', 'Compose functions'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Differentiation', d: 'Basic calculus', obj: ['Differentiate polynomials', 'Find gradients and tangents', 'Apply stationary points'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Integration', d: 'Basic integration', obj: ['Integrate polynomials', 'Find areas under curves', 'Apply integration techniques'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Trigonometry', d: 'Angles and identities', obj: ['Use trigonometric ratios', 'Apply sine cosine rules', 'Solve trigonometric equations'] },
+    { s: 'AS1: Pure Maths', o: o++, t: 'Sequences and Series', d: 'Arithmetic and geometric', obj: ['Find nth term', 'Sum arithmetic series', 'Sum geometric series'] },
+    
+    { s: 'AS2: Applied Maths', o: o++, t: 'Statistics Data', d: 'Data representation', obj: ['Draw statistical diagrams', 'Calculate measures of location', 'Calculate measures of spread'] },
+    { s: 'AS2: Applied Maths', o: o++, t: 'Probability', d: 'Probability theory', obj: ['Calculate probabilities', 'Use tree diagrams', 'Apply conditional probability'] },
+    { s: 'AS2: Applied Maths', o: o++, t: 'Statistical Distributions', d: 'Normal and binomial', obj: ['Use binomial distribution', 'Apply normal distribution', 'Solve distribution problems'] },
+    { s: 'AS2: Applied Maths', o: o++, t: 'Mechanics Kinematics', d: 'Motion in straight line', obj: ['Use suvat equations', 'Draw velocity-time graphs', 'Solve motion problems'] },
+    { s: 'AS2: Applied Maths', o: o++, t: 'Mechanics Forces', d: 'Forces and equilibrium', obj: ['Resolve forces', 'Apply Newton laws', 'Solve equilibrium problems'] }
+  ];
+}
+
+function getMathematicsA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Advanced Algebra', d: 'Polynomials and partial fractions', obj: ['Divide polynomials', 'Use remainder theorem', 'Apply partial fractions'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Exponentials and Logarithms', d: 'Exponential and log functions', obj: ['Solve exponential equations', 'Apply logarithm laws', 'Model exponential growth'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Advanced Trigonometry', d: 'Identities and equations', obj: ['Apply compound angle formulae', 'Use double angle formulae', 'Solve trigonometric equations'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Advanced Differentiation', d: 'Product quotient chain rules', obj: ['Apply product rule', 'Apply quotient rule', 'Use chain rule'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Advanced Integration', d: 'Integration techniques', obj: ['Integrate by substitution', 'Integrate by parts', 'Solve differential equations'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Parametric Equations', d: 'Parametric forms', obj: ['Differentiate parametric equations', 'Find areas parametric curves', 'Convert to Cartesian'] },
+    { s: 'A2-1: Pure Maths', o: o++, t: 'Vectors', d: '2D and 3D vectors', obj: ['Add and subtract vectors', 'Calculate scalar product', 'Find vector equations'] },
+    
+    { s: 'A2-2: Applied Maths', o: o++, t: 'Advanced Statistics', d: 'Hypothesis testing', obj: ['Conduct hypothesis tests', 'Use significance levels', 'Interpret test results'] },
+    { s: 'A2-2: Applied Maths', o: o++, t: 'Correlation and Regression', d: 'Bivariate data', obj: ['Calculate correlation coefficient', 'Find regression lines', 'Make predictions'] },
+    { s: 'A2-2: Applied Maths', o: o++, t: 'Advanced Mechanics', d: 'Projectiles and circular motion', obj: ['Solve projectile problems', 'Apply circular motion', 'Use energy and momentum'] }
+  ];
+}
+
+// FURTHER MATHEMATICS LESSONS
+function getFurtherMathematicsAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Core Pure', o: o++, t: 'Complex Numbers', d: 'Imaginary and complex', obj: ['Define complex numbers', 'Perform complex arithmetic', 'Use Argand diagrams'] },
+    { s: 'AS1: Core Pure', o: o++, t: 'Matrices', d: 'Matrix operations', obj: ['Add and multiply matrices', 'Find determinants and inverses', 'Solve matrix equations'] },
+    { s: 'AS1: Core Pure', o: o++, t: 'Proof by Induction', d: 'Mathematical proof', obj: ['Apply proof by induction', 'Prove series formulae', 'Prove divisibility'] },
+    { s: 'AS1: Core Pure', o: o++, t: 'Advanced Algebra', d: 'Inequalities and roots', obj: ['Solve modulus inequalities', 'Use discriminant', 'Apply algebraic division'] },
+    
+    { s: 'AS2: Option Mechanics', o: o++, t: 'Advanced Kinematics', d: 'Variable acceleration', obj: ['Use calculus in kinematics', 'Solve variable acceleration', 'Apply vector methods'] },
+    { s: 'AS2: Option Statistics', o: o++, t: 'Probability Distributions', d: 'Discrete and continuous', obj: ['Use Poisson distribution', 'Apply exponential distribution', 'Solve probability problems'] }
+  ];
+}
+
+function getFurtherMathematicsA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Core Pure', o: o++, t: 'Hyperbolic Functions', d: 'Sinh cosh tanh', obj: ['Define hyperbolic functions', 'Prove hyperbolic identities', 'Solve hyperbolic equations'] },
+    { s: 'A2-1: Core Pure', o: o++, t: 'Differential Equations', d: 'First and second order', obj: ['Solve first order DEs', 'Solve second order DEs', 'Model with DEs'] },
+    { s: 'A2-1: Core Pure', o: o++, t: 'Polar Coordinates', d: 'Polar forms', obj: ['Convert to polar coordinates', 'Sketch polar curves', 'Find areas polar regions'] },
+    
+    { s: 'A2-2: Options', o: o++, t: 'Advanced Mechanics', d: 'Rigid body motion', obj: ['Apply moments', 'Use center of mass', 'Solve rigid body problems'] },
+    { s: 'A2-2: Options', o: o++, t: 'Advanced Statistics', d: 'Statistical inference', obj: ['Use chi-squared tests', 'Apply confidence intervals', 'Conduct advanced hypothesis tests'] }
+  ];
+}
+
+// LIFE & HEALTH SCIENCES LESSONS
+function getLifeHealthSciencesAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Human Biology', o: o++, t: 'Cell Structure and Function', d: 'Cells tissues organs', obj: ['Describe cell organelles', 'Explain cell specialization', 'Understand tissue types'] },
+    { s: 'AS1: Human Biology', o: o++, t: 'Circulatory System', d: 'Heart and blood vessels', obj: ['Describe heart structure', 'Explain cardiac cycle', 'Understand blood circulation'] },
+    { s: 'AS1: Human Biology', o: o++, t: 'Respiratory System', d: 'Breathing and gas exchange', obj: ['Describe respiratory structures', 'Explain ventilation mechanism', 'Understand gas exchange'] },
+    { s: 'AS1: Human Biology', o: o++, t: 'Digestive System', d: 'Digestion and absorption', obj: ['Describe digestive organs', 'Explain enzyme digestion', 'Understand nutrient absorption'] },
+    { s: 'AS1: Human Biology', o: o++, t: 'Nervous System', d: 'Coordination and control', obj: ['Describe neuron structure', 'Explain nerve impulse transmission', 'Understand reflex actions'] },
+    
+    { s: 'AS2: Health Issues', o: o++, t: 'Diet and Nutrition', d: 'Balanced diet requirements', obj: ['Explain nutrient requirements', 'Assess dietary deficiencies', 'Understand malnutrition'] },
+    { s: 'AS2: Health Issues', o: o++, t: 'Cardiovascular Disease', d: 'Heart disease prevention', obj: ['Identify CVD risk factors', 'Explain disease mechanisms', 'Assess prevention strategies'] },
+    { s: 'AS2: Health Issues', o: o++, t: 'Respiratory Disease', d: 'Lung disorders', obj: ['Describe asthma COPD', 'Explain disease causes', 'Assess treatment options'] },
+    { s: 'AS2: Health Issues', o: o++, t: 'Infectious Disease', d: 'Pathogens and immunity', obj: ['Identify disease-causing organisms', 'Explain immune response', 'Understand vaccination'] },
+    { s: 'AS2: Health Issues', o: o++, t: 'Mental Health', d: 'Psychological wellbeing', obj: ['Understand mental health conditions', 'Identify risk factors', 'Assess support strategies'] }
+  ];
+}
+
+function getLifeHealthSciencesA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Body Systems', o: o++, t: 'Endocrine System', d: 'Hormonal control', obj: ['Describe endocrine glands', 'Explain hormone action', 'Understand feedback control'] },
+    { s: 'A2-1: Body Systems', o: o++, t: 'Renal System', d: 'Kidney function', obj: ['Describe kidney structure', 'Explain urine formation', 'Understand homeostasis'] },
+    { s: 'A2-1: Body Systems', o: o++, t: 'Reproductive System', d: 'Human reproduction', obj: ['Describe reproductive organs', 'Explain gametogenesis', 'Understand pregnancy development'] },
+    { s: 'A2-1: Body Systems', o: o++, t: 'Immune System', d: 'Defense mechanisms', obj: ['Explain innate immunity', 'Describe adaptive immunity', 'Understand immunological memory'] },
+    
+    { s: 'A2-2: Contemporary Issues', o: o++, t: 'Cancer Biology', d: 'Cancer development and treatment', obj: ['Explain tumor formation', 'Identify risk factors', 'Assess treatment approaches'] },
+    { s: 'A2-2: Contemporary Issues', o: o++, t: 'Genetic Disorders', d: 'Inherited conditions', obj: ['Explain genetic inheritance', 'Describe genetic disorders', 'Assess genetic screening'] },
+    { s: 'A2-2: Contemporary Issues', o: o++, t: 'Substance Abuse', d: 'Drug effects on health', obj: ['Explain drug effects', 'Assess health impacts', 'Understand addiction'] },
+    { s: 'A2-2: Contemporary Issues', o: o++, t: 'Healthcare Systems', d: 'Public health', obj: ['Compare healthcare models', 'Assess health provision', 'Understand health policy'] }
+  ];
+}
+
+// ENVIRONMENTAL TECHNOLOGY LESSONS
+function getEnvironmentalTechnologyAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Environmental Science', o: o++, t: 'Ecosystems', d: 'Ecosystem components and energy flow', obj: ['Describe ecosystem structure', 'Explain energy transfer', 'Understand nutrient cycles'] },
+    { s: 'AS1: Environmental Science', o: o++, t: 'Biodiversity', d: 'Species diversity and conservation', obj: ['Measure biodiversity', 'Assess conservation importance', 'Understand threats to biodiversity'] },
+    { s: 'AS1: Environmental Science', o: o++, t: 'Pollution', d: 'Air water soil pollution', obj: ['Identify pollution sources', 'Assess pollution effects', 'Evaluate control measures'] },
+    { s: 'AS1: Environmental Science', o: o++, t: 'Climate Change', d: 'Causes and impacts', obj: ['Explain greenhouse effect', 'Assess climate change evidence', 'Understand mitigation strategies'] },
+    
+    { s: 'AS2: Environmental Management', o: o++, t: 'Waste Management', d: 'Waste reduction and recycling', obj: ['Classify waste types', 'Assess disposal methods', 'Evaluate recycling schemes'] },
+    { s: 'AS2: Environmental Management', o: o++, t: 'Energy Resources', d: 'Renewable and non-renewable', obj: ['Compare energy sources', 'Assess sustainability', 'Understand energy efficiency'] },
+    { s: 'AS2: Environmental Management', o: o++, t: 'Water Resources', d: 'Water supply and treatment', obj: ['Explain water cycle', 'Describe water treatment', 'Assess water conservation'] }
+  ];
+}
+
+function getEnvironmentalTechnologyA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Environmental Issues', o: o++, t: 'Deforestation', d: 'Forest loss impacts', obj: ['Identify deforestation causes', 'Assess environmental impacts', 'Evaluate sustainable forestry'] },
+    { s: 'A2-1: Environmental Issues', o: o++, t: 'Agriculture and Environment', d: 'Farming impacts', obj: ['Assess agricultural pollution', 'Explain intensive farming', 'Understand organic farming'] },
+    { s: 'A2-1: Environmental Issues', o: o++, t: 'Urban Environment', d: 'Urban sustainability', obj: ['Identify urban environmental issues', 'Assess sustainable cities', 'Understand green infrastructure'] },
+    
+    { s: 'A2-2: Environmental Technology', o: o++, t: 'Environmental Monitoring', d: 'Measurement techniques', obj: ['Use monitoring equipment', 'Collect environmental data', 'Analyze data trends'] },
+    { s: 'A2-2: Environmental Technology', o: o++, t: 'Environmental Assessment', d: 'Impact assessment', obj: ['Conduct environmental surveys', 'Assess development impacts', 'Recommend mitigation measures'] }
   ];
 }
