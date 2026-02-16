@@ -288,3 +288,112 @@ function getBiologyA2Complete() {
 
   return lessons;
 }
+
+function getHistoryAS() {
+  let o = 1;
+  return [
+    { section: 'Unit AS 1', order: o++, title: 'Medieval England', description: 'Feudalism and monarchy', learning_objectives: ['Understand feudal system', 'Analyze authority', 'Evaluate society'] },
+    { section: 'Unit AS 1', order: o++, title: 'Tudor Dynasty', description: 'Consolidation and reform', learning_objectives: ['Examine policies', 'Understand change', 'Evaluate impact'] },
+    { section: 'Unit AS 1', order: o++, title: 'Stuart Period', description: 'Conflict and revolution', learning_objectives: ['Analyze conflict', 'Understand causes', 'Evaluate outcomes'] },
+    { section: 'Unit AS 1', order: o++, title: 'Georgian Britain', description: 'Industry and society', learning_objectives: ['Examine change', 'Understand impact', 'Evaluate progress'] },
+    { section: 'Unit AS 2', order: o++, title: 'French Revolution', description: 'Revolutionary change', learning_objectives: ['Understand causes', 'Analyze effects', 'Evaluate influence'] },
+    { section: 'Unit AS 2', order: o++, title: 'German Unification', description: 'Nationalism and power', learning_objectives: ['Examine process', 'Understand factors', 'Evaluate Bismarck'] },
+    { section: 'Unit AS 2', order: o++, title: 'American Independence', description: 'Revolution and expansion', learning_objectives: ['Analyze independence', 'Understand growth', 'Evaluate conflict'] },
+    { section: 'Unit AS 2', order: o++, title: 'Russian History', description: 'Autocracy to revolution', learning_objectives: ['Examine system', 'Understand change', 'Evaluate impact'] },
+  ];
+}
+
+function getHistoryA2() {
+  let o = 1;
+  return [
+    { section: 'Unit A2 1', order: o++, title: 'English Civil War', description: 'Constitutional conflict', learning_objectives: ['Examine causes', 'Analyze ideologies', 'Evaluate legacy'] },
+    { section: 'Unit A2 1', order: o++, title: 'Ancient Greece', description: 'Democracy and culture', learning_objectives: ['Understand democracy', 'Analyze culture', 'Evaluate influence'] },
+    { section: 'Unit A2 1', order: o++, title: 'Roman Empire', description: 'Republic to empire', learning_objectives: ['Examine republic', 'Understand empire', 'Evaluate Augustus'] },
+    { section: 'Unit A2 2', order: o++, title: 'American Presidency', description: 'Executive power', learning_objectives: ['Analyze presidency', 'Understand policies', 'Evaluate impact'] },
+    { section: 'Unit A2 2', order: o++, title: 'Weimar and Hitler', description: 'Interwar to fascism', learning_objectives: ['Examine Weimar', 'Understand crisis', 'Analyze fascism'] },
+    { section: 'Unit A2 2', order: o++, title: 'Soviet Union', description: 'Communist state', learning_objectives: ['Understand ideology', 'Analyze policies', 'Evaluate totalitarianism'] },
+  ];
+}
+
+function getMathematicsAS() {
+  let o = 1;
+  return [
+    { section: 'Pure', order: o++, title: 'Algebra and Functions', description: 'Algebraic manipulation', learning_objectives: ['Manipulate expressions', 'Understand functions', 'Solve equations'] },
+    { section: 'Pure', order: o++, title: 'Polynomials', description: 'Higher degree functions', learning_objectives: ['Factor polynomials', 'Divide polynomials', 'Understand applications'] },
+    { section: 'Pure', order: o++, title: 'Exponentials and Logarithms', description: 'Growth and logarithms', learning_objectives: ['Use exponentials', 'Understand logarithms', 'Solve equations'] },
+    { section: 'Pure', order: o++, title: 'Trigonometry', description: 'Trigonometric functions', learning_objectives: ['Use ratios', 'Understand identities', 'Solve equations'] },
+    { section: 'Pure', order: o++, title: 'Differentiation', description: 'Rate of change', learning_objectives: ['Find derivatives', 'Understand limits', 'Apply rules'] },
+    { section: 'Pure', order: o++, title: 'Integration', description: 'Antiderivatives', learning_objectives: ['Find integrals', 'Calculate areas', 'Apply methods'] },
+    { section: 'Statistics', order: o++, title: 'Data Analysis', description: 'Data collection', learning_objectives: ['Collect data', 'Analyze distributions', 'Draw conclusions'] },
+    { section: 'Statistics', order: o++, title: 'Probability', description: 'Probability theory', learning_objectives: ['Calculate probabilities', 'Use distributions', 'Apply to problems'] },
+    { section: 'Mechanics', order: o++, title: 'Kinematics', description: 'Motion analysis', learning_objectives: ['Analyze motion', 'Use equations', 'Solve problems'] },
+  ];
+}
+
+function getMathematicsA2() {
+  let o = 1;
+  return [
+    { section: 'Pure', order: o++, title: 'Complex Numbers', description: 'Complex arithmetic', learning_objectives: ['Perform operations', 'Use polar form', 'Apply theorems'] },
+    { section: 'Pure', order: o++, title: 'Matrices', description: 'Matrix operations', learning_objectives: ['Multiply matrices', 'Find determinants', 'Calculate inverses'] },
+    { section: 'Pure', order: o++, title: 'Series', description: 'Sequences and series', learning_objectives: ['Sum series', 'Find terms', 'Understand limits'] },
+    { section: 'Pure', order: o++, title: 'Proof', description: 'Mathematical proof', learning_objectives: ['Use induction', 'Prove statements', 'Apply techniques'] },
+    { section: 'Pure', order: o++, title: 'Advanced Trig', description: 'Advanced trigonometry', learning_objectives: ['Solve equations', 'Use identities', 'Apply substitutions'] },
+    { section: 'Pure', order: o++, title: 'Differential Equations', description: 'Solving DEs', learning_objectives: ['Solve DEs', 'Model systems', 'Apply to physics'] },
+    { section: 'Statistics', order: o++, title: 'Hypothesis Testing', description: 'Statistical testing', learning_objectives: ['Test hypotheses', 'Calculate p-values', 'Interpret results'] },
+    { section: 'Mechanics', order: o++, title: 'Advanced Mechanics', description: 'Forces and energy', learning_objectives: ['Analyze forces', 'Calculate energy', 'Understand oscillations'] },
+  ];
+}
+
+function getChemistryAS() {
+  let o = 1;
+  return [
+    { section: 'Atomic', order: o++, title: 'Atomic Structure', description: 'Atomic model', learning_objectives: ['Understand structure', 'Use quantum model', 'Write configurations'] },
+    { section: 'Atomic', order: o++, title: 'Bonding - Ionic', description: 'Ionic compounds', learning_objectives: ['Form compounds', 'Understand lattices', 'Predict properties'] },
+    { section: 'Atomic', order: o++, title: 'Bonding - Covalent', description: 'Covalent bonding', learning_objectives: ['Draw structures', 'Understand polarity', 'Predict shapes'] },
+    { section: 'Atomic', order: o++, title: 'Periodicity', description: 'Periodic trends', learning_objectives: ['Understand trends', 'Predict properties', 'Explain patterns'] },
+    { section: 'Reactions', order: o++, title: 'Group Chemistry', description: 'Group reactions', learning_objectives: ['Recognize trends', 'Predict reactions', 'Explain behavior'] },
+    { section: 'Reactions', order: o++, title: 'Equilibrium', description: 'Chemical equilibrium', learning_objectives: ['Calculate Kc', 'Shift equilibrium', 'Predict changes'] },
+    { section: 'Reactions', order: o++, title: 'Energetics', description: 'Thermochemistry', learning_objectives: ['Calculate enthalpy', 'Apply Hess Law', 'Understand energy'] },
+    { section: 'Organic', order: o++, title: 'Organic Basics', description: 'Organic structure', learning_objectives: ['Name compounds', 'Identify groups', 'Understand structure'] },
+  ];
+}
+
+function getChemistryA2() {
+  let o = 1;
+  return [
+    { section: 'Kinetics', order: o++, title: 'Reaction Rates', description: 'Rate equations', learning_objectives: ['Determine order', 'Write rate laws', 'Understand activation'] },
+    { section: 'Kinetics', order: o++, title: 'Advanced Equilibrium', description: 'Gas equilibrium', learning_objectives: ['Calculate Kp', 'Shift equilibrium', 'Predict changes'] },
+    { section: 'Kinetics', order: o++, title: 'Acids and Bases', description: 'Acid-base chemistry', learning_objectives: ['Calculate pH', 'Understand buffers', 'Predict indicators'] },
+    { section: 'Kinetics', order: o++, title: 'Redox Reactions', description: 'Oxidation and reduction', learning_objectives: ['Assign states', 'Balance equations', 'Understand processes'] },
+    { section: 'Transition', order: o++, title: 'Transition Metals', description: 'Complex ions', learning_objectives: ['Identify complexes', 'Explain colors', 'Understand reactions'] },
+    { section: 'Organic', order: o++, title: 'Alkanes and Alkenes', description: 'Hydrocarbons', learning_objectives: ['Predict reactions', 'Name isomers', 'Understand mechanisms'] },
+    { section: 'Organic', order: o++, title: 'Aromatic Chemistry', description: 'Benzene compounds', learning_objectives: ['Understand resonance', 'Predict substitution', 'Explain reactivity'] },
+    { section: 'Organic', order: o++, title: 'Organic Synthesis', description: 'Building molecules', learning_objectives: ['Plan synthesis', 'Predict products', 'Understand routes'] },
+  ];
+}
+
+function getGeographyAS() {
+  let o = 1;
+  return [
+    { section: 'Physical', order: o++, title: 'Plate Tectonics', description: 'Earth structure', learning_objectives: ['Understand plates', 'Explain earthquakes', 'Predict hazards'] },
+    { section: 'Physical', order: o++, title: 'Weather and Climate', description: 'Atmospheric systems', learning_objectives: ['Understand systems', 'Predict weather', 'Explain climate'] },
+    { section: 'Physical', order: o++, title: 'River Systems', description: 'Fluvial processes', learning_objectives: ['Understand processes', 'Identify features', 'Explain erosion'] },
+    { section: 'Physical', order: o++, title: 'Coastal Environments', description: 'Wave processes', learning_objectives: ['Understand processes', 'Identify features', 'Evaluate management'] },
+    { section: 'Human', order: o++, title: 'Population Dynamics', description: 'Population change', learning_objectives: ['Understand transitions', 'Analyze patterns', 'Predict trends'] },
+    { section: 'Human', order: o++, title: 'Settlement Patterns', description: 'Urbanization', learning_objectives: ['Analyze patterns', 'Understand hierarchy', 'Evaluate development'] },
+    { section: 'Human', order: o++, title: 'Economic Activity', description: 'Economic sectors', learning_objectives: ['Classify activities', 'Understand change', 'Evaluate impact'] },
+    { section: 'Human', order: o++, title: 'Development', description: 'Global inequality', learning_objectives: ['Measure development', 'Explain gaps', 'Evaluate strategies'] },
+  ];
+}
+
+function getGeographyA2() {
+  let o = 1;
+  return [
+    { section: 'Advanced Physical', order: o++, title: 'Biogeography', description: 'Biomes and ecosystems', learning_objectives: ['Classify biomes', 'Understand functions', 'Evaluate change'] },
+    { section: 'Advanced Physical', order: o++, title: 'Soil Systems', description: 'Soil formation', learning_objectives: ['Understand formation', 'Classify soils', 'Evaluate management'] },
+    { section: 'Advanced Physical', order: o++, title: 'Sustainability', description: 'Conservation', learning_objectives: ['Understand sustainability', 'Evaluate strategies', 'Apply knowledge'] },
+    { section: 'Advanced Human', order: o++, title: 'Global Trade', description: 'International commerce', learning_objectives: ['Understand trade', 'Analyze development', 'Evaluate strategies'] },
+    { section: 'Advanced Human', order: o++, title: 'Urban Development', description: 'City growth', learning_objectives: ['Analyze growth', 'Understand challenges', 'Evaluate solutions'] },
+    { section: 'Advanced Human', order: o++, title: 'Political Geography', description: 'Geopolitics', learning_objectives: ['Understand boundaries', 'Analyze conflicts', 'Evaluate tensions'] },
+  ];
+}
