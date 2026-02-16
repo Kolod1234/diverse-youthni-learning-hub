@@ -46,8 +46,7 @@ export default function CourseDetails() {
   const { data: course, isLoading: loadingCourse } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
-      const courses = await base44.entities.Course.filter({ id: courseId });
-      return courses[0];
+      return await base44.entities.Course.get(courseId);
     },
     enabled: !!courseId,
     staleTime: 5 * 60 * 1000,
