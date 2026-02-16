@@ -85,7 +85,7 @@ export default function CourseIntegrityValidator() {
                 variant="contained"
                 startIcon={isRunning ? <Loader className="animate-spin" size={20} /> : <Play size={20} />}
                 onClick={handleRunValidation}
-                disabled={isRunning}
+                disabled={isRunning || isFixing}
                 sx={{
                   background: 'linear-gradient(to right, #2563eb, #1e40af)',
                   color: 'white',
@@ -96,6 +96,23 @@ export default function CourseIntegrityValidator() {
               >
                 {isRunning ? 'Validating...' : 'Run Full Validation'}
               </Button>
+              {validation && !isRunning && validation.issues_found.length > 0 && (
+                <Button
+                  variant="contained"
+                  startIcon={isFixing ? <Loader className="animate-spin" size={20} /> : <CheckCircle size={20} />}
+                  onClick={handleAutoFix}
+                  disabled={isFixing}
+                  sx={{
+                    background: 'linear-gradient(to right, #10b981, #059669)',
+                    color: 'white',
+                    px: 3,
+                    py: 1.5,
+                    fontWeight: 600
+                  }}
+                >
+                  {isFixing ? 'Fixing...' : 'Auto-Fix Issues'}
+                </Button>
+              )}
               {validation && !isRunning && (
                 <>
                   <Chip
