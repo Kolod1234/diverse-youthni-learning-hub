@@ -343,14 +343,24 @@ export default function Library() {
                 onChange={handleFileSelected}
                 className="hidden"
               />
-              <Button 
-                onClick={handleInitiateUpload}
-                disabled={uploadingFile || analyzing}
-                className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-              >
-                <Plus className="w-5 h-5" />
-                {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
-              </Button>
+              <Box sx={{ display: 'flex', gap: 2 }}>
+                <Button 
+                  onClick={() => setShowBulkUpload(true)}
+                  variant="outlined"
+                  className="gap-2"
+                >
+                  <Upload className="w-5 h-5" />
+                  Bulk Import
+                </Button>
+                <Button 
+                  onClick={handleInitiateUpload}
+                  disabled={uploadingFile || analyzing}
+                  className="bg-indigo-600 hover:bg-indigo-700 gap-2"
+                >
+                  <Plus className="w-5 h-5" />
+                  {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
+                </Button>
+              </Box>
             </>
           )}
         </Box>
