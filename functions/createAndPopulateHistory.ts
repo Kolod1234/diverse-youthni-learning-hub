@@ -50,23 +50,18 @@ Deno.serve(async (req) => {
           }
         }
 
-        const batchSize = 8;
-        for (let i = 0; i < lessons.length; i += batchSize) {
-          const batch = lessons.slice(i, i + batchSize);
-          await base44.entities.Lesson.bulkCreate(batch.map(l => ({
-            course_id: course.id,
-            title: l.title,
-            description: l.description,
-            section: l.section,
-            order: l.order,
-            learning_objectives: l.learning_objectives || [],
-            content_type: 'richtext',
-            slides: [],
-            is_preview: l.order <= 3,
-            duration_minutes: 50
-          })));
-          await new Promise(r => setTimeout(r, 150));
-        }
+        await base44.entities.Lesson.bulkCreate(lessons.map(l => ({
+          course_id: course.id,
+          title: l.title,
+          description: l.description,
+          section: l.section,
+          order: l.order,
+          learning_objectives: l.learning_objectives || [],
+          content_type: 'richtext',
+          slides: [],
+          is_preview: l.order <= 3,
+          duration_minutes: 50
+        })));
 
         await base44.asServiceRole.entities.Course.update(course.id, {
           total_lessons: lessons.length
