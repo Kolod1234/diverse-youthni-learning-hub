@@ -34,7 +34,7 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
   };
 
   return (
-    <div className="relative w-full h-full bg-gray-900 flex flex-col overflow-hidden">
+    <div style={{ width: '100%', height: '100%', backgroundColor: '#111827', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Toolbar */}
       <Box sx={{ 
         bgcolor: '#ffffff', 
