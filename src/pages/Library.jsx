@@ -834,14 +834,33 @@ export default function Library() {
       </DialogContent>
     </Dialog>
 
+      {/* Permission Manager Dialog */}
+      {canManageUsers && (
+       <Box sx={{ position: 'fixed', bottom: 20, right: 20, zIndex: 50 }}>
+         <Button
+           variant="contained"
+           onClick={() => setShowPermissionManager(true)}
+           sx={{ bgcolor: '#4f46e5', borderRadius: '50%', width: 56, height: 56, minWidth: 0, p: 0 }}
+           title="Manage library permissions"
+         >
+           <Edit className="w-6 h-6" />
+         </Button>
+       </Box>
+      )}
+
+      <LibraryPermissionManager
+       open={showPermissionManager}
+       onOpenChange={setShowPermissionManager}
+      />
+
       {/* Bulk Upload Manager */}
       <BulkUploadManager
-        open={showBulkUpload}
-        onOpenChange={setShowBulkUpload}
-        onSuccess={() => {
-          queryClient.invalidateQueries(['library-resources']);
-          setShowBulkUpload(false);
-        }}
+       open={showBulkUpload}
+       onOpenChange={setShowBulkUpload}
+       onSuccess={() => {
+         queryClient.invalidateQueries(['library-resources']);
+         setShowBulkUpload(false);
+       }}
       />
 
       {/* Upload Book Dialog - Shows after AI analysis */}
