@@ -118,9 +118,9 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
       {/* Bookmarks Display */}
       {bookmarkedPages.length > 0 && (
         <Box sx={{ 
-          bgcolor: '#1f2937', 
+          bgcolor: '#f9fafb', 
           borderBottom: 1, 
-          borderColor: '#374151',
+          borderColor: '#e5e7eb',
           p: 1.5, 
           display: 'flex', 
           gap: 1, 
@@ -139,7 +139,8 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
                 color: 'white',
                 cursor: 'pointer',
                 fontSize: '0.75rem',
-                height: 24
+                height: 24,
+                fontWeight: 600
               }}
             />
           ))}
