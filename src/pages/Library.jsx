@@ -63,6 +63,18 @@ export default function Library() {
     loadUser();
   }, []);
 
+  // Check for book ID in sessionStorage from AI assistant
+  useEffect(() => {
+    const bookId = sessionStorage.getItem('openLibraryBookId');
+    if (bookId && resources.length > 0) {
+      const book = resources.find(r => r.id === bookId);
+      if (book) {
+        setSelectedBook(book);
+        sessionStorage.removeItem('openLibraryBookId');
+      }
+    }
+  }, [resources]);
+
   const { data: resources = [] } = useQuery({
     queryKey: ['library-resources'],
     queryFn: () => base44.entities.LibraryResource.list('-created_date', 500)
