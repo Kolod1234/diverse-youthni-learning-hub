@@ -65,7 +65,22 @@ export default function AILibraryAssistant({ resources = [] }) {
             {result.answer && (
               <Box>
                 <h3 className="font-semibold text-gray-900 mb-2">Answer</h3>
-                <p className="text-gray-700 leading-relaxed">{result.answer}</p>
+                <div className="prose prose-sm max-w-none text-gray-700 space-y-3">
+                  <ReactMarkdown 
+                    components={{
+                      p: ({ children }) => <p className="text-gray-700 leading-relaxed mb-2">{children}</p>,
+                      strong: ({ children }) => <strong className="font-semibold text-gray-900">{children}</strong>,
+                      em: ({ children }) => <em className="italic text-gray-600">{children}</em>,
+                      a: ({ children, href }) => <a href={href} target="_blank" rel="noopener noreferrer" className="text-blue-600 underline hover:text-blue-800">{children}</a>,
+                      ul: ({ children }) => <ul className="list-disc list-inside ml-2 text-gray-700">{children}</ul>,
+                      ol: ({ children }) => <ol className="list-decimal list-inside ml-2 text-gray-700">{children}</ol>,
+                      li: ({ children }) => <li className="text-gray-700 mb-1">{children}</li>,
+                      h4: ({ children }) => <h4 className="font-semibold text-gray-900 mt-3 mb-2">{children}</h4>,
+                    }}
+                  >
+                    {result.answer}
+                  </ReactMarkdown>
+                </div>
               </Box>
             )}
             {result.relevantBooks && result.relevantBooks.length > 0 && (
