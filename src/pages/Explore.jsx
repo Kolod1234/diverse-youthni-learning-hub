@@ -12,6 +12,7 @@ import SearchBar from '@/components/courses/SearchBar';
 
 const categories = [
   { id: 'mathematics', label: 'Mathematics', icon: '🔢', color: 'from-blue-500 to-cyan-500' },
+  { id: 'further_mathematics', label: 'Further Mathematics', icon: '🧮', color: 'from-blue-600 to-indigo-600' },
   { id: 'english', label: 'English', icon: '📚', color: 'from-purple-500 to-pink-500' },
   { id: 'biology', label: 'Biology', icon: '🧬', color: 'from-green-500 to-emerald-500' },
   { id: 'chemistry', label: 'Chemistry', icon: '⚗️', color: 'from-orange-500 to-amber-500' },
