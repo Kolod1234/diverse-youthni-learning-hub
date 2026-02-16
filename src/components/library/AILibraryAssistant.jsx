@@ -205,18 +205,33 @@ export default function AILibraryAssistant({ resources = [] }) {
 
   return (
     <>
-      <Button
+      <Box
         onClick={() => setOpen(true)}
         sx={{
+          position: 'fixed',
+          bottom: 30,
+          right: 30,
+          zIndex: 1000,
+          display: 'flex',
+          alignItems: 'center',
           gap: 1,
+          px: 2.5,
+          py: 1.5,
           bgcolor: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
           color: 'white',
-          '&:hover': { opacity: 0.9 }
+          borderRadius: 3,
+          cursor: 'pointer',
+          boxShadow: '0 10px 30px rgba(102, 126, 234, 0.4)',
+          transition: 'all 0.3s ease',
+          '&:hover': { 
+            transform: 'translateY(-4px)',
+            boxShadow: '0 15px 40px rgba(102, 126, 234, 0.6)'
+          }
         }}
       >
         <Sparkles className="w-5 h-5" />
-        AI Library Assistant
-      </Button>
+        <span style={{ fontSize: '0.875rem', fontWeight: 600 }}>AI Assistant</span>
+      </Box>
 
       <Dialog open={open} onClose={() => setOpen(false)} maxWidth="md" fullWidth>
         <DialogTitle sx={{ bgcolor: '#f9fafb', borderBottom: 1, borderColor: '#e5e7eb' }}>
