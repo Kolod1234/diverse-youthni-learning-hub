@@ -583,9 +583,9 @@ export default function Library() {
       <Dialog open={!!selectedBook} onClose={() => setSelectedBook(null)} maxWidth="lg" fullWidth>
         <DialogContent sx={{ p: 0, maxHeight: '90vh', overflow: 'hidden' }}>
           {selectedBook && (
-            <div className="flex flex-col md:flex-row h-full">
+            <div className="flex flex-col md:flex-row h-full gap-0">
               {/* Book Cover */}
-              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col items-center justify-start">
+              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col items-center overflow-y-auto">
                 {selectedBook.cover_image ? (
                   selectedBook.cover_image.toLowerCase().includes('.pdf') ? (
                     <div className="w-full max-w-xs rounded-lg shadow-2xl mb-6 bg-white">
