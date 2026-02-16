@@ -607,9 +607,9 @@ export default function Library() {
             sx={{
               display: { xs: 'flex', sm: 'none' },
               position: 'fixed',
-              bottom: 30,
+              bottom: 100,
               right: 20,
-              zIndex: 40,
+              zIndex: 1000,
               width: 56,
               height: 56,
               borderRadius: '50%',
