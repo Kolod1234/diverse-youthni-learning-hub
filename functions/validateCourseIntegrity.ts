@@ -56,10 +56,10 @@ Deno.serve(async (req) => {
         courseIssues.push('Missing instructor name');
       }
 
-      // Fetch lessons for this course
-      const lessons = await base44.asServiceRole.entities.Lesson.filter({ 
-        course_id: course.id 
-      });
+      // Fetch lessons for this course (limit to 1000, should be more than enough per course)
+            const lessons = await base44.asServiceRole.entities.Lesson.filter({ 
+              course_id: course.id 
+            }, '', 1000);
 
       if (lessons.length === 0) {
         courseIssues.push(`No lessons found (expected at least 1)`);
