@@ -54,7 +54,7 @@ Deno.serve(async (req) => {
         });
 
         results.push({ course: course.title, lessons: lessons.length, status: 'success' });
-        await new Promise(r => setTimeout(r, 6000));
+        await new Promise(r => setTimeout(r, 12000)); // Longer delay between courses
 
       } catch (error) {
         results.push({ course: course.title, status: 'error', error: error.message });
