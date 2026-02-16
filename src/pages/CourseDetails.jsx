@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { 
@@ -197,7 +198,7 @@ export default function CourseDetails() {
   }
 
   return (
-    <>
+    <CoursePasswordProtection user={user}>
       <CourseSEO course={course} />
       <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom, #f8fafc, white)' }}>
       {/* Hero Section */}
