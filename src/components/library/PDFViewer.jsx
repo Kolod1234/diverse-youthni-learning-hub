@@ -135,6 +135,20 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
           <FileImage className="w-4 h-4" />
           Set as Cover
         </Button>
+
+        {/* Fullscreen Button */}
+        <Button
+          size="sm"
+          onClick={toggleFullscreen}
+          className="bg-gray-600 hover:bg-gray-700 text-white gap-2 font-medium ml-auto"
+          title="Toggle fullscreen"
+        >
+          {isFullscreen ? (
+            <Minimize2 className="w-4 h-4" />
+          ) : (
+            <Maximize2 className="w-4 h-4" />
+          )}
+        </Button>
       </Box>
 
       {/* Bookmarks Display */}
