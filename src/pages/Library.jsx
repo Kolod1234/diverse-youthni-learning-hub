@@ -15,6 +15,8 @@ import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
 import CoverPicker from '@/components/library/CoverPicker';
 import BulkUploadManager from '@/components/library/BulkUploadManager';
+import LibraryPermissionManager from '@/components/library/LibraryPermissionManager';
+import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
