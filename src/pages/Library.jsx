@@ -556,7 +556,12 @@ export default function Library() {
             <p className="text-gray-500">No resources found</p>
           </div>
         )}
-      </Container>
+        </Container>
+
+        {/* Floating AI Assistant Button */}
+        <Box sx={{ position: 'fixed', bottom: 30, right: 30, zIndex: 40 }}>
+        <AILibraryAssistant resources={resources} />
+        </Box>
 
         {/* Upload Progress Dialog */}
         <Dialog open={uploadingFile} onClose={() => {}}>
