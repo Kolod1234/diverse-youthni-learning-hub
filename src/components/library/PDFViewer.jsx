@@ -257,86 +257,86 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
         minHeight: 0,
         backgroundColor: '#111827'
       }}>
-      {/* PDF Viewer */}
-      <div style={{ 
-        flex: 1, 
-        display: 'flex', 
-        flexDirection: 'column', 
-        overflowY: 'auto', 
-        overflowX: 'auto', 
-        backgroundColor: '#111827', 
-        padding: isFullscreen ? '0' : '16px', 
-        minHeight: 0,
-        alignItems: 'center',
-        justifyContent: 'center'
-      }}>
-        {!fileUrl && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
-            No file URL provided
-          </div>
-        )}
-
-        {fileUrl && (
-          <>
-            {isLoading && (
-              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
-                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
-              </div>
-            )}
-
-            <Document
-              file={fileUrl}
-              onLoadSuccess={({ numPages }) => {
-                setNumPages(numPages);
-                setIsLoading(false);
-              }}
-              onLoadError={(error) => {
-                console.error('PDF load error:', error);
-                setIsLoading(false);
-              }}
-              loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
-            >
-              <div style={{ 
-                backgroundColor: 'white', 
-                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
-                margin: isFullscreen ? '0' : '16px auto', 
-                width: isFullscreen ? '100%' : 'fit-content',
-                height: isFullscreen ? '100%' : 'auto',
-                display: 'flex',
-                alignItems: 'center',
-                justifyContent: 'center'
-              }}>
-                <Page 
-                  pageNumber={currentPage}
-                  renderTextLayer={true}
-                  renderAnnotationLayer={true}
-                  width={isFullscreen ? window.innerWidth : undefined}
-                />
-              </div>
-            </Document>
-          </>
-        )}
-      </div>
-      
-      {/* Annotations Panel */}
-      {showAnnotations && resourceId && (
-        <Box sx={{ 
-          width: 350,
-          bgcolor: '#ffffff',
-          borderLeft: 1,
-          borderColor: '#e5e7eb',
-          overflowY: 'auto',
-          display: { xs: 'none', md: 'block' }
+        {/* PDF Viewer */}
+        <div style={{ 
+          flex: 1, 
+          display: 'flex', 
+          flexDirection: 'column', 
+          overflowY: 'auto', 
+          overflowX: 'auto', 
+          backgroundColor: '#111827', 
+          padding: isFullscreen ? '0' : '16px', 
+          minHeight: 0,
+          alignItems: 'center',
+          justifyContent: 'center'
         }}>
-          <AnnotationTools
-            resourceId={resourceId}
-            pageNumber={currentPage}
-            annotations={annotations}
-            onAnnotationCreate={(data) => createAnnotationMutation.mutate(data)}
-            onAnnotationDelete={(id) => deleteAnnotationMutation.mutate(id)}
-          />
-        </Box>
-      )}
+          {!fileUrl && (
+            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
+              No file URL provided
+            </div>
+          )}
+
+          {fileUrl && (
+            <>
+              {isLoading && (
+                <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
+                  <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+                </div>
+              )}
+
+              <Document
+                file={fileUrl}
+                onLoadSuccess={({ numPages }) => {
+                  setNumPages(numPages);
+                  setIsLoading(false);
+                }}
+                onLoadError={(error) => {
+                  console.error('PDF load error:', error);
+                  setIsLoading(false);
+                }}
+                loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+              >
+                <div style={{ 
+                  backgroundColor: 'white', 
+                  boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
+                  margin: isFullscreen ? '0' : '16px auto', 
+                  width: isFullscreen ? '100%' : 'fit-content',
+                  height: isFullscreen ? '100%' : 'auto',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center'
+                }}>
+                  <Page 
+                    pageNumber={currentPage}
+                    renderTextLayer={true}
+                    renderAnnotationLayer={true}
+                    width={isFullscreen ? window.innerWidth : undefined}
+                  />
+                </div>
+              </Document>
+            </>
+          )}
+        </div>
+        
+        {/* Annotations Panel */}
+        {showAnnotations && resourceId && (
+          <Box sx={{ 
+            width: 350,
+            bgcolor: '#ffffff',
+            borderLeft: 1,
+            borderColor: '#e5e7eb',
+            overflowY: 'auto',
+            display: { xs: 'none', md: 'block' }
+          }}>
+            <AnnotationTools
+              resourceId={resourceId}
+              pageNumber={currentPage}
+              annotations={annotations}
+              onAnnotationCreate={(data) => createAnnotationMutation.mutate(data)}
+              onAnnotationDelete={(id) => deleteAnnotationMutation.mutate(id)}
+            />
+          </Box>
+        )}
       </div>
     </div>
   );
