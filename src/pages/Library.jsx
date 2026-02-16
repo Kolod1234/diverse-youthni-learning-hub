@@ -824,8 +824,31 @@ export default function Library() {
                   </div>
                 )}
                 <div className="flex-1">
-                  <PDFViewer fileUrl={viewingBook.file_url} title={viewingBook.title} />
-                </div>
+                   <PDFViewer 
+                     fileUrl={viewingBook.file_url} 
+                     title={viewingBook.title}
+                     onCoverCapture={async (pageNum) => {
+                       try {
+                         const toastId = toast.loading(`Capturing page ${pageNum} as cover...`);
+                         const response = await base44.functions.invoke('extractPdfPage', {
+                           file_url: viewingBook.file_url,
+                           page_number: pageNum - 1
+                         });
+                         if (!response.data.success) {
+                           toast.error(response.data.error || 'Failed to capture page', { id: toastId });
+                           return;
+                         }
+                         await base44.entities.LibraryResource.update(viewingBook.id, {
+                           cover_image: response.data.extracted_page_url
+                         });
+                         queryClient.invalidateQueries(['library-resources']);
+                         toast.success('Cover image saved!', { id: toastId });
+                       } catch (error) {
+                         toast.error('Failed to capture page: ' + error.message);
+                       }
+                     }}
+                   />
+                 </div>
               </div>
             </div>
           )}
