@@ -790,7 +790,7 @@ export default function Library() {
                       onClick={async (e) => {
                         e.preventDefault();
                         e.stopPropagation();
-                        
+
                         try {
                           const toastId = toast.loading('Capturing first page as cover...');
 
@@ -827,6 +827,7 @@ export default function Library() {
                    <PDFViewer 
                      fileUrl={viewingBook.file_url} 
                      title={viewingBook.title}
+                     resourceId={viewingBook.id}
                      onCoverCapture={async (pageNum) => {
                        try {
                          const toastId = toast.loading(`Capturing page ${pageNum} as cover...`);
