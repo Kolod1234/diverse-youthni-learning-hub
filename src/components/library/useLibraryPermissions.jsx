@@ -37,6 +37,11 @@ const DEFAULT_ROLES = {
 };
 
 export function useLibraryPermissions(userEmail) {
+  const { data: user } = useQuery({
+    queryKey: ['current-user'],
+    queryFn: () => base44.auth.me()
+  });
+
   const { data: userRole } = useQuery({
     queryKey: ['user-library-role', userEmail],
     queryFn: async () => {
@@ -53,7 +58,7 @@ export function useLibraryPermissions(userEmail) {
 
   const userPermissions = userRole 
     ? getPermissions(userRole.library_role)
-    : getPermissions('viewer');
+    : user?.role === 'admin' ? getPermissions('curator') : getPermissions('viewer');
 
   const canUpload = userPermissions.can_upload;
   
