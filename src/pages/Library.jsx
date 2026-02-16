@@ -14,6 +14,7 @@ import CommentsSection from '@/components/library/CommentsSection';
 import ActivityHistory from '@/components/library/ActivityHistory';
 import EditBookDialog from '@/components/library/EditBookDialog';
 import CoverPicker from '@/components/library/CoverPicker';
+import BulkUploadManager from '@/components/library/BulkUploadManager';
 
 export default function Library() {
   const [searchQuery, setSearchQuery] = useState('');
