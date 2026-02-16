@@ -186,6 +186,13 @@ export default function AdminCourseBuilder() {
           onClose={() => setEditingSection(null)}
         />
       )}
+
+      {editingBasicInfo && (
+        <CourseBasicInfoEditor
+          course={course}
+          onClose={() => setEditingBasicInfo(false)}
+        />
+      )}
     </div>
   );
 }
