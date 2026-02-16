@@ -62,6 +62,15 @@ export default function AILibraryAssistant({ resources = [] }) {
       case 'answer':
         return (
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            {result.image_url && (
+              <Box sx={{ width: '100%', borderRadius: 2, overflow: 'hidden' }}>
+                <img 
+                  src={result.image_url} 
+                  alt="Answer illustration" 
+                  className="w-full h-auto object-cover rounded-lg shadow-md"
+                />
+              </Box>
+            )}
             {result.answer && (
               <Box>
                 <h3 className="font-semibold text-gray-900 mb-2">Answer</h3>
