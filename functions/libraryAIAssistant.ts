@@ -62,7 +62,7 @@ Deno.serve(async (req) => {
         .map(r => `- "${r.title}" by ${r.author || 'Unknown'} (Category: ${r.category}, Tags: ${r.tags?.join(', ') || 'N/A'})\n  Description: ${r.description || 'No description'}`)
         .join('\n\n');
 
-      prompt = `You are a library research assistant helping a student find answers using textbooks.
+      prompt = `You are a research assistant helping a student find answers using textbooks and internet sources.
 
 STUDENT QUESTION: "${query}"
 
@@ -70,12 +70,12 @@ AVAILABLE TEXTBOOKS IN THE LIBRARY:
 ${booksList}
 
 Your task:
-1. List which books from above are relevant to answer this question
-2. For each relevant book, explain what topic or chapter would help
+1. First, provide a comprehensive answer to the question using both library textbooks AND current internet information
+2. List which library books are relevant and explain what topic/chapter would help
 3. Rate each book's relevance (0-100)
-4. Suggest the best reading order
+4. Suggest the best reading order for those books
 
-Be specific about which books match the question. Only recommend books that are actually listed above.`;
+Use web search to provide complete answers, and recommend library books as supplementary resources.`;
 
       responseSchema = {
         type: 'object',
