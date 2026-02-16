@@ -385,6 +385,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
                       <ListItemText primary="Page Builder" />
                     </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('CourseIntegrityValidator')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><CheckCircle size={20} color="#10b981" /></ListItemIcon>
+                      <ListItemText primary="Course Validator" />
+                    </MenuItem>
                     <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Manage Coordinators" />
