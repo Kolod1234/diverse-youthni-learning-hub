@@ -44,18 +44,20 @@ Deno.serve(async (req) => {
     let responseSchema = {};
 
     if (mode === 'answer') {
-      prompt = `You are a helpful library assistant. Based on the following available library resources, answer the user's question comprehensively with relevant book references.
+      prompt = `You are a helpful library assistant. You have access to a library with the following books:
 
-AVAILABLE LIBRARY RESOURCES:
+LIBRARY BOOKS:
 ${resourceContext}
 
-USER QUESTION: ${query}
+The user is asking: "${query}"
 
-Please provide:
-1. A clear, detailed answer to the question
-2. Relevant books from the library that contain information about this topic
-3. Specific page numbers if known (estimate based on typical book structure)
-4. Key concepts related to the answer`;
+Your task:
+1. Answer the question based on general knowledge and the library context
+2. Recommend relevant books from the library that would help with this topic
+3. Explain why each recommended book is relevant
+4. List key concepts the user should understand
+
+Be specific about which books from the library match the user's needs.`;
 
       responseSchema = {
         type: 'object',
