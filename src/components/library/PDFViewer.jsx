@@ -190,11 +190,23 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           Set as Cover
         </Button>
 
+        {/* Annotations Panel Button */}
+        {resourceId && (
+          <Button
+            size="sm"
+            onClick={() => setShowAnnotations(!showAnnotations)}
+            className={`gap-2 ${showAnnotations ? 'bg-purple-600 text-white' : 'bg-gray-600 hover:bg-gray-700 text-white'}`}
+            title="Show annotations"
+          >
+            📝 {annotations.length}
+          </Button>
+        )}
+
         {/* Fullscreen Button */}
         <Button
           size="sm"
           onClick={toggleFullscreen}
-          className="bg-gray-600 hover:bg-gray-700 text-white gap-2 font-medium ml-auto"
+          className="bg-gray-600 hover:bg-gray-700 text-white gap-2 font-medium"
           title="Toggle fullscreen"
         >
           {isFullscreen ? (
