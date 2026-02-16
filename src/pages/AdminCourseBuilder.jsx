@@ -89,10 +89,16 @@ export default function AdminCourseBuilder() {
               <h1 className="text-2xl font-bold">Course Landing Page Builder</h1>
               <p className="text-gray-500">{course.title}</p>
             </div>
-            <Button onClick={() => setEditingSection({ course_id: courseId })}>
-              <Plus className="w-4 h-4 mr-2" />
-              Add Section
-            </Button>
+            <div className="flex gap-2">
+              <Button variant="outline" onClick={() => setEditingBasicInfo(true)}>
+                <Image className="w-4 h-4 mr-2" />
+                Edit Thumbnail
+              </Button>
+              <Button onClick={() => setEditingSection({ course_id: courseId })}>
+                <Plus className="w-4 h-4 mr-2" />
+                Add Section
+              </Button>
+            </div>
           </div>
 
           {sections.length === 0 ? (
