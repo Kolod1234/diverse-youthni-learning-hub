@@ -249,6 +249,14 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
         </Box>
       )}
 
+      {/* Main Content Area */}
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        gap: '16px',
+        minHeight: 0,
+        backgroundColor: '#111827'
+      }}>
       {/* PDF Viewer */}
       <div style={{ 
         flex: 1, 
