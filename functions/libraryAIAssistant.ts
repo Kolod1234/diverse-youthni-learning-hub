@@ -35,37 +35,10 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    // Build context from available resources, including PDF content extraction
-    let resourceContext = '';
-    
-    for (const r of resourcesToSearch) {
-      let bookContent = `Title: ${r.title}\nAuthor: ${r.author || 'Unknown'}\nDescription: ${r.description || 'N/A'}\nTags: ${r.tags?.join(', ') || 'N/A'}`;
-      
-      // Extract text from PDF if available
-      if (r.file_url && r.file_url.toLowerCase().endsWith('.pdf')) {
-        try {
-          const pdfContent = await base44.integrations.Core.ExtractDataFromUploadedFile({
-            file_url: r.file_url,
-            json_schema: {
-              type: 'object',
-              properties: {
-                text: { type: 'string', description: 'Extracted text content from PDF' }
-              }
-            }
-          });
-          
-          if (pdfContent && pdfContent.output && pdfContent.output.text) {
-            // Limit to first 3000 chars per book to avoid token overload
-            bookContent += `\n\nContent Preview: ${pdfContent.output.text.substring(0, 3000)}...`;
-          }
-        } catch (err) {
-          console.log(`Could not extract PDF content for ${r.title}:`, err.message);
-          // Continue with just metadata if extraction fails
-        }
-      }
-      
-      resourceContext += bookContent + '\n\n';
-    }
+    // Build context from available resources
+    const resourceContext = resourcesToSearch
+      .map(r => `Title: ${r.title}\nAuthor: ${r.author || 'Unknown'}\nDescription: ${r.description || 'N/A'}\nCategory: ${r.category || 'N/A'}\nTags: ${r.tags?.join(', ') || 'N/A'}`)
+      .join('\n\n');
 
     let prompt = '';
     let responseSchema = {};
