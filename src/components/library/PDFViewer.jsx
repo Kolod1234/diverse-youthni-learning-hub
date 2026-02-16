@@ -12,6 +12,8 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedPages, setBookmarkedPages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
+  const containerRef = useRef(null);
 
   const toggleBookmark = () => {
     setBookmarkedPages(prev =>
