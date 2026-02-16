@@ -10,14 +10,47 @@ import AnnotationTools from './AnnotationTools';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
-export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
+export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }) {
   const [numPages, setNumPages] = useState(null);
   const [currentPage, setCurrentPage] = useState(1);
   const [searchQuery, setSearchQuery] = useState('');
   const [bookmarkedPages, setBookmarkedPages] = useState([]);
   const [isLoading, setIsLoading] = useState(false);
   const [isFullscreen, setIsFullscreen] = useState(false);
+  const [showAnnotations, setShowAnnotations] = useState(false);
   const containerRef = useRef(null);
+  const queryClient = useQueryClient();
+
+  const { data: annotations = [] } = useQuery({
+    queryKey: ['annotations', resourceId, currentPage],
+    queryFn: () => resourceId ? base44.entities.Annotation.filter({ 
+      resource_id: resourceId,
+      page_number: currentPage 
+    }, '-created_date', 100) : Promise.resolve([]),
+    enabled: !!resourceId
+  });
+
+  const createAnnotationMutation = useMutation({
+    mutationFn: (annotationData) => {
+      if (!resourceId) throw new Error('Resource ID required');
+      return base44.entities.Annotation.create({
+        ...annotationData,
+        resource_id: resourceId
+      });
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['annotations']);
+      toast.success('Annotation saved');
+    }
+  });
+
+  const deleteAnnotationMutation = useMutation({
+    mutationFn: (annotationId) => base44.entities.Annotation.delete(annotationId),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['annotations']);
+      toast.success('Annotation deleted');
+    }
+  });
 
   const toggleBookmark = () => {
     setBookmarkedPages(prev =>
