@@ -4,6 +4,7 @@ import { Box, TextField, Button, Dialog, DialogTitle, DialogContent, DialogActio
 import { Send, Sparkles, BookOpen, HelpCircle, Settings, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { createPageUrl } from '@/utils';
+import ReactMarkdown from 'react-markdown';
 
 export default function AILibraryAssistant({ resources = [] }) {
   const [open, setOpen] = useState(false);
