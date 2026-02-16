@@ -16,6 +16,7 @@ Deno.serve(async (req) => {
 
     const results = [];
 
+    // Create courses only (no lessons)
     for (const courseInfo of historyCourses) {
       try {
         let course = await base44.asServiceRole.entities.Course.filter({
@@ -34,37 +35,10 @@ Deno.serve(async (req) => {
             level: courseInfo.stage === 'as' ? 'intermediate' : 'advanced',
             total_lessons: 0
           });
+          results.push({ course: courseInfo.title, status: 'created' });
+        } else {
+          results.push({ course: courseInfo.title, status: 'exists' });
         }
-
-        const lessons = courseInfo.stage === 'as' ? getHistoryAS() : getHistoryA2();
-        
-        if (!lessons.length) {
-          results.push({ course: courseInfo.title, status: 'no lesson data' });
-          continue;
-        }
-
-        await base44.entities.Lesson.bulkCreate(lessons.map(l => ({
-          course_id: course.id,
-          title: l.title,
-          description: l.description,
-          section: l.section,
-          order: l.order,
-          learning_objectives: l.learning_objectives || [],
-          content_type: 'richtext',
-          slides: [],
-          is_preview: l.order <= 3,
-          duration_minutes: 50
-        })));
-
-        await base44.asServiceRole.entities.Course.update(course.id, {
-          total_lessons: lessons.length
-        });
-
-        results.push({
-          course: courseInfo.title,
-          lessons: lessons.length,
-          status: 'success'
-        });
 
       } catch (error) {
         results.push({
