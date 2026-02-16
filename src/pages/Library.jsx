@@ -332,20 +332,21 @@ export default function Library() {
     <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb' }}>
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 4 }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: { xs: '100%', md: 'auto' } }}>
             <Box sx={{ bgcolor: '#4f46e5', p: 1, borderRadius: 2 }}>
               <BookOpen size={24} color="white" />
             </Box>
             <Typography variant="h4" fontWeight={700}>BookBase</Typography>
           </Box>
           
-          <Box sx={{ flex: 1, maxWidth: 450, mx: 4 }}>
+          <Box sx={{ flex: 1, maxWidth: 450, minWidth: 200, display: { xs: 'none', sm: 'block' } }}>
             <TextField
               placeholder="Search your favourite books"
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               fullWidth
+              size="small"
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
@@ -357,7 +358,7 @@ export default function Library() {
             />
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
             {canUpload && (
               <>
                 <input
@@ -370,26 +371,46 @@ export default function Library() {
                 <Button 
                   onClick={() => setShowBulkUpload(true)}
                   variant="outlined"
-                  className="gap-2"
-                  sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
+                  size="small"
+                  sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1 }}
                 >
-                  <Upload className="w-5 h-5" />
-                  Bulk Import
+                  <Upload className="w-4 h-4" />
+                  <span sx={{ display: { xs: 'none', md: 'inline' } }}>Bulk Import</span>
                 </Button>
                 <Button 
                   onClick={handleInitiateUpload}
                   disabled={uploadingFile || analyzing}
-                  className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-                  sx={{ display: { xs: 'inline-flex', sm: 'inline-flex' } }}
+                  variant="contained"
+                  size="small"
+                  sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
                 >
-                  <Plus className="w-5 h-5" />
-                  <span className="hidden sm:inline">
-                    {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
+                  <Plus className="w-4 h-4" />
+                  <span sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                    {uploadingFile || analyzing ? 'Analyzing...' : 'Upload'}
                   </span>
                 </Button>
               </>
             )}
           </Box>
+        </Box>
+
+        {/* Mobile Search */}
+        <Box sx={{ display: { xs: 'block', sm: 'none' }, mb: 3 }}>
+          <TextField
+            placeholder="Search books"
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            fullWidth
+            size="small"
+            InputProps={{
+              startAdornment: (
+                <InputAdornment position="start">
+                  <Search size={20} color="#9ca3af" />
+                </InputAdornment>
+              ),
+            }}
+            sx={{ bgcolor: 'white', '& .MuiOutlinedInput-root': { borderRadius: 2 } }}
+          />
         </Box>
 
         {/* Featured Section */}
