@@ -357,7 +357,7 @@ export default function Library() {
             />
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1, flexWrap: 'wrap', justifyContent: { xs: 'flex-end', md: 'flex-end' } }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
             {canUpload && (
               <>
                 <input
@@ -371,7 +371,7 @@ export default function Library() {
                   onClick={() => setShowBulkUpload(true)}
                   variant="outlined"
                   className="gap-2"
-                  sx={{ display: { xs: 'none', sm: 'flex' } }}
+                  sx={{ display: { xs: 'none', sm: 'inline-flex' } }}
                 >
                   <Upload className="w-5 h-5" />
                   Bulk Import
@@ -380,10 +380,10 @@ export default function Library() {
                   onClick={handleInitiateUpload}
                   disabled={uploadingFile || analyzing}
                   className="bg-indigo-600 hover:bg-indigo-700 gap-2"
-                  size={typeof window !== 'undefined' && window.innerWidth < 640 ? 'small' : 'medium'}
+                  sx={{ display: { xs: 'inline-flex', sm: 'inline-flex' } }}
                 >
                   <Plus className="w-5 h-5" />
-                  <span sx={{ display: { xs: 'none', sm: 'inline' } }}>
+                  <span className="hidden sm:inline">
                     {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
                   </span>
                 </Button>
