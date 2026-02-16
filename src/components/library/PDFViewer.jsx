@@ -352,15 +352,27 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
                         boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
                         padding: '16px',
                         display: 'flex',
+                        flexDirection: layoutMode === 'continuous' ? 'column' : 'row',
                         alignItems: 'center',
-                        justifyContent: 'center'
+                        justifyContent: 'center',
+                        gap: '16px'
                       }}>
                         <Page 
                           pageNumber={currentPage}
                           renderTextLayer={true}
                           renderAnnotationLayer={true}
-                          width={isFullscreen ? window.innerWidth - 32 : undefined}
+                          width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
+                          scale={fontSize / 100}
                         />
+                        {layoutMode === 'continuous' && currentPage < numPages && (
+                          <Page 
+                            pageNumber={currentPage + 1}
+                            renderTextLayer={true}
+                            renderAnnotationLayer={true}
+                            width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
+                            scale={fontSize / 100}
+                          />
+                        )}
                       </div>
                     </Document>
                   </TransformComponent>
