@@ -62,7 +62,7 @@ export default function Explore() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
-      const courses = await base44.entities.Course.list('-created_date', 100);
+      const courses = await base44.entities.Course.list('-created_date', 500);
       // Fetch lesson counts for all courses
       const coursesWithCounts = await Promise.all(
         courses.map(async (course) => {
