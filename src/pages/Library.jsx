@@ -625,33 +625,7 @@ export default function Library() {
         )}
         </Container>
 
-        {/* Mobile Upload FAB */}
-        {canUpload && (
-          <Box
-            onClick={handleInitiateUpload}
-            disabled={uploadingFile || analyzing}
-            sx={{
-              display: { xs: 'flex', sm: 'none' },
-              position: 'fixed',
-              bottom: 100,
-              right: 20,
-              zIndex: 1000,
-              width: 56,
-              height: 56,
-              borderRadius: '50%',
-              bgcolor: '#4f46e5',
-              color: 'white',
-              alignItems: 'center',
-              justifyContent: 'center',
-              cursor: uploadingFile || analyzing ? 'not-allowed' : 'pointer',
-              opacity: uploadingFile || analyzing ? 0.6 : 1,
-              boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)',
-              '&:active': { boxShadow: '0 2px 8px rgba(79, 70, 229, 0.3)' }
-            }}
-          >
-            <Plus className="w-6 h-6" />
-          </Box>
-        )}
+
 
         {/* Floating AI Assistant Button */}
         <AILibraryAssistant resources={resources} />
