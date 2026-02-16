@@ -151,14 +151,20 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
 
       {/* PDF Viewer */}
       <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'auto', backgroundColor: '#111827', padding: '16px', minHeight: 0 }}>
-        {isLoading && (
-          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
-            <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+        {!fileUrl && (
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
+            No file URL provided
           </div>
         )}
 
-        {!isLoading && (
-          <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
+        {fileUrl && (
+          <>
+            {isLoading && (
+              <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%' }}>
+                <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
+              </div>
+            )}
+
             <Document
               file={fileUrl}
               onLoadSuccess={({ numPages }) => {
@@ -179,7 +185,7 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
                 />
               </div>
             </Document>
-          </div>
+          </>
         )}
       </div>
     </div>
