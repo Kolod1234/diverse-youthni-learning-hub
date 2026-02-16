@@ -21,11 +21,11 @@ Deno.serve(async (req) => {
         const lessons = getDesignLessons(key);
 
         if (!lessons || lessons.length === 0) {
-          results.push({ course: course.title, status: 'no lesson data' });
+          results.push({ course: course.title, status: 'skipped - no lesson data for this stage' });
           continue;
         }
 
-        // Delete existing lessons
+        // Only delete existing lessons if we have new data to replace them
         const existing = await base44.entities.Lesson.filter({ course_id: course.id });
         if (existing.length > 0) {
           await Promise.all(existing.map(l => base44.asServiceRole.entities.Lesson.delete(l.id)));
