@@ -201,7 +201,18 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
       )}
 
       {/* PDF Viewer */}
-      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'auto', backgroundColor: '#111827', padding: '16px', minHeight: 0 }}>
+      <div style={{ 
+        flex: 1, 
+        display: 'flex', 
+        flexDirection: 'column', 
+        overflowY: 'auto', 
+        overflowX: 'auto', 
+        backgroundColor: '#111827', 
+        padding: isFullscreen ? '0' : '16px', 
+        minHeight: 0,
+        alignItems: 'center',
+        justifyContent: 'center'
+      }}>
         {!fileUrl && (
           <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
             No file URL provided
@@ -228,11 +239,21 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
               }}
               loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
             >
-              <div style={{ backgroundColor: 'white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', margin: '16px auto', width: 'fit-content' }}>
+              <div style={{ 
+                backgroundColor: 'white', 
+                boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
+                margin: isFullscreen ? '0' : '16px auto', 
+                width: isFullscreen ? '100%' : 'fit-content',
+                height: isFullscreen ? '100%' : 'auto',
+                display: 'flex',
+                alignItems: 'center',
+                justifyContent: 'center'
+              }}>
                 <Page 
                   pageNumber={currentPage}
                   renderTextLayer={true}
                   renderAnnotationLayer={true}
+                  width={isFullscreen ? window.innerWidth : undefined}
                 />
               </div>
             </Document>
