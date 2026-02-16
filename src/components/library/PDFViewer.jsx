@@ -150,35 +150,38 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
       )}
 
       {/* PDF Viewer */}
-      <div className="relative flex-1 overflow-y-auto overflow-x-hidden flex justify-center bg-gray-950 p-4">
+      <div style={{ flex: 1, display: 'flex', flexDirection: 'column', overflowY: 'auto', overflowX: 'hidden', backgroundColor: '#111827', padding: '16px' }}>
         {isLoading && (
-          <div className="flex items-center justify-center h-full">
+          <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%' }}>
             <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
           </div>
         )}
 
-        <Document
-          file={fileUrl}
-          onLoadSuccess={({ numPages }) => {
-            setNumPages(numPages);
-            setIsLoading(false);
-          }}
-          onLoadError={(error) => {
-            console.error('PDF load error:', error);
-            setIsLoading(false);
-          }}
-          loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
-          className="flex justify-center"
-        >
-          <div className="bg-white shadow-2xl my-4">
-            <Page 
-              pageNumber={currentPage}
-              scale={1.5}
-              renderTextLayer={true}
-              renderAnnotationLayer={true}
-            />
+        {!isLoading && (
+          <div style={{ display: 'flex', justifyContent: 'center' }}>
+            <Document
+              file={fileUrl}
+              onLoadSuccess={({ numPages }) => {
+                setNumPages(numPages);
+                setIsLoading(false);
+              }}
+              onLoadError={(error) => {
+                console.error('PDF load error:', error);
+                setIsLoading(false);
+              }}
+              loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+            >
+              <div style={{ backgroundColor: 'white', boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', margin: '16px 0', display: 'inline-block' }}>
+                <Page 
+                  pageNumber={currentPage}
+                  scale={1.5}
+                  renderTextLayer={true}
+                  renderAnnotationLayer={true}
+                />
+              </div>
+            </Document>
           </div>
-        </Document>
+        )}
       </div>
     </div>
   );
