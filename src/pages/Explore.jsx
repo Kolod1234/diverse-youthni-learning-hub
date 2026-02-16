@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { useQuery } from '@tanstack/react-query';
+import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { base44 } from '@/api/base44Client';
 import { 
   Slider, Checkbox, FormControlLabel, Button, Drawer, Box, Typography, Chip, Card, IconButton
