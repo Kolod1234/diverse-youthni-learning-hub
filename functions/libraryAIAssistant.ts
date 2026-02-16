@@ -62,25 +62,22 @@ Deno.serve(async (req) => {
         .map(r => `- "${r.title}" by ${r.author || 'Unknown'} (Category: ${r.category}, Tags: ${r.tags?.join(', ') || 'N/A'})\n  Description: ${r.description || 'No description'}`)
         .join('\n\n');
 
-      prompt = `You are a research assistant helping a student find answers using textbooks and internet sources.
+      prompt = `You are a helpful research assistant. Answer this student's question comprehensively using current information and available textbooks.
 
-STUDENT QUESTION: "${query}"
+QUESTION: "${query}"
 
-AVAILABLE TEXTBOOKS IN THE LIBRARY:
+AVAILABLE TEXTBOOKS IN OUR LIBRARY:
 ${booksList}
 
-Your task:
-1. First, provide a comprehensive answer to the question using both library textbooks AND current internet information
-2. List which library books are relevant and explain what topic/chapter would help
-3. Rate each book's relevance (0-100)
-4. Suggest the best reading order for those books
-
-Use web search to provide complete answers, and recommend library books as supplementary resources.`;
+Please provide:
+1. A clear, complete answer to the question
+2. A list of relevant library books that cover this topic (with why each is relevant)
+3. A suggested reading order`;
 
       responseSchema = {
         type: 'object',
         properties: {
-          summary: { type: 'string' },
+          answer: { type: 'string', description: 'Comprehensive answer to the question' },
           relevantBooks: {
             type: 'array',
             items: {
@@ -88,15 +85,12 @@ Use web search to provide complete answers, and recommend library books as suppl
               properties: {
                 title: { type: 'string' },
                 author: { type: 'string' },
-                matchScore: { type: 'number' },
                 why: { type: 'string' }
-              },
-              required: ['title', 'why']
+              }
             }
           },
           readingOrder: { type: 'array', items: { type: 'string' } }
-        },
-        required: ['summary', 'relevantBooks']
+        }
       };
     } else if (mode === 'search') {
       prompt = `You are a library search assistant. Help the user find relevant books and topics related to their search query.
