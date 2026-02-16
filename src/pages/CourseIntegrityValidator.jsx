@@ -10,9 +10,11 @@ import { Play, CheckCircle, AlertCircle, Loader, Download } from 'lucide-react';
 
 export default function CourseIntegrityValidator() {
   const [isRunning, setIsRunning] = useState(false);
+  const [isFixing, setIsFixing] = useState(false);
   const [validation, setValidation] = useState(null);
   const [selectedCourse, setSelectedCourse] = useState(null);
   const [error, setError] = useState(null);
+  const [fixResult, setFixResult] = useState(null);
 
   const handleRunValidation = async () => {
     setIsRunning(true);
@@ -20,10 +22,28 @@ export default function CourseIntegrityValidator() {
     try {
       const response = await base44.functions.invoke('validateCourseIntegrity', {});
       setValidation(response.data.validation);
+      setFixResult(null);
     } catch (err) {
       setError(err.message);
     } finally {
       setIsRunning(false);
+    }
+  };
+
+  const handleAutoFix = async () => {
+    setIsFixing(true);
+    setError(null);
+    try {
+      const response = await base44.functions.invoke('fixCourseIssues', {
+        issues_found: validation.issues_found
+      });
+      setFixResult(response.data.fixes);
+      // Re-run validation to show updated status
+      setTimeout(() => handleRunValidation(), 1000);
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsFixing(false);
     }
   };
 
