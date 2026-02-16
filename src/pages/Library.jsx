@@ -137,8 +137,12 @@ export default function Library() {
     setShowEditDialog(true);
   };
 
-  const canEditBook = (book) => {
-    return user && (user.role === 'admin' || user.is_tutor || book.created_by === user.email);
+  const canEditBookUI = (book) => {
+    return checkCanEditBook(book, book.created_by);
+  };
+
+  const canDeleteBookUI = (book) => {
+    return checkCanDeleteBook(book, book.created_by);
   };
 
   const createMutation = useMutation({
