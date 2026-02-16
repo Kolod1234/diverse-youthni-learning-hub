@@ -91,10 +91,13 @@ export default function AILibraryAssistant({ resources = [] }) {
                     const matchedBook = resources.find(r => r.title.toLowerCase().includes(book.title.toLowerCase()));
                     const handleClick = () => {
                       if (matchedBook) {
+                        // Store book ID in sessionStorage for Library page to open
+                        sessionStorage.setItem('openLibraryBookId', matchedBook.id);
                         setOpen(false);
+                        // Small delay to ensure dialog closes before navigation
                         setTimeout(() => {
                           window.location.href = createPageUrl('Library');
-                        }, 100);
+                        }, 200);
                       }
                     };
                     return (
