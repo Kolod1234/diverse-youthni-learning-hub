@@ -332,14 +332,14 @@ export default function Library() {
     <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
           {/* Mobile Upload FAB */}
           {canUpload && (
-        <Box
+          <Box
           onClick={handleInitiateUpload}
           sx={{
             display: { xs: 'flex', sm: 'none' },
             position: 'fixed',
-            bottom: { xs: 'calc(64px + 16px)', md: '30px' },
+            bottom: 80,
             right: 16,
-            zIndex: 1000,
+            zIndex: 9999,
             width: 56,
             height: 56,
             borderRadius: '50%',
@@ -352,10 +352,10 @@ export default function Library() {
             boxShadow: '0 4px 12px rgba(79, 70, 229, 0.4)',
             '&:hover': { boxShadow: '0 6px 16px rgba(79, 70, 229, 0.6)' }
           }}
-        >
+          >
           <Plus className="w-6 h-6" />
-        </Box>
-      )}
+          </Box>
+          )}
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
         <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
