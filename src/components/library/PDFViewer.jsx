@@ -2,7 +2,11 @@ import React, { useState, useRef } from 'react';
 import { Document, Page } from 'react-pdf';
 import { Loader2, Search, Bookmark, FileImage, ChevronLeft, ChevronRight, Maximize2, Minimize2 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Box, TextField, Chip } from '@mui/material';
+import { Box, TextField, Chip, Dialog, DialogContent } from '@mui/material';
+import { base44 } from '@/api/base44Client';
+import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { toast } from 'sonner';
+import AnnotationTools from './AnnotationTools';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
 
