@@ -290,8 +290,6 @@ export default function Library() {
     });
   };
 
-
-
   const handleSuggestTags = async () => {
     setSuggestingTags(true);
     try {
