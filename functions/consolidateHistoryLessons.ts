@@ -89,8 +89,16 @@ Deno.serve(async (req) => {
       ]
     }));
 
-    // Batch create lessons
-    await base44.entities.Lesson.bulkCreate(newLessons);
+    // Batch create lessons with delay to avoid rate limits
+    const batchSize = 5;
+    for (let i = 0; i < newLessons.length; i += batchSize) {
+      const batch = newLessons.slice(i, i + batchSize);
+      await base44.entities.Lesson.bulkCreate(batch);
+      // Delay between batches to avoid rate limiting
+      if (i + batchSize < newLessons.length) {
+        await new Promise(resolve => setTimeout(resolve, 2000));
+      }
+    }
 
     // Update course with new lesson count
     await base44.entities.Course.update(course_id, {
