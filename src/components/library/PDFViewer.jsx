@@ -146,9 +146,9 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
       )}
 
       {/* PDF Viewer */}
-      <div className="relative flex-1 overflow-auto flex items-center justify-center bg-gray-950">
+      <div className="relative flex-1 overflow-y-auto overflow-x-hidden flex justify-center bg-gray-950 p-4">
         {isLoading && (
-          <div className="flex items-center justify-center">
+          <div className="flex items-center justify-center h-full">
             <Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />
           </div>
         )}
@@ -164,11 +164,12 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
             setIsLoading(false);
           }}
           loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
+          className="flex justify-center"
         >
-          <div className="bg-white shadow-lg">
+          <div className="bg-white shadow-2xl my-4">
             <Page 
               pageNumber={currentPage}
-              width={Math.min(900, typeof window !== 'undefined' ? window.innerWidth - 40 : 900)}
+              scale={1.5}
               renderTextLayer={true}
               renderAnnotationLayer={true}
             />
