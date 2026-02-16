@@ -358,15 +358,15 @@ export default function Library() {
           )}
       <Container maxWidth="xl" sx={{ py: 4 }}>
         {/* Header */}
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: { xs: 'wrap', md: 'nowrap' } }}>
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, minWidth: { xs: '100%', md: 'auto' } }}>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', gap: 2, mb: 4, flexWrap: 'wrap' }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
             <Box sx={{ bgcolor: '#4f46e5', p: 1, borderRadius: 2 }}>
               <BookOpen size={24} color="white" />
             </Box>
             <Typography variant="h4" fontWeight={700}>BookBase</Typography>
           </Box>
-          
-          <Box sx={{ flex: 1, maxWidth: 450, minWidth: 200, display: { xs: 'none', sm: 'block' } }}>
+
+          <Box sx={{ flex: 1, maxWidth: 450, minWidth: 200, display: { xs: 'none', sm: 'block' }, order: { xs: 3, md: 2 } }}>
             <TextField
               placeholder="Search your favourite books"
               value={searchQuery}
@@ -384,7 +384,7 @@ export default function Library() {
             />
           </Box>
 
-          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+          <Box sx={{ display: 'flex', gap: 1, alignItems: 'center', order: { xs: 2, md: 3 } }}>
             {canUpload && (
               <>
                 <input
@@ -401,7 +401,7 @@ export default function Library() {
                   sx={{ display: { xs: 'none', sm: 'flex' }, gap: 1 }}
                 >
                   <Upload className="w-4 h-4" />
-                  <span sx={{ display: { xs: 'none', md: 'inline' } }}>Bulk Import</span>
+                  Bulk Import
                 </Button>
                 <Button 
                   onClick={handleInitiateUpload}
@@ -411,9 +411,7 @@ export default function Library() {
                   sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
                 >
                   <Plus className="w-4 h-4" />
-                  <span sx={{ display: { xs: 'none', sm: 'inline' } }}>
-                    {uploadingFile || analyzing ? 'Analyzing...' : 'Upload'}
-                  </span>
+                  Upload
                 </Button>
               </>
             )}
