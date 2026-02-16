@@ -4,9 +4,10 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff } from 'lucide-react';
+import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Image } from 'lucide-react';
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
+import CourseBasicInfoEditor from '@/components/admin/CourseBasicInfoEditor';
 
 export default function AdminCourseBuilder() {
   const location = useLocation();

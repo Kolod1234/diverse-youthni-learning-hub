@@ -80,6 +80,7 @@ import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
 import CourseDiscussion from './pages/CourseDiscussion';
+import CourseIntegrityValidator from './pages/CourseIntegrityValidator';
 import CourseParticipants from './pages/CourseParticipants';
 import CreateAssignment from './pages/CreateAssignment';
 import Dashboard from './pages/Dashboard';
@@ -122,7 +123,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import CourseIntegrityValidator from './pages/CourseIntegrityValidator';
 import __Layout from './Layout.jsx';
 
 
@@ -160,6 +160,7 @@ export const PAGES = {
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
     "CourseDiscussion": CourseDiscussion,
+    "CourseIntegrityValidator": CourseIntegrityValidator,
     "CourseParticipants": CourseParticipants,
     "CreateAssignment": CreateAssignment,
     "Dashboard": Dashboard,
@@ -202,7 +203,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "CourseIntegrityValidator": CourseIntegrityValidator,
 }
 
 export const pagesConfig = {
