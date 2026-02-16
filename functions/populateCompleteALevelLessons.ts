@@ -85,6 +85,14 @@ function getCompleteLessonData(key) {
     'english_language_a2': getEnglishLanguageA2,
     'biology_as': getBiologyASComplete,
     'biology_a2': getBiologyA2Complete,
+    'history_as': getHistoryAS,
+    'history_a2': getHistoryA2,
+    'mathematics_as': getMathematicsAS,
+    'mathematics_a2': getMathematicsA2,
+    'chemistry_as': getChemistryAS,
+    'chemistry_a2': getChemistryA2,
+    'geography_as': getGeographyAS,
+    'geography_a2': getGeographyA2,
   };
   
   const fn = dataMap[key];
