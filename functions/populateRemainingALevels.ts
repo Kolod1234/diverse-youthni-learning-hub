@@ -218,14 +218,196 @@ function getGovernmentPoliticsA2() {
   ];
 }
 
-// Add remaining subject functions (Religious Studies, Digital Technology, Software Systems, Technology & Design, English Literature)
-function getReligiousStudiesAS() { return []; }
-function getReligiousStudiesA2() { return []; }
-function getDigitalTechnologyAS() { return []; }
-function getDigitalTechnologyA2() { return []; }
-function getSoftwareSystemsAS() { return []; }
-function getSoftwareSystemsA2() { return []; }
-function getTechnologyDesignAS() { return []; }
-function getTechnologyDesignA2() { return []; }
-function getEnglishLiteratureAS() { return []; }
-function getEnglishLiteratureA2() { return []; }
+// RELIGIOUS STUDIES LESSONS
+function getReligiousStudiesAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Philosophy', o: o++, t: 'Ancient Greek Influences', d: 'Plato and Aristotle', obj: ['Explain Plato theory of Forms', 'Describe Aristotle four causes', 'Understand Prime Mover'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Arguments for God Ontological', d: 'Anselm and Descartes', obj: ['Explain Anselm ontological argument', 'Describe Descartes version', 'Assess Gaunilo criticism'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Arguments for God Cosmological', d: 'Aquinas and Leibniz', obj: ['Explain Aquinas Five Ways', 'Describe Leibniz principle sufficient reason', 'Assess Hume Russell criticisms'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Arguments for God Teleological', d: 'Design arguments', obj: ['Explain Paley watchmaker analogy', 'Describe Tennant anthropic principle', 'Assess Hume Darwin criticisms'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Problem of Evil', d: 'Theodicies and responses', obj: ['Explain logical problem of evil', 'Describe Augustinian theodicy', 'Assess Irenaean theodicy'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Religious Experience', d: 'Types and verification', obj: ['Describe mystical experiences', 'Explain conversion experiences', 'Assess William James criteria'] },
+    { s: 'AS1: Philosophy', o: o++, t: 'Religious Language', d: 'Verification and falsification', obj: ['Explain verification principle Ayer', 'Describe falsification Flew', 'Understand analogy and symbol'] },
+    
+    { s: 'AS2: Ethics', o: o++, t: 'Utilitarianism', d: 'Bentham and Mill', obj: ['Explain Bentham hedonic calculus', 'Describe Mill higher lower pleasures', 'Assess act rule utilitarianism'] },
+    { s: 'AS2: Ethics', o: o++, t: 'Kantian Ethics', d: 'Deontological approach', obj: ['Explain categorical imperative', 'Describe universalisability', 'Assess duty-based ethics'] },
+    { s: 'AS2: Ethics', o: o++, t: 'Natural Law', d: 'Aquinas theory', obj: ['Explain primary precepts', 'Describe secondary precepts', 'Assess double effect principle'] },
+    { s: 'AS2: Ethics', o: o++, t: 'Situation Ethics', d: 'Fletcher teleological approach', obj: ['Explain agape love principle', 'Describe six propositions', 'Assess relativism criticism'] },
+    { s: 'AS2: Ethics', o: o++, t: 'Applied Ethics Abortion', d: 'Ethical perspectives', obj: ['Apply utilitarian view', 'Apply natural law view', 'Assess situation ethics view'] },
+    { s: 'AS2: Ethics', o: o++, t: 'Applied Ethics Euthanasia', d: 'Ethical perspectives', obj: ['Distinguish voluntary involuntary', 'Apply ethical theories', 'Assess sanctity quality life'] }
+  ];
+}
+
+function getReligiousStudiesA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Christianity', o: o++, t: 'Person of Jesus Christ', d: 'Christological debates', obj: ['Explain Jesus as Son of God', 'Describe incarnation atonement', 'Assess Chalcedonian definition'] },
+    { s: 'A2-1: Christianity', o: o++, t: 'Christian Moral Principles', d: 'Biblical ethics', obj: ['Explain Old Testament law', 'Describe New Testament ethics', 'Understand Sermon on Mount'] },
+    { s: 'A2-1: Christianity', o: o++, t: 'Christian Moral Action', d: 'Bonhoeffer and King', obj: ['Explain Bonhoeffer costly grace', 'Describe King civil disobedience', 'Assess Christian activism'] },
+    { s: 'A2-1: Christianity', o: o++, t: 'Death and Afterlife', d: 'Christian beliefs', obj: ['Explain resurrection body', 'Describe heaven hell purgatory', 'Assess immortality soul'] },
+    { s: 'A2-1: Christianity', o: o++, t: 'Knowledge of God', d: 'Natural and revealed', obj: ['Explain natural theology', 'Describe revealed theology', 'Assess faith reason relationship'] },
+    { s: 'A2-1: Christianity', o: o++, t: 'Nature of God', d: 'Divine attributes', obj: ['Explain omnipotence omniscience', 'Describe eternity immutability', 'Assess goodness justice'] },
+    
+    { s: 'A2-2: Dialogue', o: o++, t: 'Pluralism', d: 'Religious diversity', obj: ['Explain exclusivism', 'Describe inclusivism', 'Assess pluralism Hick'] },
+    { s: 'A2-2: Dialogue', o: o++, t: 'Theology and Science', d: 'Relationship models', obj: ['Explain conflict thesis', 'Describe independence view', 'Assess dialogue integration'] },
+    { s: 'A2-2: Dialogue', o: o++, t: 'Gender and Theology', d: 'Feminist perspectives', obj: ['Explain patriarchy in religion', 'Describe feminist theology', 'Assess gender equality'] },
+    { s: 'A2-2: Dialogue', o: o++, t: 'Secularisation', d: 'Religion in modern society', obj: ['Explain secularisation thesis', 'Assess decline of religion', 'Understand religious pluralism'] }
+  ];
+}
+
+// DIGITAL TECHNOLOGY LESSONS
+function getDigitalTechnologyAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Hardware', o: o++, t: 'Computer Systems', d: 'Von Neumann architecture', obj: ['Explain CPU components', 'Describe fetch-execute cycle', 'Understand stored program concept'] },
+    { s: 'AS1: Hardware', o: o++, t: 'Memory Types', d: 'RAM ROM cache', obj: ['Compare primary secondary storage', 'Explain volatile non-volatile', 'Understand memory hierarchy'] },
+    { s: 'AS1: Hardware', o: o++, t: 'Input Output Devices', d: 'Peripherals and interfaces', obj: ['Describe input devices', 'Explain output devices', 'Understand device drivers'] },
+    { s: 'AS1: Hardware', o: o++, t: 'Storage Devices', d: 'Magnetic optical solid-state', obj: ['Compare HDD SSD', 'Explain optical storage', 'Assess storage capacity speed'] },
+    
+    { s: 'AS1: Software', o: o++, t: 'Operating Systems', d: 'Functions and types', obj: ['Explain OS functions', 'Describe process management', 'Understand file management'] },
+    { s: 'AS1: Software', o: o++, t: 'Application Software', d: 'Types and uses', obj: ['Describe productivity software', 'Explain specialist applications', 'Understand software licensing'] },
+    { s: 'AS1: Software', o: o++, t: 'Programming Languages', d: 'High-level low-level', obj: ['Compare compiled interpreted', 'Explain assembler machine code', 'Understand language generations'] },
+    
+    { s: 'AS2: Data', o: o++, t: 'Data Representation', d: 'Binary denary hexadecimal', obj: ['Convert between number systems', 'Explain binary arithmetic', 'Understand two complement'] },
+    { s: 'AS2: Data', o: o++, t: 'Character Encoding', d: 'ASCII Unicode', obj: ['Explain ASCII codes', 'Describe Unicode UTF-8', 'Understand character sets'] },
+    { s: 'AS2: Data', o: o++, t: 'Image Representation', d: 'Bitmap vector graphics', obj: ['Explain pixel resolution', 'Describe colour depth', 'Compare bitmap vector'] },
+    { s: 'AS2: Data', o: o++, t: 'Sound Representation', d: 'Digital audio', obj: ['Explain sampling', 'Describe sample rate bit depth', 'Understand audio file sizes'] },
+    { s: 'AS2: Data', o: o++, t: 'Data Compression', d: 'Lossy and lossless', obj: ['Explain compression need', 'Compare lossy lossless', 'Understand compression algorithms'] },
+    
+    { s: 'AS2: Networks', o: o++, t: 'Network Types', d: 'LAN WAN PAN', obj: ['Describe local area networks', 'Explain wide area networks', 'Understand network topologies'] },
+    { s: 'AS2: Networks', o: o++, t: 'Network Protocols', d: 'TCP/IP HTTP FTP', obj: ['Explain protocol layers', 'Describe TCP IP functions', 'Understand application protocols'] },
+    { s: 'AS2: Networks', o: o++, t: 'Network Security', d: 'Threats and protection', obj: ['Identify security threats', 'Explain encryption methods', 'Understand firewalls'] }
+  ];
+}
+
+function getDigitalTechnologyA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Databases', o: o++, t: 'Database Concepts', d: 'Relational databases', obj: ['Explain database structure', 'Describe tables fields records', 'Understand primary foreign keys'] },
+    { s: 'A2-1: Databases', o: o++, t: 'Database Normalisation', d: 'Normal forms', obj: ['Explain 1NF 2NF 3NF', 'Describe normalisation process', 'Understand data redundancy'] },
+    { s: 'A2-1: Databases', o: o++, t: 'SQL Queries', d: 'Data manipulation', obj: ['Write SELECT statements', 'Use WHERE clauses', 'Understand JOIN operations'] },
+    
+    { s: 'A2-1: Programming', o: o++, t: 'Programming Paradigms', d: 'Procedural OOP functional', obj: ['Explain procedural programming', 'Describe object-oriented concepts', 'Understand functional programming'] },
+    { s: 'A2-1: Programming', o: o++, t: 'Data Structures', d: 'Arrays lists stacks queues', obj: ['Describe array structures', 'Explain linked lists', 'Understand stacks queues'] },
+    { s: 'A2-1: Programming', o: o++, t: 'Algorithms', d: 'Searching and sorting', obj: ['Explain linear binary search', 'Describe bubble merge sort', 'Assess algorithm efficiency'] },
+    
+    { s: 'A2-2: Web Development', o: o++, t: 'HTML Fundamentals', d: 'Structure and semantics', obj: ['Create HTML documents', 'Use semantic elements', 'Understand document structure'] },
+    { s: 'A2-2: Web Development', o: o++, t: 'CSS Styling', d: 'Presentation and layout', obj: ['Apply CSS styles', 'Use selectors properties', 'Understand box model'] },
+    { s: 'A2-2: Web Development', o: o++, t: 'JavaScript Basics', d: 'Client-side scripting', obj: ['Write JavaScript code', 'Manipulate DOM', 'Understand events'] },
+    
+    { s: 'A2-2: Systems', o: o++, t: 'Systems Analysis', d: 'Investigation and analysis', obj: ['Conduct fact finding', 'Analyze current systems', 'Identify requirements'] },
+    { s: 'A2-2: Systems', o: o++, t: 'Systems Design', d: 'Design solutions', obj: ['Create system diagrams', 'Design interfaces', 'Plan data structures'] },
+    { s: 'A2-2: Systems', o: o++, t: 'Testing and Evaluation', d: 'Quality assurance', obj: ['Plan test strategies', 'Execute test plans', 'Evaluate solutions'] }
+  ];
+}
+
+// SOFTWARE SYSTEMS DEVELOPMENT LESSONS
+function getSoftwareSystemsAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Programming', o: o++, t: 'Programming Fundamentals', d: 'Variables data types', obj: ['Declare variables', 'Use data types', 'Understand constants'] },
+    { s: 'AS1: Programming', o: o++, t: 'Selection Statements', d: 'IF THEN ELSE CASE', obj: ['Implement IF statements', 'Use nested selection', 'Apply CASE statements'] },
+    { s: 'AS1: Programming', o: o++, t: 'Iteration Structures', d: 'FOR WHILE REPEAT loops', obj: ['Implement FOR loops', 'Use WHILE loops', 'Understand loop control'] },
+    { s: 'AS1: Programming', o: o++, t: 'Procedures and Functions', d: 'Modular programming', obj: ['Create procedures', 'Write functions', 'Understand parameters'] },
+    { s: 'AS1: Programming', o: o++, t: 'Arrays', d: 'One and two dimensional', obj: ['Declare arrays', 'Access array elements', 'Understand array processing'] },
+    { s: 'AS1: Programming', o: o++, t: 'String Manipulation', d: 'String operations', obj: ['Perform string operations', 'Use string functions', 'Understand string processing'] },
+    { s: 'AS1: Programming', o: o++, t: 'File Handling', d: 'Reading and writing files', obj: ['Open close files', 'Read file data', 'Write file data'] },
+    
+    { s: 'AS2: Development', o: o++, t: 'Algorithm Design', d: 'Pseudocode and flowcharts', obj: ['Write pseudocode', 'Create flowcharts', 'Design algorithms'] },
+    { s: 'AS2: Development', o: o++, t: 'Testing Strategies', d: 'Test planning and execution', obj: ['Plan test data', 'Execute tests', 'Record test results'] },
+    { s: 'AS2: Development', o: o++, t: 'Debugging Techniques', d: 'Error identification and correction', obj: ['Identify syntax errors', 'Fix logic errors', 'Use debugging tools'] },
+    { s: 'AS2: Development', o: o++, t: 'Documentation', d: 'Code and user documentation', obj: ['Write code comments', 'Create user guides', 'Produce technical documentation'] }
+  ];
+}
+
+function getSoftwareSystemsA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Advanced Programming', o: o++, t: 'Object-Oriented Programming', d: 'Classes and objects', obj: ['Define classes', 'Create objects', 'Understand encapsulation'] },
+    { s: 'A2-1: Advanced Programming', o: o++, t: 'Inheritance', d: 'Class hierarchies', obj: ['Implement inheritance', 'Use polymorphism', 'Understand method overriding'] },
+    { s: 'A2-1: Advanced Programming', o: o++, t: 'Data Structures', d: 'Stacks queues linked lists', obj: ['Implement stack operations', 'Create queue structures', 'Build linked lists'] },
+    { s: 'A2-1: Advanced Programming', o: o++, t: 'Recursion', d: 'Recursive algorithms', obj: ['Write recursive functions', 'Understand base cases', 'Assess recursion efficiency'] },
+    
+    { s: 'A2-2: Database Programming', o: o++, t: 'SQL Advanced Queries', d: 'Complex database operations', obj: ['Write JOIN queries', 'Use aggregate functions', 'Implement subqueries'] },
+    { s: 'A2-2: Database Programming', o: o++, t: 'Database Integration', d: 'Connecting programs to databases', obj: ['Connect to databases', 'Execute SQL from code', 'Handle database results'] },
+    
+    { s: 'A2-2: Software Engineering', o: o++, t: 'Software Development Lifecycle', d: 'SDLC methodologies', obj: ['Explain waterfall model', 'Describe agile methods', 'Understand iterative development'] },
+    { s: 'A2-2: Software Engineering', o: o++, t: 'Requirements Analysis', d: 'Gathering and documenting requirements', obj: ['Elicit requirements', 'Document functional requirements', 'Specify non-functional requirements'] },
+    { s: 'A2-2: Software Engineering', o: o++, t: 'Project Management', d: 'Planning and control', obj: ['Create project plans', 'Manage resources', 'Track progress'] }
+  ];
+}
+
+// TECHNOLOGY & DESIGN LESSONS
+function getTechnologyDesignAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Design Process', o: o++, t: 'Design Brief and Analysis', d: 'Problem identification', obj: ['Write design briefs', 'Analyze design problems', 'Identify user needs'] },
+    { s: 'AS1: Design Process', o: o++, t: 'Research and Investigation', d: 'Gathering information', obj: ['Conduct market research', 'Analyze existing products', 'Identify design opportunities'] },
+    { s: 'AS1: Design Process', o: o++, t: 'Design Specification', d: 'Defining criteria', obj: ['Write design specifications', 'Define success criteria', 'Prioritize requirements'] },
+    { s: 'AS1: Design Process', o: o++, t: 'Generating Ideas', d: 'Creative thinking techniques', obj: ['Use brainstorming', 'Apply lateral thinking', 'Create design concepts'] },
+    { s: 'AS1: Design Process', o: o++, t: 'Design Development', d: 'Refining solutions', obj: ['Develop design ideas', 'Model solutions', 'Evaluate design options'] },
+    
+    { s: 'AS2: Materials', o: o++, t: 'Material Properties', d: 'Physical and mechanical', obj: ['Explain material properties', 'Test materials', 'Select appropriate materials'] },
+    { s: 'AS2: Materials', o: o++, t: 'Timber Materials', d: 'Hardwoods softwoods manufactured boards', obj: ['Classify timber types', 'Understand wood properties', 'Apply timber in design'] },
+    { s: 'AS2: Materials', o: o++, t: 'Metals and Alloys', d: 'Ferrous non-ferrous metals', obj: ['Classify metal types', 'Explain metal properties', 'Apply metals in design'] },
+    { s: 'AS2: Materials', o: o++, t: 'Polymers', d: 'Thermoplastics thermosetting plastics', obj: ['Classify polymer types', 'Explain polymer properties', 'Apply polymers in design'] },
+    
+    { s: 'AS2: Manufacturing', o: o++, t: 'Manufacturing Processes', d: 'Joining shaping finishing', obj: ['Explain joining techniques', 'Describe shaping methods', 'Apply finishing processes'] },
+    { s: 'AS2: Manufacturing', o: o++, t: 'Quality Control', d: 'Testing and inspection', obj: ['Implement quality checks', 'Use measuring tools', 'Ensure product quality'] }
+  ];
+}
+
+function getTechnologyDesignA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Product Design', o: o++, t: 'Ergonomics and Anthropometrics', d: 'Human factors in design', obj: ['Apply ergonomic principles', 'Use anthropometric data', 'Design for users'] },
+    { s: 'A2-1: Product Design', o: o++, t: 'Sustainability', d: 'Environmental considerations', obj: ['Apply sustainable design', 'Consider product lifecycle', 'Reduce environmental impact'] },
+    { s: 'A2-1: Product Design', o: o++, t: 'Systems and Control', d: 'Mechanical and electronic systems', obj: ['Design mechanical systems', 'Integrate electronic control', 'Apply systems thinking'] },
+    
+    { s: 'A2-2: Manufacturing', o: o++, t: 'CAD CAM', d: 'Computer-aided design and manufacture', obj: ['Use CAD software', 'Apply CAM processes', 'Understand CNC machining'] },
+    { s: 'A2-2: Manufacturing', o: o++, t: 'Batch and Mass Production', d: 'Manufacturing scales', obj: ['Explain production methods', 'Compare batch mass production', 'Understand automation'] },
+    { s: 'A2-2: Manufacturing', o: o++, t: 'Quality Assurance', d: 'Standards and testing', obj: ['Apply quality standards', 'Implement testing procedures', 'Ensure consistency'] },
+    
+    { s: 'A2-2: Project', o: o++, t: 'Project Development', d: 'Major design project', obj: ['Plan project work', 'Develop design solution', 'Manufacture prototype'] },
+    { s: 'A2-2: Project', o: o++, t: 'Evaluation', d: 'Testing and assessment', obj: ['Test final product', 'Evaluate against specification', 'Suggest improvements'] }
+  ];
+}
+
+// ENGLISH LITERATURE LESSONS
+function getEnglishLiteratureAS() {
+  let o = 1;
+  return [
+    { s: 'AS1: Poetry', o: o++, t: 'Poetry Analysis Techniques', d: 'Form structure language', obj: ['Analyze poetic form', 'Examine language devices', 'Understand rhythm meter'] },
+    { s: 'AS1: Poetry', o: o++, t: 'Poetry Themes and Context', d: 'Historical and cultural contexts', obj: ['Explore thematic concerns', 'Consider historical context', 'Understand cultural influences'] },
+    { s: 'AS1: Poetry', o: o++, t: 'Comparative Poetry Study', d: 'Comparing poems', obj: ['Compare themes across poems', 'Analyze different perspectives', 'Evaluate poetic techniques'] },
+    
+    { s: 'AS1: Shakespeare', o: o++, t: 'Shakespeare Language', d: 'Elizabethan English', obj: ['Understand Shakespeare language', 'Analyze dramatic techniques', 'Explore wordplay imagery'] },
+    { s: 'AS1: Shakespeare', o: o++, t: 'Shakespeare Themes', d: 'Universal themes', obj: ['Identify key themes', 'Analyze character development', 'Understand dramatic structure'] },
+    { s: 'AS1: Shakespeare', o: o++, t: 'Shakespeare Performance', d: 'Text as performance', obj: ['Consider staging choices', 'Analyze directorial interpretation', 'Evaluate performances'] },
+    
+    { s: 'AS2: Prose', o: o++, t: 'Novel Study Introduction', d: 'Narrative techniques', obj: ['Analyze narrative voice', 'Examine characterization', 'Understand plot structure'] },
+    { s: 'AS2: Prose', o: o++, t: 'Prose Themes and Context', d: 'Social and historical context', obj: ['Explore thematic concerns', 'Consider social context', 'Understand authorial intent'] },
+    { s: 'AS2: Prose', o: o++, t: 'Critical Perspectives', d: 'Literary criticism', obj: ['Apply critical theories', 'Evaluate different interpretations', 'Form independent judgments'] },
+    
+    { s: 'AS2: Drama', o: o++, t: 'Modern Drama Study', d: 'Post-1900 drama', obj: ['Analyze dramatic form', 'Examine character relationships', 'Understand staging techniques'] },
+    { s: 'AS2: Drama', o: o++, t: 'Drama Themes and Issues', d: 'Social and political themes', obj: ['Identify key themes', 'Analyze social commentary', 'Understand dramatic purpose'] }
+  ];
+}
+
+function getEnglishLiteratureA2() {
+  let o = 1;
+  return [
+    { s: 'A2-1: Literary Genres', o: o++, t: 'Genre Characteristics', d: 'Conventions and features', obj: ['Identify genre conventions', 'Analyze genre expectations', 'Understand genre evolution'] },
+    { s: 'A2-1: Literary Genres', o: o++, t: 'Genre Comparison', d: 'Cross-genre analysis', obj: ['Compare different genres', 'Analyze similar themes', 'Evaluate genre effectiveness'] },
+    
+    { s: 'A2-1: Critical Study', o: o++, t: 'Literary Theory', d: 'Critical approaches', obj: ['Apply feminist criticism', 'Use Marxist approaches', 'Understand psychoanalytic theory'] },
+    { s: 'A2-1: Critical Study', o: o++, t: 'Close Reading', d: 'Detailed textual analysis', obj: ['Analyze language choices', 'Examine structural patterns', 'Evaluate literary effects'] },
+    
+    { s: 'A2-2: Wider Reading', o: o++, t: 'Literary Connections', d: 'Comparative study', obj: ['Make textual connections', 'Compare treatments of themes', 'Evaluate different approaches'] },
+    { s: 'A2-2: Wider Reading', o: o++, t: 'Independent Study', d: 'Personal research', obj: ['Select appropriate texts', 'Conduct independent research', 'Form critical arguments'] },
+    
+    { s: 'A2-2: Coursework', o: o++, t: 'Extended Essay', d: 'Independent critical writing', obj: ['Plan extended essay', 'Develop critical argument', 'Support with evidence'] },
+    { s: 'A2-2: Coursework', o: o++, t: 'Research Skills', d: 'Academic research', obj: ['Use critical sources', 'Reference appropriately', 'Synthesize arguments'] }
+  ];
+}
