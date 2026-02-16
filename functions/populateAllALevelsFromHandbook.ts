@@ -146,10 +146,10 @@ function getMathsAS() { let o = 1; const l = []; while (o <= 28) l.push({ s: 'AS
 function getMathsA2() { let o = 1; const l = []; while (o <= 21) l.push({ s: 'A2 Maths', o: o++, t: `Maths A2 ${o}`, d: 'Advanced', obj: ['Advanced maths'] }); return l; }
 function getFMathsAS() { let o = 1; const l = []; while (o <= 9) l.push({ s: 'AS FMaths', o: o++, t: `FMaths AS ${o}`, d: 'Further', obj: ['Complex topics'] }); return l; }
 function getFMathsA2() { let o = 1; const l = []; while (o <= 5) l.push({ s: 'A2 FMaths', o: o++, t: `FMaths A2 ${o}`, d: 'Advanced', obj: ['Higher level'] }); return l; }
-function getEngLangAS() { let o = 1; const l = []; while (o <= 8) l.push({ s: 'AS Lang', o: o++, t: `Lang AS ${o}`, d: 'Language', obj: ['Linguistic analysis'] }); return l; }
-function getEngLangA2() { let o = 1; const l = []; while (o <= 4) l.push({ s: 'A2 Lang', o: o++, t: `Lang A2 ${o}`, d: 'Advanced', obj: ['Research'] }); return l; }
-function getEngLitAS() { let o = 1; const l = []; while (o <= 11) l.push({ s: 'AS Lit', o: o++, t: `Lit AS ${o}`, d: 'Literature', obj: ['Literary analysis'] }); return l; }
-function getEngLitA2() { let o = 1; const l = []; while (o <= 8) l.push({ s: 'A2 Lit', o: o++, t: `Lit A2 ${o}`, d: 'Advanced', obj: ['Critical study'] }); return l; }
+function getEngLangAS() { let o = 1; const l = []; while (o <= 25) l.push({ s: 'AS Lang', o: o++, t: `Language Study ${o}`, d: 'Language frameworks variation spoken written', obj: ['Analyze language structure', 'Study language variation', 'Examine discourse'] }); return l; }
+function getEngLangA2() { let o = 1; const l = []; while (o <= 18) l.push({ s: 'A2 Lang', o: o++, t: `Advanced Language ${o}`, d: 'Language investigation change diversity', obj: ['Conduct linguistic research', 'Analyze language change', 'Study sociolinguistics'] }); return l; }
+function getEngLitAS() { let o = 1; const l = []; while (o <= 30) l.push({ s: 'AS Lit', o: o++, t: `Literature Study ${o}`, d: 'Poetry prose drama Shakespeare literary analysis', obj: ['Analyze literary texts', 'Study poetic techniques', 'Examine dramatic works'] }); return l; }
+function getEngLitA2() { let o = 1; const l = []; while (o <= 25) l.push({ s: 'A2 Lit', o: o++, t: `Advanced Literature ${o}`, d: 'Critical theory comparative study independent research', obj: ['Apply critical theory', 'Compare literary texts', 'Conduct independent study'] }); return l; }
 function getGeogAS() { let o = 1; const l = []; while (o <= 21) l.push({ s: 'AS Geog', o: o++, t: `Geog AS ${o}`, d: 'Geography', obj: ['Geographical skills'] }); return l; }
 function getGeogA2() { let o = 1; const l = []; while (o <= 21) l.push({ s: 'A2 Geog', o: o++, t: `Geog A2 ${o}`, d: 'Advanced', obj: ['Advanced geography'] }); return l; }
 function getGovPolAS() { let o = 1; const l = []; while (o <= 15) l.push({ s: 'AS Politics', o: o++, t: `Politics AS ${o}`, d: 'Politics', obj: ['Political analysis'] }); return l; }
