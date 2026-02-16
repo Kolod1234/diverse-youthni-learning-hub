@@ -337,7 +337,7 @@ export default function Library() {
           sx={{
             display: { xs: 'flex', sm: 'none' },
             position: 'fixed',
-            bottom: 90,
+            bottom: { xs: 'calc(64px + 16px)', md: '30px' },
             right: 16,
             zIndex: 1000,
             width: 56,
