@@ -80,22 +80,23 @@ Be specific about which books match the question. Only recommend books that are 
       responseSchema = {
         type: 'object',
         properties: {
+          summary: { type: 'string' },
           relevantBooks: {
             type: 'array',
             items: {
               type: 'object',
               properties: {
-                title: { type: 'string', description: 'Exact title from the library list' },
+                title: { type: 'string' },
                 author: { type: 'string' },
-                matchScore: { type: 'number', description: 'Relevance 0-100' },
-                why: { type: 'string', description: 'Why this book answers the question' },
-                suggestedTopics: { type: 'array', items: { type: 'string' } }
-              }
+                matchScore: { type: 'number' },
+                why: { type: 'string' }
+              },
+              required: ['title', 'why']
             }
           },
-          readingOrder: { type: 'array', items: { type: 'string' } },
-          summary: { type: 'string', description: 'How these books collectively answer the question' }
-        }
+          readingOrder: { type: 'array', items: { type: 'string' } }
+        },
+        required: ['summary', 'relevantBooks']
       };
     } else if (mode === 'search') {
       prompt = `You are a library search assistant. Help the user find relevant books and topics related to their search query.
