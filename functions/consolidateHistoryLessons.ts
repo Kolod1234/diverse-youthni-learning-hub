@@ -14,9 +14,15 @@ Deno.serve(async (req) => {
     // Fetch current lessons
     const currentLessons = await base44.entities.Lesson.filter({ course_id });
     
-    // Delete all current lessons
-    for (const lesson of currentLessons) {
-      await base44.entities.Lesson.delete(lesson.id);
+    // Delete all current lessons with rate limit protection
+    const deleteBatchSize = 10;
+    for (let i = 0; i < currentLessons.length; i += deleteBatchSize) {
+      const batch = currentLessons.slice(i, i + deleteBatchSize);
+      await Promise.all(batch.map(lesson => base44.entities.Lesson.delete(lesson.id)));
+      // Delay between deletion batches
+      if (i + deleteBatchSize < currentLessons.length) {
+        await new Promise(resolve => setTimeout(resolve, 1500));
+      }
     }
 
     // Get course details
