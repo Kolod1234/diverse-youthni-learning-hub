@@ -722,6 +722,6 @@ export default function CourseDetails() {
         <DynamicCourseLanding course={course} enrollment={enrollment} />
       </Container>
       </Box>
-    </>
+    </CoursePasswordProtection>
   );
 }

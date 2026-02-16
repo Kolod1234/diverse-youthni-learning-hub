@@ -9,7 +9,6 @@ import { Filter, X, BookOpen, Sparkles, TrendingUp, Award, Star, Clock, Users } 
 import { motion, AnimatePresence } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
-import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 
 const categories = [
   { id: 'mathematics', label: 'Mathematics', icon: '🔢', color: 'from-blue-500 to-cyan-500' },
