@@ -35,6 +35,24 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
     }
   };
 
+  const toggleFullscreen = async () => {
+    try {
+      if (!isFullscreen) {
+        if (containerRef.current?.requestFullscreen) {
+          await containerRef.current.requestFullscreen();
+          setIsFullscreen(true);
+        }
+      } else {
+        if (document.fullscreenElement) {
+          await document.exitFullscreen();
+          setIsFullscreen(false);
+        }
+      }
+    } catch (err) {
+      console.error('Fullscreen error:', err);
+    }
+  };
+
   return (
     <div style={{ width: '100%', height: '100%', backgroundColor: '#111827', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
       {/* Toolbar */}
