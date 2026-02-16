@@ -330,8 +330,8 @@ export default function Library() {
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
-      {/* Mobile Upload FAB - Outside Container */}
-      {canUpload && (
+          {/* Mobile Upload FAB */}
+          {canUpload && (
         <Box
           onClick={handleInitiateUpload}
           sx={{
