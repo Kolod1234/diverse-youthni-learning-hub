@@ -37,15 +37,16 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
     <div className="relative w-full h-full bg-gray-900 flex flex-col overflow-hidden">
       {/* Toolbar */}
       <Box sx={{ 
-        bgcolor: '#1f2937', 
-        borderBottom: 1, 
-        borderColor: '#374151', 
+        bgcolor: '#ffffff', 
+        borderBottom: 2, 
+        borderColor: '#e5e7eb', 
         p: 2, 
         display: 'flex', 
         gap: 2, 
         alignItems: 'center', 
         overflowX: 'auto',
-        flexWrap: 'wrap'
+        flexWrap: 'wrap',
+        boxShadow: '0 2px 4px rgba(0,0,0,0.1)'
       }}>
         {/* Page Navigation */}
         <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
@@ -53,18 +54,18 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
             size="sm"
             onClick={() => goToPage(currentPage - 1)}
             disabled={currentPage <= 1}
-            className="bg-gray-700 hover:bg-gray-600 text-white"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <ChevronLeft className="w-4 h-4" />
           </Button>
-          <Box sx={{ color: '#e5e7eb', fontSize: '0.875rem', minWidth: 120, textAlign: 'center' }}>
+          <Box sx={{ color: '#1f2937', fontSize: '0.875rem', fontWeight: 600, minWidth: 120, textAlign: 'center' }}>
             Page {currentPage} of {numPages || '...'}
           </Box>
           <Button
             size="sm"
             onClick={() => goToPage(currentPage + 1)}
             disabled={!numPages || currentPage >= numPages}
-            className="bg-gray-700 hover:bg-gray-600 text-white"
+            className="bg-indigo-600 hover:bg-indigo-700 text-white"
           >
             <ChevronRight className="w-4 h-4" />
           </Button>
@@ -78,11 +79,11 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
           onChange={(e) => setSearchQuery(e.target.value)}
           sx={{ 
             width: 200,
-            bgcolor: '#374151',
-            input: { color: 'white', fontSize: '0.875rem' },
+            bgcolor: '#f3f4f6',
+            input: { color: '#1f2937', fontSize: '0.875rem' },
             '& .MuiOutlinedInput-root': { 
-              '& fieldset': { borderColor: '#4b5563' },
-              '&:hover fieldset': { borderColor: '#6b7280' }
+              '& fieldset': { borderColor: '#d1d5db' },
+              '&:hover fieldset': { borderColor: '#9ca3af' }
             }
           }}
         />
@@ -91,10 +92,10 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
         <Button
           size="sm"
           onClick={toggleBookmark}
-          className={`gap-2 ${
+          className={`gap-2 font-medium ${
             bookmarkedPages.includes(currentPage)
               ? 'bg-amber-500 hover:bg-amber-600 text-white'
-              : 'bg-gray-700 hover:bg-gray-600 text-gray-200'
+              : 'bg-gray-200 hover:bg-gray-300 text-gray-900'
           }`}
           title="Bookmark this page"
         >
@@ -106,7 +107,7 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
         <Button
           size="sm"
           onClick={handleSetCover}
-          className="bg-green-600 hover:bg-green-700 text-white gap-2"
+          className="bg-green-600 hover:bg-green-700 text-white gap-2 font-medium"
           title="Set current page as cover"
         >
           <FileImage className="w-4 h-4" />
