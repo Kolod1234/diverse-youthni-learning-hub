@@ -54,7 +54,24 @@ export default function PDFViewer({ fileUrl, title, onCoverCapture }) {
   };
 
   return (
-    <div ref={containerRef} style={{ width: '100%', height: '100%', backgroundColor: '#111827', display: 'flex', flexDirection: 'column', overflow: 'hidden' }}>
+    <div ref={containerRef} style={{ 
+      width: '100%', 
+      height: '100%', 
+      backgroundColor: '#111827', 
+      display: 'flex', 
+      flexDirection: 'column', 
+      overflow: 'hidden',
+      ...(isFullscreen && {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        zIndex: 9999,
+        width: '100vw',
+        height: '100vh'
+      })
+    }}>
       {/* Toolbar */}
       <Box sx={{ 
         bgcolor: '#ffffff', 
