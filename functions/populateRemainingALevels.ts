@@ -53,9 +53,9 @@ Deno.serve(async (req) => {
         });
 
         results.push({ course: course.title, lessons: lessons.length, status: 'success' });
-        
-        // Delay to avoid rate limits
-        await new Promise(r => setTimeout(r, 3000));
+
+        // Delay to avoid rate limits - increased to 6 seconds
+        await new Promise(r => setTimeout(r, 6000));
 
       } catch (error) {
         results.push({ course: course.title, status: 'error', error: error.message });
