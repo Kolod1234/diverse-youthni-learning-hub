@@ -32,10 +32,10 @@ Deno.serve(async (req) => {
         }
 
         // Create lessons in batches
-        const batchSize = 15;
+        const batchSize = 10;
         for (let i = 0; i < lessons.length; i += batchSize) {
           const batch = lessons.slice(i, i + batchSize);
-          await base44.entities.Lesson.bulkCreate(batch.map(l => ({
+          await base44.asServiceRole.entities.Lesson.bulkCreate(batch.map(l => ({
             course_id: course.id,
             title: l.title,
             description: l.description,
@@ -44,10 +44,10 @@ Deno.serve(async (req) => {
             learning_objectives: l.learning_objectives || [],
             content_type: 'richtext',
             slides: [],
-            is_preview: l.order <= 3,
-            duration_minutes: 50
+            is_preview: l.order <= 2,
+            duration_minutes: 45
           })));
-          await new Promise(r => setTimeout(r, 300));
+          await new Promise(r => setTimeout(r, 400));
         }
 
         await base44.asServiceRole.entities.Course.update(course.id, {
@@ -60,7 +60,7 @@ Deno.serve(async (req) => {
           status: 'success'
         });
 
-        await new Promise(r => setTimeout(r, 8000));
+        await new Promise(r => setTimeout(r, 5000));
       } catch (error) {
         results.push({
           course: course.title,
@@ -90,57 +90,65 @@ function getDesignLessons(key) {
 function getDesignGCSE() {
   let o = 1;
   return [
-    // Unit 1: Design Principles and Processes
-    { section: 'Unit 1: Design Principles', order: o++, title: 'Design Thinking and Problem-Solving', description: 'Understanding design methodology and user-centered design', learning_objectives: ['Understand design thinking framework', 'Apply problem-solving strategies', 'Identify user needs and requirements'] },
-    { section: 'Unit 1: Design Principles', order: o++, title: 'Materials and Properties', description: 'Selection and testing of materials', learning_objectives: ['Classify materials by properties', 'Evaluate material suitability', 'Understand material behavior'] },
-    { section: 'Unit 1: Design Principles', order: o++, title: 'Design for Manufacture', description: 'Production methods and techniques', learning_objectives: ['Identify appropriate manufacturing processes', 'Understand scale of production', 'Evaluate manufacturing efficiency'] },
-    { section: 'Unit 1: Design Principles', order: o++, title: 'Sustainability and Ethics', description: 'Environmental and ethical considerations', learning_objectives: ['Understand sustainable design principles', 'Evaluate environmental impact', 'Consider ethical manufacturing'] },
-
-    // Unit 2: Product Design and Development
-    { section: 'Unit 2: Product Design', order: o++, title: 'Design Iteration and Prototyping', description: 'Testing and refining designs', learning_objectives: ['Create prototypes and models', 'Test design concepts', 'Refine designs based on feedback'] },
-    { section: 'Unit 2: Product Design', order: o++, title: 'User Experience (UX) Design', description: 'Creating usable and accessible products', learning_objectives: ['Design for user needs', 'Understand usability principles', 'Apply accessibility standards'] },
-    { section: 'Unit 2: Product Design', order: o++, title: 'Aesthetics and Ergonomics', description: 'Form, function, and human factors', learning_objectives: ['Understand ergonomic principles', 'Apply aesthetic design principles', 'Balance form and function'] },
-
-    // Unit 3: Systems and Control
-    { section: 'Unit 3: Systems', order: o++, title: 'Systems Thinking', description: 'Understanding interconnected systems', learning_objectives: ['Identify systems and subsystems', 'Understand inputs, processes, outputs', 'Evaluate system performance'] },
-    { section: 'Unit 3: Systems', order: o++, title: 'Control Systems and Automation', description: 'Mechanical and electronic control', learning_objectives: ['Understand control mechanisms', 'Identify feedback systems', 'Evaluate automation in manufacturing'] },
+    { section: 'Unit 1.1: Material Selection', order: o++, title: 'Material Selection Criteria', description: 'Selecting materials based on functional, manufacturing and environmental requirements', learning_objectives: ['Consider functional requirements (properties and characteristics)', 'Consider manufacturing demands and scale of production', 'Consider environmental factors and material availability', 'Understand appropriate joining techniques'] },
+    { section: 'Unit 1.2: Wood', order: o++, title: 'Wood Materials', description: 'Hardwoods, softwoods and manufactured boards', learning_objectives: ['Know hardwoods and softwoods', 'Understand properties of pine, ash, beech, oak, mahogany', 'Know manufactured boards: plywood, blockboard, chipboard, hardboard, MDF', 'Understand wood finishes: stains, oils, polishes, paints, veneers, laminates'] },
+    { section: 'Unit 1.3: Metal', order: o++, title: 'Metal Materials', description: 'Ferrous and non-ferrous metals and alloys', learning_objectives: ['Distinguish between ferrous and non-ferrous metals', 'Know properties of aluminium, copper, brass, zinc, steels', 'Understand metal finishes: painting, electroplating, anodising'] },
+    { section: 'Unit 1.4: Plastic', order: o++, title: 'Plastics and Polymers', description: 'Thermoplastics and thermosetting plastics', learning_objectives: ['Understand difference between thermoplastic and thermosetting', 'Know properties of HDPE, LDPE, PET, PVC, acrylic, nylon, ABS, melamine-formaldehyde'] },
+    { section: 'Unit 1.5: Modern Materials', order: o++, title: 'Modern and Smart Materials', description: 'Composite materials and emerging technologies', learning_objectives: ['Know thermochromic and photochromic materials', 'Understand smart material applications', 'Know PEEK, PPSU and modern composites'] },
+    { section: 'Unit 1.6: Processing', order: o++, title: 'Manufacturing Processes', description: 'Wasting, forming, moulding and extrusion', learning_objectives: ['Understand wasting processes: hand tools, CNC machining', 'Know forming: rolling, blanking, forging', 'Understand moulding: injection, blow, vacuum forming, casting'] },
+    { section: 'Unit 1.7-1.8: Design', order: o++, title: 'Design Process and Communication', description: 'Product analysis and design communication', learning_objectives: ['Analyze products: marketing, ergonomics, environmental, safety', 'Understand design process: research, specification, ideas, development', 'Communicate designs using sketching and CAD'] },
+    { section: 'Unit 1.9-1.10: CAD/Quality', order: o++, title: 'CAD/CAM and Quality Control', description: 'Digital design and quality assurance', learning_objectives: ['Know CAD, CAM, CIM applications and advantages', 'Understand factor of safety', 'Know testing, inspection and safety procedures'] },
   ];
 }
 
 function getDesignAS() {
   let o = 1;
   return [
-    // Unit 1: Design Principles and Methodology
-    { section: 'Unit AS1: Design Principles', order: o++, title: 'Design Thinking Framework', description: 'Structured approach to design problem-solving', learning_objectives: ['Apply design thinking methodology', 'Conduct user research', 'Generate creative solutions'] },
-    { section: 'Unit AS1: Design Principles', order: o++, title: 'Research and Analysis', description: 'Market research and contextual analysis', learning_objectives: ['Analyze market trends', 'Identify design opportunities', 'Evaluate existing solutions'] },
-    { section: 'Unit AS1: Design Principles', order: o++, title: 'Materials Science', description: 'Properties and selection of materials', learning_objectives: ['Classify and compare materials', 'Understand material properties', 'Select appropriate materials for purpose'] },
-    { section: 'Unit AS1: Design Principles', order: o++, title: 'Manufacturing Processes', description: 'Production methods and techniques', learning_objectives: ['Understand manufacturing processes', 'Evaluate scale and efficiency', 'Consider design for manufacture'] },
-    { section: 'Unit AS1: Design Principles', order: o++, title: 'Sustainability', description: 'Environmental and social responsibility', learning_objectives: ['Evaluate environmental impact', 'Understand circular economy', 'Apply sustainable design principles'] },
-
-    // Unit 2: Product Design and Development
-    { section: 'Unit AS2: Product Development', order: o++, title: 'Design Specifications', description: 'Defining design requirements and constraints', learning_objectives: ['Create detailed specifications', 'Set design constraints', 'Establish success criteria'] },
-    { section: 'Unit AS2: Product Development', order: o++, title: 'Prototyping and Testing', description: 'Creating and validating prototypes', learning_objectives: ['Design and build prototypes', 'Conduct user testing', 'Iterate based on feedback'] },
-    { section: 'Unit AS2: Product Development', order: o++, title: 'User-Centered Design', description: 'Designing for specific user groups', learning_objectives: ['Apply UX principles', 'Design for accessibility', 'Consider user psychology'] },
-    { section: 'Unit AS2: Product Development', order: o++, title: 'Ergonomics and Aesthetics', description: 'Human factors and visual design', learning_objectives: ['Apply ergonomic principles', 'Understand aesthetic theory', 'Balance functionality and appearance'] },
+    // Compulsory Core: Design and Materials (1.1-1.10)
+    { section: 'Unit AS 1.1: Material Selection', order: o++, title: 'Material Selection Criteria', description: 'Functional requirements, manufacturing demands and environmental considerations', learning_objectives: ['Consider functional requirements (properties and characteristics)', 'Consider manufacturing demands (scale of production, process suitability)', 'Consider environmental factors (corrosion resistance, stability)', 'Understand appropriate joining techniques', 'Know physical properties: density, electrical/thermal conductivity', 'Know mechanical properties: strength, elasticity, plasticity, toughness, hardness, durability, brittleness'] },
+    
+    { section: 'Unit AS 1.2: Wood', order: o++, title: 'Wood: Hardwoods and Softwoods', description: 'Properties, characteristics and uses of wood materials', learning_objectives: ['Know hardwoods and softwoods', 'Understand properties and uses of pine, ash, beech, oak, mahogany', 'Know available forms: common lengths, rough sawn and PAR sizes', 'Understand manufactured boards: plywood, blockboard, chipboard, hardboard, MDF', 'Know wood finishes: stains, oils, polishes, paints, synthetic resins, veneers, laminates'] },
+    
+    { section: 'Unit AS 1.3: Metal', order: o++, title: 'Metals: Ferrous and Non-Ferrous', description: 'Metal materials, alloys and finishing techniques', learning_objectives: ['Know available forms of supply of metals', 'Understand ferrous vs non-ferrous metals and alloys', 'Know properties of aluminium, aluminium alloys, copper, brass, zinc, mild/medium/high steel, stainless steel', 'Understand metal finishes: painting, plastic coating, electroplating, anodising, enamelling, lacquering'] },
+    
+    { section: 'Unit AS 1.4: Plastic', order: o++, title: 'Plastics and Polymers', description: 'Thermoplastic and thermosetting materials', learning_objectives: ['Understand difference between thermoplastic and thermosetting plastics', 'Know properties and uses of HDPE, LDPE, PET, PVC, acrylic, nylon, ABS, melamine-formaldehyde'] },
+    
+    { section: 'Unit AS 1.5: Modern Materials', order: o++, title: 'Modern Composite and Smart Materials', description: 'Advanced materials and emerging technologies', learning_objectives: ['Know thermochromic and photochromic materials', 'Understand phosphorescent pigments, reflective films, holograms', 'Know liquid crystal displays', 'Understand PEEK and PPSU applications in product design'] },
+    
+    { section: 'Unit AS 1.6: Processing Methods', order: o++, title: 'Manufacturing Processes', description: 'Wasting, forming, moulding and extrusion processes', learning_objectives: ['Understand wasting: workshop hand tools, manual and CNC machine tools', 'Know forming: rolling, blanking, press forming, forging', 'Understand moulding: injection, blow, rotational, vacuum forming, sand casting, pressure die casting', 'Know extrusion processes'] },
+    
+    { section: 'Unit AS 1.7: Product Analysis', order: o++, title: 'Product Analysis and Improvement', description: 'Evaluating and redesigning existing products', learning_objectives: ['Analyze products: marketing constraints, target audience', 'Evaluate ergonomics and anthropometrics', 'Consider cultural, ethnic and moral issues', 'Assess environmental issues', 'Consider user safety', 'Produce redesign proposals'] },
+    
+    { section: 'Unit AS 1.8: Design Communication', order: o++, title: 'Design Process and Communication', description: 'Design methodology and visual communication', learning_objectives: ['Understand design process: research to specification, idea generation, development, review, testing', 'Apply sustainability, creativity, flair and innovation in design', 'Communicate designs using 2D freehand sketching and mixed media'] },
+    
+    { section: 'Unit AS 1.9: CAD/CAM', order: o++, title: 'Computer-Aided Design and Manufacture', description: 'Digital design and manufacturing technologies', learning_objectives: ['Understand CAD: drawing, solid modelling, virtual imaging, rapid prototyping', 'Know CAM: computer-assisted manufacturing', 'Understand CIM: stock control, quality control, manufacturing, assembly', 'Know advantages of using CAD, CAM and CIM'] },
+    
+    { section: 'Unit AS 1.10: Quality and Safety', order: o++, title: 'Quality Assurance and Safety', description: 'Testing, inspection and safety procedures', learning_objectives: ['Understand use of factor of safety', 'Know purpose of testing and inspection of components/products', 'Understand risks associated with manufacturing processes', 'Know safety procedures and methods to minimise risks'] },
   ];
 }
 
 function getDesignA2() {
   let o = 1;
   return [
-    // Unit 1: Advanced Design Research and Analysis
-    { section: 'Unit A21: Advanced Research', order: o++, title: 'Advanced Market Analysis', description: 'In-depth market investigation and segmentation', learning_objectives: ['Conduct comprehensive market analysis', 'Identify market gaps', 'Analyze competitor strategies'] },
-    { section: 'Unit A21: Advanced Research', order: o++, title: 'User Research Methods', description: 'Qualitative and quantitative research techniques', learning_objectives: ['Design and conduct surveys', 'Perform user interviews', 'Analyze research data'] },
-    { section: 'Unit A21: Advanced Research', order: o++, title: 'Contextual and Cultural Analysis', description: 'Understanding design contexts and cultural factors', learning_objectives: ['Analyze cultural context', 'Understand social factors', 'Consider global perspectives'] },
-
-    // Unit 2: Advanced Manufacturing and Materials
-    { section: 'Unit A22: Manufacturing', order: o++, title: 'Advanced Manufacturing Processes', description: 'Modern production technologies and techniques', learning_objectives: ['Understand CNC and automation', 'Evaluate advanced manufacturing', 'Consider Industry 4.0 principles'] },
-    { section: 'Unit A22: Manufacturing', order: o++, title: 'Material Innovation', description: 'Smart materials and advanced material properties', learning_objectives: ['Understand smart materials', 'Evaluate innovative materials', 'Apply material science to design'] },
-    { section: 'Unit A22: Manufacturing', order: o++, title: 'Design for Manufacture (DFM)', description: 'Optimizing design for production', learning_objectives: ['Apply DFM principles', 'Minimize production costs', 'Ensure manufacturability'] },
-
-    // Unit 3: Systems, Control and Innovation
-    { section: 'Unit A23: Systems & Innovation', order: o++, title: 'Advanced Control Systems', description: 'Complex automated and smart systems', learning_objectives: ['Design control systems', 'Understand IoT integration', 'Apply feedback mechanisms'] },
-    { section: 'Unit A23: Systems & Innovation', order: o++, title: 'Circular Economy and Life Cycle Design', description: 'Designing for entire product lifecycle', learning_objectives: ['Conduct lifecycle assessment', 'Design for disassembly', 'Plan end-of-life solutions'] },
-    { section: 'Unit A23: Systems & Innovation', order: o++, title: 'Innovation and Emerging Technologies', description: 'Future design trends and technologies', learning_objectives: ['Identify emerging technologies', 'Apply cutting-edge design solutions', 'Anticipate future needs'] },
+    // A2 focuses on advanced systems, environmental issues, and comprehensive product development
+    { section: 'Unit A2 1.49: Environmental Issues', order: o++, title: 'Environmental Issues in Product Design', description: 'Sustainability and environmental impact throughout product lifecycle', learning_objectives: ['Understand environmental impact at different product life cycle stages', 'Know climate change and greenhouse gases', 'Understand reducing impact by design', 'Apply the 6Rs: rethink, reuse, recycle, repair, reduce, refuse', 'Know environmental audits and life-cycle assessment', 'Understand sustainable use of metals and plastics', 'Know biodegradable and photodegradable plastics', 'Understand need for innovation in product design'] },
+    
+    { section: 'Unit A2 1.50: Product Life Cycle', order: o++, title: 'Product Life Cycle and Market Strategy', description: 'Understanding product development from concept to market', learning_objectives: ['Understand product life cycle: inception, introduction, growth, maturity, decline', 'Know life cycles for fad, fashion and basic products', 'Understand product redesign: reasons, alternatives, relaunch', 'Know product testing and identification of problems'] },
+    
+    { section: 'Unit A2 1.51: Technology in Manufacturing', order: o++, title: 'Advances in Technology and ICT', description: 'Modern manufacturing technologies and systems', learning_objectives: ['Employ CAD and CAM systems in design and manufacture', 'Understand benefits of QRM (quick response manufacturing)', 'Know quick change injection moulding techniques', 'Understand FMS (flexible manufacturing systems)'] },
+    
+    { section: 'Unit A2 1.52: Marketing - The Four Ps', order: o++, title: 'From Mind to Market: Marketing Strategy', description: 'Market analysis, pricing, placement and promotion', learning_objectives: ['Understand how and why new products arise', 'Know market pull vs technology push', 'Understand radical vs incremental products', 'Know market strategy: penetration, development, diversification', 'Understand Product: variable life cycles, consumer types (innovators, opinion leaders, masses, late adopters, laggards)', 'Know Price: cost-plus, contribution pricing, perceived value, pricing for life cycle stages', 'Understand Place: geographical and physical placing, barriers to trading', 'Know Promotion: sales promotion, advertising, publicity, exhibitions, trade fairs', 'Use ICT to implement the four Ps'] },
+    
+    { section: 'Unit A2 1.53-1.54: Quality and Design', order: o++, title: 'Quality Control and Design for Use', description: 'Quality systems and inclusive design principles', learning_objectives: ['Understand quality control and assurance systems', 'Know use of measuring devices, jigs, templates, fixtures', 'Understand use of ICT in quality control', 'Design for maintenance and repair', 'Design to be inclusive for all society'] },
+    
+    { section: 'Unit A2 1.55-1.56: Design for Manufacture', order: o++, title: 'Design for Manufacture and Communication', description: 'Designing for production and communicating design intent', learning_objectives: ['Formulate proposals for scale production', 'Design to minimise materials, components, processes, environmental impact', 'Design to minimise packaging material and wasted space', 'Use appropriate communication and rendering techniques', 'Use text size and style to communicate impact and appeal to audiences'] },
+    
+    { section: 'Unit A2 1.57: Design Movements', order: o++, title: 'Technological Developments in Society', description: 'Influence of designers, movements and societal factors', learning_objectives: ['Know influence of key designers and design movements', 'Understand changes in fashion: miniaturisation, portability, flexibility', 'Know cultural and social changes', 'Understand scientific advances', 'Know examples incorporating moral, economic, social and environmental factors'] },
+    
+    { section: 'Unit A2 2: Coursework - Problem Identification', order: o++, title: 'Problem Identification and User Needs', description: 'Identifying design problems and creating specifications', learning_objectives: ['Identify a problem or need', 'Formulate a design brief', 'Identify potential clients or end users', 'Consider design implications from user needs', 'Analyze existing solutions using research techniques', 'Formulate design specification for concept development', 'Provide detailed referencing of sources'] },
+    
+    { section: 'Unit A2 2: Coursework - Design Development', order: o++, title: 'Initial Ideas, Development and Planning', description: 'Innovative design proposals and technical development', learning_objectives: ['Propose innovative design outcomes integrating Systems/Control or Product Design', 'Evaluate each proposal using relevant criteria', 'Select concept appropriate for development', 'Develop chosen concept with evidence of numerical analysis', 'Provide documentary evidence of making and design decisions', 'Justify development decisions', 'Integrate with user and environment', 'Provide ergonomic and aesthetic development', 'Create detailed plan of making process', 'Produce working drawings'] },
+    
+    { section: 'Unit A2 2: Coursework - Making and Testing', order: o++, title: 'Product Manufacture and Evaluation', description: 'Making prototype and testing outcomes', learning_objectives: ['Produce product prototype meeting identified needs', 'Incorporate components/product design features and materials', 'Demonstrate design decisions in prototype', 'Show competence in range of making skills and processes', 'Evaluate outcome of design process', 'Carry out tests on design outcome', 'Make conclusions from evaluation', 'Propose further development based on testing results'] },
   ];
 }
