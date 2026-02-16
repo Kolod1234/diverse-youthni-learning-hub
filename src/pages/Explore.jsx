@@ -13,14 +13,23 @@ import SearchBar from '@/components/courses/SearchBar';
 const categories = [
   { id: 'mathematics', label: 'Mathematics', icon: '🔢', color: 'from-blue-500 to-cyan-500' },
   { id: 'further_mathematics', label: 'Further Mathematics', icon: '🧮', color: 'from-blue-600 to-indigo-600' },
-  { id: 'english', label: 'English', icon: '📚', color: 'from-purple-500 to-pink-500' },
+  { id: 'english_language', label: 'English Language', icon: '📚', color: 'from-purple-500 to-pink-500' },
+  { id: 'english_literature', label: 'English Literature', icon: '📖', color: 'from-purple-600 to-pink-600' },
   { id: 'biology', label: 'Biology', icon: '🧬', color: 'from-green-500 to-emerald-500' },
   { id: 'chemistry', label: 'Chemistry', icon: '⚗️', color: 'from-orange-500 to-amber-500' },
   { id: 'physics', label: 'Physics', icon: '⚛️', color: 'from-indigo-500 to-blue-500' },
   { id: 'science', label: 'Science', icon: '🔬', color: 'from-teal-500 to-cyan-500' },
+  { id: 'computer_science', label: 'Computer Science', icon: '💻', color: 'from-gray-700 to-gray-900' },
+  { id: 'software_systems_development', label: 'Software Systems Development', icon: '⚙️', color: 'from-gray-600 to-black' },
+  { id: 'digital_technology', label: 'Digital Technology', icon: '📱', color: 'from-blue-400 to-blue-600' },
+  { id: 'technology_design', label: 'Technology & Design', icon: '🎨', color: 'from-red-400 to-pink-500' },
   { id: 'history', label: 'History', icon: '📜', color: 'from-amber-500 to-orange-500' },
   { id: 'geography', label: 'Geography', icon: '🌍', color: 'from-emerald-500 to-teal-500' },
+  { id: 'economics', label: 'Economics', icon: '💰', color: 'from-green-600 to-green-800' },
+  { id: 'government_politics', label: 'Government & Politics', icon: '🏛️', color: 'from-slate-600 to-slate-800' },
+  { id: 'religious_studies', label: 'Religious Studies', icon: '🕯️', color: 'from-yellow-600 to-amber-700' },
   { id: 'life_health_sciences', label: 'Life & Health Sciences', icon: '🫀', color: 'from-red-500 to-pink-500' },
+  { id: 'environmental_technology', label: 'Environmental Technology', icon: '🌱', color: 'from-green-400 to-teal-500' },
 ];
 
 const levels = [
