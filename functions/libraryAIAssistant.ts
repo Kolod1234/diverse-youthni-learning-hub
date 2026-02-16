@@ -169,6 +169,20 @@ Please generate:
       response_json_schema: responseSchema
     });
 
+    // Generate image if in answer mode and imagePrompt is available
+    let imageUrl = null;
+    if (mode === 'answer' && result.imagePrompt) {
+      try {
+        const imageResult = await base44.integrations.Core.GenerateImage({
+          prompt: result.imagePrompt
+        });
+        imageUrl = imageResult.url;
+        result.image_url = imageUrl;
+      } catch (e) {
+        console.log('Image generation failed:', e.message);
+      }
+    }
+
     // Log search activity
     try {
       await base44.entities.FileActivity.create({
