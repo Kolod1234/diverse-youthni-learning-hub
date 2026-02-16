@@ -48,8 +48,12 @@ function LayoutContent({ children, currentPageName }) {
 
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      }
     };
     loadUser();
   }, []);
