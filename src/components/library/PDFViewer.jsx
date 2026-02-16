@@ -295,11 +295,10 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           flex: 1, 
           display: 'flex', 
           flexDirection: 'column', 
-          overflowY: 'auto', 
-          overflowX: 'auto', 
           backgroundColor: '#111827', 
           padding: isFullscreen ? '0' : '16px', 
-          minHeight: 0
+          minHeight: 0,
+          overflow: 'hidden'
         }}>
           {!fileUrl && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
@@ -315,65 +314,53 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
                 </div>
               )}
 
-              <div style={{ display: 'flex', justifyContent: 'center', width: '100%' }}>
-                <TransformWrapper
-                  initialScale={1}
-                  initialPositionX={0}
-                  initialPositionY={0}
-                  panning={{ disabled: false }}
-                  pinch={{ disabled: false }}
-                  doubleClick={{ disabled: false }}
-                  wheel={{ disabled: false, step: 50 }}
+              <div style={{ 
+                flex: 1, 
+                overflowY: 'auto', 
+                overflowX: 'auto',
+                display: 'flex',
+                justifyContent: 'center',
+                width: '100%',
+                minHeight: 0
+              }}>
+                <Document
+                  file={fileUrl}
+                  onLoadSuccess={({ numPages }) => {
+                    setNumPages(numPages);
+                    setIsLoading(false);
+                  }}
+                  onLoadError={(error) => {
+                    console.error('PDF load error:', error);
+                    setIsLoading(false);
+                  }}
+                  loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
                 >
-                  {({ zoomIn, zoomOut, resetTransform }) => (
-                    <TransformComponent
-                      wrapperStyle={{
-                        width: '100%',
-                        display: 'flex',
-                        justifyContent: 'center'
-                      }}
-                    >
-                      <Document
-                        file={fileUrl}
-                        onLoadSuccess={({ numPages }) => {
-                          setNumPages(numPages);
-                          setIsLoading(false);
-                        }}
-                        onLoadError={(error) => {
-                          console.error('PDF load error:', error);
-                          setIsLoading(false);
-                        }}
-                        loading={<Loader2 className="w-8 h-8 text-indigo-600 animate-spin" />}
-                      >
-                        <div style={{ 
-                          backgroundColor: 'white', 
-                          boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
-                          padding: '16px',
-                          display: 'flex',
-                          flexDirection: layoutMode === 'continuous' ? 'column' : 'row',
-                          gap: '16px'
-                        }}>
-                          <Page 
-                            pageNumber={currentPage}
-                            renderTextLayer={true}
-                            renderAnnotationLayer={true}
-                            width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
-                            scale={fontSize / 100}
-                          />
-                          {layoutMode === 'continuous' && currentPage < numPages && (
-                            <Page 
-                              pageNumber={currentPage + 1}
-                              renderTextLayer={true}
-                              renderAnnotationLayer={true}
-                              width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
-                              scale={fontSize / 100}
-                            />
-                          )}
-                        </div>
-                      </Document>
-                    </TransformComponent>
-                  )}
-                </TransformWrapper>
+                  <div style={{ 
+                    backgroundColor: 'white', 
+                    boxShadow: '0 20px 25px -5px rgba(0, 0, 0, 0.1)', 
+                    padding: '16px',
+                    display: 'flex',
+                    flexDirection: layoutMode === 'continuous' ? 'column' : 'row',
+                    gap: '16px'
+                  }}>
+                    <Page 
+                      pageNumber={currentPage}
+                      renderTextLayer={true}
+                      renderAnnotationLayer={true}
+                      width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
+                      scale={fontSize / 100}
+                    />
+                    {layoutMode === 'continuous' && currentPage < numPages && (
+                      <Page 
+                        pageNumber={currentPage + 1}
+                        renderTextLayer={true}
+                        renderAnnotationLayer={true}
+                        width={Math.max(300, Math.min(800, (isFullscreen ? window.innerWidth - 32 : 600) * (fontSize / 100)))}
+                        scale={fontSize / 100}
+                      />
+                    )}
+                  </div>
+                </Document>
               </div>
             </>
           )}
