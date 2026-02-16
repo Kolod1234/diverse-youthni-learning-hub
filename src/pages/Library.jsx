@@ -341,16 +341,17 @@ export default function Library() {
             />
           </Box>
 
-          {canUpload && (
-            <>
-              <input
-                ref={fileInputRef}
-                type="file"
-                accept=".pdf,.epub,.mobi,.doc,.docx"
-                onChange={handleFileSelected}
-                className="hidden"
-              />
-              <Box sx={{ display: 'flex', gap: 2 }}>
+          <Box sx={{ display: 'flex', gap: 2 }}>
+            <AILibraryAssistant resources={resources} />
+            {canUpload && (
+              <>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept=".pdf,.epub,.mobi,.doc,.docx"
+                  onChange={handleFileSelected}
+                  className="hidden"
+                />
                 <Button 
                   onClick={() => setShowBulkUpload(true)}
                   variant="outlined"
@@ -367,9 +368,9 @@ export default function Library() {
                   <Plus className="w-5 h-5" />
                   {uploadingFile || analyzing ? 'Analyzing...' : 'Upload Book'}
                 </Button>
-              </Box>
-            </>
-          )}
+              </>
+            )}
+          </Box>
         </Box>
 
         {/* Featured Section */}
