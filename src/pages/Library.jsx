@@ -214,7 +214,11 @@ export default function Library() {
         });
       }, 300);
 
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      const uploadRes = await base44.functions.invoke('uploadLargeLibraryPDF', { file });
+      if (!uploadRes.data.success) {
+        throw new Error(uploadRes.data.error || 'Upload failed');
+      }
+      const file_url = uploadRes.data.file_url;
 
       clearInterval(progressInterval);
       setUploadProgress(100);
