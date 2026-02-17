@@ -216,25 +216,11 @@ export default function Library() {
         });
       }, 500);
 
-      console.log('Calling backend function...');
-      console.log('File to upload:', { name: file.name, size: file.size, type: file.type });
-      
-      // Upload file to backend with timeout and detailed error handling
-      let uploadRes;
-      try {
-        const uploadPromise = base44.functions.invoke('uploadLargeLibraryPDF', { file });
-        const timeoutPromise = new Promise((_, reject) => 
-          setTimeout(() => reject(new Error('Upload timeout after 2 minutes')), 120000)
-        );
-        
-        uploadRes = await Promise.race([uploadPromise, timeoutPromise]);
-        console.log('Raw upload response:', uploadRes);
-      } catch (uploadError) {
-        console.error('Upload invocation error:', uploadError);
-        throw new Error(`Upload failed: ${uploadError.message}`);
-      }
-      
-      console.log('Backend response:', JSON.stringify(uploadRes, null, 2));
+      console.log('Uploading file directly...');
+
+      // Upload file directly using Core.UploadFile
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      console.log('File uploaded successfully:', file_url);
 
       // Stop progress simulation
       if (progressInterval) {
@@ -242,20 +228,6 @@ export default function Library() {
         progressInterval = null;
       }
 
-      // Check response
-      if (!uploadRes?.data) {
-        throw new Error('No response data from server');
-      }
-
-      if (!uploadRes.data.success) {
-        throw new Error(uploadRes.data.error || 'Upload failed');
-      }
-
-      if (!uploadRes.data.file_url) {
-        throw new Error('No file URL in response');
-      }
-
-      console.log('File uploaded successfully:', uploadRes.data.file_url);
       setUploadProgress(95);
 
       // Create book record
@@ -264,7 +236,7 @@ export default function Library() {
         author: '',
         description: '',
         category: 'gcse_books',
-        file_url: uploadRes.data.file_url,
+        file_url: file_url,
         cover_image: '',
         tags: [],
         is_featured: false
@@ -273,7 +245,7 @@ export default function Library() {
       console.log('Creating book record...');
       const newBook = await base44.entities.LibraryResource.create(bookData);
       console.log('Book created:', newBook.id);
-      
+
       setUploadProgress(100);
 
       // Reset filters to show the new book
@@ -284,10 +256,10 @@ export default function Library() {
       // Force refresh
       await queryClient.invalidateQueries(['library-resources']);
       await queryClient.refetchQueries(['library-resources']);
-      
+
       console.log('=== UPLOAD COMPLETE ===');
       toast.success(`"${bookData.title}" uploaded successfully! Scroll down to see it.`, { duration: 4000 });
-      
+
       // Small delay to allow UI to update
       setTimeout(() => {
         window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
@@ -298,13 +270,13 @@ export default function Library() {
         clearInterval(progressInterval);
         progressInterval = null;
       }
-      
+
       console.error('=== UPLOAD ERROR ===');
       console.error('Error type:', error.constructor.name);
       console.error('Error message:', error.message);
       console.error('Error stack:', error.stack);
       console.error('Full error:', error);
-      
+
       toast.error(`Upload failed: ${error.message}`, { duration: 5000 });
     } finally {
       setUploadingFile(false);
