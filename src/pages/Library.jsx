@@ -212,30 +212,53 @@ export default function Library() {
 
     setUploadingFile(true);
     setUploadProgress(0);
-    let progressInterval = null;
 
     try {
-      // Start progress simulation
-      progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          const next = prev + Math.random() * 10;
-          return next >= 90 ? 90 : next;
-        });
-      }, 500);
+      const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
+      let file_url;
 
-      console.log('Uploading file directly...');
+      if (file.size > LARGE_FILE_THRESHOLD) {
+        // Chunked upload with real progress
+        console.log('Using chunked upload for large file...');
+        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+        const uploadId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
 
-      // Upload file directly using Core.UploadFile
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      console.log('File uploaded successfully:', file_url);
+        for (let i = 0; i < totalChunks; i++) {
+          const start = i * CHUNK_SIZE;
+          const end = Math.min(start + CHUNK_SIZE, file.size);
+          const chunk = file.slice(start, end);
 
-      // Stop progress simulation
-      if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
+          const formData = new FormData();
+          formData.append('chunk', chunk);
+          formData.append('chunkIndex', i.toString());
+          formData.append('totalChunks', totalChunks.toString());
+          formData.append('uploadId', uploadId);
+          formData.append('fileName', file.name);
+
+          const response = await base44.functions.invoke('uploadFileChunked', formData);
+
+          if (!response.data.success) {
+            throw new Error('Chunk upload failed');
+          }
+
+          // Update progress based on chunks uploaded
+          setUploadProgress(response.data.progress);
+
+          if (response.data.complete) {
+            file_url = response.data.file_url;
+            console.log('Chunked upload complete:', file_url);
+          }
+        }
+      } else {
+        // Direct upload for smaller files
+        console.log('Using direct upload...');
+        setUploadProgress(50);
+        const result = await base44.integrations.Core.UploadFile({ file });
+        file_url = result.file_url;
+        console.log('File uploaded successfully:', file_url);
+        setUploadProgress(95);
       }
-
-      setUploadProgress(95);
 
       // Create book record
       const bookData = {
@@ -273,11 +296,6 @@ export default function Library() {
       }, 500);
 
     } catch (error) {
-      if (progressInterval) {
-        clearInterval(progressInterval);
-        progressInterval = null;
-      }
-
       console.error('=== UPLOAD ERROR ===');
       console.error('Error type:', error.constructor.name);
       console.error('Error message:', error.message);
