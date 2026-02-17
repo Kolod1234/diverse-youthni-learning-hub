@@ -185,81 +185,67 @@ export default function Library() {
 
   const handleFileSelected = async (e) => {
     const file = e.target.files[0];
-    if (!file) {
-      setUploadingFile(false);
-      return;
-    }
+    if (!file) return;
 
     // Check file size (500MB limit)
-    const maxSize = 500 * 1024 * 1024; // 500MB in bytes
+    const maxSize = 500 * 1024 * 1024;
     if (file.size > maxSize) {
       toast.error(`File too large! Maximum size is 500MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB`);
       e.target.value = '';
-      setUploadingFile(false);
       return;
     }
 
     setUploadingFile(true);
-    setAnalyzing(false);
     setUploadProgress(0);
     let progressInterval = null;
 
     try {
-      // Simulate progress for better UX
+      // Simulate progress
       progressInterval = setInterval(() => {
-        setUploadProgress(prev => {
-          if (prev >= 95) return prev;
-          if (prev >= 80) return prev + Math.random() * 2;
-          return prev + Math.random() * 15;
-        });
+        setUploadProgress(prev => prev >= 90 ? prev : prev + Math.random() * 15);
       }, 300);
 
+      // Upload file
       const uploadRes = await base44.functions.invoke('uploadLargeLibraryPDF', { file });
-      if (!uploadRes.data.success) {
-        throw new Error(uploadRes.data.error || 'Upload failed');
+      if (!uploadRes.data?.success || !uploadRes.data?.file_url) {
+        throw new Error(uploadRes.data?.error || 'Upload failed - no file URL returned');
       }
-      const file_url = uploadRes.data.file_url;
 
       clearInterval(progressInterval);
-      setUploadProgress(100);
+      progressInterval = null;
+      setUploadProgress(95);
 
-      // Auto-save book with basic info immediately
+      // Create book record
       const bookData = {
         title: file.name.replace(/\.[^/.]+$/, ''),
         author: '',
         description: '',
         category: 'gcse_books',
-        file_url,
+        file_url: uploadRes.data.file_url,
         cover_image: '',
         tags: [],
         is_featured: false
       };
 
-      try {
-        // Create the book right away
-        const newBook = await base44.entities.LibraryResource.create(bookData);
-        console.log('Book created:', newBook);
-        
-        // Force refresh the list
-        await queryClient.invalidateQueries(['library-resources']);
-        await queryClient.refetchQueries(['library-resources']);
-        
-        toast.success('Book uploaded successfully!');
-      } catch (error) {
-        console.error('Failed to create book:', error);
-        toast.error('Failed to save book: ' + error.message);
-        throw error;
-      }
+      const newBook = await base44.entities.LibraryResource.create(bookData);
+      setUploadProgress(100);
+
+      // Refresh library
+      await queryClient.invalidateQueries(['library-resources']);
+      
+      toast.success(`"${bookData.title}" uploaded successfully!`);
+      console.log('Book created:', newBook);
+
     } catch (error) {
       if (progressInterval) clearInterval(progressInterval);
-      console.error('Upload error:', error);
-      toast.error(`Upload failed: ${error.message || 'Unknown error'}. Please try again.`);
+      console.error('Upload failed:', error);
+      toast.error(error.message || 'Upload failed. Please try again.');
     } finally {
       setUploadingFile(false);
       setUploadProgress(0);
       e.target.value = '';
     }
-    };
+  };
 
   const handleUploadCoverInForm = async (e) => {
     const file = e.target.files[0];
