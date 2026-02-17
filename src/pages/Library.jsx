@@ -217,14 +217,22 @@ export default function Library() {
       }, 500);
 
       console.log('Calling backend function...');
+      console.log('File to upload:', { name: file.name, size: file.size, type: file.type });
       
-      // Upload file to backend with timeout
-      const uploadPromise = base44.functions.invoke('uploadLargeLibraryPDF', { file });
-      const timeoutPromise = new Promise((_, reject) => 
-        setTimeout(() => reject(new Error('Upload timeout after 2 minutes')), 120000)
-      );
-      
-      const uploadRes = await Promise.race([uploadPromise, timeoutPromise]);
+      // Upload file to backend with timeout and detailed error handling
+      let uploadRes;
+      try {
+        const uploadPromise = base44.functions.invoke('uploadLargeLibraryPDF', { file });
+        const timeoutPromise = new Promise((_, reject) => 
+          setTimeout(() => reject(new Error('Upload timeout after 2 minutes')), 120000)
+        );
+        
+        uploadRes = await Promise.race([uploadPromise, timeoutPromise]);
+        console.log('Raw upload response:', uploadRes);
+      } catch (uploadError) {
+        console.error('Upload invocation error:', uploadError);
+        throw new Error(`Upload failed: ${uploadError.message}`);
+      }
       
       console.log('Backend response:', JSON.stringify(uploadRes, null, 2));
 
