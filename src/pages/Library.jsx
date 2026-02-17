@@ -513,7 +513,7 @@ export default function Library() {
                     )}
                   </div>
                   {canEditBookUI(book) && (
-                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                    <div className="absolute top-2 right-2 flex gap-1">
                       <button
                         onClick={(e) => {
                           e.stopPropagation();
@@ -644,7 +644,7 @@ export default function Library() {
                 )}
               </div>
               {canEditBookUI(book) && (
-                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                <div className="absolute top-2 right-2 flex gap-1">
                   <button
                     onClick={(e) => {
                       e.stopPropagation();
