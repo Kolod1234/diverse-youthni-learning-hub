@@ -214,51 +214,53 @@ export default function Library() {
     setUploadProgress(0);
 
     try {
-      const LARGE_FILE_THRESHOLD = 20 * 1024 * 1024; // 20MB
-      let file_url;
+      console.log('Uploading with XHR progress tracking...');
+      
+      // Create FormData
+      const formData = new FormData();
+      formData.append('file', file);
 
-      if (file.size > LARGE_FILE_THRESHOLD) {
-        // Chunked upload with real progress
-        console.log('Using chunked upload for large file...');
-        const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
-        const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
-        const uploadId = `${Date.now()}_${Math.random().toString(36).substring(7)}`;
+      // Upload with XMLHttpRequest to track progress
+      const file_url = await new Promise((resolve, reject) => {
+        const xhr = new XMLHttpRequest();
 
-        for (let i = 0; i < totalChunks; i++) {
-          const start = i * CHUNK_SIZE;
-          const end = Math.min(start + CHUNK_SIZE, file.size);
-          const chunk = file.slice(start, end);
-
-          const formData = new FormData();
-          formData.append('chunk', chunk);
-          formData.append('chunkIndex', i.toString());
-          formData.append('totalChunks', totalChunks.toString());
-          formData.append('uploadId', uploadId);
-          formData.append('fileName', file.name);
-
-          const response = await base44.functions.invoke('uploadFileChunked', formData);
-
-          if (!response.data.success) {
-            throw new Error('Chunk upload failed');
+        xhr.upload.addEventListener('progress', (event) => {
+          if (event.lengthComputable) {
+            const percentComplete = Math.round((event.loaded / event.total) * 95);
+            setUploadProgress(percentComplete);
+            console.log(`Upload progress: ${percentComplete}%`);
           }
+        });
 
-          // Update progress based on chunks uploaded
-          setUploadProgress(response.data.progress);
-
-          if (response.data.complete) {
-            file_url = response.data.file_url;
-            console.log('Chunked upload complete:', file_url);
+        xhr.addEventListener('load', async () => {
+          if (xhr.status === 200) {
+            try {
+              const response = JSON.parse(xhr.responseText);
+              resolve(response.file_url);
+            } catch (err) {
+              reject(new Error('Invalid response from server'));
+            }
+          } else {
+            reject(new Error(`Upload failed with status ${xhr.status}`));
           }
-        }
-      } else {
-        // Direct upload for smaller files
-        console.log('Using direct upload...');
-        setUploadProgress(50);
-        const result = await base44.integrations.Core.UploadFile({ file });
-        file_url = result.file_url;
-        console.log('File uploaded successfully:', file_url);
-        setUploadProgress(95);
-      }
+        });
+
+        xhr.addEventListener('error', () => {
+          reject(new Error('Network error during upload'));
+        });
+
+        xhr.addEventListener('abort', () => {
+          reject(new Error('Upload cancelled'));
+        });
+
+        // Use the Core.UploadFile endpoint
+        xhr.open('POST', `https://api.base44.com/v1/integrations/Core/UploadFile`);
+        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('base44_token')}`);
+        xhr.send(formData);
+      });
+
+      console.log('File uploaded successfully:', file_url);
+      setUploadProgress(95);
 
       // Create book record
       const bookData = {
