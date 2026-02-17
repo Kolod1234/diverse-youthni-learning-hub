@@ -430,7 +430,7 @@ export default function Library() {
               type="file"
               accept=".pdf,.epub,.mobi,.doc,.docx"
               onChange={handleFileSelected}
-              className="hidden"
+              style={{ display: 'none' }}
             />
             <Button 
               onClick={() => setShowBulkUpload(true)}
