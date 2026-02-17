@@ -19,9 +19,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Fetch the PDF
+    // Fetch the PDF with authentication
     console.log('Fetching PDF from:', file_url);
-    const response = await fetch(file_url);
+    const token = req.headers.get('authorization')?.replace('Bearer ', '');
+    const appId = req.headers.get('x-app-id');
+    
+    const fetchHeaders = {};
+    if (token) fetchHeaders['Authorization'] = `Bearer ${token}`;
+    if (appId) fetchHeaders['X-App-Id'] = appId;
+    
+    const response = await fetch(file_url, { headers: fetchHeaders });
     
     if (!response.ok) {
       console.error('Fetch failed:', response.status, response.statusText);
