@@ -227,18 +227,57 @@ export default function Library() {
       try {
         let file_url;
         
-        // Use backend function for files over 20MB to handle larger uploads
-        if (file.size > 20 * 1024 * 1024) {
-          console.log('Using backend function for large file...');
-          const formData = new FormData();
-          formData.append('file', file);
-          const response = await base44.functions.invoke('uploadLargeFile', formData);
+        // Use chunked upload for files over 15MB
+        if (file.size > 15 * 1024 * 1024) {
+          console.log('Using chunked upload for large file...');
           
-          if (!response.data.success) {
-            throw new Error(response.data.error || 'Upload failed');
+          const CHUNK_SIZE = 5 * 1024 * 1024; // 5MB chunks
+          const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+          const sessionId = `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          
+          console.log(`Splitting into ${totalChunks} chunks of ${CHUNK_SIZE / 1024 / 1024}MB each`);
+          
+          // Upload each chunk
+          for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+            
+            const chunkFormData = new FormData();
+            chunkFormData.append('chunk', chunk);
+            chunkFormData.append('chunkIndex', i.toString());
+            chunkFormData.append('totalChunks', totalChunks.toString());
+            chunkFormData.append('fileName', file.name);
+            
+            console.log(`Uploading chunk ${i + 1}/${totalChunks} (${((end - start) / 1024 / 1024).toFixed(1)}MB)...`);
+            
+            try {
+              const response = await base44.functions.invoke('uploadLargeFile', {
+                action: 'uploadChunk',
+                sessionId,
+                chunkIndex: i,
+                chunk: await chunk.arrayBuffer(),
+                chunkSize: chunk.size,
+                totalChunks,
+                fileName: file.name
+              });
+              
+              if (response.data.success && response.data.file_url) {
+                file_url = response.data.file_url;
+                console.log('All chunks uploaded successfully');
+                break;
+              }
+              
+              setUploadProgress(Math.round((i + 1) / totalChunks * 90));
+            } catch (chunkError) {
+              console.error(`Chunk ${i} upload failed:`, chunkError);
+              throw new Error(`Failed to upload chunk ${i + 1}/${totalChunks}: ${chunkError.message}`);
+            }
           }
           
-          file_url = response.data.file_url;
+          if (!file_url) {
+            throw new Error('Chunked upload failed - no final response');
+          }
         } else {
           const result = await base44.integrations.Core.UploadFile({ file });
           file_url = result.file_url;
