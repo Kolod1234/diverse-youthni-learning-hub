@@ -68,7 +68,9 @@ export default function BookDetails() {
     return checkCanDeleteBook(book, book.created_by);
   };
 
-  const handleDownload = async () => {
+  const handleDownload = async (e) => {
+    e?.preventDefault();
+    e?.stopPropagation();
     if (!book) return;
     try {
       await base44.entities.LibraryResource.update(book.id, {
