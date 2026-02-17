@@ -3,7 +3,7 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   console.log('=== BACKEND UPLOAD START ===');
   console.log('Method:', req.method);
-  console.log('Headers:', Object.fromEntries(req.headers));
+  console.log('Content-Type:', req.headers.get('content-type'));
 
   try {
     const base44 = createClientFromRequest(req);
@@ -16,23 +16,13 @@ Deno.serve(async (req) => {
 
     console.log('User authenticated:', user.email);
 
-    const contentType = req.headers.get('content-type') || '';
-    console.log('Content-Type:', contentType);
-    
-    if (!contentType.includes('multipart/form-data')) {
-      console.error('Invalid content type:', contentType);
-      return Response.json({ 
-        error: 'Invalid content type. Expected multipart/form-data', 
-        success: false 
-      }, { status: 400 });
-    }
-
+    // Parse form data
     console.log('Parsing form data...');
     const formData = await req.formData();
     const file = formData.get('file');
 
     if (!file) {
-      console.error('No file in form data');
+      console.error('No file in form data. Available keys:', Array.from(formData.keys()));
       return Response.json({ error: 'No file provided', success: false }, { status: 400 });
     }
 
@@ -43,7 +33,7 @@ Deno.serve(async (req) => {
     });
 
     if (!(file instanceof File)) {
-      console.error('Invalid file object');
+      console.error('Invalid file object, got:', typeof file);
       return Response.json({ error: 'Invalid file object', success: false }, { status: 400 });
     }
 
@@ -78,6 +68,8 @@ Deno.serve(async (req) => {
     }
 
     console.log('=== BACKEND UPLOAD SUCCESS ===');
+    console.log('File URL:', uploadResult.file_url);
+    
     return Response.json({
       success: true,
       file_url: uploadResult.file_url,
