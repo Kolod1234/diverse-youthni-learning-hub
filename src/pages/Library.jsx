@@ -268,12 +268,22 @@ export default function Library() {
       
       setUploadProgress(100);
 
+      // Reset filters to show the new book
+      setSelectedCategory('all');
+      setSelectedTags([]);
+      setSearchQuery('');
+
       // Force refresh
       await queryClient.invalidateQueries(['library-resources']);
       await queryClient.refetchQueries(['library-resources']);
       
       console.log('=== UPLOAD COMPLETE ===');
-      toast.success(`"${bookData.title}" uploaded successfully!`);
+      toast.success(`"${bookData.title}" uploaded successfully! Scroll down to see it.`, { duration: 4000 });
+      
+      // Small delay to allow UI to update
+      setTimeout(() => {
+        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+      }, 500);
 
     } catch (error) {
       if (progressInterval) {
