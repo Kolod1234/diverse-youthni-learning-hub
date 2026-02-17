@@ -27,9 +27,12 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid file' }, { status: 400 });
     }
 
-    // Check file type
-    if (!file.type.includes('pdf')) {
-      return Response.json({ error: 'Only PDF files are allowed' }, { status: 400 });
+    // Allow various document types
+    const allowedTypes = ['pdf', 'epub', 'mobi', 'doc', 'docx', 'image'];
+    const isAllowed = allowedTypes.some(type => file.type.includes(type) || file.name.toLowerCase().endsWith(`.${type}`));
+    
+    if (!isAllowed) {
+      return Response.json({ error: 'File type not supported. Please upload PDF, EPUB, DOC, DOCX, or image files.' }, { status: 400 });
     }
 
     // Allow up to 500MB

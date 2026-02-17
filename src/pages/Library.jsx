@@ -206,7 +206,10 @@ export default function Library() {
       }, 300);
 
       // Upload file
+      console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
       const uploadRes = await base44.functions.invoke('uploadLargeLibraryPDF', { file });
+      console.log('Upload response:', uploadRes.data);
+      
       if (!uploadRes.data?.success || !uploadRes.data?.file_url) {
         throw new Error(uploadRes.data?.error || 'Upload failed - no file URL returned');
       }
