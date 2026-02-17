@@ -724,13 +724,13 @@ export default function Library() {
           {selectedBook && (
             <div className="flex flex-col md:flex-row h-full gap-0">
               {/* Book Cover */}
-              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-6 flex flex-col items-center overflow-y-auto max-h-[90vh]">
+              <div className="md:w-1/3 bg-gradient-to-br from-slate-800 to-slate-900 p-4 flex flex-col items-center overflow-y-auto">
                 {selectedBook.cover_image ? (
                   selectedBook.cover_image.toLowerCase().includes('.pdf') ? (
-                    <div className="w-full max-w-xs rounded-lg shadow-2xl mb-4 bg-white flex-shrink-0">
+                    <div className="w-40 h-52 rounded-lg shadow-2xl mb-3 bg-white flex-shrink-0">
                       <iframe
                         src={`https://mozilla.github.io/pdf.js/web/viewer.html?file=${encodeURIComponent(selectedBook.cover_image)}`}
-                        className="w-full aspect-[3/4] rounded-lg"
+                        className="w-full h-full rounded-lg"
                         style={{ border: 'none' }}
                       />
                     </div>
@@ -738,12 +738,12 @@ export default function Library() {
                     <img
                       src={selectedBook.cover_image}
                       alt={selectedBook.title}
-                      className="w-full max-w-xs rounded-lg shadow-2xl mb-4 object-contain bg-gray-100 flex-shrink-0"
+                      className="w-40 h-52 rounded-lg shadow-2xl mb-3 object-cover bg-gray-100 flex-shrink-0"
                     />
                   )
                 ) : (
-                  <div className="w-full max-w-xs aspect-[3/4] bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center mb-4 flex-shrink-0">
-                    <BookOpen className="w-24 h-24 text-gray-400" />
+                  <div className="w-40 h-52 bg-gradient-to-br from-gray-700 to-gray-800 rounded-lg flex items-center justify-center mb-3 flex-shrink-0">
+                    <BookOpen className="w-16 h-16 text-gray-400" />
                   </div>
                 )}
 
