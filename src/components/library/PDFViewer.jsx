@@ -409,6 +409,14 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           </Box>
         )}
       </div>
+
+      {/* Snipping Tool Overlay */}
+      {showSnippingTool && (
+        <PDFSnippingTool
+          onCapture={handleSnipCapture}
+          onCancel={() => setShowSnippingTool(false)}
+        />
+      )}
     </div>
   );
 }
