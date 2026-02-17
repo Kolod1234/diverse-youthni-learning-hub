@@ -19,16 +19,16 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Fetch the PDF with proper headers
-    const response = await fetch(file_url, {
-      headers: {
-        'Accept': 'application/pdf,application/octet-stream,*/*',
-      }
-    });
+    // Fetch the PDF
+    console.log('Fetching PDF from:', file_url);
+    const response = await fetch(file_url);
     
     if (!response.ok) {
       console.error('Fetch failed:', response.status, response.statusText);
-      throw new Error(`Failed to fetch PDF (${response.status}): ${response.statusText}`);
+      return Response.json({ 
+        success: false,
+        error: `Failed to fetch PDF: ${response.statusText}` 
+      }, { status: 500 });
     }
     
     const contentType = response.headers.get('content-type');
