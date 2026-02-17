@@ -21,75 +21,40 @@ Deno.serve(async (req) => {
 
     // Fetch the PDF
     const response = await fetch(file_url);
-    const pdfBlob = await response.blob();
-    const pdfFile = new File([pdfBlob], 'temp.pdf', { type: 'application/pdf' });
-    
-    // Upload the PDF temporarily
-    const { file_url: tempPdfUrl } = await base44.integrations.Core.UploadFile({ file: pdfFile });
-    
-    // Use Manus API to convert PDF page to image
-    const manusResponse = await fetch('https://backend.manus.chat/api/v1/image-generation', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${Deno.env.get('MANUS_API_KEY')}`
-      },
-      body: JSON.stringify({
-        prompt: `Convert page ${page_number + 1} of this PDF to a high-quality image: ${tempPdfUrl}`,
-        model: 'flux-1.1-pro',
-        width: 800,
-        height: 1200
-      })
-    });
-    
-    if (!manusResponse.ok) {
-      // Fallback: just extract as single-page PDF
-      const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
-      const arrayBuffer = await pdfBlob.arrayBuffer();
-      const pdfDoc = await PDFDocument.load(arrayBuffer);
-      const pageCount = pdfDoc.getPageCount();
-      
-      if (page_number >= pageCount) {
-        return Response.json({ 
-          error: `Page ${page_number + 1} does not exist. PDF has ${pageCount} pages.` 
-        }, { status: 400 });
-      }
-
-      const newPdf = await PDFDocument.create();
-      const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
-      newPdf.addPage(copiedPage);
-      
-      const pdfBytes = await newPdf.save();
-      const blob = new Blob([pdfBytes], { type: 'application/pdf' });
-      const extractedPdfFile = new File([blob], `cover-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
-      
-      const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: extractedPdfFile });
-      
-      return Response.json({ 
-        success: true,
-        extracted_page_url: extractedPageUrl,
-        page_number: page_number + 1,
-        message: 'PDF page extracted (PDF format)',
-        format: 'pdf'
-      });
+    if (!response.ok) {
+      throw new Error(`Failed to fetch PDF: ${response.statusText}`);
     }
     
-    const manusData = await manusResponse.json();
-    const imageUrl = manusData.url || manusData.image_url;
+    const arrayBuffer = await response.arrayBuffer();
     
-    // Download the generated image
-    const imgResponse = await fetch(imageUrl);
-    const imgBlob = await imgResponse.blob();
-    const imgFile = new File([imgBlob], `page-${page_number + 1}.png`, { type: 'image/png' });
+    // Extract single page as PDF using pdf-lib
+    const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
+    const pdfDoc = await PDFDocument.load(arrayBuffer);
+    const pageCount = pdfDoc.getPageCount();
     
-    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: imgFile });
+    if (page_number >= pageCount) {
+      return Response.json({ 
+        success: false,
+        error: `Page ${page_number + 1} does not exist. PDF has ${pageCount} pages.` 
+      }, { status: 400 });
+    }
+
+    const newPdf = await PDFDocument.create();
+    const [copiedPage] = await newPdf.copyPages(pdfDoc, [page_number]);
+    newPdf.addPage(copiedPage);
+    
+    const pdfBytes = await newPdf.save();
+    const blob = new Blob([pdfBytes], { type: 'application/pdf' });
+    const extractedPdfFile = new File([blob], `cover-page-${page_number + 1}.pdf`, { type: 'application/pdf' });
+    
+    const { file_url: extractedPageUrl } = await base44.integrations.Core.UploadFile({ file: extractedPdfFile });
     
     return Response.json({ 
       success: true,
       extracted_page_url: extractedPageUrl,
       page_number: page_number + 1,
-      message: 'PDF page extracted as image',
-      format: 'image'
+      message: 'PDF page extracted successfully',
+      format: 'pdf'
     });
 
   } catch (error) {
