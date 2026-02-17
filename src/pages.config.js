@@ -87,6 +87,7 @@ import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
 import DetailedCourseAnalytics from './pages/DetailedCourseAnalytics';
 import Explore from './pages/Explore';
+import FileManager from './pages/FileManager';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
 import KnowledgeBase from './pages/KnowledgeBase';
@@ -123,7 +124,6 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import FileManager from './pages/FileManager';
 import __Layout from './Layout.jsx';
 
 
@@ -168,6 +168,7 @@ export const PAGES = {
     "DataPresentation": DataPresentation,
     "DetailedCourseAnalytics": DetailedCourseAnalytics,
     "Explore": Explore,
+    "FileManager": FileManager,
     "GradeAssignments": GradeAssignments,
     "Home": Home,
     "KnowledgeBase": KnowledgeBase,
@@ -204,7 +205,6 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "FileManager": FileManager,
 }
 
 export const pagesConfig = {

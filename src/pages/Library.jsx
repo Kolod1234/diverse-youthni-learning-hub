@@ -223,8 +223,8 @@ export default function Library() {
       clearInterval(progressInterval);
       setUploadProgress(100);
 
-      // Set basic data and show dialog immediately
-      setFormData({
+      // Auto-save book with basic info immediately
+      const bookData = {
         title: file.name.replace(/\.[^/.]+$/, ''),
         author: '',
         description: '',
@@ -233,10 +233,13 @@ export default function Library() {
         cover_image: '',
         tags: [],
         is_featured: false
-      });
+      };
 
-      toast.success('File uploaded! Fill in details below.');
-      setShowUploadDialog(true);
+      // Create the book right away
+      await base44.entities.LibraryResource.create(bookData);
+      queryClient.invalidateQueries(['library-resources']);
+      
+      toast.success('Book uploaded successfully! You can edit details later.');
     } catch (error) {
       if (progressInterval) clearInterval(progressInterval);
       console.error('Upload error:', error);
