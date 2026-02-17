@@ -146,6 +146,10 @@ export default function Library() {
   };
 
   const handleEdit = (book) => {
+    if (!canEditBookUI(book)) {
+      toast.error('You do not have permission to edit this book');
+      return;
+    }
     setEditingBook(book);
     setShowEditDialog(true);
   };
