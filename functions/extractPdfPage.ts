@@ -19,13 +19,23 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Valid page number required' }, { status: 400 });
     }
 
-    // Fetch the PDF
-    const response = await fetch(file_url);
+    // Fetch the PDF with proper headers
+    const response = await fetch(file_url, {
+      headers: {
+        'Accept': 'application/pdf,application/octet-stream,*/*',
+      }
+    });
+    
     if (!response.ok) {
-      throw new Error(`Failed to fetch PDF: ${response.statusText}`);
+      console.error('Fetch failed:', response.status, response.statusText);
+      throw new Error(`Failed to fetch PDF (${response.status}): ${response.statusText}`);
     }
     
+    const contentType = response.headers.get('content-type');
+    console.log('Content-Type:', contentType);
+    
     const arrayBuffer = await response.arrayBuffer();
+    console.log('PDF size:', arrayBuffer.byteLength, 'bytes');
     
     // Extract single page as PDF using pdf-lib
     const { PDFDocument } = await import('npm:pdf-lib@1.17.1');
