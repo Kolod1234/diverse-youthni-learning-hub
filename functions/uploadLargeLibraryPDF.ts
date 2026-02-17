@@ -1,62 +1,99 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 Deno.serve(async (req) => {
+  console.log('=== BACKEND UPLOAD START ===');
+  console.log('Method:', req.method);
+  console.log('Headers:', Object.fromEntries(req.headers));
+
   try {
     const base44 = createClientFromRequest(req);
     const user = await base44.auth.me();
 
     if (!user) {
-      return Response.json({ error: 'Unauthorized' }, { status: 401 });
+      console.error('User not authenticated');
+      return Response.json({ error: 'Unauthorized', success: false }, { status: 401 });
     }
 
-    const contentType = req.headers.get('content-type');
+    console.log('User authenticated:', user.email);
+
+    const contentType = req.headers.get('content-type') || '';
+    console.log('Content-Type:', contentType);
     
-    if (!contentType || !contentType.includes('multipart/form-data')) {
-      return Response.json({ error: 'Invalid content type' }, { status: 400 });
+    if (!contentType.includes('multipart/form-data')) {
+      console.error('Invalid content type:', contentType);
+      return Response.json({ 
+        error: 'Invalid content type. Expected multipart/form-data', 
+        success: false 
+      }, { status: 400 });
     }
 
+    console.log('Parsing form data...');
     const formData = await req.formData();
     const file = formData.get('file');
 
     if (!file) {
-      return Response.json({ error: 'No file provided' }, { status: 400 });
+      console.error('No file in form data');
+      return Response.json({ error: 'No file provided', success: false }, { status: 400 });
     }
 
-    // Check if it's a file object
+    console.log('File received:', {
+      name: file.name,
+      size: file.size,
+      type: file.type
+    });
+
     if (!(file instanceof File)) {
-      return Response.json({ error: 'Invalid file' }, { status: 400 });
+      console.error('Invalid file object');
+      return Response.json({ error: 'Invalid file object', success: false }, { status: 400 });
     }
 
     // Allow various document types
-    const allowedTypes = ['pdf', 'epub', 'mobi', 'doc', 'docx', 'image'];
-    const isAllowed = allowedTypes.some(type => file.type.includes(type) || file.name.toLowerCase().endsWith(`.${type}`));
+    const allowedExtensions = ['pdf', 'epub', 'mobi', 'doc', 'docx', 'jpg', 'jpeg', 'png', 'gif', 'webp'];
+    const fileExt = file.name.split('.').pop()?.toLowerCase();
     
-    if (!isAllowed) {
-      return Response.json({ error: 'File type not supported. Please upload PDF, EPUB, DOC, DOCX, or image files.' }, { status: 400 });
+    if (!fileExt || !allowedExtensions.includes(fileExt)) {
+      console.error('File type not allowed:', fileExt);
+      return Response.json({ 
+        error: `File type not supported. Allowed: ${allowedExtensions.join(', ')}`, 
+        success: false 
+      }, { status: 400 });
     }
 
-    // Allow up to 500MB
+    // Check file size (500MB)
     const maxSize = 500 * 1024 * 1024;
     if (file.size > maxSize) {
+      console.error('File too large:', file.size);
       return Response.json({ 
-        error: `File too large. Maximum size is 500MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB` 
+        error: `File too large. Max 500MB, got ${(file.size / 1024 / 1024).toFixed(1)}MB`, 
+        success: false 
       }, { status: 413 });
     }
 
-    // Upload using base44 integration
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
+    console.log('Uploading to storage...');
+    const uploadResult = await base44.integrations.Core.UploadFile({ file });
+    console.log('Upload result:', uploadResult);
 
+    if (!uploadResult?.file_url) {
+      throw new Error('No file_url returned from upload');
+    }
+
+    console.log('=== BACKEND UPLOAD SUCCESS ===');
     return Response.json({
       success: true,
-      file_url,
+      file_url: uploadResult.file_url,
       file_name: file.name,
       file_size: file.size
     });
+
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('=== BACKEND UPLOAD ERROR ===');
+    console.error('Error:', error);
+    console.error('Stack:', error.stack);
+    
     return Response.json({ 
       error: error.message || 'Upload failed',
-      success: false 
+      success: false,
+      details: error.stack
     }, { status: 500 });
   }
 });

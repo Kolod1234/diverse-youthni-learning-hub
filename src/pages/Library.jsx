@@ -185,7 +185,15 @@ export default function Library() {
 
   const handleFileSelected = async (e) => {
     const file = e.target.files[0];
-    if (!file) return;
+    if (!file) {
+      console.log('No file selected');
+      return;
+    }
+
+    console.log('=== UPLOAD START ===');
+    console.log('File:', file.name);
+    console.log('Size:', (file.size / 1024 / 1024).toFixed(2), 'MB');
+    console.log('Type:', file.type);
 
     // Check file size (500MB limit)
     const maxSize = 500 * 1024 * 1024;
@@ -200,22 +208,41 @@ export default function Library() {
     let progressInterval = null;
 
     try {
-      // Simulate progress
+      // Start progress simulation
       progressInterval = setInterval(() => {
-        setUploadProgress(prev => prev >= 90 ? prev : prev + Math.random() * 15);
-      }, 300);
+        setUploadProgress(prev => {
+          const next = prev + Math.random() * 10;
+          return next >= 90 ? 90 : next;
+        });
+      }, 500);
 
-      // Upload file
-      console.log('Uploading file:', file.name, 'Size:', file.size, 'Type:', file.type);
-      const uploadRes = await base44.functions.invoke('uploadLargeLibraryPDF', { file });
-      console.log('Upload response:', uploadRes.data);
+      console.log('Calling backend function...');
       
-      if (!uploadRes.data?.success || !uploadRes.data?.file_url) {
-        throw new Error(uploadRes.data?.error || 'Upload failed - no file URL returned');
+      // Upload file to backend
+      const uploadRes = await base44.functions.invoke('uploadLargeLibraryPDF', { file });
+      
+      console.log('Backend response:', JSON.stringify(uploadRes, null, 2));
+
+      // Stop progress simulation
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
       }
 
-      clearInterval(progressInterval);
-      progressInterval = null;
+      // Check response
+      if (!uploadRes?.data) {
+        throw new Error('No response data from server');
+      }
+
+      if (!uploadRes.data.success) {
+        throw new Error(uploadRes.data.error || 'Upload failed');
+      }
+
+      if (!uploadRes.data.file_url) {
+        throw new Error('No file URL in response');
+      }
+
+      console.log('File uploaded successfully:', uploadRes.data.file_url);
       setUploadProgress(95);
 
       // Create book record
@@ -230,19 +257,32 @@ export default function Library() {
         is_featured: false
       };
 
+      console.log('Creating book record...');
       const newBook = await base44.entities.LibraryResource.create(bookData);
+      console.log('Book created:', newBook.id);
+      
       setUploadProgress(100);
 
-      // Refresh library
+      // Force refresh
       await queryClient.invalidateQueries(['library-resources']);
+      await queryClient.refetchQueries(['library-resources']);
       
+      console.log('=== UPLOAD COMPLETE ===');
       toast.success(`"${bookData.title}" uploaded successfully!`);
-      console.log('Book created:', newBook);
 
     } catch (error) {
-      if (progressInterval) clearInterval(progressInterval);
-      console.error('Upload failed:', error);
-      toast.error(error.message || 'Upload failed. Please try again.');
+      if (progressInterval) {
+        clearInterval(progressInterval);
+        progressInterval = null;
+      }
+      
+      console.error('=== UPLOAD ERROR ===');
+      console.error('Error type:', error.constructor.name);
+      console.error('Error message:', error.message);
+      console.error('Error stack:', error.stack);
+      console.error('Full error:', error);
+      
+      toast.error(`Upload failed: ${error.message}`, { duration: 5000 });
     } finally {
       setUploadingFile(false);
       setUploadProgress(0);
