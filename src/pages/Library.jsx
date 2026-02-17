@@ -497,7 +497,7 @@ export default function Library() {
                 <div 
                   key={book.id}
                   className="cursor-pointer group relative"
-                  onClick={() => setSelectedBook(book)}
+                  onClick={() => window.location.href = createPageUrl('BookDetails') + '?id=' + book.id}
                 >
                   <div className="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all">
                     {book.cover_image && book.cover_image.match(/\.(jpg|jpeg|png|gif|webp|svg)$/i) ? (
