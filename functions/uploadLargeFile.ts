@@ -10,13 +10,15 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse form data
+    // Parse form data from request
     const formData = await req.formData();
     const file = formData.get('file');
 
     if (!file || !(file instanceof File)) {
-      return Response.json({ error: 'No file provided' }, { status: 400 });
+      return Response.json({ error: 'No file provided or invalid file object' }, { status: 400 });
     }
+
+    console.log(`Backend: Received file ${file.name}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
 
     // Validate file type
     const allowedExtensions = ['.pdf', '.epub', '.mobi', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif'];
@@ -33,22 +35,43 @@ Deno.serve(async (req) => {
       }, { status: 400 });
     }
 
-    console.log(`Uploading file: ${file.name} (${(file.size / 1024 / 1024).toFixed(1)}MB)`);
+    console.log(`Backend: Uploading ${file.name}...`);
 
-    // Upload file directly
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-
-    console.log(`File uploaded successfully: ${file_url}`);
-
-    return Response.json({ 
-      success: true,
-      file_url,
-      file_name: file.name,
-      file_size: file.size
-    });
+    // Try UploadFile integration
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      console.log(`Backend: Upload successful: ${file_url}`);
+      
+      return Response.json({ 
+        success: true,
+        file_url,
+        file_name: file.name,
+        file_size: file.size
+      });
+    } catch (uploadError) {
+      console.error(`Backend: UploadFile failed, trying UploadPrivateFile:`, uploadError.message);
+      
+      // Fallback to UploadPrivateFile
+      const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
+      
+      // Create a signed URL that works for longer
+      const { signed_url } = await base44.integrations.Core.CreateFileSignedUrl({ 
+        file_uri,
+        expires_in: 31536000 // 1 year
+      });
+      
+      console.log(`Backend: Upload successful (private): ${signed_url}`);
+      
+      return Response.json({ 
+        success: true,
+        file_url: signed_url,
+        file_name: file.name,
+        file_size: file.size
+      });
+    }
 
   } catch (error) {
-    console.error('Upload error:', error);
+    console.error('Backend: Upload error:', error.message);
     return Response.json({ 
       success: false,
       error: error.message || 'Upload failed' 
