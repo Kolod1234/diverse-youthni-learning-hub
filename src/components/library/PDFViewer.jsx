@@ -287,18 +287,17 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
         display: 'flex', 
         gap: '16px',
         minHeight: 0,
-        backgroundColor: '#111827',
-        overflow: 'hidden'
+        backgroundColor: '#111827'
       }}>
         {/* PDF Viewer */}
         <div style={{ 
           flex: 1, 
-          display: 'flex', 
-          flexDirection: 'column', 
+          overflowY: 'auto', 
+          overflowX: 'auto',
+          WebkitOverflowScrolling: 'touch',
           backgroundColor: '#111827', 
-          padding: isFullscreen ? '0' : '16px', 
-          minHeight: 0,
-          overflow: 'hidden'
+          padding: isFullscreen ? '16px' : '16px',
+          touchAction: 'pan-y pinch-zoom'
         }}>
           {!fileUrl && (
             <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'center', height: '100%', width: '100%', color: '#9ca3af' }}>
@@ -315,13 +314,9 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
               )}
 
               <div style={{ 
-                flex: 1, 
-                overflowY: 'auto', 
-                overflowX: 'auto',
                 display: 'flex',
                 justifyContent: 'center',
-                width: '100%',
-                minHeight: 0
+                width: '100%'
               }}>
                 <Document
                   file={fileUrl}
