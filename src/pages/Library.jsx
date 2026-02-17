@@ -756,14 +756,14 @@ export default function Library() {
                       setSelectedBook(null);
                     }}
                     variant="outline"
-                    className="w-full gap-2 bg-white"
+                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
                   >
                     <BookOpen className="w-5 h-5" />
                     Read Online
                   </Button>
                   <Button 
                     onClick={() => handleDownload(selectedBook)}
-                    className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
+                    className="w-full bg-white/10 hover:bg-white/20 gap-2 text-white border border-white/20"
                   >
                     <Download className="w-5 h-5" />
                     Download
@@ -771,7 +771,7 @@ export default function Library() {
                   <Button 
                     onClick={() => handleShare(selectedBook)}
                     variant="outline"
-                    className="w-full gap-2 bg-white"
+                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
                   >
                     <Share2 className="w-5 h-5" />
                     Share
@@ -784,7 +784,7 @@ export default function Library() {
                           setSelectedBook(null);
                         }}
                         variant="outline"
-                        className="w-full gap-2 bg-white"
+                        className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
                       >
                         <Edit className="w-5 h-5" />
                         Edit
@@ -797,7 +797,7 @@ export default function Library() {
                             setSelectedBook(null);
                           }}
                           variant="outline"
-                          className="w-full gap-2 bg-white"
+                          className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
                         >
                           <Upload className="w-5 h-5" />
                           Set Page as Cover
