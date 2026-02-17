@@ -235,11 +235,21 @@ export default function Library() {
         is_featured: false
       };
 
-      // Create the book right away
-      await base44.entities.LibraryResource.create(bookData);
-      queryClient.invalidateQueries(['library-resources']);
-      
-      toast.success('Book uploaded successfully! You can edit details later.');
+      try {
+        // Create the book right away
+        const newBook = await base44.entities.LibraryResource.create(bookData);
+        console.log('Book created:', newBook);
+        
+        // Force refresh the list
+        await queryClient.invalidateQueries(['library-resources']);
+        await queryClient.refetchQueries(['library-resources']);
+        
+        toast.success('Book uploaded successfully!');
+      } catch (error) {
+        console.error('Failed to create book:', error);
+        toast.error('Failed to save book: ' + error.message);
+        throw error;
+      }
     } catch (error) {
       if (progressInterval) clearInterval(progressInterval);
       console.error('Upload error:', error);
