@@ -144,15 +144,6 @@ export default function BookDetails() {
                     alt={book.title}
                     style={{ width: '100%', maxWidth: 300, height: 'auto', borderRadius: 12, boxShadow: '0 10px 25px rgba(0,0,0,0.15)' }}
                   />
-                ) : book.file_url?.toLowerCase().endsWith('.pdf') ? (
-                  <Box sx={{ width: '100%', maxWidth: 300, aspectRatio: '3/4', overflow: 'hidden', borderRadius: 3, position: 'relative', bgcolor: '#f3f4f6' }}>
-                    <iframe
-                      src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
-                      style={{ width: '120%', height: '120%', border: 'none', transform: 'scale(0.85)', transformOrigin: 'top left' }}
-                      scrolling="no"
-                    />
-                    <div style={{ position: 'absolute', inset: 0, zIndex: 10, background: 'transparent' }} />
-                  </Box>
                 ) : (
                   <Box sx={{ width: '100%', maxWidth: 300, aspectRatio: '3/4', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#e5e7eb', borderRadius: 3 }}>
                     <BookOpen size={80} color="#9ca3af" />
