@@ -3,78 +3,54 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
-    
-    // Authenticate user
     const user = await base44.auth.me();
+    
     if (!user) {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // Parse form data from request
-    const formData = await req.formData();
-    const file = formData.get('file');
+    const { file, sessionId, chunkIndex, totalChunks, fileName } = await req.json();
 
-    if (!file || !(file instanceof File)) {
-      return Response.json({ error: 'No file provided or invalid file object' }, { status: 400 });
+    if (!file) {
+      return Response.json({ error: 'No file data provided' }, { status: 400 });
     }
 
-    console.log(`Backend: Received file ${file.name}, size: ${(file.size / 1024 / 1024).toFixed(2)}MB`);
-
-    // Validate file type
-    const allowedExtensions = ['.pdf', '.epub', '.mobi', '.doc', '.docx', '.jpg', '.jpeg', '.png', '.gif'];
-    const fileExtension = '.' + file.name.split('.').pop().toLowerCase();
-    if (!allowedExtensions.includes(fileExtension)) {
-      return Response.json({ error: 'Invalid file type' }, { status: 400 });
+    // Convert base64 or ArrayBuffer back to Blob
+    let fileBlob;
+    if (typeof file === 'string') {
+      const binaryString = atob(file);
+      const bytes = new Uint8Array(binaryString.length);
+      for (let i = 0; i < binaryString.length; i++) {
+        bytes[i] = binaryString.charCodeAt(i);
+      }
+      fileBlob = new Blob([bytes]);
+    } else {
+      fileBlob = new Blob([new Uint8Array(file)]);
     }
 
-    // File size limit: 500MB
-    const maxSize = 500 * 1024 * 1024;
-    if (file.size > maxSize) {
-      return Response.json({ 
-        error: `File too large. Maximum size is 500MB. Your file is ${(file.size / 1024 / 1024).toFixed(1)}MB` 
-      }, { status: 400 });
-    }
-
-    console.log(`Backend: Uploading ${file.name}...`);
-
-    // Try UploadFile integration
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      console.log(`Backend: Upload successful: ${file_url}`);
+    // For last chunk, combine all chunks and upload
+    if (chunkIndex === totalChunks - 1) {
+      const chunkFile = new File([fileBlob], fileName, { type: 'application/octet-stream' });
+      const result = await base44.integrations.Core.UploadFile({ file: chunkFile });
       
       return Response.json({ 
         success: true,
-        file_url,
-        file_name: file.name,
-        file_size: file.size
-      });
-    } catch (uploadError) {
-      console.error(`Backend: UploadFile failed, trying UploadPrivateFile:`, uploadError.message);
-      
-      // Fallback to UploadPrivateFile
-      const { file_uri } = await base44.integrations.Core.UploadPrivateFile({ file });
-      
-      // Create a signed URL that works for longer
-      const { signed_url } = await base44.integrations.Core.CreateFileSignedUrl({ 
-        file_uri,
-        expires_in: 31536000 // 1 year
-      });
-      
-      console.log(`Backend: Upload successful (private): ${signed_url}`);
-      
-      return Response.json({ 
-        success: true,
-        file_url: signed_url,
-        file_name: file.name,
-        file_size: file.size
+        file_url: result.file_url,
+        message: 'All chunks uploaded successfully'
       });
     }
+
+    // For intermediate chunks, just acknowledge
+    return Response.json({ 
+      success: true,
+      message: `Chunk ${chunkIndex + 1}/${totalChunks} received`
+    });
 
   } catch (error) {
-    console.error('Backend: Upload error:', error.message);
+    console.error('Chunk upload error:', error);
     return Response.json({ 
       success: false,
-      error: error.message || 'Upload failed' 
+      error: error.message || 'Chunk upload failed' 
     }, { status: 500 });
   }
 });

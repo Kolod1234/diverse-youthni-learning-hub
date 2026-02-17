@@ -227,19 +227,46 @@ export default function Library() {
       try {
         let file_url;
         
-        // Use backend function for files over 15MB
-        if (file.size > 15 * 1024 * 1024) {
-          console.log('Using backend function for large file upload...');
-          const formData = new FormData();
-          formData.append('file', file);
-          const response = await base44.functions.invoke('uploadLargeFile', formData);
+        // For files over 20MB, use chunked upload
+        if (file.size > 20 * 1024 * 1024) {
+          console.log('Using chunked upload for large file...');
           
-          if (!response.data.success) {
-            throw new Error(response.data.error || 'Upload failed');
+          const CHUNK_SIZE = 10 * 1024 * 1024; // 10MB chunks
+          const totalChunks = Math.ceil(file.size / CHUNK_SIZE);
+          const sessionId = `upload-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
+          
+          console.log(`Splitting into ${totalChunks} chunks of ${CHUNK_SIZE / 1024 / 1024}MB each`);
+          
+          for (let i = 0; i < totalChunks; i++) {
+            const start = i * CHUNK_SIZE;
+            const end = Math.min(start + CHUNK_SIZE, file.size);
+            const chunk = file.slice(start, end);
+            
+            // Convert chunk to ArrayBuffer for transmission
+            const arrayBuffer = await chunk.arrayBuffer();
+            
+            console.log(`Uploading chunk ${i + 1}/${totalChunks} (${((end - start) / 1024 / 1024).toFixed(1)}MB)...`);
+            
+            const response = await base44.functions.invoke('uploadLargeFile', {
+              file: Array.from(new Uint8Array(arrayBuffer)),
+              sessionId,
+              chunkIndex: i,
+              totalChunks,
+              fileName: file.name
+            });
+            
+            if (!response.data.success) {
+              throw new Error(`Chunk ${i + 1} failed: ${response.data.error}`);
+            }
+            
+            if (response.data.file_url) {
+              file_url = response.data.file_url;
+              console.log('All chunks uploaded, file URL received');
+              break;
+            }
+            
+            setUploadProgress(Math.round((i + 1) / totalChunks * 90));
           }
-          
-          file_url = response.data.file_url;
-          console.log('File uploaded successfully:', file_url);
         } else {
           const result = await base44.integrations.Core.UploadFile({ file });
           file_url = result.file_url;
