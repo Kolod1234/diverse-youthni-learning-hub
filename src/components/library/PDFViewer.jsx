@@ -7,6 +7,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { toast } from 'sonner';
 import AnnotationTools from './AnnotationTools';
+import PDFSnippingTool from './PDFSnippingTool';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 import 'react-pdf/dist/esm/Page/AnnotationLayer.css';
 import 'react-pdf/dist/esm/Page/TextLayer.css';
@@ -21,6 +22,7 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
   const [showAnnotations, setShowAnnotations] = useState(false);
   const [fontSize, setFontSize] = useState(100);
   const [layoutMode, setLayoutMode] = useState('single');
+  const [showSnippingTool, setShowSnippingTool] = useState(false);
   const containerRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -66,6 +68,21 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
   const handleSetCover = async () => {
     if (onCoverCapture) {
       await onCoverCapture(currentPage);
+    }
+  };
+
+  const handleSnipCapture = async (imageUrl) => {
+    setShowSnippingTool(false);
+    if (resourceId) {
+      try {
+        await base44.entities.LibraryResource.update(resourceId, {
+          cover_image: imageUrl
+        });
+        queryClient.invalidateQueries(['library-resources']);
+        toast.success('Cover image updated!');
+      } catch (error) {
+        toast.error('Failed to update cover');
+      }
     }
   };
 
@@ -191,6 +208,17 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
         >
           <FileImage className="w-4 h-4" />
           Set as Cover
+        </Button>
+
+        {/* Snipping Tool */}
+        <Button
+          size="sm"
+          onClick={() => setShowSnippingTool(true)}
+          className="bg-purple-600 hover:bg-purple-700 text-white gap-2 font-medium"
+          title="Snip area for cover"
+        >
+          <FileImage className="w-4 h-4" />
+          Snip Cover
         </Button>
 
         {/* Annotations Panel Button */}
