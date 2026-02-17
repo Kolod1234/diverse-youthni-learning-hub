@@ -214,90 +214,62 @@ export default function Library() {
     setUploadProgress(0);
 
     try {
-      console.log('Uploading with XHR progress tracking...');
+      console.log('Uploading file...');
       
-      // Create FormData
-      const formData = new FormData();
-      formData.append('file', file);
-
-      // Upload with XMLHttpRequest to track progress
-      const file_url = await new Promise((resolve, reject) => {
-        const xhr = new XMLHttpRequest();
-
-        xhr.upload.addEventListener('progress', (event) => {
-          if (event.lengthComputable) {
-            const percentComplete = Math.round((event.loaded / event.total) * 95);
-            setUploadProgress(percentComplete);
-            console.log(`Upload progress: ${percentComplete}%`);
-          }
+      // Simulated progress updates while uploading
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          if (prev >= 90) return prev;
+          return prev + 5;
         });
-
-        xhr.addEventListener('load', async () => {
-          if (xhr.status === 200) {
-            try {
-              const response = JSON.parse(xhr.responseText);
-              resolve(response.file_url);
-            } catch (err) {
-              reject(new Error('Invalid response from server'));
-            }
-          } else {
-            reject(new Error(`Upload failed with status ${xhr.status}`));
-          }
-        });
-
-        xhr.addEventListener('error', () => {
-          reject(new Error('Network error during upload'));
-        });
-
-        xhr.addEventListener('abort', () => {
-          reject(new Error('Upload cancelled'));
-        });
-
-        // Use the Core.UploadFile endpoint
-        xhr.open('POST', `https://api.base44.com/v1/integrations/Core/UploadFile`);
-        xhr.setRequestHeader('Authorization', `Bearer ${localStorage.getItem('base44_token')}`);
-        xhr.send(formData);
-      });
-
-      console.log('File uploaded successfully:', file_url);
-      setUploadProgress(95);
-
-      // Create book record
-      const bookData = {
-        title: file.name.replace(/\.[^/.]+$/, ''),
-        author: '',
-        description: '',
-        category: 'gcse_books',
-        file_url: file_url,
-        cover_image: '',
-        tags: [],
-        is_featured: false
-      };
-
-      console.log('Creating book record...');
-      const newBook = await base44.entities.LibraryResource.create(bookData);
-      console.log('Book created:', newBook.id);
-
-      setUploadProgress(100);
-
-      // Reset filters to show the new book
-      setSelectedCategory('all');
-      setSelectedTags([]);
-      setSearchQuery('');
-
-      // Force refresh
-      await queryClient.invalidateQueries(['library-resources']);
-      await queryClient.refetchQueries(['library-resources']);
-
-      console.log('=== UPLOAD COMPLETE ===');
-      toast.success(`"${bookData.title}" uploaded successfully! Scroll down to see it.`, { duration: 4000 });
-
-      // Small delay to allow UI to update
-      setTimeout(() => {
-        window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
       }, 500);
 
-    } catch (error) {
+      try {
+        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        clearInterval(progressInterval);
+        console.log('File uploaded successfully:', file_url);
+        setUploadProgress(95);
+
+        // Create book record
+        const bookData = {
+          title: file.name.replace(/\.[^/.]+$/, ''),
+          author: '',
+          description: '',
+          category: 'gcse_books',
+          file_url: file_url,
+          cover_image: '',
+          tags: [],
+          is_featured: false
+        };
+
+        console.log('Creating book record...');
+        const newBook = await base44.entities.LibraryResource.create(bookData);
+        console.log('Book created:', newBook.id);
+
+        setUploadProgress(100);
+
+        // Reset filters to show the new book
+        setSelectedCategory('all');
+        setSelectedTags([]);
+        setSearchQuery('');
+
+        // Force refresh
+        await queryClient.invalidateQueries(['library-resources']);
+        await queryClient.refetchQueries(['library-resources']);
+
+        console.log('=== UPLOAD COMPLETE ===');
+        toast.success(`"${bookData.title}" uploaded successfully! Scroll down to see it.`, { duration: 4000 });
+
+        // Small delay to allow UI to update
+        setTimeout(() => {
+          window.scrollTo({ top: document.body.scrollHeight, behavior: 'smooth' });
+        }, 500);
+        } catch (uploadError) {
+        clearInterval(progressInterval);
+        throw uploadError;
+        }
+
+        } catch (error) {
       console.error('=== UPLOAD ERROR ===');
       console.error('Error type:', error.constructor.name);
       console.error('Error message:', error.message);
