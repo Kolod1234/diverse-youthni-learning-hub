@@ -329,7 +329,11 @@ export default function Library() {
     createMutation.mutate(formData);
   };
 
-  const handleDelete = (book) => {
+  const handleDelete = async (book) => {
+    if (!canDeleteBookUI(book)) {
+      toast.error('You do not have permission to delete this book');
+      return;
+    }
     if (window.confirm(`Are you sure you want to delete "${book.title}"?`)) {
       deleteMutation.mutate(book.id);
     }
