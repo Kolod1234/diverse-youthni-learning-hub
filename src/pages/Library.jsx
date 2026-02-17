@@ -157,16 +157,12 @@ export default function Library() {
 
   const canEditBookUI = (book) => {
     if (!user || !book) return false;
-    if (user.role === 'admin') return true;
-    if (book.created_by === user.email) return true;
-    return checkCanEditBook(book, book.created_by);
+    return user.role === 'admin';
   };
 
   const canDeleteBookUI = (book) => {
     if (!user || !book) return false;
-    if (user.role === 'admin') return true;
-    if (book.created_by === user.email) return true;
-    return checkCanDeleteBook(book, book.created_by);
+    return user.role === 'admin';
   };
 
   const createMutation = useMutation({
