@@ -151,10 +151,14 @@ export default function Library() {
   };
 
   const canEditBookUI = (book) => {
+    if (!user || !book) return false;
+    if (user.role === 'admin') return true;
     return checkCanEditBook(book, book.created_by);
   };
 
   const canDeleteBookUI = (book) => {
+    if (!user || !book) return false;
+    if (user.role === 'admin') return true;
     return checkCanDeleteBook(book, book.created_by);
   };
 
