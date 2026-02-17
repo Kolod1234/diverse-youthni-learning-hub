@@ -225,7 +225,25 @@ export default function Library() {
       }, 500);
 
       try {
-        const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        let file_url;
+        
+        // Use backend function for files over 20MB to handle larger uploads
+        if (file.size > 20 * 1024 * 1024) {
+          console.log('Using backend function for large file...');
+          const formData = new FormData();
+          formData.append('file', file);
+          const response = await base44.functions.invoke('uploadLargeFile', formData);
+          
+          if (!response.data.success) {
+            throw new Error(response.data.error || 'Upload failed');
+          }
+          
+          file_url = response.data.file_url;
+        } else {
+          const result = await base44.integrations.Core.UploadFile({ file });
+          file_url = result.file_url;
+        }
+        
         clearInterval(progressInterval);
         console.log('File uploaded successfully:', file_url);
         setUploadProgress(95);
