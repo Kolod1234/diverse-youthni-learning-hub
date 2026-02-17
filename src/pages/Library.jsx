@@ -512,17 +512,31 @@ export default function Library() {
                       </div>
                     )}
                   </div>
-                  {canUpload && (
-                    <button
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDelete(book);
-                      }}
-                      className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                      title="Delete book"
-                    >
-                      <Trash2 className="w-4 h-4" />
-                    </button>
+                  {canEditBookUI(book) && (
+                    <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          handleEdit(book);
+                        }}
+                        className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg"
+                        title="Edit book"
+                      >
+                        <Edit className="w-4 h-4" />
+                      </button>
+                      {canDeleteBookUI(book) && (
+                        <button
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDelete(book);
+                          }}
+                          className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg"
+                          title="Delete book"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      )}
+                    </div>
                   )}
                   <div className="mt-2">
                     <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
@@ -629,17 +643,31 @@ export default function Library() {
                   </div>
                 )}
               </div>
-              {canUpload && (
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleDelete(book);
-                  }}
-                  className="absolute top-2 right-2 bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg"
-                  title="Delete book"
-                >
-                  <Trash2 className="w-4 h-4" />
-                </button>
+              {canEditBookUI(book) && (
+                <div className="absolute top-2 right-2 flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleEdit(book);
+                    }}
+                    className="bg-blue-500 hover:bg-blue-600 text-white p-1.5 rounded-full shadow-lg"
+                    title="Edit book"
+                  >
+                    <Edit className="w-4 h-4" />
+                  </button>
+                  {canDeleteBookUI(book) && (
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleDelete(book);
+                      }}
+                      className="bg-red-500 hover:bg-red-600 text-white p-1.5 rounded-full shadow-lg"
+                      title="Delete book"
+                    >
+                      <Trash2 className="w-4 h-4" />
+                    </button>
+                  )}
+                </div>
               )}
               <div className="mt-2">
                 <h3 className="font-semibold text-gray-900 text-sm line-clamp-1">{book.title}</h3>
