@@ -20,7 +20,7 @@ export default function HomeLeadership() {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
-        
+
         // Show onboarding if not completed
         if (!userData?.onboarding_completed) {
           setShowOnboarding(true);
@@ -36,25 +36,25 @@ export default function HomeLeadership() {
     queryKey: ['leadership-carousel-images'],
     queryFn: async () => {
       const images = await base44.entities.CarouselImage.list('-created_date', 1000);
-      return images.filter(img => img.carousel_type === 'leadership' && img.is_active !== false)
-        .sort((a, b) => (a.order || 0) - (b.order || 0));
-    },
+      return images.filter((img) => img.carousel_type === 'leadership' && img.is_active !== false).
+      sort((a, b) => (a.order || 0) - (b.order || 0));
+    }
   });
 
   const { data: programs = [] } = useQuery({
     queryKey: ['active-programs'],
-    queryFn: () => base44.entities.Program.filter({ status: 'active' }, '-created_date', 10),
+    queryFn: () => base44.entities.Program.filter({ status: 'active' }, '-created_date', 10)
   });
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* Onboarding Flow */}
-      {showOnboarding && (
-        <PathwayOnboarding
-          pathway="leadership"
-          onComplete={() => setShowOnboarding(false)}
-        />
-      )}
+      {showOnboarding &&
+      <PathwayOnboarding
+        pathway="leadership"
+        onComplete={() => setShowOnboarding(false)} />
+
+      }
 
       {/* Hero Section */}
       <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', py: 12, overflow: 'hidden' }}>
@@ -62,8 +62,8 @@ export default function HomeLeadership() {
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8 }}
-          >
+            transition={{ duration: 0.8 }}>
+
             <Box sx={{ textAlign: 'center', color: 'white' }}>
               <Chip
                 icon={<Award size={20} />}
@@ -76,10 +76,10 @@ export default function HomeLeadership() {
                   fontWeight: 700,
                   mb: 3,
                   fontSize: '1rem'
-                }}
-              />
-              <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, mb: 3 }}>
-                Welcome to Leadership
+                }} />
+
+              <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 800, mb: 3 }} className="MuiTypography-root MuiTypography-h2 css-19dgo2p-MuiTypography-root">Welcome to Leadership Development Pathway
+
               </Typography>
               <Typography variant="h5" sx={{ mb: 4, maxWidth: 800, mx: 'auto', opacity: 0.95 }}>
                 Develop your skills, track your progress, and become a leader
@@ -98,8 +98,8 @@ export default function HomeLeadership() {
                     fontWeight: 700,
                     borderRadius: 50,
                     '&:hover': { bgcolor: '#f3e8ff', transform: 'scale(1.05)' }
-                  }}
-                >
+                  }}>
+
                   View Programs
                 </Button>
               </Link>
@@ -109,26 +109,26 @@ export default function HomeLeadership() {
       </Box>
 
       {/* Leadership Carousel */}
-      {leadershipCarouselImages.length > 0 && (
-        <Container maxWidth="xl" sx={{ py: 8 }}>
+      {leadershipCarouselImages.length > 0 &&
+      <Container maxWidth="xl" sx={{ py: 8 }}>
           <Box sx={{ overflow: 'hidden', borderRadius: 4, boxShadow: 6 }} ref={leadershipEmblaRef}>
             <Box sx={{ display: 'flex' }}>
-              {leadershipCarouselImages.map((img, idx) => (
-                <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
+              {leadershipCarouselImages.map((img, idx) =>
+            <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
                   <Box sx={{ aspectRatio: '16/9', overflow: 'hidden' }}>
                     <CardMedia
-                      component="img"
-                      image={img.image_url}
-                      alt={`Leadership ${idx + 1}`}
-                      sx={{ width: '100%', height: '100%', objectFit: 'cover' }}
-                    />
+                  component="img"
+                  image={img.image_url}
+                  alt={`Leadership ${idx + 1}`}
+                  sx={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+
                   </Box>
                 </Box>
-              ))}
+            )}
             </Box>
           </Box>
         </Container>
-      )}
+      }
 
       {/* Quick Actions */}
       <Container maxWidth="xl" sx={{ py: 8 }}>
@@ -176,12 +176,12 @@ export default function HomeLeadership() {
       </Container>
 
       {/* Active Programs */}
-      {programs.length > 0 && (
-        <Container maxWidth="xl" sx={{ py: 8 }}>
+      {programs.length > 0 &&
+      <Container maxWidth="xl" sx={{ py: 8 }}>
           <Typography variant="h4" sx={{ fontWeight: 700, mb: 4 }}>Active Programs</Typography>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 4 }}>
-            {programs.map((program) => (
-              <Card key={program.id} sx={{ display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
+            {programs.map((program) =>
+          <Card key={program.id} sx={{ display: 'flex', flexDirection: 'column', boxShadow: 3 }}>
                 <CardContent sx={{ p: 4 }}>
                   <Typography variant="h5" sx={{ fontWeight: 700, mb: 2 }}>{program.name}</Typography>
                   <Typography color="text.secondary" sx={{ mb: 3 }}>{program.description}</Typography>
@@ -194,10 +194,10 @@ export default function HomeLeadership() {
                   </Link>
                 </CardContent>
               </Card>
-            ))}
+          )}
           </Box>
         </Container>
-      )}
-    </Box>
-  );
+      }
+    </Box>);
+
 }
