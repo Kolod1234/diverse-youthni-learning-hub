@@ -1,16 +1,18 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Card } from '@/components/ui/card';
-import { Bell, X, Check } from 'lucide-react';
+import { Bell, X, Check, Settings } from 'lucide-react';
 import { format } from 'date-fns';
 import { createPageUrl } from '@/utils';
 
 export default function NotificationBell() {
   const [user, setUser] = useState(null);
   const [showNotifications, setShowNotifications] = useState(false);
+  const navigate = useNavigate();
   const queryClient = useQueryClient();
 
   useEffect(() => {
@@ -88,19 +90,32 @@ export default function NotificationBell() {
             onClick={() => setShowNotifications(false)}
           />
           <Card className="absolute right-0 top-12 w-96 max-h-[500px] overflow-hidden flex flex-col z-50 shadow-2xl">
-            <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
-              <h3 className="font-semibold text-gray-900">Notifications</h3>
-              {unreadCount > 0 && (
-                <Button
-                  size="sm"
-                  variant="ghost"
-                  onClick={markAllAsRead}
-                  className="text-xs"
-                >
-                  Mark all read
-                </Button>
-              )}
-            </div>
+           <div className="p-4 border-b bg-gray-50 flex items-center justify-between">
+             <h3 className="font-semibold text-gray-900">Notifications</h3>
+             <div className="flex items-center gap-2">
+               {unreadCount > 0 && (
+                 <Button
+                   size="sm"
+                   variant="ghost"
+                   onClick={markAllAsRead}
+                   className="text-xs"
+                 >
+                   Mark all read
+                 </Button>
+               )}
+               <Button
+                 size="sm"
+                 variant="ghost"
+                 onClick={() => {
+                   setShowNotifications(false);
+                   navigate(createPageUrl('NotificationCenter'));
+                 }}
+                 className="h-6 w-6 p-0"
+               >
+                 <Settings className="w-4 h-4" />
+               </Button>
+             </div>
+           </div>
 
             <div className="flex-1 overflow-y-auto">
               {notifications.length > 0 ? (
