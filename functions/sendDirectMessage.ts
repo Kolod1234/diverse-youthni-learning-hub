@@ -16,24 +16,30 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Send email using integrations with proper context
-    try {
-      const result = await base44.asServiceRole.integrations.Core.SendEmail({
-        to: studentEmail,
-        subject: subject,
-        body: body
-      });
+    // Create in-app message
+    const message = await base44.asServiceRole.entities.Message.create({
+      sender_email: user.email,
+      sender_name: user.full_name,
+      sender_avatar: user.avatar,
+      recipient_email: studentEmail,
+      content: `**${subject}**\n\n${body}`,
+      is_read: false,
+      message_type: 'text'
+    });
 
-      return Response.json({
-        success: true,
-        message: 'Message sent successfully'
-      });
-    } catch (emailError) {
-      console.error('Email send error:', emailError);
-      return Response.json({ 
-        error: 'Failed to send email: ' + emailError.message 
-      }, { status: 500 });
-    }
+    // Create notification
+    await base44.asServiceRole.entities.Notification.create({
+      user_email: studentEmail,
+      title: 'New Message from ' + user.full_name,
+      message: subject,
+      type: 'message'
+    });
+
+    return Response.json({
+      success: true,
+      message: 'Message sent successfully',
+      messageId: message.id
+    });
   } catch (error) {
     console.error('Function error:', error);
     return Response.json({ error: error.message }, { status: 500 });
