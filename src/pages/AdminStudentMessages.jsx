@@ -30,10 +30,10 @@ export default function AdminStudentMessages() {
   const { data: allUsers = [], isLoading } = useQuery({
     queryKey: ['all-users'],
     queryFn: async () => {
-      const response = await base44.functions.invoke('getMessageableUsers', {});
-      return response.data.filter(u => u.role !== 'admin' && !u.is_tutor && !u.is_coordinator);
+      const users = await base44.asServiceRole.entities.User.list('full_name', 1000);
+      return users.filter(u => u.role !== 'admin' && !u.is_tutor && !u.is_coordinator);
     },
-    enabled: !!user,
+    enabled: !!user && (user.role === 'admin' || user.is_tutor),
   });
 
   const sendMessageMutation = useMutation({
