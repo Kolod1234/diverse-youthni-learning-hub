@@ -96,7 +96,16 @@ export default function LeadershipLanding() {
                 color: 'white',
                 py: { xs: 12, md: 16 },
                 overflow: 'hidden',
-                background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+                backgroundImage: 'url(https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/c3924d15a_DSC00124.jpg)',
+                backgroundSize: 'cover',
+                backgroundPosition: 'center',
+                '&::before': {
+                  content: '""',
+                  position: 'absolute',
+                  inset: 0,
+                  backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                  zIndex: 0,
+                }
               }}>
 
               <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
