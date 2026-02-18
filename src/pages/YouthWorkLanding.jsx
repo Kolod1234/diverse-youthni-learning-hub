@@ -1,0 +1,464 @@
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { base44 } from '@/api/base44Client';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Container, Box, Typography } from '@mui/material';
+import { 
+  Users, Briefcase, Award, Target, TrendingUp, Heart, 
+  BookOpen, CheckCircle, ArrowRight, Star, Calendar, Zap 
+} from 'lucide-react';
+import { motion } from 'framer-motion';
+import { createPageUrl } from '@/utils';
+
+export default function YouthWorkLanding() {
+  const [user, setUser] = useState(null);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      }
+    };
+    loadUser();
+  }, []);
+
+  const handleJoinYouthWork = async () => {
+    if (user) {
+      await base44.auth.updateMe({ interest_type: 'youth_work' });
+      navigate(createPageUrl('HomeYouthWork'));
+    } else {
+      localStorage.setItem('pending_interest', 'youth_work');
+      base44.auth.redirectToLogin(window.location.origin + createPageUrl('YouthWorkLanding'));
+    }
+  };
+
+  const features = [
+    {
+      icon: Award,
+      title: 'OCN Qualifications',
+      description: 'Earn nationally recognized Open College Network qualifications',
+      gradient: 'linear-gradient(135deg, #f59e0b 0%, #d97706 100%)'
+    },
+    {
+      icon: BookOpen,
+      title: 'Flexible Learning',
+      description: 'Study at your own pace with interactive workbooks and resources',
+      gradient: 'linear-gradient(135deg, #3b82f6 0%, #1e40af 100%)'
+    },
+    {
+      icon: Users,
+      title: 'Community Support',
+      description: 'Learn alongside peers and get guidance from experienced mentors',
+      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+    },
+    {
+      icon: Briefcase,
+      title: 'Career Ready',
+      description: 'Develop practical skills valued by employers across industries',
+      gradient: 'linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)'
+    },
+    {
+      icon: TrendingUp,
+      title: 'Track Progress',
+      description: 'Monitor your learning journey with detailed progress reports',
+      gradient: 'linear-gradient(135deg, #ec4899 0%, #be185d 100%)'
+    },
+    {
+      icon: CheckCircle,
+      title: 'Competency Based',
+      description: 'Demonstrate real-world skills through practical assessments',
+      gradient: 'linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)'
+    }
+  ];
+
+  const qualifications = [
+    {
+      level: 'Entry Level',
+      title: 'Youth Work Essentials',
+      duration: '8-10 weeks',
+      description: 'Perfect for beginners. Learn fundamental youth work principles and skills.',
+      skills: ['Communication', 'Team Work', 'Basic Youth Support']
+    },
+    {
+      level: 'Level 2',
+      title: 'Youth Work Practice',
+      duration: '12-16 weeks',
+      description: 'Build practical competencies in youth engagement and support.',
+      skills: ['Program Planning', 'Youth Engagement', 'Safeguarding']
+    },
+    {
+      level: 'Level 3',
+      title: 'Youth Work Leadership',
+      duration: '16-20 weeks',
+      description: 'Develop advanced leadership and management capabilities.',
+      skills: ['Team Leadership', 'Project Management', 'Mentoring']
+    }
+  ];
+
+  const steps = [
+    {
+      number: '1',
+      title: 'Enroll',
+      description: 'Sign up for your chosen qualification level'
+    },
+    {
+      number: '2',
+      title: 'Learn',
+      description: 'Complete interactive lessons and workbooks at your pace'
+    },
+    {
+      number: '3',
+      title: 'Practice',
+      description: 'Demonstrate competencies through practical activities'
+    },
+    {
+      number: '4',
+      title: 'Achieve',
+      description: 'Earn your OCN qualification and certificate'
+    }
+  ];
+
+  return (
+    <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Hero Section */}
+      <Box
+        sx={{
+          position: 'relative',
+          color: 'white',
+          py: { xs: 12, md: 16 },
+          overflow: 'hidden',
+          backgroundImage: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          '&::before': {
+            content: '""',
+            position: 'absolute',
+            inset: 0,
+            backgroundImage: 'url("data:image/svg+xml,%3Csvg width="60" height="60" viewBox="0 0 60 60" xmlns="http://www.w3.org/2000/svg"%3E%3Cg fill="none" fill-rule="evenodd"%3E%3Cg fill="%23ffffff" fill-opacity="0.1"%3E%3Cpath d="M36 34v-4h-2v4h-4v2h4v4h2v-4h4v-2h-4zm0-30V0h-2v4h-4v2h4v4h2V6h4V4h-4zM6 34v-4H4v4H0v2h4v4h2v-4h4v-2H6zM6 4V0H4v4H0v2h4v4h2V6h4V4H6z"/%3E%3C/g%3E%3C/g%3E%3C/svg%3E")',
+            zIndex: 0,
+          }
+        }}>
+
+        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.6 }}>
+
+            <Box sx={{ textAlign: 'center', mb: 6 }}>
+              <Box sx={{ display: 'inline-block', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', px: 3, py: 1, borderRadius: '50px', mb: 3 }}>
+                <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '0.9rem' }}>OCN Qualifications</Typography>
+              </Box>
+              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' }, color: 'white', lineHeight: 1.2 }}>
+                Transform Lives Through Youth Work
+              </Typography>
+              <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' }, color: 'white' }}>
+                Earn nationally recognized OCN qualifications and develop your skills in youth engagement, support, and leadership
+              </Typography>
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
+                <Button
+                  onClick={handleJoinYouthWork}
+                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 text-base font-semibold rounded-full"
+                  size="lg">
+                  {user ? 'Start Learning Now' : 'Get Started'}
+                  <ArrowRight className="ml-2 w-4 h-4" />
+                </Button>
+                <Button
+                  onClick={() => navigate(createPageUrl('YouthWork'))}
+                  className="bg-white/20 text-white hover:bg-white/30 backdrop-blur-sm px-8 py-3 text-base font-semibold rounded-full border border-white/30"
+                  size="lg">
+                  Learn More
+                </Button>
+              </Box>
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* Features Grid */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.2 }}>
+
+          <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
+            Why Choose Youth Work Qualifications?
+          </Typography>
+          
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 8 }}>
+            {features.map((feature, index) => {
+              const Icon = feature.icon;
+              return (
+                <motion.div
+                  key={feature.title}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}>
+
+                  <Card sx={{ p: 3, height: '100%', transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)' } }}>
+                    <Box
+                      sx={{
+                        width: 60,
+                        height: 60,
+                        borderRadius: 3,
+                        background: feature.gradient,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'center',
+                        mb: 2
+                      }}>
+                      <Icon size={30} color="white" />
+                    </Box>
+                    <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                      {feature.title}
+                    </Typography>
+                    <Typography variant="body2" color="text.secondary">
+                      {feature.description}
+                    </Typography>
+                  </Card>
+                </motion.div>
+              );
+            })}
+          </Box>
+        </motion.div>
+      </Container>
+
+      {/* Qualifications Section */}
+      <Box sx={{ bgcolor: 'background.paper', py: 8, borderTop: 1, borderColor: 'divider' }}>
+        <Container maxWidth="lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.3 }}>
+
+            <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
+              Available Qualifications
+            </Typography>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
+              {qualifications.map((qual, index) => (
+                <motion.div
+                  key={qual.level}
+                  initial={{ opacity: 0, x: -20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.1 * index }}>
+
+                  <Card sx={{ 
+                    p: 4, 
+                    height: '100%', 
+                    display: 'flex', 
+                    flexDirection: 'column',
+                    border: '2px solid',
+                    borderColor: 'divider',
+                    transition: 'all 0.3s',
+                    '&:hover': { 
+                      borderColor: 'primary.main',
+                      boxShadow: 3,
+                      transform: 'translateY(-4px)'
+                    }
+                  }}>
+                    <Box sx={{ mb: 3 }}>
+                      <Box sx={{ display: 'inline-block', px: 2, py: 1, borderRadius: 2, bgcolor: 'primary.main', color: 'white' }}>
+                        <Typography variant="caption" sx={{ fontWeight: 700 }}>
+                          {qual.level}
+                        </Typography>
+                      </Box>
+                    </Box>
+                    <Typography variant="h5" sx={{ fontWeight: 700, mb: 1 }}>
+                      {qual.title}
+                    </Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3, color: 'text.secondary' }}>
+                      <Calendar size={16} />
+                      <Typography variant="sm">{qual.duration}</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 3, flex: 1 }}>
+                      {qual.description}
+                    </Typography>
+                    <Box sx={{ mb: 3 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', display: 'block', mb: 2 }}>
+                        Key Skills:
+                      </Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1 }}>
+                        {qual.skills.map(skill => (
+                          <Box
+                            key={skill}
+                            sx={{
+                              px: 2,
+                              py: 0.5,
+                              borderRadius: 2,
+                              bgcolor: 'primary.main',
+                              color: 'white',
+                            }}>
+                            <Typography variant="caption" sx={{ fontWeight: 500 }}>
+                              {skill}
+                            </Typography>
+                          </Box>
+                        ))}
+                      </Box>
+                    </Box>
+                    <Button
+                      fullWidth
+                      onClick={handleJoinYouthWork}
+                      className="bg-purple-600 hover:bg-purple-700"
+                    >
+                      Enroll Now
+                    </Button>
+                  </Card>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* How It Works */}
+      <Container maxWidth="lg" sx={{ py: 8 }}>
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}>
+
+          <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
+            How It Works
+          </Typography>
+
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(4, 1fr)' }, gap: 3 }}>
+            {steps.map((step, index) => (
+              <motion.div
+                key={step.number}
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.1 * index }}>
+
+                <Card sx={{ p: 4, textAlign: 'center', height: '100%' }}>
+                  <Box
+                    sx={{
+                      width: 60,
+                      height: 60,
+                      borderRadius: '50%',
+                      background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                      display: 'flex',
+                      alignItems: 'center',
+                      justifyContent: 'center',
+                      mx: 'auto',
+                      mb: 3,
+                      color: 'white',
+                      fontWeight: 700,
+                      fontSize: '1.5rem'
+                    }}>
+                    {step.number}
+                  </Box>
+                  <Typography variant="h6" sx={{ fontWeight: 700, mb: 1 }}>
+                    {step.title}
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary">
+                    {step.description}
+                  </Typography>
+                </Card>
+              </motion.div>
+            ))}
+          </Box>
+        </motion.div>
+      </Container>
+
+      {/* Testimonials Section */}
+      <Box sx={{ bgcolor: 'background.paper', py: 8, borderTop: 1, borderColor: 'divider' }}>
+        <Container maxWidth="lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}>
+
+            <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
+              What Learners Say
+            </Typography>
+
+            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
+              {[
+                {
+                  name: 'Sarah M.',
+                  role: 'Youth Worker',
+                  text: 'The OCN qualification gave me the confidence to advance my career and make a real difference in young people\'s lives.',
+                  rating: 5
+                },
+                {
+                  name: 'James T.',
+                  role: 'Community Leader',
+                  text: 'Flexible learning combined with practical skills made this the perfect choice for my professional development.',
+                  rating: 5
+                },
+                {
+                  name: 'Emma K.',
+                  role: 'Support Worker',
+                  text: 'The mentorship and community support throughout the qualification was invaluable to my success.',
+                  rating: 5
+                }
+              ].map((testimonial, index) => (
+                <motion.div
+                  key={testimonial.name}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: 0.1 * index }}>
+
+                  <Card sx={{ p: 4 }}>
+                    <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
+                      {[...Array(testimonial.rating)].map((_, i) => (
+                        <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
+                      ))}
+                    </Box>
+                    <Typography variant="body2" sx={{ mb: 4, fontStyle: 'italic', color: 'text.secondary' }}>
+                      "{testimonial.text}"
+                    </Typography>
+                    <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
+                      {testimonial.name}
+                    </Typography>
+                    <Typography variant="caption" color="text.secondary">
+                      {testimonial.role}
+                    </Typography>
+                  </Card>
+                </motion.div>
+              ))}
+            </Box>
+          </motion.div>
+        </Container>
+      </Box>
+
+      {/* Final CTA Section */}
+      <Box
+        sx={{
+          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+          color: 'white',
+          py: 8,
+          textAlign: 'center'
+        }}>
+
+        <Container maxWidth="lg">
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.6 }}>
+
+            <Heart size={48} className="mx-auto mb-4" />
+            <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
+              Ready to Make an Impact?
+            </Typography>
+            <Typography variant="body1" sx={{ mb: 4, opacity: 0.95, maxWidth: 600, mx: 'auto' }}>
+              Start your OCN Youth Work qualification journey today and unlock your potential in youth engagement and support.
+            </Typography>
+            <Button
+              onClick={handleJoinYouthWork}
+              className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
+              size="lg">
+              Enroll Now & Get Started
+              <ArrowRight className="ml-2" />
+            </Button>
+          </motion.div>
+        </Container>
+      </Box>
+    </Box>
+  );
+}

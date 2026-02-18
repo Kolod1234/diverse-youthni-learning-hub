@@ -134,6 +134,7 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import NotificationCenter from './pages/NotificationCenter';
+import YouthWorkLanding from './pages/YouthWorkLanding';
 import __Layout from './Layout.jsx';
 
 
@@ -225,6 +226,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "NotificationCenter": NotificationCenter,
+    "YouthWorkLanding": YouthWorkLanding,
 }
 
 export const pagesConfig = {
