@@ -502,15 +502,16 @@ export default function Library() {
                       <div className="w-full aspect-[3/4] overflow-hidden bg-gray-100 relative">
                         <iframe
                           src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
-                          className="w-[120%] h-[120%] pointer-events-none border-none"
+                          className="w-[120%] h-[120%] border-none"
                           style={{
                             transform: 'scale(0.85)',
                             transformOrigin: 'top left',
-                            overflow: 'hidden'
+                            overflow: 'hidden',
+                            pointerEvents: 'none'
                           }}
                           scrolling="no"
                         />
-                        <div className="absolute inset-0 z-10 bg-transparent" />
+                        <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                       </div>
                     ) : (
                       <div className="w-full aspect-[3/4] bg-gradient-to-br from-indigo-100 to-purple-100 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
@@ -633,15 +634,16 @@ export default function Library() {
                   <div className="w-full aspect-[3/4] overflow-hidden bg-gray-100 relative">
                     <iframe
                       src={`${book.file_url}#page=1&toolbar=0&navpanes=0&scrollbar=0`}
-                      className="w-[120%] h-[120%] pointer-events-none border-none"
+                      className="w-[120%] h-[120%] border-none"
                       style={{
                         transform: 'scale(0.85)',
                         transformOrigin: 'top left',
-                        overflow: 'hidden'
+                        overflow: 'hidden',
+                        pointerEvents: 'none'
                       }}
                       scrolling="no"
                     />
-                    <div className="absolute inset-0 z-10 bg-transparent" />
+                    <div className="absolute inset-0 z-10 cursor-pointer" style={{ pointerEvents: 'auto' }} />
                   </div>
                 ) : (
                   <div className="w-full aspect-[3/4] bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center transform transition-transform duration-300 group-hover:scale-105">
