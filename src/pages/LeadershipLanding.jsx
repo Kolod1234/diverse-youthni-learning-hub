@@ -90,78 +90,44 @@ export default function LeadershipLanding() {
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
       {/* Hero Section */}
-      <Box
-        sx={{
-          position: 'relative',
-          color: 'white',
-          py: { xs: 8, md: 12 },
-          overflow: 'hidden',
-          '&::before': {
-            content: '""',
-            position: 'absolute',
-            top: 0,
-            left: 0,
-            right: 0,
-            bottom: 0,
-            backgroundImage: 'url(https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/f78692c3c_PXL_20240718_134233296PORTRAIT.jpg)',
-            backgroundSize: 'cover',
-            backgroundPosition: 'center',
-            filter: 'brightness(0.4)',
-            zIndex: 0
-          }
-        }}>
+            <Box
+              sx={{
+                position: 'relative',
+                color: 'white',
+                py: { xs: 12, md: 16 },
+                overflow: 'hidden',
+                background: 'linear-gradient(135deg, #9333ea 0%, #a855f7 100%)',
+              }}>
 
-        <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}>
+              <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6 }}>
 
-            <Box sx={{ textAlign: 'center', mb: 6 }}>
-              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2rem', md: '3.5rem' } }} className="MuiTypography-root MuiTypography-h2 css-yik7ee-MuiTypography-root">Leadership Development Programmes
-
-              </Typography>
-              <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' } }}>
-                Unlock your potential and become the leader you're meant to be
+                  <Box sx={{ textAlign: 'center', mb: 6 }}>
+                    <Box sx={{ display: 'inline-block', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', px: 3, py: 1, borderRadius: '50px', mb: 3 }}>
+                      <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '0.9rem' }}>Leadership Development</Typography>
+                    </Box>
+                    <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' }, color: 'white', lineHeight: 1.2 }}>Welcome to Leadership Development Pathway</Typography>
+              <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' }, color: 'white' }}>
+                Develop your skills, track your progress, and become a leader
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
                 <Button
                   onClick={handleJoinProgramme}
-                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
+                  className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-3 text-base font-semibold rounded-full"
                   size="lg">
 
-                  {user ? 'Join Programme' : 'Sign In to Join'}
-                  <ArrowRight className="ml-2" />
-                </Button>
-                <Button
-                  onClick={handleBackToHome}
-                  variant="outline"
-                  className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg"
-                  size="lg">
-
-                  <Home className="mr-2" />
-                  Back to Homepage
+                  {user ? 'View Programs' : 'Sign In to View Programs'}
+                  <ArrowRight className="ml-2 w-4 h-4" />
                 </Button>
               </Box>
             </Box>
           </motion.div>
         </Container>
 
-        {/* Decorative Elements */}
-        <Box
-          sx={{
-            position: 'absolute',
-            top: -100,
-            right: -100,
-            width: 400,
-            height: 400,
-            bgcolor: 'white',
-            opacity: 0.1,
-            borderRadius: '50%',
-            display: { xs: 'none', md: 'block' }
-          }} />
-
-      </Box>
+        </Box>
 
       {/* Features Grid */}
       <Container maxWidth="lg" sx={{ py: 8 }}>
