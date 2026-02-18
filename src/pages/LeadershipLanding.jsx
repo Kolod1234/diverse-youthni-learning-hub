@@ -40,52 +40,52 @@ export default function LeadershipLanding() {
   };
 
   const features = [
-    {
-      icon: Users,
-      title: 'Personal Mentorship',
-      description: 'Get paired with experienced mentors who guide your leadership journey',
-      gradient: 'linear-gradient(135deg, #a855f7 0%, #4f46e5 100%)',
-    },
-    {
-      icon: ClipboardList,
-      title: 'Digital Logbooks',
-      description: 'Track your progress with easy-to-use digital logbooks and receive feedback',
-      gradient: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)',
-    },
-    {
-      icon: Calendar,
-      title: 'Weekly Activities',
-      description: 'Participate in workshops, events, and team-building activities',
-      gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)',
-    },
-    {
-      icon: Award,
-      title: 'Certification',
-      description: 'Earn recognized certificates upon completing programme milestones',
-      gradient: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)',
-    },
-    {
-      icon: Target,
-      title: 'Goal Setting',
-      description: 'Set and achieve personal and professional development goals',
-      gradient: 'linear-gradient(135deg, #ec4899 0%, #e11d48 100%)',
-    },
-    {
-      icon: TrendingUp,
-      title: 'Skills Development',
-      description: 'Build leadership, communication, and project management skills',
-      gradient: 'linear-gradient(135deg, #eab308 0%, #f59e0b 100%)',
-    },
-  ];
+  {
+    icon: Users,
+    title: 'Personal Mentorship',
+    description: 'Get paired with experienced mentors who guide your leadership journey',
+    gradient: 'linear-gradient(135deg, #a855f7 0%, #4f46e5 100%)'
+  },
+  {
+    icon: ClipboardList,
+    title: 'Digital Logbooks',
+    description: 'Track your progress with easy-to-use digital logbooks and receive feedback',
+    gradient: 'linear-gradient(135deg, #3b82f6 0%, #06b6d4 100%)'
+  },
+  {
+    icon: Calendar,
+    title: 'Weekly Activities',
+    description: 'Participate in workshops, events, and team-building activities',
+    gradient: 'linear-gradient(135deg, #10b981 0%, #059669 100%)'
+  },
+  {
+    icon: Award,
+    title: 'Certification',
+    description: 'Earn recognized certificates upon completing programme milestones',
+    gradient: 'linear-gradient(135deg, #f97316 0%, #dc2626 100%)'
+  },
+  {
+    icon: Target,
+    title: 'Goal Setting',
+    description: 'Set and achieve personal and professional development goals',
+    gradient: 'linear-gradient(135deg, #ec4899 0%, #e11d48 100%)'
+  },
+  {
+    icon: TrendingUp,
+    title: 'Skills Development',
+    description: 'Build leadership, communication, and project management skills',
+    gradient: 'linear-gradient(135deg, #eab308 0%, #f59e0b 100%)'
+  }];
+
 
   const benefits = [
-    'Develop essential leadership skills',
-    'Build confidence and self-awareness',
-    'Network with peers and professionals',
-    'Gain practical work experience',
-    'Enhance your CV and future prospects',
-    'Access ongoing support and guidance',
-  ];
+  'Develop essential leadership skills',
+  'Build confidence and self-awareness',
+  'Network with peers and professionals',
+  'Gain practical work experience',
+  'Enhance your CV and future prospects',
+  'Access ongoing support and guidance'];
+
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
@@ -107,19 +107,19 @@ export default function LeadershipLanding() {
             backgroundSize: 'cover',
             backgroundPosition: 'center',
             filter: 'brightness(0.4)',
-            zIndex: 0,
-          },
-        }}
-      >
+            zIndex: 0
+          }
+        }}>
+
         <Container maxWidth="lg" sx={{ position: 'relative', zIndex: 1 }}>
           <motion.div
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6 }}
-          >
+            transition={{ duration: 0.6 }}>
+
             <Box sx={{ textAlign: 'center', mb: 6 }}>
-              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2rem', md: '3.5rem' } }}>
-                Leadership Development Programme
+              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2rem', md: '3.5rem' } }} className="MuiTypography-root MuiTypography-h2 css-yik7ee-MuiTypography-root">Leadership Development Programmes
+
               </Typography>
               <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' } }}>
                 Unlock your potential and become the leader you're meant to be
@@ -128,8 +128,8 @@ export default function LeadershipLanding() {
                 <Button
                   onClick={handleJoinProgramme}
                   className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
-                  size="lg"
-                >
+                  size="lg">
+
                   {user ? 'Join Programme' : 'Sign In to Join'}
                   <ArrowRight className="ml-2" />
                 </Button>
@@ -137,8 +137,8 @@ export default function LeadershipLanding() {
                   onClick={handleBackToHome}
                   variant="outline"
                   className="border-white text-white hover:bg-white/10 px-8 py-6 text-lg"
-                  size="lg"
-                >
+                  size="lg">
+
                   <Home className="mr-2" />
                   Back to Homepage
                 </Button>
@@ -158,9 +158,9 @@ export default function LeadershipLanding() {
             bgcolor: 'white',
             opacity: 0.1,
             borderRadius: '50%',
-            display: { xs: 'none', md: 'block' },
-          }}
-        />
+            display: { xs: 'none', md: 'block' }
+          }} />
+
       </Box>
 
       {/* Features Grid */}
@@ -168,8 +168,8 @@ export default function LeadershipLanding() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.2 }}
-        >
+          transition={{ delay: 0.2 }}>
+
           <Typography variant="h3" align="center" sx={{ fontWeight: 700, mb: 6, color: 'text.primary' }}>
             What You'll Experience
           </Typography>
@@ -182,8 +182,8 @@ export default function LeadershipLanding() {
                   key={feature.title}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.1 * index }}
-                >
+                  transition={{ delay: 0.1 * index }}>
+
                   <Card sx={{ p: 3, height: '100%', transition: 'transform 0.3s', '&:hover': { transform: 'translateY(-8px)' } }}>
                     <Box
                       sx={{
@@ -194,9 +194,9 @@ export default function LeadershipLanding() {
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'center',
-                        mb: 2,
-                      }}
-                    >
+                        mb: 2
+                      }}>
+
                       <Icon size={30} color="white" />
                     </Box>
                     <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
@@ -206,8 +206,8 @@ export default function LeadershipLanding() {
                       {feature.description}
                     </Typography>
                   </Card>
-                </motion.div>
-              );
+                </motion.div>);
+
             })}
           </Box>
         </motion.div>
@@ -216,33 +216,33 @@ export default function LeadershipLanding() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
-        >
+          transition={{ delay: 0.4 }}>
+
           <Box
             sx={{
               bgcolor: 'background.paper',
               borderRadius: 4,
               p: { xs: 4, md: 6 },
-              boxShadow: 3,
-            }}
-          >
+              boxShadow: 3
+            }}>
+
             <Typography variant="h4" align="center" sx={{ fontWeight: 700, mb: 4 }}>
               Why Join Our Programme?
             </Typography>
             <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
-              {benefits.map((benefit, index) => (
-                <motion.div
-                  key={benefit}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.05 * index }}
-                >
+              {benefits.map((benefit, index) =>
+              <motion.div
+                key={benefit}
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.05 * index }}>
+
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
                     <CheckCircle size={24} color="#10b981" />
                     <Typography variant="body1">{benefit}</Typography>
                   </Box>
                 </motion.div>
-              ))}
+              )}
             </Box>
           </Box>
         </motion.div>
@@ -251,8 +251,8 @@ export default function LeadershipLanding() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.6 }}
-        >
+          transition={{ delay: 0.6 }}>
+
           <Box
             sx={{
               background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
@@ -260,9 +260,9 @@ export default function LeadershipLanding() {
               p: { xs: 4, md: 6 },
               textAlign: 'center',
               mt: 8,
-              color: 'white',
-            }}
-          >
+              color: 'white'
+            }}>
+
             <Heart size={48} className="mx-auto mb-4" />
             <Typography variant="h4" sx={{ fontWeight: 700, mb: 2 }}>
               Ready to Start Your Journey?
@@ -273,14 +273,14 @@ export default function LeadershipLanding() {
             <Button
               onClick={handleJoinProgramme}
               className="bg-white text-purple-700 hover:bg-gray-100 px-8 py-6 text-lg"
-              size="lg"
-            >
+              size="lg">
+
               {user ? 'Join Programme Now' : 'Sign In to Get Started'}
               <ArrowRight className="ml-2" />
             </Button>
           </Box>
         </motion.div>
       </Container>
-    </Box>
-  );
+    </Box>);
+
 }
