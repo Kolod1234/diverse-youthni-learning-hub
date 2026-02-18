@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container, Avatar } from '@mui/material';
 import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock, Rss } from 'lucide-react';
@@ -50,6 +50,7 @@ export default function Home() {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 5000, stopOnInteraction: false })]);
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
   const [heroEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
+  const navigate = useNavigate();
 
   const { data: currentUser, isLoading: userLoading } = useQuery({
     queryKey: ['user'],
@@ -61,6 +62,25 @@ export default function Home() {
   useEffect(() => {
     if (currentUser) setUser(currentUser);
   }, [currentUser]);
+
+  // Redirect to WelcomeCover if no interest selected
+  useEffect(() => {
+    const checkInterest = async () => {
+      try {
+        const userData = await base44.auth.me();
+        if (!userData?.interest_type || userData.interest_type === '') {
+          navigate(createPageUrl('WelcomeCover'));
+        }
+      } catch (error) {
+        // Not logged in - check localStorage
+        const guestInterest = localStorage.getItem('interest_type');
+        if (!guestInterest) {
+          navigate(createPageUrl('WelcomeCover'));
+        }
+      }
+    };
+    checkInterest();
+  }, [navigate]);
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
