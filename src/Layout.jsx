@@ -484,6 +484,10 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><User size={18} /></ListItemIcon>
                   <ListItemText primary="My Dashboard" />
                 </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('WelcomeCover')} onClick={() => setUserMenuAnchor(null)}>
+                  <ListItemIcon><Home size={18} /></ListItemIcon>
+                  <ListItemText primary="Change Pathway" />
+                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('Settings')} onClick={() => setUserMenuAnchor(null)}>
                   <ListItemIcon><Settings size={18} /></ListItemIcon>
                   <ListItemText primary="Settings" />
