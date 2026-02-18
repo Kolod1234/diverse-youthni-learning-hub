@@ -132,6 +132,7 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import LeadershipLanding from './pages/LeadershipLanding';
+import PersonalDashboard from './pages/PersonalDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -221,6 +222,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "LeadershipLanding": LeadershipLanding,
+    "PersonalDashboard": PersonalDashboard,
 }
 
 export const pagesConfig = {
