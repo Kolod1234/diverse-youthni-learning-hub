@@ -180,8 +180,26 @@ export default function WelcomeCover() {
           </Card>
         </motion.div>
 
+        {/* Skip to Full Homepage */}
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ delay: 0.6 }}
+          className="text-center mt-8"
+        >
+          <button
+            onClick={() => {
+              sessionStorage.setItem('skip_home_redirect', 'true');
+              navigate(createPageUrl('Home'));
+            }}
+            className="text-gray-400 hover:text-white transition-colors text-sm underline"
+          >
+            Skip and view full homepage
+          </button>
+        </motion.div>
+
         {/* Footer */}
-        <p className="text-center text-gray-400 mt-12 text-sm">
+        <p className="text-center text-gray-400 mt-6 text-sm">
           You can change your pathway anytime from your settings
         </p>
       </div>

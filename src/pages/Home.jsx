@@ -63,9 +63,16 @@ export default function Home() {
     if (currentUser) setUser(currentUser);
   }, [currentUser]);
 
-  // Redirect based on interest_type (skip for admins)
+  // Redirect based on interest_type (skip for admins and users accessing directly)
   useEffect(() => {
     const checkInterest = async () => {
+      // Check if user came directly to Home (skip redirect)
+      const skipRedirect = sessionStorage.getItem('skip_home_redirect');
+      if (skipRedirect === 'true') {
+        sessionStorage.removeItem('skip_home_redirect');
+        return;
+      }
+
       try {
         const userData = await base44.auth.me();
         
