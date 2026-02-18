@@ -124,7 +124,7 @@ export default function WelcomeCover() {
           <img 
             src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
             alt="Diverse Youth NI"
-            className="h-20 w-auto mx-auto mb-8"
+            className="h-20 w-20 mx-auto mb-8 rounded-full object-contain"
           />
           <h1 className="text-5xl md:text-6xl font-bold text-white mb-4">
             Welcome to Diverse Youth NI
