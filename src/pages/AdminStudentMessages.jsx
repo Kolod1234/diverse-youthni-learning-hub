@@ -8,7 +8,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Search, Send, Mail, Loader2, CheckCircle, X, History, Eye } from 'lucide-react';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { Search, Send, Mail, Loader2, CheckCircle, X, History, Eye, Clock, Calendar as CalendarIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
@@ -21,6 +23,9 @@ export default function AdminStudentMessages() {
   const [subject, setSubject] = useState('');
   const [message, setMessage] = useState('');
   const [selectedMessage, setSelectedMessage] = useState(null);
+  const [scheduleEnabled, setScheduleEnabled] = useState(false);
+  const [scheduledDate, setScheduledDate] = useState(null);
+  const [scheduledTime, setScheduledTime] = useState('09:00');
   const queryClient = useQueryClient();
 
   useEffect(() => {
