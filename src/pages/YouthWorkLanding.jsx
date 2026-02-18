@@ -160,10 +160,10 @@ export default function YouthWorkLanding() {
               <Box sx={{ display: 'inline-block', backgroundColor: 'rgba(255, 255, 255, 0.2)', backdropFilter: 'blur(10px)', px: 3, py: 1, borderRadius: '50px', mb: 3 }}>
                 <Typography sx={{ color: 'white', fontWeight: 600, fontSize: '0.9rem' }}>OCN Qualifications</Typography>
               </Box>
-              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' }, color: 'white', lineHeight: 1.2 }}>
+              <Typography variant="h2" component="h1" sx={{ fontWeight: 700, mb: 2, fontSize: { xs: '2.5rem', md: '3.5rem' }, color: 'white', lineHeight: 1.2, textShadow: '0 4px 20px rgba(0, 0, 0, 0.6), 0 2px 8px rgba(0, 0, 0, 0.5)' }}>
                 Transform Lives Through Youth Work
               </Typography>
-              <Typography variant="h5" sx={{ mb: 4, opacity: 0.95, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' }, color: 'white' }}>
+              <Typography variant="h5" sx={{ mb: 4, maxWidth: 800, mx: 'auto', fontSize: { xs: '1.1rem', md: '1.5rem' }, color: 'white', textShadow: '0 2px 12px rgba(0, 0, 0, 0.5), 0 1px 4px rgba(0, 0, 0, 0.4)' }}>
                 Earn nationally recognized OCN qualifications and develop your skills in youth engagement, support, and leadership
               </Typography>
               <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', flexWrap: 'wrap' }}>
