@@ -97,6 +97,7 @@ import HomeLeadership from './pages/HomeLeadership';
 import HomeLearning from './pages/HomeLearning';
 import HomeYouthWork from './pages/HomeYouthWork';
 import KnowledgeBase from './pages/KnowledgeBase';
+import LeadershipLanding from './pages/LeadershipLanding';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
@@ -107,6 +108,7 @@ import Library from './pages/Library';
 import MessageCenter from './pages/MessageCenter';
 import PathManager from './pages/PathManager';
 import PathwayManager from './pages/PathwayManager';
+import PersonalDashboard from './pages/PersonalDashboard';
 import Profile from './pages/Profile';
 import Programs from './pages/Programs';
 import Quiz from './pages/Quiz';
@@ -131,8 +133,6 @@ import VideoSession from './pages/VideoSession';
 import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import LeadershipLanding from './pages/LeadershipLanding';
-import PersonalDashboard from './pages/PersonalDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -187,6 +187,7 @@ export const PAGES = {
     "HomeLearning": HomeLearning,
     "HomeYouthWork": HomeYouthWork,
     "KnowledgeBase": KnowledgeBase,
+    "LeadershipLanding": LeadershipLanding,
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
     "LessonPlayer": LessonPlayer,
@@ -197,6 +198,7 @@ export const PAGES = {
     "MessageCenter": MessageCenter,
     "PathManager": PathManager,
     "PathwayManager": PathwayManager,
+    "PersonalDashboard": PersonalDashboard,
     "Profile": Profile,
     "Programs": Programs,
     "Quiz": Quiz,
@@ -221,8 +223,6 @@ export const PAGES = {
     "WelcomeCover": WelcomeCover,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "LeadershipLanding": LeadershipLanding,
-    "PersonalDashboard": PersonalDashboard,
 }
 
 export const pagesConfig = {

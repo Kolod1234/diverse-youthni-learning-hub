@@ -69,6 +69,7 @@ export default function WelcomeCover() {
       icon: Users,
       gradient: 'from-purple-500 to-indigo-600',
       features: ['Track Progress', 'Weekly Activities', 'Mentor Support', 'Digital Logbooks'],
+      image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/bba9d6785_DSC00124.jpg',
     },
     {
       id: 'learning',
@@ -136,9 +137,19 @@ export default function WelcomeCover() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="bg-white/10 backdrop-blur-lg border-white/20 hover:bg-white/15 transition-all duration-300 h-full">
+                <Card className="bg-white/10 backdrop-blur-lg border-white/20 hover:bg-white/15 transition-all duration-300 h-full overflow-hidden">
+                  {pathway.image && (
+                    <div className="relative h-48 w-full overflow-hidden">
+                      <img 
+                        src={pathway.image} 
+                        alt={pathway.title}
+                        className="w-full h-full object-cover"
+                      />
+                      <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                    </div>
+                  )}
                   <div className="p-6 flex flex-col h-full">
-                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pathway.gradient} flex items-center justify-center mb-4`}>
+                    <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pathway.gradient} flex items-center justify-center mb-4 ${pathway.image ? '-mt-14 relative z-10 border-4 border-white/20' : ''}`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
                     
