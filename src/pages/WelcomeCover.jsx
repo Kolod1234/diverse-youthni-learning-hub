@@ -137,9 +137,9 @@ export default function WelcomeCover() {
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
               >
-                <Card className="bg-white/10 backdrop-blur-lg border-white/20 hover:bg-white/15 transition-all duration-300 h-full overflow-hidden">
+                <Card className="bg-white/10 backdrop-blur-lg border-white/20 hover:bg-white/15 transition-all duration-300 h-full overflow-hidden flex flex-col">
                   {pathway.image && (
-                    <div className="relative h-48 w-full overflow-hidden">
+                    <div className="relative h-48 w-full overflow-hidden flex-shrink-0">
                       <img 
                         src={pathway.image} 
                         alt={pathway.title}
@@ -148,7 +148,7 @@ export default function WelcomeCover() {
                       <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                     </div>
                   )}
-                  <div className="p-6 flex flex-col h-full">
+                  <div className="p-6 flex flex-col flex-grow">
                     <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${pathway.gradient} flex items-center justify-center mb-4 ${pathway.image ? '-mt-14 relative z-10 border-4 border-white/20' : ''}`}>
                       <Icon className="w-8 h-8 text-white" />
                     </div>
