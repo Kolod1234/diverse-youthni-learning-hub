@@ -92,6 +92,7 @@ export default function WelcomeCover() {
       icon: Award,
       gradient: 'from-green-500 to-emerald-600',
       features: ['OCN Courses', 'Workbook Tasks', 'Attendance Tracking', 'Certification'],
+      image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/adfaefdeb_PXL_20240718_134233296PORTRAIT.jpg',
     },
   ];
 
