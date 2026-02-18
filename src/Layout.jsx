@@ -179,7 +179,7 @@ function LayoutContent({ children, currentPageName }) {
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                   alt="Diverse Youth NI"
-                  style={{ height: '56px', width: 'auto', objectFit: 'contain' }}
+                  style={{ height: '56px', width: '56px', objectFit: 'contain', borderRadius: '50%', overflow: 'hidden' }}
                 />
               </Link>
             ) : (
@@ -688,7 +688,7 @@ function LayoutContent({ children, currentPageName }) {
                 <img 
                   src="https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/2c84fe800_Picsart_25-09-17_19-15-27-477.jpg"
                   alt="Diverse Youth NI"
-                  style={{ height: 48, width: 'auto', objectFit: 'contain' }}
+                  style={{ height: 48, width: 48, objectFit: 'contain', borderRadius: '50%', overflow: 'hidden' }}
                 />
               </Link>
               <Typography variant="body2" color="text.secondary">
