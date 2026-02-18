@@ -17,7 +17,8 @@ import {
 } from '@/components/ui/dialog';
 import { 
   MessageSquare, Send, Search, Mail, MailOpen, 
-  ArrowLeft, Sparkles, Loader2, FileText, PlusCircle, Smile
+  ArrowLeft, Sparkles, Loader2, FileText, PlusCircle, Smile,
+  Bell, AlertCircle, CheckCircle, Calendar, GraduationCap, Star
 } from 'lucide-react';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
@@ -32,6 +33,7 @@ export default function MessageCenter() {
   const [newMessageRecipient, setNewMessageRecipient] = useState('');
   const [newMessageContent, setNewMessageContent] = useState('');
   const [showEmojiPicker, setShowEmojiPicker] = useState(false);
+  const [viewMode, setViewMode] = useState('messages');
   const messagesEndRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -49,7 +51,7 @@ export default function MessageCenter() {
   useEffect(() => {
     if (!user?.email) return;
     
-    const unsubscribe = base44.entities.Message.subscribe((event) => {
+    const unsubscribeMsg = base44.entities.Message.subscribe((event) => {
       if (event.type === 'create' && 
           (event.data.recipient_email === user.email || event.data.sender_email === user.email)) {
         queryClient.invalidateQueries(['messages']);
@@ -64,7 +66,19 @@ export default function MessageCenter() {
       }
     });
 
-    return unsubscribe;
+    const unsubscribeNotif = base44.entities.Notification.subscribe((event) => {
+      if (event.type === 'create' && event.data.user_email === user.email) {
+        queryClient.invalidateQueries(['notifications']);
+        toast.info(event.data.title);
+      } else if (event.type === 'update') {
+        queryClient.invalidateQueries(['notifications']);
+      }
+    });
+
+    return () => {
+      unsubscribeMsg();
+      unsubscribeNotif();
+    };
   }, [user?.email, queryClient]);
 
   const { data: messages = [] } = useQuery({
@@ -93,10 +107,23 @@ export default function MessageCenter() {
     enabled: !!user,
   });
 
+  const { data: notifications = [] } = useQuery({
+    queryKey: ['notifications', user?.email],
+    queryFn: () => base44.entities.Notification.filter({ user_email: user?.email }, '-created_date', 100),
+    enabled: !!user?.email,
+  });
+
   const markAsReadMutation = useMutation({
     mutationFn: (messageId) => base44.entities.Message.update(messageId, { is_read: true }),
     onSuccess: () => {
       queryClient.invalidateQueries(['messages']);
+    },
+  });
+
+  const markNotificationReadMutation = useMutation({
+    mutationFn: (notificationId) => base44.entities.Notification.update(notificationId, { is_read: true }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['notifications']);
     },
   });
 
@@ -252,6 +279,29 @@ Reply:`,
     );
 
   const unreadCount = messages.filter(m => !m.is_read).length;
+  const unreadNotificationsCount = notifications.filter(n => !n.is_read).length;
+
+  const notificationIcons = {
+    session_reminder: Calendar,
+    session_started: Video,
+    session_cancelled: AlertCircle,
+    quiz: FileText,
+    logbook: FileText,
+    program: GraduationCap,
+    message: Mail,
+    general: Bell,
+  };
+
+  const notificationColors = {
+    session_reminder: 'bg-blue-50 border-blue-200 text-blue-900',
+    session_started: 'bg-green-50 border-green-200 text-green-900',
+    session_cancelled: 'bg-red-50 border-red-200 text-red-900',
+    quiz: 'bg-purple-50 border-purple-200 text-purple-900',
+    logbook: 'bg-orange-50 border-orange-200 text-orange-900',
+    program: 'bg-indigo-50 border-indigo-200 text-indigo-900',
+    message: 'bg-cyan-50 border-cyan-200 text-cyan-900',
+    general: 'bg-gray-50 border-gray-200 text-gray-900',
+  };
 
     const handleSelectThread = (thread) => {
     setSelectedThread(thread);
@@ -312,9 +362,36 @@ Reply:`,
         <div className="mb-6">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Message Center</h1>
           <p className="text-gray-500">Communicate with tutors and students</p>
+          
+          <div className="flex gap-2 mt-4">
+            <Button
+              variant={viewMode === 'messages' ? 'default' : 'outline'}
+              onClick={() => setViewMode('messages')}
+              className={viewMode === 'messages' ? 'bg-indigo-600' : ''}
+            >
+              <MessageSquare className="w-4 h-4 mr-2" />
+              Messages
+              {unreadCount > 0 && (
+                <Badge className="ml-2 bg-red-500">{unreadCount}</Badge>
+              )}
+            </Button>
+            <Button
+              variant={viewMode === 'notifications' ? 'default' : 'outline'}
+              onClick={() => setViewMode('notifications')}
+              className={viewMode === 'notifications' ? 'bg-indigo-600' : ''}
+            >
+              <Bell className="w-4 h-4 mr-2" />
+              Notifications
+              {unreadNotificationsCount > 0 && (
+                <Badge className="ml-2 bg-red-500">{unreadNotificationsCount}</Badge>
+              )}
+            </Button>
+          </div>
         </div>
 
         <div className="grid lg:grid-cols-3 gap-6">
+          {viewMode === 'messages' ? (
+            <>
           {/* Thread List */}
           <Card className="lg:col-span-1">
             <div className="p-4 border-b">
@@ -622,6 +699,85 @@ Reply:`,
               </div>
             )}
           </Card>
+          </>
+          ) : (
+            /* Notifications View */
+            <Card className="lg:col-span-3">
+              <div className="p-4 border-b">
+                <div className="flex items-center gap-2">
+                  <Bell className="w-5 h-5 text-indigo-600" />
+                  <h2 className="font-semibold text-gray-900">System Notifications</h2>
+                  {unreadNotificationsCount > 0 && (
+                    <Badge className="bg-red-500">{unreadNotificationsCount}</Badge>
+                  )}
+                </div>
+              </div>
+              <ScrollArea className="h-[700px]">
+                <div className="p-4 space-y-3">
+                  {notifications.length === 0 ? (
+                    <div className="text-center py-12">
+                      <Bell className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+                      <p className="text-gray-500">No notifications yet</p>
+                    </div>
+                  ) : (
+                    notifications.map((notif) => {
+                      const Icon = notificationIcons[notif.type] || Bell;
+                      const colorClass = notificationColors[notif.type] || notificationColors.general;
+                      
+                      return (
+                        <motion.div
+                          key={notif.id}
+                          initial={{ opacity: 0, y: 10 }}
+                          animate={{ opacity: 1, y: 0 }}
+                          onClick={() => {
+                            if (!notif.is_read) {
+                              markNotificationReadMutation.mutate(notif.id);
+                            }
+                            if (notif.link) {
+                              window.location.href = notif.link;
+                            }
+                          }}
+                          className={`
+                            p-4 rounded-lg border-2 cursor-pointer transition-all
+                            ${colorClass}
+                            ${!notif.is_read ? 'border-l-4' : 'opacity-75'}
+                            hover:shadow-md
+                          `}
+                        >
+                          <div className="flex items-start gap-3">
+                            <div className={`
+                              p-2 rounded-lg
+                              ${notif.type === 'session_started' ? 'bg-green-100' : 
+                                notif.type === 'session_cancelled' ? 'bg-red-100' :
+                                notif.type === 'quiz' ? 'bg-purple-100' :
+                                notif.type === 'message' ? 'bg-cyan-100' :
+                                'bg-indigo-100'}
+                            `}>
+                              <Icon className="w-5 h-5" />
+                            </div>
+                            <div className="flex-1 min-w-0">
+                              <div className="flex items-start justify-between gap-2">
+                                <div className="flex-1">
+                                  <p className="font-semibold mb-1">{notif.title}</p>
+                                  <p className="text-sm whitespace-pre-wrap">{notif.message}</p>
+                                </div>
+                                {!notif.is_read && (
+                                  <div className="w-2 h-2 bg-indigo-600 rounded-full shrink-0 mt-2" />
+                                )}
+                              </div>
+                              <p className="text-xs mt-2 opacity-75">
+                                {format(new Date(notif.created_date), 'MMM d, h:mm a')}
+                              </p>
+                            </div>
+                          </div>
+                        </motion.div>
+                      );
+                    })
+                  )}
+                </div>
+              </ScrollArea>
+            </Card>
+          )}
         </div>
       </div>
     </div>
