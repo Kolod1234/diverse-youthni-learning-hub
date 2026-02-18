@@ -16,11 +16,11 @@ Deno.serve(async (req) => {
     }
 
     // Send email
-    const result = await base44.asServiceRole.integrations.Core.SendEmail({
+    await base44.integrations.Core.SendEmail({
       to: studentEmail,
       subject: subject,
       body: body,
-      from_name: user.full_name
+      from_name: user.full_name || 'Diverse Youth NI'
     });
 
     return Response.json({
