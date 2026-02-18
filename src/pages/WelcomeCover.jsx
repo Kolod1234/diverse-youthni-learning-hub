@@ -18,6 +18,12 @@ export default function WelcomeCover() {
         const userData = await base44.auth.me();
         setUser(userData);
         
+        // Admins can always access the cover page
+        if (userData?.role === 'admin') {
+          setLoading(false);
+          return;
+        }
+        
         // If user already has an interest, redirect them
         if (userData?.interest_type && userData.interest_type !== 'guest') {
           navigate(createPageUrl('Home'));
