@@ -10,6 +10,25 @@ export default function AttendanceReports() {
   const [startDate, setStartDate] = useState('');
   const [endDate, setEndDate] = useState('');
   const [exportDialog, setExportDialog] = useState(false);
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  // Check user authorization
+  React.useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUser();
+  }, []);
+
+  const hasPermission = user && (user.role === 'admin' || user.is_tutor === true || user.is_coordinator === true);
 
   const { data: allAttendance = [] } = useQuery({
     queryKey: ['all-attendance'],
@@ -84,6 +103,18 @@ export default function AttendanceReports() {
   };
 
   const stats = getTotalStats();
+
+  if (loading) {
+    return <Typography>Loading...</Typography>;
+  }
+
+  if (!hasPermission) {
+    return (
+      <Box sx={{ textAlign: 'center', py: 4 }}>
+        <Typography color="error">You don't have permission to view attendance reports.</Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
