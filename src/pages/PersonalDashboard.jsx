@@ -90,11 +90,29 @@ export default function PersonalDashboard() {
     enabled: !!user,
   });
 
+  const { data: logbooks = [] } = useQuery({
+    queryKey: ['user-logbooks'],
+    queryFn: () => base44.entities.Logbook.filter({ participant_email: user?.email }, '-created_date', 10),
+    enabled: !!user && interestType === 'leadership',
+  });
+
+  const { data: messages = [] } = useQuery({
+    queryKey: ['user-messages'],
+    queryFn: async () => {
+      const received = await base44.entities.Message.filter({ recipient_email: user?.email }, '-created_date', 5);
+      return received.filter(m => !m.is_read);
+    },
+    enabled: !!user && interestType === 'leadership',
+  });
+
   const { data: qualifications = [] } = useQuery({
     queryKey: ['user-qualifications'],
     queryFn: () => base44.entities.YouthWorkQualification.filter({ created_by: user?.email }),
     enabled: !!user && interestType === 'youth_work',
   });
+
+  const pendingLogbooks = logbooks.filter(l => !l.is_approved).length;
+  const approvedLogbooks = logbooks.filter(l => l.is_approved).length;
 
   if (!user) {
     return (
@@ -113,9 +131,11 @@ export default function PersonalDashboard() {
           color: '#7c3aed',
           gradient: 'linear-gradient(135deg, #7c3aed 0%, #c026d3 100%)',
           stats: [
-            { label: 'Active Programs', value: programs.length, icon: ClipboardList },
+            { label: 'My Programs', value: programs.length, icon: ClipboardList },
             { label: 'Upcoming Activities', value: activities.length, icon: Calendar },
-            { label: 'Logbooks Submitted', value: userProgress?.total_lessons_completed || 0, icon: CheckCircle },
+            { label: 'Logbooks Approved', value: approvedLogbooks, icon: CheckCircle },
+            { label: 'Pending Review', value: pendingLogbooks, icon: Clock },
+            { label: 'Unread Messages', value: messages.length, icon: AlertCircle },
           ],
         };
       case 'youth_work':
@@ -152,9 +172,10 @@ export default function PersonalDashboard() {
     switch (interestType) {
       case 'leadership':
         return [
-          { label: 'View Programs', icon: Users, path: 'Programs', color: '#7c3aed' },
-          { label: 'Activities', icon: Calendar, path: 'Programs', color: '#c026d3' },
+          { label: 'My Programs', icon: Users, path: 'Programs', color: '#7c3aed' },
+          { label: 'View Schedule', icon: Calendar, path: 'Programs', color: '#c026d3' },
           { label: 'Submit Logbook', icon: ClipboardList, path: 'Programs', color: '#9333ea' },
+          { label: 'Messages', icon: AlertCircle, path: 'MessageCenter', color: '#ec4899' },
         ];
       case 'youth_work':
         return [
@@ -198,7 +219,7 @@ export default function PersonalDashboard() {
 
         {/* Stats Grid */}
         <Grid container spacing={3} sx={{ mb: 4 }}>
-          {config.stats.map((stat, index) => {
+          {config.stats.slice(0, 3).map((stat, index) => {
             const StatIcon = stat.icon;
             return (
               <Grid item xs={12} md={4} key={stat.label}>
@@ -285,9 +306,94 @@ export default function PersonalDashboard() {
           </Grid>
         </motion.div>
 
+        {/* My Programs Section */}
+        {interestType === 'leadership' && programs.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>My Programs</Typography>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              {programs.map((program) => {
+                const participation = participations.find(p => p.program_id === program.id);
+                return (
+                  <Grid item xs={12} md={6} key={program.id}>
+                    <Card sx={{ boxShadow: 3, '&:hover': { boxShadow: 6 }, transition: 'all 0.3s' }}>
+                      <CardContent>
+                        <Box sx={{ display: 'flex', alignItems: 'start', justifyContent: 'space-between', mb: 2 }}>
+                          <Box>
+                            <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
+                              {program.name}
+                            </Typography>
+                            <Chip 
+                              label={program.status} 
+                              size="small"
+                              sx={{ bgcolor: '#10b981', color: 'white' }}
+                            />
+                          </Box>
+                        </Box>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          {program.description}
+                        </Typography>
+                        {participation?.current_task && (
+                          <Box sx={{ bgcolor: 'background.default', p: 2, borderRadius: 2, mb: 2 }}>
+                            <Typography variant="caption" color="text.secondary">Current Task:</Typography>
+                            <Typography variant="body2" sx={{ fontWeight: 600 }}>
+                              {participation.current_task}
+                            </Typography>
+                          </Box>
+                        )}
+                        <Link to={createPageUrl('Programs')} style={{ textDecoration: 'none' }}>
+                          <Button size="sm" className="w-full">
+                            View Details <ArrowRight className="ml-2" size={16} />
+                          </Button>
+                        </Link>
+                      </CardContent>
+                    </Card>
+                  </Grid>
+                );
+              })}
+            </Grid>
+          </motion.div>
+        )}
+
+        {/* Recent Logbooks */}
+        {interestType === 'leadership' && logbooks.length > 0 && (
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+            <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Recent Logbooks</Typography>
+            <Grid container spacing={3} sx={{ mb: 4 }}>
+              {logbooks.slice(0, 3).map((logbook) => (
+                <Grid item xs={12} md={4} key={logbook.id}>
+                  <Card sx={{ boxShadow: 3 }}>
+                    <CardContent>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 2 }}>
+                        <ClipboardList size={20} color={logbook.is_approved ? '#10b981' : '#f59e0b'} />
+                        <Chip 
+                          label={logbook.is_approved ? 'Approved' : 'Pending Review'}
+                          size="small"
+                          sx={{ 
+                            bgcolor: logbook.is_approved ? '#10b981' : '#f59e0b',
+                            color: 'white'
+                          }}
+                        />
+                      </Box>
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
+                        Week {logbook.week_number} • {format(new Date(logbook.entry_date), 'MMM d, yyyy')}
+                      </Typography>
+                      <Typography variant="body2" sx={{ mb: 1 }}>
+                        <strong>Duty:</strong> {logbook.duty_for_week}
+                      </Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {logbook.hours_per_week} hours
+                      </Typography>
+                    </CardContent>
+                  </Card>
+                </Grid>
+              ))}
+            </Grid>
+          </motion.div>
+        )}
+
         {/* Pathway-Specific Content */}
         {interestType === 'leadership' && activities.length > 0 && (
-          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.4 }}>
+          <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.6 }}>
             <Typography variant="h5" sx={{ fontWeight: 700, mb: 3 }}>Upcoming Activities</Typography>
             <Grid container spacing={3}>
               {activities.slice(0, 3).map((activity) => (
@@ -303,9 +409,14 @@ export default function PersonalDashboard() {
                       <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>
                         {activity.title}
                       </Typography>
-                      <Typography variant="body2" color="text.secondary">
+                      <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>
                         {activity.description?.substring(0, 100)}...
                       </Typography>
+                      {activity.location && (
+                        <Typography variant="caption" color="text.secondary">
+                          📍 {activity.location}
+                        </Typography>
+                      )}
                     </CardContent>
                   </Card>
                 </Grid>
