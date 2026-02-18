@@ -49,24 +49,39 @@ export default function PersonalDashboard() {
     enabled: enrollments.length > 0,
   });
 
+  const { data: participations = [] } = useQuery({
+    queryKey: ['user-participations'],
+    queryFn: () => base44.entities.ProgramParticipant.filter({ participant_email: user?.email }),
+    enabled: !!user && interestType === 'leadership',
+  });
+
   const { data: programs = [] } = useQuery({
     queryKey: ['user-programs'],
-    queryFn: () => base44.entities.Program.filter({ status: 'active' }, '-created_date', 10),
-    enabled: !!user && interestType === 'leadership',
+    queryFn: async () => {
+      if (participations.length === 0) return [];
+      const programIds = participations.map(p => p.program_id);
+      const allPrograms = await base44.entities.Program.list('-created_date', 1000);
+      return allPrograms.filter(p => programIds.includes(p.id));
+    },
+    enabled: participations.length > 0,
   });
 
   const { data: activities = [] } = useQuery({
     queryKey: ['upcoming-activities'],
     queryFn: async () => {
+      if (participations.length === 0) return [];
+      const programIds = participations.map(p => p.program_id);
       const allActivities = await base44.entities.Activity.list('-activity_date', 50);
       const today = new Date();
       const nextWeek = addDays(today, 7);
       return allActivities.filter(a => {
         const activityDate = new Date(a.activity_date);
-        return isAfter(activityDate, today) && isBefore(activityDate, nextWeek);
+        return programIds.includes(a.program_id) && 
+               isAfter(activityDate, today) && 
+               isBefore(activityDate, nextWeek);
       });
     },
-    enabled: !!user && interestType === 'leadership',
+    enabled: participations.length > 0,
   });
 
   const { data: userProgress } = useQuery({
