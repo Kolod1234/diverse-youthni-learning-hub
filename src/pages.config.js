@@ -133,6 +133,7 @@ import VideoSession from './pages/VideoSession';
 import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import NotificationCenter from './pages/NotificationCenter';
 import __Layout from './Layout.jsx';
 
 
@@ -223,6 +224,7 @@ export const PAGES = {
     "WelcomeCover": WelcomeCover,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "NotificationCenter": NotificationCenter,
 }
 
 export const pagesConfig = {
