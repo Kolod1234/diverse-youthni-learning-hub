@@ -15,12 +15,11 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Missing required fields' }, { status: 400 });
     }
 
-    // Send email
-    await base44.integrations.Core.SendEmail({
+    // Send email using service role to bypass user restrictions
+    await base44.asServiceRole.integrations.Core.SendEmail({
       to: studentEmail,
       subject: subject,
-      body: body,
-      from_name: user.full_name || 'Diverse Youth NI'
+      body: body
     });
 
     return Response.json({
