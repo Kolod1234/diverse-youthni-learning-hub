@@ -63,11 +63,17 @@ export default function Home() {
     if (currentUser) setUser(currentUser);
   }, [currentUser]);
 
-  // Redirect based on interest_type
+  // Redirect based on interest_type (skip for admins)
   useEffect(() => {
     const checkInterest = async () => {
       try {
         const userData = await base44.auth.me();
+        
+        // Admins can see all homepages - no redirect
+        if (userData?.role === 'admin') {
+          return;
+        }
+
         const interestType = userData?.interest_type;
         
         if (!interestType || interestType === '') {
