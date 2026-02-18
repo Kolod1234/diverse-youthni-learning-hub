@@ -45,6 +45,28 @@ export default function MessageCenter() {
     loadUser();
   }, []);
 
+  // Real-time message subscription
+  useEffect(() => {
+    if (!user?.email) return;
+    
+    const unsubscribe = base44.entities.Message.subscribe((event) => {
+      if (event.type === 'create' && 
+          (event.data.recipient_email === user.email || event.data.sender_email === user.email)) {
+        queryClient.invalidateQueries(['messages']);
+        queryClient.invalidateQueries(['sent-messages']);
+        
+        if (event.data.recipient_email === user.email) {
+          toast.info(`New message from ${event.data.sender_name}`);
+        }
+      } else if (event.type === 'update') {
+        queryClient.invalidateQueries(['messages']);
+        queryClient.invalidateQueries(['sent-messages']);
+      }
+    });
+
+    return unsubscribe;
+  }, [user?.email, queryClient]);
+
   const { data: messages = [] } = useQuery({
     queryKey: ['messages', user?.email],
     queryFn: () => base44.entities.Message.filter({ recipient_email: user?.email }, '-created_date', 100),
@@ -246,6 +268,7 @@ Reply:`,
       course_id: selectedThread.courseId,
       sender_email: user?.email,
       sender_name: user?.full_name,
+      sender_avatar: user?.avatar,
       recipient_email: selectedThread.otherPartyEmail,
       content: replyText,
       is_read: false,
@@ -263,6 +286,7 @@ Reply:`,
     sendNewMessageMutation.mutate({
       sender_email: user?.email,
       sender_name: user?.full_name,
+      sender_avatar: user?.avatar,
       recipient_email: newMessageRecipient,
       content: newMessageContent,
       is_read: false,
