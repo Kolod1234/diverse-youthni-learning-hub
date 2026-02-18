@@ -106,6 +106,7 @@ import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import LessonPlayerRise from './pages/LessonPlayerRise';
 import Library from './pages/Library';
 import MessageCenter from './pages/MessageCenter';
+import NotificationCenter from './pages/NotificationCenter';
 import PathManager from './pages/PathManager';
 import PathwayManager from './pages/PathwayManager';
 import PersonalDashboard from './pages/PersonalDashboard';
@@ -132,9 +133,8 @@ import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
 import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
-import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import NotificationCenter from './pages/NotificationCenter';
 import YouthWorkLanding from './pages/YouthWorkLanding';
+import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import __Layout from './Layout.jsx';
 
 
@@ -198,6 +198,7 @@ export const PAGES = {
     "LessonPlayerRise": LessonPlayerRise,
     "Library": Library,
     "MessageCenter": MessageCenter,
+    "NotificationCenter": NotificationCenter,
     "PathManager": PathManager,
     "PathwayManager": PathwayManager,
     "PersonalDashboard": PersonalDashboard,
@@ -224,9 +225,8 @@ export const PAGES = {
     "VideoSession": VideoSession,
     "WelcomeCover": WelcomeCover,
     "YouthWork": YouthWork,
-    "YouthWorkWorkbook": YouthWorkWorkbook,
-    "NotificationCenter": NotificationCenter,
     "YouthWorkLanding": YouthWorkLanding,
+    "YouthWorkWorkbook": YouthWorkWorkbook,
 }
 
 export const pagesConfig = {

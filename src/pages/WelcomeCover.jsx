@@ -84,6 +84,7 @@ export default function WelcomeCover() {
       icon: GraduationCap,
       gradient: 'from-blue-500 to-cyan-600',
       features: ['Interactive Lessons', 'Past Papers', 'Live Sessions', 'Study Library'],
+      image: 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/73bf1b641_PXL_20250405_120925148.jpg',
     },
     {
       id: 'youth_work',
