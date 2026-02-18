@@ -106,48 +106,60 @@ export default function LessonPlayerClassic() {
     loadUser();
   }, []);
 
-  // Load user XP and update streak
+  // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
-    const updateStreak = async () => {
-      if (!user) return;
-      
-      const today = new Date().toISOString().split('T')[0];
-      const streaks = await base44.entities.StudyStreak.list();
-      const streak = streaks[0];
-      
-      if (streak) {
-        const lastDate = streak.last_activity_date;
-        if (lastDate !== today) {
-          // Update streak
-          const yesterday = new Date();
-          yesterday.setDate(yesterday.getDate() - 1);
-          const yesterdayStr = yesterday.toISOString().split('T')[0];
-          
-          const newStreak = lastDate === yesterdayStr ? streak.current_streak + 1 : 1;
-          
-          await base44.entities.StudyStreak.update(streak.id, {
-            current_streak: newStreak,
-            longest_streak: Math.max(newStreak, streak.longest_streak),
+    if (!user) return;
+
+    let timeoutId;
+    const updateStreak = async (retries = 3) => {
+      try {
+        const today = new Date().toISOString().split('T')[0];
+        const streaks = await base44.entities.StudyStreak.list();
+        const streak = streaks[0];
+        
+        if (streak) {
+          const lastDate = streak.last_activity_date;
+          if (lastDate !== today) {
+            const yesterday = new Date();
+            yesterday.setDate(yesterday.getDate() - 1);
+            const yesterdayStr = yesterday.toISOString().split('T')[0];
+            
+            const newStreak = lastDate === yesterdayStr ? streak.current_streak + 1 : 1;
+            
+            await base44.entities.StudyStreak.update(streak.id, {
+              current_streak: newStreak,
+              longest_streak: Math.max(newStreak, streak.longest_streak),
+              last_activity_date: today,
+              streak_dates: [...(streak.streak_dates || []), today],
+              total_xp: streak.total_xp || 0,
+            });
+          }
+          setCurrentXP(streak.total_xp || 0);
+          setUserLevel(Math.floor((streak.total_xp || 0) / 100) + 1);
+        } else {
+          await base44.entities.StudyStreak.create({
+            current_streak: 1,
+            longest_streak: 1,
             last_activity_date: today,
-            streak_dates: [...(streak.streak_dates || []), today],
-            total_xp: streak.total_xp || 0,
+            streak_dates: [today],
+            total_xp: 0,
           });
         }
-        setCurrentXP(streak.total_xp || 0);
-        setUserLevel(Math.floor((streak.total_xp || 0) / 100) + 1);
-      } else {
-        // Create first streak record
-        await base44.entities.StudyStreak.create({
-          current_streak: 1,
-          longest_streak: 1,
-          last_activity_date: today,
-          streak_dates: [today],
-          total_xp: 0,
-        });
+      } catch (error) {
+        if (error.message?.includes('Rate limit') && retries > 0) {
+          // Exponential backoff: 1s, 2s, 4s
+          const delay = Math.pow(2, 3 - retries) * 1000;
+          timeoutId = setTimeout(() => updateStreak(retries - 1), delay);
+        } else {
+          console.error('Failed to update streak:', error);
+        }
       }
     };
+
+    // Debounce: only call updateStreak after user is loaded
+    timeoutId = setTimeout(() => updateStreak(), 500);
     
-    updateStreak();
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   // First fetch the lesson to get its course_id
