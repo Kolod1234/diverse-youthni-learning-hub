@@ -17,8 +17,8 @@ Deno.serve(async (req) => {
             // Cannot message yourself
             if (u.email === user.email) return false;
 
-            // Admins can message everyone
-            if (user.role === 'admin') return true;
+            // Admins and tutors can message everyone
+            if (user.role === 'admin' || user.is_tutor) return true;
             
             // Everyone can message admins
             if (u.role === 'admin') return true;
