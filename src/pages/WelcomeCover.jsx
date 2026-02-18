@@ -44,6 +44,12 @@ export default function WelcomeCover() {
       return;
     }
 
+    // Youth Work goes to landing page
+    if (interestType === 'youth_work') {
+      navigate(createPageUrl('YouthWorkLanding'));
+      return;
+    }
+
     if (user) {
       // Logged-in user: save to database
       await base44.auth.updateMe({ interest_type: interestType });
