@@ -63,18 +63,43 @@ export default function Home() {
     if (currentUser) setUser(currentUser);
   }, [currentUser]);
 
-  // Redirect to WelcomeCover if no interest selected
+  // Redirect based on interest_type
   useEffect(() => {
     const checkInterest = async () => {
       try {
         const userData = await base44.auth.me();
-        if (!userData?.interest_type || userData.interest_type === '') {
+        const interestType = userData?.interest_type;
+        
+        if (!interestType || interestType === '') {
           navigate(createPageUrl('WelcomeCover'));
+          return;
+        }
+
+        // Redirect to appropriate homepage
+        switch (interestType) {
+          case 'leadership':
+            navigate(createPageUrl('HomeLeadership'));
+            break;
+          case 'learning':
+            navigate(createPageUrl('HomeLearning'));
+            break;
+          case 'youth_work':
+            navigate(createPageUrl('HomeYouthWork'));
+            break;
+          case 'guest':
+            navigate(createPageUrl('HomeGuest'));
+            break;
+          default:
+            navigate(createPageUrl('WelcomeCover'));
         }
       } catch (error) {
         // Not logged in - check localStorage
         const guestInterest = localStorage.getItem('interest_type');
         if (!guestInterest) {
+          navigate(createPageUrl('WelcomeCover'));
+        } else if (guestInterest === 'guest') {
+          navigate(createPageUrl('HomeGuest'));
+        } else {
           navigate(createPageUrl('WelcomeCover'));
         }
       }

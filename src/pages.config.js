@@ -127,6 +127,10 @@ import VideoSession from './pages/VideoSession';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import WelcomeCover from './pages/WelcomeCover';
+import HomeLeadership from './pages/HomeLeadership';
+import HomeLearning from './pages/HomeLearning';
+import HomeYouthWork from './pages/HomeYouthWork';
+import HomeGuest from './pages/HomeGuest';
 import __Layout from './Layout.jsx';
 
 
@@ -211,6 +215,10 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "WelcomeCover": WelcomeCover,
+    "HomeLeadership": HomeLeadership,
+    "HomeLearning": HomeLearning,
+    "HomeYouthWork": HomeYouthWork,
+    "HomeGuest": HomeGuest,
 }
 
 export const pagesConfig = {
