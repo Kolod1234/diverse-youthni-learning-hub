@@ -38,6 +38,12 @@ export default function WelcomeCover() {
   }, [navigate]);
 
   const handleSelectInterest = async (interestType) => {
+    // Leadership goes to landing page
+    if (interestType === 'leadership') {
+      navigate(createPageUrl('LeadershipLanding'));
+      return;
+    }
+
     if (user) {
       // Logged-in user: save to database
       await base44.auth.updateMe({ interest_type: interestType });

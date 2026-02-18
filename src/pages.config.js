@@ -92,6 +92,10 @@ import Explore from './pages/Explore';
 import FileManager from './pages/FileManager';
 import GradeAssignments from './pages/GradeAssignments';
 import Home from './pages/Home';
+import HomeGuest from './pages/HomeGuest';
+import HomeLeadership from './pages/HomeLeadership';
+import HomeLearning from './pages/HomeLearning';
+import HomeYouthWork from './pages/HomeYouthWork';
 import KnowledgeBase from './pages/KnowledgeBase';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
@@ -124,13 +128,10 @@ import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
 import VideoSession from './pages/VideoSession';
+import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import WelcomeCover from './pages/WelcomeCover';
-import HomeLeadership from './pages/HomeLeadership';
-import HomeLearning from './pages/HomeLearning';
-import HomeYouthWork from './pages/HomeYouthWork';
-import HomeGuest from './pages/HomeGuest';
+import LeadershipLanding from './pages/LeadershipLanding';
 import __Layout from './Layout.jsx';
 
 
@@ -180,6 +181,10 @@ export const PAGES = {
     "FileManager": FileManager,
     "GradeAssignments": GradeAssignments,
     "Home": Home,
+    "HomeGuest": HomeGuest,
+    "HomeLeadership": HomeLeadership,
+    "HomeLearning": HomeLearning,
+    "HomeYouthWork": HomeYouthWork,
     "KnowledgeBase": KnowledgeBase,
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
@@ -212,13 +217,10 @@ export const PAGES = {
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
     "VideoSession": VideoSession,
+    "WelcomeCover": WelcomeCover,
     "YouthWork": YouthWork,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "WelcomeCover": WelcomeCover,
-    "HomeLeadership": HomeLeadership,
-    "HomeLearning": HomeLearning,
-    "HomeYouthWork": HomeYouthWork,
-    "HomeGuest": HomeGuest,
+    "LeadershipLanding": LeadershipLanding,
 }
 
 export const pagesConfig = {
