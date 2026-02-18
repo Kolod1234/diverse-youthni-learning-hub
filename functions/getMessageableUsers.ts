@@ -12,28 +12,27 @@ Deno.serve(async (req) => {
         // Fetch all users with service role
         const allUsers = await base44.asServiceRole.entities.User.list('full_name', 1000);
 
-        // Filter users based on role and permissions
-        const availableUsers = allUsers.filter(u => {
-            // Cannot message yourself
-            if (u.email === user.email) return false;
-
-            // Admins and tutors can message everyone
-            if (user.role === 'admin' || user.is_tutor) return true;
-            
-            // Everyone can message admins
-            if (u.role === 'admin') return true;
-            
-            // Everyone can message coordinators
-            if (u.is_coordinator) return true;
-            
-            // Non-tutors can message tutors
-            if (u.is_tutor && !user.is_tutor) return true;
-            
-            // Coordinators can message their assigned participants
-            if (user.is_coordinator && u.assigned_coordinator_email === user.email) return true;
-            
-            return false;
-        });
+        // Admins and tutors can message everyone except themselves
+        const availableUsers = (user.role === 'admin' || user.is_tutor) 
+            ? allUsers.filter(u => u.email !== user.email)
+            : allUsers.filter(u => {
+                // Cannot message yourself
+                if (u.email === user.email) return false;
+                
+                // Everyone can message admins
+                if (u.role === 'admin') return true;
+                
+                // Everyone can message coordinators
+                if (u.is_coordinator) return true;
+                
+                // Non-tutors can message tutors
+                if (u.is_tutor && !user.is_tutor) return true;
+                
+                // Coordinators can message their assigned participants
+                if (user.is_coordinator && u.assigned_coordinator_email === user.email) return true;
+                
+                return false;
+            });
 
         return Response.json(availableUsers);
     } catch (error) {
