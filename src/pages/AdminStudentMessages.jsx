@@ -50,6 +50,8 @@ export default function AdminStudentMessages() {
       });
     },
     onSuccess: () => {
+      queryClient.invalidateQueries(['messages']);
+      queryClient.invalidateQueries(['sent-messages']);
       toast.success('Message sent successfully');
       setMessage({ subject: '', body: '' });
       setSelectedStudent(null);
