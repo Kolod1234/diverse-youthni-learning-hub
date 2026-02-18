@@ -75,18 +75,58 @@ export default function AdminStudentMessages() {
       return;
     }
 
-    const promises = selectedStudents.map(email =>
-      sendMessageMutation.mutateAsync({ studentEmail: email })
-    );
+    if (scheduleEnabled) {
+      if (!scheduledDate) {
+        toast.error('Please select a scheduled date');
+        return;
+      }
+      
+      const [hours, minutes] = scheduledTime.split(':');
+      const scheduledDateTime = new Date(scheduledDate);
+      scheduledDateTime.setHours(parseInt(hours), parseInt(minutes), 0, 0);
 
-    try {
-      await Promise.all(promises);
-      toast.success(`Message sent to ${selectedStudents.length} student(s)`);
-      setSelectedStudents([]);
-      setSubject('');
-      setMessage('');
-    } catch (error) {
-      toast.error('Failed to send some messages');
+      if (scheduledDateTime <= new Date()) {
+        toast.error('Scheduled time must be in the future');
+        return;
+      }
+
+      try {
+        const promises = selectedStudents.map(email =>
+          base44.entities.ScheduledMessage.create({
+            recipient_email: email,
+            subject: subject.trim(),
+            content: message.trim(),
+            scheduled_time: scheduledDateTime.toISOString(),
+            sender_email: user.email,
+            sender_name: user.full_name,
+            status: 'pending',
+          })
+        );
+        await Promise.all(promises);
+        toast.success(`Message scheduled for ${selectedStudents.length} student(s)`);
+        setSelectedStudents([]);
+        setSubject('');
+        setMessage('');
+        setScheduleEnabled(false);
+        setScheduledDate(null);
+        setScheduledTime('09:00');
+      } catch (error) {
+        toast.error('Failed to schedule messages');
+      }
+    } else {
+      const promises = selectedStudents.map(email =>
+        sendMessageMutation.mutateAsync({ studentEmail: email })
+      );
+
+      try {
+        await Promise.all(promises);
+        toast.success(`Message sent to ${selectedStudents.length} student(s)`);
+        setSelectedStudents([]);
+        setSubject('');
+        setMessage('');
+      } catch (error) {
+        toast.error('Failed to send some messages');
+      }
     }
   };
 
@@ -266,6 +306,51 @@ export default function AdminStudentMessages() {
                   </p>
                 </div>
 
+                <div className="space-y-3">
+                  <div className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      id="schedule"
+                      checked={scheduleEnabled}
+                      onChange={(e) => setScheduleEnabled(e.target.checked)}
+                      className="w-4 h-4 text-indigo-600 rounded"
+                    />
+                    <label htmlFor="schedule" className="text-sm font-medium text-gray-700 cursor-pointer">
+                      Schedule message for later
+                    </label>
+                  </div>
+
+                  {scheduleEnabled && (
+                    <div className="flex gap-2">
+                      <Popover>
+                        <PopoverTrigger asChild>
+                          <Button variant="outline" className="flex-1 justify-start">
+                            <CalendarIcon className="w-4 h-4 mr-2" />
+                            {scheduledDate ? format(scheduledDate, 'PPP') : 'Pick a date'}
+                          </Button>
+                        </PopoverTrigger>
+                        <PopoverContent className="w-auto p-0">
+                          <Calendar
+                            mode="single"
+                            selected={scheduledDate}
+                            onSelect={setScheduledDate}
+                            disabled={(date) => date < new Date()}
+                          />
+                        </PopoverContent>
+                      </Popover>
+                      <div className="flex items-center gap-2 border rounded-lg px-3">
+                        <Clock className="w-4 h-4 text-gray-500" />
+                        <Input
+                          type="time"
+                          value={scheduledTime}
+                          onChange={(e) => setScheduledTime(e.target.value)}
+                          className="border-0 p-0 h-auto focus-visible:ring-0"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+
                 <div className="flex justify-end gap-3 pt-4">
                   <Button
                     variant="outline"
@@ -290,7 +375,12 @@ export default function AdminStudentMessages() {
                     {sendMessageMutation.isPending ? (
                       <>
                         <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                        Sending...
+                        {scheduleEnabled ? 'Scheduling...' : 'Sending...'}
+                      </>
+                    ) : scheduleEnabled ? (
+                      <>
+                        <Clock className="w-4 h-4 mr-2" />
+                        Schedule Message
                       </>
                     ) : (
                       <>
