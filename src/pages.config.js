@@ -62,7 +62,6 @@ import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
 import AdminReminders from './pages/AdminReminders';
 import AdminReviews from './pages/AdminReviews';
-import AdminStudentMessages from './pages/AdminStudentMessages';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminUserProfile from './pages/AdminUserProfile';
 import AdminUsers from './pages/AdminUsers';
@@ -145,7 +144,6 @@ export const PAGES = {
     "AdminRSSFeed": AdminRSSFeed,
     "AdminReminders": AdminReminders,
     "AdminReviews": AdminReviews,
-    "AdminStudentMessages": AdminStudentMessages,
     "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminUserProfile": AdminUserProfile,
     "AdminUsers": AdminUsers,
