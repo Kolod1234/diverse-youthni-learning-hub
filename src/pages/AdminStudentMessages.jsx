@@ -31,7 +31,7 @@ export default function AdminStudentMessages() {
     queryKey: ['all-users'],
     queryFn: async () => {
       const users = await base44.asServiceRole.entities.User.list('full_name', 1000);
-      return users.filter(u => u.role !== 'admin' && !u.is_tutor && !u.is_coordinator);
+      return users;
     },
     enabled: !!user && (user.role === 'admin' || user.is_tutor),
   });
