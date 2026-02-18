@@ -16,7 +16,27 @@ export default function AdminAttendance() {
   const [bulkMarkDialog, setBulkMarkDialog] = useState(false);
   const [bulkMarkStatus, setBulkMarkStatus] = useState('present');
   const [selectedStudents, setSelectedStudents] = useState(new Set());
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
   const queryClient = useQueryClient();
+
+  // Check user authorization
+  React.useEffect(() => {
+    const loadUser = async () => {
+      try {
+        const userData = await base44.auth.me();
+        setUser(userData);
+      } catch (error) {
+        console.error('Failed to load user:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+    loadUser();
+  }, []);
+
+  // Check if user has permission to view attendance
+  const hasPermission = user && (user.role === 'admin' || user.is_tutor === true || user.is_coordinator === true);
 
   const { data: attendanceRecords = [] } = useQuery({
     queryKey: ['attendance', selectedDate],
@@ -115,6 +135,25 @@ export default function AdminAttendance() {
   };
 
   const stats = getAttendanceStats();
+
+  if (loading) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography>Loading...</Typography>
+      </Box>
+    );
+  }
+
+  if (!hasPermission) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>Access Denied</Typography>
+          <Typography color="textSecondary">Only admins, tutors, and coordinators can view attendance records.</Typography>
+        </Box>
+      </Box>
+    );
+  }
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
