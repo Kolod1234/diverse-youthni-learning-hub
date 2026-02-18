@@ -210,12 +210,19 @@ export default function PDFViewer({ fileUrl, title, resourceId, onCoverCapture }
           Set as Cover
         </Button>
 
-        {/* Snipping Tool */}
+        {/* Snipping Tool - Floating */}
         <Button
           size="sm"
           onClick={() => setShowSnippingTool(true)}
           className="bg-purple-600 hover:bg-purple-700 text-white gap-2 font-medium"
           title="Snip area for cover"
+          style={{
+            position: 'fixed',
+            top: '80px',
+            right: '20px',
+            zIndex: 100,
+            boxShadow: '0 4px 12px rgba(139, 92, 246, 0.4)'
+          }}
         >
           <FileImage className="w-4 h-4" />
           Snip Cover
