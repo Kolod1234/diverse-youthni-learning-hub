@@ -8,17 +8,24 @@ import { BookOpen, GraduationCap, Video, TrendingUp, ArrowRight, Star, Users } f
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
+import PathwayOnboarding from '@/components/onboarding/PathwayOnboarding';
 
 export default function HomeLearning() {
   const [user, setUser] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortBy, setSortBy] = useState('popular');
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        
+        // Show onboarding if not completed
+        if (!userData?.onboarding_completed) {
+          setShowOnboarding(true);
+        }
       } catch (error) {
         console.error('Failed to load user:', error);
       }
@@ -48,6 +55,14 @@ export default function HomeLearning() {
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <PathwayOnboarding
+          pathway="learning"
+          onComplete={() => setShowOnboarding(false)}
+        />
+      )}
+
       {/* Hero Section */}
       <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #2563eb, #1e40af, #1e3a8a)', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">

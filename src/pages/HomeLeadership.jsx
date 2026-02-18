@@ -8,9 +8,11 @@ import { ClipboardList, Award, Users, Calendar, ArrowRight, TrendingUp } from 'l
 import { motion } from 'framer-motion';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
+import PathwayOnboarding from '@/components/onboarding/PathwayOnboarding';
 
 export default function HomeLeadership() {
   const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const [leadershipEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
 
   useEffect(() => {
@@ -18,6 +20,11 @@ export default function HomeLeadership() {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        
+        // Show onboarding if not completed
+        if (!userData?.onboarding_completed) {
+          setShowOnboarding(true);
+        }
       } catch (error) {
         console.error('Failed to load user:', error);
       }
@@ -41,6 +48,14 @@ export default function HomeLeadership() {
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <PathwayOnboarding
+          pathway="leadership"
+          onComplete={() => setShowOnboarding(false)}
+        />
+      )}
+
       {/* Hero Section */}
       <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #7c3aed, #9333ea, #c026d3)', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">

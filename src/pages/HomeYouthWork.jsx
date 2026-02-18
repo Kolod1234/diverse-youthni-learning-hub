@@ -6,15 +6,22 @@ import { createPageUrl } from '@/utils';
 import { Button, Container, Typography, Box, Card, CardContent, Chip } from '@mui/material';
 import { Award, BookOpen, CheckCircle, Users, ArrowRight, FileText } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PathwayOnboarding from '@/components/onboarding/PathwayOnboarding';
 
 export default function HomeYouthWork() {
   const [user, setUser] = useState(null);
+  const [showOnboarding, setShowOnboarding] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
       try {
         const userData = await base44.auth.me();
         setUser(userData);
+        
+        // Show onboarding if not completed
+        if (!userData?.onboarding_completed) {
+          setShowOnboarding(true);
+        }
       } catch (error) {
         console.error('Failed to load user:', error);
       }
@@ -36,6 +43,14 @@ export default function HomeYouthWork() {
 
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <PathwayOnboarding
+          pathway="youth_work"
+          onComplete={() => setShowOnboarding(false)}
+        />
+      )}
+
       {/* Hero Section */}
       <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #059669, #047857, #065f46)', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">

@@ -1,14 +1,32 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { Button, Container, Typography, Box, Card, CardContent, Chip } from '@mui/material';
 import { Eye, GraduationCap, Users, BookOpen, ArrowRight, Sparkles, Award } from 'lucide-react';
 import { motion } from 'framer-motion';
+import PathwayOnboarding from '@/components/onboarding/PathwayOnboarding';
 
 export default function HomeGuest() {
+  const [showOnboarding, setShowOnboarding] = useState(false);
+
+  useEffect(() => {
+    const hasSeenOnboarding = localStorage.getItem('onboarding_completed');
+    if (!hasSeenOnboarding) {
+      setShowOnboarding(true);
+    }
+  }, []);
+
   return (
     <Box sx={{ bgcolor: 'background.default', minHeight: '100vh' }}>
+      {/* Onboarding Flow */}
+      {showOnboarding && (
+        <PathwayOnboarding
+          pathway="guest"
+          onComplete={() => setShowOnboarding(false)}
+        />
+      )}
+
       {/* Hero Section */}
       <Box sx={{ position: 'relative', background: 'linear-gradient(to bottom right, #1e293b, #334155, #475569)', py: 12, overflow: 'hidden' }}>
         <Container maxWidth="xl">
