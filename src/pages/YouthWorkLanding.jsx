@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -26,6 +27,11 @@ export default function YouthWorkLanding() {
     };
     loadUser();
   }, []);
+
+  const { data: testimonials = [] } = useQuery({
+    queryKey: ['youth-work-testimonials'],
+    queryFn: () => base44.entities.Review.filter({ rating_type: 'course' }, '-created_date', 100),
+  });
 
   const handleJoinYouthWork = async () => {
     if (user) {
@@ -377,27 +383,9 @@ export default function YouthWorkLanding() {
               What Learners Say
             </Typography>
 
-            <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
-              {[
-                {
-                  name: 'Sarah M.',
-                  role: 'Youth Worker',
-                  text: 'The OCN qualification gave me the confidence to advance my career and make a real difference in young people\'s lives.',
-                  rating: 5
-                },
-                {
-                  name: 'James T.',
-                  role: 'Community Leader',
-                  text: 'Flexible learning combined with practical skills made this the perfect choice for my professional development.',
-                  rating: 5
-                },
-                {
-                  name: 'Emma K.',
-                  role: 'Support Worker',
-                  text: 'The mentorship and community support throughout the qualification was invaluable to my success.',
-                  rating: 5
-                }
-              ].map((testimonial, index) => (
+            {testimonials.length > 0 ? (
+              <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
+                {testimonials.slice(0, 3).map((testimonial, index) => (
                 <motion.div
                   key={testimonial.name}
                   initial={{ opacity: 0, y: 20 }}
@@ -406,23 +394,30 @@ export default function YouthWorkLanding() {
 
                   <Card sx={{ p: 4 }}>
                     <Box sx={{ display: 'flex', gap: 1, mb: 2 }}>
-                      {[...Array(testimonial.rating)].map((_, i) => (
+                      {[...Array(Math.round(testimonial.rating))].map((_, i) => (
                         <Star key={i} size={18} className="fill-yellow-400 text-yellow-400" />
                       ))}
                     </Box>
                     <Typography variant="body2" sx={{ mb: 4, fontStyle: 'italic', color: 'text.secondary' }}>
-                      "{testimonial.text}"
+                      "{testimonial.comment}"
                     </Typography>
                     <Typography variant="subtitle2" sx={{ fontWeight: 700 }}>
-                      {testimonial.name}
+                      {testimonial.user_name || 'Anonymous'}
                     </Typography>
                     <Typography variant="caption" color="text.secondary">
-                      {testimonial.role}
+                      {testimonial.instructor_name || 'Learner'}
                     </Typography>
                   </Card>
                 </motion.div>
               ))}
-            </Box>
+              </Box>
+            ) : (
+              <Box sx={{ textAlign: 'center', py: 6 }}>
+                <Typography variant="body1" color="text.secondary">
+                  Be the first to share your experience with our Youth Work qualification!
+                </Typography>
+              </Box>
+            )}
           </motion.div>
         </Container>
       </Box>
