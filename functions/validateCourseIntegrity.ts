@@ -12,7 +12,10 @@ Deno.serve(async (req) => {
       missing_lessons: 0,
       missing_objectives: 0,
       missing_content: 0,
-      empty_courses: 0
+      empty_courses: 0,
+      broken_urls: 0,
+      invalid_references: 0,
+      routing_errors: 0
     }
   };
 
@@ -172,6 +175,82 @@ Deno.serve(async (req) => {
       const duplicateTitles = lessonTitles.filter((title, idx) => lessonTitles.indexOf(title) !== idx);
       if (duplicateTitles.length > 0) {
         courseIssues.push(`Duplicate lesson titles found: ${[...new Set(duplicateTitles)].join(', ')}`);
+      }
+
+      // Check for frontend/routing errors
+      for (const lesson of lessons) {
+        const lessonPrefix = `Lesson "${lesson.title || 'Untitled'}"`;
+        
+        // Check for broken external URLs
+        const urlFields = ['video_url', 'file_url', 'google_slides_url', 'h5p_content_url'];
+        for (const field of urlFields) {
+          if (lesson[field]) {
+            const url = lesson[field];
+            // Check for common URL issues
+            if (url.includes('localhost') || url.includes('127.0.0.1')) {
+              courseIssues.push(`${lessonPrefix}: ${field} contains localhost URL (${url.substring(0, 50)}...)`);
+              validationResults.summary.broken_urls++;
+            }
+            if (url.includes('undefined') || url.includes('null')) {
+              courseIssues.push(`${lessonPrefix}: ${field} contains invalid value`);
+              validationResults.summary.broken_urls++;
+            }
+            // Check for broken Google Slides links
+            if (field === 'google_slides_url' && !url.match(/docs\.google\.com\/presentation/)) {
+              courseIssues.push(`${lessonPrefix}: google_slides_url doesn't match Google Slides pattern`);
+              validationResults.summary.broken_urls++;
+            }
+          }
+        }
+
+        // Check for invalid player references
+        if (lesson.default_player && !['LessonPlayerClassic', 'LessonPlayerPowerPoint'].includes(lesson.default_player)) {
+          courseIssues.push(`${lessonPrefix}: Invalid default_player "${lesson.default_player}"`);
+          validationResults.summary.routing_errors++;
+        }
+
+        // Check for orphaned resources
+        if (lesson.resources && Array.isArray(lesson.resources)) {
+          for (const resource of lesson.resources) {
+            if (resource.url && (resource.url.includes('localhost') || resource.url.includes('undefined'))) {
+              courseIssues.push(`${lessonPrefix}: Resource "${resource.name || 'unnamed'}" has broken URL`);
+              validationResults.summary.broken_urls++;
+            }
+          }
+        }
+      }
+
+      // Check course-level frontend issues
+      if (course.syllabus_url && (course.syllabus_url.includes('localhost') || course.syllabus_url.includes('undefined'))) {
+        courseIssues.push('Course syllabus_url contains invalid URL');
+        validationResults.summary.broken_urls++;
+      }
+
+      // Check for invalid enrollments (backend data integrity)
+      try {
+        const enrollments = await base44.asServiceRole.entities.Enrollment.filter({ course_id: course.id }, '', 100);
+        for (const enrollment of enrollments) {
+          // Check for invalid lesson IDs in completed_lessons
+          if (enrollment.completed_lessons && Array.isArray(enrollment.completed_lessons)) {
+            const validLessonIds = lessons.map(l => l.id);
+            const invalidIds = enrollment.completed_lessons.filter(id => !validLessonIds.includes(id));
+            if (invalidIds.length > 0) {
+              courseIssues.push(`Enrollment has ${invalidIds.length} references to deleted lessons`);
+              validationResults.summary.invalid_references++;
+            }
+          }
+
+          // Check for invalid current_lesson_id
+          if (enrollment.current_lesson_id) {
+            const validLessonIds = lessons.map(l => l.id);
+            if (!validLessonIds.includes(enrollment.current_lesson_id)) {
+              courseIssues.push(`Enrollment references deleted lesson as current_lesson_id`);
+              validationResults.summary.invalid_references++;
+            }
+          }
+        }
+      } catch (e) {
+        courseIssues.push(`Failed to validate enrollments: ${e.message}`);
       }
 
       if (courseIssues.length > 0) {

@@ -26,6 +26,9 @@ Deno.serve(async (req) => {
       courses_fixed: 0,
       lessons_fixed: 0,
       objectives_added: 0,
+      urls_fixed: 0,
+      enrollments_cleaned: 0,
+      references_fixed: 0,
       errors: []
     };
 
@@ -156,9 +159,80 @@ Deno.serve(async (req) => {
             fixes.lessons_fixed++;
           }
 
+          // Fix broken URLs
+          const urlFields = ['video_url', 'file_url', 'google_slides_url', 'h5p_content_url'];
+          for (const field of urlFields) {
+            if (lesson[field]) {
+              const url = lesson[field];
+              if (url.includes('localhost') || url.includes('127.0.0.1') || url.includes('undefined') || url.includes('null')) {
+                updateData[field] = null;
+                fixes.urls_fixed++;
+              }
+            }
+          }
+
+          // Fix invalid player references
+          if (lesson.default_player && !['LessonPlayerClassic', 'LessonPlayerPowerPoint'].includes(lesson.default_player)) {
+            updateData.default_player = 'LessonPlayerClassic';
+            fixes.references_fixed++;
+          }
+
+          // Clean orphaned resources
+          if (lesson.resources && Array.isArray(lesson.resources)) {
+            const cleanedResources = lesson.resources.filter(resource => {
+              if (!resource.url) return true;
+              if (resource.url.includes('localhost') || resource.url.includes('undefined')) {
+                fixes.urls_fixed++;
+                return false;
+              }
+              return true;
+            });
+            if (cleanedResources.length !== lesson.resources.length) {
+              updateData.resources = cleanedResources;
+            }
+          }
+
           if (Object.keys(updateData).length > 0) {
             await base44.asServiceRole.entities.Lesson.update(lesson.id, updateData);
           }
+        }
+
+        // Fix course-level URLs
+        if (course.syllabus_url && (course.syllabus_url.includes('localhost') || course.syllabus_url.includes('undefined'))) {
+          courseUpdateData.syllabus_url = null;
+          fixes.urls_fixed++;
+        }
+
+        // Fix enrollments with invalid references
+        try {
+          const enrollments = await base44.asServiceRole.entities.Enrollment.filter({ course_id: courseId }, '', 1000);
+          const validLessonIds = lessons.map(l => l.id);
+          
+          for (const enrollment of enrollments) {
+            let enrollmentUpdate = {};
+            
+            // Clean completed_lessons
+            if (enrollment.completed_lessons && Array.isArray(enrollment.completed_lessons)) {
+              const cleanedIds = enrollment.completed_lessons.filter(id => validLessonIds.includes(id));
+              if (cleanedIds.length !== enrollment.completed_lessons.length) {
+                enrollmentUpdate.completed_lessons = cleanedIds;
+                fixes.references_fixed++;
+              }
+            }
+
+            // Fix current_lesson_id
+            if (enrollment.current_lesson_id && !validLessonIds.includes(enrollment.current_lesson_id)) {
+              enrollmentUpdate.current_lesson_id = validLessonIds.length > 0 ? validLessonIds[0] : null;
+              fixes.references_fixed++;
+            }
+
+            if (Object.keys(enrollmentUpdate).length > 0) {
+              await base44.asServiceRole.entities.Enrollment.update(enrollment.id, enrollmentUpdate);
+              fixes.enrollments_cleaned++;
+            }
+          }
+        } catch (e) {
+          // Non-critical error, continue
         }
 
         // Fix course metadata
