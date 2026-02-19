@@ -163,23 +163,24 @@ export default function LessonPlayerClassic() {
   }, [user]);
 
   // First fetch the lesson to get its course_id
-  const { data: currentLessonArray = [], isLoading: lessonLoading, error: lessonError } = useQuery({
+  const { data: lesson, isLoading: lessonLoading, error: lessonError, isFetching, refetch: refetchLesson } = useQuery({
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
-        return [];
+        throw new Error('Invalid lesson ID');
       }
-      const lessons = await base44.entities.Lesson.filter({ id: lessonId });
-      return lessons;
+      // Use get() for direct ID lookup - more reliable than filter
+      return await base44.entities.Lesson.get(lessonId);
     },
     enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined',
-    retry: 3,
-    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 5000),
-    staleTime: 5 * 60 * 1000, // 5 minutes
-    gcTime: 10 * 60 * 1000 // 10 minutes
+    retry: 5,
+    retryDelay: (attemptIndex) => Math.min(500 * Math.pow(2, attemptIndex), 10000),
+    staleTime: 10 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    refetchOnMount: 'always',
+    refetchOnReconnect: true,
+    refetchOnWindowFocus: false
   });
-
-  const lesson = currentLessonArray[0];
   
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
@@ -221,16 +222,16 @@ export default function LessonPlayerClassic() {
     }
   };
 
-  const { data: course } = useQuery({
+  const { data: course, refetch: refetchCourse } = useQuery({
     queryKey: ['course', courseId],
     queryFn: async () => {
       if (!courseId) return null;
-      const courses = await base44.entities.Course.filter({ id: courseId });
-      return courses[0];
+      return await base44.entities.Course.get(courseId);
     },
     enabled: !!courseId,
-    retry: 3,
-    staleTime: 5 * 60 * 1000
+    retry: 5,
+    staleTime: 10 * 60 * 1000,
+    refetchOnMount: 'always'
   });
 
   const { data: courseLessons = [] } = useQuery({
