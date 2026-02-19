@@ -15,6 +15,9 @@ import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
+import EssayQuestion from '@/components/lesson/EssayQuestion';
+import FillInTheBlanks from '@/components/lesson/FillInTheBlanks';
+import InteractiveDiagram from '@/components/lesson/InteractiveDiagram';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import LessonBookmarks from '@/components/lesson/LessonBookmarks';
@@ -1176,19 +1179,56 @@ export default function LessonPlayerClassic() {
 
               {!loadingInteractives && interactiveContent && (
                 <Stack spacing={3} sx={{ mt: { xs: 4, sm: 6 } }}>
+                  {interactiveContent.essayQuestions?.length > 0 && (
+                    <EssayQuestion
+                      questions={interactiveContent.essayQuestions}
+                      onComplete={async (count) => {
+                        toast.success(`Completed ${count} essay questions!`);
+                        const response = await base44.functions.invoke('awardPoints', {
+                          action: 'complete_quiz',
+                          value: count * 20
+                        });
+                        if (response.data.success) {
+                          setEarnedPoints(response.data.pointsEarned);
+                          setShowPointsAnimation(true);
+                        }
+                      }}
+                    />
+                  )}
+
+                  {interactiveContent.fillInTheBlanks?.length > 0 && (
+                    <FillInTheBlanks
+                      exercises={interactiveContent.fillInTheBlanks}
+                      onComplete={async (score) => {
+                        toast.success(`Completed ${score} exercises!`);
+                        const response = await base44.functions.invoke('awardPoints', {
+                          action: 'interactive_complete',
+                          value: score * 10
+                        });
+                        if (response.data.success) {
+                          setEarnedPoints(response.data.pointsEarned);
+                          setShowPointsAnimation(true);
+                        }
+                      }}
+                    />
+                  )}
+
+                  {interactiveContent.interactiveDiagrams?.length > 0 && (
+                    <InteractiveDiagram
+                      diagrams={interactiveContent.interactiveDiagrams}
+                    />
+                  )}
+
                   {interactiveContent.matchingPairs?.length > 0 && (
                     <MatchingGame
                       pairs={interactiveContent.matchingPairs}
                       onRegenerate={handleRegenerateInteractives}
                       onComplete={async (score) => {
                         toast.success(`Great job! You scored ${score} points!`);
-                        
-                        // Award points for completing interactive
                         const response = await base44.functions.invoke('awardPoints', {
                           action: 'interactive_complete',
                           value: score
                         });
-                        
                         if (response.data.success) {
                           setEarnedPoints(response.data.pointsEarned);
                           setShowPointsAnimation(true);
@@ -1204,17 +1244,13 @@ export default function LessonPlayerClassic() {
                       onComplete={async (score) => {
                         const percentage = Math.round((score / interactiveContent.quizQuestions.length) * 100);
                         toast.success(`Quiz complete! You scored ${percentage}%`);
-                        
-                        // Award points based on quiz score
                         const response = await base44.functions.invoke('awardPoints', {
                           action: 'complete_quiz',
                           value: percentage
                         });
-                        
                         if (response.data.success) {
                           setEarnedPoints(response.data.pointsEarned);
                           setShowPointsAnimation(true);
-                          
                           if (response.data.newBadges?.length > 0) {
                             setNewBadges(response.data.newBadges);
                             setShowBadges(true);

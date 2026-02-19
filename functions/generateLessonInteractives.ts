@@ -59,6 +59,31 @@ Generate the following in valid JSON format:
   ],
   "flashCards": [
     { "front": "question or term (use LaTeX for math/science)", "back": "answer or definition (use LaTeX for math/science)" }
+  ],
+  "essayQuestions": [
+    {
+      "question": "essay prompt requiring detailed analysis or explanation",
+      "rubric": "key points that should be covered in a good answer",
+      "wordCount": 250,
+      "tips": "guidance for students"
+    }
+  ],
+  "fillInTheBlanks": [
+    {
+      "text": "sentence with __blank__ markers for missing words",
+      "blanks": ["correct answer 1", "correct answer 2"],
+      "hint": "optional hint"
+    }
+  ],
+  "interactiveDiagrams": [
+    {
+      "title": "diagram title",
+      "description": "what to label or identify",
+      "imagePrompt": "description for generating diagram image",
+      "labels": [
+        { "term": "label term", "definition": "what it means" }
+      ]
+    }
   ]
 }
 
@@ -73,6 +98,9 @@ STRICT A-LEVEL REQUIREMENTS:
 - For chemistry: use \\ce{...} for chemical formulas (e.g., \\ce{H2SO4})
 - For physics: include units, calculations, and equations
 - Create exactly 12 flashcards for key concepts
+- Create exactly 3 essay questions requiring extended responses
+- Create exactly 5 fill-in-the-blank exercises with 2-3 blanks each (use __blank__ format)
+- Create exactly 2 interactive diagram descriptions with 4-6 labels each
 - Make questions exam-style: clear, unambiguous, academically rigorous
 - Include real-world applications and problem-solving scenarios
 - Ensure plausible distractors (wrong answers that seem reasonable)
@@ -102,7 +130,10 @@ STRICT A-LEVEL REQUIREMENTS:
       success: true,
       matchingPairs: content.matchingPairs || [],
       quizQuestions: content.quizQuestions || [],
-      flashCards: content.flashCards || []
+      flashCards: content.flashCards || [],
+      essayQuestions: content.essayQuestions || [],
+      fillInTheBlanks: content.fillInTheBlanks || [],
+      interactiveDiagrams: content.interactiveDiagrams || []
     });
 
   } catch (error) {
