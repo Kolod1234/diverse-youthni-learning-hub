@@ -169,19 +169,13 @@ export default function LessonPlayerClassic() {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
         return null;
       }
-      try {
-        const response = await base44.entities.Lesson.get(lessonId);
-        return response;
-      } catch (error) {
-        if (error.message?.includes('not found') || error.status === 404) {
-          return null;
-        }
-        throw error;
-      }
+      const response = await base44.entities.Lesson.get(lessonId);
+      return response;
     },
     enabled: Boolean(lessonId) && lessonId !== 'null' && lessonId !== 'undefined',
-    staleTime: 10 * 60 * 1000,
-    retry: 1
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: false
   });
   
   // Use course_id from lesson if URL doesn't have it
@@ -228,24 +222,12 @@ export default function LessonPlayerClassic() {
     queryKey: ['course', courseId],
     queryFn: async () => {
       if (!courseId) return null;
-      try {
-        return await base44.entities.Course.get(courseId);
-      } catch (error) {
-        if (error.message?.includes('not found') || error.status === 404) {
-          return null;
-        }
-        throw error;
-      }
+      return await base44.entities.Course.get(courseId);
     },
     enabled: !!courseId,
-    retry: (failureCount, error) => {
-      if (error?.message?.includes('not found') || error?.status === 404) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-    staleTime: 10 * 60 * 1000,
-    refetchOnMount: true
+    staleTime: 15 * 60 * 1000,
+    gcTime: 30 * 60 * 1000,
+    retry: false
   });
 
   const { data: courseLessons = [] } = useQuery({
