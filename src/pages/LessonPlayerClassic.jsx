@@ -169,8 +169,16 @@ export default function LessonPlayerClassic() {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
         return null;
       }
-      const response = await base44.entities.Lesson.get(lessonId);
-      return response;
+      try {
+        const response = await base44.entities.Lesson.get(lessonId);
+        return response;
+      } catch (error) {
+        // For 404 or not found errors, return null gracefully instead of throwing
+        if (error.message?.includes('not found') || error.status === 404 || error.response?.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: Boolean(lessonId) && lessonId !== 'null' && lessonId !== 'undefined',
     staleTime: 15 * 60 * 1000,
@@ -222,7 +230,14 @@ export default function LessonPlayerClassic() {
     queryKey: ['course', courseId],
     queryFn: async () => {
       if (!courseId) return null;
-      return await base44.entities.Course.get(courseId);
+      try {
+        return await base44.entities.Course.get(courseId);
+      } catch (error) {
+        if (error.message?.includes('not found') || error.status === 404 || error.response?.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: !!courseId,
     staleTime: 15 * 60 * 1000,
