@@ -167,17 +167,30 @@ export default function LessonPlayerClassic() {
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
-        throw new Error('Invalid lesson ID');
+        return null;
       }
-      // Use get() for direct ID lookup - more reliable than filter
-      return await base44.entities.Lesson.get(lessonId);
+      try {
+        return await base44.entities.Lesson.get(lessonId);
+      } catch (error) {
+        // If lesson not found, return null instead of throwing
+        if (error.message?.includes('not found') || error.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined',
-    retry: 5,
-    retryDelay: (attemptIndex) => Math.min(500 * Math.pow(2, attemptIndex), 10000),
+    retry: (failureCount, error) => {
+      // Don't retry if lesson doesn't exist
+      if (error?.message?.includes('not found') || error?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
+    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 5000),
     staleTime: 10 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    refetchOnMount: 'always',
+    refetchOnMount: true,
     refetchOnReconnect: true,
     refetchOnWindowFocus: false
   });
@@ -226,12 +239,24 @@ export default function LessonPlayerClassic() {
     queryKey: ['course', courseId],
     queryFn: async () => {
       if (!courseId) return null;
-      return await base44.entities.Course.get(courseId);
+      try {
+        return await base44.entities.Course.get(courseId);
+      } catch (error) {
+        if (error.message?.includes('not found') || error.status === 404) {
+          return null;
+        }
+        throw error;
+      }
     },
     enabled: !!courseId,
-    retry: 5,
+    retry: (failureCount, error) => {
+      if (error?.message?.includes('not found') || error?.status === 404) {
+        return false;
+      }
+      return failureCount < 3;
+    },
     staleTime: 10 * 60 * 1000,
-    refetchOnMount: 'always'
+    refetchOnMount: true
   });
 
   const { data: courseLessons = [] } = useQuery({
