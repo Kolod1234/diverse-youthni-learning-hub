@@ -170,29 +170,18 @@ export default function LessonPlayerClassic() {
         return null;
       }
       try {
-        return await base44.entities.Lesson.get(lessonId);
+        const response = await base44.entities.Lesson.get(lessonId);
+        return response;
       } catch (error) {
-        // If lesson not found, return null instead of throwing
         if (error.message?.includes('not found') || error.status === 404) {
           return null;
         }
         throw error;
       }
     },
-    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined',
-    retry: (failureCount, error) => {
-      // Don't retry if lesson doesn't exist
-      if (error?.message?.includes('not found') || error?.status === 404) {
-        return false;
-      }
-      return failureCount < 3;
-    },
-    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 5000),
+    enabled: Boolean(lessonId) && lessonId !== 'null' && lessonId !== 'undefined',
     staleTime: 10 * 60 * 1000,
-    gcTime: 30 * 60 * 1000,
-    refetchOnMount: true,
-    refetchOnReconnect: true,
-    refetchOnWindowFocus: false
+    retry: 1
   });
   
   // Use course_id from lesson if URL doesn't have it
