@@ -412,7 +412,8 @@ export default function CourseDetails() {
                                  key={lesson.id}
                                  onClick={() => {
                                    if (canAccess) {
-                                     navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${lesson.id}`);
+                                     console.log('Navigating to lesson:', { lessonId: lesson.id, courseId, fullLesson: lesson });
+                                     navigate(`${createPageUrl('LessonPlayerClassic')}?course=${courseId}&lesson=${lesson.id}`);
                                    }
                                  }}
                                  sx={{ px: 3, py: 1.5, cursor: canAccess ? 'pointer' : 'default', opacity: canAccess ? 1 : 0.6, '&:hover': canAccess ? { bgcolor: 'action.hover' } : {} }}
