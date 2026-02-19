@@ -319,7 +319,8 @@ export default function CourseDetails() {
                           const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
                           const targetLessonId = enrollment.current_lesson_id || sortedLessons[0]?.id;
                           if (targetLessonId) {
-                            navigate(`${createPageUrl('LessonPlayer')}?course=${courseId}&lesson=${targetLessonId}`);
+                            console.log('Continue Learning clicked:', { targetLessonId, courseId });
+                            navigate(`${createPageUrl('LessonPlayerClassic')}?course=${courseId}&lesson=${targetLessonId}`);
                           }
                         }}
                         sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
