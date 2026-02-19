@@ -203,26 +203,42 @@ export default function LessonPlayerClassic() {
   // Use course_id from lesson if URL doesn't have it
   const courseId = urlCourseId || lesson?.course_id;
 
-  // Load interactive content based on lesson
+  // Load interactive content based on lesson (with caching)
   useEffect(() => {
     const loadInteractives = async () => {
-      if (!lessonId || lessonId === 'null' || lessonId === 'undefined' || !lesson) return;
+      if (!lessonId || lessonId === 'null' || lessonId === 'undefined') return;
+      
+      // Check cache first
+      const cacheKey = `interactives_${lessonId}`;
+      const cached = sessionStorage.getItem(cacheKey);
+      if (cached) {
+        try {
+          setInteractiveContent(JSON.parse(cached));
+          return;
+        } catch (e) {
+          sessionStorage.removeItem(cacheKey);
+        }
+      }
       
       setLoadingInteractives(true);
       try {
         const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
         if (response.data.success) {
           setInteractiveContent(response.data);
+          sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
         }
       } catch (error) {
         console.error('Failed to load interactive content:', error);
+        if (error.response?.status === 429) {
+          toast.error('Too many requests. Please wait a moment and try again.');
+        }
       } finally {
         setLoadingInteractives(false);
       }
     };
     
     loadInteractives();
-  }, [lessonId, lesson]);
+  }, [lessonId]);
 
   const handleRegenerateInteractives = async () => {
     setLoadingInteractives(true);
@@ -230,11 +246,18 @@ export default function LessonPlayerClassic() {
       const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
       if (response.data.success) {
         setInteractiveContent(response.data);
+        // Update cache
+        const cacheKey = `interactives_${lessonId}`;
+        sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
         toast.success('New activities generated!');
       }
     } catch (error) {
       console.error('Failed to regenerate interactive content:', error);
-      toast.error('Failed to generate new activities');
+      if (error.response?.status === 429) {
+        toast.error('Rate limit reached. Please wait a moment before regenerating.');
+      } else {
+        toast.error('Failed to generate new activities');
+      }
     } finally {
       setLoadingInteractives(false);
     }
