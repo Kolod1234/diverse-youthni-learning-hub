@@ -163,7 +163,7 @@ export default function LessonPlayerClassic() {
   }, [user]);
 
   // First fetch the lesson to get its course_id
-  const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
+  const { data: currentLessonArray = [], isLoading: lessonLoading, error: lessonError } = useQuery({
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
@@ -172,7 +172,11 @@ export default function LessonPlayerClassic() {
       const lessons = await base44.entities.Lesson.filter({ id: lessonId });
       return lessons;
     },
-    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined'
+    enabled: !!lessonId && lessonId !== 'null' && lessonId !== 'undefined',
+    retry: 3,
+    retryDelay: (attemptIndex) => Math.min(1000 * Math.pow(2, attemptIndex), 5000),
+    staleTime: 5 * 60 * 1000, // 5 minutes
+    gcTime: 10 * 60 * 1000 // 10 minutes
   });
 
   const lesson = currentLessonArray[0];
@@ -224,7 +228,9 @@ export default function LessonPlayerClassic() {
       const courses = await base44.entities.Course.filter({ id: courseId });
       return courses[0];
     },
-    enabled: !!courseId
+    enabled: !!courseId,
+    retry: 3,
+    staleTime: 5 * 60 * 1000
   });
 
   const { data: courseLessons = [] } = useQuery({
@@ -235,7 +241,9 @@ export default function LessonPlayerClassic() {
       }
       return base44.entities.Lesson.filter({ course_id: courseId }, 'order', 100);
     },
-    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined',
+    retry: 3,
+    staleTime: 5 * 60 * 1000
   });
 
   const { data: enrollment, refetch: refetchEnrollment } = useQuery({
@@ -247,7 +255,9 @@ export default function LessonPlayerClassic() {
       const enrollments = await base44.entities.Enrollment.filter({ course_id: courseId });
       return enrollments[0];
     },
-    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined'
+    enabled: !!courseId && courseId !== 'null' && courseId !== 'undefined',
+    retry: 3,
+    staleTime: 2 * 60 * 1000
   });
 
   // Progress auto-save hook (after enrollment is defined)
@@ -542,13 +552,25 @@ export default function LessonPlayerClassic() {
     );
   }
 
-  if (!lesson) {
+  if (!lessonLoading && !lesson && !lessonError) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Box sx={{ textAlign: 'center' }}>
           <BookOpen style={{ width: 64, height: 64, color: 'rgba(0,0,0,0.2)', margin: '0 auto 16px' }} />
           <Typography variant="h6" sx={{ mb: 2 }}>Lesson not found</Typography>
           <Button onClick={() => navigate(-1)} variant="contained">Go Back</Button>
+        </Box>
+      </Box>
+    );
+  }
+
+  if (lessonError) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
+        <Box sx={{ textAlign: 'center' }}>
+          <Typography variant="h6" sx={{ mb: 2 }}>Failed to load lesson</Typography>
+          <Button onClick={() => window.location.reload()} variant="contained" sx={{ mr: 2 }}>Retry</Button>
+          <Button onClick={() => navigate(-1)} variant="outlined">Go Back</Button>
         </Box>
       </Box>
     );
