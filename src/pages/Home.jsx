@@ -66,14 +66,14 @@ export default function Home() {
   // Redirect based on interest_type (skip for admins and users accessing directly)
   useEffect(() => {
     const checkInterest = async () => {
-      // Check if user came directly to Home (skip redirect)
-      const skipRedirect = sessionStorage.getItem('skip_home_redirect');
-      if (skipRedirect === 'true') {
-        sessionStorage.removeItem('skip_home_redirect');
-        return;
-      }
-
       try {
+        // Check if user came directly to Home (skip redirect)
+        const skipRedirect = sessionStorage.getItem('skip_home_redirect');
+        if (skipRedirect === 'true') {
+          sessionStorage.removeItem('skip_home_redirect');
+          return;
+        }
+
         const userData = await base44.auth.me();
         
         // Admins can see all homepages - no redirect
@@ -84,36 +84,36 @@ export default function Home() {
         const interestType = userData?.interest_type;
         
         if (!interestType || interestType === '') {
-          navigate(createPageUrl('WelcomeCover'));
+          navigate(createPageUrl('WelcomeCover'), { replace: true });
           return;
         }
 
         // Redirect to appropriate homepage
         switch (interestType) {
           case 'leadership':
-            navigate(createPageUrl('HomeLeadership'));
+            navigate(createPageUrl('HomeLeadership'), { replace: true });
             break;
           case 'learning':
-            navigate(createPageUrl('HomeLearning'));
+            navigate(createPageUrl('HomeLearning'), { replace: true });
             break;
           case 'youth_work':
-            navigate(createPageUrl('HomeYouthWork'));
+            navigate(createPageUrl('HomeYouthWork'), { replace: true });
             break;
           case 'guest':
-            navigate(createPageUrl('HomeGuest'));
+            navigate(createPageUrl('HomeGuest'), { replace: true });
             break;
           default:
-            navigate(createPageUrl('WelcomeCover'));
+            navigate(createPageUrl('WelcomeCover'), { replace: true });
         }
       } catch (error) {
         // Not logged in - check localStorage
         const guestInterest = localStorage.getItem('interest_type');
         if (!guestInterest) {
-          navigate(createPageUrl('WelcomeCover'));
+          navigate(createPageUrl('WelcomeCover'), { replace: true });
         } else if (guestInterest === 'guest') {
-          navigate(createPageUrl('HomeGuest'));
+          navigate(createPageUrl('HomeGuest'), { replace: true });
         } else {
-          navigate(createPageUrl('WelcomeCover'));
+          navigate(createPageUrl('WelcomeCover'), { replace: true });
         }
       }
     };
