@@ -82,7 +82,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
                   Loading...
                 </Button>
               ) : lessonId ? (
-                <Link to={createPageUrl('LessonPlayer') + `?course=${course.id}&lesson=${lessonId}`}>
+                <Link to={createPageUrl('LessonPlayerClassic') + `?course=${course.id}&lesson=${lessonId}`}>
                   <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 rounded-full">
                     <Play className="w-4 h-4 mr-1" />
                     {enrollment.is_completed ? 'Review' : 'Continue'}
