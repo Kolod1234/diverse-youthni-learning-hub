@@ -167,12 +167,26 @@ export default function LessonPlayerClassic() {
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
       if (!lessonId || lessonId === 'null' || lessonId === 'undefined') {
+        console.error('Invalid lessonId:', lessonId);
         return null;
       }
       try {
+        console.log('Fetching lesson with ID:', lessonId);
         const response = await base44.entities.Lesson.get(lessonId);
+        console.log('Lesson fetched successfully:', response);
         return response;
       } catch (error) {
+        console.error('Failed to fetch lesson via get, trying filter fallback:', error);
+        // Fallback: try to fetch via filter
+        try {
+          const lessons = await base44.entities.Lesson.filter({ id: lessonId });
+          if (lessons && lessons.length > 0) {
+            console.log('Lesson found via filter fallback:', lessons[0]);
+            return lessons[0];
+          }
+        } catch (filterError) {
+          console.error('Filter fallback also failed:', filterError);
+        }
         // For 404 or not found errors, return null gracefully instead of throwing
         if (error.message?.includes('not found') || error.status === 404 || error.response?.status === 404) {
           return null;
@@ -183,7 +197,7 @@ export default function LessonPlayerClassic() {
     enabled: Boolean(lessonId) && lessonId !== 'null' && lessonId !== 'undefined',
     staleTime: 15 * 60 * 1000,
     gcTime: 30 * 60 * 1000,
-    retry: false
+    retry: 1
   });
   
   // Use course_id from lesson if URL doesn't have it
