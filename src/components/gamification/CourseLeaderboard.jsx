@@ -20,6 +20,7 @@ export default function CourseLeaderboard({ courseId }) {
   const { data: users = [] } = useQuery({
     queryKey: ['users'],
     queryFn: () => base44.entities.User.list('-created_date', 500),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: userProgress = [] } = useQuery({
@@ -31,9 +32,17 @@ export default function CourseLeaderboard({ courseId }) {
     .map(enrollment => {
       const user = users.find(u => u.email === enrollment.created_by);
       const progress = userProgress.find(p => p.created_by === enrollment.created_by);
+      
+      // Get name from enrollment.created_by if user not found
+      let displayName = user?.full_name || 'Unknown';
+      if (displayName === 'Unknown' && enrollment.created_by) {
+        // Extract name from email (before @)
+        displayName = enrollment.created_by.split('@')[0].replace(/[._-]/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+      }
+      
       return {
         ...enrollment,
-        name: user?.full_name || 'Unknown',
+        name: displayName,
         avatar: user?.avatar,
         points: progress?.points || 0,
         streak: progress?.streak_days || 0,
