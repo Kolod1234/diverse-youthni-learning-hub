@@ -34,29 +34,125 @@ Deno.serve(async (req) => {
       const courseId = courseIssue.course_id;
       
       try {
-        // Fetch lessons for this course
-        const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId });
+        // Fetch course and lessons
+        const course = await base44.asServiceRole.entities.Course.get(courseId);
+        const lessons = await base44.asServiceRole.entities.Lesson.filter({ course_id: courseId }, 'order', 1000);
 
-        // Fix 1: Add missing learning objectives to lessons
+        let courseUpdateData = {};
+
+        // Fix course-level issues
+        if (!course.description || course.description.trim() === '') {
+          courseUpdateData.description = `A comprehensive ${course.category || 'course'} course designed to help students excel in their studies.`;
+        } else if (course.description.length < 20) {
+          courseUpdateData.description = course.description + ' This course provides detailed instruction and practice materials.';
+        }
+
+        if (!course.thumbnail) {
+          courseUpdateData.thumbnail = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80';
+        }
+
+        if (!course.qualification_type) {
+          courseUpdateData.qualification_type = 'gcse';
+        }
+
+        if (course.price === undefined || course.price === null) {
+          courseUpdateData.price = 0;
+        }
+
+        if (!course.level) {
+          courseUpdateData.level = 'intermediate';
+        }
+
+        if (!course.duration_hours || course.duration_hours <= 0) {
+          const estimatedHours = lessons.length > 0 
+            ? Math.ceil(lessons.reduce((sum, l) => sum + (l.duration_minutes || 30), 0) / 60)
+            : 10;
+          courseUpdateData.duration_hours = estimatedHours;
+        }
+
+        if (!course.instructor || course.instructor.trim() === '') {
+          courseUpdateData.instructor = 'Course Instructor';
+        }
+
+        // Fix lesson ordering issues
+        const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
+        let orderNeedsUpdate = false;
+        
+        sortedLessons.forEach((lesson, idx) => {
+          const expectedOrder = idx + 1;
+          if (lesson.order !== expectedOrder) {
+            orderNeedsUpdate = true;
+          }
+        });
+
+        if (orderNeedsUpdate) {
+          for (let i = 0; i < sortedLessons.length; i++) {
+            const lesson = sortedLessons[i];
+            await base44.asServiceRole.entities.Lesson.update(lesson.id, { order: i + 1 });
+          }
+          fixes.lessons_fixed += sortedLessons.length;
+        }
+
+        // Fix individual lesson issues
         for (const lesson of lessons) {
           let updateData = {};
+          
+          if (!lesson.title || lesson.title.trim() === '') {
+            updateData.title = `Lesson ${lesson.order || 1}`;
+            fixes.lessons_fixed++;
+          }
+
+          if (!lesson.description || lesson.description.trim() === '' || lesson.description === '<p><br></p>') {
+            updateData.description = `This lesson covers important concepts in ${course.category || 'this subject'}.`;
+            fixes.lessons_fixed++;
+          }
           
           if (!lesson.learning_objectives || lesson.learning_objectives.length === 0) {
             updateData.learning_objectives = [
               `Understand the key concepts of ${lesson.title || 'this lesson'}`,
               `Apply knowledge of ${lesson.title || 'this lesson'} to practical scenarios`,
-              `Evaluate and analyze ${lesson.title || 'this lesson'} in different contexts`
+              `Analyze and evaluate ${lesson.title || 'this lesson'} in different contexts`
             ];
+            fixes.objectives_added++;
+          } else if (lesson.learning_objectives.length < 3) {
+            const existing = lesson.learning_objectives;
+            updateData.learning_objectives = [
+              ...existing,
+              `Apply concepts from ${lesson.title || 'this lesson'}`,
+              `Evaluate understanding through practice`
+            ].slice(0, 4);
             fixes.objectives_added++;
           }
 
           if (!lesson.content_type) {
-            updateData.content_type = 'richtext';
+            // Infer content type from available fields
+            if (lesson.google_slides_url) {
+              updateData.content_type = 'googleslides';
+            } else if (lesson.file_url) {
+              updateData.content_type = 'document';
+            } else {
+              updateData.content_type = 'richtext';
+            }
             fixes.lessons_fixed++;
           }
 
-          if (!lesson.title || lesson.title.trim() === '') {
-            updateData.title = `Lesson ${lesson.order || 1}`;
+          if (!lesson.section || lesson.section.trim() === '') {
+            updateData.section = 'Main Content';
+            fixes.lessons_fixed++;
+          }
+
+          if (!lesson.duration_minutes || lesson.duration_minutes <= 0) {
+            updateData.duration_minutes = 30;
+            fixes.lessons_fixed++;
+          }
+
+          // Ensure content exists based on content_type
+          if (lesson.content_type === 'richtext' && (!lesson.slides || lesson.slides.length === 0)) {
+            updateData.slides = [{
+              title: lesson.title || 'Introduction',
+              content: lesson.description || '<p>Lesson content goes here.</p>',
+              order: 1
+            }];
             fixes.lessons_fixed++;
           }
 
@@ -65,32 +161,37 @@ Deno.serve(async (req) => {
           }
         }
 
-        // Fix 2: Update course lesson count
+        // Fix course metadata
         const actualLessonCount = lessons.length;
-        await base44.asServiceRole.entities.Course.update(courseId, {
-          total_lessons: actualLessonCount
-        });
+        courseUpdateData.total_lessons = actualLessonCount;
 
-        // Fix 3: Add basic lesson if course has none
+        // Add basic lesson if course has none
         if (lessons.length === 0) {
           await base44.asServiceRole.entities.Lesson.create({
             course_id: courseId,
-            title: 'Introduction',
-            description: 'Welcome to this course',
+            title: 'Introduction to ' + (course.title || 'Course'),
+            description: `Welcome to ${course.title || 'this course'}. This lesson introduces the key concepts and learning objectives.`,
             learning_objectives: [
-              'Understand the course overview',
-              'Set learning goals',
-              'Get familiar with the course structure'
+              'Understand the course overview and structure',
+              'Identify key learning goals and outcomes',
+              'Prepare for upcoming lessons and assessments'
             ],
             content_type: 'richtext',
             order: 1,
-            section: 'Introduction'
+            section: 'Introduction',
+            duration_minutes: 30,
+            slides: [{
+              title: 'Welcome',
+              content: `<h2>Welcome to ${course.title || 'this course'}</h2><p>Get ready to learn!</p>`,
+              order: 1
+            }]
           });
-          
-          await base44.asServiceRole.entities.Course.update(courseId, {
-            total_lessons: 1
-          });
+          courseUpdateData.total_lessons = 1;
           fixes.lessons_fixed++;
+        }
+
+        if (Object.keys(courseUpdateData).length > 0) {
+          await base44.asServiceRole.entities.Course.update(courseId, courseUpdateData);
         }
 
         fixes.courses_fixed++;
