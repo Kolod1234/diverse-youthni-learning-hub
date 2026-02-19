@@ -541,7 +541,7 @@ export default function LessonPlayerClassic() {
     }
   }, [lesson?.section]);
 
-  if (lessonLoading) {
+  if (lessonLoading || isFetching) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Box sx={{ textAlign: 'center' }}>
@@ -552,25 +552,21 @@ export default function LessonPlayerClassic() {
     );
   }
 
-  if (!lessonLoading && !lesson && !lessonError) {
+  if (lessonError || !lesson) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
         <Box sx={{ textAlign: 'center' }}>
           <BookOpen style={{ width: 64, height: 64, color: 'rgba(0,0,0,0.2)', margin: '0 auto 16px' }} />
-          <Typography variant="h6" sx={{ mb: 2 }}>Lesson not found</Typography>
-          <Button onClick={() => navigate(-1)} variant="contained">Go Back</Button>
-        </Box>
-      </Box>
-    );
-  }
-
-  if (lessonError) {
-    return (
-      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: 'background.default' }}>
-        <Box sx={{ textAlign: 'center' }}>
-          <Typography variant="h6" sx={{ mb: 2 }}>Failed to load lesson</Typography>
-          <Button onClick={() => window.location.reload()} variant="contained" sx={{ mr: 2 }}>Retry</Button>
-          <Button onClick={() => navigate(-1)} variant="outlined">Go Back</Button>
+          <Typography variant="h6" sx={{ mb: 2 }}>
+            {lessonError ? 'Failed to load lesson' : 'Lesson not found'}
+          </Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+            {lessonError ? 'Please try again or contact support if the issue persists.' : 'This lesson may have been removed or is unavailable.'}
+          </Typography>
+          <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center' }}>
+            <Button onClick={() => window.location.reload()} variant="contained">Retry</Button>
+            <Button onClick={() => navigate(-1)} variant="outlined">Go Back</Button>
+          </Box>
         </Box>
       </Box>
     );
