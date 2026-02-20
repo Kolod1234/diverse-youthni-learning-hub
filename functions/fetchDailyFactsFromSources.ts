@@ -119,11 +119,33 @@ Rules:
     // Remove exact duplicates
     const uniqueFacts = [];
     const seen = new Set();
+    const today = new Date().toISOString().split('T')[0];
+    
     for (const fact of factsToAdd) {
       const factLower = fact.fact.toLowerCase().trim();
       if (!seen.has(factLower)) {
         seen.add(factLower);
-        uniqueFacts.push(fact);
+        uniqueFacts.push({
+          ...fact,
+          fact_date: today
+        });
+      }
+    }
+
+    // Deactivate facts older than 3 days
+    const threeDaysAgo = new Date();
+    threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+    const cutoffDate = threeDaysAgo.toISOString().split('T')[0];
+    
+    const oldFacts = await base44.asServiceRole.entities.DailyFact.filter({
+      is_active: true
+    });
+    
+    for (const oldFact of oldFacts) {
+      if (!oldFact.fact_date || oldFact.fact_date < cutoffDate) {
+        await base44.asServiceRole.entities.DailyFact.update(oldFact.id, {
+          is_active: false
+        });
       }
     }
 

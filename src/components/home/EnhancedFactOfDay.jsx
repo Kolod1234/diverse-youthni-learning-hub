@@ -18,7 +18,16 @@ export default function EnhancedFactOfDay() {
 
   const { data: facts = [], isLoading } = useQuery({
     queryKey: ['daily-facts-widget'],
-    queryFn: () => base44.entities.DailyFact.filter({ is_active: true }, '-created_date', 100),
+    queryFn: async () => {
+      const allFacts = await base44.entities.DailyFact.filter({ is_active: true }, '-created_date', 100);
+      // Filter to show only facts from the last 3 days
+      const threeDaysAgo = new Date();
+      threeDaysAgo.setDate(threeDaysAgo.getDate() - 3);
+      const cutoffDate = threeDaysAgo.toISOString().split('T')[0];
+      
+      return allFacts.filter(f => !f.fact_date || f.fact_date >= cutoffDate);
+    },
+    staleTime: 1000 * 60 * 60, // Cache for 1 hour
   });
 
   useEffect(() => {
