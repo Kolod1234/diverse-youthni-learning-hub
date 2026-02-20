@@ -344,13 +344,24 @@ export default function Settings() {
 
                 <Box sx={{ bgcolor: '#fee2e2', border: 1, borderColor: '#fca5a5', borderRadius: 2, p: 3 }}>
                   <Typography variant="h6" fontWeight={600} sx={{ mb: 1, color: '#991b1b' }}>Delete Account</Typography>
+                  <Box sx={{ mb: 3, bgcolor: 'white', p: 2, borderRadius: 1.5, border: 1, borderColor: '#fca5a5' }}>
+                    <Typography variant="body2" fontWeight={600} sx={{ mb: 1, color: '#991b1b' }}>
+                      What happens when you delete your account:
+                    </Typography>
+                    <Box component="ul" sx={{ pl: 2.5, m: 0, '& li': { mb: 0.5, fontSize: '0.875rem', color: 'text.secondary' } }}>
+                      <li>All your course progress and enrollments will be permanently deleted</li>
+                      <li>Your achievements, certificates, and badges will be lost</li>
+                      <li>Any messages, discussions, and comments will be removed</li>
+                      <li>Your account cannot be recovered after deletion</li>
+                    </Box>
+                  </Box>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
-                    Permanently delete your account and all associated data. This action cannot be undone.
+                    This action is permanent and cannot be undone. Please consider exporting your data before proceeding.
                   </Typography>
                   <Button
                     onClick={() => setShowDeleteDialog(true)}
                     variant="contained"
-                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } }}
+                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
                     startIcon={<Trash2 size={16} />}
                   >
                     Delete Account
@@ -361,14 +372,17 @@ export default function Settings() {
               {/* Delete Confirmation Dialog */}
               <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ bgcolor: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>
-                  Delete Account
+                  Delete Account - Final Confirmation
                 </DialogTitle>
                 <DialogContent sx={{ mt: 2 }}>
-                  <Typography color="error" variant="body2" sx={{ mb: 2 }}>
-                    This action is permanent and cannot be reversed. All your data will be deleted.
+                  <Typography color="error" variant="body2" fontWeight={600} sx={{ mb: 2 }}>
+                    ⚠️ This action is permanent and cannot be reversed!
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
-                    To confirm, please enter your email address:
+                    All your data including courses, progress, achievements, and certificates will be permanently deleted.
+                  </Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                    To confirm deletion, please type your email address below:
                   </Typography>
                   <TextField
                     fullWidth
@@ -377,19 +391,20 @@ export default function Settings() {
                     value={deleteConfirmEmail}
                     onChange={(e) => setDeleteConfirmEmail(e.target.value)}
                     error={deleteConfirmEmail !== '' && deleteConfirmEmail !== user?.email}
+                    helperText={deleteConfirmEmail !== '' && deleteConfirmEmail !== user?.email ? 'Email does not match your account' : ''}
                   />
                 </DialogContent>
                 <DialogActions sx={{ p: 2, gap: 1 }}>
-                  <Button onClick={() => { setShowDeleteDialog(false); setDeleteConfirmEmail(''); }} color="inherit">
+                  <Button onClick={() => { setShowDeleteDialog(false); setDeleteConfirmEmail(''); }} color="inherit" sx={{ minHeight: 44 }}>
                     Cancel
                   </Button>
                   <Button
                     onClick={handleDeleteAccount}
                     disabled={deleteConfirmEmail !== user?.email}
                     variant="contained"
-                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' } }}
+                    sx={{ bgcolor: '#dc2626', '&:hover': { bgcolor: '#b91c1c' }, minHeight: 44 }}
                   >
-                    Delete Account
+                    Delete My Account
                   </Button>
                 </DialogActions>
               </Dialog>
