@@ -44,11 +44,13 @@ export default function WelcomeCover() {
       // Logged-in user: save to database and navigate
       await base44.auth.updateMe({ interest_type: interestType });
       
-      // Navigate to specific landing pages
+      // Navigate to specific pages based on interest type
       if (interestType === 'leadership') {
-        navigate(createPageUrl('LeadershipLanding'));
+        navigate(createPageUrl('HomeLeadership'));
       } else if (interestType === 'youth_work') {
-        navigate(createPageUrl('YouthWorkLanding'));
+        navigate(createPageUrl('HomeYouthWork'));
+      } else if (interestType === 'learning') {
+        navigate(createPageUrl('HomeLearning'));
       } else {
         navigate(createPageUrl('Home'));
       }
