@@ -82,11 +82,12 @@ export default function AIQuizGenerator({ courses }) {
       }
 
       const result = await base44.integrations.Core.InvokeLLM({
-        prompt: `Create ${numQuestions} quiz questions about: "${topic}"${subtopic ? ` (Subtopic: ${subtopic})` : ''}
+        prompt: `You are an expert A-level examination board question writer. Create ${numQuestions} rigorous, academically challenging quiz questions about: "${topic}"${subtopic ? ` (Subtopic: ${subtopic})` : ''}
         
 ${additionalContext ? `Additional context: ${additionalContext}` : ''}
 
 Difficulty level: ${difficulty}
+${difficulty === 'easy' ? '- Focus on recall and basic understanding' : difficulty === 'medium' ? '- Require application and analysis' : '- Demand synthesis, evaluation, and critical thinking'}
 
 Question Types Distribution:
 - ${mcCount} Multiple Choice questions
@@ -94,31 +95,69 @@ ${includeShortAnswer ? `- ${Math.ceil(numQuestions * 0.2)} Short Answer question
 ${includeLongAnswer ? `- ${Math.ceil(numQuestions * 0.15)} Long Answer questions (paragraph answers, ${marksPerQuestion * 3}-${marksPerQuestion * 5} marks)` : ''}
 ${includeImageQuestions ? `- ${Math.ceil(numQuestions * 0.15)} Image/Diagram based questions (include placeholder image URLs)` : ''}
 
+CRITICAL REQUIREMENTS:
+1. Mathematical Notation: Use LaTeX formatting
+   - Inline math: $x^2 + y^2 = r^2$
+   - Display math: $$E = mc^2$$
+   - Chemistry: \\ce{H2SO4}, \\ce{2H2O -> 2H2 + O2}
+   - Physics: Include units and proper notation
+
+2. Question Quality Standards:
+   - Questions must be clear, unambiguous, and academically rigorous
+   - Avoid trick questions or ambiguous phrasing
+   - Include real-world applications and problem-solving scenarios
+   - Test understanding, not just memorization
+   - Use proper academic terminology
+
+3. Multiple Choice Excellence:
+   - Create plausible distractors (wrong answers that seem reasonable)
+   - Randomly vary which option (0-3) is correct across questions
+   - DO NOT always make option 0 or 1 correct
+   - Each distractor should represent a common misconception
+   - Options should be similar in length and complexity
+
+4. Answer Explanations:
+   - Explain WHY the correct answer is right
+   - Address why common wrong answers are incorrect
+   - Reference key concepts and principles
+   - Include step-by-step reasoning for calculations
+
+5. Cognitive Levels (distribute across questions):
+   - Recall/Knowledge: 20%
+   - Understanding/Comprehension: 30%
+   - Application: 25%
+   - Analysis: 15%
+   - Synthesis/Evaluation: 10%
+
 For each question create:
-- Clear, educational question text
-- Set question_type: "multiple_choice", "short_answer", "long_answer", or "image_based"
-- For multiple choice: 4 options, correct_answer (0-3)
-- For short/long answer: correct_text_answer with model answer
-- For image questions: image_url (use "https://via.placeholder.com/600x400/6366F1/FFFFFF?text=Diagram+Here"), and either options or correct_text_answer
-- Brief explanation
-- Marks: ${marksPerQuestion} for MC/short, ${marksPerQuestion * 3} for long answer
-${timePerQuestion ? `- Time limit: ${timePerQuestion}s for MC, ${timePerQuestion * 2}s for short answer, ${timePerQuestion * 3}s for long answer` : ''}
+- question: Clear, well-structured question with LaTeX math where needed
+- question_type: "multiple_choice", "short_answer", "long_answer", or "image_based"
+- For multiple choice:
+  * options: Array of 4 options (use LaTeX for math/science)
+  * correct_answer: Index 0-3 (VARY THIS across questions)
+- For short/long answer:
+  * correct_text_answer: Detailed model answer with key points
+- For image questions:
+  * image_url: "https://via.placeholder.com/600x400/6366F1/FFFFFF?text=Diagram+Here"
+- explanation: Comprehensive explanation with reasoning
+- marks: ${marksPerQuestion} for MC/short, ${marksPerQuestion * 3} for long answer
+${timePerQuestion ? `- time_limit_seconds: ${timePerQuestion} for MC, ${timePerQuestion * 2} for short answer, ${timePerQuestion * 3} for long answer` : ''}
 
 Return JSON:
 {
-  "title": "Quiz title",
-  "description": "What the quiz covers",
+  "title": "Engaging, descriptive quiz title",
+  "description": "Comprehensive description of learning outcomes covered",
   "questions": [
     {
-      "question": "Question text",
+      "question": "Question text with LaTeX where appropriate",
       "question_type": "multiple_choice|short_answer|long_answer|image_based",
-      "image_url": "url for image questions",
-      "options": ["A", "B", "C", "D"] // only for multiple_choice,
-      "correct_answer": 0, // only for multiple_choice
-      "correct_text_answer": "model answer", // for short/long answer
-      "explanation": "Why correct",
-      "marks": 1,
-      "time_limit_seconds": 60
+      "image_url": "url for image questions only",
+      "options": ["Option A with LaTeX if needed", "Option B", "Option C", "Option D"],
+      "correct_answer": 2,
+      "correct_text_answer": "Model answer for text-based questions",
+      "explanation": "Detailed explanation with reasoning and key concepts",
+      "marks": ${marksPerQuestion},
+      "time_limit_seconds": ${timePerQuestion}
     }
   ]
 }`,
@@ -133,8 +172,11 @@ Return JSON:
                 type: "object",
                 properties: {
                   question: { type: "string" },
+                  question_type: { type: "string" },
+                  image_url: { type: "string" },
                   options: { type: "array", items: { type: "string" } },
                   correct_answer: { type: "number" },
+                  correct_text_answer: { type: "string" },
                   explanation: { type: "string" },
                   marks: { type: "number" },
                   time_limit_seconds: { type: "number" }
@@ -388,31 +430,60 @@ Return JSON:
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-bold text-indigo-600">{idx + 1}.</span>
                     <div className="flex-1">
-                      <MathJax className="font-medium text-gray-900 mb-2">{q.question}</MathJax>
-                      <div className="space-y-1">
-                        {q.options?.map((opt, optIdx) => (
-                          <div
-                            key={optIdx}
-                            className={`text-sm px-3 py-2 rounded ${
-                              q.correct_answer === optIdx
-                                ? 'bg-green-100 text-green-800 font-medium'
-                                : 'bg-white text-gray-700'
-                            }`}
-                          >
-                            <MathJax>{String.fromCharCode(65 + optIdx)}. {opt}</MathJax>
-                            {q.correct_answer === optIdx && ' ✓'}
-                          </div>
-                        ))}
+                      <div className="flex items-center gap-2 mb-2">
+                        <MathJax className="font-medium text-gray-900 flex-1">{q.question}</MathJax>
+                        {q.question_type && (
+                          <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                            q.question_type === 'multiple_choice' ? 'bg-blue-100 text-blue-700' :
+                            q.question_type === 'short_answer' ? 'bg-purple-100 text-purple-700' :
+                            q.question_type === 'long_answer' ? 'bg-pink-100 text-pink-700' :
+                            'bg-cyan-100 text-cyan-700'
+                          }`}>
+                            {q.question_type.replace('_', ' ')}
+                          </span>
+                        )}
                       </div>
-                      {q.explanation && (
-                        <MathJax className="text-xs text-gray-600 mt-2 italic">💡 {q.explanation}</MathJax>
+                      
+                      {q.image_url && (
+                        <img src={q.image_url} alt="Question diagram" className="w-full rounded-lg mb-2 border" />
                       )}
-                      <div className="flex gap-2 mt-2">
-                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
+                      
+                      {q.options && q.options.length > 0 ? (
+                        <div className="space-y-1">
+                          {q.options.map((opt, optIdx) => (
+                            <div
+                              key={optIdx}
+                              className={`text-sm px-3 py-2 rounded ${
+                                q.correct_answer === optIdx
+                                  ? 'bg-green-100 text-green-800 font-medium border-2 border-green-300'
+                                  : 'bg-white text-gray-700 border border-gray-200'
+                              }`}
+                            >
+                              <MathJax>{String.fromCharCode(65 + optIdx)}. {opt}</MathJax>
+                              {q.correct_answer === optIdx && ' ✓'}
+                            </div>
+                          ))}
+                        </div>
+                      ) : q.correct_text_answer && (
+                        <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded">
+                          <p className="text-xs font-semibold text-green-800 mb-1">Model Answer:</p>
+                          <MathJax className="text-sm text-green-900">{q.correct_text_answer}</MathJax>
+                        </div>
+                      )}
+                      
+                      {q.explanation && (
+                        <div className="bg-indigo-50 border-l-4 border-indigo-500 p-3 rounded mt-2">
+                          <p className="text-xs font-semibold text-indigo-800 mb-1">Explanation:</p>
+                          <MathJax className="text-xs text-indigo-900">{q.explanation}</MathJax>
+                        </div>
+                      )}
+                      
+                      <div className="flex gap-2 mt-2 flex-wrap">
+                        <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">
                           {q.marks} mark{q.marks !== 1 ? 's' : ''}
                         </span>
                         {q.time_limit_seconds && (
-                          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded">
+                          <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-medium">
                             ⏱️ {q.time_limit_seconds}s
                           </span>
                         )}
