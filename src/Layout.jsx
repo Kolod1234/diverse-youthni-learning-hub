@@ -750,19 +750,13 @@ function LayoutContent({ children, currentPageName }) {
       {/* Footer */}
       <Box component="footer" sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', mt: 10 }}>
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          {user && user.role !== 'admin' && (!user.is_coordinator || !user.is_tutor) && (
-            <Box sx={{ mb: 4, pb: 4, borderBottom: 1, borderColor: 'divider' }}>
-              <Typography variant="h6" fontWeight={600} gutterBottom>Join Our Team</Typography>
-              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
-                {!user.is_coordinator && (
-                  <BecomeCoordinatorButton user={user} />
-                )}
-                {!user.is_tutor && (
-                  <BecomeTutorButton user={user} />
-                )}
-              </Box>
+          <Box sx={{ mb: 4, pb: 4, borderBottom: 1, borderColor: 'divider' }}>
+            <Typography variant="h6" fontWeight={600} gutterBottom>Join Our Team</Typography>
+            <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
+              <BecomeCoordinatorButton user={user} />
+              <BecomeTutorButton user={user} />
             </Box>
-          )}
+          </Box>
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 4 }}>
             <Box sx={{ gridColumn: { xs: 'span 2', md: 'span 1' } }}>
               <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>
