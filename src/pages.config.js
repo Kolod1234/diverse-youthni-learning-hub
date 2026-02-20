@@ -147,6 +147,7 @@ import LiveSessionHost from './pages/LiveSessionHost';
 import SessionRecordings from './pages/SessionRecordings';
 import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
 import ContentVersionManager from './pages/ContentVersionManager';
+import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
 import __Layout from './Layout.jsx';
 
 
@@ -251,6 +252,7 @@ export const PAGES = {
     "SessionRecordings": SessionRecordings,
     "GroupProjectWorkspace": GroupProjectWorkspace,
     "ContentVersionManager": ContentVersionManager,
+    "EnhancedContentAuthor": EnhancedContentAuthor,
 }
 
 export const pagesConfig = {

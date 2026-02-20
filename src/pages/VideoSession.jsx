@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { format } from 'date-fns';
 import CustomVideoCall from '@/components/video/CustomVideoCall';
+import RealTimeChatPanel from '@/components/session/RealTimeChatPanel';
 
 export default function VideoSession() {
   const [user, setUser] = useState(null);
