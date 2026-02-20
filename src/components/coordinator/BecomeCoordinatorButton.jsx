@@ -30,7 +30,6 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
   const requestMutation = useMutation({
     mutationFn: async (data) => {
       if (existingRequest && existingRequest.status === 'rejected') {
-        // Update existing rejected request
         return await base44.entities.CoordinatorRequest.update(existingRequest.id, {
           reason: data.reason,
           status: 'pending',
@@ -38,7 +37,6 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
           processed_date: null
         });
       } else {
-        // Create new request
         return await base44.entities.CoordinatorRequest.create(data);
       }
     },
@@ -79,11 +77,9 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
   };
 
   const handleClick = () => {
+    setShowPasscode(true);
     if (onCloseMobileMenu) {
-      onCloseMobileMenu();
-      setTimeout(() => setShowPasscode(true), 250);
-    } else {
-      setShowPasscode(true);
+      setTimeout(() => onCloseMobileMenu(), 100);
     }
   };
 
@@ -114,7 +110,6 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
         {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
       </button>
 
-      {/* Passcode Dialog */}
       <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
@@ -147,7 +142,6 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
         </DialogContent>
       </Dialog>
 
-      {/* Request Form Dialog */}
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
