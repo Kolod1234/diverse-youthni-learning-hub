@@ -586,12 +586,12 @@ function LayoutContent({ children, currentPageName }) {
 
                     {user && !user.is_coordinator && user.role !== 'admin' && (
                       <Box sx={{ px: 2, py: 1 }}>
-                        <BecomeCoordinatorButton user={user} />
+                        <BecomeCoordinatorButton user={user} onOpen={() => setMoreMenuAnchor(null)} />
                       </Box>
                     )}
                     {user && !user.is_tutor && user.role !== 'admin' && (
                       <Box sx={{ px: 2, py: 1 }}>
-                        <BecomeTutorButton user={user} />
+                        <BecomeTutorButton user={user} onOpen={() => setMoreMenuAnchor(null)} />
                       </Box>
                     )}
 

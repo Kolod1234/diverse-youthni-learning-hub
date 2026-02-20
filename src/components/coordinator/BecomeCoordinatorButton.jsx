@@ -9,7 +9,7 @@ import { Label } from '@/components/ui/label';
 import { UserCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function BecomeCoordinatorButton({ user }) {
+export default function BecomeCoordinatorButton({ user, onOpen }) {
   const [open, setOpen] = useState(false);
   const [showPasscode, setShowPasscode] = useState(false);
   const [passcode, setPasscode] = useState('');
@@ -97,7 +97,10 @@ export default function BecomeCoordinatorButton({ user }) {
   return (
     <>
       <button 
-        onClick={() => setShowPasscode(true)} 
+        onClick={() => {
+          setShowPasscode(true);
+          onOpen?.();
+        }} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
         <UserCheck className="w-4 h-4 mr-2" />
