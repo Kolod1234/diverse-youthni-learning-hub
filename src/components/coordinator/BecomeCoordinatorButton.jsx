@@ -102,13 +102,14 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
 
   return (
     <>
-      <button 
+      <Button 
         onClick={handleClick} 
-        className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
+        variant="outline"
+        className="flex items-center gap-2"
       >
-        <UserCheck className="w-4 h-4 mr-2" />
+        <UserCheck className="w-4 h-4" />
         {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
-      </button>
+      </Button>
 
       <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={true}>
         <DialogContent className="max-w-md">

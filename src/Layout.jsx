@@ -584,25 +584,6 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemText primary="My Learning" />
                     </ListItemButton>
 
-                    {user && !user.is_coordinator && user.role !== 'admin' && (
-                      <Box sx={{ px: 2, py: 1 }}>
-                        <BecomeCoordinatorButton 
-                          user={user} 
-                          onSuccess={() => setMobileMenuOpen(false)} 
-                          onCloseMobileMenu={() => setMobileMenuOpen(false)} 
-                        />
-                      </Box>
-                    )}
-                    {user && !user.is_tutor && user.role !== 'admin' && (
-                      <Box sx={{ px: 2, py: 1 }}>
-                        <BecomeTutorButton 
-                          user={user} 
-                          onSuccess={() => setMobileMenuOpen(false)} 
-                          onCloseMobileMenu={() => setMobileMenuOpen(false)} 
-                        />
-                      </Box>
-                    )}
-
                     {isCoordinator && !isTutorOrAdmin && (
                       <ListItemButton component={Link} to={createPageUrl('CoordinatorsDashboard')} onClick={() => setMobileMenuOpen(false)}>
                         <ListItemIcon><User size={20} /></ListItemIcon>
@@ -769,6 +750,23 @@ function LayoutContent({ children, currentPageName }) {
       {/* Footer */}
       <Box component="footer" sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', mt: 10 }}>
         <Container maxWidth="xl" sx={{ py: 6 }}>
+          {user && (!user.is_coordinator || !user.is_tutor) && user.role !== 'admin' && (
+            <Box sx={{ mb: 4, pb: 4, borderBottom: 1, borderColor: 'divider' }}>
+              <Typography variant="h6" fontWeight={600} gutterBottom>Join Our Team</Typography>
+              <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap', mt: 2 }}>
+                {user && !user.is_coordinator && user.role !== 'admin' && (
+                  <Box>
+                    <BecomeCoordinatorButton user={user} />
+                  </Box>
+                )}
+                {user && !user.is_tutor && user.role !== 'admin' && (
+                  <Box>
+                    <BecomeTutorButton user={user} />
+                  </Box>
+                )}
+              </Box>
+            </Box>
+          )}
           <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(4, 1fr)' }, gap: 4 }}>
             <Box sx={{ gridColumn: { xs: 'span 2', md: 'span 1' } }}>
               <Link to={createPageUrl('Home')} style={{ display: 'flex', alignItems: 'center', marginBottom: 16 }}>

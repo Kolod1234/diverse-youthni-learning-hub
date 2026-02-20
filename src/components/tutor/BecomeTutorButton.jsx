@@ -118,13 +118,14 @@ export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }
 
   return (
     <>
-      <button 
+      <Button 
         onClick={handleClick} 
-        className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
+        variant="outline"
+        className="flex items-center gap-2"
       >
-        <GraduationCap className="w-4 h-4 mr-2" />
+        <GraduationCap className="w-4 h-4" />
         {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
-      </button>
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
