@@ -41,14 +41,14 @@ export default function WelcomeCover() {
 
   const handleSelectInterest = async (interestType) => {
     if (user) {
-      // Logged-in user: save to database and navigate
+      // Logged-in user: save to database first
       await base44.auth.updateMe({ interest_type: interestType });
       
-      // Navigate to specific pages based on interest type
+      // Navigate to specific landing pages (not home variants)
       if (interestType === 'leadership') {
-        navigate(createPageUrl('HomeLeadership'));
+        navigate(createPageUrl('LeadershipLanding'));
       } else if (interestType === 'youth_work') {
-        navigate(createPageUrl('HomeYouthWork'));
+        navigate(createPageUrl('YouthWorkLanding'));
       } else if (interestType === 'learning') {
         navigate(createPageUrl('HomeLearning'));
       } else {
