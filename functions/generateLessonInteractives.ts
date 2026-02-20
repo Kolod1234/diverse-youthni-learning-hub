@@ -46,6 +46,39 @@ CRITICAL: This is generation #${randomSeed} at ${timestamp}. Create COMPLETELY N
 Generate the following in valid JSON format:
 
 {
+  "summary": {
+    "overview": "concise 2-3 sentence overview of the entire lesson",
+    "keyPoints": ["bullet point 1", "bullet point 2", "bullet point 3"],
+    "prerequisites": ["prerequisite knowledge 1", "prerequisite knowledge 2"],
+    "realWorldRelevance": "why this topic matters in real life"
+  },
+  "contentChunks": [
+    {
+      "title": "digestible topic section title",
+      "summary": "2-3 sentence summary of this chunk",
+      "keyTakeaway": "single most important thing to remember",
+      "difficulty": "basic|intermediate|advanced"
+    }
+  ],
+  "examples": [
+    {
+      "title": "example title",
+      "description": "detailed example explanation",
+      "type": "worked_example|case_study|real_world_application",
+      "difficulty": "basic|intermediate|advanced",
+      "relatedConcepts": ["concept 1", "concept 2"]
+    }
+  ],
+  "resources": [
+    {
+      "title": "resource title",
+      "type": "video|article|interactive|book|research_paper",
+      "description": "what this resource covers and why it's useful",
+      "difficulty": "beginner|intermediate|advanced",
+      "estimatedTime": "time in minutes",
+      "url": "suggested search query or general URL pattern"
+    }
+  ],
   "matchingPairs": [
     { "left": "term or concept", "right": "definition or explanation" }
   ],
@@ -78,6 +111,28 @@ Generate the following in valid JSON format:
 }
 
 STRICT A-LEVEL REQUIREMENTS:
+
+CONTENT SUMMARY & CHUNKING:
+- Create a comprehensive lesson summary with 3-5 key points
+- Break down content into 4-6 digestible chunks, each with a clear summary
+- Identify 2-3 prerequisite concepts students should know
+- Explain real-world relevance and applications
+
+EXAMPLES & CASE STUDIES:
+- Generate 5-7 diverse examples covering different difficulty levels
+- Include at least 2 worked examples with step-by-step solutions
+- Provide 1-2 real-world case studies showing practical applications
+- Ensure examples span basic, intermediate, and advanced levels
+- Connect examples to multiple related concepts
+
+EXTERNAL RESOURCES:
+- Suggest 6-8 high-quality external resources for further learning
+- Include mix of: 2-3 videos, 2-3 articles, 1-2 interactive tools, 1 advanced reading
+- Provide brief descriptions explaining what each resource offers
+- Indicate difficulty level and estimated study time
+- Use search query suggestions (e.g., "Khan Academy photosynthesis", "BBC Bitesize enzymes")
+
+ASSESSMENT MATERIALS:
 - Create exactly 6 matching pairs with A-level terminology
 - Create exactly 10 challenging quiz questions at A-level standard
 - Each quiz question MUST have exactly 4 options (A, B, C, D)
@@ -117,6 +172,10 @@ STRICT A-LEVEL REQUIREMENTS:
 
     return Response.json({
       success: true,
+      summary: content.summary || null,
+      contentChunks: content.contentChunks || [],
+      examples: content.examples || [],
+      resources: content.resources || [],
       matchingPairs: content.matchingPairs || [],
       quizQuestions: content.quizQuestions || [],
       flashCards: content.flashCards || [],
