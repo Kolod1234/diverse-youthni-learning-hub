@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Sparkles, Loader2, Save, RefreshCw, Brain } from 'lucide-react';
 import { toast } from 'sonner';
+import { MathJax } from 'better-react-mathjax';
 
 export default function AIQuizGenerator({ courses }) {
   const [topic, setTopic] = useState('');
@@ -387,9 +388,9 @@ Return JSON:
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-bold text-indigo-600">{idx + 1}.</span>
                     <div className="flex-1">
-                      <p className="font-medium text-gray-900 mb-2">{q.question}</p>
+                      <MathJax className="font-medium text-gray-900 mb-2">{q.question}</MathJax>
                       <div className="space-y-1">
-                        {q.options.map((opt, optIdx) => (
+                        {q.options?.map((opt, optIdx) => (
                           <div
                             key={optIdx}
                             className={`text-sm px-3 py-2 rounded ${
@@ -398,13 +399,13 @@ Return JSON:
                                 : 'bg-white text-gray-700'
                             }`}
                           >
-                            {String.fromCharCode(65 + optIdx)}. {opt}
+                            <MathJax>{String.fromCharCode(65 + optIdx)}. {opt}</MathJax>
                             {q.correct_answer === optIdx && ' ✓'}
                           </div>
                         ))}
                       </div>
                       {q.explanation && (
-                        <p className="text-xs text-gray-600 mt-2 italic">💡 {q.explanation}</p>
+                        <MathJax className="text-xs text-gray-600 mt-2 italic">💡 {q.explanation}</MathJax>
                       )}
                       <div className="flex gap-2 mt-2">
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded">
