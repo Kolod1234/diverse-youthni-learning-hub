@@ -103,7 +103,10 @@ export default function ContinueLearningSection({ user }) {
                 </p>
               )}
 
-              <Link to={createPageUrl('LessonPlayer') + `?courseId=${enrollment.course_id}&lessonId=${enrollment.current_lesson_id || ''}`}>
+              <Link to={enrollment.current_lesson_id 
+                ? createPageUrl('LessonPlayerClassic') + `?lesson=${enrollment.current_lesson_id}&course=${enrollment.course_id}`
+                : createPageUrl('CourseDetails') + `?id=${enrollment.course_id}`
+              }>
                 <Button className="w-full bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-semibold gap-2">
                   Resume <ArrowRight className="w-4 h-4" />
                 </Button>
