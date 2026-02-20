@@ -113,7 +113,7 @@ export default function BecomeTutorButton({ user, onOpen }) {
       <button 
         onClick={() => {
           setOpen(true);
-          onOpen?.();
+          setTimeout(() => onOpen?.(), 50);
         }} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
