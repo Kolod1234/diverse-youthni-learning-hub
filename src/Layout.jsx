@@ -8,7 +8,6 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { AnimatePresence, motion } from 'framer-motion';
 import { 
   AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
   Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
@@ -24,7 +23,7 @@ import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
 import ThemeToggle from '@/components/theme/ThemeToggle';
 import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
-import { motion } from 'framer-motion';
+import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 
 function LayoutContent({ children, currentPageName }) {
