@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import { Users, Shield, Edit, Save, Search } from 'lucide-react';
 import { toast } from 'sonner';
-import { ROLES, PERMISSIONS, ROLE_PERMISSIONS } from '@/lib/permissions';
+import { ROLES, PERMISSIONS, ROLE_PERMISSIONS } from '@/components/permissions/permissions';
 import PermissionGate from '@/components/permissions/PermissionGate';
 
 export default function AdminRolesPermissions() {

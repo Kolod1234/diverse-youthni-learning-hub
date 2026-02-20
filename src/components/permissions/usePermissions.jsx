@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
-import { hasPermission, getPermissions, hasRoleLevel } from '@/lib/permissions';
+import { hasPermission, getPermissions, hasRoleLevel } from './permissions';
 
 export function usePermissions() {
   const [user, setUser] = useState(null);

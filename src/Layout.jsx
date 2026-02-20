@@ -26,7 +26,7 @@ import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
-import { PERMISSIONS } from '@/lib/permissions';
+import { PERMISSIONS } from '@/components/permissions/permissions';
 
 function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
