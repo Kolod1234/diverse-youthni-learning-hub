@@ -9,7 +9,7 @@ import { GraduationCap, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-export default function BecomeTutorButton({ user, onOpen }) {
+export default function BecomeTutorButton({ user, onSuccess }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [qualifications, setQualifications] = useState('');
@@ -113,7 +113,6 @@ export default function BecomeTutorButton({ user, onOpen }) {
       <button 
         onClick={() => {
           setOpen(true);
-          onOpen?.();
         }} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
