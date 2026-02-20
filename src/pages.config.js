@@ -141,6 +141,8 @@ import AcademyExplore from './pages/AcademyExplore';
 import AcademyPlayer from './pages/AcademyPlayer';
 import ExpertContentCreator from './pages/ExpertContentCreator';
 import LearningImpactDashboard from './pages/LearningImpactDashboard';
+import CollaborationHub from './pages/CollaborationHub';
+import EnterpriseIntegrations from './pages/EnterpriseIntegrations';
 import __Layout from './Layout.jsx';
 
 
@@ -239,6 +241,8 @@ export const PAGES = {
     "AcademyPlayer": AcademyPlayer,
     "ExpertContentCreator": ExpertContentCreator,
     "LearningImpactDashboard": LearningImpactDashboard,
+    "CollaborationHub": CollaborationHub,
+    "EnterpriseIntegrations": EnterpriseIntegrations,
 }
 
 export const pagesConfig = {
