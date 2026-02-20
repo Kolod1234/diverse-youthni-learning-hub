@@ -536,7 +536,7 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><User size={18} /></ListItemIcon>
                   <ListItemText primary="My Dashboard" />
                 </MenuItem>
-                <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover')); setUserMenuAnchor(null); }}>
+                <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover'), { state: { forceShow: true } }); setUserMenuAnchor(null); }}>
                   <ListItemIcon><Home size={18} /></ListItemIcon>
                   <ListItemText primary="Change Pathway" />
                 </MenuItem>

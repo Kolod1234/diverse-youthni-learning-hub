@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -11,6 +11,8 @@ export default function WelcomeCover() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
   const navigate = useNavigate();
+  const location = useLocation();
+  const forceShow = location.state?.forceShow;
 
   useEffect(() => {
     const loadUser = async () => {
@@ -24,8 +26,8 @@ export default function WelcomeCover() {
           return;
         }
 
-        // If user already has an interest, redirect them
-        if (userData?.interest_type && userData.interest_type !== 'guest') {
+        // If user already has an interest, redirect them (unless forced to show)
+        if (userData?.interest_type && userData.interest_type !== 'guest' && !forceShow) {
           navigate(createPageUrl('Home'));
         }
       } catch (error) {
