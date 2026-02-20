@@ -74,16 +74,6 @@ Generate the following in valid JSON format:
       "blanks": ["correct answer 1", "correct answer 2"],
       "hint": "optional hint"
     }
-  ],
-  "interactiveDiagrams": [
-    {
-      "title": "diagram title",
-      "description": "what to label or identify",
-      "imagePrompt": "description for generating diagram image",
-      "labels": [
-        { "term": "label term", "definition": "what it means" }
-      ]
-    }
   ]
 }
 
@@ -100,7 +90,6 @@ STRICT A-LEVEL REQUIREMENTS:
 - Create exactly 12 flashcards for key concepts
 - Create exactly 3 essay questions requiring extended responses
 - Create exactly 5 fill-in-the-blank exercises with 2-3 blanks each (use __blank__ format)
-- Create exactly 2 interactive diagram descriptions with 4-6 labels each
 - Make questions exam-style: clear, unambiguous, academically rigorous
 - Include real-world applications and problem-solving scenarios
 - Ensure plausible distractors (wrong answers that seem reasonable)
@@ -132,8 +121,7 @@ STRICT A-LEVEL REQUIREMENTS:
       quizQuestions: content.quizQuestions || [],
       flashCards: content.flashCards || [],
       essayQuestions: content.essayQuestions || [],
-      fillInTheBlanks: content.fillInTheBlanks || [],
-      interactiveDiagrams: content.interactiveDiagrams || []
+      fillInTheBlanks: content.fillInTheBlanks || []
     });
 
   } catch (error) {
