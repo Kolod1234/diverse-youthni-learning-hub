@@ -143,6 +143,10 @@ import ExpertContentCreator from './pages/ExpertContentCreator';
 import LearningImpactDashboard from './pages/LearningImpactDashboard';
 import CollaborationHub from './pages/CollaborationHub';
 import EnterpriseIntegrations from './pages/EnterpriseIntegrations';
+import LiveSessionHost from './pages/LiveSessionHost';
+import SessionRecordings from './pages/SessionRecordings';
+import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
+import ContentVersionManager from './pages/ContentVersionManager';
 import __Layout from './Layout.jsx';
 
 
@@ -243,6 +247,10 @@ export const PAGES = {
     "LearningImpactDashboard": LearningImpactDashboard,
     "CollaborationHub": CollaborationHub,
     "EnterpriseIntegrations": EnterpriseIntegrations,
+    "LiveSessionHost": LiveSessionHost,
+    "SessionRecordings": SessionRecordings,
+    "GroupProjectWorkspace": GroupProjectWorkspace,
+    "ContentVersionManager": ContentVersionManager,
 }
 
 export const pagesConfig = {
