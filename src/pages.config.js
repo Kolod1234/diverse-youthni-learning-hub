@@ -138,6 +138,9 @@ import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import AcademyManager from './pages/AcademyManager';
 import AcademyBuilder from './pages/AcademyBuilder';
 import AcademyExplore from './pages/AcademyExplore';
+import AcademyPlayer from './pages/AcademyPlayer';
+import ExpertContentCreator from './pages/ExpertContentCreator';
+import LearningImpactDashboard from './pages/LearningImpactDashboard';
 import __Layout from './Layout.jsx';
 
 
@@ -233,6 +236,9 @@ export const PAGES = {
     "AcademyManager": AcademyManager,
     "AcademyBuilder": AcademyBuilder,
     "AcademyExplore": AcademyExplore,
+    "AcademyPlayer": AcademyPlayer,
+    "ExpertContentCreator": ExpertContentCreator,
+    "LearningImpactDashboard": LearningImpactDashboard,
 }
 
 export const pagesConfig = {
