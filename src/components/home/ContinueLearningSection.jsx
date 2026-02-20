@@ -20,8 +20,18 @@ export default function ContinueLearningSection({ user }) {
     enabled: enrollments.length > 0
   });
 
-  const activeEnrollments = enrollments
+  // Deduplicate enrollments - keep most recent per course
+  const uniqueCourseEnrollments = enrollments
     .filter(e => !e.is_completed)
+    .reduce((acc, enrollment) => {
+      const existing = acc.find(e => e.course_id === enrollment.course_id);
+      if (!existing || new Date(enrollment.updated_date) > new Date(existing.updated_date)) {
+        return [...acc.filter(e => e.course_id !== enrollment.course_id), enrollment];
+      }
+      return acc;
+    }, []);
+
+  const activeEnrollments = uniqueCourseEnrollments
     .slice(0, 3)
     .map(enrollment => {
       const course = courses.find(c => c.id === enrollment.course_id);
