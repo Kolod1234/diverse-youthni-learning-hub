@@ -12,9 +12,10 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
   const [selectedLeft, setSelectedLeft] = useState(null);
   const [selectedRight, setSelectedRight] = useState(null);
   const [matches, setMatches] = useState([]);
-  const [wrongMatches, setWrongMatches] = useState([]);
+  const [wrongPairs, setWrongPairs] = useState(new Set());
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
+  const [correctMatches, setCorrectMatches] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
 
   useEffect(() => {
@@ -27,12 +28,32 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
 
   const handleLeftClick = (item) => {
     if (item.matched) return;
+    
+    // If clicking same item, deselect
+    if (selectedLeft?.id === item.id) {
+      setSelectedLeft(null);
+      setWrongPairs(new Set());
+      return;
+    }
+    
+    // Clear previous wrong pairs
+    setWrongPairs(new Set());
     setSelectedLeft(item);
     if (selectedRight) checkMatch(item, selectedRight);
   };
 
   const handleRightClick = (item) => {
     if (item.matched) return;
+    
+    // If clicking same item, deselect
+    if (selectedRight?.id === item.id) {
+      setSelectedRight(null);
+      setWrongPairs(new Set());
+      return;
+    }
+    
+    // Clear previous wrong pairs
+    setWrongPairs(new Set());
     setSelectedRight(item);
     if (selectedLeft) checkMatch(selectedLeft, item);
   };
@@ -41,8 +62,10 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
     setAttempts(prev => prev + 1);
     
     if (left.id === right.id) {
+      // Correct match - mark as matched and award points
       const newMatches = [...matches, left.id];
       setMatches(newMatches);
+      setCorrectMatches(prev => prev + 1);
       setScore(prev => prev + 10);
       
       setLeftItems(prev => prev.map(item => 
@@ -52,21 +75,24 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
         item.id === right.id ? { ...item, matched: true } : item
       ));
 
+      // Clear selections after showing success
+      setTimeout(() => {
+        setSelectedLeft(null);
+        setSelectedRight(null);
+      }, 600);
+
       if (newMatches.length === pairs.length) {
         setIsComplete(true);
         confetti({ particleCount: 100, spread: 70 });
         onComplete?.(score + 10);
       }
     } else {
-      // Wrong match - track it and deduct points
-      setWrongMatches([...wrongMatches, { left: left.id, right: right.id }]);
+      // Wrong match - keep visible as wrong, deduct points
+      const pairKey = `${left.id}-${right.id}`;
+      setWrongPairs(prev => new Set([...prev, pairKey]));
       setScore(prev => Math.max(0, prev - 2));
+      // Don't clear selections - keep them visible as wrong
     }
-    
-    setTimeout(() => {
-      setSelectedLeft(null);
-      setSelectedRight(null);
-    }, 600);
   };
 
   const reset = () => {
@@ -78,9 +104,10 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
     setSelectedLeft(null);
     setSelectedRight(null);
     setMatches([]);
-    setWrongMatches([]);
+    setWrongPairs(new Set());
     setScore(0);
     setAttempts(0);
+    setCorrectMatches(0);
     setIsComplete(false);
   };
 
@@ -90,7 +117,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
         <h3 className="text-lg sm:text-xl font-bold text-gray-800">Match the Pairs</h3>
         <div className="flex gap-3 items-center">
           <div className="text-sm font-semibold text-purple-600">
-            Score: {score}
+            {correctMatches}/{pairs.length} • Score: {score}
           </div>
           <Button variant="outline" size="sm" onClick={reset}>
             <RotateCcw className="w-4 h-4" />
@@ -133,8 +160,8 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   item.matched
                     ? 'bg-green-100 border-2 border-green-500'
-                    : selectedLeft?.id === item.id && selectedRight && selectedLeft.id !== selectedRight.id
-                    ? 'bg-red-200 border-2 border-red-500'
+                    : selectedLeft?.id === item.id && wrongPairs.size > 0
+                    ? 'bg-red-200 border-2 border-red-500 animate-pulse'
                     : selectedLeft?.id === item.id
                     ? 'bg-blue-200 border-2 border-blue-500'
                     : 'bg-white border-2 border-gray-200 hover:border-blue-300'
@@ -142,7 +169,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
               >
                 <div className="flex items-center gap-2">
                   {item.matched && <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />}
-                  {selectedLeft?.id === item.id && selectedRight && selectedLeft.id !== selectedRight.id && (
+                  {selectedLeft?.id === item.id && wrongPairs.size > 0 && (
                     <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                   )}
                   <span className="text-sm sm:text-base font-medium text-gray-800">{item.text}</span>
@@ -161,8 +188,8 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   item.matched
                     ? 'bg-green-100 border-2 border-green-500'
-                    : selectedRight?.id === item.id && selectedLeft && selectedLeft.id !== selectedRight.id
-                    ? 'bg-red-200 border-2 border-red-500'
+                    : selectedRight?.id === item.id && wrongPairs.size > 0
+                    ? 'bg-red-200 border-2 border-red-500 animate-pulse'
                     : selectedRight?.id === item.id
                     ? 'bg-purple-200 border-2 border-purple-500'
                     : 'bg-white border-2 border-gray-200 hover:border-purple-300'
@@ -170,7 +197,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
               >
                 <div className="flex items-center gap-2">
                   {item.matched && <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />}
-                  {selectedRight?.id === item.id && selectedLeft && selectedLeft.id !== selectedRight.id && (
+                  {selectedRight?.id === item.id && wrongPairs.size > 0 && (
                     <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
                   )}
                   <MathRenderer content={item.text} className="text-sm sm:text-base font-medium text-gray-800" />
