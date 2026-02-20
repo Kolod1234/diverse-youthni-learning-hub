@@ -34,6 +34,7 @@ function LayoutContent({ children, currentPageName }) {
   const [moreMenuAnchor, setMoreMenuAnchor] = useState(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
   const [tabScrollPositions, setTabScrollPositions] = useState({});
 
@@ -184,6 +185,7 @@ function LayoutContent({ children, currentPageName }) {
       <AppBar 
         position="sticky" 
         elevation={scrolled ? 2 : 0}
+        role="banner"
         sx={{ 
           bgcolor: scrolled ? 'background.paper' : 'background.paper/80',
           backdropFilter: 'blur(10px)',
@@ -192,7 +194,8 @@ function LayoutContent({ children, currentPageName }) {
           color: 'text.primary',
           paddingTop: 'env(safe-area-inset-top)',
           paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
+          paddingRight: 'env(safe-area-inset-right)',
+          userSelect: 'none'
         }}
       >
         <Container maxWidth="xl">
@@ -521,7 +524,7 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemText primary="Achievements" />
                 </MenuItem>
                 <Divider />
-                <MenuItem onClick={() => { base44.auth.logout(); setUserMenuAnchor(null); }} sx={{ color: 'error.main' }}>
+                <MenuItem onClick={() => { setLogoutDialogOpen(true); setUserMenuAnchor(null); }} sx={{ color: 'error.main' }}>
                   <ListItemIcon><LogOut size={18} color="#dc2626" /></ListItemIcon>
                   <ListItemText primary="Log out" />
                 </MenuItem>
@@ -628,6 +631,7 @@ function LayoutContent({ children, currentPageName }) {
       {/* Mobile Bottom Navigation */}
       <Box
         component="nav"
+        aria-label="Mobile bottom navigation"
         sx={{
           display: { xs: 'flex', md: 'none' },
           position: 'fixed',
@@ -642,7 +646,8 @@ function LayoutContent({ children, currentPageName }) {
           minHeight: 64,
           paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
-          paddingRight: 'env(safe-area-inset-right)'
+          paddingRight: 'env(safe-area-inset-right)',
+          userSelect: 'none'
         }}
       >
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
@@ -710,6 +715,20 @@ function LayoutContent({ children, currentPageName }) {
           </Button>
           <Button onClick={handleAdminAccess} variant="contained" color="primary">
             Access
+          </Button>
+        </DialogActions>
+      </Dialog>
+
+      {/* Logout Confirmation Dialog */}
+      <Dialog open={logoutDialogOpen} onClose={() => setLogoutDialogOpen(false)}>
+        <DialogTitle>Confirm Logout</DialogTitle>
+        <DialogContent>
+          <Typography>Are you sure you want to log out?</Typography>
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setLogoutDialogOpen(false)}>Cancel</Button>
+          <Button onClick={() => { base44.auth.logout(); setLogoutDialogOpen(false); }} color="error" variant="contained">
+            Log Out
           </Button>
         </DialogActions>
       </Dialog>

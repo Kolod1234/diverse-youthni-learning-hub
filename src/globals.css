@@ -1,7 +1,7 @@
 css
 /* Base Styles */
 html {
-  overflow-y: scroll; /* Forces vertical scrollbar to prevent layout jumping */
+  /* Removed overflow-y: scroll for native mobile feel */
 }
 
 body {
@@ -13,6 +13,15 @@ body {
 
       /* User select none for interactive elements */
       button, a, [role="button"], input[type="checkbox"], input[type="radio"] {
+        user-select: none;
+        -webkit-user-select: none;
+        -moz-user-select: none;
+        -ms-user-select: none;
+      }
+
+      /* Bottom tab bar and header no user select */
+      nav[aria-label="Mobile bottom navigation"],
+      header[role="banner"] {
         user-select: none;
         -webkit-user-select: none;
         -moz-user-select: none;
