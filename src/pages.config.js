@@ -135,6 +135,9 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import AcademyManager from './pages/AcademyManager';
+import AcademyBuilder from './pages/AcademyBuilder';
+import AcademyExplore from './pages/AcademyExplore';
 import __Layout from './Layout.jsx';
 
 
@@ -227,6 +230,9 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "AcademyManager": AcademyManager,
+    "AcademyBuilder": AcademyBuilder,
+    "AcademyExplore": AcademyExplore,
 }
 
 export const pagesConfig = {
