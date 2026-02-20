@@ -25,6 +25,8 @@ import ThemeProvider from '@/components/theme/ThemeProvider';
 import MUIThemeProvider from '@/components/theme/MUIThemeProvider';
 import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
+import { usePermissions } from '@/components/permissions/usePermissions';
+import { PERMISSIONS } from '@/lib/permissions';
 
 function LayoutContent({ children, currentPageName }) {
   const [user, setUser] = useState(null);
@@ -37,6 +39,7 @@ function LayoutContent({ children, currentPageName }) {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
   const [tabScrollPositions, setTabScrollPositions] = useState({});
+  const { can, isAdmin, isInstructor, isContentCreator } = usePermissions();
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
@@ -362,20 +365,24 @@ function LayoutContent({ children, currentPageName }) {
                     </MenuItem>
                   </>
                 )}
-                {isTutorOrAdmin && (
+                {(isTutorOrAdmin || can(PERMISSIONS.CREATE_LESSON)) && (
                   <>
                     <Divider />
                     <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
-                      TUTOR TOOLS
+                      CONTENT CREATOR TOOLS
                     </Typography>
-                    <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
-                      <ListItemText primary="Tutor Overview" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
-                      <ListItemText primary="Lesson Editor" />
-                    </MenuItem>
+                    {can(PERMISSIONS.CREATE_COURSE) && (
+                      <MenuItem component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><Settings size={20} color="#2563eb" /></ListItemIcon>
+                        <ListItemText primary="Tutor Overview" />
+                      </MenuItem>
+                    )}
+                    {can(PERMISSIONS.CREATE_LESSON) && (
+                      <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
+                        <ListItemText primary="Lesson Editor" />
+                      </MenuItem>
+                    )}
                     <MenuItem component={Link} to={createPageUrl('Templates')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><ClipboardList size={20} color="#ec4899" /></ListItemIcon>
                       <ListItemText primary="Templates" />
@@ -384,25 +391,37 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><BarChart3 size={20} color="#ea580c" /></ListItemIcon>
                       <ListItemText primary="Data to Slides" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Pathway Manager" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
-                      <ListItemText primary="Quiz Generator" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
-                      <ListItemText primary="Tutor Setup" />
-                    </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
-                      <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
-                      <ListItemText primary="Full Tutor Dashboard" />
-                    </MenuItem>
+                    {can(PERMISSIONS.CREATE_QUIZ) && (
+                      <MenuItem component={Link} to={createPageUrl('QuizGenerator')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><Award size={20} color="#ca8a04" /></ListItemIcon>
+                        <ListItemText primary="Quiz Generator" />
+                      </MenuItem>
+                    )}
+                    {can(PERMISSIONS.CREATE_SIMULATION) && (
+                      <MenuItem component={Link} to={createPageUrl('SimulationAuthor')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><Award size={20} color="#8b5cf6" /></ListItemIcon>
+                        <ListItemText primary="Simulation Author" />
+                      </MenuItem>
+                    )}
+                    {can(PERMISSIONS.CREATE_COURSE) && (
+                      <>
+                        <MenuItem component={Link} to={createPageUrl('PathwayManager')} onClick={() => setMoreMenuAnchor(null)}>
+                          <ListItemIcon><Award size={20} color="#6366f1" /></ListItemIcon>
+                          <ListItemText primary="Pathway Manager" />
+                        </MenuItem>
+                        <MenuItem component={Link} to={createPageUrl('TutorSetup')} onClick={() => setMoreMenuAnchor(null)}>
+                          <ListItemIcon><User size={20} color="#0d9488" /></ListItemIcon>
+                          <ListItemText primary="Tutor Setup" />
+                        </MenuItem>
+                        <MenuItem component={Link} to={createPageUrl('TutorDashboard')} onClick={() => setMoreMenuAnchor(null)}>
+                          <ListItemIcon><Settings size={20} color="#6366f1" /></ListItemIcon>
+                          <ListItemText primary="Full Tutor Dashboard" />
+                        </MenuItem>
+                      </>
+                    )}
                   </>
                 )}
-                {isAdmin && (
+                {can(PERMISSIONS.ACCESS_ADMIN_PANEL) && (
                   <>
                     <Divider />
                     <Typography variant="caption" sx={{ px: 2, py: 1, display: 'block', color: 'text.secondary', fontWeight: 600 }}>
@@ -412,6 +431,12 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Settings size={20} color="#dc2626" /></ListItemIcon>
                       <ListItemText primary="Admin Panel" />
                     </MenuItem>
+                    {can(PERMISSIONS.MANAGE_ROLES) && (
+                      <MenuItem component={Link} to={createPageUrl('AdminRolesPermissions')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><Shield size={20} color="#f59e0b" /></ListItemIcon>
+                        <ListItemText primary="Roles & Permissions" />
+                      </MenuItem>
+                    )}
                     <MenuItem component={Link} to={createPageUrl('AdminPageBuilder')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><LayoutIcon size={20} color="#8b5cf6" /></ListItemIcon>
                       <ListItemText primary="Page Builder" />

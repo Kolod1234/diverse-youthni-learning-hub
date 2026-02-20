@@ -150,6 +150,7 @@ import ContentVersionManager from './pages/ContentVersionManager';
 import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
 import LMSIntegrationConfig from './pages/LMSIntegrationConfig';
 import SimulationAuthor from './pages/SimulationAuthor';
+import AdminRolesPermissions from './pages/AdminRolesPermissions';
 import __Layout from './Layout.jsx';
 
 
@@ -257,6 +258,7 @@ export const PAGES = {
     "EnhancedContentAuthor": EnhancedContentAuthor,
     "LMSIntegrationConfig": LMSIntegrationConfig,
     "SimulationAuthor": SimulationAuthor,
+    "AdminRolesPermissions": AdminRolesPermissions,
 }
 
 export const pagesConfig = {
