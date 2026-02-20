@@ -100,16 +100,16 @@ export default function Home() {
           return;
         }
 
-        // Redirect to appropriate homepage
+        // Redirect to appropriate landing pages
         switch (interestType) {
           case 'leadership':
-            navigate(createPageUrl('HomeLeadership'), { replace: true });
+            navigate(createPageUrl('LeadershipLanding'), { replace: true });
             break;
           case 'learning':
             navigate(createPageUrl('HomeLearning'), { replace: true });
             break;
           case 'youth_work':
-            navigate(createPageUrl('HomeYouthWork'), { replace: true });
+            navigate(createPageUrl('YouthWorkLanding'), { replace: true });
             break;
           case 'guest':
             navigate(createPageUrl('HomeGuest'), { replace: true });
