@@ -17,7 +17,6 @@ import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
 import EssayQuestion from '@/components/lesson/EssayQuestion';
 import FillInTheBlanks from '@/components/lesson/FillInTheBlanks';
-import InteractiveDiagram from '@/components/lesson/InteractiveDiagram';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import LessonBookmarks from '@/components/lesson/LessonBookmarks';
@@ -1211,12 +1210,6 @@ export default function LessonPlayerClassic() {
                           setShowPointsAnimation(true);
                         }
                       }}
-                    />
-                  )}
-
-                  {interactiveContent.interactiveDiagrams?.length > 0 && (
-                    <InteractiveDiagram
-                      diagrams={interactiveContent.interactiveDiagrams}
                     />
                   )}
 
