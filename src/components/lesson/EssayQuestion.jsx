@@ -28,20 +28,42 @@ export default function EssayQuestion({ questions, onComplete }) {
     setIsAnalyzing(true);
     try {
       const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `You are an A-level examiner. Analyze this student essay and provide constructive feedback.
+        prompt: `You are a fair and understanding A-level examiner. Analyze this student essay with flexibility and nuance.
+
+IMPORTANT ASSESSMENT PRINCIPLES:
+1. ACCEPT MULTIPLE VALID APPROACHES - Students may express the same concept differently using alternative terminology, examples, or reasoning paths. Award full marks if the understanding is demonstrated, even if wording differs from the rubric.
+
+2. REWARD UNDERSTANDING OVER EXACT WORDING - Focus on whether the student grasps the concept, not whether they use specific phrases. Different explanations of the same idea should receive equal credit.
+
+3. VALUE ORIGINAL THINKING - If a student provides valid points not explicitly in the rubric but relevant to the question, recognize and credit this independent thinking.
+
+4. BE LENIENT WITH TERMINOLOGY - Accept synonyms, paraphrases, and different ways of expressing the same concept (e.g., "increase in temperature" = "getting hotter" = "thermal energy rises").
+
+5. PARTIAL CREDIT - Award partial marks for partially correct answers, work in progress, or answers that show some understanding even if incomplete.
+
+6. CONSIDER CONTEXT - Evaluate the answer holistically. A well-structured argument with minor gaps may deserve higher marks than a list of facts without coherence.
 
 Question: ${currentQuestion.question}
 
 Student Answer: ${answer}
 
-Rubric/Key Points: ${currentQuestion.rubric}
+Rubric/Key Points to Consider (not a strict checklist): ${currentQuestion.rubric}
+
+ASSESSMENT GUIDELINES:
+- 90-100: Excellent understanding, addresses all key concepts (even if worded differently), well-structured
+- 75-89: Good understanding, covers most key concepts, minor gaps acceptable
+- 60-74: Adequate understanding, addresses main points, some areas need development
+- 50-59: Basic understanding, covers some points but misses key elements
+- Below 50: Limited understanding, significant gaps in knowledge
 
 Provide feedback in JSON format:
 {
   "score": 85,
-  "strengths": ["strength 1", "strength 2"],
+  "strengths": ["strength 1", "strength 2", "strength 3"],
   "improvements": ["improvement 1", "improvement 2"],
-  "overallFeedback": "detailed paragraph of feedback"
+  "overallFeedback": "detailed, encouraging feedback paragraph that acknowledges valid alternative approaches",
+  "conceptsCovered": ["concept 1", "concept 2"],
+  "conceptsMissing": ["concept that could strengthen the answer"]
 }`,
         response_json_schema: {
           type: 'object',
@@ -49,7 +71,9 @@ Provide feedback in JSON format:
             score: { type: 'number' },
             strengths: { type: 'array', items: { type: 'string' } },
             improvements: { type: 'array', items: { type: 'string' } },
-            overallFeedback: { type: 'string' }
+            overallFeedback: { type: 'string' },
+            conceptsCovered: { type: 'array', items: { type: 'string' } },
+            conceptsMissing: { type: 'array', items: { type: 'string' } }
           }
         }
       });
@@ -167,6 +191,19 @@ Provide feedback in JSON format:
                     </div>
                   )}
 
+                  {feedback.conceptsCovered?.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-blue-700 mb-2">Concepts Demonstrated</h4>
+                      <div className="flex flex-wrap gap-2">
+                        {feedback.conceptsCovered.map((concept, idx) => (
+                          <Badge key={idx} variant="outline" className="bg-blue-50">
+                            {concept}
+                          </Badge>
+                        ))}
+                      </div>
+                    </div>
+                  )}
+
                   {feedback.improvements.length > 0 && (
                     <div className="mb-4">
                       <h4 className="font-semibold text-amber-700 mb-2 flex items-center gap-2">
@@ -176,6 +213,17 @@ Provide feedback in JSON format:
                       <ul className="list-disc list-inside space-y-1">
                         {feedback.improvements.map((improvement, idx) => (
                           <li key={idx} className="text-gray-700">{improvement}</li>
+                        ))}
+                      </ul>
+                    </div>
+                  )}
+
+                  {feedback.conceptsMissing?.length > 0 && (
+                    <div className="mb-4">
+                      <h4 className="font-semibold text-purple-700 mb-2">Consider Adding</h4>
+                      <ul className="list-disc list-inside space-y-1">
+                        {feedback.conceptsMissing.map((concept, idx) => (
+                          <li key={idx} className="text-gray-700">{concept}</li>
                         ))}
                       </ul>
                     </div>
