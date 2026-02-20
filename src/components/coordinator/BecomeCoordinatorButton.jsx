@@ -99,7 +99,7 @@ export default function BecomeCoordinatorButton({ user, onOpen }) {
       <button 
         onClick={() => {
           setShowPasscode(true);
-          setTimeout(() => onOpen?.(), 50);
+          onOpen?.();
         }} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
@@ -108,7 +108,7 @@ export default function BecomeCoordinatorButton({ user, onOpen }) {
       </button>
 
       {/* Passcode Dialog */}
-      <Dialog open={showPasscode} onOpenChange={setShowPasscode}>
+      <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Enter Coordinator Passcode</DialogTitle>
@@ -141,7 +141,7 @@ export default function BecomeCoordinatorButton({ user, onOpen }) {
       </Dialog>
 
       {/* Request Form Dialog */}
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Request to Become a Coordinator</DialogTitle>

@@ -113,7 +113,7 @@ export default function BecomeTutorButton({ user, onOpen }) {
       <button 
         onClick={() => {
           setOpen(true);
-          setTimeout(() => onOpen?.(), 50);
+          onOpen?.();
         }} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
@@ -121,7 +121,7 @@ export default function BecomeTutorButton({ user, onOpen }) {
         {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
       </button>
 
-      <Dialog open={open} onOpenChange={setOpen}>
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Request to Become a Tutor</DialogTitle>
