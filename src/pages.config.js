@@ -148,6 +148,7 @@ import SessionRecordings from './pages/SessionRecordings';
 import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
 import ContentVersionManager from './pages/ContentVersionManager';
 import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
+import LMSIntegrationConfig from './pages/LMSIntegrationConfig';
 import __Layout from './Layout.jsx';
 
 
@@ -253,6 +254,7 @@ export const PAGES = {
     "GroupProjectWorkspace": GroupProjectWorkspace,
     "ContentVersionManager": ContentVersionManager,
     "EnhancedContentAuthor": EnhancedContentAuthor,
+    "LMSIntegrationConfig": LMSIntegrationConfig,
 }
 
 export const pagesConfig = {

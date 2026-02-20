@@ -85,7 +85,7 @@ Deno.serve(async (req) => {
     
     const description = metadata?.querySelector('description')?.textContent || '';
 
-    // Find resources
+    // Find resources and extract all SCOs
     const resources = xmlDoc.querySelectorAll('resource');
     if (resources.length === 0) {
       validationReport.isValid = false;
@@ -93,23 +93,61 @@ Deno.serve(async (req) => {
       return Response.json({ success: false, validationReport }, { status: 400 });
     }
 
-    // Find launch file
-    let launchFile = null;
-    let scormType = null;
+    validationReport.info.push(`Found ${resources.length} resource(s)`);
+
+    // Extract all SCOs and assets
+    const scos = [];
+    const assets = [];
     
     for (const resource of resources) {
+      const resourceId = resource.getAttribute('identifier');
+      const href = resource.getAttribute('href');
       const type = resource.getAttribute('type') || resource.getAttribute('adlcp:scormtype');
+      const baseUrl = resource.getAttribute('xml:base') || '';
+      
+      const resourceData = {
+        id: resourceId,
+        href: href,
+        type: type,
+        baseUrl: baseUrl
+      };
+      
       if (type && type.toLowerCase().includes('sco')) {
-        launchFile = resource.getAttribute('href');
-        scormType = type;
-        break;
+        scos.push(resourceData);
+      } else {
+        assets.push(resourceData);
+      }
+
+      // Check for dependencies
+      const dependencies = resource.querySelectorAll('dependency');
+      if (dependencies.length > 0) {
+        resourceData.dependencies = Array.from(dependencies).map(d => d.getAttribute('identifierref'));
+        validationReport.info.push(`Resource ${resourceId} has ${dependencies.length} dependencies`);
+      }
+
+      // Extract files
+      const files = resource.querySelectorAll('file');
+      if (files.length > 0) {
+        resourceData.files = Array.from(files).map(f => f.getAttribute('href'));
       }
     }
 
-    if (!launchFile) {
-      // Fallback: use first resource
-      launchFile = resources[0].getAttribute('href');
-      validationReport.warnings.push('No SCO resource found, using first resource as launch file');
+    validationReport.info.push(`Extracted ${scos.length} SCO(s) and ${assets.length} asset(s)`);
+
+    // Find primary launch file
+    let launchFile = null;
+    let primarySCO = null;
+    
+    if (scos.length > 0) {
+      primarySCO = scos[0];
+      launchFile = primarySCO.href;
+    } else if (assets.length > 0) {
+      launchFile = assets[0].href;
+      validationReport.warnings.push('No SCO resource found, using first asset as launch file');
+    } else {
+      validationReport.isValid = false;
+      validationReport.errors.push('No valid launch resource found');
+      return Response.json({ success: false, validationReport }, { status: 400 });
     }
 
     // Validate launch file exists
@@ -120,7 +158,32 @@ Deno.serve(async (req) => {
       return Response.json({ success: false, validationReport }, { status: 400 });
     }
 
-    validationReport.info.push(`Launch file: ${launchFile}`);
+    validationReport.info.push(`Primary launch file: ${launchFile}`);
+
+    // Validate all referenced files exist
+    let missingFiles = [];
+    if (primarySCO?.files) {
+      for (const file of primarySCO.files) {
+        if (!zipData.file(file)) {
+          missingFiles.push(file);
+        }
+      }
+    }
+
+    if (missingFiles.length > 0) {
+      if (missingFiles.length <= 3) {
+        validationReport.warnings.push(`Missing referenced files: ${missingFiles.join(', ')}`);
+      } else {
+        validationReport.warnings.push(`${missingFiles.length} referenced files are missing from package`);
+      }
+    }
+
+    // Check for common required files
+    const commonFiles = ['index.html', 'index.htm', 'default.htm', 'scormdriver.js', 'scormapi.js'];
+    const foundCommonFiles = commonFiles.filter(f => zipData.file(f));
+    if (foundCommonFiles.length > 0) {
+      validationReport.info.push(`Found common SCORM files: ${foundCommonFiles.join(', ')}`);
+    }
 
     // Check for required files
     const requiredFiles = ['imsmanifest.xml', launchFile];
@@ -143,6 +206,26 @@ Deno.serve(async (req) => {
     const completionThreshold = xmlDoc.querySelector('completionThreshold')?.textContent;
     if (completionThreshold) {
       validationReport.info.push(`Completion threshold: ${completionThreshold}`);
+    }
+
+    // Extract time limits
+    const timeLimitAction = xmlDoc.querySelector('timeLimitAction')?.textContent;
+    const dataFromLMS = xmlDoc.querySelector('dataFromLMS')?.textContent;
+    
+    if (timeLimitAction) {
+      validationReport.info.push(`Time limit action: ${timeLimitAction}`);
+    }
+
+    // Extract prerequisites
+    const prerequisites = xmlDoc.querySelectorAll('prerequisites');
+    if (prerequisites.length > 0) {
+      validationReport.info.push(`Found ${prerequisites.length} prerequisite rule(s)`);
+    }
+
+    // Check sequencing rules (SCORM 2004)
+    const sequencingRules = xmlDoc.querySelectorAll('imsss\\:sequencing, sequencing');
+    if (sequencingRules.length > 0) {
+      validationReport.info.push(`SCORM 2004: Found ${sequencingRules.length} sequencing rule(s)`);
     }
 
     // Validate organizations
