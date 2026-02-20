@@ -120,8 +120,7 @@ export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }
     <>
       <Button 
         onClick={handleClick} 
-        variant="outline"
-        className="flex items-center gap-2"
+        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
       >
         <GraduationCap className="w-4 h-4" />
         {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
