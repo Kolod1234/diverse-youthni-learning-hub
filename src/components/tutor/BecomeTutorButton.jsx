@@ -9,7 +9,7 @@ import { GraduationCap, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-export default function BecomeTutorButton({ user, onSuccess }) {
+export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [qualifications, setQualifications] = useState('');
@@ -92,6 +92,15 @@ export default function BecomeTutorButton({ user, onSuccess }) {
     setSubjects(newSubjects);
   };
 
+  const handleClick = () => {
+    if (onCloseMobileMenu) {
+      onCloseMobileMenu();
+      setTimeout(() => setOpen(true), 250);
+    } else {
+      setOpen(true);
+    }
+  };
+
   if (!user || user.is_tutor || user.role === 'admin') {
     return null;
   }
@@ -112,9 +121,7 @@ export default function BecomeTutorButton({ user, onSuccess }) {
   return (
     <>
       <button 
-        onClick={() => {
-          setOpen(true);
-        }} 
+        onClick={handleClick} 
         className="flex items-center w-full text-left hover:bg-gray-100 px-2 py-1.5 rounded-md transition-colors"
       >
         <GraduationCap className="w-4 h-4 mr-2" />
