@@ -35,6 +35,7 @@ function LayoutContent({ children, currentPageName }) {
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const location = useLocation();
+  const [tabScrollPositions, setTabScrollPositions] = useState({});
 
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
@@ -63,6 +64,29 @@ function LayoutContent({ children, currentPageName }) {
     window.addEventListener('scroll', handleScroll);
     return () => window.removeEventListener('scroll', handleScroll);
   }, []);
+
+  // Preserve scroll position when navigating tabs
+  useEffect(() => {
+    const saveScrollPosition = () => {
+      setTabScrollPositions(prev => ({
+        ...prev,
+        [location.pathname]: window.scrollY
+      }));
+    };
+
+    const restoreScrollPosition = () => {
+      const savedPosition = tabScrollPositions[location.pathname];
+      if (savedPosition !== undefined) {
+        window.scrollTo(0, savedPosition);
+      }
+    };
+
+    restoreScrollPosition();
+
+    return () => {
+      saveScrollPosition();
+    };
+  }, [location.pathname]);
 
   const isLessonPlayer = currentPageName === 'LessonPlayer';
 

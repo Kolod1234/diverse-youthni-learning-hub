@@ -1,8 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
+import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box, Container, Avatar } from '@mui/material';
 import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock, Rss } from 'lucide-react';
 import { motion } from 'framer-motion';
@@ -51,12 +52,23 @@ export default function Home() {
   const [leadershipEmblaRef, leadershipEmblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 4000, stopOnInteraction: false })]);
   const [heroEmblaRef] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 6000, stopOnInteraction: false })]);
   const navigate = useNavigate();
+  const scrollContainerRef = useRef(null);
 
-  const { data: currentUser, isLoading: userLoading } = useQuery({
+  const { data: currentUser, isLoading: userLoading, refetch: refetchUser } = useQuery({
     queryKey: ['user'],
     queryFn: () => base44.auth.me(),
     staleTime: 1000 * 60 * 5, // 5 minutes
     onSuccess: (data) => setUser(data),
+  });
+
+  // Pull to refresh
+  const { isPulling, pullDistance } = usePullToRefresh(async () => {
+    await Promise.all([
+      refetchUser(),
+      queryClient.invalidateQueries(['courses']),
+      queryClient.invalidateQueries(['all-carousel-images']),
+      queryClient.invalidateQueries(['site-content'])
+    ]);
   });
 
   useEffect(() => {
@@ -308,7 +320,40 @@ export default function Home() {
     .slice(0, 3);
 
   return (
-    <Box sx={{ bgcolor: 'background.default' }}>
+    <Box ref={scrollContainerRef} sx={{ bgcolor: 'background.default' }}>
+      {/* Pull to Refresh Indicator */}
+      {isPulling && (
+        <Box
+          sx={{
+            position: 'fixed',
+            top: 64,
+            left: 0,
+            right: 0,
+            display: 'flex',
+            justifyContent: 'center',
+            zIndex: 9999,
+            transition: 'transform 0.2s',
+            transform: `translateY(${Math.min(pullDistance, 80)}px)`,
+            pointerEvents: 'none'
+          }}
+        >
+          <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Box
+              sx={{
+                width: 16,
+                height: 16,
+                border: '2px solid white',
+                borderTopColor: 'transparent',
+                borderRadius: '50%',
+                animation: pullDistance > 80 ? 'spin 1s linear infinite' : 'none'
+              }}
+            />
+            <Typography variant="body2" fontWeight={600}>
+              {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+            </Typography>
+          </Box>
+        </Box>
+      )}
       <PageSEO pageName="Home" sections={allPageSections} />
       {/* Search Bar - Sticky at top with glass effect */}
       <Box component="section" sx={{ position: 'sticky', top: 64, zIndex: 40, background: 'linear-gradient(to right, rgba(0,51,102,0.95), rgba(0,68,136,0.95), rgba(0,51,102,0.95))', backdropFilter: 'blur(24px)', boxShadow: 6, borderBottom: 1, borderColor: 'rgba(255,255,255,0.1)' }}>

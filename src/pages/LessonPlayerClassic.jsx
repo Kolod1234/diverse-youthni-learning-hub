@@ -642,7 +642,7 @@ export default function LessonPlayerClassic() {
                 onClick={() => setShowUnlockDialog(true)}
                 variant="contained"
                 fullWidth
-                sx={{ background: 'linear-gradient(90deg, #ea580c 0%, #dc2626 100%)', gap: 1 }}
+                sx={{ background: 'linear-gradient(90deg, #ea580c 0%, #dc2626 100%)', gap: 1, minHeight: 44 }}
               >
                 <Key className="w-4 h-4" />
                 Enter Unlock Key
@@ -651,6 +651,7 @@ export default function LessonPlayerClassic() {
                 onClick={() => navigate(-1)}
                 variant="outlined"
                 fullWidth
+                sx={{ minHeight: 44 }}
               >
                 Back to Course
               </Button>
@@ -1277,14 +1278,14 @@ export default function LessonPlayerClassic() {
                 size="large"
                 onClick={handlePrevLesson}
                 disabled={!prevLesson}
-                sx={{ flex: { xs: 1, sm: 'none' } }}
+                sx={{ flex: { xs: 1, sm: 'none' }, minHeight: 44 }}
               >
                 ← Previous
               </Button>
               <Button 
                 variant="contained"
                 size="large"
-                sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#1e3a8a', '&:hover': { bgcolor: '#1e2855' } }}
+                sx={{ flex: { xs: 1, sm: 'none' }, bgcolor: '#1e3a8a', '&:hover': { bgcolor: '#1e2855' }, minHeight: 44 }}
                 onClick={handleNextLesson}
                 disabled={!nextLesson}
               >
@@ -1303,7 +1304,7 @@ export default function LessonPlayerClassic() {
                     haptic.success();
                   }}
                   disabled={markCompleteMutation.isPending}
-                  sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' }, gap: 1, minHeight: 44 }}
+                  sx={{ bgcolor: 'success.main', '&:hover': { bgcolor: 'success.dark' }, gap: 1, minHeight: 48, fontSize: '1rem' }}
                 >
                   <CheckCircle size={20} />
                   {markCompleteMutation.isPending ? 'Saving...' : 'Mark as Complete'}

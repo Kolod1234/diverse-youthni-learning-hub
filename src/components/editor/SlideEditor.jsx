@@ -657,7 +657,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               variant={editorMode === 'rich' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setEditorMode('rich')}
-              className="h-8"
+              className="min-h-[44px]"
             >
               <FileText className="w-4 h-4 mr-2" />
               Rich Text
@@ -666,7 +666,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               variant={editorMode === 'canvas' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setEditorMode('canvas')}
-              className="h-8"
+              className="min-h-[44px]"
             >
               <LayoutTemplate className="w-4 h-4 mr-2" />
               Canvas
@@ -676,7 +676,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             variant="outline"
             size="sm"
             onClick={() => setShowTemplateBlocks(true)}
-            className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100"
+            className="bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100 min-h-[44px]"
           >
             <Grid3x3 className="w-4 h-4 mr-2" />
             Blocks
@@ -685,7 +685,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             variant="outline"
             size="sm"
             onClick={() => setShowCanvaImporter(true)}
-            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 min-h-[44px]"
           >
             <Download className="w-4 h-4 mr-2" />
             Import Canva
@@ -694,7 +694,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             variant="outline"
             size="sm"
             onClick={() => setShowFigmaImporter(true)}
-            className="bg-pink-50 border-pink-200 text-pink-700 hover:bg-pink-100"
+            className="bg-pink-50 border-pink-200 text-pink-700 hover:bg-pink-100 min-h-[44px]"
           >
             <Download className="w-4 h-4 mr-2" />
             Import Figma
@@ -703,7 +703,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             variant="outline"
             size="sm"
             onClick={() => setShowPresentation(true)}
-            className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100"
+            className="bg-green-50 border-green-200 text-green-700 hover:bg-green-100 min-h-[44px]"
           >
             <Presentation className="w-4 h-4 mr-2" />
             Present
@@ -716,7 +716,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
               setAiPrompt('');
               setShowAIDialog(true);
             }}
-            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100"
+            className="bg-purple-50 border-purple-200 text-purple-700 hover:bg-purple-100 min-h-[44px]"
           >
             <Sparkles className="w-4 h-4 mr-2" />
             AI Assistant
@@ -725,6 +725,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             variant="outline"
             size="sm"
             onClick={() => setFullscreenEdit(!fullscreenEdit)}
+            className="min-h-[44px]"
           >
             <Maximize2 className="w-4 h-4 mr-2" />
             {fullscreenEdit ? 'Exit' : 'Fullscreen'}
@@ -822,7 +823,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 p-0"
+                                    className="min-h-[44px] min-w-[44px] p-0"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       duplicateSlide(index);
@@ -833,7 +834,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                                   <Button
                                     variant="ghost"
                                     size="sm"
-                                    className="h-6 w-6 p-0 text-red-600 hover:text-red-700"
+                                    className="min-h-[44px] min-w-[44px] p-0 text-red-600 hover:text-red-700"
                                     onClick={(e) => {
                                       e.stopPropagation();
                                       if (confirm('Delete this slide?')) deleteSlide(index);
@@ -867,6 +868,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   size="sm"
                   onClick={() => setCurrentSlide(Math.max(0, currentSlide - 1))}
                   disabled={currentSlide === 0}
+                  className="min-h-[44px]"
                 >
                   <ChevronLeft className="w-4 h-4 mr-1" />
                   Previous
@@ -1008,6 +1010,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                     variant="outline"
                     size="sm"
                     onClick={() => duplicateSlide(currentSlide)}
+                    className="min-h-[44px]"
                   >
                     <Copy className="w-4 h-4 mr-1" />
                     Duplicate
@@ -1018,7 +1021,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                     onClick={() => {
                       if (confirm('Delete this slide?')) deleteSlide(currentSlide);
                     }}
-                    className="text-red-600 hover:text-red-700"
+                    className="text-red-600 hover:text-red-700 min-h-[44px]"
                   >
                     <Trash2 className="w-4 h-4 mr-1" />
                     Delete
@@ -1030,6 +1033,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   size="sm"
                   onClick={() => setCurrentSlide(Math.min(slides.length - 1, currentSlide + 1))}
                   disabled={currentSlide === slides.length - 1}
+                  className="min-h-[44px]"
                 >
                   Next
                   <ChevronRight className="w-4 h-4 ml-1" />

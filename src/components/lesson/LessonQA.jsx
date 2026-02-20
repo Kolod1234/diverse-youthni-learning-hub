@@ -23,6 +23,26 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.LessonQuestion.create(data),
+    onMutate: async (newQuestion) => {
+      await queryClient.cancelQueries(['lesson-questions', lessonId]);
+      const previousQuestions = queryClient.getQueryData(['lesson-questions', lessonId]);
+      
+      queryClient.setQueryData(['lesson-questions', lessonId], (old = []) => [
+        {
+          id: 'temp-' + Date.now(),
+          ...newQuestion,
+          created_date: new Date().toISOString(),
+          upvotes: 0,
+          is_answered: false
+        },
+        ...old
+      ]);
+      
+      return { previousQuestions };
+    },
+    onError: (err, newQuestion, context) => {
+      queryClient.setQueryData(['lesson-questions', lessonId], context.previousQuestions);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['lesson-questions', lessonId]);
       setQuestion('');
@@ -31,6 +51,19 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.LessonQuestion.update(id, data),
+    onMutate: async ({ id, data }) => {
+      await queryClient.cancelQueries(['lesson-questions', lessonId]);
+      const previousQuestions = queryClient.getQueryData(['lesson-questions', lessonId]);
+      
+      queryClient.setQueryData(['lesson-questions', lessonId], (old = []) =>
+        old.map(q => q.id === id ? { ...q, ...data } : q)
+      );
+      
+      return { previousQuestions };
+    },
+    onError: (err, variables, context) => {
+      queryClient.setQueryData(['lesson-questions', lessonId], context.previousQuestions);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['lesson-questions', lessonId]);
       setAnswer('');
