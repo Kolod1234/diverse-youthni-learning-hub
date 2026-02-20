@@ -109,7 +109,6 @@ function LayoutContent({ children, currentPageName }) {
 
   // Role checks
   const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
-  const isAdmin = user && user.role === 'admin';
   const isCoordinator = user && user.is_coordinator === true && !user.coordinator_banned;
 
   const navigation = [
