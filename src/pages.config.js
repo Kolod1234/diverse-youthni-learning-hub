@@ -47,6 +47,10 @@
  *
  * The mainPage value must match a key in the PAGES object exactly.
  */
+import AcademyBuilder from './pages/AcademyBuilder';
+import AcademyExplore from './pages/AcademyExplore';
+import AcademyManager from './pages/AcademyManager';
+import AcademyPlayer from './pages/AcademyPlayer';
 import Achievements from './pages/Achievements';
 import AdminAttendance from './pages/AdminAttendance';
 import AdminCoordinators from './pages/AdminCoordinators';
@@ -62,6 +66,7 @@ import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
 import AdminReminders from './pages/AdminReminders';
 import AdminReviews from './pages/AdminReviews';
+import AdminRolesPermissions from './pages/AdminRolesPermissions';
 import AdminStudentMessages from './pages/AdminStudentMessages';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminUserProfile from './pages/AdminUserProfile';
@@ -75,9 +80,11 @@ import CCEAPastPapers from './pages/CCEAPastPapers';
 import ChallengeLeaderboard from './pages/ChallengeLeaderboard';
 import ChallengePlayer from './pages/ChallengePlayer';
 import Challenges from './pages/Challenges';
+import CollaborationHub from './pages/CollaborationHub';
 import Community from './pages/Community';
 import CommunityEventSlides from './pages/CommunityEventSlides';
 import ContactUs from './pages/ContactUs';
+import ContentVersionManager from './pages/ContentVersionManager';
 import CoordinatorsDashboard from './pages/CoordinatorsDashboard';
 import CourseAnalytics from './pages/CourseAnalytics';
 import CourseDetails from './pages/CourseDetails';
@@ -88,16 +95,22 @@ import CreateAssignment from './pages/CreateAssignment';
 import Dashboard from './pages/Dashboard';
 import DataPresentation from './pages/DataPresentation';
 import DetailedCourseAnalytics from './pages/DetailedCourseAnalytics';
+import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
+import EnterpriseIntegrations from './pages/EnterpriseIntegrations';
+import ExpertContentCreator from './pages/ExpertContentCreator';
 import Explore from './pages/Explore';
 import FileManager from './pages/FileManager';
 import GradeAssignments from './pages/GradeAssignments';
+import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
 import Home from './pages/Home';
 import HomeGuest from './pages/HomeGuest';
 import HomeLeadership from './pages/HomeLeadership';
 import HomeLearning from './pages/HomeLearning';
 import HomeYouthWork from './pages/HomeYouthWork';
 import KnowledgeBase from './pages/KnowledgeBase';
+import LMSIntegrationConfig from './pages/LMSIntegrationConfig';
 import LeadershipLanding from './pages/LeadershipLanding';
+import LearningImpactDashboard from './pages/LearningImpactDashboard';
 import LearningPaths from './pages/LearningPaths';
 import LessonEditor from './pages/LessonEditor';
 import LessonPlayer from './pages/LessonPlayer';
@@ -105,6 +118,7 @@ import LessonPlayerClassic from './pages/LessonPlayerClassic';
 import LessonPlayerPowerPoint from './pages/LessonPlayerPowerPoint';
 import LessonPlayerRise from './pages/LessonPlayerRise';
 import Library from './pages/Library';
+import LiveSessionHost from './pages/LiveSessionHost';
 import MessageCenter from './pages/MessageCenter';
 import NotificationCenter from './pages/NotificationCenter';
 import PathManager from './pages/PathManager';
@@ -116,8 +130,10 @@ import Quiz from './pages/Quiz';
 import QuizGenerator from './pages/QuizGenerator';
 import SCORMAuthor from './pages/SCORMAuthor';
 import ScheduleSession from './pages/ScheduleSession';
+import SessionRecordings from './pages/SessionRecordings';
 import Sessions from './pages/Sessions';
 import Settings from './pages/Settings';
+import SimulationAuthor from './pages/SimulationAuthor';
 import SocialHub from './pages/SocialHub';
 import StudentAnalytics from './pages/StudentAnalytics';
 import StudentPathways from './pages/StudentPathways';
@@ -135,26 +151,14 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AcademyManager from './pages/AcademyManager';
-import AcademyBuilder from './pages/AcademyBuilder';
-import AcademyExplore from './pages/AcademyExplore';
-import AcademyPlayer from './pages/AcademyPlayer';
-import ExpertContentCreator from './pages/ExpertContentCreator';
-import LearningImpactDashboard from './pages/LearningImpactDashboard';
-import CollaborationHub from './pages/CollaborationHub';
-import EnterpriseIntegrations from './pages/EnterpriseIntegrations';
-import LiveSessionHost from './pages/LiveSessionHost';
-import SessionRecordings from './pages/SessionRecordings';
-import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
-import ContentVersionManager from './pages/ContentVersionManager';
-import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
-import LMSIntegrationConfig from './pages/LMSIntegrationConfig';
-import SimulationAuthor from './pages/SimulationAuthor';
-import AdminRolesPermissions from './pages/AdminRolesPermissions';
 import __Layout from './Layout.jsx';
 
 
 export const PAGES = {
+    "AcademyBuilder": AcademyBuilder,
+    "AcademyExplore": AcademyExplore,
+    "AcademyManager": AcademyManager,
+    "AcademyPlayer": AcademyPlayer,
     "Achievements": Achievements,
     "AdminAttendance": AdminAttendance,
     "AdminCoordinators": AdminCoordinators,
@@ -170,6 +174,7 @@ export const PAGES = {
     "AdminRSSFeed": AdminRSSFeed,
     "AdminReminders": AdminReminders,
     "AdminReviews": AdminReviews,
+    "AdminRolesPermissions": AdminRolesPermissions,
     "AdminStudentMessages": AdminStudentMessages,
     "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminUserProfile": AdminUserProfile,
@@ -183,9 +188,11 @@ export const PAGES = {
     "ChallengeLeaderboard": ChallengeLeaderboard,
     "ChallengePlayer": ChallengePlayer,
     "Challenges": Challenges,
+    "CollaborationHub": CollaborationHub,
     "Community": Community,
     "CommunityEventSlides": CommunityEventSlides,
     "ContactUs": ContactUs,
+    "ContentVersionManager": ContentVersionManager,
     "CoordinatorsDashboard": CoordinatorsDashboard,
     "CourseAnalytics": CourseAnalytics,
     "CourseDetails": CourseDetails,
@@ -196,16 +203,22 @@ export const PAGES = {
     "Dashboard": Dashboard,
     "DataPresentation": DataPresentation,
     "DetailedCourseAnalytics": DetailedCourseAnalytics,
+    "EnhancedContentAuthor": EnhancedContentAuthor,
+    "EnterpriseIntegrations": EnterpriseIntegrations,
+    "ExpertContentCreator": ExpertContentCreator,
     "Explore": Explore,
     "FileManager": FileManager,
     "GradeAssignments": GradeAssignments,
+    "GroupProjectWorkspace": GroupProjectWorkspace,
     "Home": Home,
     "HomeGuest": HomeGuest,
     "HomeLeadership": HomeLeadership,
     "HomeLearning": HomeLearning,
     "HomeYouthWork": HomeYouthWork,
     "KnowledgeBase": KnowledgeBase,
+    "LMSIntegrationConfig": LMSIntegrationConfig,
     "LeadershipLanding": LeadershipLanding,
+    "LearningImpactDashboard": LearningImpactDashboard,
     "LearningPaths": LearningPaths,
     "LessonEditor": LessonEditor,
     "LessonPlayer": LessonPlayer,
@@ -213,6 +226,7 @@ export const PAGES = {
     "LessonPlayerPowerPoint": LessonPlayerPowerPoint,
     "LessonPlayerRise": LessonPlayerRise,
     "Library": Library,
+    "LiveSessionHost": LiveSessionHost,
     "MessageCenter": MessageCenter,
     "NotificationCenter": NotificationCenter,
     "PathManager": PathManager,
@@ -224,8 +238,10 @@ export const PAGES = {
     "QuizGenerator": QuizGenerator,
     "SCORMAuthor": SCORMAuthor,
     "ScheduleSession": ScheduleSession,
+    "SessionRecordings": SessionRecordings,
     "Sessions": Sessions,
     "Settings": Settings,
+    "SimulationAuthor": SimulationAuthor,
     "SocialHub": SocialHub,
     "StudentAnalytics": StudentAnalytics,
     "StudentPathways": StudentPathways,
@@ -243,22 +259,6 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AcademyManager": AcademyManager,
-    "AcademyBuilder": AcademyBuilder,
-    "AcademyExplore": AcademyExplore,
-    "AcademyPlayer": AcademyPlayer,
-    "ExpertContentCreator": ExpertContentCreator,
-    "LearningImpactDashboard": LearningImpactDashboard,
-    "CollaborationHub": CollaborationHub,
-    "EnterpriseIntegrations": EnterpriseIntegrations,
-    "LiveSessionHost": LiveSessionHost,
-    "SessionRecordings": SessionRecordings,
-    "GroupProjectWorkspace": GroupProjectWorkspace,
-    "ContentVersionManager": ContentVersionManager,
-    "EnhancedContentAuthor": EnhancedContentAuthor,
-    "LMSIntegrationConfig": LMSIntegrationConfig,
-    "SimulationAuthor": SimulationAuthor,
-    "AdminRolesPermissions": AdminRolesPermissions,
 }
 
 export const pagesConfig = {

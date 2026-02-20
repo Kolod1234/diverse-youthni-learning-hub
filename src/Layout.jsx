@@ -4,7 +4,7 @@ import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
@@ -38,6 +38,7 @@ function LayoutContent({ children, currentPageName }) {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const [tabScrollPositions, setTabScrollPositions] = useState({});
   const { can, isAdmin, isInstructor, isContentCreator } = usePermissions();
 
@@ -535,7 +536,7 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><User size={18} /></ListItemIcon>
                   <ListItemText primary="My Dashboard" />
                 </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('WelcomeCover')} onClick={() => setUserMenuAnchor(null)}>
+                <MenuItem onClick={() => { navigate(createPageUrl('WelcomeCover')); setUserMenuAnchor(null); }}>
                   <ListItemIcon><Home size={18} /></ListItemIcon>
                   <ListItemText primary="Change Pathway" />
                 </MenuItem>
