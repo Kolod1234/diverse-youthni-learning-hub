@@ -2,6 +2,8 @@ import React from 'react';
 import { AlertCircle, FileText, Film, PuzzleIcon, Zap } from 'lucide-react';
 import DocumentViewer from './DocumentViewer';
 import GoogleSlidePlayer from './GoogleSlidePlayer';
+import { MathJax } from 'better-react-mathjax';
+import isomorphicDOMPurify from 'isomorphic-dompurify';
 
 /**
  * Unified content renderer for different lesson content types
@@ -128,17 +130,49 @@ function RichTextRenderer({ slides }) {
     );
   }
 
+  const cleanHTML = (html) => {
+    if (typeof html !== 'string') return html;
+    
+    let cleaned = html
+      // Decode HTML entities
+      .replace(/&lt;/g, '<')
+      .replace(/&gt;/g, '>')
+      .replace(/&quot;/g, '"')
+      .replace(/&#39;/g, "'")
+      .replace(/&amp;/g, '&')
+      // Remove duplicate headings (case insensitive)
+      .replace(/(<h[1-6][^>]*>)(.*?)<\/h[1-6]>\s*<h[1-6][^>]*>\2<\/h[1-6]>/gi, '$1$2</h$1>')
+      // Fix broken bullet points
+      .replace(/<li>\s*<\/li>/g, '')
+      .replace(/(<p>)\s*•\s*/g, '<ul><li>')
+      .replace(/\n\s*•\s*/g, '</li><li>')
+      .replace(/(<\/li>)(?!\s*<li>|\s*<\/ul>)/g, '$1</ul>')
+      // Remove random bold tags in middle of sentences
+      .replace(/(<\/(strong|b)>)\s*(<(strong|b)>)/gi, ' ')
+      // Clean up whitespace
+      .replace(/\s{2,}/g, ' ')
+      .replace(/<p>\s*<\/p>/g, '')
+      .replace(/<br\s*\/?>\s*<br\s*\/?>/g, '<br/>')
+      // Merge consecutive lists
+      .replace(/<\/ul>\s*<ul>/g, '')
+      .replace(/<\/ol>\s*<ol>/g, '');
+    
+    // Sanitize for security
+    return isomorphicDOMPurify.sanitize(cleaned, {
+      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'span', 'div', 'code', 'pre', 'blockquote'],
+      ALLOWED_ATTR: ['href', 'class', 'id', 'style']
+    });
+  };
+
   return (
     <div className="space-y-6">
       {slides.map((slide, index) => (
         <div key={index} className="bg-white rounded-lg shadow-sm p-6 border border-slate-200">
           {slide.title && <h2 className="text-2xl font-bold mb-4 text-slate-900">{slide.title}</h2>}
           <div 
-            className="prose prose-slate max-w-none"
+            className="prose prose-slate max-w-none prose-headings:mb-3 prose-p:mb-2 prose-li:mb-1 prose-ul:my-3 prose-ol:my-3"
             dangerouslySetInnerHTML={{ 
-              __html: typeof slide.content === 'string' 
-                ? slide.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
-                : slide.content 
+              __html: cleanHTML(slide.content)
             }}
           />
         </div>
