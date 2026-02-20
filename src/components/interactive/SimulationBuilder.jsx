@@ -51,7 +51,11 @@ export default function SimulationBuilder({ lessonId, courseId, onCreated }) {
     { value: 'coding_sandbox', label: 'Coding Sandbox', icon: Code },
     { value: 'physics_simulation', label: 'Physics Simulation', icon: Play },
     { value: 'chemistry_lab', label: 'Chemistry Lab', icon: Beaker },
-    { value: 'math_visualization', label: 'Math Visualization', icon: BarChart3 }
+    { value: 'math_visualization', label: 'Math Visualization', icon: BarChart3 },
+    { value: 'branching_scenario', label: 'Branching Scenario', icon: Code },
+    { value: 'decision_tree', label: 'Decision Tree', icon: Code },
+    { value: 'virtual_patient', label: 'Virtual Patient', icon: Beaker },
+    { value: 'case_study', label: 'Interactive Case Study', icon: Code }
   ];
 
   return (
