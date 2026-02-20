@@ -1085,7 +1085,12 @@ export default function LessonPlayerClassic() {
                   }}
                   dangerouslySetInnerHTML={{
                     __html: typeof lesson.description === 'string'
-                      ? lesson.description.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                      ? lesson.description
+                          .replace(/&lt;/g, '<')
+                          .replace(/&gt;/g, '>')
+                          .replace(/&quot;/g, '"')
+                          .replace(/&#39;/g, "'")
+                          .replace(/&amp;/g, '&')
                       : lesson.description
                   }}
                 />
@@ -1106,10 +1111,23 @@ export default function LessonPlayerClassic() {
                       )}
                       {slide.content && (
                         <Box
-                          sx={{ prose: true, color: 'text.primary', lineHeight: 1.7 }}
+                          sx={{ 
+                            prose: true, 
+                            color: 'text.primary', 
+                            lineHeight: 1.7,
+                            '& .math-error': {
+                              display: 'none'
+                            }
+                          }}
                           dangerouslySetInnerHTML={{
                             __html: typeof slide.content === 'string'
-                              ? slide.content.replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&quot;/g, '"').replace(/&#39;/g, "'")
+                              ? slide.content
+                                  .replace(/&lt;/g, '<')
+                                  .replace(/&gt;/g, '>')
+                                  .replace(/&quot;/g, '"')
+                                  .replace(/&#39;/g, "'")
+                                  .replace(/&amp;/g, '&')
+                                  .replace(/<span[^>]*class="[^"]*math-error[^"]*"[^>]*>.*?<\/span>/gi, '')
                               : slide.content
                           }}
                         />
