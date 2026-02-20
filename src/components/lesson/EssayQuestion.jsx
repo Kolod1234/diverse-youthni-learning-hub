@@ -14,6 +14,7 @@ export default function EssayQuestion({ questions, onComplete }) {
   const [feedback, setFeedback] = useState(null);
   const [isAnalyzing, setIsAnalyzing] = useState(false);
   const [completedCount, setCompletedCount] = useState(0);
+  const [hasSubmitted, setHasSubmitted] = useState(false);
 
   const currentQuestion = questions[currentIndex];
   const wordCount = answer.trim().split(/\s+/).filter(Boolean).length;
@@ -79,11 +80,8 @@ Provide feedback in JSON format:
       });
 
       setFeedback(response);
+      setHasSubmitted(true);
       setCompletedCount(prev => prev + 1);
-      
-      if (currentIndex === questions.length - 1 && onComplete) {
-        setTimeout(() => onComplete(completedCount + 1), 2000);
-      }
     } catch (error) {
       console.error('Failed to analyze essay:', error);
       toast.error('Failed to analyze your essay. Please try again.');
@@ -97,6 +95,12 @@ Provide feedback in JSON format:
       setCurrentIndex(prev => prev + 1);
       setAnswer('');
       setFeedback(null);
+      setHasSubmitted(false);
+    } else {
+      // Last question - trigger completion
+      if (onComplete) {
+        onComplete(completedCount);
+      }
     }
   };
 
@@ -235,11 +239,17 @@ Provide feedback in JSON format:
                   </div>
                 </div>
 
-                {currentIndex < questions.length - 1 && (
-                  <Button onClick={nextQuestion} className="w-full">
-                    Next Question →
-                  </Button>
-                )}
+                <div className="flex gap-2">
+                  {currentIndex < questions.length - 1 ? (
+                    <Button onClick={nextQuestion} className="w-full">
+                      Next Question →
+                    </Button>
+                  ) : (
+                    <Button onClick={nextQuestion} className="w-full bg-green-600 hover:bg-green-700">
+                      Complete All Questions ✓
+                    </Button>
+                  )}
+                </div>
               </motion.div>
             )}
           </motion.div>
