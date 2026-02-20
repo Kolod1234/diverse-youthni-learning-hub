@@ -3,9 +3,10 @@ import { base44 } from '@/api/base44Client';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   Card, Box, Typography, Button, TextField, LinearProgress,
-  Alert, List, ListItem, ListItemText
+  Alert, List, ListItem, ListItemText, Chip, Accordion,
+  AccordionSummary, AccordionDetails
 } from '@mui/material';
-import { Upload, FileArchive, CheckCircle, AlertCircle } from 'lucide-react';
+import { Upload, FileArchive, CheckCircle, AlertCircle, AlertTriangle, Info, ChevronDown } from 'lucide-react';
 import { toast } from 'sonner';
 
 export default function SCORMUploader({ courseId, lessonId, onUploaded }) {
@@ -14,11 +15,14 @@ export default function SCORMUploader({ courseId, lessonId, onUploaded }) {
   const [selectedFile, setSelectedFile] = useState(null);
   const [packageInfo, setPackageInfo] = useState(null);
   const [uploading, setUploading] = useState(false);
+  const [validationReport, setValidationReport] = useState(null);
 
   const uploadSCORMMutation = useMutation({
     mutationFn: async (file) => {
       setUploading(true);
       setUploadProgress(10);
+      setValidationReport(null);
+      setPackageInfo(null);
 
       // Upload the SCORM package
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
@@ -35,14 +39,26 @@ export default function SCORMUploader({ courseId, lessonId, onUploaded }) {
       return response.data;
     },
     onSuccess: (data) => {
-      queryClient.invalidateQueries(['scorm-packages']);
-      toast.success('SCORM package uploaded successfully!');
-      setPackageInfo(data);
-      onUploaded?.(data);
+      if (data.success) {
+        queryClient.invalidateQueries(['scorm-packages']);
+        toast.success('SCORM package uploaded and validated successfully!');
+        setPackageInfo(data);
+        setValidationReport(data.validationReport);
+        onUploaded?.(data);
+      } else {
+        toast.error('SCORM validation failed - see report for details');
+        setValidationReport(data.validationReport);
+      }
       setUploading(false);
     },
     onError: (error) => {
-      toast.error('Failed to upload SCORM package');
+      const errorData = error.response?.data;
+      if (errorData?.validationReport) {
+        setValidationReport(errorData.validationReport);
+        toast.error('SCORM package validation failed');
+      } else {
+        toast.error('Failed to process SCORM package');
+      }
       console.error(error);
       setUploading(false);
     }
@@ -109,11 +125,103 @@ export default function SCORMUploader({ courseId, lessonId, onUploaded }) {
         </Box>
       )}
 
-      {packageInfo && (
+      {/* Validation Report */}
+      {validationReport && (
         <Box sx={{ mb: 3 }}>
-          <Alert severity="success" icon={<CheckCircle />} sx={{ mb: 2 }}>
-            SCORM package uploaded successfully!
-          </Alert>
+          {validationReport.isValid ? (
+            <Alert severity="success" icon={<CheckCircle />} sx={{ mb: 2 }}>
+              ✅ SCORM package validated successfully!
+            </Alert>
+          ) : (
+            <Alert severity="error" icon={<AlertCircle />} sx={{ mb: 2 }}>
+              ❌ SCORM package validation failed
+            </Alert>
+          )}
+
+          {/* Errors */}
+          {validationReport.errors.length > 0 && (
+            <Accordion defaultExpanded={!validationReport.isValid}>
+              <AccordionSummary expandIcon={<ChevronDown />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AlertCircle className="w-4 h-4 text-error-main" />
+                  <Typography variant="subtitle2">
+                    Errors ({validationReport.errors.length})
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List dense>
+                  {validationReport.errors.map((error, idx) => (
+                    <ListItem key={idx}>
+                      <ListItemText
+                        primary={error}
+                        primaryTypographyProps={{ color: 'error', variant: 'body2' }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          )}
+
+          {/* Warnings */}
+          {validationReport.warnings.length > 0 && (
+            <Accordion>
+              <AccordionSummary expandIcon={<ChevronDown />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <AlertTriangle className="w-4 h-4 text-warning-main" />
+                  <Typography variant="subtitle2">
+                    Warnings ({validationReport.warnings.length})
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List dense>
+                  {validationReport.warnings.map((warning, idx) => (
+                    <ListItem key={idx}>
+                      <ListItemText
+                        primary={warning}
+                        primaryTypographyProps={{ color: 'warning.main', variant: 'body2' }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          )}
+
+          {/* Info */}
+          {validationReport.info.length > 0 && (
+            <Accordion>
+              <AccordionSummary expandIcon={<ChevronDown />}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                  <Info className="w-4 h-4 text-info-main" />
+                  <Typography variant="subtitle2">
+                    Package Information ({validationReport.info.length})
+                  </Typography>
+                </Box>
+              </AccordionSummary>
+              <AccordionDetails>
+                <List dense>
+                  {validationReport.info.map((info, idx) => (
+                    <ListItem key={idx}>
+                      <ListItemText
+                        primary={info}
+                        primaryTypographyProps={{ variant: 'body2' }}
+                      />
+                    </ListItem>
+                  ))}
+                </List>
+              </AccordionDetails>
+            </Accordion>
+          )}
+        </Box>
+      )}
+
+      {/* Package Details */}
+      {packageInfo && packageInfo.success && (
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="subtitle2" sx={{ mb: 1 }}>Package Details</Typography>
           <List dense>
             <ListItem>
               <ListItemText
@@ -121,18 +229,34 @@ export default function SCORMUploader({ courseId, lessonId, onUploaded }) {
                 secondary={packageInfo.title}
               />
             </ListItem>
+            {packageInfo.description && (
+              <ListItem>
+                <ListItemText
+                  primary="Description"
+                  secondary={packageInfo.description}
+                />
+              </ListItem>
+            )}
             <ListItem>
               <ListItemText
                 primary="SCORM Version"
-                secondary={packageInfo.scorm_version}
+                secondary={
+                  <Chip 
+                    label={packageInfo.scorm_version} 
+                    size="small" 
+                    color="primary" 
+                  />
+                }
               />
             </ListItem>
-            <ListItem>
-              <ListItemText
-                primary="Launch File"
-                secondary={packageInfo.launch_url}
-              />
-            </ListItem>
+            {packageInfo.mastery_score && (
+              <ListItem>
+                <ListItemText
+                  primary="Mastery Score"
+                  secondary={`${packageInfo.mastery_score}%`}
+                />
+              </ListItem>
+            )}
           </List>
         </Box>
       )}
