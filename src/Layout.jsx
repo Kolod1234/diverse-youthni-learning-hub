@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, 
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle, Shield
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
