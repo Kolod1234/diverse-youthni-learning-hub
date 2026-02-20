@@ -2,8 +2,6 @@ import React from 'react';
 import { AlertCircle, FileText, Film, PuzzleIcon, Zap } from 'lucide-react';
 import DocumentViewer from './DocumentViewer';
 import GoogleSlidePlayer from './GoogleSlidePlayer';
-import { MathJax } from 'better-react-mathjax';
-import isomorphicDOMPurify from 'isomorphic-dompurify';
 
 /**
  * Unified content renderer for different lesson content types
@@ -133,15 +131,15 @@ function RichTextRenderer({ slides }) {
   const cleanHTML = (html) => {
     if (typeof html !== 'string') return html;
     
-    let cleaned = html
+    return html
       // Decode HTML entities
       .replace(/&lt;/g, '<')
       .replace(/&gt;/g, '>')
       .replace(/&quot;/g, '"')
       .replace(/&#39;/g, "'")
       .replace(/&amp;/g, '&')
-      // Remove duplicate headings (case insensitive)
-      .replace(/(<h[1-6][^>]*>)(.*?)<\/h[1-6]>\s*<h[1-6][^>]*>\2<\/h[1-6]>/gi, '$1$2</h$1>')
+      // Remove duplicate consecutive headings
+      .replace(/(<h[1-6][^>]*>.*?<\/h[1-6]>)\s*\1/gi, '$1')
       // Fix broken bullet points
       .replace(/<li>\s*<\/li>/g, '')
       .replace(/(<p>)\s*•\s*/g, '<ul><li>')
@@ -156,12 +154,6 @@ function RichTextRenderer({ slides }) {
       // Merge consecutive lists
       .replace(/<\/ul>\s*<ul>/g, '')
       .replace(/<\/ol>\s*<ol>/g, '');
-    
-    // Sanitize for security
-    return isomorphicDOMPurify.sanitize(cleaned, {
-      ALLOWED_TAGS: ['p', 'br', 'strong', 'em', 'u', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ul', 'ol', 'li', 'a', 'span', 'div', 'code', 'pre', 'blockquote'],
-      ALLOWED_ATTR: ['href', 'class', 'id', 'style']
-    });
   };
 
   return (
