@@ -41,7 +41,21 @@ Lesson Description: ${lessonDescription}
 Learning Objectives:
 ${learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-CRITICAL: This is generation #${randomSeed} at ${timestamp}. Create COMPLETELY NEW and DIFFERENT questions from any previous generations. Use varied examples, different question phrasings, alternative perspectives, and diverse scenarios.
+CRITICAL ALIGNMENT REQUIREMENTS:
+1. ONLY create questions that DIRECTLY test the learning objectives listed above
+2. EVERY question MUST relate to the specific lesson title and description provided
+3. DO NOT include general knowledge questions - all content must be specifically about THIS lesson's topics
+4. DO NOT introduce concepts not mentioned in the learning objectives
+5. Each question should explicitly address at least one of the numbered learning objectives above
+
+QUESTION VALIDITY CHECKLIST - Before including any question, verify:
+✓ Does this question test a learning objective from the list above?
+✓ Is this content mentioned in the lesson title or description?
+✓ Would a student who only studied THIS specific lesson be able to answer it?
+✓ Am I staying within the scope of THIS lesson (not adding extra topics)?
+
+VARIETY REQUIREMENT (Generation #${randomSeed} at ${timestamp}):
+Create COMPLETELY NEW and DIFFERENT questions from any previous generations while staying strictly within the lesson scope. Use varied examples, different question phrasings, and alternative perspectives - but ONLY for topics covered in THIS lesson.
 
 Generate the following in valid JSON format:
 
@@ -112,43 +126,42 @@ Generate the following in valid JSON format:
 
 STRICT A-LEVEL REQUIREMENTS:
 
-CONTENT SUMMARY & CHUNKING:
-- Create a comprehensive lesson summary with 3-5 key points
-- Break down content into 4-6 digestible chunks, each with a clear summary
-- Identify 2-3 prerequisite concepts students should know
-- Explain real-world relevance and applications
+CONTENT SUMMARY & CHUNKING (MUST align with lesson objectives):
+- Summarize ONLY the concepts covered in this lesson's learning objectives
+- Break down ONLY the topics mentioned in the lesson title and description
+- Prerequisites should be concepts needed BEFORE this specific lesson
+- Real-world relevance must connect to THIS lesson's specific topics
 
-EXAMPLES & CASE STUDIES:
-- Generate 5-7 diverse examples covering different difficulty levels
-- Include at least 2 worked examples with step-by-step solutions
-- Provide 1-2 real-world case studies showing practical applications
-- Ensure examples span basic, intermediate, and advanced levels
-- Connect examples to multiple related concepts
+EXAMPLES & CASE STUDIES (MUST align with lesson objectives):
+- ALL examples MUST illustrate concepts from the learning objectives above
+- Worked examples should demonstrate solving problems covered in THIS lesson
+- Case studies MUST apply THIS lesson's specific content, not general knowledge
+- DO NOT create examples for topics not in the learning objectives
 
-EXTERNAL RESOURCES:
-- Suggest 6-8 high-quality external resources for further learning
-- Include mix of: 2-3 videos, 2-3 articles, 1-2 interactive tools, 1 advanced reading
-- Provide brief descriptions explaining what each resource offers
-- Indicate difficulty level and estimated study time
-- Use search query suggestions (e.g., "Khan Academy photosynthesis", "BBC Bitesize enzymes")
+EXTERNAL RESOURCES (MUST align with lesson objectives):
+- ONLY suggest resources that cover THIS lesson's specific topics
+- Resource descriptions should mention which learning objective(s) they support
+- Use search queries specific to THIS lesson (include lesson title in search)
+- Example: "Khan Academy ${lessonTitle}", "BBC Bitesize ${lessonTitle}"
 
-ASSESSMENT MATERIALS:
-- Create exactly 6 matching pairs with A-level terminology
-- Create exactly 10 challenging quiz questions at A-level standard
-- Each quiz question MUST have exactly 4 options (A, B, C, D)
+ASSESSMENT MATERIALS (STRICT ALIGNMENT REQUIRED):
+- Create exactly 6 matching pairs - ONLY use terms/concepts from the learning objectives
+- Create exactly 10 quiz questions - EACH must test a specific learning objective listed above
+- In each question, reference which objective number (1, 2, 3, etc.) you're testing
+- ALL quiz options must be plausible within THIS lesson's scope
 - Distribute correct answers randomly across all 4 options (not just A or B)
-- Questions must require deep understanding, not just recall
-- Include questions requiring: analysis, evaluation, application of knowledge
-- Use mathematical notation with LaTeX where appropriate: $...$$ for inline, $$...$$ for display
+- Use mathematical notation with LaTeX: $...$ for inline, $$...$$ for display
 - For chemistry: use \\ce{...} for chemical formulas (e.g., \\ce{H2SO4})
-- For physics: include units, calculations, and equations
-- Create exactly 12 flashcards for key concepts
-- Create exactly 3 essay questions requiring extended responses
-- Create exactly 5 fill-in-the-blank exercises with 2-3 blanks each (use __blank__ format)
-- Make questions exam-style: clear, unambiguous, academically rigorous
-- Include real-world applications and problem-solving scenarios
-- Ensure plausible distractors (wrong answers that seem reasonable)
-- Vary difficulty: 3 challenging, 4 medium, 3 advanced questions`;
+- Create exactly 12 flashcards - ONLY covering terms from THIS lesson
+- Create exactly 3 essay questions - MUST require knowledge from the learning objectives
+- Create exactly 5 fill-in-the-blank exercises - ONLY testing THIS lesson's content
+- Distractors (wrong answers) should be plausible but clearly wrong for THIS lesson
+- Vary difficulty: 3 basic, 4 medium, 3 advanced questions
+
+FINAL VALIDATION - Before submitting, verify:
+- Every question can be answered using ONLY knowledge from this lesson
+- No questions test general knowledge or topics outside the learning objectives
+- All content directly supports the specific lesson title provided
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -159,7 +172,7 @@ ASSESSMENT MATERIALS:
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: When providing 4 options, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Distribute correct answers evenly across all four positions. Always respond with valid JSON only.' },
+          { role: 'system', content: 'You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials that STRICTLY align with specified learning objectives. Your PRIMARY responsibility is ensuring every single question directly tests the provided learning objectives - never include questions on topics not explicitly covered. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: When providing 4 options, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Distribute correct answers evenly across all four positions. Always respond with valid JSON only. REJECT any temptation to add "helpful" extra topics - stick ONLY to what was requested.' },
           { role: 'user', content: prompt }
         ],
         temperature: 0.9,
