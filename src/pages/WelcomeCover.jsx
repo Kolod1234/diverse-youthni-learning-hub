@@ -40,29 +40,25 @@ export default function WelcomeCover() {
   }, [navigate]);
 
   const handleSelectInterest = async (interestType) => {
-    // Leadership goes to landing page
-    if (interestType === 'leadership') {
-      navigate(createPageUrl('LeadershipLanding'));
-      return;
-    }
-
-    // Youth Work goes to landing page
-    if (interestType === 'youth_work') {
-      navigate(createPageUrl('YouthWorkLanding'));
-      return;
-    }
-
     if (user) {
-      // Logged-in user: save to database
+      // Logged-in user: save to database and navigate
       await base44.auth.updateMe({ interest_type: interestType });
-      navigate(createPageUrl('Home'));
+      
+      // Navigate to specific landing pages
+      if (interestType === 'leadership') {
+        navigate(createPageUrl('LeadershipLanding'));
+      } else if (interestType === 'youth_work') {
+        navigate(createPageUrl('YouthWorkLanding'));
+      } else {
+        navigate(createPageUrl('Home'));
+      }
     } else {
-      // Guest: save to localStorage
+      // Guest: save to localStorage or redirect to login
       if (interestType === 'guest') {
         localStorage.setItem('interest_type', 'guest');
         navigate(createPageUrl('Home'));
       } else {
-        // Redirect to login with next URL
+        // Redirect to login with pending interest
         localStorage.setItem('pending_interest', interestType);
         base44.auth.redirectToLogin(window.location.origin + createPageUrl('WelcomeCover'));
       }
