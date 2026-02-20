@@ -12,6 +12,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
   const [selectedLeft, setSelectedLeft] = useState(null);
   const [selectedRight, setSelectedRight] = useState(null);
   const [matches, setMatches] = useState([]);
+  const [wrongMatches, setWrongMatches] = useState([]);
   const [score, setScore] = useState(0);
   const [attempts, setAttempts] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
@@ -56,6 +57,10 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
         confetti({ particleCount: 100, spread: 70 });
         onComplete?.(score + 10);
       }
+    } else {
+      // Wrong match - track it and deduct points
+      setWrongMatches([...wrongMatches, { left: left.id, right: right.id }]);
+      setScore(prev => Math.max(0, prev - 2));
     }
     
     setTimeout(() => {
@@ -73,6 +78,7 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
     setSelectedLeft(null);
     setSelectedRight(null);
     setMatches([]);
+    setWrongMatches([]);
     setScore(0);
     setAttempts(0);
     setIsComplete(false);
@@ -127,6 +133,8 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   item.matched
                     ? 'bg-green-100 border-2 border-green-500'
+                    : selectedLeft?.id === item.id && selectedRight && selectedLeft.id !== selectedRight.id
+                    ? 'bg-red-200 border-2 border-red-500'
                     : selectedLeft?.id === item.id
                     ? 'bg-blue-200 border-2 border-blue-500'
                     : 'bg-white border-2 border-gray-200 hover:border-blue-300'
@@ -134,6 +142,9 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
               >
                 <div className="flex items-center gap-2">
                   {item.matched && <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />}
+                  {selectedLeft?.id === item.id && selectedRight && selectedLeft.id !== selectedRight.id && (
+                    <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                  )}
                   <span className="text-sm sm:text-base font-medium text-gray-800">{item.text}</span>
                 </div>
               </motion.button>
@@ -150,6 +161,8 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
                 className={`w-full p-4 rounded-lg text-left transition-all ${
                   item.matched
                     ? 'bg-green-100 border-2 border-green-500'
+                    : selectedRight?.id === item.id && selectedLeft && selectedLeft.id !== selectedRight.id
+                    ? 'bg-red-200 border-2 border-red-500'
                     : selectedRight?.id === item.id
                     ? 'bg-purple-200 border-2 border-purple-500'
                     : 'bg-white border-2 border-gray-200 hover:border-purple-300'
@@ -157,6 +170,9 @@ export default function MatchingGame({ pairs, onComplete, onRegenerate }) {
               >
                 <div className="flex items-center gap-2">
                   {item.matched && <CheckCircle className="w-5 h-5 text-green-600 flex-shrink-0" />}
+                  {selectedRight?.id === item.id && selectedLeft && selectedLeft.id !== selectedRight.id && (
+                    <XCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                  )}
                   <MathRenderer content={item.text} className="text-sm sm:text-base font-medium text-gray-800" />
                 </div>
               </motion.button>
