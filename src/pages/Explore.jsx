@@ -1,7 +1,9 @@
-import React, { useState, useEffect } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import React, { useState, useEffect, useRef } from 'react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { base44 } from '@/api/base44Client';
+import usePullToRefresh from '@/components/lesson/usePullToRefresh';
+import { RefreshCw } from 'lucide-react';
 import { 
   Slider, Checkbox, FormControlLabel, Button, Drawer, Box, Typography, Chip, Card, IconButton
 } from '@mui/material';
@@ -48,6 +50,8 @@ export default function Explore() {
   const [showFreeOnly, setShowFreeOnly] = useState(false);
   const [selectedQualification, setSelectedQualification] = useState(['gcse', 'alevel']);
   const [selectedALevelStage, setSelectedALevelStage] = useState(['as', 'a2', 'full']);
+  const queryClient = useQueryClient();
+  const scrollContainerRef = useRef(null);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -68,7 +72,7 @@ export default function Explore() {
     }
   }, []);
 
-  const { data: courses = [], isLoading } = useQuery({
+  const { data: courses = [], isLoading, refetch: refetchCourses } = useQuery({
     queryKey: ['courses'],
     queryFn: async () => {
       const courses = await base44.entities.Course.list('-created_date', 500);
@@ -81,6 +85,15 @@ export default function Explore() {
       );
       return coursesWithCounts;
     },
+  });
+
+  // Pull to refresh
+  const { isPulling, pullDistance } = usePullToRefresh(async () => {
+    await Promise.all([
+      refetchCourses(),
+      queryClient.invalidateQueries(['all-reviews']),
+      queryClient.invalidateQueries(['all-enrollments'])
+    ]);
   });
 
   const { data: allReviews = [], isLoading: reviewsLoading } = useQuery({
@@ -452,7 +465,31 @@ export default function Explore() {
 
   return (
     <CoursePasswordProtection user={user}>
-      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+        {/* Pull to Refresh Indicator */}
+        {isPulling && (
+          <Box
+            sx={{
+              position: 'fixed',
+              top: 64,
+              left: 0,
+              right: 0,
+              display: 'flex',
+              justifyContent: 'center',
+              zIndex: 9999,
+              transition: 'transform 0.2s',
+              transform: `translateY(${Math.min(pullDistance, 80)}px)`,
+              pointerEvents: 'none'
+            }}
+          >
+            <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
+              <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+              <Typography variant="body2" fontWeight={600}>
+                {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+              </Typography>
+            </Box>
+          </Box>
+        )}
         <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, sm: 3, lg: 4 }, py: 6 }}>
         {/* Header with Stats */}
         <motion.div 

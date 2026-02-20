@@ -1,6 +1,8 @@
-import React, { useState, useEffect, useMemo } from 'react';
+import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
+import usePullToRefresh from '@/components/lesson/usePullToRefresh';
+import { RefreshCw } from 'lucide-react';
 import { 
   Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
   Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem
@@ -53,8 +55,14 @@ export default function Library() {
     is_featured: false
   });
   const fileInputRef = React.useRef(null);
+  const scrollContainerRef = useRef(null);
 
   const queryClient = useQueryClient();
+
+  // Pull to refresh
+  const { isPulling, pullDistance } = usePullToRefresh(async () => {
+    await queryClient.invalidateQueries(['library-resources']);
+  });
 
   useEffect(() => {
     const loadUser = async () => {
@@ -372,7 +380,31 @@ export default function Library() {
   };
 
   return (
-    <Box sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
+    <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
+          {/* Pull to Refresh Indicator */}
+          {isPulling && (
+            <Box
+              sx={{
+                position: 'fixed',
+                top: 64,
+                left: 0,
+                right: 0,
+                display: 'flex',
+                justifyContent: 'center',
+                zIndex: 9999,
+                transition: 'transform 0.2s',
+                transform: `translateY(${Math.min(pullDistance, 80)}px)`,
+                pointerEvents: 'none'
+              }}
+            >
+              <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
+                <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+                <Typography variant="body2" fontWeight={600}>
+                  {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
+                </Typography>
+              </Box>
+            </Box>
+          )}
           {/* Mobile Upload FAB */}
           {canUpload && (
           <Box
@@ -450,7 +482,7 @@ export default function Library() {
               disabled={uploadingFile || analyzing || !canUpload}
               variant="contained"
               size="small"
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1 }}
+              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, gap: 1, minHeight: 44 }}
             >
               <Plus className="w-4 h-4" />
               Upload
@@ -764,14 +796,14 @@ export default function Library() {
                       setSelectedBook(null);
                     }}
                     variant="outline"
-                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20 min-h-[44px]"
                   >
                     <BookOpen className="w-5 h-5" />
                     Read Online
                   </Button>
                   <Button 
                     onClick={() => handleDownload(selectedBook)}
-                    className="w-full bg-white/10 hover:bg-white/20 gap-2 text-white border border-white/20"
+                    className="w-full bg-white/10 hover:bg-white/20 gap-2 text-white border border-white/20 min-h-[44px]"
                   >
                     <Download className="w-5 h-5" />
                     Download
@@ -779,7 +811,7 @@ export default function Library() {
                   <Button 
                     onClick={() => handleShare(selectedBook)}
                     variant="outline"
-                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20"
+                    className="w-full gap-2 bg-white/10 text-white border-white/20 hover:bg-white/20 min-h-[44px]"
                   >
                     <Share2 className="w-5 h-5" />
                     Share
@@ -1159,6 +1191,7 @@ export default function Library() {
           <Button 
             variant="outlined"
             onClick={() => { setShowUploadDialog(false); resetForm(); }}
+            sx={{ minHeight: 44 }}
           >
             Cancel
           </Button>
@@ -1166,7 +1199,7 @@ export default function Library() {
             variant="contained"
             onClick={handleSubmit} 
             disabled={uploadingCover}
-            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 44 }}
           >
             Save Book
           </Button>

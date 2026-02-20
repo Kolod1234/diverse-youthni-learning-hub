@@ -120,7 +120,7 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
         <Button
           onClick={handleAskQuestion}
           disabled={createMutation.isPending || !question.trim()}
-          className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2"
+          className="w-full bg-indigo-600 hover:bg-indigo-700 gap-2 min-h-[44px]"
         >
           <Send className="w-4 h-4" />
           {createMutation.isPending ? 'Posting...' : 'Ask Question'}
@@ -208,7 +208,7 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
                         onClick={() => handleUpvote(q.id, q.upvotes)}
                         variant="ghost"
                         size="sm"
-                        className="gap-1 text-gray-600 hover:text-indigo-600"
+                        className="gap-1 text-gray-600 hover:text-indigo-600 min-h-[44px] min-w-[44px]"
                       >
                         <ThumbsUp className="w-4 h-4" />
                         <span>{q.upvotes || 0}</span>
@@ -219,7 +219,7 @@ export default function LessonQA({ lessonId, courseId, user, currentSlideIndex }
                           onClick={() => setAnsweringId(q.id)}
                           variant="ghost"
                           size="sm"
-                          className="text-emerald-600 hover:text-emerald-700"
+                          className="text-emerald-600 hover:text-emerald-700 min-h-[44px]"
                         >
                           Answer
                         </Button>
