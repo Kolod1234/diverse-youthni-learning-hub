@@ -8,6 +8,7 @@ import { Link, useLocation } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
+import { AnimatePresence, motion } from 'framer-motion';
 import { 
   AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
   Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
@@ -609,9 +610,20 @@ function LayoutContent({ children, currentPageName }) {
         </Container>
       </AppBar>
 
-      {/* Main Content */}
+      {/* Main Content with Route Transitions */}
       <Box component="main" sx={{ flexGrow: 1, pb: { xs: 8, md: 0 } }}>
-        {children}
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={location.pathname}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.2, ease: 'easeInOut' }}
+            style={{ width: '100%' }}
+          >
+            {children}
+          </motion.div>
+        </AnimatePresence>
       </Box>
 
       {/* Mobile Bottom Navigation */}
@@ -628,7 +640,7 @@ function LayoutContent({ children, currentPageName }) {
           borderColor: 'divider',
           zIndex: 50,
           boxShadow: 3,
-          height: 64,
+          minHeight: 64,
           paddingBottom: 'env(safe-area-inset-bottom)',
           paddingLeft: 'env(safe-area-inset-left)',
           paddingRight: 'env(safe-area-inset-right)'
@@ -638,40 +650,40 @@ function LayoutContent({ children, currentPageName }) {
           <Link 
             to={createPageUrl('Explore')} 
             onClick={() => location.pathname.includes('Explore') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
           >
-            <Compass size={20} color={location.pathname.includes('Explore') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Explore') ? 600 : 400 }}>
+            <Compass size={24} color={location.pathname.includes('Explore') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Explore') ? 600 : 400, fontSize: '0.7rem' }}>
               Courses
             </Typography>
           </Link>
           <Link 
             to={createPageUrl('Dashboard')} 
             onClick={() => location.pathname.includes('Dashboard') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
           >
-            <BarChart3 size={20} color={location.pathname.includes('Dashboard') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Dashboard') ? 600 : 400 }}>
+            <BarChart3 size={24} color={location.pathname.includes('Dashboard') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Dashboard') ? 600 : 400, fontSize: '0.7rem' }}>
               Progress
             </Typography>
           </Link>
           <Link 
             to={createPageUrl('Library')} 
             onClick={() => location.pathname.includes('Library') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
           >
-            <BookOpen size={20} color={location.pathname.includes('Library') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Library') ? 600 : 400 }}>
+            <BookOpen size={24} color={location.pathname.includes('Library') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Library') ? 600 : 400, fontSize: '0.7rem' }}>
               Library
             </Typography>
           </Link>
           <Link 
             to={createPageUrl('Profile')} 
             onClick={() => location.pathname.includes('Profile') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px' }}
+            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
           >
-            <User size={20} color={location.pathname.includes('Profile') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Profile') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Profile') ? 600 : 400 }}>
+            <User size={24} color={location.pathname.includes('Profile') ? '#003366' : '#999'} />
+            <Typography variant="caption" sx={{ color: location.pathname.includes('Profile') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Profile') ? 600 : 400, fontSize: '0.7rem' }}>
               Profile
             </Typography>
           </Link>
