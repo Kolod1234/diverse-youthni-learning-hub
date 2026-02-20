@@ -49,6 +49,7 @@ export default function BecomeTutorButton({ user, onSuccess }) {
       setQualifications('');
       setSubjects(['']);
       toast.success('Tutor request submitted successfully!');
+      onSuccess?.();
     },
     onError: () => {
       toast.error('Failed to submit request');

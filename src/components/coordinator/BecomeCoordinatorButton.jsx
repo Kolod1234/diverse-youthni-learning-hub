@@ -47,6 +47,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess }) {
       setOpen(false);
       setReason('');
       toast.success('Coordinator request submitted successfully!');
+      onSuccess?.();
     },
     onError: () => {
       toast.error('Failed to submit request');
