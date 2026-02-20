@@ -129,6 +129,11 @@ export default function LMSIntegrationConfig() {
     testConnectionMutation.mutate(integration);
   };
 
+  const handleTestConnection = (integration) => {
+    setTestingConnection(integration.id);
+    testConnectionMutation.mutate(integration);
+  };
+
   const providers = [
     { value: 'moodle', label: 'Moodle' },
     { value: 'canvas', label: 'Canvas LMS' },

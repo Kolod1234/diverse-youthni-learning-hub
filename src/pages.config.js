@@ -149,6 +149,7 @@ import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
 import ContentVersionManager from './pages/ContentVersionManager';
 import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
 import LMSIntegrationConfig from './pages/LMSIntegrationConfig';
+import SimulationAuthor from './pages/SimulationAuthor';
 import __Layout from './Layout.jsx';
 
 
@@ -255,6 +256,7 @@ export const PAGES = {
     "ContentVersionManager": ContentVersionManager,
     "EnhancedContentAuthor": EnhancedContentAuthor,
     "LMSIntegrationConfig": LMSIntegrationConfig,
+    "SimulationAuthor": SimulationAuthor,
 }
 
 export const pagesConfig = {
