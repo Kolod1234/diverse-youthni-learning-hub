@@ -24,6 +24,9 @@ export default function AIQuizGenerator({ courses }) {
   const [includeShortAnswer, setIncludeShortAnswer] = useState(false);
   const [includeLongAnswer, setIncludeLongAnswer] = useState(false);
   const [includeImageQuestions, setIncludeImageQuestions] = useState(false);
+  const [includeTrueFalse, setIncludeTrueFalse] = useState(false);
+  const [includeMatching, setIncludeMatching] = useState(false);
+  const [mixedDifficulty, setMixedDifficulty] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [generatedQuiz, setGeneratedQuiz] = useState(null);
 
@@ -73,32 +76,61 @@ export default function AIQuizGenerator({ courses }) {
     try {
       const questionTypes = [];
       let mcCount = numQuestions;
+      let distribution = {};
       
-      if (includeShortAnswer) {
-        questionTypes.push('short_answer');
-        mcCount = Math.floor(numQuestions * 0.7);
+      const totalChecked = [includeShortAnswer, includeLongAnswer, includeImageQuestions, includeTrueFalse, includeMatching].filter(Boolean).length;
+      
+      if (totalChecked > 0) {
+        const baseCount = Math.floor(numQuestions / (totalChecked + 1));
+        mcCount = baseCount;
+        
+        if (includeShortAnswer) {
+          questionTypes.push('short_answer');
+          distribution.short_answer = baseCount;
+        }
+        if (includeLongAnswer) {
+          questionTypes.push('long_answer');
+          distribution.long_answer = Math.max(2, Math.floor(baseCount * 0.5));
+        }
+        if (includeImageQuestions) {
+          questionTypes.push('image_based');
+          distribution.image_based = baseCount;
+        }
+        if (includeTrueFalse) {
+          questionTypes.push('true_false');
+          distribution.true_false = baseCount;
+        }
+        if (includeMatching) {
+          questionTypes.push('matching');
+          distribution.matching = Math.max(1, Math.floor(baseCount * 0.3));
+        }
       }
-      if (includeLongAnswer) {
-        questionTypes.push('long_answer');
-        mcCount = Math.floor(numQuestions * 0.6);
-      }
-      if (includeImageQuestions) {
-        questionTypes.push('image_based');
-      }
+      
+      distribution.multiple_choice = mcCount;
+
+      const difficultyInstruction = mixedDifficulty 
+        ? `Difficulty level: MIXED - Distribute questions across all three levels:
+   - ${Math.ceil(numQuestions * 0.3)} Easy questions (recall and basic understanding)
+   - ${Math.ceil(numQuestions * 0.4)} Medium questions (application and analysis)
+   - ${Math.ceil(numQuestions * 0.3)} Hard questions (synthesis, evaluation, critical thinking)
+   Clearly mark each question's difficulty level.`
+        : `Difficulty level: ${difficulty}
+${difficulty === 'easy' ? '- Focus on recall and basic understanding' : difficulty === 'medium' ? '- Require application and analysis' : '- Demand synthesis, evaluation, and critical thinking'}`;
 
       const result = await base44.integrations.Core.InvokeLLM({
         prompt: `You are an expert A-level examination board question writer. Create ${numQuestions} rigorous, academically challenging quiz questions about: "${topic}"${subtopic ? ` (Subtopic: ${subtopic})` : ''}
         
 ${additionalContext ? `Additional context: ${additionalContext}` : ''}
 
-Difficulty level: ${difficulty}
-${difficulty === 'easy' ? '- Focus on recall and basic understanding' : difficulty === 'medium' ? '- Require application and analysis' : '- Demand synthesis, evaluation, and critical thinking'}
+${difficultyInstruction}
 
 Question Types Distribution:
-- ${mcCount} Multiple Choice questions
-${includeShortAnswer ? `- ${Math.ceil(numQuestions * 0.2)} Short Answer questions (1-2 sentence answers)` : ''}
-${includeLongAnswer ? `- ${Math.ceil(numQuestions * 0.15)} Long Answer questions (paragraph answers, ${marksPerQuestion * 3}-${marksPerQuestion * 5} marks)` : ''}
-${includeImageQuestions ? `- ${Math.ceil(numQuestions * 0.15)} Image/Diagram based questions (include placeholder image URLs)` : ''}
+- ${distribution.multiple_choice || mcCount} Multiple Choice questions
+${distribution.short_answer ? `- ${distribution.short_answer} Short Answer questions (1-2 sentence answers)` : ''}
+${distribution.long_answer ? `- ${distribution.long_answer} Long Answer questions (paragraph answers, ${marksPerQuestion * 3}-${marksPerQuestion * 5} marks)` : ''}
+${distribution.image_based ? `- ${distribution.image_based} Image/Diagram based questions (include placeholder image URLs)` : ''}
+${distribution.true_false ? `- ${distribution.true_false} True/False questions with detailed justification` : ''}
+${distribution.matching ? `- ${distribution.matching} Matching questions (5-8 pairs per question)` : ''}
 
 CRITICAL REQUIREMENTS:
 1. Mathematical Notation: Use LaTeX formatting
@@ -121,13 +153,20 @@ CRITICAL REQUIREMENTS:
    - Each distractor should represent a common misconception
    - Options should be similar in length and complexity
 
-4. Answer Explanations:
+4. PERSONALIZED FEEDBACK (CRITICAL):
+   - For EACH incorrect option in multiple choice, provide specific feedback explaining why that answer is wrong
+   - Create an "option_feedback" object with keys for each option index (0-3)
+   - Each feedback should address the specific misconception or error in that option
+   - Format: "option_feedback": {"0": "This is wrong because...", "1": "Correct!", "2": "This assumes X but...", "3": "This confuses Y with Z..."}
+   - For true/false: explain both why true is right/wrong AND why false is right/wrong
+   - Make feedback educational and constructive, not just "incorrect"
+
+5. Answer Explanations:
    - Explain WHY the correct answer is right
-   - Address why common wrong answers are incorrect
    - Reference key concepts and principles
    - Include step-by-step reasoning for calculations
 
-5. Cognitive Levels (distribute across questions):
+6. Cognitive Levels (distribute across questions):
    - Recall/Knowledge: 20%
    - Understanding/Comprehension: 30%
    - Application: 25%
@@ -136,17 +175,26 @@ CRITICAL REQUIREMENTS:
 
 For each question create:
 - question: Clear, well-structured question with LaTeX math where needed
-- question_type: "multiple_choice", "short_answer", "long_answer", or "image_based"
+- question_type: "multiple_choice", "short_answer", "long_answer", "image_based", "true_false", or "matching"
+${mixedDifficulty ? '- difficulty_level: "easy", "medium", or "hard" (required for mixed difficulty)' : ''}
 - For multiple choice:
   * options: Array of 4 options (use LaTeX for math/science)
   * correct_answer: Index 0-3 (VARY THIS across questions)
+  * option_feedback: Object with feedback for EACH option {"0": "feedback", "1": "feedback", "2": "feedback", "3": "feedback"}
+- For true/false:
+  * correct_answer: 0 for True, 1 for False
+  * options: ["True", "False"]
+  * option_feedback: {"0": "why true is correct/wrong", "1": "why false is correct/wrong"}
+- For matching:
+  * matching_pairs: Array of objects [{"left": "Term/concept", "right": "Definition/match", "pair_id": 1}, ...]
+  * Create 5-8 pairs, each with unique pair_id
 - For short/long answer:
   * correct_text_answer: Detailed model answer with key points
 - For image questions:
   * image_url: "https://via.placeholder.com/600x400/6366F1/FFFFFF?text=Diagram+Here"
-- explanation: Comprehensive explanation with reasoning
-- marks: ${marksPerQuestion} for MC/short, ${marksPerQuestion * 3} for long answer
-${timePerQuestion ? `- time_limit_seconds: ${timePerQuestion} for MC, ${timePerQuestion * 2} for short answer, ${timePerQuestion * 3} for long answer` : ''}
+- explanation: Comprehensive explanation with reasoning (general, not option-specific)
+- marks: ${marksPerQuestion} for MC/short/TF, ${marksPerQuestion * 2} for matching, ${marksPerQuestion * 3} for long answer
+${timePerQuestion ? `- time_limit_seconds: ${timePerQuestion} for MC/TF, ${timePerQuestion * 1.5} for matching, ${timePerQuestion * 2} for short answer, ${timePerQuestion * 3} for long answer` : ''}
 
 Return JSON:
 {
@@ -155,12 +203,15 @@ Return JSON:
   "questions": [
     {
       "question": "Question text with LaTeX where appropriate",
-      "question_type": "multiple_choice|short_answer|long_answer|image_based",
+      "question_type": "multiple_choice|short_answer|long_answer|image_based|true_false|matching",
+      ${mixedDifficulty ? '"difficulty_level": "easy|medium|hard",' : ''}
       "image_url": "url for image questions only",
-      "options": ["Option A with LaTeX if needed", "Option B", "Option C", "Option D"],
+      "options": ["Option A", "Option B", "Option C", "Option D"],
       "correct_answer": 2,
+      "option_feedback": {"0": "Specific feedback for option A", "1": "Specific feedback for option B", "2": "Correct! This is right because...", "3": "Specific feedback for option D"},
+      "matching_pairs": [{"left": "Term 1", "right": "Definition 1", "pair_id": 1}, {"left": "Term 2", "right": "Definition 2", "pair_id": 2}],
       "correct_text_answer": "Model answer for text-based questions",
-      "explanation": "Detailed explanation with reasoning and key concepts",
+      "explanation": "General explanation with reasoning and key concepts",
       "marks": ${marksPerQuestion},
       "time_limit_seconds": ${timePerQuestion}
     }
@@ -178,9 +229,22 @@ Return JSON:
                 properties: {
                   question: { type: "string" },
                   question_type: { type: "string" },
+                  difficulty_level: { type: "string" },
                   image_url: { type: "string" },
                   options: { type: "array", items: { type: "string" } },
                   correct_answer: { type: "number" },
+                  option_feedback: { type: "object" },
+                  matching_pairs: { 
+                    type: "array", 
+                    items: { 
+                      type: "object",
+                      properties: {
+                        left: { type: "string" },
+                        right: { type: "string" },
+                        pair_id: { type: "number" }
+                      }
+                    }
+                  },
                   correct_text_answer: { type: "string" },
                   explanation: { type: "string" },
                   marks: { type: "number" },
@@ -329,11 +393,21 @@ Return JSON:
                 value={difficulty}
                 onChange={(e) => setDifficulty(e.target.value)}
                 className="w-full h-10 px-3 rounded-md border border-gray-300"
+                disabled={mixedDifficulty}
               >
                 <option value="easy">Easy</option>
                 <option value="medium">Medium</option>
                 <option value="hard">Hard</option>
               </select>
+              <label className="flex items-center gap-2 cursor-pointer mt-2">
+                <input
+                  type="checkbox"
+                  checked={mixedDifficulty}
+                  onChange={(e) => setMixedDifficulty(e.target.checked)}
+                  className="w-4 h-4 text-indigo-600 rounded"
+                />
+                <span className="text-sm text-gray-600">Mixed difficulty levels</span>
+              </label>
             </div>
           </div>
 
@@ -389,6 +463,24 @@ Return JSON:
                 />
                 <span className="text-sm">Image/Diagram Based Questions</span>
               </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeTrueFalse}
+                  onChange={(e) => setIncludeTrueFalse(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">True/False Questions</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={includeMatching}
+                  onChange={(e) => setIncludeMatching(e.target.checked)}
+                  className="w-4 h-4 text-purple-600 rounded"
+                />
+                <span className="text-sm">Matching Questions</span>
+              </label>
             </div>
           </div>
 
@@ -434,13 +526,20 @@ Return JSON:
                 <span className="text-xs bg-indigo-100 text-indigo-700 px-2 py-1 rounded-full font-medium">
                   {generatedQuiz.questions.reduce((sum, q) => sum + q.marks, 0)} marks
                 </span>
-                <span className={`text-xs px-2 py-1 rounded-full font-medium ${
-                  difficulty === 'easy' ? 'bg-green-100 text-green-700' :
-                  difficulty === 'hard' ? 'bg-red-100 text-red-700' :
-                  'bg-yellow-100 text-yellow-700'
-                }`}>
-                  {difficulty}
-                </span>
+                {!mixedDifficulty && (
+                  <span className={`text-xs px-2 py-1 rounded-full font-medium ${
+                    difficulty === 'easy' ? 'bg-green-100 text-green-700' :
+                    difficulty === 'hard' ? 'bg-red-100 text-red-700' :
+                    'bg-yellow-100 text-yellow-700'
+                  }`}>
+                    {difficulty}
+                  </span>
+                )}
+                {mixedDifficulty && (
+                  <span className="text-xs bg-gradient-to-r from-green-100 via-yellow-100 to-red-100 text-gray-700 px-2 py-1 rounded-full font-medium border border-gray-300">
+                    Mixed Difficulty
+                  </span>
+                )}
               </div>
             </div>
 
@@ -450,16 +549,27 @@ Return JSON:
                   <div className="flex items-start gap-2 mb-2">
                     <span className="font-bold text-indigo-600">{idx + 1}.</span>
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-2">
+                      <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <MathJax className="font-medium text-gray-900 flex-1">{q.question}</MathJax>
                         {q.question_type && (
                           <span className={`text-xs px-2 py-0.5 rounded font-medium ${
                             q.question_type === 'multiple_choice' ? 'bg-blue-100 text-blue-700' :
                             q.question_type === 'short_answer' ? 'bg-purple-100 text-purple-700' :
                             q.question_type === 'long_answer' ? 'bg-pink-100 text-pink-700' :
+                            q.question_type === 'true_false' ? 'bg-teal-100 text-teal-700' :
+                            q.question_type === 'matching' ? 'bg-amber-100 text-amber-700' :
                             'bg-cyan-100 text-cyan-700'
                           }`}>
-                            {q.question_type.replace('_', ' ')}
+                            {q.question_type.replace(/_/g, ' ')}
+                          </span>
+                        )}
+                        {q.difficulty_level && (
+                          <span className={`text-xs px-2 py-0.5 rounded font-medium ${
+                            q.difficulty_level === 'easy' ? 'bg-green-100 text-green-700' :
+                            q.difficulty_level === 'hard' ? 'bg-red-100 text-red-700' :
+                            'bg-yellow-100 text-yellow-700'
+                          }`}>
+                            {q.difficulty_level}
                           </span>
                         )}
                       </div>
@@ -468,19 +578,53 @@ Return JSON:
                         <img src={q.image_url} alt="Question diagram" className="w-full rounded-lg mb-2 border" />
                       )}
                       
-                      {q.options && q.options.length > 0 ? (
-                        <div className="space-y-1">
+                      {q.matching_pairs && q.matching_pairs.length > 0 ? (
+                        <div className="bg-amber-50 border border-amber-200 rounded-lg p-3">
+                          <p className="text-xs font-semibold text-amber-800 mb-2">Match the pairs:</p>
+                          <div className="grid grid-cols-2 gap-2">
+                            <div className="space-y-1">
+                              <p className="text-xs font-semibold text-gray-600 mb-1">Terms:</p>
+                              {q.matching_pairs.map((pair, pIdx) => (
+                                <div key={pIdx} className="text-sm bg-white px-2 py-1 rounded border">
+                                  <MathJax>{pIdx + 1}. {pair.left}</MathJax>
+                                </div>
+                              ))}
+                            </div>
+                            <div className="space-y-1">
+                              <p className="text-xs font-semibold text-gray-600 mb-1">Matches:</p>
+                              {q.matching_pairs.map((pair, pIdx) => (
+                                <div key={pIdx} className="text-sm bg-green-50 px-2 py-1 rounded border border-green-200">
+                                  <MathJax>{String.fromCharCode(65 + pIdx)}. {pair.right}</MathJax>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      ) : q.options && q.options.length > 0 ? (
+                        <div className="space-y-2">
                           {q.options.map((opt, optIdx) => (
-                            <div
-                              key={optIdx}
-                              className={`text-sm px-3 py-2 rounded ${
-                                q.correct_answer === optIdx
-                                  ? 'bg-green-100 text-green-800 font-medium border-2 border-green-300'
-                                  : 'bg-white text-gray-700 border border-gray-200'
-                              }`}
-                            >
-                              <MathJax>{String.fromCharCode(65 + optIdx)}. {opt}</MathJax>
-                              {q.correct_answer === optIdx && ' ✓'}
+                            <div key={optIdx} className="space-y-1">
+                              <div
+                                className={`text-sm px-3 py-2 rounded ${
+                                  q.correct_answer === optIdx
+                                    ? 'bg-green-100 text-green-800 font-medium border-2 border-green-300'
+                                    : 'bg-white text-gray-700 border border-gray-200'
+                                }`}
+                              >
+                                <MathJax>
+                                  {q.question_type === 'true_false' ? opt : `${String.fromCharCode(65 + optIdx)}. ${opt}`}
+                                </MathJax>
+                                {q.correct_answer === optIdx && ' ✓'}
+                              </div>
+                              {q.option_feedback && q.option_feedback[optIdx] && (
+                                <div className={`text-xs px-2 py-1 rounded ml-4 ${
+                                  q.correct_answer === optIdx 
+                                    ? 'bg-green-50 text-green-700 border-l-2 border-green-400' 
+                                    : 'bg-red-50 text-red-700 border-l-2 border-red-400'
+                                }`}>
+                                  <MathJax>💡 {q.option_feedback[optIdx]}</MathJax>
+                                </div>
+                              )}
                             </div>
                           ))}
                         </div>
