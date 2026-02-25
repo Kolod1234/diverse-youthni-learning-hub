@@ -59,8 +59,13 @@ export default function AIQuizGenerator({ courses }) {
   });
 
   const handleGenerate = async () => {
-    if (!topic.trim() || !courseId) {
-      toast.error('Please enter a topic and select a course');
+    if (!topic.trim()) {
+      toast.error('Please enter a topic');
+      return;
+    }
+
+    if (!courseId) {
+      toast.error('Please select a course');
       return;
     }
 
@@ -187,11 +192,25 @@ Return JSON:
         }
       });
 
+      if (!result || !result.questions || result.questions.length === 0) {
+        throw new Error('AI returned invalid quiz data. Please try again.');
+      }
+
       setGeneratedQuiz(result);
       toast.success('Quiz generated successfully!');
     } catch (error) {
       console.error('Quiz generation error:', error);
-      toast.error(error?.message || 'Failed to generate quiz. Please try again.');
+      
+      let errorMessage = 'Failed to generate quiz. ';
+      if (error?.message) {
+        errorMessage += error.message;
+      } else if (typeof error === 'string') {
+        errorMessage += error;
+      } else {
+        errorMessage += 'Please check your inputs and try again.';
+      }
+      
+      toast.error(errorMessage, { duration: 5000 });
     } finally {
       setGenerating(false);
     }
