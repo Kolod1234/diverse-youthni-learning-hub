@@ -22,7 +22,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
       const requests = await base44.entities.CoordinatorRequest.filter({ 
         user_email: user.email 
       });
-      return requests[0];
+      return requests[0] || null;
     },
     enabled: !!user && !user.is_coordinator,
   });
