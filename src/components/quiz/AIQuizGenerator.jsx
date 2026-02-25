@@ -190,7 +190,8 @@ Return JSON:
       setGeneratedQuiz(result);
       toast.success('Quiz generated successfully!');
     } catch (error) {
-      toast.error('Failed to generate quiz');
+      console.error('Quiz generation error:', error);
+      toast.error(error?.message || 'Failed to generate quiz. Please try again.');
     } finally {
       setGenerating(false);
     }
