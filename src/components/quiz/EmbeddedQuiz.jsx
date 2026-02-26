@@ -89,11 +89,27 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
     if (!quiz) return;
 
     const timeTaken = startTime ? Math.floor((Date.now() - startTime) / 1000) : 0;
-    const answersArray = quiz.questions.map((q, idx) => ({
-      question_index: idx,
-      selected_answer: answers[idx] ?? -1,
-      is_correct: answers[idx] === q.correct_answer
-    }));
+    const answersArray = quiz.questions.map((q, idx) => {
+      const userAnswer = answers[idx];
+      
+      // Handle fill-in-the-blank questions
+      if (q.type === 'fill_in_blank') {
+        const isCorrect = Array.isArray(userAnswer) && Array.isArray(q.correct_answers) &&
+          userAnswer.every((ans, i) => ans?.trim().toLowerCase() === q.correct_answers[i]?.trim().toLowerCase());
+        return {
+          question_index: idx,
+          selected_answer: userAnswer,
+          is_correct: isCorrect
+        };
+      }
+      
+      // Handle regular multiple choice questions
+      return {
+        question_index: idx,
+        selected_answer: userAnswer ?? -1,
+        is_correct: userAnswer === q.correct_answer
+      };
+    });
 
     const correctCount = answersArray.filter(a => a.is_correct).length;
     const score = (correctCount / quiz.questions.length) * 100;
@@ -296,7 +312,9 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
   const question = quiz.questions[currentQuestion];
   const progress = ((currentQuestion + 1) / quiz.questions.length) * 100;
   const isLastQuestion = currentQuestion === quiz.questions.length - 1;
-  const hasAnswered = answers[currentQuestion] !== undefined;
+  const hasAnswered = question.type === 'fill_in_blank' 
+    ? (Array.isArray(answers[currentQuestion]) && answers[currentQuestion].some(a => a?.trim()))
+    : answers[currentQuestion] !== undefined;
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 flex flex-col p-4">
