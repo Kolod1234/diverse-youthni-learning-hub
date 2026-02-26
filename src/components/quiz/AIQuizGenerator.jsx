@@ -133,13 +133,13 @@ ${distribution.true_false ? `- ${distribution.true_false} True/False questions w
 ${distribution.matching ? `- ${distribution.matching} Matching questions (5-8 pairs per question)` : ''}
 
 CRITICAL REQUIREMENTS:
-1. Mathematical Notation: Use LaTeX formatting (IMPORTANT: Use proper LaTeX syntax)
-   - Inline math: $x^2 + y^2 = r^2$
-   - Display math: $$E = mc^2$$
-   - Chemistry: $\\text{H}_2\\text{SO}_4$, $\\text{NH}_4\\text{OH}$, $2\\text{H}_2\\text{O} \\rightarrow 2\\text{H}_2 + \\text{O}_2$
-   - Chemical formulas: Use $\\text{...}$ for text, subscripts with _, superscripts with ^
-   - Physics: Include units like $5 \\text{ m/s}^2$ or $E = mc^2$
-   - NEVER use \\ce{} notation, always use $\\text{}$ with proper subscripts/superscripts
+1. Mathematical Notation: SIMPLE formatting (CRITICAL: Keep it readable without LaTeX)
+   - For chemistry formulas: Write H2SO4, NH4OH, HCl (plain text with numbers)
+   - For equations: Use regular text like "2H2O -> 2H2 + O2"
+   - For math: Only use LaTeX for complex equations: $x^2 + y^2 = r^2$ or $$E = mc^2$$
+   - DO NOT use \\text{}, \\textit{}, \\ce{} or any LaTeX text commands
+   - Write chemical names and formulas as plain text: H2SO4 not $\\text{H}_2\\text{SO}_4$
+   - Keep it simple and readable - students should see "H2SO4" not LaTeX commands
 
 2. Question Quality Standards:
    - Questions must be clear, unambiguous, and academically rigorous
