@@ -133,11 +133,13 @@ ${distribution.true_false ? `- ${distribution.true_false} True/False questions w
 ${distribution.matching ? `- ${distribution.matching} Matching questions (5-8 pairs per question)` : ''}
 
 CRITICAL REQUIREMENTS:
-1. Mathematical Notation: Use LaTeX formatting
+1. Mathematical Notation: Use LaTeX formatting (IMPORTANT: Use proper LaTeX syntax)
    - Inline math: $x^2 + y^2 = r^2$
    - Display math: $$E = mc^2$$
-   - Chemistry: \\ce{H2SO4}, \\ce{2H2O -> 2H2 + O2}
-   - Physics: Include units and proper notation
+   - Chemistry: $\\text{H}_2\\text{SO}_4$, $\\text{NH}_4\\text{OH}$, $2\\text{H}_2\\text{O} \\rightarrow 2\\text{H}_2 + \\text{O}_2$
+   - Chemical formulas: Use $\\text{...}$ for text, subscripts with _, superscripts with ^
+   - Physics: Include units like $5 \\text{ m/s}^2$ or $E = mc^2$
+   - NEVER use \\ce{} notation, always use $\\text{}$ with proper subscripts/superscripts
 
 2. Question Quality Standards:
    - Questions must be clear, unambiguous, and academically rigorous
