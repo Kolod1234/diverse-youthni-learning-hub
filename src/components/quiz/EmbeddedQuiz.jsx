@@ -333,29 +333,53 @@ export default function EmbeddedQuiz({ quiz, user, onClose }) {
                 <img src={question.image_url} alt="Question" className="w-full max-w-md mx-auto rounded-lg mb-6 shadow-md" />
               )}
 
-              <RadioGroup value={answers[currentQuestion]?.toString()} onValueChange={(value) => handleAnswerSelect(currentQuestion, parseInt(value))} disabled={showFeedback}>
-                <div className="space-y-3">
-                  {question.options.map((option, idx) => {
-                    const isSelected = answers[currentQuestion] === idx;
-                    const isCorrect = question.correct_answer === idx;
-                    const showResult = showFeedback && isSelected;
-                    
-                    return (
-                      <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}
-                        className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
-                          showResult && isCorrect ? 'border-emerald-500 bg-emerald-50' :
-                          showResult && !isCorrect ? 'border-red-500 bg-red-50' :
-                          isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300 bg-white'
-                        }`}>
-                        <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
-                        <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">{option}</Label>
-                        {showResult && isCorrect && <CheckCircle className="w-5 h-5 text-emerald-600 ml-2" />}
-                        {showResult && !isCorrect && <XCircle className="w-5 h-5 text-red-600 ml-2" />}
-                      </motion.div>
-                    );
-                  })}
+              {question.type === 'fill_in_blank' ? (
+                <div className="space-y-4">
+                  {question.text?.split('______').map((part, idx, arr) => (
+                    <div key={idx} className="flex flex-wrap items-center gap-2">
+                      <span className="text-gray-700">{part}</span>
+                      {idx < arr.length - 1 && (
+                        <input
+                          type="text"
+                          className="border-2 border-gray-300 rounded-lg px-3 py-2 min-w-[200px] focus:border-indigo-500 focus:outline-none"
+                          placeholder={`Blank ${idx + 1}`}
+                          value={answers[currentQuestion]?.[idx] || ''}
+                          onChange={(e) => {
+                            const newAnswers = { ...answers };
+                            if (!newAnswers[currentQuestion]) newAnswers[currentQuestion] = [];
+                            newAnswers[currentQuestion][idx] = e.target.value;
+                            setAnswers(newAnswers);
+                          }}
+                        />
+                      )}
+                    </div>
+                  ))}
                 </div>
-              </RadioGroup>
+              ) : (
+                <RadioGroup value={answers[currentQuestion]?.toString()} onValueChange={(value) => handleAnswerSelect(currentQuestion, parseInt(value))} disabled={showFeedback}>
+                  <div className="space-y-3">
+                    {question.options.map((option, idx) => {
+                      const isSelected = answers[currentQuestion] === idx;
+                      const isCorrect = question.correct_answer === idx;
+                      const showResult = showFeedback && isSelected;
+                      
+                      return (
+                        <motion.div key={idx} initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: idx * 0.1 }}
+                          className={`flex items-start p-4 border-2 rounded-xl cursor-pointer transition-all ${
+                            showResult && isCorrect ? 'border-emerald-500 bg-emerald-50' :
+                            showResult && !isCorrect ? 'border-red-500 bg-red-50' :
+                            isSelected ? 'border-indigo-500 bg-indigo-50' : 'border-gray-200 hover:border-gray-300 bg-white'
+                          }`}>
+                          <RadioGroupItem value={idx.toString()} id={`option-${idx}`} className="mt-1" />
+                          <Label htmlFor={`option-${idx}`} className="ml-3 flex-1 cursor-pointer text-gray-700">{option}</Label>
+                          {showResult && isCorrect && <CheckCircle className="w-5 h-5 text-emerald-600 ml-2" />}
+                          {showResult && !isCorrect && <XCircle className="w-5 h-5 text-red-600 ml-2" />}
+                        </motion.div>
+                      );
+                    })}
+                  </div>
+                </RadioGroup>
+              )}
 
               {showFeedback && question.explanation && (
                 <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} className="mt-4 p-4 bg-blue-50 border border-blue-200 rounded-lg">
