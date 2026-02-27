@@ -231,6 +231,12 @@ export default function TutorDashboardOverview() {
                     Create Course
                   </Button>
                 </Link>
+                <Link to={createPageUrl('TutorBookingManager')}>
+                  <Button variant="outline" className="w-full justify-start">
+                    <Calendar className="w-4 h-4 mr-2" />
+                    Manage Bookings
+                  </Button>
+                </Link>
                 <Link to={createPageUrl('ScheduleSession')}>
                   <Button variant="outline" className="w-full justify-start">
                     <Video className="w-4 h-4 mr-2" />
