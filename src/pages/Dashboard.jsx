@@ -5,7 +5,7 @@ import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button, Tabs, Tab, Card, Box, Typography, Container } from '@mui/material';
-import { BookOpen, Clock, Award, ArrowRight, Sparkles, TrendingUp, Target, Zap } from 'lucide-react';
+import { BookOpen, Clock, Award, ArrowRight, Sparkles, TrendingUp, Target, Zap, MessageSquare } from 'lucide-react';
 import { motion } from 'framer-motion';
 import StatsOverview from '@/components/dashboard/StatsOverview';
 import ProgressCard from '@/components/dashboard/ProgressCard';
