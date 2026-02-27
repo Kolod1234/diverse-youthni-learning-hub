@@ -347,17 +347,19 @@ function LayoutContent({ children, currentPageName }) {
                 <Divider />
                 {user && !user.is_coordinator && user.role !== 'admin' && (
                   <>
-                    <Box sx={{ px: 2, py: 1 }}>
-                      <BecomeCoordinatorButton user={user} />
-                    </Box>
+                    <MenuItem onClick={() => { setMoreMenuAnchor(null); setTimeout(() => setShowCoordinatorDialog(true), 50); }}>
+                      <ListItemIcon><UserCheck size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary={user?.coordinator_request_status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'} />
+                    </MenuItem>
                     <Divider />
                   </>
                 )}
                 {user && !user.is_tutor && user.role !== 'admin' && (
                   <>
-                    <Box sx={{ px: 2, py: 1 }}>
-                      <BecomeTutorButton user={user} />
-                    </Box>
+                    <MenuItem onClick={() => { setMoreMenuAnchor(null); setTimeout(() => setShowTutorDialog(true), 50); }}>
+                      <ListItemIcon><GraduationCap size={20} color="#4f46e5" /></ListItemIcon>
+                      <ListItemText primary={user?.tutor_request_status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'} />
+                    </MenuItem>
                     <Divider />
                   </>
                 )}
