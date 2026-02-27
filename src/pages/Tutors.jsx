@@ -364,13 +364,14 @@ export default function Tutors() {
                       </div>
                     )}
 
-                    <div className="flex gap-2 mt-auto">
-                      <Link to={createPageUrl('Explore')} className="flex-1">
-                        <Button className="w-full bg-indigo-600 hover:bg-indigo-700 group-hover:shadow-md transition-all">
-                          View Courses
-                          <ChevronRight className="w-4 h-4 ml-1" />
-                        </Button>
-                      </Link>
+                    <div className="flex gap-2 mt-auto" onClick={e => e.stopPropagation()}>
+                      <Button
+                        className="flex-1 bg-indigo-600 hover:bg-indigo-700 group-hover:shadow-md transition-all"
+                        onClick={() => setSelectedTutor({ tutor, stats })}
+                      >
+                        View Profile
+                        <ChevronRight className="w-4 h-4 ml-1" />
+                      </Button>
                       <Link to={`${createPageUrl('MessageCenter')}?recipient=${encodeURIComponent(tutor.email)}&name=${encodeURIComponent(tutor.full_name || 'Tutor')}`}>
                         <Button variant="outline" size="icon" title={`Message ${tutor.full_name}`}>
                           <MessageSquare className="w-4 h-4" />
