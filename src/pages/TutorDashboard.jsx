@@ -1149,49 +1149,103 @@ function CoursesView({ courses, user }) {
   );
 }
 
-function HomeView({ courses }) {
-  const { data: allEnrollments = [] } = useQuery({
-    queryKey: ['tutor-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 500),
+function HomeView({ courses, user }) {
+  const { data: enrollments = [] } = useQuery({
+    queryKey: ['tutor-home-enrollments', courses.map(c => c.id).join(',')],
+    queryFn: async () => {
+      if (courses.length === 0) return [];
+      const results = await Promise.all(
+        courses.map(c => base44.entities.Enrollment.filter({ course_id: c.id }, '-created_date', 200))
+      );
+      return results.flat();
+    },
+    enabled: courses.length > 0,
   });
 
-  const totalStudents = new Set(
-    allEnrollments.filter(e => courses.some(c => c.id === e.course_id)).map(e => e.created_by)
-  ).size;
+  const { data: sessions = [] } = useQuery({
+    queryKey: ['tutor-home-sessions', user?.email],
+    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 10),
+    enabled: !!user?.email,
+  });
+
+  const totalStudents = new Set(enrollments.map(e => e.created_by)).size;
+  const completedCount = enrollments.filter(e => e.is_completed).length;
+  const upcomingSessions = sessions.filter(s => s.status === 'scheduled' && new Date(s.scheduled_date) >= new Date()).slice(0, 3);
 
   return (
     <div className="max-w-5xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Dashboard Home</h1>
-      <div className="grid grid-cols-3 gap-6 mb-8">
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+      <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome, {user?.full_name?.split(' ')[0]}!</h1>
+      <p className="text-gray-500 mb-6">Your tutor workspace — manage courses, students, and sessions.</p>
+      
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-5">
           <div className="text-3xl font-bold text-blue-600">{courses.length}</div>
-          <div className="text-sm text-gray-600 mt-1">Total Courses</div>
+          <div className="text-sm text-blue-700 mt-1">Assigned Courses</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-green-50 border border-green-100 rounded-xl p-5">
           <div className="text-3xl font-bold text-green-600">{totalStudents}</div>
-          <div className="text-sm text-gray-600 mt-1">Total Students</div>
+          <div className="text-sm text-green-700 mt-1">My Students</div>
         </div>
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="text-3xl font-bold text-purple-600">
-            {courses.reduce((sum, c) => sum + (c.total_lessons || 0), 0)}
-          </div>
-          <div className="text-sm text-gray-600 mt-1">Total Lessons</div>
+        <div className="bg-purple-50 border border-purple-100 rounded-xl p-5">
+          <div className="text-3xl font-bold text-purple-600">{completedCount}</div>
+          <div className="text-sm text-purple-700 mt-1">Completions</div>
+        </div>
+        <div className="bg-amber-50 border border-amber-100 rounded-xl p-5">
+          <div className="text-3xl font-bold text-amber-600">{upcomingSessions.length}</div>
+          <div className="text-sm text-amber-700 mt-1">Upcoming Sessions</div>
         </div>
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <h2 className="text-xl font-semibold mb-4">Recent Courses</h2>
-        <div className="space-y-3">
-          {courses.slice(0, 5).map(course => (
-            <div key={course.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
-              <div>
-                <div className="font-medium text-gray-900">{course.title}</div>
-                <div className="text-sm text-gray-500">{course.category}</div>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <h2 className="text-lg font-semibold mb-4">My Courses</h2>
+          <div className="space-y-3">
+            {courses.slice(0, 5).map(course => {
+              const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
+              return (
+                <div key={course.id} className="flex items-center justify-between p-3 hover:bg-gray-50 rounded-lg">
+                  <div>
+                    <div className="font-medium text-gray-900 text-sm">{course.title}</div>
+                    <div className="text-xs text-gray-500 mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
+                  </div>
+                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
+                    <Button variant="outline" size="sm">Manage</Button>
+                  </Link>
+                </div>
+              );
+            })}
+            {courses.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No courses assigned yet.</p>}
+          </div>
+        </div>
+
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-lg font-semibold">Upcoming Sessions</h2>
+            <Link to={createPageUrl('ScheduleSession')}>
+              <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">
+                <Plus className="w-3 h-3 mr-1" /> Schedule
+              </Button>
+            </Link>
+          </div>
+          <div className="space-y-3">
+            {upcomingSessions.map(session => (
+              <div key={session.id} className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg">
+                <Video className="w-5 h-5 text-purple-600 flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-medium text-gray-900 text-sm truncate">{session.title}</div>
+                  <div className="text-xs text-gray-500">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
+                </div>
+                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
+                  <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">Start</Button>
+                </Link>
               </div>
-              <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
-                <Button variant="outline" size="sm">Manage</Button>
-              </Link>
-            </div>
-          ))}
+            ))}
+            {upcomingSessions.length === 0 && (
+              <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions.<br/>
+                <Link to={createPageUrl('ScheduleSession')} className="text-purple-600 hover:underline">Schedule one now</Link>
+              </p>
+            )}
+          </div>
         </div>
       </div>
     </div>
