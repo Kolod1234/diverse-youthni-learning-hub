@@ -252,6 +252,23 @@ export default function TutorCourseManager() {
     return acc;
   }, {});
 
+  if (course && !isAllowedToEditCourse) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <div className="text-center max-w-md">
+          <div className="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
+            <X className="w-8 h-8 text-red-600" />
+          </div>
+          <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
+          <p className="text-gray-600 mb-6">You are not approved to edit courses in the <strong>{course?.category}</strong> subject. You can only edit courses in your approved subjects.</p>
+          <Link to={createPageUrl('TutorDashboard')}>
+            <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Dashboard</Button>
+          </Link>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
