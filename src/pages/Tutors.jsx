@@ -281,7 +281,7 @@ export default function Tutors() {
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.05 }}
                 >
-                  <Card className="p-6 hover:shadow-xl transition-all duration-300 group h-full flex flex-col">
+                  <Card className="p-6 hover:shadow-xl transition-all duration-300 group h-full flex flex-col cursor-pointer" onClick={() => setSelectedTutor({ tutor, stats })}>
                     <div className="flex items-start gap-4 mb-4">
                       <Avatar className="w-16 h-16 border-2 border-indigo-100">
                         <AvatarImage src={tutor.avatar} />
