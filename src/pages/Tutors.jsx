@@ -22,6 +22,7 @@ export default function Tutors() {
   const [isUnlocked, setIsUnlocked] = useState(() => localStorage.getItem('tutorsUnlocked') === 'true');
   const [accessCode, setAccessCode] = useState('');
   const [error, setError] = useState('');
+  const [selectedTutor, setSelectedTutor] = useState(null);
 
   useEffect(() => {
     const loadUser = async () => {
