@@ -9,8 +9,10 @@ import { GraduationCap, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }) {
-  const [open, setOpen] = useState(false);
+export default function BecomeTutorButton({ user, onSuccess, hideButton, externalOpen, onExternalOpenChange }) {
+  const [internalOpen, setInternalOpen] = useState(false);
+  const open = externalOpen !== undefined ? externalOpen : internalOpen;
+  const setOpen = onExternalOpenChange !== undefined ? onExternalOpenChange : setInternalOpen;
   const [reason, setReason] = useState('');
   const [qualifications, setQualifications] = useState('');
   const [subjects, setSubjects] = useState(['']);
@@ -96,11 +98,17 @@ export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }
     setOpen(true);
   };
 
+  const handleOpenChange = (val) => {
+    setOpen(val);
+  };
+
+  const isExternallyControlled = externalOpen !== undefined;
+
   if (!user || user.is_tutor || user.role === 'admin') {
     return null;
   }
 
-  if (existingRequest && existingRequest.status === 'pending') {
+  if (!isExternallyControlled && existingRequest && existingRequest.status === 'pending') {
     return (
       <button className="flex items-center w-full text-left text-gray-400 cursor-not-allowed">
         <GraduationCap className="w-4 h-4 mr-2" />
@@ -109,21 +117,23 @@ export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }
     );
   }
 
-  if (existingRequest && existingRequest.status === 'approved') {
+  if (!isExternallyControlled && existingRequest && existingRequest.status === 'approved') {
     return null;
   }
 
   return (
     <>
-      <Button 
-        onClick={handleClick} 
-        className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
-      >
-        <GraduationCap className="w-4 h-4" />
-        {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
-      </Button>
+      {!isExternallyControlled && (
+        <Button 
+          onClick={handleClick} 
+          className="flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white"
+        >
+          <GraduationCap className="w-4 h-4" />
+          {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
+        </Button>
+      )}
 
-      <Dialog open={open} onOpenChange={handleOpenChange} modal={false}>
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Request to Become a Tutor</DialogTitle>
