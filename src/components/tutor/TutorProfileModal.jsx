@@ -91,16 +91,26 @@ export default function TutorProfileModal({ tutor, stats, open, onClose }) {
             </div>
           </div>
 
-          {/* Message Button */}
-          <Link
-            to={`${createPageUrl('MessageCenter')}?recipient=${encodeURIComponent(tutor.email)}&name=${encodeURIComponent(tutor.full_name || 'Tutor')}`}
-            onClick={onClose}
-          >
-            <Button className="mt-4 bg-white text-indigo-700 hover:bg-white/90 gap-2 w-full sm:w-auto">
-              <MessageSquare className="w-4 h-4" />
-              Send Message
-            </Button>
-          </Link>
+          {/* Action Buttons */}
+          <div className="mt-4 flex flex-wrap gap-2">
+            <Link
+              to={`${createPageUrl('MessageCenter')}?recipient=${encodeURIComponent(tutor.email)}&name=${encodeURIComponent(tutor.full_name || 'Tutor')}`}
+              onClick={onClose}
+            >
+              <Button className="bg-white text-indigo-700 hover:bg-white/90 gap-2">
+                <MessageSquare className="w-4 h-4" />
+                Send Message
+              </Button>
+            </Link>
+            {hasAvailability && (
+              <Link to={createPageUrl('BookSession')} onClick={onClose}>
+                <Button className="bg-white/20 text-white hover:bg-white/30 border border-white/40 gap-2">
+                  <Calendar className="w-4 h-4" />
+                  Book Session
+                </Button>
+              </Link>
+            )}
+          </div>
         </div>
 
         {/* Tabs */}
