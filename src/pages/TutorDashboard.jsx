@@ -72,23 +72,17 @@ export default function TutorDashboard() {
 
   const navItems = [
     { icon: Home, label: 'Home', view: 'home' },
-    { icon: BookOpen, label: 'Modules', view: 'modules' },
-    { icon: Bell, label: 'Announcements', view: 'announcements' },
+    { icon: BookOpen, label: 'My Courses', view: 'modules' },
+    { icon: Users, label: 'Students', view: 'people' },
+    { icon: Calendar, label: 'Calendar & Sessions', view: 'video' },
     { icon: ClipboardList, label: 'Assignments', view: 'assignments' },
+    { icon: Award, label: 'Grades & Assessment', view: 'grades' },
     { icon: MessageSquare, label: 'Discussions', view: 'discussions' },
-    { icon: Award, label: 'Grades', view: 'grades' },
-    { icon: Users, label: 'People', view: 'people' },
-    { icon: FileText, label: 'Pages', view: 'pages' },
-    { icon: FileText, label: 'Files', view: 'files' },
-    { icon: BookOpen, label: 'Syllabus', view: 'syllabus' },
-    { icon: Target, label: 'Outcomes', view: 'outcomes' },
-    { icon: FileCheck, label: 'Rubrics', view: 'rubrics' },
     { icon: HelpCircle, label: 'Quizzes', view: 'quizzes' },
-    { icon: Video, label: 'BigBlueButton', view: 'video' },
-    { icon: Users, label: 'Collaborations', view: 'collaborations' },
+    { icon: Target, label: 'Learning Outcomes', view: 'outcomes' },
+    { icon: FileCheck, label: 'Unlock Lessons', view: 'unlock' },
+    { icon: BarChart, label: 'Analytics', view: 'analytics' },
     { icon: Calendar, label: 'Attendance', view: 'attendance' },
-    { icon: BarChart, label: 'Course Analytics', view: 'analytics' },
-    { icon: FileText, label: 'Lucid (Whiteboard)', view: 'whiteboard' },
   ];
 
   useEffect(() => {
