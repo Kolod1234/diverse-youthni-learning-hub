@@ -88,34 +88,18 @@ export default function Home() {
 
         const userData = await base44.auth.me();
         
-        // Admins can see all homepages - no redirect
-        if (userData?.role === 'admin') {
-          return;
-        }
+        if (userData?.role === 'admin') return;
+        if (userData?.is_tutor === true) { navigate(createPageUrl('TutorDashboardOverview'), { replace: true }); return; }
 
         const interestType = userData?.interest_type;
-        
-        if (!interestType || interestType === '') {
-          navigate(createPageUrl('WelcomeCover'), { replace: true });
-          return;
-        }
+        if (!interestType || interestType === '') { navigate(createPageUrl('WelcomeCover'), { replace: true }); return; }
 
-        // Redirect to appropriate landing pages
         switch (interestType) {
-          case 'leadership':
-            navigate(createPageUrl('LeadershipLanding'), { replace: true });
-            break;
-          case 'learning':
-            navigate(createPageUrl('HomeLearning'), { replace: true });
-            break;
-          case 'youth_work':
-            navigate(createPageUrl('YouthWorkLanding'), { replace: true });
-            break;
-          case 'guest':
-            navigate(createPageUrl('HomeGuest'), { replace: true });
-            break;
-          default:
-            navigate(createPageUrl('WelcomeCover'), { replace: true });
+          case 'leadership': navigate(createPageUrl('LeadershipLanding'), { replace: true }); break;
+          case 'learning': navigate(createPageUrl('HomeLearning'), { replace: true }); break;
+          case 'youth_work': navigate(createPageUrl('YouthWorkLanding'), { replace: true }); break;
+          case 'guest': navigate(createPageUrl('HomeGuest'), { replace: true }); break;
+          default: navigate(createPageUrl('WelcomeCover'), { replace: true });
         }
       } catch (error) {
         // Not logged in - check localStorage
