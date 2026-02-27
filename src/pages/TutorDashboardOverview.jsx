@@ -21,7 +21,7 @@ export default function TutorDashboardOverview() {
       const userData = await base44.auth.me();
       setUser(userData);
       // Redirect new tutors who haven't completed onboarding
-      if (userData?.is_tutor && !userData?.onboarding_completed) {
+      if (userData?.is_tutor && !userData?.onboarding_completed && userData?.role !== 'admin') {
         navigate(createPageUrl('TutorOnboarding'));
       }
     };
