@@ -715,6 +715,10 @@ function LayoutContent({ children, currentPageName }) {
         </Box>
       </Box>
 
+      {/* Become Tutor / Coordinator Dialogs - rendered outside MuiMenu to avoid focus trapping issues */}
+      <BecomeTutorButton user={user} externalOpen={showTutorDialog} onExternalOpenChange={setShowTutorDialog} />
+      <BecomeCoordinatorButton user={user} externalOpen={showCoordinatorDialog} onExternalOpenChange={setShowCoordinatorDialog} />
+
       {/* Admin Password Modal */}
       <Dialog open={showAdminPassword} onClose={() => setShowAdminPassword(false)} maxWidth="xs" fullWidth>
         <DialogTitle>Admin Access</DialogTitle>
