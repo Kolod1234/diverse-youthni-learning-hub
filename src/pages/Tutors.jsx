@@ -105,7 +105,10 @@ export default function Tutors() {
     setAccessCode('');
   };
 
-  if (!isUnlocked) {
+  // Tutors and admins bypass the access code lock
+  const isTutorOrAdmin = currentUser?.is_tutor === true || currentUser?.role === 'admin';
+
+  if (!isUnlocked && !isTutorOrAdmin) {
     return (
       <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center p-4">
         <motion.div
