@@ -11,7 +11,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Star, BookOpen, Users, Search, GraduationCap, 
-  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut, MessageSquare
+  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut, MessageSquare, Calendar
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TutorProfileModal from '@/components/tutor/TutorProfileModal';
