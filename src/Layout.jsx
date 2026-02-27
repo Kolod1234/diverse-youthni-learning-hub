@@ -386,7 +386,7 @@ function LayoutContent({ children, currentPageName }) {
                     )}
                     {can(PERMISSIONS.CREATE_COURSE) && (
                       <MenuItem component={Link} to={createPageUrl('TutorBookingManager')} onClick={() => setMoreMenuAnchor(null)}>
-                        <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
+                        <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
                         <ListItemText primary="Manage Bookings" />
                       </MenuItem>
                     )}
