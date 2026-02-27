@@ -428,7 +428,7 @@ export default function TutorBookingManager() {
                     if (!daySlots.length) return null;
                     return (
                       <div key={day}>
-                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{DAY_LABELS[day]}urday</p>
+                        <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-1">{day.charAt(0).toUpperCase() + day.slice(1)}</p>
                         <div className="space-y-1.5 ml-2">
                           {daySlots.map(slot => (
                             <div key={slot.id} className={`flex items-center justify-between p-3 rounded-lg border ${slot.is_active ? 'bg-white border-gray-200' : 'bg-gray-50 border-gray-100 opacity-60'}`}>
