@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { UserCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobileMenu }) {
+export default function BecomeCoordinatorButton({ user, onSuccess, hideButton, externalOpen, onExternalOpenChange }) {
   const [open, setOpen] = useState(false);
-  const [showPasscode, setShowPasscode] = useState(false);
+  const [internalShowPasscode, setInternalShowPasscode] = useState(false);
+  const showPasscode = externalOpen !== undefined ? externalOpen : internalShowPasscode;
+  const setShowPasscode = onExternalOpenChange !== undefined ? onExternalOpenChange : setInternalShowPasscode;
   const [passcode, setPasscode] = useState('');
   const [reason, setReason] = useState('');
   const queryClient = useQueryClient();
