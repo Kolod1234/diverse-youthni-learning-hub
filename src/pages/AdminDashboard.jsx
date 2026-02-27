@@ -40,7 +40,10 @@ export default function AdminDashboard() {
 
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users'],
-    queryFn: () => base44.asServiceRole.entities.User.list('-created_date', 1000),
+    queryFn: async () => {
+      const res = await base44.functions.invoke('getAllTutors');
+      return res.data?.users || [];
+    },
   });
 
   const { data: courses = [] } = useQuery({
