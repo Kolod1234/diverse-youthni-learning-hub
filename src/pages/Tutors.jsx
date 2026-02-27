@@ -197,9 +197,7 @@ export default function Tutors() {
                     <h3 className="font-semibold text-gray-900 mb-1">Become a Tutor</h3>
                     <p className="text-sm text-gray-600">Share your expertise and earn by teaching on our platform</p>
                   </div>
-                  <Button className="bg-indigo-600 hover:bg-indigo-700">
-                    Apply Now
-                  </Button>
+                  <BecomeTutorButton user={currentUser} />
                 </div>
               </Card>
             </div>
