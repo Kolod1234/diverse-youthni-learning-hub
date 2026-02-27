@@ -384,6 +384,12 @@ function LayoutContent({ children, currentPageName }) {
                         <ListItemText primary="Tutor Overview" />
                       </MenuItem>
                     )}
+                    {can(PERMISSIONS.CREATE_COURSE) && (
+                      <MenuItem component={Link} to={createPageUrl('TutorBookingManager')} onClick={() => setMoreMenuAnchor(null)}>
+                        <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
+                        <ListItemText primary="Manage Bookings" />
+                      </MenuItem>
+                    )}
                     {can(PERMISSIONS.CREATE_LESSON) && (
                       <MenuItem component={Link} to={createPageUrl('LessonEditor')} onClick={() => setMoreMenuAnchor(null)}>
                         <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
