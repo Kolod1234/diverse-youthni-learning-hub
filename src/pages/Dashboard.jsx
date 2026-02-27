@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button, Tabs, Tab, Card, Box, Typography, Container } from '@mui/material';
 import { BookOpen, Clock, Award, ArrowRight, Sparkles, TrendingUp, Target, Zap, MessageSquare } from 'lucide-react';
