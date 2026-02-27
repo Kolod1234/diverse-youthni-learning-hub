@@ -13,6 +13,7 @@ import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import AdvancedFilters from '@/components/search/AdvancedFilters';
+import UnlockLessonsView from '@/components/tutor/UnlockLessonsView';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
