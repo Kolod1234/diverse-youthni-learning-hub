@@ -370,6 +370,11 @@ export default function Tutors() {
                           <ChevronRight className="w-4 h-4 ml-1" />
                         </Button>
                       </Link>
+                      <Link to={`${createPageUrl('MessageCenter')}?recipient=${encodeURIComponent(tutor.email)}&name=${encodeURIComponent(tutor.full_name || 'Tutor')}`}>
+                        <Button variant="outline" size="icon" title={`Message ${tutor.full_name}`}>
+                          <MessageSquare className="w-4 h-4" />
+                        </Button>
+                      </Link>
                     </div>
                   </Card>
                 </motion.div>
