@@ -14,11 +14,16 @@ import { motion } from 'framer-motion';
 
 export default function TutorDashboardOverview() {
   const [user, setUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
+      // Redirect new tutors who haven't completed onboarding
+      if (userData?.is_tutor && !userData?.onboarding_completed) {
+        navigate(createPageUrl('TutorOnboarding'));
+      }
     };
     loadUser();
   }, []);
