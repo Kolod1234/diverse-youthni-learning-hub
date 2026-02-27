@@ -35,6 +35,8 @@ function LayoutContent({ children, currentPageName }) {
   const [adminPassword, setAdminPassword] = useState('');
   const [moreMenuAnchor, setMoreMenuAnchor] = useState(null);
   const [userMenuAnchor, setUserMenuAnchor] = useState(null);
+  const [showTutorDialog, setShowTutorDialog] = useState(false);
+  const [showCoordinatorDialog, setShowCoordinatorDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
