@@ -1736,44 +1736,36 @@ function QuizzesView({ course }) {
   );
 }
 
-function VideoView({ course }) {
+function VideoView({ course, courses, user }) {
   const { data: sessions = [] } = useQuery({
-    queryKey: ['course-video-sessions', course?.id],
-    queryFn: () => base44.entities.VideoSession.filter({ course_id: course?.id }, '-scheduled_date', 50),
-    enabled: !!course?.id,
+    queryKey: ['tutor-video-sessions', user?.email],
+    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 100),
+    enabled: !!user?.email,
   });
-
+  const { data: bookings = [] } = useQuery({
+    queryKey: ['tutor-bookings-vid', user?.email],
+    queryFn: () => base44.entities.SessionBooking.filter({ tutor_email: user?.email }, '-created_date', 100),
+    enabled: !!user?.email,
+  });
+  const upcoming = sessions.filter(s => s.status === 'scheduled' && new Date(s.scheduled_date) >= new Date());
+  const past = sessions.filter(s => s.status !== 'scheduled' || new Date(s.scheduled_date) < new Date());
+  const pendingBookings = bookings.filter(b => b.status === 'pending');
   return (
     <div className="max-w-4xl">
       <div className="flex items-center justify-between mb-6">
-        <h1 className="text-3xl font-bold text-gray-900">Live Video Sessions</h1>
-        <Link to={createPageUrl('ScheduleSession') + `?courseId=${course?.id}`}>
-          <Button className="bg-blue-600 hover:bg-blue-700">
-            <Plus className="w-4 h-4 mr-2" />
-            Schedule Session
-          </Button>
-        </Link>
+        <h1 className="text-3xl font-bold text-gray-900">Calendar & Sessions</h1>
+        <div className="flex gap-2">
+          <Link to={createPageUrl('TutorBookingManager')}><Button variant="outline">Bookings {pendingBookings.length > 0 && <span className="ml-1 bg-amber-500 text-white text-xs rounded-full px-1.5">{pendingBookings.length}</span>}</Button></Link>
+          <Link to={createPageUrl('ScheduleSession')}><Button className="bg-purple-600 hover:bg-purple-700 text-white"><Plus className="w-4 h-4 mr-2" />Schedule</Button></Link>
+        </div>
       </div>
-      <div className="space-y-3">
-        {sessions.length > 0 ? sessions.map(session => (
-          <div key={session.id} className="bg-white border border-gray-200 rounded-lg p-4">
-            <h3 className="font-semibold text-gray-900">{session.title}</h3>
-            <div className="mt-2 flex items-center gap-4 text-sm text-gray-600">
-              <span>{new Date(session.scheduled_date).toLocaleDateString()}</span>
-              <span>•</span>
-              <span>{session.scheduled_time}</span>
-              <span>•</span>
-              <span className="capitalize">{session.status}</span>
-            </div>
-          </div>
-        )) : (
-          <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-            <Video className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-            <h3 className="text-xl font-semibold text-gray-700 mb-2">No sessions scheduled</h3>
-            <p className="text-gray-500">Schedule live video sessions with students</p>
-          </div>
-        )}
+      {pendingBookings.length > 0 && <div className="bg-amber-50 border border-amber-200 rounded-xl p-4 mb-4 flex items-center justify-between"><p className="font-semibold text-amber-900">{pendingBookings.length} booking{pendingBookings.length > 1 ? 's' : ''} pending</p><Link to={createPageUrl('TutorBookingManager')}><Button size="sm" className="bg-amber-600 text-white">Review</Button></Link></div>}
+      <h2 className="text-lg font-semibold mb-3">Upcoming ({upcoming.length})</h2>
+      <div className="space-y-3 mb-6">
+        {upcoming.map(s => { const c = (courses||[]).find(co=>co.id===s.course_id); return <div key={s.id} className="bg-white border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div className="flex items-center gap-3"><div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center"><Video className="w-5 h-5 text-purple-600"/></div><div><h3 className="font-semibold text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})} at {s.scheduled_time}{c&&` · ${c.title}`}</p></div></div><Link to={createPageUrl('VideoSession')+`?id=${s.id}`}><Button className="bg-purple-600 hover:bg-purple-700 text-white" size="sm">Start</Button></Link></div>;})}
+        {upcoming.length===0&&<div className="bg-white border border-gray-200 rounded-xl p-8 text-center text-gray-500"><Video className="w-10 h-10 text-gray-300 mx-auto mb-2"/><p>No upcoming sessions. <Link to={createPageUrl('ScheduleSession')} className="text-purple-600 hover:underline">Schedule one</Link>.</p></div>}
       </div>
+      {past.length>0&&<><h2 className="text-lg font-semibold mb-3">Past Sessions</h2><div className="space-y-2">{past.slice(0,5).map(s=><div key={s.id} className="bg-gray-50 border border-gray-200 rounded-xl p-4 flex items-center justify-between"><div><h3 className="font-medium text-gray-900 text-sm">{s.title}</h3><p className="text-xs text-gray-500">{new Date(s.scheduled_date).toLocaleDateString('en-GB')} · <span className="capitalize">{s.status}</span></p></div><Link to={createPageUrl('SessionRecordings')+`?sessionId=${s.id}`}><Button variant="outline" size="sm">Recording</Button></Link></div>)}</div></>}
     </div>
   );
 }
