@@ -202,7 +202,7 @@ export default function Tutors() {
              </Link>
            </div>
           )}
-          {!currentUser?.is_tutor && currentUser?.role !== 'admin' && (
+          {!currentUser?.is_tutor && !currentUser?.data?.is_tutor && currentUser?.role !== 'admin' && (
             <div className="mt-6">
               <Card className="max-w-2xl mx-auto p-6 bg-gradient-to-br from-indigo-50 to-violet-50 border-indigo-200">
                 <div className="flex items-center gap-4">
