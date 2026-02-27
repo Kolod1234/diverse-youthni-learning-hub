@@ -966,6 +966,210 @@ function AttendanceManagement({ attendanceRecords, users }) { return <Typography
 function SiteContentManagement({ siteContent }) { return <Typography>Site Content Management - To be implemented</Typography>; }
 function ContactInfoManagement({ contactInfo }) { return <Typography>Contact Info Management - To be implemented</Typography>; }
 function PasswordManagement({ users }) { return <Typography>Password Management - To be implemented</Typography>; }
-function TutorRequestsManagement() { return <Typography>Tutor Requests Management - To be implemented</Typography>; }
+function TutorRequestsManagement() {
+  const queryClient = useQueryClient();
+  const [filter, setFilter] = useState('pending');
+  const [rejectDialogOpen, setRejectDialogOpen] = useState(false);
+  const [selectedRequest, setSelectedRequest] = useState(null);
+  const [rejectionNote, setRejectionNote] = useState('');
+
+  const { data: allRequests = [], isLoading } = useQuery({
+    queryKey: ['tutor-requests-all'],
+    queryFn: () => base44.entities.TutorRequest.list('-created_date', 500),
+  });
+
+  const filteredRequests = filter === 'all' ? allRequests : allRequests.filter(r => r.status === filter);
+
+  const updateRequestMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.TutorRequest.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['tutor-requests-all']);
+      queryClient.invalidateQueries(['tutor-requests']);
+    },
+  });
+
+  const updateUserMutation = useMutation({
+    mutationFn: ({ email, data }) =>
+      base44.asServiceRole.entities.User.filter({ email }).then(users => {
+        if (users.length > 0) return base44.asServiceRole.entities.User.update(users[0].id, data);
+      }),
+    onSuccess: () => queryClient.invalidateQueries(['all-users']),
+  });
+
+  const handleApprove = async (request) => {
+    if (!confirm(`Approve ${request.user_name} as a tutor?`)) return;
+    await updateRequestMutation.mutateAsync({
+      id: request.id,
+      data: { status: 'approved', processed_date: new Date().toISOString() },
+    });
+    await updateUserMutation.mutateAsync({
+      email: request.user_email,
+      data: { is_tutor: true, tutor_request_status: 'approved' },
+    });
+    toast.success(`${request.user_name} is now a tutor!`);
+  };
+
+  const handleRejectConfirm = async () => {
+    if (!selectedRequest) return;
+    await updateRequestMutation.mutateAsync({
+      id: selectedRequest.id,
+      data: { status: 'rejected', processed_date: new Date().toISOString() },
+    });
+    await updateUserMutation.mutateAsync({
+      email: selectedRequest.user_email,
+      data: { is_tutor: false, tutor_request_status: 'rejected' },
+    });
+    toast.success(`Request from ${selectedRequest.user_name} rejected.`);
+    setRejectDialogOpen(false);
+    setSelectedRequest(null);
+    setRejectionNote('');
+  };
+
+  const statusColor = { pending: 'warning', approved: 'success', rejected: 'error' };
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Tutor Requests</Typography>
+          <Typography variant="body2" color="textSecondary">Review and manage tutor applications</Typography>
+        </Box>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          {['pending', 'approved', 'rejected', 'all'].map(f => (
+            <Button
+              key={f}
+              size="small"
+              variant={filter === f ? 'contained' : 'outlined'}
+              onClick={() => setFilter(f)}
+              sx={{ textTransform: 'capitalize' }}
+            >
+              {f}
+              {f === 'pending' && allRequests.filter(r => r.status === 'pending').length > 0 && (
+                <Chip
+                  label={allRequests.filter(r => r.status === 'pending').length}
+                  size="small"
+                  color="error"
+                  sx={{ ml: 0.5, height: 18, fontSize: '0.65rem' }}
+                />
+              )}
+            </Button>
+          ))}
+        </Box>
+      </Box>
+
+      {isLoading ? (
+        <Typography color="textSecondary">Loading...</Typography>
+      ) : filteredRequests.length === 0 ? (
+        <Box sx={{ textAlign: 'center', py: 6 }}>
+          <GraduationCap style={{ width: 48, height: 48, color: '#d1d5db', margin: '0 auto 12px' }} />
+          <Typography color="textSecondary">No {filter} requests found.</Typography>
+        </Box>
+      ) : (
+        <Box>
+          {filteredRequests.map((request) => (
+            <Card key={request.id} sx={{ mb: 2, border: request.status === 'pending' ? '1px solid #fbbf24' : undefined }}>
+              <CardContent>
+                <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2 }}>
+                  <Box sx={{ display: 'flex', gap: 2, alignItems: 'center' }}>
+                    <Avatar sx={{ bgcolor: '#e0e7ff', color: '#4f46e5', width: 48, height: 48 }}>
+                      {request.user_name?.charAt(0) || 'T'}
+                    </Avatar>
+                    <Box>
+                      <Typography variant="body1" sx={{ fontWeight: 600 }}>{request.user_name}</Typography>
+                      <Typography variant="body2" color="textSecondary">{request.user_email}</Typography>
+                      <Chip
+                        label={request.status}
+                        size="small"
+                        color={statusColor[request.status] || 'default'}
+                        sx={{ mt: 0.5, textTransform: 'capitalize' }}
+                      />
+                    </Box>
+                  </Box>
+
+                  {request.status === 'pending' && (
+                    <Box sx={{ display: 'flex', gap: 1 }}>
+                      <Button
+                        variant="contained"
+                        color="success"
+                        size="small"
+                        startIcon={<CheckCircle style={{ width: 16, height: 16 }} />}
+                        onClick={() => handleApprove(request)}
+                        disabled={updateRequestMutation.isPending}
+                      >
+                        Approve
+                      </Button>
+                      <Button
+                        variant="outlined"
+                        color="error"
+                        size="small"
+                        startIcon={<X style={{ width: 16, height: 16 }} />}
+                        onClick={() => { setSelectedRequest(request); setRejectDialogOpen(true); }}
+                      >
+                        Reject
+                      </Button>
+                    </Box>
+                  )}
+                </Box>
+
+                <Box sx={{ mt: 2, pl: 8 }}>
+                  <Box sx={{ mb: 1 }}>
+                    <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>Reason</Typography>
+                    <Typography variant="body2" sx={{ mt: 0.5 }}>{request.reason || '—'}</Typography>
+                  </Box>
+                  {request.qualifications && (
+                    <Box sx={{ mb: 1 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>Qualifications</Typography>
+                      <Typography variant="body2" sx={{ mt: 0.5 }}>{request.qualifications}</Typography>
+                    </Box>
+                  )}
+                  {request.subjects?.length > 0 && (
+                    <Box sx={{ mb: 1 }}>
+                      <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'uppercase', letterSpacing: 0.5 }}>Subjects</Typography>
+                      <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5, mt: 0.5 }}>
+                        {request.subjects.map(s => (
+                          <Chip key={s} label={s} size="small" variant="outlined" sx={{ textTransform: 'capitalize' }} />
+                        ))}
+                      </Box>
+                    </Box>
+                  )}
+                  {request.processed_date && (
+                    <Typography variant="caption" color="textSecondary">
+                      Processed: {new Date(request.processed_date).toLocaleDateString()}
+                    </Typography>
+                  )}
+                </Box>
+              </CardContent>
+            </Card>
+          ))}
+        </Box>
+      )}
+
+      {/* Reject Confirmation Dialog */}
+      <Dialog open={rejectDialogOpen} onClose={() => setRejectDialogOpen(false)} maxWidth="xs" fullWidth>
+        <DialogTitle>Reject Tutor Request</DialogTitle>
+        <DialogContent>
+          <Typography variant="body2" sx={{ mb: 2 }}>
+            Are you sure you want to reject <strong>{selectedRequest?.user_name}</strong>'s tutor application?
+          </Typography>
+          <TextField
+            fullWidth
+            multiline
+            rows={3}
+            label="Rejection Note (optional)"
+            value={rejectionNote}
+            onChange={(e) => setRejectionNote(e.target.value)}
+            placeholder="Provide a reason for rejection..."
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setRejectDialogOpen(false)}>Cancel</Button>
+          <Button onClick={handleRejectConfirm} color="error" variant="contained" disabled={updateRequestMutation.isPending}>
+            Reject
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
+  );
+}
 function AboutUsManagement({ siteContent }) { return <Typography>About Us Management - To be implemented</Typography>; }
 function SitePasswordsManagement({ siteContent }) { return <Typography>Site Passwords Management - To be implemented</Typography>; }
