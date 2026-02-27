@@ -18,7 +18,7 @@ export default function TutorDashboard() {
   const [user, setUser] = useState(null);
   const [searchParams, setSearchParams] = useSearchParams();
   const [selectedCourseId, setSelectedCourseId] = useState(searchParams.get('courseId'));
-  const currentView = searchParams.get('view') || 'modules';
+  const currentView = searchParams.get('view') || 'home';
   const [sidebarOpen, setSidebarOpen] = useState(window.innerWidth > 768);
   const [showGlobalSearch, setShowGlobalSearch] = useState(false);
 
