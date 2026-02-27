@@ -1287,62 +1287,87 @@ function AssignmentsView({ course }) {
   );
 }
 
-function PeopleView({ course }) {
-  const [filters, setFilters] = React.useState({});
+function PeopleView({ courses, selectedCourse }) {
+  const [selectedCourseFilter, setSelectedCourseFilter] = React.useState(selectedCourse?.id || '');
+  const [search, setSearch] = React.useState('');
+
+  const targetCourseId = selectedCourseFilter || selectedCourse?.id;
 
   const { data: enrollments = [] } = useQuery({
-    queryKey: ['course-enrollments', course?.id],
-    queryFn: () => base44.entities.Enrollment.filter({ course_id: course?.id }, '-created_date', 200),
-    enabled: !!course?.id,
+    queryKey: ['all-course-enrollments', courses.map(c => c.id).join(',')],
+    queryFn: async () => {
+      if (courses.length === 0) return [];
+      const results = await Promise.all(
+        courses.map(c => base44.entities.Enrollment.filter({ course_id: c.id }, '-created_date', 200))
+      );
+      return results.flat();
+    },
+    enabled: courses.length > 0,
   });
 
-  // Apply filters
-  const filteredEnrollments = enrollments.filter(enrollment => {
-    if (filters.progress) {
-      const progress = enrollment.progress_percent || 0;
-      if (filters.progress === 'not_started' && progress > 0) return false;
-      if (filters.progress === 'in_progress' && (progress === 0 || progress === 100)) return false;
-      if (filters.progress === 'completed' && progress < 100) return false;
-    }
-    if (filters.query) {
-      const query = filters.query.toLowerCase();
-      return enrollment.created_by?.toLowerCase().includes(query);
-    }
+  const filtered = enrollments.filter(e => {
+    if (targetCourseId && e.course_id !== targetCourseId) return false;
+    if (search && !e.created_by?.toLowerCase().includes(search.toLowerCase())) return false;
     return true;
   });
 
+  const uniqueStudents = [...new Map(filtered.map(e => [e.created_by, e])).values()];
+
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">People</h1>
-      
-      {/* Advanced Filters */}
-      <div className="mb-6">
-        <AdvancedFilters
-          filterType="students"
-          filters={filters}
-          onFilterChange={setFilters}
-          onClear={() => setFilters({})}
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Students</h1>
+      <div className="flex gap-3 mb-6 flex-wrap">
+        <input
+          type="text"
+          placeholder="Search by email..."
+          value={search}
+          onChange={e => setSearch(e.target.value)}
+          className="px-3 py-2 border rounded-lg text-sm flex-1 max-w-xs"
         />
+        <select
+          value={selectedCourseFilter}
+          onChange={e => setSelectedCourseFilter(e.target.value)}
+          className="px-3 py-2 border rounded-lg text-sm"
+        >
+          <option value="">All Courses</option>
+          {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+        </select>
       </div>
-      <div className="bg-white border border-gray-200 rounded-lg overflow-hidden">
-        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
-          <h3 className="font-semibold">Students ({enrollments.length})</h3>
+      <div className="bg-white border border-gray-200 rounded-xl overflow-hidden">
+        <div className="px-6 py-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+          <h3 className="font-semibold">Students ({uniqueStudents.length})</h3>
+          <Link to={createPageUrl('MessageCenter')}>
+            <Button size="sm" variant="outline"><MessageSquare className="w-4 h-4 mr-1" /> Message All</Button>
+          </Link>
         </div>
         <div className="divide-y divide-gray-200">
-          {filteredEnrollments.map(enrollment => (
-            <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
-              <div className="flex items-center gap-3">
-                <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold">
-                  {enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}
+          {uniqueStudents.map(enrollment => {
+            const course = courses.find(c => c.id === enrollment.course_id);
+            return (
+              <div key={enrollment.id} className="px-6 py-4 flex items-center justify-between hover:bg-gray-50">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-full flex items-center justify-center text-white font-bold text-sm">
+                    {enrollment.created_by?.charAt(0)?.toUpperCase() || 'S'}
+                  </div>
+                  <div>
+                    <div className="font-medium text-gray-900 text-sm">{enrollment.created_by}</div>
+                    <div className="text-xs text-gray-500">{course?.title} · {enrollment.progress_percent || 0}% complete</div>
+                  </div>
                 </div>
-                <div>
-                  <div className="font-medium text-gray-900">{enrollment.created_by}</div>
-                  <div className="text-sm text-gray-500">{enrollment.progress_percent || 0}% complete</div>
+                <div className="flex gap-2">
+                  <Link to={createPageUrl('StudentAnalytics') + `?studentEmail=${enrollment.created_by}&courseId=${enrollment.course_id}`}>
+                    <Button variant="outline" size="sm">Analytics</Button>
+                  </Link>
+                  <Link to={createPageUrl('MessageCenter') + `?to=${enrollment.created_by}`}>
+                    <Button variant="outline" size="sm"><MessageSquare className="w-3 h-3" /></Button>
+                  </Link>
                 </div>
               </div>
-              <Button variant="outline" size="sm">View Profile</Button>
-            </div>
-          ))}
+            );
+          })}
+          {uniqueStudents.length === 0 && (
+            <div className="px-6 py-12 text-center text-gray-500 text-sm">No students found.</div>
+          )}
         </div>
       </div>
     </div>
