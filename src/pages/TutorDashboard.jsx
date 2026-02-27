@@ -185,24 +185,18 @@ export default function TutorDashboard() {
           <div className="flex h-full">
             {/* Main Section */}
             <div className="flex-1 p-8 overflow-y-auto">
+              {currentView === 'home' && <HomeView courses={courses} user={user} />}
               {currentView === 'modules' && <ModulesView courses={courses} user={user} />}
-              {currentView === 'home' && <HomeView courses={courses} />}
+              {currentView === 'people' && <PeopleView courses={courses} selectedCourse={selectedCourse} />}
+              {currentView === 'video' && <VideoView course={selectedCourse} courses={courses} user={user} />}
               {currentView === 'assignments' && <AssignmentsView course={selectedCourse} />}
-              {currentView === 'people' && <PeopleView course={selectedCourse} />}
-              {currentView === 'grades' && <GradesView course={selectedCourse} />}
+              {currentView === 'grades' && <GradesView course={selectedCourse} courses={courses} />}
               {currentView === 'analytics' && <AnalyticsView course={selectedCourse} />}
-              {currentView === 'announcements' && <AnnouncementsView course={selectedCourse} />}
               {currentView === 'discussions' && <DiscussionsView course={selectedCourse} />}
-              {currentView === 'pages' && <PagesView course={selectedCourse} />}
-              {currentView === 'files' && <FilesView course={selectedCourse} />}
-              {currentView === 'syllabus' && <SyllabusView course={selectedCourse} />}
-              {currentView === 'outcomes' && <OutcomesView course={selectedCourse} />}
-              {currentView === 'rubrics' && <RubricsView course={selectedCourse} />}
               {currentView === 'quizzes' && <QuizzesView course={selectedCourse} />}
-              {currentView === 'video' && <VideoView course={selectedCourse} />}
-              {currentView === 'collaborations' && <CollaborationsView course={selectedCourse} />}
+              {currentView === 'outcomes' && <OutcomesView course={selectedCourse} />}
+              {currentView === 'unlock' && <UnlockLessonsView courses={courses} />}
               {currentView === 'attendance' && <AttendanceView course={selectedCourse} />}
-              {currentView === 'whiteboard' && <WhiteboardView course={selectedCourse} />}
             </div>
 
             {/* Right Sidebar - Context Sensitive (Hidden on mobile) */}
