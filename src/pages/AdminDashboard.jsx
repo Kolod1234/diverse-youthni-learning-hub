@@ -989,11 +989,16 @@ function TutorRequestsManagement() {
   });
 
   const updateUserMutation = useMutation({
-    mutationFn: ({ email, data }) =>
-      base44.entities.User.filter({ email }).then(users => {
-        if (users.length > 0) return base44.entities.User.update(users[0].id, data);
-      }),
-    onSuccess: () => queryClient.invalidateQueries(['all-users']),
+    mutationFn: async ({ email, data }) => {
+      const users = await base44.asServiceRole.entities.User.filter({ email });
+      if (users.length > 0) {
+        return base44.asServiceRole.entities.User.update(users[0].id, data);
+      }
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-users']);
+      queryClient.invalidateQueries(['all-users-tutors']);
+    },
   });
 
   const handleApprove = async (request) => {

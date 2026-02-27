@@ -139,10 +139,12 @@ import StudentAnalytics from './pages/StudentAnalytics';
 import StudentPathways from './pages/StudentPathways';
 import StudyGroupDetail from './pages/StudyGroupDetail';
 import Templates from './pages/Templates';
+import TutorBookingManager from './pages/TutorBookingManager';
 import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorDashboardCanvas from './pages/TutorDashboardCanvas';
 import TutorDashboardOverview from './pages/TutorDashboardOverview';
+import TutorOnboarding from './pages/TutorOnboarding';
 import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
 import Tutors from './pages/Tutors';
@@ -151,8 +153,6 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import TutorBookingManager from './pages/TutorBookingManager';
-import TutorOnboarding from './pages/TutorOnboarding';
 import __Layout from './Layout.jsx';
 
 
@@ -249,10 +249,12 @@ export const PAGES = {
     "StudentPathways": StudentPathways,
     "StudyGroupDetail": StudyGroupDetail,
     "Templates": Templates,
+    "TutorBookingManager": TutorBookingManager,
     "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
     "TutorDashboardCanvas": TutorDashboardCanvas,
     "TutorDashboardOverview": TutorDashboardOverview,
+    "TutorOnboarding": TutorOnboarding,
     "TutorSessionsDashboard": TutorSessionsDashboard,
     "TutorSetup": TutorSetup,
     "Tutors": Tutors,
@@ -261,8 +263,6 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "TutorBookingManager": TutorBookingManager,
-    "TutorOnboarding": TutorOnboarding,
 }
 
 export const pagesConfig = {
