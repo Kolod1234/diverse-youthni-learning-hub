@@ -416,7 +416,25 @@ export default function Dashboard() {
                     )}
                   </Card>
 
-                  {/* Call to Action */}
+                  {/* Message Center Quick Access */}
+                  <Card sx={{ p: 3, borderRadius: 4, border: 1, borderColor: 'divider', boxShadow: 2 }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 1.5 }}>
+                      <Box sx={{ width: 36, height: 36, bgcolor: '#eef2ff', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <MessageSquare size={18} color="#4f46e5" />
+                      </Box>
+                      <Typography variant="subtitle1" fontWeight={600}>Messages</Typography>
+                    </Box>
+                    <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                      Chat with your tutors and coordinators directly.
+                    </Typography>
+                    <Link to={createPageUrl('MessageCenter')} style={{ textDecoration: 'none' }}>
+                      <Button fullWidth variant="outlined" sx={{ borderRadius: 2 }}>
+                        Open Message Center
+                      </Button>
+                    </Link>
+                  </Card>
+
+              {/* Call to Action */}
                   <Card sx={{ position: 'relative', overflow: 'hidden', bgcolor: 'primary.main', color: 'primary.contrastText', p: 3, borderRadius: 4, boxShadow: 6 }}>
                     <Box sx={{ position: 'relative' }}>
                       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1.5 }}>
