@@ -33,8 +33,8 @@ export default function Tutors() {
   }, []);
 
   const { data: allUsers = [], isLoading } = useQuery({
-    queryKey: ['all-users'],
-    queryFn: () => base44.entities.User.list('-created_date', 500),
+    queryKey: ['all-users-tutors'],
+    queryFn: () => base44.asServiceRole.entities.User.list('-created_date', 500),
   });
 
   const { data: courses = [] } = useQuery({
