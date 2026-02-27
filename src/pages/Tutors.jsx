@@ -35,12 +35,8 @@ export default function Tutors() {
   const { data: allUsers = [], isLoading } = useQuery({
     queryKey: ['all-users-tutors'],
     queryFn: async () => {
-      // Try service role first, fall back to regular
-      try {
-        return await base44.asServiceRole.entities.User.list('-created_date', 500);
-      } catch {
-        return await base44.entities.User.list('-created_date', 500);
-      }
+      const res = await base44.functions.invoke('getAllTutors');
+      return res.data?.users || [];
     },
   });
 
