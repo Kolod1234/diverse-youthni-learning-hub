@@ -394,6 +394,16 @@ export default function Tutors() {
           </div>
         )}
       </div>
+
+      {/* Tutor Profile Modal */}
+      {selectedTutor && (
+        <TutorProfileModal
+          tutor={selectedTutor.tutor}
+          stats={selectedTutor.stats}
+          open={!!selectedTutor}
+          onClose={() => setSelectedTutor(null)}
+        />
+      )}
     </div>
   );
 }
