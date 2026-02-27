@@ -116,7 +116,7 @@ export default function Tutors() {
   };
 
   // Tutors and admins bypass the access code lock
-  const isTutorOrAdmin = currentUser?.is_tutor === true || currentUser?.role === 'admin';
+  const isTutorOrAdmin = currentUser?.is_tutor === true || currentUser?.data?.is_tutor === true || currentUser?.role === 'admin';
 
   if (!isUnlocked && !isTutorOrAdmin) {
     return (
