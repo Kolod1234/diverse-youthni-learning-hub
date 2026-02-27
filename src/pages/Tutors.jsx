@@ -59,7 +59,10 @@ export default function Tutors() {
     queryFn: () => base44.entities.Review.list('-created_date', 1000),
   });
 
-  const tutors = allUsers.filter(user => user.is_tutor || user.role === 'admin');
+  const tutors = allUsers.filter(user => {
+    const data = user.data || {};
+    return user.is_tutor === true || data.is_tutor === true || user.role === 'admin';
+  });
 
   const getTutorStats = (tutorEmail, tutorName) => {
     const tutorCourses = courses.filter(c => c.created_by === tutorEmail);
