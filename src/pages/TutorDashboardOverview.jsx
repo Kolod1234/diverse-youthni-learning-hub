@@ -26,11 +26,24 @@ export default function TutorDashboardOverview() {
     });
   }, []);
 
-  const { data: myCourses = [] } = useQuery({
+  const { data: tutorRequest } = useQuery({
+    queryKey: ['tutor-request-overview', user?.email],
+    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
+    enabled: !!user?.email && user?.role !== 'admin',
+  });
+
+  const approvedSubjects = tutorRequest?.[0]?.subjects || [];
+
+  const { data: allMyCourses = [] } = useQuery({
     queryKey: ['my-courses', user?.email],
     queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
     enabled: !!user?.email,
   });
+
+  // Non-admins can only see/manage courses in their approved subjects
+  const myCourses = user?.role === 'admin' || approvedSubjects.length === 0
+    ? allMyCourses
+    : allMyCourses.filter(c => approvedSubjects.includes(c.category));
 
   const { data: enrollments = [] } = useQuery({
     queryKey: ['tutor-overview-enrollments'],
