@@ -990,10 +990,8 @@ function TutorRequestsManagement() {
 
   const updateUserMutation = useMutation({
     mutationFn: async ({ email, data }) => {
-      const users = await base44.asServiceRole.entities.User.filter({ email });
-      if (users.length > 0) {
-        return base44.asServiceRole.entities.User.update(users[0].id, data);
-      }
+      const response = await base44.functions.invoke('adminUpdateUser', { email, data });
+      return response.data;
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
