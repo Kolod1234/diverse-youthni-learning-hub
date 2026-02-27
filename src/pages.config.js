@@ -152,6 +152,7 @@ import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import TutorBookingManager from './pages/TutorBookingManager';
+import TutorOnboarding from './pages/TutorOnboarding';
 import __Layout from './Layout.jsx';
 
 
@@ -261,6 +262,7 @@ export const PAGES = {
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "TutorBookingManager": TutorBookingManager,
+    "TutorOnboarding": TutorOnboarding,
 }
 
 export const pagesConfig = {
