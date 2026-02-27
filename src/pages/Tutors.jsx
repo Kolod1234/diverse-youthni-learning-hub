@@ -14,6 +14,7 @@ import {
   Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut, MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import TutorProfileModal from '@/components/tutor/TutorProfileModal';
 
 export default function Tutors() {
   const [searchQuery, setSearchQuery] = useState('');
