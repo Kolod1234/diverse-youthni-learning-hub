@@ -23,14 +23,20 @@ export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [tabValue, setTabValue] = useState('in-progress');
   const [accessDenied, setAccessDenied] = useState(false);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
       
-      // Block tutors and non-admins from accessing this student dashboard
-      if (userData?.is_tutor || userData?.is_coordinator) {
+      // Redirect tutors to their dashboard instead of showing access denied
+      if (userData?.is_tutor && userData?.role !== 'admin') {
+        navigate(createPageUrl('TutorDashboardOverview'), { replace: true });
+        return;
+      }
+      
+      if (userData?.is_coordinator && !userData?.is_tutor) {
         setAccessDenied(true);
       }
     };
