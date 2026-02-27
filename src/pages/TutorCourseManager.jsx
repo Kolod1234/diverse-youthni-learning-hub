@@ -81,13 +81,25 @@ export default function TutorCourseManager() {
     enabled: !!courseId,
   });
 
-  const { data: allCourses = [] } = useQuery({
-    queryKey: ['all-tutor-courses'],
-    queryFn: async () => {
-      const user = await base44.auth.me();
-      return base44.entities.Course.filter({ created_by: user.email, is_deleted: { $ne: true } }, '-created_date', 100);
-    },
+  const { data: tutorRequest } = useQuery({
+    queryKey: ['tutor-request-for-courses', user?.email],
+    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
+    enabled: !!user?.email && user?.role !== 'admin',
   });
+
+  const approvedSubjects = tutorRequest?.[0]?.subjects || [];
+
+  const { data: allCourses = [] } = useQuery({
+    queryKey: ['all-tutor-courses', user?.email],
+    queryFn: async () => {
+      const me = await base44.auth.me();
+      return base44.entities.Course.filter({ created_by: me.email }, '-created_date', 100);
+    },
+    enabled: !!user,
+  });
+
+  // Verify the current course belongs to this tutor and is in an approved subject
+  const isAllowedToEditCourse = !course || user?.role === 'admin' || approvedSubjects.length === 0 || approvedSubjects.includes(course?.category);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],
