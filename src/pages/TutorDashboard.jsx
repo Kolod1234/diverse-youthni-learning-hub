@@ -1374,15 +1374,76 @@ function PeopleView({ courses, selectedCourse }) {
   );
 }
 
-function GradesView({ course }) {
+function GradesView({ course, courses }) {
+  const [selectedCourseId, setSelectedCourseId] = React.useState(course?.id || '');
+  const targetCourseId = selectedCourseId || course?.id;
+
+  const { data: submissions = [] } = useQuery({
+    queryKey: ['course-submissions-grades', targetCourseId],
+    queryFn: () => base44.entities.Submission.filter({ course_id: targetCourseId }, '-created_date', 200),
+    enabled: !!targetCourseId,
+  });
+
+  const { data: quizAttempts = [] } = useQuery({
+    queryKey: ['course-quiz-attempts-grades', targetCourseId],
+    queryFn: () => base44.entities.QuizAttempt.filter({ course_id: targetCourseId }, '-created_date', 200),
+    enabled: !!targetCourseId,
+  });
+
+  const ungradedSubmissions = submissions.filter(s => !s.is_graded);
+
   return (
     <div className="max-w-4xl">
-      <h1 className="text-3xl font-bold text-gray-900 mb-6">Grades</h1>
-      <div className="bg-white border border-gray-200 rounded-lg p-8 text-center">
-        <Award className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-        <h3 className="text-xl font-semibold text-gray-700 mb-2">Grade Book</h3>
-        <p className="text-gray-500">View and manage student grades</p>
+      <h1 className="text-3xl font-bold text-gray-900 mb-6">Grades & Assessment</h1>
+      <div className="flex gap-3 mb-6">
+        <select
+          value={selectedCourseId}
+          onChange={e => setSelectedCourseId(e.target.value)}
+          className="px-3 py-2 border rounded-lg text-sm"
+        >
+          <option value="">Select Course</option>
+          {courses.map(c => <option key={c.id} value={c.id}>{c.title}</option>)}
+        </select>
       </div>
+      <div className="grid grid-cols-3 gap-4 mb-6">
+        <div className="bg-amber-50 border border-amber-100 rounded-xl p-4 text-center">
+          <div className="text-2xl font-bold text-amber-600">{ungradedSubmissions.length}</div>
+          <div className="text-xs text-amber-700 mt-1">Awaiting Grading</div>
+        </div>
+        <div className="bg-blue-50 border border-blue-100 rounded-xl p-4 text-center">
+          <div className="text-2xl font-bold text-blue-600">{submissions.length}</div>
+          <div className="text-xs text-blue-700 mt-1">Total Submissions</div>
+        </div>
+        <div className="bg-green-50 border border-green-100 rounded-xl p-4 text-center">
+          <div className="text-2xl font-bold text-green-600">{quizAttempts.length}</div>
+          <div className="text-xs text-green-700 mt-1">Quiz Attempts</div>
+        </div>
+      </div>
+      {ungradedSubmissions.length > 0 && (
+        <div className="bg-white border border-gray-200 rounded-xl overflow-hidden mb-4">
+          <div className="px-6 py-4 bg-amber-50 border-b border-amber-100">
+            <h3 className="font-semibold text-amber-800">Needs Grading ({ungradedSubmissions.length})</h3>
+          </div>
+          <div className="divide-y divide-gray-200">
+            {ungradedSubmissions.slice(0, 10).map(sub => (
+              <div key={sub.id} className="px-6 py-4 flex items-center justify-between">
+                <div>
+                  <div className="font-medium text-gray-900 text-sm">{sub.student_name || sub.created_by}</div>
+                  <div className="text-xs text-gray-500">{sub.title || 'Assignment submission'}</div>
+                </div>
+                <Link to={createPageUrl('GradeAssignments') + `?submissionId=${sub.id}`}>
+                  <Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">Grade</Button>
+                </Link>
+              </div>
+            ))}
+          </div>
+        </div>
+      )}
+      {targetCourseId && (
+        <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}>
+          <Button variant="outline" className="w-full">View All Submissions & Grades</Button>
+        </Link>
+      )}
     </div>
   );
 }
