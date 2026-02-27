@@ -32,7 +32,17 @@ export default function BookSession() {
 
   useEffect(() => {
     base44.auth.me().then(setUser);
+    // Pre-select tutor if passed via URL param
+    const params = new URLSearchParams(window.location.search);
+    const tutorEmail = params.get('tutor');
+    if (tutorEmail) {
+      // Will be resolved once allTutors loads
+      setTutorSearch('');
+      setPendingTutorEmail(tutorEmail);
+    }
   }, []);
+
+  const [pendingTutorEmail, setPendingTutorEmail] = useState(null);
 
   const { data: allTutors = [] } = useQuery({
     queryKey: ['all-tutors'],
