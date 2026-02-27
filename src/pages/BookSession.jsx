@@ -48,9 +48,23 @@ export default function BookSession() {
     queryKey: ['all-tutors'],
     queryFn: async () => {
       const users = await base44.entities.User.list('-created_date', 500);
-      return users.filter(u => u.is_tutor === true);
+      return users.filter(u => u.is_tutor === true || u.role === 'admin');
     },
+    onSuccess: (tutors) => {
+      if (pendingTutorEmail) {
+        const found = tutors.find(t => t.email === pendingTutorEmail);
+        if (found) { setSelectedTutor(found); setPendingTutorEmail(null); }
+      }
+    }
   });
+
+  // Resolve pendingTutorEmail once tutors load
+  useEffect(() => {
+    if (pendingTutorEmail && allTutors.length > 0) {
+      const found = allTutors.find(t => t.email === pendingTutorEmail);
+      if (found) { setSelectedTutor(found); setPendingTutorEmail(null); }
+    }
+  }, [pendingTutorEmail, allTutors]);
 
   const { data: courses = [] } = useQuery({
     queryKey: ['courses'],
