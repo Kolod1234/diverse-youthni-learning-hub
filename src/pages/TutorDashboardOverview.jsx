@@ -8,8 +8,8 @@ import { Badge } from '@/components/ui/badge';
 import {
   BookOpen, Users, Video, MessageSquare, TrendingUp, Award,
   ArrowRight, Calendar, FileText, BarChart3, Plus, Clock,
-  CheckCircle2, Star, GraduationCap, Layers, Zap, ChevronRight,
-  BookMarked, UserCheck, Pencil
+  CheckCircle2, Star, GraduationCap, Zap, ChevronRight,
+  BookMarked, UserCheck, Lock, Unlock, Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
@@ -26,29 +26,47 @@ export default function TutorDashboardOverview() {
     });
   }, []);
 
-  const { data: tutorRequest } = useQuery({
+  // Fetch tutor's approved request to get approved subjects
+  const { data: tutorRequests = [] } = useQuery({
     queryKey: ['tutor-request-overview', user?.email],
-    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
+    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 5),
     enabled: !!user?.email && user?.role !== 'admin',
   });
 
-  const approvedSubjects = tutorRequest?.[0]?.subjects || [];
+  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
-  const { data: allMyCourses = [] } = useQuery({
-    queryKey: ['my-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
-    enabled: !!user?.email,
+  // Fetch ALL courses in this tutor's approved subjects (not just created_by)
+  const { data: allCourses = [] } = useQuery({
+    queryKey: ['tutor-assigned-courses', user?.email, approvedSubjects?.join(',')],
+    queryFn: async () => {
+      if (user?.role === 'admin') {
+        return base44.entities.Course.list('-created_date', 200);
+      }
+      if (!approvedSubjects || approvedSubjects.length === 0) return [];
+      // Fetch courses for each approved subject
+      const results = await Promise.all(
+        approvedSubjects.map(subject =>
+          base44.entities.Course.filter({ category: subject }, '-created_date', 50)
+        )
+      );
+      return results.flat();
+    },
+    enabled: !!user && (user.role === 'admin' || approvedSubjects !== null),
   });
 
-  // Non-admins can only see/manage courses in their approved subjects
-  const myCourses = user?.role === 'admin' || approvedSubjects.length === 0
-    ? allMyCourses
-    : allMyCourses.filter(c => approvedSubjects.includes(c.category));
+  const myCourses = allCourses;
 
+  // Enrollments across tutor's courses
   const { data: enrollments = [] } = useQuery({
-    queryKey: ['tutor-overview-enrollments'],
-    queryFn: () => base44.entities.Enrollment.list('-created_date', 1000),
-    enabled: !!user?.email,
+    queryKey: ['tutor-course-enrollments', myCourses.map(c => c.id).join(',')],
+    queryFn: async () => {
+      if (myCourses.length === 0) return [];
+      const results = await Promise.all(
+        myCourses.map(c => base44.entities.Enrollment.filter({ course_id: c.id }, '-created_date', 200))
+      );
+      return results.flat();
+    },
+    enabled: myCourses.length > 0,
   });
 
   const { data: messages = [] } = useQuery({
@@ -71,7 +89,7 @@ export default function TutorDashboardOverview() {
 
   // Derived stats
   const myCourseIds = myCourses.map(c => c.id);
-  const myEnrollments = enrollments.filter(e => myCourseIds.includes(e.course_id));
+  const myEnrollments = enrollments;
   const totalStudents = new Set(myEnrollments.map(e => e.created_by)).size;
   const completedCount = myEnrollments.filter(e => e.is_completed).length;
   const avgCompletion = myEnrollments.length > 0
@@ -83,7 +101,6 @@ export default function TutorDashboardOverview() {
   ).slice(0, 5);
 
   const pendingBookings = bookings.filter(b => b.status === 'pending');
-
   const today = new Date().toISOString().split('T')[0];
   const todaySessions = sessions.filter(s => s.scheduled_date === today);
 
@@ -103,18 +120,18 @@ export default function TutorDashboardOverview() {
   }
 
   const stats = [
-    { label: 'Active Courses', value: myCourses.length, icon: BookOpen, color: 'from-blue-500 to-blue-600', light: 'bg-blue-50 text-blue-700' },
-    { label: 'Total Students', value: totalStudents, icon: Users, color: 'from-violet-500 to-purple-600', light: 'bg-violet-50 text-violet-700' },
-    { label: 'Avg Completion', value: `${avgCompletion}%`, icon: TrendingUp, color: 'from-emerald-500 to-green-600', light: 'bg-emerald-50 text-emerald-700' },
-    { label: 'Upcoming Sessions', value: upcomingSessions.length, icon: Video, color: 'from-orange-500 to-amber-500', light: 'bg-orange-50 text-orange-700' },
+    { label: 'Assigned Courses', value: myCourses.length, icon: BookOpen, color: 'from-blue-500 to-blue-600' },
+    { label: 'Total Students', value: totalStudents, icon: Users, color: 'from-violet-500 to-purple-600' },
+    { label: 'Avg Completion', value: `${avgCompletion}%`, icon: TrendingUp, color: 'from-emerald-500 to-green-600' },
+    { label: 'Upcoming Sessions', value: upcomingSessions.length, icon: Video, color: 'from-orange-500 to-amber-500' },
   ];
 
   const quickActions = [
-    { label: 'Create Course', icon: Plus, href: createPageUrl('TutorDashboard') + '?view=modules', color: 'bg-blue-600 hover:bg-blue-700 text-white' },
     { label: 'Schedule Session', icon: Video, href: createPageUrl('ScheduleSession'), color: 'bg-purple-600 hover:bg-purple-700 text-white' },
     { label: 'Manage Bookings', icon: Calendar, href: createPageUrl('TutorBookingManager'), color: 'bg-emerald-600 hover:bg-emerald-700 text-white' },
-    { label: 'Lesson Editor', icon: Pencil, href: createPageUrl('LessonEditor'), color: 'bg-amber-600 hover:bg-amber-700 text-white' },
+    { label: 'Lesson Editor', icon: FileText, href: createPageUrl('LessonEditor'), color: 'bg-amber-600 hover:bg-amber-700 text-white' },
     { label: 'Quiz Generator', icon: Zap, href: createPageUrl('QuizGenerator'), color: 'bg-pink-600 hover:bg-pink-700 text-white' },
+    { label: 'Unlock Lessons', icon: Key, href: createPageUrl('TutorDashboard') + '?view=unlock', color: 'bg-indigo-600 hover:bg-indigo-700 text-white' },
     { label: 'Messages', icon: MessageSquare, href: createPageUrl('MessageCenter'), color: 'bg-slate-700 hover:bg-slate-800 text-white', badge: messages.length || null },
   ];
 
@@ -126,19 +143,28 @@ export default function TutorDashboardOverview() {
           <motion.div initial={{ opacity: 0, y: 16 }} animate={{ opacity: 1, y: 0 }}>
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
               <div>
-                <p className="text-blue-300 text-sm font-medium mb-1">Tutor Dashboard</p>
+                <p className="text-blue-300 text-sm font-medium mb-1">Tutor Home</p>
                 <h1 className="text-3xl font-bold">
-                  Welcome back, {user?.full_name?.split(' ')[0]}! 👋
+                  Welcome, {user?.full_name?.split(' ')[0]}! 👋
                 </h1>
                 <p className="text-slate-300 mt-1 text-sm">
                   {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
+                {approvedSubjects && approvedSubjects.length > 0 && (
+                  <div className="flex flex-wrap gap-2 mt-3">
+                    {approvedSubjects.map(s => (
+                      <span key={s} className="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full capitalize">
+                        {s.replace(/_/g, ' ')}
+                      </span>
+                    ))}
+                  </div>
+                )}
               </div>
               <div className="flex gap-3 flex-wrap">
                 <Link to={createPageUrl('TutorDashboard')}>
                   <Button className="bg-white text-slate-900 hover:bg-slate-100 font-semibold">
-                    <Layers className="w-4 h-4 mr-2" />
-                    Full Dashboard
+                    <BookOpen className="w-4 h-4 mr-2" />
+                    Course Dashboard
                   </Button>
                 </Link>
                 <Link to={createPageUrl('TutorSetup')}>
@@ -221,14 +247,14 @@ export default function TutorDashboardOverview() {
               </div>
             )}
 
-            {/* My Courses */}
+            {/* My Assigned Courses */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div>
-                  <h2 className="text-lg font-semibold text-gray-900">My Courses</h2>
-                  <p className="text-sm text-gray-500">{myCourses.length} course{myCourses.length !== 1 ? 's' : ''} active</p>
+                  <h2 className="text-lg font-semibold text-gray-900">My Assigned Courses</h2>
+                  <p className="text-sm text-gray-500">{myCourses.length} course{myCourses.length !== 1 ? 's' : ''} to teach</p>
                 </div>
-                <Link to={createPageUrl('TutorDashboard') + '?view=modules'}>
+                <Link to={createPageUrl('TutorDashboard')}>
                   <Button variant="outline" size="sm" className="gap-1">
                     Manage All <ArrowRight className="w-3.5 h-3.5" />
                   </Button>
@@ -238,18 +264,13 @@ export default function TutorDashboardOverview() {
               {myCourses.length === 0 ? (
                 <div className="py-14 text-center text-gray-400">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                  <p className="font-medium text-gray-600">No courses yet</p>
-                  <p className="text-sm mt-1 mb-4">Start building your first course</p>
-                  <Link to={createPageUrl('TutorDashboard') + '?view=modules'}>
-                    <Button size="sm" className="bg-blue-600 hover:bg-blue-700 text-white">
-                      <Plus className="w-4 h-4 mr-1" /> Create Course
-                    </Button>
-                  </Link>
+                  <p className="font-medium text-gray-600">No courses assigned yet</p>
+                  <p className="text-sm mt-1">Courses in your approved subjects will appear here</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {myCourses.slice(0, 5).map((course, i) => {
-                    const courseEnrollments = myEnrollments.filter(e => e.course_id === course.id);
+                  {myCourses.slice(0, 6).map((course, i) => {
+                    const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
                     const avgProg = courseEnrollments.length > 0
                       ? Math.round(courseEnrollments.reduce((s, e) => s + (e.progress_percent || 0), 0) / courseEnrollments.length)
                       : 0;
@@ -269,14 +290,13 @@ export default function TutorDashboardOverview() {
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-900 truncate">{course.title}</p>
                           <div className="flex items-center gap-3 mt-1">
+                            <span className="text-xs text-gray-500 capitalize">{course.category?.replace(/_/g, ' ')}</span>
+                            <span className="text-xs text-gray-400">•</span>
                             <span className="text-xs text-gray-500 flex items-center gap-1">
-                              <Users className="w-3.5 h-3.5" /> {courseEnrollments.length} students
+                              <Users className="w-3 h-3" /> {courseEnrollments.length} students
                             </span>
                             <span className="text-xs text-gray-400">•</span>
                             <span className="text-xs text-gray-500">{avgProg}% avg</span>
-                            <div className="flex-1 max-w-24 bg-gray-100 rounded-full h-1.5 hidden sm:block">
-                              <div className="bg-blue-500 h-1.5 rounded-full" style={{ width: `${avgProg}%` }} />
-                            </div>
                           </div>
                         </div>
                         <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}>
@@ -287,15 +307,53 @@ export default function TutorDashboardOverview() {
                       </motion.div>
                     );
                   })}
-                  {myCourses.length > 5 && (
+                  {myCourses.length > 6 && (
                     <div className="px-6 py-3 text-center">
-                      <Link to={createPageUrl('TutorDashboard') + '?view=modules'}>
+                      <Link to={createPageUrl('TutorDashboard')}>
                         <Button variant="ghost" size="sm" className="text-blue-600">
                           View all {myCourses.length} courses <ArrowRight className="w-3.5 h-3.5 ml-1" />
                         </Button>
                       </Link>
                     </div>
                   )}
+                </div>
+              )}
+            </div>
+
+            {/* Students Enrolled in My Courses */}
+            <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
+              <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+                <div>
+                  <h2 className="text-lg font-semibold text-gray-900">My Students</h2>
+                  <p className="text-sm text-gray-500">{totalStudents} enrolled across all courses</p>
+                </div>
+                <Link to={createPageUrl('TutorDashboard') + '?view=people'}>
+                  <Button variant="outline" size="sm" className="gap-1">
+                    View All <ArrowRight className="w-3.5 h-3.5" />
+                  </Button>
+                </Link>
+              </div>
+              {totalStudents === 0 ? (
+                <div className="py-10 text-center text-gray-400">
+                  <Users className="w-10 h-10 mx-auto mb-3 opacity-40" />
+                  <p className="text-sm font-medium text-gray-600">No students enrolled yet</p>
+                </div>
+              ) : (
+                <div className="px-6 py-4">
+                  <div className="grid grid-cols-3 gap-4">
+                    <div className="bg-blue-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-blue-700">{totalStudents}</p>
+                      <p className="text-xs text-blue-600 mt-1">Total Students</p>
+                    </div>
+                    <div className="bg-green-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-green-700">{completedCount}</p>
+                      <p className="text-xs text-green-600 mt-1">Completed</p>
+                    </div>
+                    <div className="bg-purple-50 rounded-xl p-4 text-center">
+                      <p className="text-2xl font-bold text-purple-700">{avgCompletion}%</p>
+                      <p className="text-xs text-purple-600 mt-1">Avg Progress</p>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>
@@ -320,32 +378,34 @@ export default function TutorDashboardOverview() {
                   </Link>
                 </div>
               </div>
-
               {upcomingSessions.length === 0 ? (
                 <div className="py-12 text-center text-gray-400">
                   <Video className="w-10 h-10 mx-auto mb-3 opacity-40" />
                   <p className="font-medium text-gray-600 text-sm">No upcoming sessions</p>
-                  <p className="text-xs mt-1">Schedule live sessions to connect with students</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
-                  {upcomingSessions.map(session => (
-                    <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
-                      <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
-                        <Video className="w-5 h-5 text-purple-600" />
+                  {upcomingSessions.map(session => {
+                    const course = myCourses.find(c => c.id === session.course_id);
+                    return (
+                      <div key={session.id} className="flex items-center gap-4 px-6 py-4 hover:bg-gray-50">
+                        <div className="w-10 h-10 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0">
+                          <Video className="w-5 h-5 text-purple-600" />
+                        </div>
+                        <div className="flex-1 min-w-0">
+                          <p className="font-medium text-gray-900 truncate">{session.title}</p>
+                          <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
+                            <Calendar className="w-3.5 h-3.5" />
+                            {new Date(session.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' })} at {session.scheduled_time}
+                            {course && <span className="ml-2 text-gray-400">• {course.title}</span>}
+                          </p>
+                        </div>
+                        <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}>
+                          <Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white">Start</Button>
+                        </Link>
                       </div>
-                      <div className="flex-1 min-w-0">
-                        <p className="font-medium text-gray-900 truncate">{session.title}</p>
-                        <p className="text-sm text-gray-500 flex items-center gap-1 mt-0.5">
-                          <Calendar className="w-3.5 h-3.5" />
-                          {new Date(session.scheduled_date).toLocaleDateString('en-GB', { weekday: 'short', month: 'short', day: 'numeric' })} at {session.scheduled_time}
-                        </p>
-                      </div>
-                      <Badge className="bg-purple-100 text-purple-700 border-0 text-xs">
-                        {session.invited_students?.length || 0} students
-                      </Badge>
-                    </div>
-                  ))}
+                    );
+                  })}
                 </div>
               )}
             </div>
@@ -380,6 +440,24 @@ export default function TutorDashboardOverview() {
               </div>
             </div>
 
+            {/* Approved Subjects */}
+            {approvedSubjects && approvedSubjects.length > 0 && (
+              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
+                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                  <CheckCircle2 className="w-4 h-4 text-green-500" />
+                  Approved to Teach
+                </h3>
+                <div className="space-y-2">
+                  {approvedSubjects.map(subject => (
+                    <div key={subject} className="flex items-center justify-between p-2.5 bg-green-50 rounded-xl">
+                      <span className="text-sm text-green-800 capitalize font-medium">{subject.replace(/_/g, ' ')}</span>
+                      <CheckCircle2 className="w-4 h-4 text-green-600" />
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
             {/* Performance Card */}
             <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white">
               <div className="flex items-center gap-3 mb-4">
@@ -393,7 +471,7 @@ export default function TutorDashboardOverview() {
               </div>
               <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <span className="text-indigo-200 text-sm">Completion Rate</span>
+                  <span className="text-indigo-200 text-sm">Avg Completion</span>
                   <span className="font-bold text-xl">{avgCompletion}%</span>
                 </div>
                 <div className="w-full bg-white/20 rounded-full h-2">
@@ -406,7 +484,7 @@ export default function TutorDashboardOverview() {
               </div>
             </div>
 
-            {/* Inbox Preview */}
+            {/* Messages Preview */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden">
               <div className="flex items-center justify-between px-5 py-4 border-b border-gray-100">
                 <h3 className="font-semibold text-gray-900 flex items-center gap-2">
@@ -441,18 +519,20 @@ export default function TutorDashboardOverview() {
               )}
             </div>
 
-            {/* Resources */}
+            {/* Tutor Tools */}
             <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
               <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
                 <Star className="w-4 h-4 text-amber-400" />
                 Tutor Tools
               </h3>
-              <div className="space-y-2">
+              <div className="space-y-1">
                 {[
-                  { label: 'Availability Manager', href: createPageUrl('TutorSetup'), icon: Calendar },
+                  { label: 'Availability & Calendar', href: createPageUrl('TutorSetup'), icon: Calendar },
                   { label: 'Booking Manager', href: createPageUrl('TutorBookingManager'), icon: CheckCircle2 },
+                  { label: 'Grade Students', href: createPageUrl('TutorDashboard') + '?view=grades', icon: Award },
+                  { label: 'Unlock Lessons', href: createPageUrl('TutorDashboard') + '?view=unlock', icon: Key },
                   { label: 'Course Analytics', href: createPageUrl('CourseAnalytics'), icon: BarChart3 },
-                  { label: 'Data to Slides', href: createPageUrl('DataPresentation'), icon: FileText },
+                  { label: 'Message Center', href: createPageUrl('MessageCenter'), icon: MessageSquare },
                 ].map(item => {
                   const Icon = item.icon;
                   return (
