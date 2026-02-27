@@ -289,6 +289,9 @@ function LayoutContent({ children, currentPageName }) {
                 anchorEl={moreMenuAnchor}
                 open={Boolean(moreMenuAnchor)}
                 onClose={() => setMoreMenuAnchor(null)}
+                disableEnforceFocus
+                disableRestoreFocus
+                disableAutoFocusItem
                 PaperProps={{
                   sx: { width: 280, maxHeight: 600, borderRadius: 3, mt: 1 }
                 }}
