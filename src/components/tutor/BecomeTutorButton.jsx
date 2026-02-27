@@ -98,6 +98,10 @@ export default function BecomeTutorButton({ user, onSuccess, hideButton, externa
     setOpen(true);
   };
 
+  const handleOpenChange = (val) => {
+    setOpen(val);
+  };
+
   if (!user || user.is_tutor || user.role === 'admin') {
     return null;
   }
