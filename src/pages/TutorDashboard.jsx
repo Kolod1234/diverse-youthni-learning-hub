@@ -33,10 +33,26 @@ export default function TutorDashboard() {
     loadUser();
   }, []);
 
+  // Fetch approved subjects from TutorRequest
+  const { data: tutorRequests = [] } = useQuery({
+    queryKey: ['tutor-request-dashboard', user?.email],
+    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 5),
+    enabled: !!user?.email && user?.role !== 'admin',
+  });
+  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
+
+  // Tutors see ALL courses in their approved subjects (not just ones they created)
   const { data: courses = [] } = useQuery({
-    queryKey: ['tutor-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }, '-created_date', 100),
-    enabled: !!user?.email,
+    queryKey: ['tutor-courses-by-subject', user?.email, approvedSubjects?.join(',')],
+    queryFn: async () => {
+      if (user?.role === 'admin') return base44.entities.Course.list('-created_date', 200);
+      if (!approvedSubjects || approvedSubjects.length === 0) return [];
+      const results = await Promise.all(
+        approvedSubjects.map(subject => base44.entities.Course.filter({ category: subject }, '-created_date', 50))
+      );
+      return results.flat();
+    },
+    enabled: !!user && (user.role === 'admin' || approvedSubjects !== null),
   });
 
   const selectedCourse = courses.find(c => c.id === selectedCourseId) || courses[0];
