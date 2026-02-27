@@ -10,7 +10,7 @@ import { Input } from '@/components/ui/input';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { 
   Star, BookOpen, Users, Search, GraduationCap, 
-  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut 
+  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut, MessageSquare
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 
