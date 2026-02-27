@@ -129,7 +129,7 @@ export default function BecomeTutorButton({ user, onSuccess, hideButton, externa
         {existingRequest?.status === 'rejected' ? 'Reapply as Tutor' : 'Become a Tutor'}
       </Button>
 
-      <Dialog open={open} onOpenChange={setOpen} modal={true}>
+      <Dialog open={open} onOpenChange={handleOpenChange} modal={false}>
         <DialogContent className="max-w-md max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Request to Become a Tutor</DialogTitle>

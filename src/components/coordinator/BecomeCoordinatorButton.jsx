@@ -109,7 +109,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess, hideButton, e
         {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
       </Button>
 
-      <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={true}>
+      <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={false}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Enter Coordinator Passcode</DialogTitle>
@@ -141,7 +141,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess, hideButton, e
         </DialogContent>
       </Dialog>
 
-      <Dialog open={open} onOpenChange={setOpen} modal={true}>
+      <Dialog open={open} onOpenChange={setOpen} modal={false}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Request to Become a Coordinator</DialogTitle>
