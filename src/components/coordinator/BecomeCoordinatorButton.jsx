@@ -77,12 +77,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
   };
 
   const handleClick = () => {
-    if (onCloseMobileMenu) {
-      onCloseMobileMenu();
-      setTimeout(() => setShowPasscode(true), 150);
-    } else {
-      setShowPasscode(true);
-    }
+    setShowPasscode(true);
   };
 
   if (!user || user.is_coordinator || user.role === 'admin') {
