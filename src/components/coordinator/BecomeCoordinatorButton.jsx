@@ -9,9 +9,11 @@ import { Label } from '@/components/ui/label';
 import { UserCheck, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 
-export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobileMenu }) {
+export default function BecomeCoordinatorButton({ user, onSuccess, hideButton, externalOpen, onExternalOpenChange }) {
   const [open, setOpen] = useState(false);
-  const [showPasscode, setShowPasscode] = useState(false);
+  const [internalShowPasscode, setInternalShowPasscode] = useState(false);
+  const showPasscode = externalOpen !== undefined ? externalOpen : internalShowPasscode;
+  const setShowPasscode = onExternalOpenChange !== undefined ? onExternalOpenChange : setInternalShowPasscode;
   const [passcode, setPasscode] = useState('');
   const [reason, setReason] = useState('');
   const queryClient = useQueryClient();
@@ -80,11 +82,13 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
     setShowPasscode(true);
   };
 
+  const isExternallyControlled = externalOpen !== undefined;
+
   if (!user || user.is_coordinator || user.role === 'admin') {
     return null;
   }
 
-  if (existingRequest && existingRequest.status === 'pending') {
+  if (!isExternallyControlled && existingRequest && existingRequest.status === 'pending') {
     return (
       <button className="flex items-center w-full text-left text-gray-400 cursor-not-allowed">
         <UserCheck className="w-4 h-4 mr-2" />
@@ -93,21 +97,23 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
     );
   }
 
-  if (existingRequest && existingRequest.status === 'approved') {
+  if (!isExternallyControlled && existingRequest && existingRequest.status === 'approved') {
     return null;
   }
 
   return (
     <>
-      <Button 
-        onClick={handleClick} 
-        className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
-      >
-        <UserCheck className="w-4 h-4" />
-        {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
-      </Button>
+      {!isExternallyControlled && (
+        <Button 
+          onClick={handleClick} 
+          className="flex items-center gap-2 bg-purple-600 hover:bg-purple-700 text-white"
+        >
+          <UserCheck className="w-4 h-4" />
+          {existingRequest?.status === 'rejected' ? 'Reapply as Coordinator' : 'Become a Coordinator'}
+        </Button>
+      )}
 
-      <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={false}>
+      <Dialog open={showPasscode} onOpenChange={setShowPasscode} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Enter Coordinator Passcode</DialogTitle>
@@ -139,7 +145,7 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
         </DialogContent>
       </Dialog>
 
-      <Dialog open={open} onOpenChange={setOpen} modal={false}>
+      <Dialog open={open} onOpenChange={setOpen} modal={true}>
         <DialogContent className="max-w-md">
           <DialogHeader>
             <DialogTitle>Request to Become a Coordinator</DialogTitle>
