@@ -372,6 +372,11 @@ export default function Tutors() {
                         View Profile
                         <ChevronRight className="w-4 h-4 ml-1" />
                       </Button>
+                      <Link to={`${createPageUrl('BookSession')}?tutor=${encodeURIComponent(tutor.email)}`}>
+                        <Button variant="outline" size="sm" title="Book a session" className="text-purple-600 border-purple-300 hover:bg-purple-50">
+                          <Calendar className="w-4 h-4" />
+                        </Button>
+                      </Link>
                       <Link to={`${createPageUrl('MessageCenter')}?recipient=${encodeURIComponent(tutor.email)}&name=${encodeURIComponent(tutor.full_name || 'Tutor')}`}>
                         <Button variant="outline" size="icon" title={`Message ${tutor.full_name}`}>
                           <MessageSquare className="w-4 h-4" />
