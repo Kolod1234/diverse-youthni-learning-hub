@@ -188,7 +188,7 @@ export default function Tutors() {
           <p className="text-lg text-gray-500 max-w-2xl mx-auto mb-6">
             Learn from experienced educators and industry professionals
           </p>
-          {(currentUser?.is_tutor || currentUser?.role === 'admin') && (
+          {(currentUser?.is_tutor || currentUser?.data?.is_tutor || currentUser?.role === 'admin') && (
            <div className="flex justify-center gap-3">
              <Link to={createPageUrl('TutorSetup')}>
                <Button size="lg" className="bg-indigo-600 hover:bg-indigo-700">
