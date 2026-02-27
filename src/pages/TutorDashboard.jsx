@@ -1996,5 +1996,3 @@ function RightSidebarContent({ currentView, course }) {
     </>
   );
 }
-
-// Legacy tab components removed - replaced by TutorDashboardOverview
