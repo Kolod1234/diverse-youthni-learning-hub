@@ -9,10 +9,8 @@ import { GraduationCap, Loader2, Plus, X } from 'lucide-react';
 import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 
-export default function BecomeTutorButton({ user, onSuccess, hideButton, externalOpen, onExternalOpenChange }) {
-  const [internalOpen, setInternalOpen] = useState(false);
-  const open = externalOpen !== undefined ? externalOpen : internalOpen;
-  const setOpen = onExternalOpenChange !== undefined ? onExternalOpenChange : setInternalOpen;
+export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }) {
+  const [open, setOpen] = useState(false);
   const [reason, setReason] = useState('');
   const [qualifications, setQualifications] = useState('');
   const [subjects, setSubjects] = useState(['']);
@@ -96,10 +94,6 @@ export default function BecomeTutorButton({ user, onSuccess, hideButton, externa
 
   const handleClick = () => {
     setOpen(true);
-  };
-
-  const handleOpenChange = (val) => {
-    setOpen(val);
   };
 
   if (!user || user.is_tutor || user.role === 'admin') {
