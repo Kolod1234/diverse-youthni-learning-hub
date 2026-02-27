@@ -93,9 +93,11 @@ export default function BecomeTutorButton({ user, onSuccess, onCloseMobileMenu }
   };
 
   const handleClick = () => {
-    setOpen(true);
     if (onCloseMobileMenu) {
-      setTimeout(() => onCloseMobileMenu(), 100);
+      onCloseMobileMenu();
+      setTimeout(() => setOpen(true), 150);
+    } else {
+      setOpen(true);
     }
   };
 

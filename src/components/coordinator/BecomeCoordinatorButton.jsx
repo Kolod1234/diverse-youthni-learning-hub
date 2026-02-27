@@ -77,9 +77,11 @@ export default function BecomeCoordinatorButton({ user, onSuccess, onCloseMobile
   };
 
   const handleClick = () => {
-    setShowPasscode(true);
     if (onCloseMobileMenu) {
-      setTimeout(() => onCloseMobileMenu(), 100);
+      onCloseMobileMenu();
+      setTimeout(() => setShowPasscode(true), 150);
+    } else {
+      setShowPasscode(true);
     }
   };
 
