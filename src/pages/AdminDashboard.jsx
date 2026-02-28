@@ -568,6 +568,7 @@ function CoursesManagement({ courses, users }) {
       setSelectedCourse(null);
       setEditingInstructor(null);
       setCustomInstructorName('');
+      setSelectedTutorEmail('');
     },
   });
 
@@ -583,12 +584,34 @@ function CoursesManagement({ courses, users }) {
     if (!selectedCourse || !selectedTutorEmail) return;
     const tutor = tutors.find(t => t.email === selectedTutorEmail);
     if (!tutor) return;
+
+    const currentAssigned = selectedCourse.assigned_tutors || [];
+    if (currentAssigned.includes(selectedTutorEmail)) {
+      toast.error('This tutor is already assigned to this course');
+      return;
+    }
+    if (currentAssigned.length >= 2) {
+      toast.error('Maximum 2 tutors per course. Please unassign one first.');
+      return;
+    }
+
+    const newAssigned = [...currentAssigned, selectedTutorEmail];
     updateCourseMutation.mutate({
       id: selectedCourse.id,
       data: {
-        instructor: tutor.full_name,
-        instructor_avatar: tutor.avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(tutor.full_name)}&background=6366f1&color=fff`
+        assigned_tutors: newAssigned,
+        instructor: newAssigned.map(email => tutors.find(t => t.email === email)?.full_name).filter(Boolean).join(', '),
       }
+    });
+  };
+
+  const unassignTutor = (course, tutorEmail) => {
+    if (!confirm(`Unassign this tutor from ${course.title}?`)) return;
+    const newAssigned = (course.assigned_tutors || []).filter(e => e !== tutorEmail);
+    const newInstructor = newAssigned.map(email => tutors.find(t => t.email === email)?.full_name).filter(Boolean).join(', ');
+    updateCourseMutation.mutate({
+      id: course.id,
+      data: { assigned_tutors: newAssigned, instructor: newInstructor || '' }
     });
   };
 
@@ -606,29 +629,58 @@ function CoursesManagement({ courses, users }) {
   return (
     <Box>
       <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Course Management</Typography>
-      <Typography color="textSecondary" sx={{ mb: 2 }}>Manage courses and assign tutors</Typography>
+      <Typography color="textSecondary" sx={{ mb: 2 }}>Assign up to 2 tutors per course. Tutors can only edit lessons in courses assigned to them.</Typography>
 
       {selectedCourse && (
         <Card sx={{ p: 2, mb: 2, bgcolor: '#eef2ff', borderColor: '#c7d2fe' }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Assign Tutor to: {selectedCourse.title}</Typography>
-          <Box sx={{ display: 'flex', gap: 1 }}>
-            <FormControl sx={{ flex: 1 }}>
-              <Select value={selectedTutorEmail} onChange={(e) => setSelectedTutorEmail(e.target.value)}>
-                <MenuItem value="">Select Tutor</MenuItem>
-                {tutors.map(tutor => (
-                  <MenuItem key={tutor.id} value={tutor.email}>{tutor.full_name} ({tutor.email})</MenuItem>
-                ))}
-              </Select>
-            </FormControl>
-            <Button onClick={assignTutor}>Assign</Button>
-            <Button variant="outlined" onClick={() => setSelectedCourse(null)}>Cancel</Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 1 }}>
+            <Typography variant="body2" sx={{ fontWeight: 600 }}>Manage Tutors for: {selectedCourse.title}</Typography>
+            <Chip label={`${(selectedCourse.assigned_tutors || []).length}/2 tutors`} size="small" color={(selectedCourse.assigned_tutors || []).length >= 2 ? 'error' : 'default'} />
+          </Box>
+
+          {/* Currently assigned */}
+          {(selectedCourse.assigned_tutors || []).length > 0 && (
+            <Box sx={{ mb: 2 }}>
+              <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Currently Assigned:</Typography>
+              {(selectedCourse.assigned_tutors || []).map(email => {
+                const t = tutors.find(u => u.email === email);
+                return (
+                  <Box key={email} sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 0.5 }}>
+                    <Avatar sx={{ width: 24, height: 24, fontSize: '0.75rem' }}>{t?.full_name?.charAt(0) || 'T'}</Avatar>
+                    <Typography variant="body2">{t?.full_name || email}</Typography>
+                    <Button size="small" color="error" variant="outlined" sx={{ ml: 'auto', py: 0 }} onClick={() => unassignTutor(selectedCourse, email)}>
+                      Unassign
+                    </Button>
+                  </Box>
+                );
+              })}
+            </Box>
+          )}
+
+          {/* Assign new */}
+          {(selectedCourse.assigned_tutors || []).length < 2 && (
+            <Box sx={{ display: 'flex', gap: 1 }}>
+              <FormControl sx={{ flex: 1 }}>
+                <Select value={selectedTutorEmail} onChange={(e) => setSelectedTutorEmail(e.target.value)}>
+                  <MenuItem value="">Select Tutor to Assign</MenuItem>
+                  {tutors.filter(t => !(selectedCourse.assigned_tutors || []).includes(t.email)).map(tutor => (
+                    <MenuItem key={tutor.id} value={tutor.email}>{tutor.full_name} ({tutor.email})</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+              <Button onClick={assignTutor} disabled={!selectedTutorEmail}>Assign</Button>
+            </Box>
+          )}
+
+          <Box sx={{ mt: 1 }}>
+            <Button variant="outlined" size="small" onClick={() => { setSelectedCourse(null); setSelectedTutorEmail(''); }}>Close</Button>
           </Box>
         </Card>
       )}
 
       {editingInstructor && (
         <Card sx={{ p: 2, mb: 2, bgcolor: '#f3e8ff', borderColor: '#e9d5ff' }}>
-          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Edit Instructor Name: {editingInstructor.title}</Typography>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Edit Display Instructor Name: {editingInstructor.title}</Typography>
           <Box sx={{ display: 'flex', gap: 1 }}>
             <TextField value={customInstructorName} onChange={(e) => setCustomInstructorName(e.target.value)} placeholder="Enter custom instructor name" sx={{ flex: 1 }} />
             <Button onClick={updateCustomInstructor}>Update</Button>
@@ -642,14 +694,27 @@ function CoursesManagement({ courses, users }) {
           <Card key={course.id} sx={{ p: 2, mb: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-                <Box component="img" src={course.thumbnail} alt={course.title} sx={{ width: 80, height: 56, objectFit: 'cover', borderRadius: 1 }} />
+                {course.thumbnail && <Box component="img" src={course.thumbnail} alt={course.title} sx={{ width: 80, height: 56, objectFit: 'cover', borderRadius: 1 }} />}
                 <Box>
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>{course.title}</Typography>
-                  <Typography variant="caption" color="textSecondary">Instructor: {course.instructor || 'Not assigned'} • {course.enrolled_count || 0} students</Typography>
+                  <Typography variant="caption" color="textSecondary">
+                    {(course.assigned_tutors || []).length > 0
+                      ? `Tutors: ${(course.assigned_tutors || []).map(email => tutors.find(t => t.email === email)?.full_name || email).join(', ')}`
+                      : 'No tutors assigned'}
+                    {' • '}{course.enrolled_count || 0} students
+                  </Typography>
+                  <Box sx={{ mt: 0.5 }}>
+                    <Chip
+                      label={`${(course.assigned_tutors || []).length}/2 tutors`}
+                      size="small"
+                      color={(course.assigned_tutors || []).length >= 2 ? 'warning' : 'default'}
+                      sx={{ fontSize: '0.65rem' }}
+                    />
+                  </Box>
                 </Box>
               </Box>
               <Box sx={{ display: 'flex', gap: 1 }}>
-                <Button size="small" variant="outlined" onClick={() => setSelectedCourse(course)} startIcon={<UserCog style={{ width: 16, height: 16 }} />}>Assign Tutor</Button>
+                <Button size="small" variant="outlined" onClick={() => { setSelectedCourse(course); setSelectedTutorEmail(''); }} startIcon={<UserCog style={{ width: 16, height: 16 }} />}>Manage Tutors</Button>
                 <Button size="small" variant="outlined" onClick={() => { setEditingInstructor(course); setCustomInstructorName(course.instructor || ''); }} startIcon={<Edit style={{ width: 16, height: 16 }} />}>Edit Name</Button>
                 <IconButton size="small" onClick={() => { if (confirm('Delete this course?')) deleteCourseMutation.mutate(course.id); }}>
                   <Trash2 style={{ width: 18, height: 18, color: 'red' }} />
