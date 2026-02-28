@@ -503,6 +503,8 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
     u.email?.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
+  const pagedUsers = filteredUsers.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
   const handleBanToggle = (user) => {
     const action = user.is_suspended ? 'unban' : 'ban';
     if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
