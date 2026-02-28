@@ -7,6 +7,7 @@ import {
   Grid, Select, MenuItem, FormControl, InputLabel, Tabs, Tab
 } from '@mui/material';
 import { Calendar, MapPin, Clock, Users, Wifi, CheckCircle, X, HelpCircle } from 'lucide-react';
+import PaginationBar from '@/components/ui/PaginationBar';
 import { format, isPast, isFuture, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';
 
@@ -24,6 +25,8 @@ export default function Events() {
   const [filter, setFilter] = useState('upcoming');
   const [selectedEvent, setSelectedEvent] = useState(null);
   const [rsvpNote, setRsvpNote] = useState('');
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 12;
   const queryClient = useQueryClient();
 
   useEffect(() => {
