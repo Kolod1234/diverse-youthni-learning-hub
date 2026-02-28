@@ -465,16 +465,29 @@ function PartnersManagement() {
 function UsersManagement({ users, searchQuery, setSearchQuery }) {
   const queryClient = useQueryClient();
 
-  const updateUserMutation = useMutation({
-    mutationFn: ({ userId, data }) => base44.asServiceRole.entities.User.update(userId, data),
+  const updateUserByEmailMutation = useMutation({
+    mutationFn: async ({ email, data }) => {
+      const response = await base44.functions.invoke('adminUpdateUser', { email, data });
+      return response.data;
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User updated successfully');
     },
+    onError: (error) => {
+      toast.error('Failed to update user: ' + error.message);
+    },
   });
 
   const deleteUserMutation = useMutation({
-    mutationFn: (userId) => base44.asServiceRole.entities.User.delete(userId),
+    mutationFn: async (userId) => {
+      const response = await base44.functions.invoke('adminUpdateUser', { 
+        email: users.find(u => u.id === userId)?.email,
+        data: { _delete: true }
+      });
+      // Fallback: use entity delete
+      return base44.entities.User.delete(userId);
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['all-users']);
       toast.success('User removed successfully');
@@ -490,14 +503,14 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
   const handleBanToggle = (user) => {
     const action = user.is_suspended ? 'unban' : 'ban';
     if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
-      updateUserMutation.mutate({ userId: user.id, data: { is_suspended: !user.is_suspended } });
+      updateUserByEmailMutation.mutate({ email: user.email, data: { is_suspended: !user.is_suspended } });
     }
   };
 
   const handleTutorToggle = (user) => {
     const action = user.is_tutor ? 'remove tutor status from' : 'make a tutor';
     if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
-      updateUserMutation.mutate({ userId: user.id, data: { is_tutor: !user.is_tutor } });
+      updateUserByEmailMutation.mutate({ email: user.email, data: { is_tutor: !user.is_tutor } });
     }
   };
 
