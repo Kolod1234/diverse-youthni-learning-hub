@@ -242,6 +242,8 @@ function LayoutContent({ children, currentPageName }) {
 
   return (
     <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh' }}>
+      {/* In-app APK update banner (mobile users) */}
+      <AppUpdateBanner />
       {/* Header */}
       <AppBar 
         position="sticky" 
