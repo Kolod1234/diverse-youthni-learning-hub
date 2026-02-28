@@ -123,12 +123,13 @@ export default function Settings() {
       return;
     }
     try {
-      // Note: Account deletion requires backend implementation
-      toast.success('Account deletion request submitted. Please contact support.');
+      await base44.entities.User.delete(user.id);
+      toast.success('Account deleted successfully.');
       setShowDeleteDialog(false);
       setDeleteConfirmEmail('');
+      setTimeout(() => base44.auth.logout(), 1500);
     } catch (error) {
-      toast.error('Failed to delete account');
+      toast.error('Failed to delete account. Please contact support.');
     }
   };
 
