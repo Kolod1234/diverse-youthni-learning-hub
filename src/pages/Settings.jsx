@@ -50,6 +50,9 @@ export default function Settings() {
         setFullName(userData.full_name || '');
         setAvatarUrl(userData.avatar || '');
         setPlayerPreference(userData.player_preference || 'LessonPlayerPowerPoint');
+        if (userData.notification_prefs) {
+          setNotifPrefs(p => ({ ...p, ...userData.notification_prefs }));
+        }
         setLoading(false);
       } catch (error) {
         toast.error('Failed to load user data');
