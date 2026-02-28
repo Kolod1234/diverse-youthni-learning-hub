@@ -549,6 +549,11 @@ export default function BookSession() {
           </div>
         </div>
       </div>
+
+      {/* Floating tutor chat widget - only when a tutor is selected and user is loaded */}
+      {selectedTutor && user && (
+        <TutorChatWidget tutor={selectedTutor} currentUser={user} />
+      )}
     </div>
   );
 }
