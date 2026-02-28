@@ -27,6 +27,7 @@ import { AnimatePresence, motion } from 'framer-motion';
 import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
 import { PERMISSIONS } from '@/components/permissions/permissions';
+import AppUpdateBanner from '@/components/app/AppUpdateBanner';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
