@@ -507,10 +507,19 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
     }
   };
 
-  const handleTutorToggle = (user) => {
+  const handleTutorToggle = async (user) => {
     const action = user.is_tutor ? 'remove tutor status from' : 'make a tutor';
     if (confirm(`Are you sure you want to ${action} ${user.full_name}?`)) {
-      updateUserByEmailMutation.mutate({ email: user.email, data: { is_tutor: !user.is_tutor } });
+      await updateUserByEmailMutation.mutateAsync({ email: user.email, data: { is_tutor: !user.is_tutor } });
+      if (!user.is_tutor) {
+        // Sending congratulatory email to newly made tutor
+        base44.integrations.Core.SendEmail({
+          to: user.email,
+          subject: 'Welcome to the Diverse Youth NI Tutor Team!',
+          body: `Dear ${user.full_name || 'Tutor'},\n\nCongratulations! We are thrilled to officially welcome you as a tutor on diverseyouthnilearninghub.\n\nBy joining us, you aren't just sharing knowledge; you're becoming part of a community dedicated to supporting children and young people who need it most. Your expertise will help build the resilience and skills of young learners facing significant challenges, from family instability to systemic inequity.\n\nWe're excited to see the impact you'll make and how you'll help our students extend their choices in life. Let's get started. Click here for onboarding: https://diverseyouthnilearninghub.base44.app/TutorOnboarding\n\nBest regards,\nThe Diverse Youth NI Team`,
+          from_name: 'Diverse Youth NI'
+        }).catch(() => {}); // fire and forget, don't block UI
+      }
     }
   };
 
