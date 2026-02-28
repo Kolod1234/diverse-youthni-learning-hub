@@ -6,7 +6,8 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, Chip, IconButton,
   LinearProgress, Alert, Switch, FormControlLabel, Tooltip, Divider
 } from '@mui/material';
-import { Upload, Plus, Bell, Trash2, CheckCircle, Star, AlertTriangle, Info } from 'lucide-react';
+import { Upload, Plus, Bell, Trash2, CheckCircle, Star, AlertTriangle, Info, Link } from 'lucide-react';
+import { LinearProgress as MuiLinearProgress } from '@mui/material';
 
 export default function AdminAppVersion() {
   const queryClient = useQueryClient();
