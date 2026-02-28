@@ -698,8 +698,36 @@ function LayoutContent({ children, currentPageName }) {
         </Container>
       </AppBar>
 
-      {/* Main Content with Route Transitions */}
-      <Box component="main" sx={{ flexGrow: 1, pb: { xs: 8, md: 0 } }}>
+      {/* Main Content with Route Transitions + Pull-to-Refresh */}
+      <Box
+        component="main"
+        onTouchStart={onTouchStart}
+        onTouchMove={onTouchMove}
+        onTouchEnd={onTouchEnd}
+        sx={{ flexGrow: 1, pb: { xs: 8, md: 0 }, position: 'relative' }}
+      >
+        {/* Pull-to-refresh indicator (mobile only) */}
+        {pulling && (
+          <Box sx={{
+            display: { xs: 'flex', md: 'none' },
+            justifyContent: 'center',
+            alignItems: 'center',
+            height: `${pullY}px`,
+            overflow: 'hidden',
+            transition: 'height 0.1s',
+          }}>
+            <Box sx={{
+              width: 36, height: 36,
+              border: 3,
+              borderColor: pullY >= THRESHOLD ? 'primary.main' : 'divider',
+              borderTopColor: 'transparent',
+              borderRadius: '50%',
+              animation: pullY >= THRESHOLD ? 'spin 0.6s linear infinite' : 'none',
+              transition: 'border-color 0.2s',
+              '@keyframes spin': { to: { transform: 'rotate(360deg)' } },
+            }} />
+          </Box>
+        )}
         <AnimatePresence mode="wait">
           <motion.div
             key={location.pathname}
