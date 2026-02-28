@@ -12,6 +12,7 @@ import { Heart, MessageCircle, Pin, Plus } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { toast } from 'sonner';
 import { format } from 'date-fns';
+import CommunityPostChat from '@/components/chat/CommunityPostChat';
 
 export default function Community() {
   const [user, setUser] = useState(null);
