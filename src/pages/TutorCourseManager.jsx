@@ -267,7 +267,7 @@ export default function TutorCourseManager() {
             <X className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-6">You are not approved to edit courses in the <strong>{course?.category}</strong> subject. You can only edit courses in your approved subjects.</p>
+          <p className="text-gray-600 mb-6">You are not assigned to edit lessons in <strong>{course?.title}</strong>. Please contact an admin to be assigned to this course.</p>
           <Link to={createPageUrl('TutorDashboard')}>
             <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Dashboard</Button>
           </Link>
