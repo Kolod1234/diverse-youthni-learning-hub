@@ -131,8 +131,9 @@ export default function Events() {
             <Typography variant="body2" color="text.disabled">Check back soon for upcoming events!</Typography>
           </Box>
         ) : (
+          <>
           <Grid container spacing={3}>
-            {filteredEvents.map((event, idx) => {
+            {filteredEvents.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((event, idx) => {
               const myRsvp = getMyRsvp(event.id);
               const isPastEvent = isPast(parseISO(event.date)) && format(parseISO(event.date), 'yyyy-MM-dd') !== format(now, 'yyyy-MM-dd');
               return (
