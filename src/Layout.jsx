@@ -403,6 +403,10 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><MessageSquare size={20} color="#06b6d4" /></ListItemIcon>
                   <ListItemText primary="Contact Us" />
                 </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('Events')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
+                  <ListItemText primary="Events" />
+                </MenuItem>
                 <Divider />
                 {user && !user.is_coordinator && user.role !== 'admin' && (
                   <>
@@ -572,6 +576,10 @@ function LayoutContent({ children, currentPageName }) {
                     <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
                       <ListItemText primary="Support Chats" />
+                    </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminEvents')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="Event Manager" />
                     </MenuItem>
                   </>
                 )}
