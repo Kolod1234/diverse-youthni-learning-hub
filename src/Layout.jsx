@@ -138,24 +138,15 @@ function LayoutContent({ children, currentPageName }) {
 
   // Preserve scroll position when navigating tabs
   useEffect(() => {
-    const saveScrollPosition = () => {
-      setTabScrollPositions(prev => ({
-        ...prev,
-        [location.pathname]: window.scrollY
-      }));
-    };
-
-    const restoreScrollPosition = () => {
-      const savedPosition = tabScrollPositions[location.pathname];
-      if (savedPosition !== undefined) {
-        window.scrollTo(0, savedPosition);
-      }
-    };
-
-    restoreScrollPosition();
-
+    const restore = tabScrollPositions.current[location.pathname];
+    if (restore !== undefined) {
+      // Defer to let the page render first
+      requestAnimationFrame(() => window.scrollTo(0, restore));
+    } else {
+      window.scrollTo(0, 0);
+    }
     return () => {
-      saveScrollPosition();
+      tabScrollPositions.current[location.pathname] = window.scrollY;
     };
   }, [location.pathname]);
 
