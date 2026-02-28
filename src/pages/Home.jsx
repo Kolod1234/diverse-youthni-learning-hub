@@ -748,83 +748,34 @@ export default function Home() {
           </Box>
         </motion.div>
         
-        <motion.div 
-          initial={{ opacity: 0, scale: 0.95 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.6 }}
-          viewport={{ once: true }}
-        >
-          <Box sx={{ position: 'relative' }}>
-            <Box sx={{ overflow: 'hidden', borderRadius: 6, boxShadow: 6 }} ref={emblaRef}>
-              <Box sx={{ display: 'flex' }}>
-              {carouselImages.map((img, idx) => (
-                <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
-                  <Box sx={{ position: 'relative', aspectRatio: { xs: '4/3', sm: '16/9', lg: '16/9' }, overflow: 'hidden' }}>
-                    <CardMedia
-                      component="img"
-                      image={img.image_url}
-                      alt={`Community ${idx + 1}`}
-                      sx={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transform: 'scale(1)', transition: 'transform 0.7s' }}
-                    />
-                    <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.6), rgba(0,0,0,0.1), transparent)' }} />
-                  </Box>
+        {carouselImages.length > 0 && (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            whileInView={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.6 }}
+            viewport={{ once: true }}
+          >
+            <Box sx={{ position: 'relative' }}>
+              <Box sx={{ overflow: 'hidden', borderRadius: 6, boxShadow: 6 }} ref={emblaRef}>
+                <Box sx={{ display: 'flex' }}>
+                  {carouselImages.map((img, idx) => (
+                    <Box key={img.id || idx} sx={{ flex: '0 0 100%', minWidth: 0 }}>
+                      <Box component="img" src={img.image_url} alt={`Community ${idx + 1}`}
+                        sx={{ width: '100%', aspectRatio: { xs: '4/3', sm: '16/9' }, objectFit: 'cover', objectPosition: 'center', display: 'block' }}
+                      />
+                    </Box>
+                  ))}
                 </Box>
-              ))}
               </Box>
+              <IconButton onClick={() => emblaApi?.scrollPrev()} sx={{ position: 'absolute', left: 12, top: '50%', transform: 'translateY(-50%)', width: { xs: 40, md: 48 }, height: { xs: 40, md: 48 }, bgcolor: 'rgba(255,255,255,0.9)', boxShadow: 4, zIndex: 10, '&:hover': { bgcolor: 'white' } }}>
+                <ChevronLeft size={22} color="#1f2937" />
+              </IconButton>
+              <IconButton onClick={() => emblaApi?.scrollNext()} sx={{ position: 'absolute', right: 12, top: '50%', transform: 'translateY(-50%)', width: { xs: 40, md: 48 }, height: { xs: 40, md: 48 }, bgcolor: 'rgba(255,255,255,0.9)', boxShadow: 4, zIndex: 10, '&:hover': { bgcolor: 'white' } }}>
+                <ChevronRight size={22} color="#1f2937" />
+              </IconButton>
             </Box>
-          </Box>
-          
-          <IconButton
-            onClick={() => emblaApi?.scrollPrev()}
-            sx={{
-              position: 'absolute',
-              left: 24,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 56,
-              height: 56,
-              bgcolor: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid #e5e7eb',
-              boxShadow: 4,
-              '&:hover': {
-                background: 'linear-gradient(to right, #f97316, #e11d48)',
-                transform: 'translateY(-50%) scale(1.1)',
-                boxShadow: 6,
-                border: 'none',
-                '& svg': { color: 'white' }
-              },
-              transition: 'all 0.3s'
-            }}
-          >
-            <ChevronLeft size={28} color="#1f2937" />
-          </IconButton>
-          <IconButton
-            onClick={() => emblaApi?.scrollNext()}
-            sx={{
-              position: 'absolute',
-              right: 24,
-              top: '50%',
-              transform: 'translateY(-50%)',
-              width: 56,
-              height: 56,
-              bgcolor: 'rgba(255,255,255,0.9)',
-              backdropFilter: 'blur(8px)',
-              border: '1px solid #e5e7eb',
-              boxShadow: 4,
-              '&:hover': {
-                background: 'linear-gradient(to right, #f97316, #e11d48)',
-                transform: 'translateY(-50%) scale(1.1)',
-                boxShadow: 6,
-                border: 'none',
-                '& svg': { color: 'white' }
-              },
-              transition: 'all 0.3s'
-            }}
-          >
-            <ChevronRight size={28} color="#1f2937" />
-          </IconButton>
-        </motion.div>
+          </motion.div>
+        )}
       </Container>
 
       {/* Leadership Programmes CTA */}
