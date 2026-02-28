@@ -571,6 +571,7 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
           </Card>
         ))}
       </Box>
+      <PaginationBar page={page} totalItems={filteredUsers.length} pageSize={PAGE_SIZE} onPageChange={setPage} />
     </Box>
   );
 }
