@@ -31,6 +31,7 @@ export default function NotificationBell() {
   const { data: notifications = [] } = useQuery({
     queryKey: ['notifications', user?.email],
     queryFn: () => base44.entities.Notification.filter({ recipient_email: user?.email }, '-created_date', 50),
+    refetchOnWindowFocus: true,
     enabled: !!user?.email,
     refetchInterval: 30000, // Poll every 30 seconds
   });

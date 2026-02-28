@@ -564,6 +564,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
                       <ListItemText primary="App Version Manager" />
                     </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminNotifications')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Notification Centre" />
+                    </MenuItem>
                   </>
                 )}
 
