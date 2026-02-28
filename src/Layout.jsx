@@ -885,6 +885,9 @@ function LayoutContent({ children, currentPageName }) {
       {/* Support Chat Widget */}
       <SupportChatWidget />
 
+      {/* Global Search Overlay */}
+      {searchOpen && <GlobalSearch onClose={() => setSearchOpen(false)} />}
+
       {/* Footer */}
       <Box component="footer" sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', mt: 10 }}>
         <Container maxWidth="xl" sx={{ py: 6 }}>
