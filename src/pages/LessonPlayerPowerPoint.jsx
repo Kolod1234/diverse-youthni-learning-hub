@@ -641,7 +641,12 @@ export default function LessonPlayerPowerPoint() {
   );
 
   return (
-    <div ref={playerRef} className={`h-screen flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}>
+    <div ref={playerRef} className={`flex flex-col overflow-hidden font-sans select-none bg-background ${isPresenting ? 'bg-black' : ''}`}
+      style={isFullscreen && !document.fullscreenElement && !document.webkitFullscreenElement
+        ? { position: 'fixed', inset: 0, zIndex: 9999, height: '100vh', width: '100vw' }
+        : { height: '100vh' }
+      }
+    >
 
       {/* HEADER: Slim on Mobile */}
       {!isPresenting && (
