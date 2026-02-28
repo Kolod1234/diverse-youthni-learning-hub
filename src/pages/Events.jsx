@@ -124,6 +124,7 @@ export default function Events() {
             ))}
           </Grid>
         ) : filteredEvents.length === 0 ? (
+
           <Box sx={{ textAlign: 'center', py: 10 }}>
             <Calendar size={64} color="#d1d5db" style={{ margin: '0 auto 16px' }} />
             <Typography variant="h6" color="text.secondary">No events found</Typography>
