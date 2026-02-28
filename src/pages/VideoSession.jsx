@@ -13,6 +13,7 @@ import {
 import { format } from 'date-fns';
 import CustomVideoCall from '@/components/video/CustomVideoCall';
 import RealTimeChatPanel from '@/components/session/RealTimeChatPanel';
+import SessionLiveChat from '@/components/chat/SessionLiveChat';
 
 export default function VideoSession() {
   const [user, setUser] = useState(null);
