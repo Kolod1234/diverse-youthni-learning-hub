@@ -334,10 +334,19 @@ export default function AdminAppVersion() {
             )}
             <Divider sx={{ my: 1.5 }} />
             <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
-              Or paste an external APK URL (e.g. from Google Drive, Dropbox, or your own server):
+              Or paste a <strong>direct download</strong> APK URL:
             </Typography>
+            <Alert severity="info" sx={{ mb: 1, py: 0.5 }}>
+              <Typography variant="caption" component="div" sx={{ fontWeight: 600, mb: 0.5 }}>Google Drive direct link instructions:</Typography>
+              <Typography variant="caption" component="div">
+                1. Upload APK to Google Drive → right-click → <strong>Share</strong> → set to "Anyone with the link"<br />
+                2. Copy the share link (e.g. <code>https://drive.google.com/file/d/<strong>FILE_ID</strong>/view</code>)<br />
+                3. Change <code>/view</code> to <code>/uc?export=download</code><br />
+                4. Paste the result below — the app will use this to download the update directly.
+              </Typography>
+            </Alert>
             <TextField
-              label="APK Download URL"
+              label="APK Direct Download URL"
               value={form.apk_url}
               onChange={e => {
                 setForm(f => ({ ...f, apk_url: e.target.value }));
@@ -345,7 +354,7 @@ export default function AdminAppVersion() {
               }}
               fullWidth
               size="small"
-              placeholder="https://..."
+              placeholder="https://drive.google.com/uc?export=download&id=FILE_ID"
               InputProps={{ startAdornment: <Link size={14} style={{ marginRight: 8, color: '#64748b' }} /> }}
             />
           </Box>
