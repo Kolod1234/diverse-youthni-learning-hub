@@ -431,6 +431,38 @@ export default function Settings() {
             </motion.div>
           )}
 
+          {/* Notifications Tab */}
+          {tabValue === 'notifications' && (
+            <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }}>
+              <Card sx={{ p: 3 }}>
+                <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Notification Preferences</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>
+                  Choose which emails and in-app notifications you receive
+                </Typography>
+                <FormGroup sx={{ gap: 1 }}>
+                  {[
+                    { key: 'email_course_updates', label: 'Course updates & new lessons', desc: 'Get notified when courses you enrolled in are updated' },
+                    { key: 'email_new_sessions',   label: 'Upcoming live sessions',       desc: 'Reminders for scheduled sessions you have booked' },
+                    { key: 'email_app_updates',    label: 'App version releases',         desc: 'Be notified when a new app version is available' },
+                    { key: 'email_quiz_reminders', label: 'Quiz & assignment reminders',  desc: 'Deadline and result notifications for quizzes' },
+                  ].map(({ key, label, desc }) => (
+                    <Box key={key} sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', p: 2, border: 1, borderColor: 'divider', borderRadius: 2 }}>
+                      <Box>
+                        <Typography variant="body2" fontWeight={600}>{label}</Typography>
+                        <Typography variant="caption" color="text.secondary">{desc}</Typography>
+                      </Box>
+                      <Switch
+                        checked={!!notifPrefs[key]}
+                        onChange={(e) => saveNotifPrefs({ ...notifPrefs, [key]: e.target.checked })}
+                        color="primary"
+                      />
+                    </Box>
+                  ))}
+                </FormGroup>
+              </Card>
+            </motion.div>
+          )}
+
           {/* Preferences Tab */}
            {tabValue === 'preferences' && (
             <motion.div
