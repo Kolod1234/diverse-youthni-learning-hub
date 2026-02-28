@@ -381,6 +381,18 @@ export default function AdminAppVersion() {
               </Box>
             }
           />
+          <Divider />
+          <FormControlLabel
+            control={<Switch checked={!!form.notify_users} onChange={e => setForm(f => ({ ...f, notify_users: e.target.checked }))} color="success" />}
+            label={
+              <Box>
+                <Typography variant="body2">📧 Email all users about this update</Typography>
+                <Typography variant="caption" color="text.secondary">
+                  Automatically sends release notes + download link to every registered user when saved
+                </Typography>
+              </Box>
+            }
+          />
         </DialogContent>
         <DialogActions>
           <Button onClick={() => setDialogOpen(false)}>Cancel</Button>
