@@ -93,17 +93,13 @@ export default function TutorCourseManager() {
     queryKey: ['all-tutor-courses', user?.email],
     queryFn: async () => {
       const me = await base44.auth.me();
-      // Return courses where tutor is explicitly assigned
-      const all = await base44.entities.Course.list('-created_date', 300);
-      return all.filter(c => (c.assigned_tutors || []).includes(me.email));
+      return base44.entities.Course.filter({ created_by: me.email }, '-created_date', 100);
     },
     enabled: !!user,
   });
 
-  // A tutor can ONLY edit/add lessons to courses they are explicitly assigned to
-  // Admins can edit any course
-  const isAllowedToEditCourse = !course || user?.role === 'admin' ||
-    (course.assigned_tutors || []).includes(user?.email);
+  // Verify the current course belongs to this tutor and is in an approved subject
+  const isAllowedToEditCourse = !course || user?.role === 'admin' || approvedSubjects.length === 0 || approvedSubjects.includes(course?.category);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],
