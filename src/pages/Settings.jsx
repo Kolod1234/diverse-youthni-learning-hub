@@ -34,6 +34,14 @@ export default function Settings() {
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('');
 
+  // Notification preferences
+  const [notifPrefs, setNotifPrefs] = useState({
+    email_course_updates: true,
+    email_new_sessions: true,
+    email_app_updates: false,
+    email_quiz_reminders: true,
+  });
+
   useEffect(() => {
     const loadUser = async () => {
       try {
