@@ -615,6 +615,15 @@ function LayoutContent({ children, currentPageName }) {
 
             {/* Right Side */}
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
+              {/* Global Search Button */}
+              <IconButton
+                onClick={() => setSearchOpen(true)}
+                title="Search (Ctrl+K)"
+                sx={{ color: 'text.secondary', display: { xs: 'none', md: 'flex' } }}
+              >
+                <Search size={20} />
+              </IconButton>
+
               {/* Theme Toggle */}
                 <Box sx={{ color: 'white' }}>
                   <ThemeToggle />
