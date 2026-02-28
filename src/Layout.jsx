@@ -28,6 +28,7 @@ import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
 import { PERMISSIONS } from '@/components/permissions/permissions';
 import AppUpdateBanner from '@/components/app/AppUpdateBanner';
+import SupportChatWidget from '@/components/support/SupportChatWidget';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
@@ -846,6 +847,9 @@ function LayoutContent({ children, currentPageName }) {
           </Button>
         </DialogActions>
       </Dialog>
+
+      {/* Support Chat Widget */}
+      <SupportChatWidget />
 
       {/* Footer */}
       <Box component="footer" sx={{ bgcolor: 'background.paper', borderTop: 1, borderColor: 'divider', mt: 10 }}>
