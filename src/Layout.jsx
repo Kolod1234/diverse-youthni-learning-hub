@@ -7,7 +7,7 @@ import React, { useState, useEffect } from 'react';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { 
   AppBar, Toolbar, Button, IconButton, Avatar, Menu as MuiMenu, MenuItem, 
   Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
@@ -28,8 +28,21 @@ import { MathJaxContext } from 'better-react-mathjax';
 import { usePermissions } from '@/components/permissions/usePermissions';
 import { PERMISSIONS } from '@/components/permissions/permissions';
 
+// Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
+const TUTOR_PAGES = [
+  'TutorDashboard', 'TutorDashboardOverview', 'TutorCourseManager',
+  'TutorSetup', 'TutorBookingManager', 'LessonEditor', 'ScheduleSession',
+  'GradeAssignments', 'QuizGenerator', 'StudentAnalytics', 'CreateAssignment',
+  'SessionRecordings', 'AdminDashboard', 'AdminUsers', 'AdminCourseBuilder',
+  'AdminPageBuilder', 'AdminCoordinators', 'AdminRolesPermissions',
+  'AdminLibraryDashboard', 'AdminDailyFacts', 'AdminDiscover', 'AdminReviews',
+  'AdminReminders', 'AdminStudentMessages', 'AdminStudentOfMonth', 'AdminQuotes',
+  'AdminRSSFeed', 'AdminAttendance', 'AdminYouthWork', 'AdminLibrary',
+  'PathwayManager', 'DataPresentation', 'Templates', 'SimulationAuthor',
+  'VideoSession', 'CourseAnalytics', 'TutorDashboardCanvas', 'TutorSessionsDashboard',
+];
+
 function LayoutContent({ children, currentPageName }) {
-  const [user, setUser] = useState(null);
   const [scrolled, setScrolled] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
   const [adminPassword, setAdminPassword] = useState('');
@@ -44,6 +57,14 @@ function LayoutContent({ children, currentPageName }) {
   const [tabScrollPositions, setTabScrollPositions] = useState({});
   const { can, isAdmin, isInstructor, isContentCreator } = usePermissions();
 
+  // Use React Query to manage user data so it can be invalidated by other components
+  const { data: user = null } = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 30000, // 30 seconds
+    retry: false,
+  });
+
   const { data: siteContent = [] } = useQuery({
     queryKey: ['site-content'],
     queryFn: () => base44.entities.SiteContent.list('key', 1000),
@@ -54,17 +75,18 @@ function LayoutContent({ children, currentPageName }) {
     return item?.value || defaultValue;
   };
 
+  // Auto-redirect approved tutors to their dashboard when on student-facing pages
   useEffect(() => {
-    const loadUser = async () => {
-      try {
-        const userData = await base44.auth.me();
-        setUser(userData);
-      } catch (error) {
-        console.error('Failed to load user:', error);
-      }
-    };
-    loadUser();
-  }, []);
+    if (!user) return;
+    const isTutor = user.is_tutor === true || user.role === 'admin';
+    if (!isTutor) return;
+    if (user.role === 'admin') return; // Admins can go anywhere
+
+    const isOnTutorPage = TUTOR_PAGES.some(page => currentPageName === page);
+    if (!isOnTutorPage) {
+      navigate(createPageUrl('TutorDashboardOverview'), { replace: true });
+    }
+  }, [user, currentPageName]);
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 20);
