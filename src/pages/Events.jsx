@@ -107,6 +107,7 @@ export default function Events() {
           {user && <Tab label="My RSVPs" value="my" />}
           <Tab label="All Events" value="all" />
         </Tabs>
+        
 
         {isLoading ? (
           <Grid container spacing={3}>
