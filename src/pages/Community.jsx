@@ -16,6 +16,7 @@ import CommunityPostChat from '@/components/chat/CommunityPostChat';
 
 export default function Community() {
   const [user, setUser] = useState(null);
+  const [expandedPostId, setExpandedPostId] = useState(null);
   const [showNewPost, setShowNewPost] = useState(false);
   const [newPost, setNewPost] = useState({ title: '', content: '', category: 'discussion' });
   const queryClient = useQueryClient();
