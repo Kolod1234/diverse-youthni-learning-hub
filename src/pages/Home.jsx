@@ -42,6 +42,7 @@ import InstructorShowcase from '@/components/home/InstructorShowcase';
 import LearningStatisticsSection from '@/components/home/LearningStatisticsSection';
 import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
 import AboutUsSection from '@/components/home/AboutUsSection';
+import CommunityCarousel from '@/components/home/CommunityCarousel';
 ...
         <CommunityCarousel images={carouselImages} />
       </Container>
