@@ -62,13 +62,54 @@ export default function AdminAppVersion() {
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ['app-versions'] }),
   });
 
+  const [uploadState, setUploadState] = useState({ status: 'idle', progress: 0, error: null });
+
   const handleUploadAPK = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    setUploading(true);
-    const { file_url } = await base44.integrations.Core.UploadFile({ file });
-    setForm(f => ({ ...f, apk_url: file_url }));
-    setUploading(false);
+
+    // APK files can be large - use XMLHttpRequest for progress tracking
+    setUploadState({ status: 'uploading', progress: 0, error: null });
+
+    const formData = new FormData();
+    formData.append('file', file);
+
+    const xhr = new XMLHttpRequest();
+
+    xhr.upload.onprogress = (event) => {
+      if (event.lengthComputable) {
+        const pct = Math.round((event.loaded / event.total) * 100);
+        setUploadState(s => ({ ...s, progress: pct }));
+      }
+    };
+
+    xhr.onload = () => {
+      if (xhr.status >= 200 && xhr.status < 300) {
+        const data = JSON.parse(xhr.responseText);
+        const url = data.file_url || data.url;
+        if (url) {
+          setForm(f => ({ ...f, apk_url: url }));
+          setUploadState({ status: 'done', progress: 100, error: null });
+        } else {
+          setUploadState({ status: 'error', progress: 0, error: 'Upload succeeded but no URL returned.' });
+        }
+      } else {
+        setUploadState({ status: 'error', progress: 0, error: `Upload failed (HTTP ${xhr.status}).` });
+      }
+    };
+
+    xhr.onerror = () => {
+      setUploadState({ status: 'error', progress: 0, error: 'Network error during upload. Please try again.' });
+    };
+
+    // Use the base44 upload integration endpoint via the SDK's fetch wrapper
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setForm(f => ({ ...f, apk_url: file_url }));
+      setUploadState({ status: 'done', progress: 100, error: null });
+    } catch (err) {
+      setUploadState({ status: 'error', progress: 0, error: err?.message || 'Upload failed. APK files may be too large — try hosting the APK externally and pasting the URL.' });
+    }
   };
 
   const handleNotify = async (version) => {
