@@ -43,6 +43,39 @@ const TUTOR_PAGES = [
   'VideoSession', 'CourseAnalytics', 'TutorDashboardCanvas', 'TutorSessionsDashboard',
 ];
 
+// Pull-to-refresh hook (mobile only)
+function usePullToRefresh(onRefresh) {
+  const startY = useRef(0);
+  const [pulling, setPulling] = useState(false);
+  const [pullY, setPullY] = useState(0);
+  const THRESHOLD = 80;
+  const isMobile = typeof window !== 'undefined' && window.innerWidth < 900;
+
+  const onTouchStart = useCallback((e) => {
+    if (!isMobile || window.scrollY > 0) return;
+    startY.current = e.touches[0].clientY;
+  }, [isMobile]);
+
+  const onTouchMove = useCallback((e) => {
+    if (!isMobile || window.scrollY > 0) return;
+    const delta = e.touches[0].clientY - startY.current;
+    if (delta > 0) {
+      setPulling(true);
+      setPullY(Math.min(delta, THRESHOLD + 20));
+    }
+  }, [isMobile]);
+
+  const onTouchEnd = useCallback(() => {
+    if (pullY >= THRESHOLD) {
+      onRefresh();
+    }
+    setPulling(false);
+    setPullY(0);
+  }, [pullY, onRefresh]);
+
+  return { pulling, pullY, THRESHOLD, onTouchStart, onTouchMove, onTouchEnd };
+}
+
 function LayoutContent({ children, currentPageName }) {
   const [scrolled, setScrolled] = useState(false);
   const [showAdminPassword, setShowAdminPassword] = useState(false);
@@ -55,8 +88,16 @@ function LayoutContent({ children, currentPageName }) {
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const [tabScrollPositions, setTabScrollPositions] = useState({});
+  // Persist scroll positions per tab path
+  const tabScrollPositions = useRef({});
+  const queryClient = useQueryClient();
   const { can, isAdmin, isInstructor, isContentCreator } = usePermissions();
+
+  const handleRefresh = useCallback(() => {
+    queryClient.invalidateQueries();
+  }, [queryClient]);
+
+  const { pulling, pullY, THRESHOLD, onTouchStart, onTouchMove, onTouchEnd } = usePullToRefresh(handleRefresh);
 
   // Use React Query to manage user data so it can be invalidated by other components
   const { data: user = null } = useQuery({
