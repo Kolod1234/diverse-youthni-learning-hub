@@ -29,6 +29,7 @@ import { usePermissions } from '@/components/permissions/usePermissions';
 import { PERMISSIONS } from '@/components/permissions/permissions';
 import AppUpdateBanner from '@/components/app/AppUpdateBanner';
 import SupportChatWidget from '@/components/support/SupportChatWidget';
+import GlobalSearch from '@/components/search/GlobalSearch';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
