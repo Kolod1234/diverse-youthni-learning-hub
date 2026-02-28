@@ -29,11 +29,19 @@ export default function LessonEditor() {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
-      
-      // Check if user is authorized
       if (userData.role !== 'admin' && !userData.is_tutor) {
         toast.error('Unauthorized access');
         navigate(createPageUrl('Dashboard'));
+        return;
+      }
+      // If a courseId is provided, verify the tutor is assigned to it
+      if (courseId && userData.role !== 'admin') {
+        const courses = await base44.entities.Course.filter({ id: courseId });
+        const course = courses[0];
+        if (course && !(course.assigned_tutors || []).includes(userData.email) && course.created_by !== userData.email) {
+          toast.error('You are not assigned to edit lessons for this course');
+          navigate(-1);
+        }
       }
     };
     loadUser();
