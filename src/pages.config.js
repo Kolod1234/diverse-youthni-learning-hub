@@ -155,6 +155,7 @@ import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
 import AdminAppVersion from './pages/AdminAppVersion';
+import AdminNotifications from './pages/AdminNotifications';
 import __Layout from './Layout.jsx';
 
 
@@ -267,6 +268,7 @@ export const PAGES = {
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
     "AdminAppVersion": AdminAppVersion,
+    "AdminNotifications": AdminNotifications,
 }
 
 export const pagesConfig = {
