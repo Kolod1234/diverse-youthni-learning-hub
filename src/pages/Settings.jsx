@@ -145,6 +145,12 @@ export default function Settings() {
     }
   };
 
+  const saveNotifPrefs = async (newPrefs) => {
+    setNotifPrefs(newPrefs);
+    await base44.auth.updateMe({ notification_prefs: newPrefs });
+    toast.success('Notification preferences saved');
+  };
+
   const [tabValue, setTabValue] = useState('profile');
 
   if (loading) {
