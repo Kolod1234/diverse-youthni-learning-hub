@@ -8,8 +8,9 @@ import {
 } from '@mui/material';
 import { 
   User, Lock, Settings as SettingsIcon, Presentation, Layout,
-  Camera, Save, ArrowLeft, CheckCircle2, AlertTriangle, Trash2
+  Camera, Save, ArrowLeft, CheckCircle2, AlertTriangle, Trash2, Bell
 } from 'lucide-react';
+import { Switch, FormControlLabel, FormGroup } from '@mui/material';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 

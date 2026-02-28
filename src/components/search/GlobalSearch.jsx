@@ -1,194 +1,174 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Search, X, BookOpen, Users, FileText, ClipboardList, Loader2 } from 'lucide-react';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
+import { Box, Typography, InputBase, Chip, CircularProgress, Paper, Divider } from '@mui/material';
+import { Search, X, BookOpen, Users, FileText, Calendar, GraduationCap } from 'lucide-react';
 import { createPageUrl } from '@/utils';
 import { Link } from 'react-router-dom';
+
+const SECTIONS = [
+  { key: 'courses',  label: 'Courses',  icon: BookOpen,      color: '#7c3aed' },
+  { key: 'lessons',  label: 'Lessons',  icon: FileText,      color: '#2563eb' },
+  { key: 'events',   label: 'Events',   icon: Calendar,      color: '#16a34a' },
+  { key: 'tutors',   label: 'Tutors',   icon: GraduationCap, color: '#ea580c' },
+];
+
+function highlight(text, query) {
+  if (!text || !query) return text;
+  const idx = text.toLowerCase().indexOf(query.toLowerCase());
+  if (idx === -1) return text;
+  return (
+    <>
+      {text.slice(0, idx)}
+      <Box component="mark" sx={{ bgcolor: '#fef08a', borderRadius: 0.5, px: 0.25 }}>{text.slice(idx, idx + query.length)}</Box>
+      {text.slice(idx + query.length)}
+    </>
+  );
+}
 
 export default function GlobalSearch({ onClose }) {
   const [query, setQuery] = useState('');
   const [debouncedQuery, setDebouncedQuery] = useState('');
-  const [isSearching, setIsSearching] = useState(false);
+  const inputRef = useRef(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setDebouncedQuery(query);
-    }, 300);
-    return () => clearTimeout(timer);
+    inputRef.current?.focus();
+  }, []);
+
+  useEffect(() => {
+    const t = setTimeout(() => setDebouncedQuery(query), 300);
+    return () => clearTimeout(t);
   }, [query]);
 
-  const { data: searchResults, isLoading } = useQuery({
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') onClose(); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [onClose]);
+
+  const { data: results, isFetching } = useQuery({
     queryKey: ['global-search', debouncedQuery],
     queryFn: async () => {
-      if (!debouncedQuery || debouncedQuery.length < 2) return null;
-      
-      setIsSearching(true);
-      const results = {
-        courses: [],
-        lessons: [],
-        students: [],
-        assignments: []
+      if (debouncedQuery.length < 2) return null;
+      const q = debouncedQuery.toLowerCase();
+
+      const [courses, lessons, events, users] = await Promise.all([
+        base44.entities.Course.list('-created_date', 200),
+        base44.entities.Lesson.list('-created_date', 300),
+        base44.entities.Event.filter({ is_published: true }, 'date', 200),
+        base44.functions.invoke('getAllTutors').then(r => r.data?.users || []),
+      ]);
+
+      return {
+        courses: courses.filter(c => c.title?.toLowerCase().includes(q) || c.description?.toLowerCase().includes(q) || c.category?.toLowerCase().includes(q)).slice(0, 5),
+        lessons: lessons.filter(l => l.title?.toLowerCase().includes(q) || l.section?.toLowerCase().includes(q)).slice(0, 5),
+        events: events.filter(e => e.title?.toLowerCase().includes(q) || e.description?.toLowerCase().includes(q) || e.location?.toLowerCase().includes(q)).slice(0, 5),
+        tutors: users.filter(u => (u.is_tutor || u.role === 'admin') && (u.full_name?.toLowerCase().includes(q) || u.email?.toLowerCase().includes(q))).slice(0, 5),
       };
-
-      try {
-        // Search courses
-        const courses = await base44.entities.Course.list('-created_date', 50);
-        results.courses = courses.filter(c => 
-          c.title?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          c.description?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          c.category?.toLowerCase().includes(debouncedQuery.toLowerCase())
-        ).slice(0, 5);
-
-        // Search lessons
-        const lessons = await base44.entities.Lesson.list('-created_date', 100);
-        results.lessons = lessons.filter(l => 
-          l.title?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          l.description?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          l.section?.toLowerCase().includes(debouncedQuery.toLowerCase())
-        ).slice(0, 5);
-
-        // Search enrollments (students)
-        const enrollments = await base44.entities.Enrollment.list('-created_date', 100);
-        results.students = enrollments.filter(e => 
-          e.created_by?.toLowerCase().includes(debouncedQuery.toLowerCase())
-        ).slice(0, 5);
-
-        // Search assignments
-        const assignments = await base44.entities.Assignment.list('-created_date', 50);
-        results.assignments = assignments.filter(a => 
-          a.title?.toLowerCase().includes(debouncedQuery.toLowerCase()) ||
-          a.description?.toLowerCase().includes(debouncedQuery.toLowerCase())
-        ).slice(0, 5);
-      } catch (error) {
-        console.error('Search error:', error);
-      }
-
-      setIsSearching(false);
-      return results;
     },
-    enabled: debouncedQuery.length >= 2
+    enabled: debouncedQuery.length >= 2,
+    staleTime: 10000,
   });
 
-  const totalResults = searchResults 
-    ? searchResults.courses.length + searchResults.lessons.length + 
-      searchResults.students.length + searchResults.assignments.length
-    : 0;
+  const totalResults = results ? Object.values(results).reduce((s, a) => s + a.length, 0) : 0;
+
+  const getHref = (key, item) => {
+    if (key === 'courses') return createPageUrl('CourseDetails') + `?id=${item.id}`;
+    if (key === 'lessons') return createPageUrl('LessonEditor') + `?id=${item.id}`;
+    if (key === 'events')  return createPageUrl('Events');
+    if (key === 'tutors')  return createPageUrl('Tutors');
+    return '#';
+  };
+
+  const getTitle = (key, item) => item.title || item.full_name || item.name || '';
+  const getSub = (key, item) => {
+    if (key === 'courses') return item.category;
+    if (key === 'lessons') return item.section;
+    if (key === 'events') return item.date ? new Date(item.date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) : '';
+    if (key === 'tutors') return item.email;
+    return '';
+  };
 
   return (
-    <div className="fixed inset-0 bg-black/50 z-50 flex items-start justify-center pt-20" onClick={onClose}>
-      <Card className="w-full max-w-2xl mx-4 p-6" onClick={(e) => e.stopPropagation()}>
-        <div className="flex items-center gap-3 mb-4">
-          <Search className="w-5 h-5 text-gray-400" />
-          <Input
-            autoFocus
-            placeholder="Search courses, lessons, students, assignments..."
+    <Box
+      onClick={onClose}
+      sx={{ position: 'fixed', inset: 0, bgcolor: 'rgba(0,0,0,0.5)', zIndex: 1400, display: 'flex', alignItems: 'flex-start', justifyContent: 'center', pt: { xs: 8, md: 16 }, px: 2 }}
+    >
+      <Paper
+        onClick={(e) => e.stopPropagation()}
+        elevation={8}
+        sx={{ width: '100%', maxWidth: 620, borderRadius: 3, overflow: 'hidden' }}
+      >
+        {/* Input */}
+        <Box sx={{ display: 'flex', alignItems: 'center', px: 2, py: 1.5, borderBottom: 1, borderColor: 'divider' }}>
+          {isFetching
+            ? <CircularProgress size={20} sx={{ mr: 1.5, flexShrink: 0 }} />
+            : <Search size={20} color="#9ca3af" style={{ marginRight: 12, flexShrink: 0 }} />
+          }
+          <InputBase
+            inputRef={inputRef}
+            fullWidth
+            placeholder="Search courses, lessons, events, tutors…"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="flex-1 border-none focus-visible:ring-0 text-lg"
+            sx={{ fontSize: '1rem' }}
           />
-          <Button variant="ghost" size="icon" onClick={onClose}>
-            <X className="w-5 h-5" />
-          </Button>
-        </div>
+          {query && (
+            <Box onClick={() => setQuery('')} sx={{ cursor: 'pointer', color: 'text.disabled', ml: 1 }}>
+              <X size={18} />
+            </Box>
+          )}
+        </Box>
 
-        {isLoading || isSearching ? (
-          <div className="flex items-center justify-center py-8">
-            <Loader2 className="w-6 h-6 animate-spin text-gray-400" />
-          </div>
-        ) : !debouncedQuery ? (
-          <div className="text-center py-8 text-gray-500">
-            <Search className="w-12 h-12 mx-auto mb-3 text-gray-300" />
-            <p>Type to search across all content...</p>
-          </div>
-        ) : totalResults === 0 ? (
-          <div className="text-center py-8 text-gray-500">
-            <p>No results found for "{debouncedQuery}"</p>
-          </div>
-        ) : (
-          <div className="space-y-4 max-h-96 overflow-y-auto">
-            {/* Courses */}
-            {searchResults.courses.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm text-gray-500 mb-2 flex items-center gap-2">
-                  <BookOpen className="w-4 h-4" />
-                  Courses ({searchResults.courses.length})
-                </h3>
-                <div className="space-y-2">
-                  {searchResults.courses.map(course => (
-                    <Link key={course.id} to={createPageUrl('CourseDetails') + `?id=${course.id}`} onClick={onClose}>
-                      <div className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                        <div className="font-medium text-gray-900">{course.title}</div>
-                        <div className="text-sm text-gray-500 line-clamp-1">{course.description}</div>
-                        <Badge variant="secondary" className="mt-1">{course.category}</Badge>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
+        {/* Body */}
+        <Box sx={{ maxHeight: 480, overflowY: 'auto', p: debouncedQuery.length >= 2 ? 1 : 0 }}>
+          {debouncedQuery.length < 2 ? (
+            <Box sx={{ textAlign: 'center', py: 5 }}>
+              <Search size={40} color="#d1d5db" style={{ margin: '0 auto 12px' }} />
+              <Typography color="text.secondary">Type at least 2 characters to search</Typography>
+            </Box>
+          ) : isFetching ? null : totalResults === 0 ? (
+            <Box sx={{ textAlign: 'center', py: 5 }}>
+              <Typography color="text.secondary">No results for "<strong>{debouncedQuery}</strong>"</Typography>
+            </Box>
+          ) : SECTIONS.map(({ key, label, icon: Icon, color }) => {
+            const items = results?.[key] || [];
+            if (!items.length) return null;
+            return (
+              <Box key={key} sx={{ mb: 1 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, px: 1.5, py: 0.75 }}>
+                  <Icon size={14} color={color} />
+                  <Typography variant="caption" fontWeight={700} sx={{ color, textTransform: 'uppercase', letterSpacing: 0.5 }}>
+                    {label}
+                  </Typography>
+                  <Chip label={items.length} size="small" sx={{ height: 16, fontSize: '0.65rem', ml: 'auto' }} />
+                </Box>
+                {items.map((item, i) => (
+                  <Link key={item.id || i} to={getHref(key, item)} onClick={onClose} style={{ textDecoration: 'none', color: 'inherit' }}>
+                    <Box sx={{ px: 1.5, py: 1, borderRadius: 1.5, mx: 0.5, '&:hover': { bgcolor: 'action.hover' }, cursor: 'pointer' }}>
+                      <Typography variant="body2" fontWeight={500} noWrap>
+                        {highlight(getTitle(key, item), debouncedQuery)}
+                      </Typography>
+                      {getSub(key, item) && (
+                        <Typography variant="caption" color="text.secondary">
+                          {highlight(getSub(key, item), debouncedQuery)}
+                        </Typography>
+                      )}
+                    </Box>
+                  </Link>
+                ))}
+                <Divider sx={{ mt: 0.5 }} />
+              </Box>
+            );
+          })}
+        </Box>
 
-            {/* Lessons */}
-            {searchResults.lessons.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm text-gray-500 mb-2 flex items-center gap-2">
-                  <FileText className="w-4 h-4" />
-                  Lessons ({searchResults.lessons.length})
-                </h3>
-                <div className="space-y-2">
-                  {searchResults.lessons.map(lesson => (
-                    <Link key={lesson.id} to={createPageUrl('LessonEditor') + `?id=${lesson.id}`} onClick={onClose}>
-                      <div className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                        <div className="font-medium text-gray-900">{lesson.title}</div>
-                        <div className="text-sm text-gray-500">{lesson.section}</div>
-                      </div>
-                    </Link>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Students */}
-            {searchResults.students.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm text-gray-500 mb-2 flex items-center gap-2">
-                  <Users className="w-4 h-4" />
-                  Students ({searchResults.students.length})
-                </h3>
-                <div className="space-y-2">
-                  {searchResults.students.map(enrollment => (
-                    <div key={enrollment.id} className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                      <div className="font-medium text-gray-900">{enrollment.created_by}</div>
-                      <div className="text-sm text-gray-500">{enrollment.progress_percent || 0}% complete</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-
-            {/* Assignments */}
-            {searchResults.assignments.length > 0 && (
-              <div>
-                <h3 className="font-semibold text-sm text-gray-500 mb-2 flex items-center gap-2">
-                  <ClipboardList className="w-4 h-4" />
-                  Assignments ({searchResults.assignments.length})
-                </h3>
-                <div className="space-y-2">
-                  {searchResults.assignments.map(assignment => (
-                    <div key={assignment.id} className="p-3 hover:bg-gray-50 rounded-lg cursor-pointer">
-                      <div className="font-medium text-gray-900">{assignment.title}</div>
-                      <div className="text-sm text-gray-500 line-clamp-1">{assignment.description}</div>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </Card>
-    </div>
+        {/* Footer hint */}
+        <Box sx={{ px: 2, py: 1, borderTop: 1, borderColor: 'divider', display: 'flex', gap: 2 }}>
+          <Typography variant="caption" color="text.disabled">↵ to select</Typography>
+          <Typography variant="caption" color="text.disabled">Esc to close</Typography>
+        </Box>
+      </Paper>
+    </Box>
   );
 }
