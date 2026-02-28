@@ -30,7 +30,7 @@ import { PERMISSIONS } from '@/components/permissions/permissions';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
-  'Explore', 'Library',
+  'Explore', 'Library', 'BookDetails', 'CourseDetails',
   'TutorDashboard', 'TutorDashboardOverview', 'TutorCourseManager',
   'TutorSetup', 'TutorBookingManager', 'LessonEditor', 'ScheduleSession',
   'GradeAssignments', 'QuizGenerator', 'StudentAnalytics', 'CreateAssignment',
