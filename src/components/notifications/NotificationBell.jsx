@@ -39,14 +39,14 @@ export default function NotificationBell() {
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId) => base44.entities.Notification.update(notificationId, { is_read: true }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 
   const deleteNotificationMutation = useMutation({
     mutationFn: (notificationId) => base44.entities.Notification.delete(notificationId),
     onSuccess: () => {
-      queryClient.invalidateQueries(['notifications']);
+      queryClient.invalidateQueries({ queryKey: ['notifications'] });
     },
   });
 
