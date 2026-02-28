@@ -89,6 +89,7 @@ function LayoutContent({ children, currentPageName }) {
   const [showCoordinatorDialog, setShowCoordinatorDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [logoutDialogOpen, setLogoutDialogOpen] = useState(false);
+  const [searchOpen, setSearchOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
   // Persist scroll positions per tab path
