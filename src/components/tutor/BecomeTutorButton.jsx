@@ -46,6 +46,7 @@ export default function BecomeTutorButton({ user, onSuccess, hideButton, externa
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['tutor-request']);
+      queryClient.invalidateQueries(['auth-me']);
       setOpen(false);
       setReason('');
       setQualifications('');
