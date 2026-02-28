@@ -135,7 +135,10 @@ export default function NotificationBell() {
                       <div className="flex-1 min-w-0">
                         <p className="font-medium text-gray-900 text-sm">{notification.title}</p>
                         <p className="text-sm text-gray-600 mt-1 line-clamp-2">{notification.message}</p>
-                        <p className="text-xs text-gray-400 mt-2">
+                        {notification.type && notification.type !== 'general' && (
+                          <span className="inline-block text-xs bg-blue-100 text-blue-700 rounded px-1.5 py-0.5 mr-1 mt-1">{notification.type}</span>
+                        )}
+                        <p className="text-xs text-gray-400 mt-1">
                           {format(new Date(notification.created_date), 'MMM d, h:mm a')}
                         </p>
                       </div>
