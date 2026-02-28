@@ -101,12 +101,9 @@ export default function Community() {
                       <Heart className="w-4 h-4" />
                       {post.likes_count || 0}
                     </button>
-                    <span className="flex items-center gap-1">
-                      <MessageCircle className="w-4 h-4" />
-                      {post.comments_count || 0}
-                    </span>
                     <span className="ml-auto">{format(new Date(post.created_date), 'MMM d, yyyy')}</span>
                   </div>
+                  {user && <CommunityPostChat post={post} currentUser={user} />}
                 </div>
               </div>
             </Card>
