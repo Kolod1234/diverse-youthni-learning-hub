@@ -569,6 +569,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Bell size={20} color="#7c3aed" /></ListItemIcon>
                       <ListItemText primary="Notification Centre" />
                     </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminSupportChats')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><MessageSquare size={20} color="#0ea5e9" /></ListItemIcon>
+                      <ListItemText primary="Support Chats" />
+                    </MenuItem>
                   </>
                 )}
 
