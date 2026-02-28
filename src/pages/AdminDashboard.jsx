@@ -541,11 +541,11 @@ function UsersManagement({ users, searchQuery, setSearchQuery }) {
           <Typography variant="h6" sx={{ fontWeight: 600 }}>User Management</Typography>
           <Chip label={`${filteredUsers.length} users`} />
         </Box>
-        <TextField fullWidth placeholder="Search users by name or email..." value={searchQuery} onChange={(e) => setSearchQuery(e.target.value)} InputProps={{ startAdornment: <Search style={{ marginRight: 8, width: 18, height: 18, color: '#9ca3af' }} /> }} />
+        <TextField fullWidth placeholder="Search users by name or email..." value={searchQuery} onChange={(e) => { setSearchQuery(e.target.value); setPage(0); }} InputProps={{ startAdornment: <Search style={{ marginRight: 8, width: 18, height: 18, color: '#9ca3af' }} /> }} />
       </Box>
 
       <Box sx={{ space: 1 }}>
-        {filteredUsers.map((user) => (
+        {pagedUsers.map((user) => (
           <Card key={user.id} sx={{ p: 2, mb: 1 }}>
             <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
