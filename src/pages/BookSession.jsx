@@ -11,6 +11,7 @@ import { Input } from '@/components/ui/input';
 import { ArrowLeft, Calendar, Clock, User, CheckCircle, Users, BookOpen, Search, Star, ChevronLeft, ChevronRight } from 'lucide-react';
 import { toast } from 'sonner';
 import { format, addDays, parse, isBefore, startOfDay, addMonths, startOfMonth, endOfMonth, eachDayOfInterval, getDay, isSameDay, isSameMonth, isToday } from 'date-fns';
+import TutorChatWidget from '@/components/chat/TutorChatWidget';
 
 const DAY_NAMES = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
 const DAY_MAP = { 0: 'sunday', 1: 'monday', 2: 'tuesday', 3: 'wednesday', 4: 'thursday', 5: 'friday', 6: 'saturday' };
