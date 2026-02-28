@@ -464,6 +464,8 @@ function PartnersManagement() {
 
 function UsersManagement({ users, searchQuery, setSearchQuery }) {
   const queryClient = useQueryClient();
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 25;
 
   const updateUserByEmailMutation = useMutation({
     mutationFn: async ({ email, data }) => {
