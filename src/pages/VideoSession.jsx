@@ -339,6 +339,18 @@ export default function VideoSession() {
               </p>
             )}
 
+            {/* Live Session Chat */}
+            {(session.status === 'live' || session.status === 'scheduled') && user && (
+              <div className="mt-6">
+                <SessionLiveChat
+                  sessionId={session.id}
+                  sessionTitle={session.title}
+                  currentUser={user}
+                  height={360}
+                />
+              </div>
+            )}
+
             {/* Recording Player */}
             {session.recording_url && session.status === 'completed' && (
               <div className="mt-6 p-6 bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg border border-purple-200">
