@@ -52,6 +52,7 @@ import AcademyExplore from './pages/AcademyExplore';
 import AcademyManager from './pages/AcademyManager';
 import AcademyPlayer from './pages/AcademyPlayer';
 import Achievements from './pages/Achievements';
+import AdminAppVersion from './pages/AdminAppVersion';
 import AdminAttendance from './pages/AdminAttendance';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminCourseBuilder from './pages/AdminCourseBuilder';
@@ -61,6 +62,7 @@ import AdminDiscover from './pages/AdminDiscover';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
 import AdminLibrary from './pages/AdminLibrary';
 import AdminLibraryDashboard from './pages/AdminLibraryDashboard';
+import AdminNotifications from './pages/AdminNotifications';
 import AdminPageBuilder from './pages/AdminPageBuilder';
 import AdminQuotes from './pages/AdminQuotes';
 import AdminRSSFeed from './pages/AdminRSSFeed';
@@ -154,8 +156,6 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminAppVersion from './pages/AdminAppVersion';
-import AdminNotifications from './pages/AdminNotifications';
 import __Layout from './Layout.jsx';
 
 
@@ -165,6 +165,7 @@ export const PAGES = {
     "AcademyManager": AcademyManager,
     "AcademyPlayer": AcademyPlayer,
     "Achievements": Achievements,
+    "AdminAppVersion": AdminAppVersion,
     "AdminAttendance": AdminAttendance,
     "AdminCoordinators": AdminCoordinators,
     "AdminCourseBuilder": AdminCourseBuilder,
@@ -174,6 +175,7 @@ export const PAGES = {
     "AdminLearningObjectives": AdminLearningObjectives,
     "AdminLibrary": AdminLibrary,
     "AdminLibraryDashboard": AdminLibraryDashboard,
+    "AdminNotifications": AdminNotifications,
     "AdminPageBuilder": AdminPageBuilder,
     "AdminQuotes": AdminQuotes,
     "AdminRSSFeed": AdminRSSFeed,
@@ -267,8 +269,6 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminAppVersion": AdminAppVersion,
-    "AdminNotifications": AdminNotifications,
 }
 
 export const pagesConfig = {

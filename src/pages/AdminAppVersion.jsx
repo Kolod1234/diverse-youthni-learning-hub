@@ -12,7 +12,6 @@ export default function AdminAppVersion() {
   const queryClient = useQueryClient();
   const [dialogOpen, setDialogOpen] = useState(false);
   const [notifyConfirm, setNotifyConfirm] = useState(null);
-  const [uploading, setUploading] = useState(false);
   const [notifyStatus, setNotifyStatus] = useState(null);
   const [form, setForm] = useState({
     version_name: '',
