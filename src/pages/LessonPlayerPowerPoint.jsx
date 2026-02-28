@@ -166,43 +166,55 @@ export default function LessonPlayerPowerPoint() {
     }
   });
 
+  // Detect if native fullscreen API is available (not available in Android WebView)
+  const supportsNativeFullscreen = typeof document !== 'undefined' && 
+    (document.fullscreenEnabled || document.webkitFullscreenEnabled || document.mozFullScreenEnabled);
+
   // Fullscreen/Pres handling
   useEffect(() => {
-    const handleFullscreenChange = () => setIsFullscreen(!!document.fullscreenElement);
+    const handleFullscreenChange = () => {
+      const nativeFs = !!(document.fullscreenElement || document.webkitFullscreenElement || document.mozFullScreenElement);
+      setIsFullscreen(nativeFs || false);
+    };
     document.addEventListener('fullscreenchange', handleFullscreenChange);
-    return () => document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', handleFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+    };
   }, []);
 
   const toggleFullscreen = async () => {
-    try {
-      if (!document.fullscreenElement) {
-        if (playerRef.current) {
-          await playerRef.current.requestFullscreen?.().catch(async () => {
-            // Fallback: Use Screen Orientation API for mobile
-            if (screen.orientation?.lock) {
-              try {
-                await screen.orientation.lock('landscape');
-              } catch (e) {
-                console.log('Orientation lock not supported');
-              }
-            }
-          });
-        }
-      } else {
-        await document.exitFullscreen?.().catch(async () => {
-          // Fallback: Unlock orientation
-          if (screen.orientation?.unlock) {
-            try {
-              await screen.orientation.unlock();
-            } catch (e) {
-              console.log('Orientation unlock not supported');
-            }
-          }
-        });
-      }
-    } catch (err) {
-      console.error('Fullscreen error:', err);
+    if (isFullscreen) {
+      // Exit fullscreen
+      setIsFullscreen(false);
+      try {
+        if (document.exitFullscreen) await document.exitFullscreen();
+        else if (document.webkitExitFullscreen) document.webkitExitFullscreen();
+      } catch (e) { /* WebView - already handled by state */ }
+      try { screen.orientation?.unlock?.(); } catch (e) {}
+      return;
     }
+
+    // Enter fullscreen - try native API first, fallback to CSS fullscreen for WebView
+    if (supportsNativeFullscreen && playerRef.current) {
+      try {
+        if (playerRef.current.requestFullscreen) {
+          await playerRef.current.requestFullscreen();
+        } else if (playerRef.current.webkitRequestFullscreen) {
+          playerRef.current.webkitRequestFullscreen();
+        }
+        setIsFullscreen(true);
+      } catch (e) {
+        // Native failed, use CSS fake fullscreen
+        setIsFullscreen(true);
+      }
+    } else {
+      // WebView / no support - use CSS fake fullscreen via state
+      setIsFullscreen(true);
+    }
+    // Try orientation lock regardless
+    try { await screen.orientation?.lock?.('landscape'); } catch (e) {}
   };
 
   const togglePresentation = () => {
