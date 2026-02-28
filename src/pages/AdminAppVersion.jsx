@@ -40,7 +40,7 @@ export default function AdminAppVersion() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['app-versions'] });
       setDialogOpen(false);
-      setForm({ version_name: '', version_code: '', apk_url: '', release_notes: '', is_active: true, force_update: false });
+      setForm({ version_name: '', version_code: '', apk_url: '', release_notes: '', is_active: true, force_update: false, notify_users: false });
     },
   });
 
