@@ -30,6 +30,7 @@ import { PERMISSIONS } from '@/components/permissions/permissions';
 
 // Pages where tutors should NOT be auto-redirected (i.e., tutor-specific pages)
 const TUTOR_PAGES = [
+  'Explore', 'Library',
   'TutorDashboard', 'TutorDashboardOverview', 'TutorCourseManager',
   'TutorSetup', 'TutorBookingManager', 'LessonEditor', 'ScheduleSession',
   'GradeAssignments', 'QuizGenerator', 'StudentAnalytics', 'CreateAssignment',
@@ -484,7 +485,7 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
                       <ListItemText primary="Tutor Monitor" />
                     </MenuItem>
-                <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
+                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Manage Coordinators" />
                     </MenuItem>
@@ -524,11 +525,11 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                    </>
-                    )}
+                  </>
+                )}
 
-                    {isTutorOrAdmin && !isAdmin && (
-                    <>
+                {isTutorOrAdmin && !isAdmin && (
+                  <>
                     <Divider />
                     <MenuItem component={Link} to={createPageUrl('AdminReminders')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><Bell size={20} color="#06b6d4" /></ListItemIcon>
@@ -538,10 +539,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
                     </MenuItem>
-                    </>
-                    )}
-                    </MuiMenu>
-                    </Box>
+                  </>
+                )}
+              </MuiMenu>
+            </Box>
 
             {/* Right Side */}
             <Box sx={{ display: 'flex', gap: 1.5, alignItems: 'center' }}>
