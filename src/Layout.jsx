@@ -480,7 +480,11 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><CheckCircle size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Course Validator" />
                     </MenuItem>
-                    <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
+                    <MenuItem component={Link} to={createPageUrl('AdminTutorMonitor')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><GraduationCap size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Tutor Monitor" />
+                    </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('AdminCoordinators')} onClick={() => setMoreMenuAnchor(null)}>
                       <ListItemIcon><User size={20} color="#10b981" /></ListItemIcon>
                       <ListItemText primary="Manage Coordinators" />
                     </MenuItem>

@@ -246,7 +246,7 @@ export default function AdminDashboard() {
           <Tabs value={selectedTab} onChange={(e, value) => setSelectedTab(value)} variant="scrollable" scrollButtons="auto">
             <Tab label="Users" value="users" />
             <Tab label="Tutor Requests" value="tutor-requests" icon={tutorRequests.length > 0 ? <Badge badgeContent={tutorRequests.length} color="error"><GraduationCap /></Badge> : undefined} iconPosition="start" />
-            <Tab label="Courses" value="courses" />
+            <Tab label="Courses & Tutors" value="courses" />
             <Tab label="Reviews" value="reviews" />
             <Tab label="Messages" value="messages" />
             <Tab label="Main Carousel" value="carousel" />
