@@ -217,6 +217,8 @@ export default function Events() {
               );
             })}
           </Grid>
+          <PaginationBar page={page} totalItems={filteredEvents.length} pageSize={PAGE_SIZE} onPageChange={setPage} />
+          </>
         )}
       </Container>
 
