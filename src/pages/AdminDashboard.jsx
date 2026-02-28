@@ -269,6 +269,7 @@ export default function AdminDashboard() {
             <Tab label="Unlock Keys" value="unlock-keys" />
             <Tab label="Page Builder" value="page-builder" />
             <Tab label="About Us" value="about-us" />
+            <Tab label="Tutor Manager" value="tutor-manager" />
           </Tabs>
 
           <Box sx={{ p: 3 }}>
@@ -307,6 +308,15 @@ export default function AdminDashboard() {
               </Card>
             )}
             {selectedTab === 'about-us' && <AboutUsManagement siteContent={siteContent} />}
+            {selectedTab === 'tutor-manager' && (
+              <Box>
+                <Typography variant="h6" sx={{ fontWeight: 600, mb: 1 }}>Tutor Manager</Typography>
+                <Typography color="textSecondary" sx={{ mb: 2 }}>Assign courses, monitor tutor activity, and send reminders</Typography>
+                <Link to={createPageUrl('AdminTutorManager')} style={{ textDecoration: 'none' }}>
+                  <Button variant="contained" startIcon={<GraduationCap />}>Open Tutor Manager</Button>
+                </Link>
+              </Box>
+            )}
           </Box>
         </Paper>
       </Container>
