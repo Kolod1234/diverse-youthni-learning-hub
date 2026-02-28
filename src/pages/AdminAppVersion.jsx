@@ -307,18 +307,47 @@ export default function AdminAppVersion() {
               variant="outlined"
               component="label"
               startIcon={<Upload size={18} />}
-              disabled={uploading}
+              disabled={uploadState.status === 'uploading'}
               fullWidth
             >
-              {uploading ? 'Uploading...' : form.apk_url ? 'Replace APK' : 'Upload APK'}
-              <input type="file" accept=".apk" hidden onChange={handleUploadAPK} />
+              {uploadState.status === 'uploading'
+                ? `Uploading... ${uploadState.progress}%`
+                : uploadState.status === 'done' || form.apk_url
+                ? 'Replace APK'
+                : 'Upload APK (.apk)'}
+              <input type="file" accept=".apk,application/vnd.android.package-archive" hidden onChange={handleUploadAPK} />
             </Button>
-            {form.apk_url && (
+            {uploadState.status === 'uploading' && (
+              <Box sx={{ mt: 1 }}>
+                <MuiLinearProgress variant="determinate" value={uploadState.progress} />
+                <Typography variant="caption" color="text.secondary">{uploadState.progress}% uploaded</Typography>
+              </Box>
+            )}
+            {uploadState.status === 'done' && form.apk_url && (
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mt: 1 }}>
                 <CheckCircle size={16} color="#22c55e" />
                 <Typography variant="caption" color="success.main">APK uploaded successfully</Typography>
               </Box>
             )}
+            {uploadState.status === 'error' && (
+              <Alert severity="error" sx={{ mt: 1 }}>{uploadState.error}</Alert>
+            )}
+            <Divider sx={{ my: 1.5 }} />
+            <Typography variant="caption" color="text.secondary" sx={{ display: 'block', mb: 1 }}>
+              Or paste an external APK URL (e.g. from Google Drive, Dropbox, or your own server):
+            </Typography>
+            <TextField
+              label="APK Download URL"
+              value={form.apk_url}
+              onChange={e => {
+                setForm(f => ({ ...f, apk_url: e.target.value }));
+                if (e.target.value) setUploadState({ status: 'done', progress: 100, error: null });
+              }}
+              fullWidth
+              size="small"
+              placeholder="https://..."
+              InputProps={{ startAdornment: <Link size={14} style={{ marginRight: 8, color: '#64748b' }} /> }}
+            />
           </Box>
           <TextField
             label="Release Notes (optional)"
