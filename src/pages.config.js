@@ -56,7 +56,6 @@ import AdminAttendance from './pages/AdminAttendance';
 import AdminCoordinators from './pages/AdminCoordinators';
 import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import AdminDailyFacts from './pages/AdminDailyFacts';
-import AdminDashboard from './pages/AdminDashboard';
 import AdminDiscover from './pages/AdminDiscover';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
 import AdminLibrary from './pages/AdminLibrary';
@@ -140,10 +139,8 @@ import StudentPathways from './pages/StudentPathways';
 import StudyGroupDetail from './pages/StudyGroupDetail';
 import Templates from './pages/Templates';
 import TutorBookingManager from './pages/TutorBookingManager';
-import TutorCourseManager from './pages/TutorCourseManager';
 import TutorDashboard from './pages/TutorDashboard';
 import TutorDashboardCanvas from './pages/TutorDashboardCanvas';
-import TutorDashboardOverview from './pages/TutorDashboardOverview';
 import TutorOnboarding from './pages/TutorOnboarding';
 import TutorSessionsDashboard from './pages/TutorSessionsDashboard';
 import TutorSetup from './pages/TutorSetup';
@@ -153,6 +150,10 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import AdminDashboard from './pages/AdminDashboard';
+import TutorDashboardOverview from './pages/TutorDashboardOverview';
+import TutorCourseManager from './pages/TutorCourseManager';
+import AdminTutorMonitor from './pages/AdminTutorMonitor';
 import __Layout from './Layout.jsx';
 
 
@@ -166,7 +167,6 @@ export const PAGES = {
     "AdminCoordinators": AdminCoordinators,
     "AdminCourseBuilder": AdminCourseBuilder,
     "AdminDailyFacts": AdminDailyFacts,
-    "AdminDashboard": AdminDashboard,
     "AdminDiscover": AdminDiscover,
     "AdminLearningObjectives": AdminLearningObjectives,
     "AdminLibrary": AdminLibrary,
@@ -250,10 +250,8 @@ export const PAGES = {
     "StudyGroupDetail": StudyGroupDetail,
     "Templates": Templates,
     "TutorBookingManager": TutorBookingManager,
-    "TutorCourseManager": TutorCourseManager,
     "TutorDashboard": TutorDashboard,
     "TutorDashboardCanvas": TutorDashboardCanvas,
-    "TutorDashboardOverview": TutorDashboardOverview,
     "TutorOnboarding": TutorOnboarding,
     "TutorSessionsDashboard": TutorSessionsDashboard,
     "TutorSetup": TutorSetup,
@@ -263,6 +261,10 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "AdminDashboard": AdminDashboard,
+    "TutorDashboardOverview": TutorDashboardOverview,
+    "TutorCourseManager": TutorCourseManager,
+    "AdminTutorMonitor": AdminTutorMonitor,
 }
 
 export const pagesConfig = {
