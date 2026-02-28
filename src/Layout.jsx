@@ -557,6 +557,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                       <ListItemText primary="Send Student Messages" />
                     </MenuItem>
+                    <MenuItem component={Link} to={createPageUrl('AdminAppVersion')} onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Bell size={20} color="#16a34a" /></ListItemIcon>
+                      <ListItemText primary="App Version Manager" />
+                    </MenuItem>
                   </>
                 )}
 
