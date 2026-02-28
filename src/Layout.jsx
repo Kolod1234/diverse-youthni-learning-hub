@@ -14,7 +14,7 @@ import {
   Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField
 } from '@mui/material';
 import { 
-  GraduationCap, Home, Compass, BookOpen, Award, Calendar,
+  GraduationCap, Home, Compass, BookOpen, Award, Calendar, Search,
   Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle, Shield, UserCheck
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
