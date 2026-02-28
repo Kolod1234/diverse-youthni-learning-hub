@@ -182,9 +182,10 @@ export default function Settings() {
         </motion.div>
 
         <Box sx={{ mt: 4 }}>
-          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }}>
+          <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ borderBottom: 1, borderColor: 'divider', mb: 3 }} variant="scrollable" scrollButtons="auto">
             <Tab value="profile" icon={<User size={16} />} iconPosition="start" label="Profile" />
             <Tab value="account" icon={<Lock size={16} />} iconPosition="start" label="Account" />
+            <Tab value="notifications" icon={<Bell size={16} />} iconPosition="start" label="Notifications" />
             <Tab value="preferences" icon={<SettingsIcon size={16} />} iconPosition="start" label="Preferences" />
             <Tab value="danger" icon={<AlertTriangle size={16} />} iconPosition="start" label="Danger Zone" sx={{ color: '#dc2626' }} />
           </Tabs>
