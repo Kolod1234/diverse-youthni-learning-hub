@@ -44,6 +44,97 @@ import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
 import AboutUsSection from '@/components/home/AboutUsSection';
 import CommunityCarousel from '@/components/home/CommunityCarousel';
 
+export default function Home() {
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [searchQuery, setSearchQuery] = useState('');
+  const [selectedCategory, setSelectedCategory] = useState('all');
+  const [sortBy, setSortBy] = useState('popular');
+
+  const pullToRefreshRef = usePullToRefresh(() => {
+    queryClient.invalidateQueries();
+  });
+
+  const { data: courses = [], isLoading } = useQuery({
+    queryKey: ['home-courses'],
+    queryFn: () => base44.entities.Course.list('-enrolled_count', 50),
+  });
+
+  const { data: carouselImages = [] } = useQuery({
+    queryKey: ['carousel-images', 'main'],
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'main', is_active: true }, 'order', 50),
+  });
+
+  const { data: heroImages = [] } = useQuery({
+    queryKey: ['carousel-images', 'hero'],
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'hero', is_active: true }, 'order', 10),
+  });
+
+  const { data: leadershipImages = [] } = useQuery({
+    queryKey: ['carousel-images', 'leadership'],
+    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'leadership', is_active: true }, 'order', 20),
+  });
+
+  const { data: blogPosts = [] } = useQuery({
+    queryKey: ['blog-posts-home'],
+    queryFn: () => base44.entities.BlogPost.filter({ is_published: true }, '-published_date', 3),
+  });
+
+  const { data: realReviews = [] } = useQuery({
+    queryKey: ['home-reviews'],
+    queryFn: () => base44.entities.Review.list('-created_date', 6),
+  });
+
+  const { data: gallerySection = [] } = useQuery({
+    queryKey: ['page-sections-gallery'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'gallery', is_active: true }, 'order', 1),
+  });
+
+  const { data: videoSection = [] } = useQuery({
+    queryKey: ['page-sections-video'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'video', is_active: true }, 'order', 1),
+  });
+
+  const { data: teamSection = [] } = useQuery({
+    queryKey: ['page-sections-team'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'team', is_active: true }, 'order', 1),
+  });
+
+  const { data: faqSection = [] } = useQuery({
+    queryKey: ['page-sections-faq'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'faq', is_active: true }, 'order', 1),
+  });
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  const featuredCourses = courses.filter(c => c.is_featured).slice(0, 3);
+  const sortedCourses = [...courses].sort((a, b) => {
+    if (sortBy === 'popular') return (b.enrolled_count || 0) - (a.enrolled_count || 0);
+    if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
+    if (sortBy === 'newest') return new Date(b.created_date) - new Date(a.created_date);
+    return 0;
+  }).filter(c => selectedCategory === 'all' || c.category === selectedCategory);
+
+  const heroItems = heroImages.length > 0
+    ? heroImages.map(img => ({ image_url: img.image_url, title: '', subtitle: '', description: '', badge: '', cta_text: '', cta_link: '' }))
+    : [];
+
+  return (
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <PageSEO title="Diverse Youth NI Learning Hub" description="Empowering young people through education" />
+
+      {/* Hero Carousel */}
+      {heroItems.length > 0 && <HeroCarousel items={heroItems} />}
+
+      {/* Community Carousel */}
+      {carouselImages.length > 0 && (
+        <Container maxWidth="xl" sx={{ py: 6 }}>
+          <CommunityCarousel images={carouselImages} />
+        </Container>
+      )}
+
       {/* Leadership Programmes CTA */}
       <LeadershipCTASection />
 
