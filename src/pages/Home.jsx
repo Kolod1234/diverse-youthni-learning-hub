@@ -43,7 +43,6 @@ import LearningStatisticsSection from '@/components/home/LearningStatisticsSecti
 import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
 import AboutUsSection from '@/components/home/AboutUsSection';
 import CommunityCarousel from '@/components/home/CommunityCarousel';
-...
         <CommunityCarousel images={carouselImages} />
       </Container>
 
