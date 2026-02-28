@@ -71,6 +71,7 @@ import AdminReviews from './pages/AdminReviews';
 import AdminRolesPermissions from './pages/AdminRolesPermissions';
 import AdminStudentMessages from './pages/AdminStudentMessages';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
+import AdminSupportChats from './pages/AdminSupportChats';
 import AdminTutorMonitor from './pages/AdminTutorMonitor';
 import AdminUserProfile from './pages/AdminUserProfile';
 import AdminUsers from './pages/AdminUsers';
@@ -156,7 +157,8 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import AdminSupportChats from './pages/AdminSupportChats';
+import Events from './pages/Events';
+import AdminEvents from './pages/AdminEvents';
 import __Layout from './Layout.jsx';
 
 
@@ -185,6 +187,7 @@ export const PAGES = {
     "AdminRolesPermissions": AdminRolesPermissions,
     "AdminStudentMessages": AdminStudentMessages,
     "AdminStudentOfMonth": AdminStudentOfMonth,
+    "AdminSupportChats": AdminSupportChats,
     "AdminTutorMonitor": AdminTutorMonitor,
     "AdminUserProfile": AdminUserProfile,
     "AdminUsers": AdminUsers,
@@ -270,7 +273,8 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "AdminSupportChats": AdminSupportChats,
+    "Events": Events,
+    "AdminEvents": AdminEvents,
 }
 
 export const pagesConfig = {
