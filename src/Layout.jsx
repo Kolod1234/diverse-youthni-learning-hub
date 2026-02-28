@@ -765,46 +765,31 @@ function LayoutContent({ children, currentPageName }) {
         }}
       >
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
-          <Link 
-            to={createPageUrl('Explore')} 
-            onClick={() => location.pathname.includes('Explore') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
-          >
-            <Compass size={24} color={location.pathname.includes('Explore') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Explore') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Explore') ? 600 : 400, fontSize: '0.7rem' }}>
-              Courses
-            </Typography>
-          </Link>
-          <Link 
-            to={createPageUrl('Dashboard')} 
-            onClick={() => location.pathname.includes('Dashboard') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
-          >
-            <BarChart3 size={24} color={location.pathname.includes('Dashboard') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Dashboard') ? 600 : 400, fontSize: '0.7rem' }}>
-              Progress
-            </Typography>
-          </Link>
-          <Link 
-            to={createPageUrl('Library')} 
-            onClick={() => location.pathname.includes('Library') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
-          >
-            <BookOpen size={24} color={location.pathname.includes('Library') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Library') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Library') ? 600 : 400, fontSize: '0.7rem' }}>
-              Library
-            </Typography>
-          </Link>
-          <Link 
-            to={createPageUrl('Profile')} 
-            onClick={() => location.pathname.includes('Profile') && window.scrollTo({ top: 0, behavior: 'smooth' })}
-            style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
-          >
-            <User size={24} color={location.pathname.includes('Profile') ? '#003366' : '#999'} />
-            <Typography variant="caption" sx={{ color: location.pathname.includes('Profile') ? 'primary.main' : 'text.secondary', fontWeight: location.pathname.includes('Profile') ? 600 : 400, fontSize: '0.7rem' }}>
-              Profile
-            </Typography>
-          </Link>
+          {[
+            { label: 'Courses', page: 'Explore', icon: Compass, match: 'Explore' },
+            { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
+            { label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' },
+            { label: 'Profile', page: 'Profile', icon: User, match: 'Profile' },
+          ].map(({ label, page, icon: Icon, match }) => {
+            const isActive = location.pathname.includes(match);
+            const href = createPageUrl(page);
+            return (
+              <Link
+                key={page}
+                to={href}
+                onClick={() => {
+                  // Save current scroll before navigating away
+                  tabScrollPositions.current[location.pathname] = window.scrollY;
+                }}
+                style={{ textDecoration: 'none', display: 'flex', flexDirection: 'column', alignItems: 'center', gap: 4, padding: '8px 12px', minHeight: 64, minWidth: 64, justifyContent: 'center' }}
+              >
+                <Icon size={24} color={isActive ? '#003366' : '#999'} />
+                <Typography variant="caption" sx={{ color: isActive ? 'primary.main' : 'text.secondary', fontWeight: isActive ? 600 : 400, fontSize: '0.7rem' }}>
+                  {label}
+                </Typography>
+              </Link>
+            );
+          })}
         </Box>
       </Box>
 
