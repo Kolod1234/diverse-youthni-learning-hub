@@ -131,7 +131,7 @@ export default function Events() {
             <Typography variant="body2" color="text.disabled">Check back soon for upcoming events!</Typography>
           </Box>
         ) : (
-          <>
+          <Box>
           <Grid container spacing={3}>
             {filteredEvents.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE).map((event, idx) => {
               const myRsvp = getMyRsvp(event.id);
