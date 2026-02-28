@@ -19,6 +19,7 @@ import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import CurriculumImporter from '@/components/admin/CurriculumImporter';
 import LessonKeyManager from '@/components/admin/LessonKeyManager';
+import PaginationBar from '@/components/ui/PaginationBar';
 
 export default function AdminDashboard() {
   const [user, setUser] = useState(null);
