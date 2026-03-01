@@ -377,18 +377,20 @@ export default function LessonPlayerClassic() {
     }
   }, [lessonId]);
 
-  // Keyboard shortcuts
+  // Navigation handlers — assigned to refs so useLessonPlayer (called earlier) can use them
   const handleNextLesson = () => {
     if (nextLesson) {
       navigate(`/LessonPlayerClassic?lesson=${nextLesson.id}&course=${courseId}`);
     }
   };
+  handleNextLessonRef.current = handleNextLesson;
 
   const handlePrevLesson = () => {
     if (prevLesson) {
       navigate(`/LessonPlayerClassic?lesson=${prevLesson.id}&course=${courseId}`);
     }
   };
+  handlePrevLessonRef.current = handlePrevLesson;
 
   useKeyboardShortcuts({
     onNext: handleNextLesson,
