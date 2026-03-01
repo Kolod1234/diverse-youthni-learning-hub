@@ -76,6 +76,7 @@ export default function LessonPlayerClassic() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [interactiveContent, setInteractiveContent] = useState(null);
   const [loadingInteractives, setLoadingInteractives] = useState(false);
+  const [quizParams, setQuizParams] = useState({ difficulty: 'intermediate', questionTypes: ['multiple_choice'], keywords: [] });
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
@@ -247,7 +248,7 @@ export default function LessonPlayerClassic() {
       
       setLoadingInteractives(true);
       try {
-        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
+        const response = await base44.functions.invoke('generateLessonInteractives', { lessonId, ...quizParams });
         if (response.data.success) {
           setInteractiveContent(response.data);
           sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
@@ -265,10 +266,13 @@ export default function LessonPlayerClassic() {
     loadInteractives();
   }, [lessonId]);
 
-  const handleRegenerateInteractives = async () => {
+  const handleRegenerateInteractives = async (params) => {
+    const newParams = params || quizParams;
+    if (params) setQuizParams(params);
     setLoadingInteractives(true);
+    setInteractiveContent(null);
     try {
-      const response = await base44.functions.invoke('generateLessonInteractives', { lessonId });
+      const response = await base44.functions.invoke('generateLessonInteractives', { lessonId, ...newParams });
       if (response.data.success) {
         setInteractiveContent(response.data);
         const cacheKey = `interactives_${lessonId}`;
@@ -282,24 +286,6 @@ export default function LessonPlayerClassic() {
       } else {
         toast.error('Failed to generate new activities');
       }
-    } finally {
-      setLoadingInteractives(false);
-    }
-  };
-
-  const handleCustomQuizGenerate = async ({ difficulty, questionTypes, keywords }) => {
-    setLoadingInteractives(true);
-    try {
-      const response = await base44.functions.invoke('generateLessonInteractives', { lessonId, difficulty, questionTypes, keywords });
-      if (response.data.success) {
-        setInteractiveContent(response.data);
-        const cacheKey = `interactives_${lessonId}_${difficulty}_${questionTypes.join('_')}`;
-        sessionStorage.setItem(cacheKey, JSON.stringify(response.data));
-        toast.success(`${difficulty.charAt(0).toUpperCase() + difficulty.slice(1)} quiz generated!`);
-      }
-    } catch (error) {
-      console.error('Failed to generate custom quiz:', error);
-      toast.error('Failed to generate custom quiz');
     } finally {
       setLoadingInteractives(false);
     }
@@ -1208,16 +1194,6 @@ export default function LessonPlayerClassic() {
                   <Typography color="text.secondary">Generating interactive activities...</Typography>
                 </Box>
               )}
-
-              {/* Quiz Customiser */}
-              <Box sx={{ mt: { xs: 3, sm: 4 } }}>
-                <QuizCustomiser onGenerate={handleCustomQuizGenerate} loading={loadingInteractives} />
-              </Box>
-
-              {/* Concept Map */}
-              <Box sx={{ mt: 2 }}>
-                <ConceptMapTool lessonId={lessonId} />
-              </Box>
 
               {!loadingInteractives && interactiveContent && (
                 <Stack spacing={3} sx={{ mt: { xs: 4, sm: 6 } }}>
