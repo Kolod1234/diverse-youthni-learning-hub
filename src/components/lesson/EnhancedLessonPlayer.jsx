@@ -142,7 +142,7 @@ export default function EnhancedLessonPlayer({
             initial={{ x: -320 }}
             animate={{ x: 0 }}
             exit={{ x: -320 }}
-            className="w-80 bg-gradient-to-b from-slate-900 to-slate-800 border-r border-slate-700 flex flex-col overflow-hidden"
+            className="hidden lg:flex w-80 bg-gradient-to-b from-slate-900 to-slate-800 border-r border-slate-700 flex-col overflow-hidden fixed lg:relative h-full z-40 lg:z-0"
           >
             {/* Search */}
             <div className="p-4 border-b border-slate-700">
