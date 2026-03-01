@@ -37,13 +37,6 @@ export default function SupportChatWidget() {
     }).then(chat => {
       setChatId(chat.id);
       sessionStorage.setItem('support_chat_id', chat.id);
-      // Send greeting from bot
-      base44.functions.invoke('supportChatBot', {
-        chat_id: chat.id,
-        message: 'hello'
-      }).then(() => {
-        queryClient.invalidateQueries({ queryKey: ['support-messages', chat.id] });
-      });
     });
   }, [open, user]);
 
