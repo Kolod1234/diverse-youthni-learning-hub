@@ -76,6 +76,7 @@ export default function LessonPlayerClassic() {
   const [touchEnd, setTouchEnd] = useState(0);
   const [interactiveContent, setInteractiveContent] = useState(null);
   const [loadingInteractives, setLoadingInteractives] = useState(false);
+  const [quizParams, setQuizParams] = useState({ difficulty: 'intermediate', questionTypes: ['multiple_choice'], keywords: [] });
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
