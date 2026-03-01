@@ -1368,6 +1368,11 @@ export default function LessonPlayerClassic() {
               />
             </Box>
 
+            {/* Concept Map Tool */}
+            <Box sx={{ mt: 4 }}>
+              <ConceptMapTool lessonId={lessonId} lessonTitle={lesson?.title} />
+            </Box>
+
             {/* Related Lessons */}
             <Box sx={{ mt: 4 }}>
               <RelatedLessons 
