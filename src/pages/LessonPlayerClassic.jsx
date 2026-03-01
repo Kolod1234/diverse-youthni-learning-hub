@@ -106,24 +106,6 @@ export default function LessonPlayerClassic() {
     base44.auth.me().then(setUser);
   }, []);
 
-  // Shared player hook — provides fullscreen, notes, bookmarks, AI, keyboard shortcuts
-  const sharedPlayer = useLessonPlayer({
-    lessonId,
-    containerRef: mainContentRef,
-    user,
-    onNext: handleNextLesson,
-    onPrev: handlePrevLesson,
-  });
-
-  const {
-    isFullscreen, toggleFullscreen,
-    showNotes: showSharedNotes, setShowNotes: setShowSharedNotes,
-    showAI, setShowAI, aiTab, setAiTab, aiLoading,
-    aiResponse, setAiResponse, aiSummary,
-    aiTranslation, targetLanguage, setTargetLanguage,
-    askAI, summariseSlide, defineWord, translateSlide,
-  } = sharedPlayer;
-
   // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
     if (!user) return;
