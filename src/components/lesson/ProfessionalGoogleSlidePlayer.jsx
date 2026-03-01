@@ -94,7 +94,7 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
       if (e.key === 'p' || e.key === 'P') setAutoAdvance(prev => !prev);
       if (e.key === '?' || e.key === '/') setShowKeyboardHelp(true);
       if (e.key === 'Escape') {
-        if (isFullscreen) exitFullscreen();
+        if (isFullscreen) toggleFullscreen();
         else if (showNotes) setShowNotes(false);
         else if (showAI) setShowAI(false);
         else if (showKeyboardHelp) setShowKeyboardHelp(false);
