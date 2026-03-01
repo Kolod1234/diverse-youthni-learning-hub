@@ -657,6 +657,112 @@ export default function Home() {
   );
 }
 
+function AfterschoolHero() {
+  return (
+    <Box
+      component="section"
+      sx={{
+        position: 'relative',
+        minHeight: { xs: 500, md: 600 },
+        background: 'linear-gradient(135deg, #003366 0%, #0d2e6e 40%, #1a1060 100%)',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        overflow: 'hidden',
+        py: 10,
+      }}
+    >
+      {/* Decorative circles */}
+      <Box sx={{ position: 'absolute', top: -80, right: -80, width: 320, height: 320, bgcolor: 'rgba(255,255,255,0.04)', borderRadius: '50%' }} />
+      <Box sx={{ position: 'absolute', bottom: -60, left: -60, width: 240, height: 240, bgcolor: 'rgba(255,200,0,0.06)', borderRadius: '50%' }} />
+
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 2, textAlign: 'center' }}>
+        {/* Badge */}
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5 }}>
+          <Chip
+            icon={<Sparkles size={16} color="#003366" />}
+            label="ONLINE LEARNING"
+            sx={{
+              bgcolor: '#fbbf24',
+              color: '#003366',
+              fontWeight: 800,
+              fontSize: '0.875rem',
+              px: 2,
+              py: 1,
+              mb: 3,
+              height: 'auto',
+              letterSpacing: 1,
+              '& .MuiChip-icon': { color: '#003366' }
+            }}
+          />
+        </motion.div>
+
+        {/* Title */}
+        <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} transition={{ duration: 0.6, delay: 0.1 }}>
+          <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 6 }, py: { xs: 2.5, md: 4 }, borderRadius: 5, boxShadow: 8, mb: 4 }}>
+            <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, background: 'linear-gradient(to right, #003366, #7c3aed)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', letterSpacing: '-0.02em', lineHeight: 1.1 }}>
+              Afterschool Hours
+            </Typography>
+          </Box>
+        </motion.div>
+
+        {/* Subtitle */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.2 }}>
+          <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, mb: 3 }}>
+            Online Quizzes
+          </Typography>
+        </motion.div>
+
+        {/* CTA Button */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.3 }}>
+          <Box sx={{ bgcolor: 'linear-gradient(to right, #fbbf24, #f59e0b)', background: 'linear-gradient(to right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'inline-block', px: { xs: 5, md: 7 }, py: 2.5, mb: 4, boxShadow: '0 8px 30px rgba(251,191,36,0.4)' }}>
+            <Typography variant="h4" sx={{ color: '#003366', fontWeight: 900, letterSpacing: 1 }}>
+              FREE ACCESS
+            </Typography>
+            <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
+              <Zap size={16} color="#003366" />
+              <Typography sx={{ color: '#003366', fontWeight: 700, fontSize: '0.875rem', letterSpacing: 2 }}>
+                ALL COURSES
+              </Typography>
+            </Box>
+          </Box>
+        </motion.div>
+
+        {/* Description */}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ duration: 0.5, delay: 0.4 }}>
+          <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 600, fontSize: '1.125rem', mb: 5 }}>
+            Access them at the comfort of your home
+          </Typography>
+        </motion.div>
+
+        {/* Explore Button */}
+        <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.5, delay: 0.5 }}>
+          <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<ArrowRight size={20} />}
+              sx={{
+                bgcolor: '#fbbf24',
+                color: '#003366',
+                fontWeight: 900,
+                fontSize: '1.1rem',
+                px: 6,
+                py: 2,
+                borderRadius: 50,
+                boxShadow: '0 8px 30px rgba(251,191,36,0.5)',
+                '&:hover': { bgcolor: '#fcd34d', transform: 'scale(1.05)', boxShadow: '0 12px 40px rgba(251,191,36,0.6)' },
+              }}
+            >
+              Explore Courses
+            </Button>
+          </Link>
+        </motion.div>
+      </Container>
+    </Box>
+  );
+}
+
 function HeroCarousel({ items }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 7000, stopOnInteraction: false })]);
   const [currentIndex, setCurrentIndex] = useState(0);
