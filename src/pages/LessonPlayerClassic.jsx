@@ -1263,18 +1263,34 @@ export default function LessonPlayerClassic() {
                       onComplete={async (score) => {
                         const percentage = Math.round((score / interactiveContent.quizQuestions.length) * 100);
                         toast.success(`Quiz complete! You scored ${percentage}%`);
-                        const response = await base44.functions.invoke('awardPoints', {
-                          action: 'complete_quiz',
-                          value: percentage
-                        });
+                        const response = await base44.functions.invoke('awardPoints', { action: 'complete_quiz', value: percentage });
                         if (response.data.success) {
                           setEarnedPoints(response.data.pointsEarned);
                           setShowPointsAnimation(true);
-                          if (response.data.newBadges?.length > 0) {
-                            setNewBadges(response.data.newBadges);
-                            setShowBadges(true);
-                          }
+                          if (response.data.newBadges?.length > 0) { setNewBadges(response.data.newBadges); setShowBadges(true); }
                         }
+                      }}
+                    />
+                  )}
+
+                  {interactiveContent.trueFalseQuestions?.length > 0 && (
+                    <TrueFalseQuiz
+                      questions={interactiveContent.trueFalseQuestions}
+                      onComplete={async (score) => {
+                        toast.success(`True/False complete! ${score}/${interactiveContent.trueFalseQuestions.length} correct`);
+                        const response = await base44.functions.invoke('awardPoints', { action: 'complete_quiz', value: Math.round(score / interactiveContent.trueFalseQuestions.length * 100) });
+                        if (response.data.success) { setEarnedPoints(response.data.pointsEarned); setShowPointsAnimation(true); }
+                      }}
+                    />
+                  )}
+
+                  {interactiveContent.shortAnswerQuestions?.length > 0 && (
+                    <ShortAnswerQuiz
+                      questions={interactiveContent.shortAnswerQuestions}
+                      onComplete={async (score) => {
+                        toast.success(`Short Answer complete! ${score}/${interactiveContent.shortAnswerQuestions.length} correct`);
+                        const response = await base44.functions.invoke('awardPoints', { action: 'complete_quiz', value: Math.round(score / interactiveContent.shortAnswerQuestions.length * 100) });
+                        if (response.data.success) { setEarnedPoints(response.data.pointsEarned); setShowPointsAnimation(true); }
                       }}
                     />
                   )}
