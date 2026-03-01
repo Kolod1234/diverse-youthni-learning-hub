@@ -168,7 +168,7 @@ export function AIAssistantDialog({
               <select
                 value={targetLanguage}
                 onChange={e => setTargetLanguage(e.target.value)}
-                className="flex h-10 flex-1 rounded-md border border-input bg-background px-3 py-2 text-sm"
+                className="flex h-10 flex-1 rounded-md border border-input bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100 px-3 py-2 text-sm"
               >
                 {LANGUAGES.map(l => <option key={l.value} value={l.value}>{l.label}</option>)}
               </select>
