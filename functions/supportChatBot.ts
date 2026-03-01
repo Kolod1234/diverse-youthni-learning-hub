@@ -1,25 +1,21 @@
 import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
-const BOT_RESPONSES = {
-  greeting: [
-    "Hi! I'm the Diverse Youth NI support bot 👋 How can I help you today?",
-    "You can ask me about courses, sessions, technical issues, or type **live agent** to connect with a human."
-  ],
-  keywords: {
-    course: "You can browse all available courses on the **Explore** page. If you're looking for something specific, try using the search or category filters!",
-    lesson: "Lessons are inside each course. Open a course and click any lesson to start learning. Some lessons may need to be unlocked.",
-    enroll: "To enrol in a course, visit the **Explore** page, open the course you like, and click the Enrol button.",
-    session: "Live sessions are available on the **Sessions** page. You'll see upcoming sessions and can join or book one-to-one tutor sessions.",
-    tutor: "We have great tutors! Visit the **Tutors** page to browse and book a session. You can also apply to become a tutor yourself.",
-    quiz: "Quizzes are found inside course lessons. Complete them to test your knowledge and track your progress.",
-    certificate: "Certificates are awarded when you complete a course. Visit your **Dashboard** to see your achievements.",
-    password: "To change your password, go to **Settings → Account**. If you've forgotten your password, use the login page's 'Forgot password' link.",
-    download: "To download the app, look for the 'Download App' banner at the top of the page, or check the App Version section in announcements.",
-    contact: "You can reach us via the **Contact Us** page, or a support agent will join this chat shortly. Type **live agent** to request a human.",
-    agent: "I'll flag this chat for a support agent to join you shortly. In the meantime, please describe your issue and we'll get back to you as soon as possible! 🙌"
-  },
-  fallback: "I'm not sure about that, but I'll make sure a support agent sees your message. You can also visit our **Contact Us** page for more help!"
-};
+const SYSTEM_PROMPT = `You are a helpful and friendly support assistant for Diverse Youth NI, an educational platform based in Northern Ireland.
+
+You help users with:
+- Browsing and enrolling in GCSE and A-Level courses
+- Finding and booking live sessions with tutors
+- Technical issues (login, password, app download)
+- Understanding quizzes, certificates, and achievements
+- Youth Work (OCN) programmes and logbooks
+- Library resources and learning pathways
+- General platform navigation
+
+Key pages users can visit: Explore (courses), Dashboard (my learning), Sessions (live sessions), Tutors, Library, Programs, Community, Achievements, Contact Us.
+
+If you don't know something specific, suggest the user visit the Contact Us page or type "live agent" to connect with a human support agent.
+
+Keep responses concise, warm, and helpful. Use markdown for formatting when appropriate.`;
 
 Deno.serve(async (req) => {
   const base44 = createClientFromRequest(req);
@@ -29,16 +25,48 @@ Deno.serve(async (req) => {
   const { chat_id, message } = await req.json();
   if (!chat_id || !message) return Response.json({ error: 'Missing params' }, { status: 400 });
 
-  const lower = message.toLowerCase();
+  // Fetch previous messages for conversation context
+  const previousMessages = await base44.asServiceRole.entities.SupportMessage.filter(
+    { chat_id },
+    'created_date',
+    20
+  );
 
-  // Find matching keyword
-  let reply = BOT_RESPONSES.fallback;
-  for (const [key, response] of Object.entries(BOT_RESPONSES.keywords)) {
-    if (lower.includes(key)) {
-      reply = response;
-      break;
-    }
+  // Build conversation history for OpenAI
+  const conversationHistory = previousMessages
+    .filter(msg => msg.sender_role === 'user' || msg.sender_role === 'bot')
+    .map(msg => ({
+      role: msg.sender_role === 'user' ? 'user' : 'assistant',
+      content: msg.content
+    }));
+
+  // Call OpenAI
+  const openaiRes = await fetch('https://api.openai.com/v1/chat/completions', {
+    method: 'POST',
+    headers: {
+      'Authorization': `Bearer ${Deno.env.get('OPENAI_API_KEY')}`,
+      'Content-Type': 'application/json'
+    },
+    body: JSON.stringify({
+      model: 'gpt-4o-mini',
+      messages: [
+        { role: 'system', content: SYSTEM_PROMPT },
+        ...conversationHistory,
+        { role: 'user', content: message }
+      ],
+      max_tokens: 400,
+      temperature: 0.7
+    })
+  });
+
+  if (!openaiRes.ok) {
+    const err = await openaiRes.text();
+    console.error('OpenAI error:', err);
+    return Response.json({ error: 'AI service error' }, { status: 500 });
   }
+
+  const data = await openaiRes.json();
+  const reply = data.choices?.[0]?.message?.content || "I'm sorry, I couldn't process that. Please try again or visit our **Contact Us** page.";
 
   // Save bot reply
   await base44.asServiceRole.entities.SupportMessage.create({
@@ -48,7 +76,7 @@ Deno.serve(async (req) => {
     content: reply
   });
 
-  // Update chat with last message and mark unread for user
+  // Update chat record
   await base44.asServiceRole.entities.SupportChat.update(chat_id, {
     last_message: reply.substring(0, 100),
     last_message_at: new Date().toISOString(),
