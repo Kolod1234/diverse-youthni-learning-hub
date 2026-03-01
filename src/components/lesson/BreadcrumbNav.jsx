@@ -13,7 +13,7 @@ export default function BreadcrumbNav({ course, section, lesson }) {
       <ChevronRight className="w-4 h-4" />
       {course && (
         <>
-          <Link to={`/CourseDetails?id=${course.id}`} className="hover:text-gray-900 truncate max-w-[150px]">
+          <Link to={`${createPageUrl('CourseDetails')}?id=${course.id}`} className="hover:text-gray-900 truncate max-w-[150px]">
             {course.title}
           </Link>
           <ChevronRight className="w-4 h-4" />
