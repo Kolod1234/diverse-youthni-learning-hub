@@ -106,23 +106,50 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isFullscreen, showNotes, showAI, showKeyboardHelp, showSearch, totalSlides]);
 
+  // Detect if native Fullscreen API is supported (not available on iOS Safari / most mobile WebViews)
+  const supportsNativeFullscreen = typeof document !== 'undefined' && 
+    (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
+
   const toggleFullscreen = () => {
-    const elem = document.getElementById('slide-container');
-    if (!document.fullscreenElement) {
-      elem?.requestFullscreen();
-      setIsFullscreen(true);
+    if (supportsNativeFullscreen) {
+      const elem = document.getElementById('slide-container');
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        const req = elem?.requestFullscreen || elem?.webkitRequestFullscreen;
+        req?.call(elem);
+        setIsFullscreen(true);
+      } else {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        exit?.call(document);
+        setIsFullscreen(false);
+      }
     } else {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+      // CSS-based fullscreen fallback for mobile (iOS Safari, PWAs, WebViews)
+      setIsFullscreen(prev => !prev);
     }
   };
 
   const exitFullscreen = () => {
-    if (document.fullscreenElement) {
-      document.exitFullscreen();
-      setIsFullscreen(false);
+    if (supportsNativeFullscreen && (document.fullscreenElement || document.webkitFullscreenElement)) {
+      const exit = document.exitFullscreen || document.webkitExitFullscreen;
+      exit?.call(document);
     }
+    setIsFullscreen(false);
   };
+
+  // Sync state with native fullscreen change events
+  useEffect(() => {
+    const onFullscreenChange = () => {
+      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
+        setIsFullscreen(false);
+      }
+    };
+    document.addEventListener('fullscreenchange', onFullscreenChange);
+    document.addEventListener('webkitfullscreenchange', onFullscreenChange);
+    return () => {
+      document.removeEventListener('fullscreenchange', onFullscreenChange);
+      document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
+    };
+  }, []);
 
   const handleReload = () => {
     setIsLoading(true);
