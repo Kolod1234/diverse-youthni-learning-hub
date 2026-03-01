@@ -27,16 +27,32 @@ export default function useLessonPlayer({
   // ── Fullscreen ────────────────────────────────────────────────────────────
   const [isFullscreen, setIsFullscreen] = useState(false);
 
+  const lockLandscape = useCallback(async () => {
+    try {
+      if (screen.orientation?.lock) {
+        await screen.orientation.lock('landscape');
+      }
+    } catch (_) {}
+  }, []);
+
   const enterFullscreen = useCallback(async () => {
     setIsFullscreen(true);
     const el = containerRef?.current;
     if (!el) return;
     const req = el.requestFullscreen || el.webkitRequestFullscreen;
     if (req) {
-      try { await req.call(el); } catch (_) { /* CSS fallback already set */ }
+      try {
+        await req.call(el);
+        // Lock after fullscreen is granted
+        await lockLandscape();
+      } catch (_) {
+        // CSS fallback already set; still try orientation lock
+        await lockLandscape();
+      }
+    } else {
+      await lockLandscape();
     }
-    try { await screen.orientation?.lock?.('landscape'); } catch (_) {}
-  }, [containerRef]);
+  }, [containerRef, lockLandscape]);
 
   const exitFullscreen = useCallback(() => {
     setIsFullscreen(false);
