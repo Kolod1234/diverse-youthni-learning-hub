@@ -28,14 +28,15 @@ export default function useLessonPlayer({
   const [isFullscreen, setIsFullscreen] = useState(false);
 
   const lockLandscape = useCallback(() => {
-    // Must be called synchronously within user gesture handler
+    // Call directly within user gesture for browser to allow it
     try {
       if (screen.orientation?.lock) {
-        screen.orientation.lock('landscape').catch((err) => {
-          console.warn('Landscape lock failed:', err);
+        // Try landscape-primary first, fall back to landscape
+        screen.orientation.lock('landscape-primary').catch(() => {
+          screen.orientation.lock('landscape').catch((err) => {
+            console.warn('Landscape lock failed:', err);
+          });
         });
-      } else {
-        console.warn('Screen orientation lock not supported');
       }
     } catch (err) {
       console.warn('Orientation error:', err);
@@ -43,28 +44,22 @@ export default function useLessonPlayer({
   }, []);
 
   const enterFullscreen = useCallback(async () => {
+    // Lock landscape FIRST, within user gesture, before any async calls
+    lockLandscape();
+    
     setIsFullscreen(true);
     const el = containerRef?.current;
     
     if (!el) return;
     
-    // Try native fullscreen first
+    // Try native fullscreen
     const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (req) {
       try {
         await req.call(el);
-        // Only lock orientation after fullscreen is successful
-        setTimeout(() => {
-          lockLandscape();
-        }, 100);
       } catch (err) {
         console.warn('Native fullscreen failed, using CSS fallback:', err);
-        // CSS fullscreen fallback already applied via setIsFullscreen
-        lockLandscape();
       }
-    } else {
-      // Fallback: just lock landscape if native fullscreen unavailable
-      lockLandscape();
     }
   }, [containerRef, lockLandscape]);
 
