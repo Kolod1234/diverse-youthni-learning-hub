@@ -313,7 +313,8 @@ body {
   width: 100% !important;
   height: 100% !important;
   border: none;
-  aspect-ratio: 16 / 9;
+  aspect-ratio: unset;
+  object-fit: contain;
 }
 
 /* Loading skeleton animation */
