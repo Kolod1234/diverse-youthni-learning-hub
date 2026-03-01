@@ -30,7 +30,7 @@ export default function EnhancedLessonPlayer({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [showSidebar, setShowSidebar] = useState(true);
+  const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 1024);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
