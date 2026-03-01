@@ -117,6 +117,9 @@ body {
   :root {
     --background: 0 0% 100%;
     --foreground: 222.2 84% 4.9%;
+    /* Override default black primary from index.css */
+    --primary: 24 100% 50% !important;
+    --primary-foreground: 0 0% 100% !important;
     --card: 0 0% 100%;
     --card-foreground: 222.2 84% 4.9%;
     --popover: 0 0% 100%;
