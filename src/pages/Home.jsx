@@ -660,6 +660,92 @@ export default function Home() {
   );
 }
 
+function AfterSchoolHero() {
+  return (
+    <Box
+      component="section"
+      sx={{
+        background: 'linear-gradient(135deg, #003366 0%, #001a4d 60%, #002244 100%)',
+        py: { xs: 8, md: 12 },
+        px: 2,
+        textAlign: 'center',
+        position: 'relative',
+        overflow: 'hidden',
+      }}
+    >
+      {/* Background glow blobs */}
+      <Box sx={{ position: 'absolute', top: -80, left: -80, width: 300, height: 300, bgcolor: 'rgba(59,130,246,0.12)', borderRadius: '50%', filter: 'blur(80px)' }} />
+      <Box sx={{ position: 'absolute', bottom: -80, right: -80, width: 300, height: 300, bgcolor: 'rgba(168,85,247,0.1)', borderRadius: '50%', filter: 'blur(80px)' }} />
+
+      <Container maxWidth="md" sx={{ position: 'relative', zIndex: 1 }}>
+        {/* Badge */}
+        <Box sx={{ display: 'inline-flex', alignItems: 'center', gap: 1, bgcolor: '#fbbf24', color: '#003366', fontWeight: 800, fontSize: '0.9rem', px: 3, py: 1, borderRadius: 50, mb: 4, letterSpacing: 1 }}>
+          <Sparkles size={16} />
+          ONLINE LEARNING
+        </Box>
+
+        {/* Title card */}
+        <Box sx={{ bgcolor: 'white', display: 'inline-block', px: { xs: 4, md: 7 }, py: { xs: 2.5, md: 3.5 }, borderRadius: 5, boxShadow: '0 8px 32px rgba(0,0,0,0.25)', mb: 3 }}>
+          <Typography variant="h2" sx={{ fontSize: { xs: '2.5rem', md: '3.5rem' }, fontWeight: 900, background: 'linear-gradient(to right, #7c3aed, #a855f7, #ec4899)', WebkitBackgroundClip: 'text', WebkitTextFillColor: 'transparent', lineHeight: 1.1 }}>
+            Afterschool Hours
+          </Typography>
+        </Box>
+
+        {/* Subtitle */}
+        <Typography variant="h5" sx={{ color: 'white', fontWeight: 700, mb: 3, fontSize: { xs: '1.25rem', md: '1.5rem' } }}>
+          Online Quizzes
+        </Typography>
+
+        {/* FREE ACCESS badge */}
+        <Box sx={{ display: 'inline-block', background: 'linear-gradient(135deg, #fbbf24 0%, #f59e0b 50%, #fb923c 100%)', borderRadius: 4, px: { xs: 4, md: 6 }, py: { xs: 2, md: 2.5 }, mb: 3, boxShadow: '0 8px 24px rgba(251,191,36,0.4)' }}>
+          <Typography variant="h4" sx={{ fontWeight: 900, color: '#003366', fontSize: { xs: '1.75rem', md: '2.25rem' }, letterSpacing: 1 }}>
+            FREE ACCESS
+          </Typography>
+          <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mt: 0.5 }}>
+            <Zap size={16} color="#003366" />
+            <Typography sx={{ fontWeight: 800, color: '#003366', letterSpacing: 2, fontSize: '0.9rem' }}>
+              ALL COURSES
+            </Typography>
+          </Box>
+        </Box>
+
+        {/* Tagline */}
+        <Typography sx={{ color: 'rgba(255,255,255,0.9)', fontWeight: 700, fontSize: { xs: '1rem', md: '1.125rem' }, mb: 4 }}>
+          Access them at the comfort of your home
+        </Typography>
+
+        {/* CTA Button */}
+        <Box>
+          <Link to={createPageUrl('Explore')} style={{ textDecoration: 'none' }}>
+            <Button
+              variant="contained"
+              size="large"
+              endIcon={<ArrowRight size={20} />}
+              sx={{
+                background: 'linear-gradient(135deg, #fbbf24, #f59e0b)',
+                color: '#003366',
+                fontWeight: 900,
+                fontSize: '1.1rem',
+                px: 5,
+                py: 2,
+                borderRadius: 50,
+                boxShadow: '0 8px 24px rgba(251,191,36,0.5)',
+                '&:hover': {
+                  background: 'linear-gradient(135deg, #fcd34d, #fbbf24)',
+                  transform: 'scale(1.05)',
+                  boxShadow: '0 12px 32px rgba(251,191,36,0.6)',
+                },
+              }}
+            >
+              Get Started
+            </Button>
+          </Link>
+        </Box>
+      </Container>
+    </Box>
+  );
+}
+
 function HeroCarousel({ items }) {
   const [emblaRef, emblaApi] = useEmblaCarousel({ loop: true }, [Autoplay({ delay: 7000, stopOnInteraction: false })]);
   const [currentIndex, setCurrentIndex] = useState(0);
