@@ -31,24 +31,40 @@ export default function useLessonPlayer({
     // Must be called synchronously within user gesture handler
     try {
       if (screen.orientation?.lock) {
-        screen.orientation.lock('landscape').catch(() => {});
+        screen.orientation.lock('landscape').catch((err) => {
+          console.warn('Landscape lock failed:', err);
+        });
+      } else {
+        console.warn('Screen orientation lock not supported');
       }
-    } catch (_) {}
+    } catch (err) {
+      console.warn('Orientation error:', err);
+    }
   }, []);
 
   const enterFullscreen = useCallback(async () => {
     setIsFullscreen(true);
     const el = containerRef?.current;
-    // Attempt orientation lock immediately (within the user gesture)
-    lockLandscape();
+    
     if (!el) return;
+    
+    // Try native fullscreen first
     const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (req) {
       try {
         await req.call(el);
-      } catch (_) {
+        // Only lock orientation after fullscreen is successful
+        setTimeout(() => {
+          lockLandscape();
+        }, 100);
+      } catch (err) {
+        console.warn('Native fullscreen failed, using CSS fallback:', err);
         // CSS fullscreen fallback already applied via setIsFullscreen
+        lockLandscape();
       }
+    } else {
+      // Fallback: just lock landscape if native fullscreen unavailable
+      lockLandscape();
     }
   }, [containerRef, lockLandscape]);
 
@@ -57,9 +73,15 @@ export default function useLessonPlayer({
     const isNative = document.fullscreenElement || document.webkitFullscreenElement;
     if (isNative) {
       const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      exit?.call(document).catch(() => {});
+      exit?.call(document).catch((err) => {
+        console.warn('Exit fullscreen failed:', err);
+      });
     }
-    try { screen.orientation?.unlock?.(); } catch (_) {}
+    try {
+      screen.orientation?.unlock?.();
+    } catch (err) {
+      console.warn('Unlock orientation failed:', err);
+    }
   }, []);
 
   const toggleFullscreen = useCallback(() => {
@@ -216,7 +238,7 @@ export default function useLessonPlayer({
         case 'a': case 'A': setShowAI(v => !v); break;
         case 'b': case 'B': break; // caller must supply current key to toggleBookmark
         case 'Escape':
-          if (isFullscreen) exitFullscreen();
+          if (isFullscreen) toggleFullscreen();
           else if (showNotes) setShowNotes(false);
           else if (showAI)   setShowAI(false);
           break;
