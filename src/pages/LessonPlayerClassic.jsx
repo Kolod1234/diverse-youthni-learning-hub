@@ -11,10 +11,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
-import useLessonPlayer from '@/components/lesson/useLessonPlayer';
-import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
@@ -80,8 +80,10 @@ export default function LessonPlayerClassic() {
   const [showCertificate, setShowCertificate] = useState(false);
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [focusModeEnabled, setFocusModeEnabled] = useState(false);
+  const mainContentRef2 = useRef(null); // alias to avoid conflict with existing mainContentRef
   const [currentXP, setCurrentXP] = useState(0);
   const [userLevel, setUserLevel] = useState(1);
   const [showXPGain, setShowXPGain] = useState(false);
@@ -103,10 +105,14 @@ export default function LessonPlayerClassic() {
   });
 
   useEffect(() => {
-    base44.auth.me().then(setUser);
+    const loadUser = async () => {
+      const userData = await base44.auth.me();
+      setUser(userData);
+    };
+    loadUser();
   }, []);
 
-  // Shared player hook — provides fullscreen, notes, bookmarks, AI, keyboard shortcuts
+  // Shared player hook — fullscreen, notes, bookmarks, AI, keyboard shortcuts
   const sharedPlayer = useLessonPlayer({
     lessonId,
     containerRef: mainContentRef,
@@ -114,13 +120,13 @@ export default function LessonPlayerClassic() {
     onNext: handleNextLesson,
     onPrev: handlePrevLesson,
   });
-
   const {
-    isFullscreen, toggleFullscreen,
-    showNotes: showSharedNotes, setShowNotes: setShowSharedNotes,
+    isFullscreen: isFullscreenShared,
+    notes: sharedNotes, showNotes, setShowNotes, saveNote, exportNotes,
+    bookmarks: sharedBookmarks, showBookmarks, setShowBookmarks, toggleBookmark,
     showAI, setShowAI, aiTab, setAiTab, aiLoading,
-    aiResponse, setAiResponse, aiSummary,
-    aiTranslation, targetLanguage, setTargetLanguage,
+    aiResponse, setAiResponse, aiSummary, aiTranslation,
+    targetLanguage, setTargetLanguage,
     askAI, summariseSlide, defineWord, translateSlide,
   } = sharedPlayer;
 
@@ -1463,6 +1469,40 @@ export default function LessonPlayerClassic() {
       <BadgeUnlock 
         badges={newBadges}
         onClose={() => setShowBadges(false)}
+      />
+
+      {/* Shared Notes / AI / Bookmarks */}
+      <NotesDialog
+        open={showNotes}
+        onOpenChange={setShowNotes}
+        slideKey="lesson"
+        notes={sharedNotes}
+        onSave={saveNote}
+        onExport={exportNotes}
+      />
+      <AIAssistantDialog
+        open={showAI}
+        onOpenChange={setShowAI}
+        aiTab={aiTab}
+        setAiTab={setAiTab}
+        aiLoading={aiLoading}
+        aiResponse={aiResponse}
+        setAiResponse={setAiResponse}
+        aiSummary={aiSummary}
+        aiTranslation={aiTranslation}
+        targetLanguage={targetLanguage}
+        setTargetLanguage={setTargetLanguage}
+        onAsk={q => askAI(q, lesson?.title)}
+        onSummarise={() => summariseSlide(lesson?.title)}
+        onDefine={defineWord}
+        onTranslate={() => translateSlide(lesson?.title)}
+        slideLabel={lesson?.title}
+      />
+      <BookmarksPanel
+        open={showBookmarks}
+        onOpenChange={setShowBookmarks}
+        bookmarks={sharedBookmarks}
+        onJump={() => {}}
       />
 
       {/* Improved Focus Mode */}
