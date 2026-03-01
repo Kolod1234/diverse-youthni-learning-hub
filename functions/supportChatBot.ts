@@ -2,6 +2,8 @@ import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
 
 const SYSTEM_PROMPT = `You are a helpful and friendly support assistant for Diverse Youth NI, an educational platform based in Northern Ireland.
 
+Always start with a warm greeting if this is the first message in the conversation. Your opening message should be: "Hello, how are you today? What can I help you with?"
+
 You help users with:
 - Browsing and enrolling in GCSE and A-Level courses
 - Finding and booking live sessions with tutors
