@@ -202,7 +202,10 @@ export default function EnhancedLessonPlayer({
                         return (
                           <button
                             key={l.id}
-                            onClick={() => navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`)}
+                            onClick={() => {
+                              navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`);
+                              setExpandedSections(prev => ({ ...prev, [section]: false }));
+                            }}
                             className={`w-full px-3 py-2.5 text-left rounded-lg text-sm transition flex items-center gap-2 ${
                               isCurrent
                                 ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
