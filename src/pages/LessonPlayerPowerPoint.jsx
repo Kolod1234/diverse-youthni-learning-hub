@@ -239,37 +239,21 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
-  // Keyboard navigation - FIXED with proper dependencies
+  // Presentation-mode Escape key (in addition to useLessonPlayer shortcuts)
   useEffect(() => {
-    if (!lesson) return;
-    
-    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
-    const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
-    
-    const handleKeyDown = (e) => {
-      // Escape key to exit presentation mode
-      if (e.key === 'Escape' && isPresenting) {
-        setIsPresenting(false);
-        return;
-      }
-
-      // For custom slides (internal content), handle navigation
-      if (lessonHasSlides) {
-        if (e.key === 'ArrowRight' || e.key === ' ') {
+    const handler = (e) => {
+      if (e.key === 'Escape' && isPresenting) setIsPresenting(false);
+      // Space/ArrowRight advance for internal slides
+      if (hasSlides) {
+        if ((e.key === 'ArrowRight' || e.key === ' ') && !isPresenting) {
           e.preventDefault();
-          setCurrentSlideIndex(prev => Math.min(slides.length - 1, prev + 1));
-        }
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+          setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
         }
       }
-      // For Google Slides/external content: Let the iframe handle its own keyboard events
     };
-
-    window.addEventListener('keydown', handleKeyDown);
-    return () => window.removeEventListener('keydown', handleKeyDown);
-  }, [isPresenting, lesson, currentSlideIndex]);
+    window.addEventListener('keydown', handler);
+    return () => window.removeEventListener('keydown', handler);
+  }, [isPresenting, hasSlides, sortedSlides.length]);
 
   // Nav Logic
   const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
