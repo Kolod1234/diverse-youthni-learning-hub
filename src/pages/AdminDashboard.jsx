@@ -1053,15 +1053,571 @@ function ThemeSettings() {
 
 // For brevity, only adding the stub functions below:
 function BlogManagement() { return <Typography>Blog Management - To be implemented</Typography>; }
-function LessonsManagement({ lessons, courses }) { return <Typography>Lessons Management - To be implemented</Typography>; }
-function QuizzesManagement({ quizzes, courses }) { return <Typography>Quizzes Management - To be implemented</Typography>; }
-function SessionsManagement({ sessions, courses }) { return <Typography>Sessions Management - To be implemented</Typography>; }
-function EnrollmentsManagement({ enrollments, courses, users }) { return <Typography>Enrollments Management - To be implemented</Typography>; }
-function TemplatesManagement({ templates }) { return <Typography>Templates Management - To be implemented</Typography>; }
-function AttendanceManagement({ attendanceRecords, users }) { return <Typography>Attendance Management - To be implemented</Typography>; }
-function SiteContentManagement({ siteContent }) { return <Typography>Site Content Management - To be implemented</Typography>; }
-function ContactInfoManagement({ contactInfo }) { return <Typography>Contact Info Management - To be implemented</Typography>; }
-function PasswordManagement({ users }) { return <Typography>Password Management - To be implemented</Typography>; }
+
+function LessonsManagement({ lessons, courses }) {
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [editingLesson, setEditingLesson] = useState(null);
+  const [formData, setFormData] = useState({ title: '', description: '', course_id: '', content_type: 'richtext' });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.Lesson.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      setShowForm(false);
+      setFormData({ title: '', description: '', course_id: '', content_type: 'richtext' });
+      toast.success('Lesson created!');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Lesson.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      setEditingLesson(null);
+      setFormData({ title: '', description: '', course_id: '', content_type: 'richtext' });
+      toast.success('Lesson updated!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Lesson.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-lessons']);
+      toast.success('Lesson deleted!');
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!formData.title || !formData.course_id) {
+      toast.error('Title and course are required');
+      return;
+    }
+    if (editingLesson) {
+      updateMutation.mutate({ id: editingLesson.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Lessons Management</Typography>
+          <Typography variant="body2" color="textSecondary">Manage course lessons</Typography>
+        </Box>
+        <Button variant="contained" startIcon={<Plus />} onClick={() => setShowForm(true)}>Add Lesson</Button>
+      </Box>
+
+      {(showForm || editingLesson) && (
+        <Card sx={{ p: 3, mb: 3, bgcolor: '#eef2ff' }}>
+          <TextField fullWidth label="Lesson Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth multiline rows={3} label="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} sx={{ mb: 2 }} />
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Course</InputLabel>
+            <Select value={formData.course_id} label="Course" onChange={(e) => setFormData({ ...formData, course_id: e.target.value })}>
+              {courses.map(c => <MenuItem key={c.id} value={c.id}>{c.title}</MenuItem>)}
+            </Select>
+          </FormControl>
+          <FormControl fullWidth sx={{ mb: 2 }}>
+            <InputLabel>Content Type</InputLabel>
+            <Select value={formData.content_type} label="Content Type" onChange={(e) => setFormData({ ...formData, content_type: e.target.value })}>
+              <MenuItem value="richtext">Rich Text</MenuItem>
+              <MenuItem value="googleslides">Google Slides</MenuItem>
+              <MenuItem value="document">Document</MenuItem>
+            </Select>
+          </FormControl>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>{editingLesson ? 'Update' : 'Create'}</Button>
+            <Button variant="outlined" onClick={() => { setShowForm(false); setEditingLesson(null); setFormData({ title: '', description: '', course_id: '', content_type: 'richtext' }); }}>Cancel</Button>
+          </Box>
+        </Card>
+      )}
+
+      <Box sx={{ space: 1 }}>
+        {lessons.map((lesson) => {
+          const course = courses.find(c => c.id === lesson.course_id);
+          return (
+            <Card key={lesson.id} sx={{ p: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{lesson.title}</Typography>
+                  <Typography variant="caption" color="textSecondary">{course?.title} • {lesson.content_type}</Typography>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <IconButton size="small" onClick={() => { setEditingLesson(lesson); setFormData(lesson); }}>
+                    <Edit style={{ width: 16, height: 16 }} />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(lesson.id); }}>
+                    <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Card>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function QuizzesManagement({ quizzes, courses }) {
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Quiz.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-quizzes']);
+      toast.success('Quiz deleted!');
+    },
+  });
+
+  const publishMutation = useMutation({
+    mutationFn: ({ id, published }) => base44.entities.Quiz.update(id, { is_published: published }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-quizzes']);
+      toast.success('Quiz updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Quizzes Management</Typography>
+          <Typography variant="body2" color="textSecondary">Manage course quizzes</Typography>
+        </Box>
+      </Box>
+
+      <Box sx={{ space: 1 }}>
+        {quizzes.map((quiz) => {
+          const course = courses.find(c => c.id === quiz.course_id);
+          return (
+            <Card key={quiz.id} sx={{ p: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{quiz.title}</Typography>
+                  <Typography variant="caption" color="textSecondary">{course?.title} • {quiz.questions?.length || 0} questions</Typography>
+                  <Box sx={{ mt: 0.5 }}>
+                    <Chip label={quiz.is_published ? 'Published' : 'Draft'} size="small" color={quiz.is_published ? 'success' : 'default'} />
+                  </Box>
+                </Box>
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button size="small" variant="outlined" onClick={() => publishMutation.mutate({ id: quiz.id, published: !quiz.is_published })}>
+                    {quiz.is_published ? 'Unpublish' : 'Publish'}
+                  </Button>
+                  <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(quiz.id); }}>
+                    <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
+                  </IconButton>
+                </Box>
+              </Box>
+            </Card>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function SessionsManagement({ sessions, courses }) {
+  const queryClient = useQueryClient();
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.VideoSession.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-sessions']);
+      toast.success('Session deleted!');
+    },
+  });
+
+  return (
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>Live Sessions Management</Typography>
+
+      <Box sx={{ space: 1 }}>
+        {sessions.map((session) => {
+          const course = courses.find(c => c.id === session.course_id);
+          return (
+            <Card key={session.id} sx={{ p: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{session.title}</Typography>
+                  <Typography variant="caption" color="textSecondary">{course?.title} • {new Date(session.scheduled_date).toLocaleDateString()}</Typography>
+                </Box>
+                <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(session.id); }}>
+                  <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
+                </IconButton>
+              </Box>
+            </Card>
+          );
+        })}
+      </Box>
+    </Box>
+  );
+}
+
+function EnrollmentsManagement({ enrollments, courses, users }) {
+  const [filterCourse, setFilterCourse] = useState('all');
+  const [page, setPage] = useState(0);
+  const PAGE_SIZE = 20;
+
+  const filtered = filterCourse === 'all' 
+    ? enrollments 
+    : enrollments.filter(e => e.course_id === filterCourse);
+
+  const pagedEnrollments = filtered.slice(page * PAGE_SIZE, (page + 1) * PAGE_SIZE);
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Enrollments Management</Typography>
+          <Typography variant="body2" color="textSecondary">Total: {filtered.length} enrollments</Typography>
+        </Box>
+        <FormControl sx={{ width: 250 }}>
+          <InputLabel>Filter by Course</InputLabel>
+          <Select value={filterCourse} label="Filter by Course" onChange={(e) => { setFilterCourse(e.target.value); setPage(0); }}>
+            <MenuItem value="all">All Courses</MenuItem>
+            {courses.map(c => <MenuItem key={c.id} value={c.id}>{c.title}</MenuItem>)}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box sx={{ overflowX: 'auto' }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#f3f4f6' }}>
+              <TableCell>Student Email</TableCell>
+              <TableCell>Course</TableCell>
+              <TableCell>Progress</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Completed Lessons</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {pagedEnrollments.map((enrollment) => {
+              const course = courses.find(c => c.id === enrollment.course_id);
+              return (
+                <TableRow key={enrollment.id}>
+                  <TableCell>{enrollment.created_by}</TableCell>
+                  <TableCell>{course?.title}</TableCell>
+                  <TableCell>{enrollment.progress_percent || 0}%</TableCell>
+                  <TableCell>
+                    <Chip label={enrollment.is_completed ? 'Completed' : 'In Progress'} size="small" color={enrollment.is_completed ? 'success' : 'default'} />
+                  </TableCell>
+                  <TableCell>{enrollment.completed_lessons?.length || 0}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Box>
+      <PaginationBar page={page} totalItems={filtered.length} pageSize={PAGE_SIZE} onPageChange={setPage} />
+    </Box>
+  );
+}
+
+function TemplatesManagement({ templates }) {
+  const queryClient = useQueryClient();
+  const [showForm, setShowForm] = useState(false);
+  const [editingTemplate, setEditingTemplate] = useState(null);
+  const [formData, setFormData] = useState({ name: '', description: '', category: 'lesson' });
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.Template.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-templates']);
+      setShowForm(false);
+      setFormData({ name: '', description: '', category: 'lesson' });
+      toast.success('Template created!');
+    },
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, data }) => base44.entities.Template.update(id, data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-templates']);
+      setEditingTemplate(null);
+      setFormData({ name: '', description: '', category: 'lesson' });
+      toast.success('Template updated!');
+    },
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.Template.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-templates']);
+      toast.success('Template deleted!');
+    },
+  });
+
+  const handleSubmit = () => {
+    if (!formData.name) {
+      toast.error('Template name is required');
+      return;
+    }
+    if (editingTemplate) {
+      updateMutation.mutate({ id: editingTemplate.id, data: formData });
+    } else {
+      createMutation.mutate(formData);
+    }
+  };
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Templates Management</Typography>
+          <Typography variant="body2" color="textSecondary">Manage content templates</Typography>
+        </Box>
+        <Button variant="contained" startIcon={<Plus />} onClick={() => setShowForm(true)}>Add Template</Button>
+      </Box>
+
+      {(showForm || editingTemplate) && (
+        <Card sx={{ p: 3, mb: 3, bgcolor: '#eef2ff' }}>
+          <TextField fullWidth label="Template Name" value={formData.name} onChange={(e) => setFormData({ ...formData, name: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth multiline rows={3} label="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={handleSubmit} disabled={createMutation.isPending || updateMutation.isPending}>{editingTemplate ? 'Update' : 'Create'}</Button>
+            <Button variant="outlined" onClick={() => { setShowForm(false); setEditingTemplate(null); setFormData({ name: '', description: '', category: 'lesson' }); }}>Cancel</Button>
+          </Box>
+        </Card>
+      )}
+
+      <Box sx={{ space: 1 }}>
+        {templates.map((template) => (
+          <Card key={template.id} sx={{ p: 2, mb: 1 }}>
+            <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+              <Box>
+                <Typography variant="body2" sx={{ fontWeight: 600 }}>{template.name}</Typography>
+                {template.description && <Typography variant="caption" color="textSecondary">{template.description}</Typography>}
+              </Box>
+              <Box sx={{ display: 'flex', gap: 1 }}>
+                <IconButton size="small" onClick={() => { setEditingTemplate(template); setFormData(template); }}>
+                  <Edit style={{ width: 16, height: 16 }} />
+                </IconButton>
+                <IconButton size="small" onClick={() => { if (confirm('Delete?')) deleteMutation.mutate(template.id); }}>
+                  <Trash2 style={{ width: 16, height: 16, color: 'red' }} />
+                </IconButton>
+              </Box>
+            </Box>
+          </Card>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+function AttendanceManagement({ attendanceRecords, users }) {
+  const [filterUser, setFilterUser] = useState('all');
+
+  const filtered = filterUser === 'all' 
+    ? attendanceRecords 
+    : attendanceRecords.filter(a => a.user_email === filterUser);
+
+  return (
+    <Box>
+      <Box sx={{ mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600, mb: 2 }}>Attendance Management</Typography>
+        <FormControl sx={{ width: 250 }}>
+          <InputLabel>Filter by User</InputLabel>
+          <Select value={filterUser} label="Filter by User" onChange={(e) => setFilterUser(e.target.value)}>
+            <MenuItem value="all">All Users</MenuItem>
+            {users.map(u => <MenuItem key={u.id} value={u.email}>{u.full_name}</MenuItem>)}
+          </Select>
+        </FormControl>
+      </Box>
+
+      <Box sx={{ overflowX: 'auto' }}>
+        <Table>
+          <TableHead>
+            <TableRow sx={{ bgcolor: '#f3f4f6' }}>
+              <TableCell>User</TableCell>
+              <TableCell>Date</TableCell>
+              <TableCell>Status</TableCell>
+              <TableCell>Hours</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {filtered.map((record) => {
+              const user = users.find(u => u.email === record.user_email);
+              return (
+                <TableRow key={record.id}>
+                  <TableCell>{user?.full_name || record.user_email}</TableCell>
+                  <TableCell>{new Date(record.date).toLocaleDateString()}</TableCell>
+                  <TableCell>
+                    <Chip label={record.status} size="small" color={record.status === 'present' ? 'success' : 'default'} />
+                  </TableCell>
+                  <TableCell>{record.hours || '—'}</TableCell>
+                </TableRow>
+              );
+            })}
+          </TableBody>
+        </Table>
+      </Box>
+    </Box>
+  );
+}
+
+function SiteContentManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [editingContent, setEditingContent] = useState(null);
+  const [editValue, setEditValue] = useState('');
+
+  const updateMutation = useMutation({
+    mutationFn: ({ id, value }) => base44.entities.SiteContent.update(id, { value }),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setEditingContent(null);
+      toast.success('Content updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>Site Content Management</Typography>
+
+      <Box sx={{ space: 1 }}>
+        {siteContent.map((content) => (
+          <Card key={content.id} sx={{ p: 2, mb: 1 }}>
+            {editingContent?.id === content.id ? (
+              <Box>
+                <Typography variant="caption" sx={{ fontWeight: 600 }}>{content.key}</Typography>
+                <TextField fullWidth multiline rows={3} value={editValue} onChange={(e) => setEditValue(e.target.value)} sx={{ mb: 1, mt: 1 }} />
+                <Box sx={{ display: 'flex', gap: 1 }}>
+                  <Button size="small" variant="contained" onClick={() => updateMutation.mutate({ id: content.id, value: editValue })}>Save</Button>
+                  <Button size="small" variant="outlined" onClick={() => setEditingContent(null)}>Cancel</Button>
+                </Box>
+              </Box>
+            ) : (
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{content.key}</Typography>
+                  <Typography variant="caption" color="textSecondary">{content.value.substring(0, 100)}...</Typography>
+                </Box>
+                <Button size="small" variant="outlined" onClick={() => { setEditingContent(content); setEditValue(content.value); }}>Edit</Button>
+              </Box>
+            )}
+          </Card>
+        ))}
+      </Box>
+    </Box>
+  );
+}
+
+function ContactInfoManagement({ contactInfo }) {
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState(contactInfo || { email: '', phone: '', address: '', social_links: {} });
+
+  const updateMutation = useMutation({
+    mutationFn: (data) => contactInfo 
+      ? base44.entities.ContactInfo.update(contactInfo.id, data)
+      : base44.entities.ContactInfo.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['contact-info']);
+      setIsEditing(false);
+      toast.success('Contact info updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>Contact Information</Typography>
+        {!isEditing && <Button variant="contained" startIcon={<Edit />} onClick={() => setIsEditing(true)}>Edit</Button>}
+      </Box>
+
+      {isEditing ? (
+        <Card sx={{ p: 3 }}>
+          <TextField fullWidth label="Email" value={formData.email || ''} onChange={(e) => setFormData({ ...formData, email: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth label="Phone" value={formData.phone || ''} onChange={(e) => setFormData({ ...formData, phone: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth label="Address" value={formData.address || ''} onChange={(e) => setFormData({ ...formData, address: e.target.value })} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={() => updateMutation.mutate(formData)}>Save</Button>
+            <Button variant="outlined" onClick={() => setIsEditing(false)}>Cancel</Button>
+          </Box>
+        </Card>
+      ) : (
+        <Card sx={{ p: 3 }}>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Email</Typography>
+            <Typography variant="body2">{contactInfo?.email || '—'}</Typography>
+          </Box>
+          <Box sx={{ mb: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Phone</Typography>
+            <Typography variant="body2">{contactInfo?.phone || '—'}</Typography>
+          </Box>
+          <Box>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Address</Typography>
+            <Typography variant="body2">{contactInfo?.address || '—'}</Typography>
+          </Box>
+        </Card>
+      )}
+    </Box>
+  );
+}
+
+function PasswordManagement({ users }) {
+  const queryClient = useQueryClient();
+  const [selectedUser, setSelectedUser] = useState(null);
+  const [newPassword, setNewPassword] = useState('');
+
+  const updatePasswordMutation = useMutation({
+    mutationFn: async ({ email, password }) => {
+      const response = await base44.functions.invoke('adminUpdateUser', { email, data: { password } });
+      return response.data;
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['all-users']);
+      toast.success('Password updated!');
+      setSelectedUser(null);
+      setNewPassword('');
+    },
+    onError: () => toast.error('Failed to update password'),
+  });
+
+  return (
+    <Box>
+      <Typography variant="h6" sx={{ fontWeight: 600, mb: 3 }}>User Password Management</Typography>
+
+      {selectedUser ? (
+        <Card sx={{ p: 3, mb: 3 }}>
+          <Typography variant="body2" sx={{ fontWeight: 600, mb: 2 }}>Reset Password for: {selectedUser.full_name}</Typography>
+          <TextField 
+            fullWidth 
+            type="password" 
+            label="New Password" 
+            value={newPassword} 
+            onChange={(e) => setNewPassword(e.target.value)} 
+            sx={{ mb: 2 }} 
+          />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={() => updatePasswordMutation.mutate({ email: selectedUser.email, password: newPassword })}>
+              Update Password
+            </Button>
+            <Button variant="outlined" onClick={() => { setSelectedUser(null); setNewPassword(''); }}>Cancel</Button>
+          </Box>
+        </Card>
+      ) : (
+        <Box sx={{ space: 1 }}>
+          {users.map((user) => (
+            <Card key={user.id} sx={{ p: 2, mb: 1 }}>
+              <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center' }}>
+                <Box>
+                  <Typography variant="body2" sx={{ fontWeight: 600 }}>{user.full_name}</Typography>
+                  <Typography variant="caption" color="textSecondary">{user.email}</Typography>
+                </Box>
+                <Button size="small" variant="outlined" onClick={() => setSelectedUser(user)}>Reset Password</Button>
+              </Box>
+            </Card>
+          ))}
+        </Box>
+      )}
+    </Box>
+  );
+}
 function TutorRequestsManagement() {
   const queryClient = useQueryClient();
   const [filter, setFilter] = useState('pending');
@@ -1270,5 +1826,119 @@ function TutorRequestsManagement() {
     </Box>
   );
 }
-function AboutUsManagement({ siteContent }) { return <Typography>About Us Management - To be implemented</Typography>; }
-function SitePasswordsManagement({ siteContent }) { return <Typography>Site Passwords Management - To be implemented</Typography>; }
+function AboutUsManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    title: siteContent.find(c => c.key === 'about_title')?.value || '',
+    content: siteContent.find(c => c.key === 'about_content')?.value || '',
+    mission: siteContent.find(c => c.key === 'about_mission')?.value || '',
+    vision: siteContent.find(c => c.key === 'about_vision')?.value || '',
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data) => {
+      await Promise.all(Object.entries(data).map(([key, value]) => {
+        const existing = siteContent.find(c => c.key === `about_${key}`);
+        return existing
+          ? base44.entities.SiteContent.update(existing.id, { value })
+          : base44.entities.SiteContent.create({ key: `about_${key}`, value, section: 'general' });
+      }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setIsEditing(false);
+      toast.success('About Us updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Typography variant="h6" sx={{ fontWeight: 600 }}>About Us Management</Typography>
+        {!isEditing && <Button variant="contained" startIcon={<Edit />} onClick={() => setIsEditing(true)}>Edit</Button>}
+      </Box>
+
+      {isEditing ? (
+        <Card sx={{ p: 3 }}>
+          <TextField fullWidth label="Title" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth multiline rows={4} label="Content" value={formData.content} onChange={(e) => setFormData({ ...formData, content: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth multiline rows={3} label="Mission" value={formData.mission} onChange={(e) => setFormData({ ...formData, mission: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth multiline rows={3} label="Vision" value={formData.vision} onChange={(e) => setFormData({ ...formData, vision: e.target.value })} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={() => updateMutation.mutate(formData)}>Save</Button>
+            <Button variant="outlined" onClick={() => setIsEditing(false)}>Cancel</Button>
+          </Box>
+        </Card>
+      ) : (
+        <Box sx={{ space: 2 }}>
+          {['title', 'content', 'mission', 'vision'].map((field) => (
+            <Card key={field} sx={{ p: 2 }}>
+              <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary', textTransform: 'capitalize' }}>{field}</Typography>
+              <Typography variant="body2">{formData[field] || '—'}</Typography>
+            </Card>
+          ))}
+        </Box>
+      )}
+    </Box>
+  );
+}
+
+function SitePasswordsManagement({ siteContent }) {
+  const queryClient = useQueryClient();
+  const [isEditing, setIsEditing] = useState(false);
+  const [formData, setFormData] = useState({
+    admin_panel_password: siteContent.find(c => c.key === 'admin_panel_password')?.value || '',
+    special_content_password: siteContent.find(c => c.key === 'special_content_password')?.value || '',
+  });
+
+  const updateMutation = useMutation({
+    mutationFn: async (data) => {
+      await Promise.all(Object.entries(data).map(([key, value]) => {
+        const existing = siteContent.find(c => c.key === key);
+        return existing
+          ? base44.entities.SiteContent.update(existing.id, { value })
+          : base44.entities.SiteContent.create({ key, value, section: 'general' });
+      }));
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries(['site-content']);
+      setIsEditing(false);
+      toast.success('Site passwords updated!');
+    },
+  });
+
+  return (
+    <Box>
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
+        <Box>
+          <Typography variant="h6" sx={{ fontWeight: 600 }}>Site Passwords Management</Typography>
+          <Typography variant="body2" color="textSecondary">Manage access passwords for protected areas</Typography>
+        </Box>
+        {!isEditing && <Button variant="contained" startIcon={<Lock />} onClick={() => setIsEditing(true)}>Change</Button>}
+      </Box>
+
+      {isEditing ? (
+        <Card sx={{ p: 3 }}>
+          <TextField fullWidth label="Admin Panel Password" value={formData.admin_panel_password} onChange={(e) => setFormData({ ...formData, admin_panel_password: e.target.value })} sx={{ mb: 2 }} />
+          <TextField fullWidth label="Special Content Password (optional)" value={formData.special_content_password} onChange={(e) => setFormData({ ...formData, special_content_password: e.target.value })} sx={{ mb: 2 }} />
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Button variant="contained" onClick={() => updateMutation.mutate(formData)}>Update Passwords</Button>
+            <Button variant="outlined" onClick={() => setIsEditing(false)}>Cancel</Button>
+          </Box>
+        </Card>
+      ) : (
+        <Box sx={{ space: 2 }}>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Admin Panel Password</Typography>
+            <Typography variant="body2">••••••••</Typography>
+          </Card>
+          <Card sx={{ p: 2 }}>
+            <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.secondary' }}>Special Content Password</Typography>
+            <Typography variant="body2">{formData.special_content_password ? '••••••••' : '—'}</Typography>
+          </Card>
+        </Box>
+      )}
+    </Box>
+  );
+}
