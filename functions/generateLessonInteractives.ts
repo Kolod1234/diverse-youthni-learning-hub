@@ -9,9 +9,9 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { lessonId } = await req.json();
+    const { lessonId, difficulty = 'intermediate', questionTypes = ['multiple_choice'], keywords = [] } = await req.json();
 
-    // Get lesson details (use get instead of filter to avoid rate limits)
+    // Get lesson details
     let lesson;
     try {
       lesson = await base44.entities.Lesson.get(lessonId);
@@ -30,32 +30,89 @@ Deno.serve(async (req) => {
     const lessonTitle = lesson.title || '';
     const lessonDescription = lesson.description || '';
 
-    // Generate interactive content using AI with randomization
+    // Build difficulty guidance
+    const difficultyGuidance = {
+      basic: 'Create straightforward recall and comprehension questions. Use simple language, direct questions, and test fundamental definitions and basic understanding. Suitable for students first encountering this topic.',
+      intermediate: 'Create application and analysis questions. Students should be able to apply concepts, interpret data, and make connections between ideas. Suitable for students with foundational knowledge.',
+      advanced: 'Create evaluation and synthesis questions. Questions should require higher-order thinking, multi-step reasoning, comparison of complex ideas, and critical analysis. Suitable for exam preparation at A-level standard.'
+    };
+
+    // Build question type schema guidance
+    const typeInstructions = [];
+    const typeSchemas = [];
+
+    if (questionTypes.includes('multiple_choice')) {
+      typeInstructions.push('Multiple Choice: 4 options, one correct answer (index 0-3, distribute randomly), with detailed explanation');
+      typeSchemas.push(`
+  "quizQuestions": [
+    {
+      "question": "question text (use LaTeX for math: $x^2$, $$E=mc^2$$; chemistry: \\\\ce{H2O})",
+      "question_type": "multiple_choice",
+      "options": ["option A", "option B", "option C", "option D"],
+      "correctAnswer": 0,
+      "explanation": "detailed explanation"
+    }
+  ]`);
+    }
+
+    if (questionTypes.includes('true_false')) {
+      typeInstructions.push('True/False: a clear statement that is definitively true or false, with explanation of why');
+      typeSchemas.push(`
+  "trueFalseQuestions": [
+    {
+      "statement": "a clear factual statement about the lesson content",
+      "question_type": "true_false",
+      "isTrue": true,
+      "explanation": "why this is true or false"
+    }
+  ]`);
+    }
+
+    if (questionTypes.includes('short_answer')) {
+      typeInstructions.push('Short Answer: open-ended questions requiring a concise 1-3 sentence response, with a model answer provided');
+      typeSchemas.push(`
+  "shortAnswerQuestions": [
+    {
+      "question": "question requiring a short written response",
+      "question_type": "short_answer",
+      "modelAnswer": "ideal concise answer (1-3 sentences)",
+      "keyPoints": ["key point 1", "key point 2"],
+      "marks": 2
+    }
+  ]`);
+    }
+
+    // Build keyword focus instruction
+    const keywordInstruction = keywords.length > 0
+      ? `\nKEYWORD FOCUS: The following specific keywords/concepts have been requested - prioritise these heavily in all generated questions, flashcards, and activities: ${keywords.join(', ')}. Every question should incorporate or directly relate to at least one of these keywords.`
+      : '';
+
     const randomSeed = Math.floor(Math.random() * 10000);
     const timestamp = Date.now();
-    
-    const prompt = `You are an A-level examination board content creator. Based on the following lesson, create rigorous A-level standard assessment materials.
+
+    const prompt = `You are an A-level examination board content creator. Based on the following lesson, create rigorous assessment materials.
 
 Lesson Title: ${lessonTitle}
 Lesson Description: ${lessonDescription}
 Learning Objectives:
 ${learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-CRITICAL ALIGNMENT REQUIREMENTS:
-1. ONLY create questions that DIRECTLY test the learning objectives listed above
-2. EVERY question MUST relate to the specific lesson title and description provided
-3. DO NOT include general knowledge questions - all content must be specifically about THIS lesson's topics
-4. DO NOT introduce concepts not mentioned in the learning objectives
-5. Each question should explicitly address at least one of the numbered learning objectives above
+DIFFICULTY LEVEL: ${difficulty.toUpperCase()}
+${difficultyGuidance[difficulty] || difficultyGuidance.intermediate}
+${keywordInstruction}
 
-QUESTION VALIDITY CHECKLIST - Before including any question, verify:
-✓ Does this question test a learning objective from the list above?
-✓ Is this content mentioned in the lesson title or description?
-✓ Would a student who only studied THIS specific lesson be able to answer it?
-✓ Am I staying within the scope of THIS lesson (not adding extra topics)?
+QUESTION TYPES REQUESTED: ${questionTypes.join(', ')}
+${typeInstructions.map((t, i) => `${i + 1}. ${t}`).join('\n')}
+
+CONTENT ALIGNMENT REQUIREMENTS:
+1. ONLY create questions that DIRECTLY test the learning objectives listed above
+2. EVERY question MUST relate to the specific lesson title and description
+3. DO NOT include general knowledge questions - all content must be specifically about THIS lesson
+4. DO NOT introduce concepts not mentioned in the learning objectives
+5. Each question should explicitly address at least one of the numbered learning objectives
 
 VARIETY REQUIREMENT (Generation #${randomSeed} at ${timestamp}):
-Create COMPLETELY NEW and DIFFERENT questions from any previous generations while staying strictly within the lesson scope. Use varied examples, different question phrasings, and alternative perspectives - but ONLY for topics covered in THIS lesson.
+Create COMPLETELY NEW and DIFFERENT questions from any previous generations while staying strictly within the lesson scope.
 
 Generate the following in valid JSON format:
 
@@ -71,7 +128,7 @@ Generate the following in valid JSON format:
       "title": "digestible topic section title",
       "summary": "2-3 sentence summary of this chunk",
       "keyTakeaway": "single most important thing to remember",
-      "difficulty": "basic|intermediate|advanced"
+      "difficulty": "${difficulty}"
     }
   ],
   "examples": [
@@ -79,7 +136,7 @@ Generate the following in valid JSON format:
       "title": "example title",
       "description": "detailed example explanation",
       "type": "worked_example|case_study|real_world_application",
-      "difficulty": "basic|intermediate|advanced",
+      "difficulty": "${difficulty}",
       "relatedConcepts": ["concept 1", "concept 2"]
     }
   ],
@@ -88,7 +145,7 @@ Generate the following in valid JSON format:
       "title": "resource title",
       "type": "video|article|interactive|book|research_paper",
       "description": "what this resource covers and why it's useful",
-      "difficulty": "beginner|intermediate|advanced",
+      "difficulty": "${difficulty}",
       "estimatedTime": "time in minutes",
       "url": "suggested search query or general URL pattern"
     }
@@ -96,14 +153,7 @@ Generate the following in valid JSON format:
   "matchingPairs": [
     { "left": "term or concept", "right": "definition or explanation" }
   ],
-  "quizQuestions": [
-    {
-      "question": "question text with mathematical notation in LaTeX format where appropriate (e.g., $x^2$, $$E=mc^2$$, \\ce{H2O})",
-      "options": ["option A", "option B", "option C", "option D"],
-      "correctAnswer": 0,
-      "explanation": "detailed explanation with reasoning"
-    }
-  ],
+  ${typeSchemas.join(',\n  ')},
   "flashCards": [
     { "front": "question or term (use LaTeX for math/science)", "back": "answer or definition (use LaTeX for math/science)" }
   ],
@@ -111,7 +161,7 @@ Generate the following in valid JSON format:
     {
       "question": "essay prompt requiring detailed analysis or explanation",
       "rubric": "key points that should be covered in a good answer",
-      "wordCount": 250,
+      "wordCount": ${difficulty === 'basic' ? 150 : difficulty === 'advanced' ? 400 : 250},
       "tips": "guidance for students"
     }
   ],
@@ -124,44 +174,22 @@ Generate the following in valid JSON format:
   ]
 }
 
-STRICT A-LEVEL REQUIREMENTS:
-
-CONTENT SUMMARY & CHUNKING (MUST align with lesson objectives):
-- Summarize ONLY the concepts covered in this lesson's learning objectives
-- Break down ONLY the topics mentioned in the lesson title and description
-- Prerequisites should be concepts needed BEFORE this specific lesson
-- Real-world relevance must connect to THIS lesson's specific topics
-
-EXAMPLES & CASE STUDIES (MUST align with lesson objectives):
-- ALL examples MUST illustrate concepts from the learning objectives above
-- Worked examples should demonstrate solving problems covered in THIS lesson
-- Case studies MUST apply THIS lesson's specific content, not general knowledge
-- DO NOT create examples for topics not in the learning objectives
-
-EXTERNAL RESOURCES (MUST align with lesson objectives):
-- ONLY suggest resources that cover THIS lesson's specific topics
-- Resource descriptions should mention which learning objective(s) they support
-- Use search queries specific to THIS lesson (include lesson title in search)
-- Example: "Khan Academy ${lessonTitle}", "BBC Bitesize ${lessonTitle}"
-
-ASSESSMENT MATERIALS (STRICT ALIGNMENT REQUIRED):
+STRICT REQUIREMENTS based on difficulty (${difficulty}):
 - Create exactly 6 matching pairs - ONLY use terms/concepts from the learning objectives
-- Create exactly 10 quiz questions - EACH must test a specific learning objective listed above
-- In each question, reference which objective number (1, 2, 3, etc.) you're testing
-- ALL quiz options must be plausible within THIS lesson's scope
-- Distribute correct answers randomly across all 4 options (not just A or B)
+${questionTypes.includes('multiple_choice') ? `- Create exactly 10 multiple choice quiz questions at ${difficulty} level` : ''}
+${questionTypes.includes('true_false') ? `- Create exactly 8 true/false questions at ${difficulty} level` : ''}
+${questionTypes.includes('short_answer') ? `- Create exactly 6 short answer questions at ${difficulty} level` : ''}
+- Create exactly 12 flashcards - ONLY covering terms from THIS lesson
+- Create exactly 3 essay questions at ${difficulty} level
+- Create exactly 5 fill-in-the-blank exercises
 - Use mathematical notation with LaTeX: $...$ for inline, $$...$$ for display
 - For chemistry: use \\ce{...} for chemical formulas (e.g., \\ce{H2SO4})
-- Create exactly 12 flashcards - ONLY covering terms from THIS lesson
-- Create exactly 3 essay questions - MUST require knowledge from the learning objectives
-- Create exactly 5 fill-in-the-blank exercises - ONLY testing THIS lesson's content
-- Distractors (wrong answers) should be plausible but clearly wrong for THIS lesson
-- Vary difficulty: 3 basic, 4 medium, 3 advanced questions
+- For multiple choice: distribute correct answers randomly across all 4 positions (not always 0 or 1)
 
 FINAL VALIDATION - Before submitting, verify:
 - Every question can be answered using ONLY knowledge from this lesson
-- No questions test general knowledge or topics outside the learning objectives
-- All content directly supports the specific lesson title provided
+- All questions match the requested difficulty: ${difficulty}
+- ${keywords.length > 0 ? `Questions prioritise the requested keywords: ${keywords.join(', ')}` : 'Questions cover the breadth of the learning objectives'}`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -172,10 +200,13 @@ FINAL VALIDATION - Before submitting, verify:
       body: JSON.stringify({
         model: 'gpt-4o-mini',
         messages: [
-          { role: 'system', content: 'You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials that STRICTLY align with specified learning objectives. Your PRIMARY responsibility is ensuring every single question directly tests the provided learning objectives - never include questions on topics not explicitly covered. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: When providing 4 options, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Distribute correct answers evenly across all four positions. Always respond with valid JSON only. REJECT any temptation to add "helpful" extra topics - stick ONLY to what was requested.' },
+          { 
+            role: 'system', 
+            content: `You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials that STRICTLY align with specified learning objectives. You adapt your content difficulty precisely to the requested level (basic/intermediate/advanced). Your PRIMARY responsibility is ensuring every single question directly tests the provided learning objectives. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: For multiple choice questions, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Always respond with valid JSON only.` 
+          },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.9,
+        temperature: 0.85,
         response_format: { type: "json_object" }
       }),
     });
@@ -185,12 +216,17 @@ FINAL VALIDATION - Before submitting, verify:
 
     return Response.json({
       success: true,
+      difficulty,
+      questionTypes,
+      keywords,
       summary: content.summary || null,
       contentChunks: content.contentChunks || [],
       examples: content.examples || [],
       resources: content.resources || [],
       matchingPairs: content.matchingPairs || [],
       quizQuestions: content.quizQuestions || [],
+      trueFalseQuestions: content.trueFalseQuestions || [],
+      shortAnswerQuestions: content.shortAnswerQuestions || [],
       flashCards: content.flashCards || [],
       essayQuestions: content.essayQuestions || [],
       fillInTheBlanks: content.fillInTheBlanks || []
