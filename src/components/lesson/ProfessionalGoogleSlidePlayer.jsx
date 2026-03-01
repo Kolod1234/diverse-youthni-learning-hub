@@ -330,7 +330,11 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
           left: 0;
           right: 0;
           bottom: 0;
+          width: 100vw !important;
+          height: 100vh !important;
+          height: 100dvh !important;
           z-index: 9999;
+          background: #000;
         }
 
         .slide-wrapper {
