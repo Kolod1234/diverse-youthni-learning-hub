@@ -106,6 +106,27 @@ export default function LessonPlayerClassic() {
     base44.auth.me().then(setUser);
   }, []);
 
+  // useLessonPlayer is declared BELOW (after handleNextLesson/handlePrevLesson)
+  // Stub refs so destructuring below works before the hook call is executed
+  // (React hooks rules: all hooks must be called unconditionally at top level)
+  // ── We use refs as stable callbacks so the hook can be called up-top ──────
+  const handleNextLessonRef = useRef(null);
+  const handlePrevLessonRef = useRef(null);
+
+  const {
+    isFullscreen, toggleFullscreen,
+    showAI, setShowAI, aiTab, setAiTab, aiLoading,
+    aiResponse, setAiResponse, aiSummary,
+    aiTranslation, targetLanguage, setTargetLanguage,
+    askAI, summariseSlide, defineWord, translateSlide,
+  } = useLessonPlayer({
+    lessonId,
+    containerRef: mainContentRef,
+    user,
+    onNext: (...args) => handleNextLessonRef.current?.(...args),
+    onPrev: (...args) => handlePrevLessonRef.current?.(...args),
+  });
+
   // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
     if (!user) return;
