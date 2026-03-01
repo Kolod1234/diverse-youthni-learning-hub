@@ -11,10 +11,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
-import useLessonPlayer from '@/components/lesson/useLessonPlayer';
-import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
@@ -80,8 +80,10 @@ export default function LessonPlayerClassic() {
   const [showCertificate, setShowCertificate] = useState(false);
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [focusModeEnabled, setFocusModeEnabled] = useState(false);
+  const mainContentRef2 = useRef(null); // alias to avoid conflict with existing mainContentRef
   const [currentXP, setCurrentXP] = useState(0);
   const [userLevel, setUserLevel] = useState(1);
   const [showXPGain, setShowXPGain] = useState(false);
@@ -109,6 +111,24 @@ export default function LessonPlayerClassic() {
     };
     loadUser();
   }, []);
+
+  // Shared player hook — fullscreen, notes, bookmarks, AI, keyboard shortcuts
+  const sharedPlayer = useLessonPlayer({
+    lessonId,
+    containerRef: mainContentRef,
+    user,
+    onNext: handleNextLesson,
+    onPrev: handlePrevLesson,
+  });
+  const {
+    isFullscreen: isFullscreenShared,
+    notes: sharedNotes, showNotes, setShowNotes, saveNote, exportNotes,
+    bookmarks: sharedBookmarks, showBookmarks, setShowBookmarks, toggleBookmark,
+    showAI, setShowAI, aiTab, setAiTab, aiLoading,
+    aiResponse, setAiResponse, aiSummary, aiTranslation,
+    targetLanguage, setTargetLanguage,
+    askAI, summariseSlide, defineWord, translateSlide,
+  } = sharedPlayer;
 
   // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
