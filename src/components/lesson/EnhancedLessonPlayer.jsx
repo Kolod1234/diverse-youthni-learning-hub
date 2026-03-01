@@ -403,20 +403,47 @@ export default function EnhancedLessonPlayer({
         </div>
 
         {/* Quiz/Interactive Section */}
-        {!loadingInteractives && interactiveContent?.quizQuestions && (
-          <div className="bg-slate-900 border-t border-slate-700 p-4">
-            <div className="max-w-4xl mx-auto">
+        {!loadingInteractives && interactiveContent && (
+          <div className="bg-slate-900 border-t border-slate-700 p-4 max-h-96 overflow-y-auto">
+            <div className="max-w-4xl mx-auto space-y-4">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="font-semibold">Practice Quiz (AI Generated)</h3>
                 <button
                   onClick={() => setLoadingInteractives(true)}
-                  className="text-xs px-3 py-1 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition"
+                  className="text-xs px-3 py-1 rounded bg-orange-500/20 text-orange-300 hover:bg-orange-500/30 transition flex items-center gap-1"
                 >
-                  <RefreshCw className="w-3 h-3 inline mr-1" />
+                  <RefreshCw className="w-3 h-3" />
                   New Quiz
                 </button>
               </div>
-              <p className="text-xs text-slate-400">{interactiveContent.quizQuestions.length} questions</p>
+
+              {interactiveContent.quizQuestions && (
+                <InteractiveQuiz 
+                  questions={interactiveContent.quizQuestions} 
+                  onComplete={(score) => toast.success(`Quiz complete! Score: ${score}%`)}
+                />
+              )}
+
+              {interactiveContent.trueFalseQuestions && (
+                <TrueFalseQuiz 
+                  questions={interactiveContent.trueFalseQuestions}
+                  onComplete={(correct) => toast.success(`True/False: ${correct}/${interactiveContent.trueFalseQuestions.length} correct`)}
+                />
+              )}
+
+              {interactiveContent.matchingPairs && (
+                <MatchingGame 
+                  pairs={interactiveContent.matchingPairs}
+                  onComplete={(score) => toast.success(`Matching: ${score} points!`)}
+                />
+              )}
+
+              {interactiveContent.shortAnswerQuestions && (
+                <ShortAnswerQuiz 
+                  questions={interactiveContent.shortAnswerQuestions}
+                  onComplete={(correct) => toast.success(`Short Answer: ${correct}/${interactiveContent.shortAnswerQuestions.length} correct`)}
+                />
+              )}
             </div>
           </div>
         )}
