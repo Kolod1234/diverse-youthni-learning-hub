@@ -7,7 +7,7 @@ import confetti from 'canvas-confetti';
 import MathRenderer from './MathRenderer';
 import { base44 } from '@/api/base44Client';
 
-export default function ShortAnswerQuiz({ questions, onComplete }) {
+export default function ShortAnswerQuiz({ questions = [], onComplete }) {
   const [current, setCurrent] = useState(0);
   const [answer, setAnswer] = useState('');
   const [submitted, setSubmitted] = useState(false);
@@ -15,6 +15,10 @@ export default function ShortAnswerQuiz({ questions, onComplete }) {
   const [loadingFeedback, setLoadingFeedback] = useState(false);
   const [score, setScore] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+
+  if (!questions || questions.length === 0) {
+    return <Card className="p-6 text-center text-gray-500">No short answer questions available</Card>;
+  }
 
   const q = questions[current];
 
