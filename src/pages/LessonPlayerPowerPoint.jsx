@@ -855,33 +855,12 @@ export default function LessonPlayerPowerPoint() {
             <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
               {lesson?.file_url && lesson?.file_type === 'pptx' ? (
                 <DocumentViewer fileUrl={lesson.file_url} fileType={lesson.file_type} />
-              ) : slideUrl ? (
-                <>
-                  <iframe 
-                    src={slideUrl} 
-                    className="w-full h-full border-0 block"
-                    allowFullScreen
-                    title="Lesson Slides"
-                  />
-                  {/* Transparent touch overlay for Google Slides - captures edge swipes only */}
-                  <div 
-                    className="absolute inset-0 pointer-events-none"
-                    style={{ pointerEvents: 'none' }}
-                  >
-                    <div 
-                      className="absolute left-0 top-0 bottom-0 w-16 pointer-events-auto"
-                      onTouchStart={onTouchStart}
-                      onTouchMove={onTouchMove}
-                      onTouchEnd={onTouchEnd}
-                    />
-                    <div 
-                      className="absolute right-0 top-0 bottom-0 w-16 pointer-events-auto"
-                      onTouchStart={onTouchStart}
-                      onTouchMove={onTouchMove}
-                      onTouchEnd={onTouchEnd}
-                    />
-                  </div>
-                </>
+              ) : (lesson?.google_slides_url || lesson?.video_url) && !hasSlides ? (
+                /* Universal player handles Google Slides, video, and document embeds */
+                <UniversalLessonPlayer
+                  lesson={lesson}
+                  totalSlides={sortedSlides.length || 20}
+                />
               ) : hasSlides ? (
                 <TransformWrapper disabled={isPresenting || window.innerWidth < 640}>
                   {({ zoomIn, zoomOut, resetTransform }) => (
