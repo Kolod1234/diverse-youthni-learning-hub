@@ -105,34 +105,35 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     return () => window.removeEventListener('keydown', handleKeyPress);
   }, [isFullscreen, showNotes, showAI, showKeyboardHelp, showSearch, totalSlides]);
 
-  // ── Fullscreen: always set CSS state immediately, native API is best-effort ──
+  // ── Fullscreen: delegate to external handler if provided, else use internal ──
   const toggleFullscreen = () => {
-    if (!isFullscreen) {
-      // Always engage CSS fullscreen immediately (works in APK WebView)
-      setIsFullscreen(true);
-      // Attempt native fullscreen on top (browser only — will no-op in WebView)
-      const elem = document.getElementById('slide-container');
-      const req = elem?.requestFullscreen || elem?.webkitRequestFullscreen;
-      if (req) req.call(elem).catch(() => { /* already handled by CSS */ });
+    if (externalToggleFullscreen) {
+      // Use the centralized handler from useLessonPlayer (includes orientation lock)
+      externalToggleFullscreen();
     } else {
-      exitFullscreen();
+      // Internal fallback for standalone usage
+      if (!internalIsFullscreen) {
+        setInternalIsFullscreen(true);
+        const elem = document.getElementById('slide-container');
+        const req = elem?.requestFullscreen || elem?.webkitRequestFullscreen;
+        if (req) req.call(elem).catch(() => {});
+      } else {
+        setInternalIsFullscreen(false);
+        const isNative = document.fullscreenElement || document.webkitFullscreenElement;
+        if (isNative) {
+          const exit = document.exitFullscreen || document.webkitExitFullscreen;
+          exit?.call(document).catch(() => {});
+        }
+      }
     }
   };
 
-  const exitFullscreen = () => {
-    setIsFullscreen(false);
-    const isNative = document.fullscreenElement || document.webkitFullscreenElement;
-    if (isNative) {
-      const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      exit?.call(document).catch(() => {});
-    }
-  };
-
-  // Sync CSS state if user exits native fullscreen via browser UI (Esc key, etc.)
+  // Sync internal CSS state if user exits native fullscreen via browser UI
   useEffect(() => {
+    if (externalToggleFullscreen) return; // external handler manages its own state
     const onFullscreenChange = () => {
       if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        setIsFullscreen(false);
+        setInternalIsFullscreen(false);
       }
     };
     document.addEventListener('fullscreenchange', onFullscreenChange);
@@ -141,7 +142,7 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
       document.removeEventListener('fullscreenchange', onFullscreenChange);
       document.removeEventListener('webkitfullscreenchange', onFullscreenChange);
     };
-  }, []);
+  }, [externalToggleFullscreen]);
 
   const handleReload = () => { setIsLoading(true); setIframeKey(prev => prev + 1); };
 
