@@ -20,6 +20,7 @@ const SOURCE_COLORS = {
   UKHOMEOFFICE: { bg: 'bg-green-50', border: 'border-green-200', text: 'text-green-700', badge: 'bg-green-500' },
   MIGRANTNI: { bg: 'bg-orange-50', border: 'border-orange-200', text: 'text-orange-700', badge: 'bg-orange-500' },
   METROWEATHER: { bg: 'bg-cyan-50', border: 'border-cyan-200', text: 'text-cyan-700', badge: 'bg-cyan-500' },
+  MSN: { bg: 'bg-teal-50', border: 'border-teal-200', text: 'text-teal-700', badge: 'bg-teal-500' },
   ANNOUNCEMENT: { bg: 'bg-yellow-50', border: 'border-yellow-300', text: 'text-yellow-900', badge: 'bg-yellow-500' },
   default: { bg: 'bg-gray-50', border: 'border-gray-200', text: 'text-gray-700', badge: 'bg-gray-500' },
 };
@@ -59,7 +60,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
   useEffect(() => {
     const importAllSources = async () => {
-      const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament'];
+      const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'msn'];
       try {
         for (const source of sources) {
           await base44.functions.invoke('importRSSFeeds', { source });
