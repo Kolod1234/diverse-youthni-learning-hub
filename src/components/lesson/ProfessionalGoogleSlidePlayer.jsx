@@ -10,8 +10,11 @@ import { ChevronLeft, ChevronRight, Maximize, Minimize, RotateCcw, StickyNote, S
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 
-export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonId, totalSlides = 20 }) {
-  const [isFullscreen, setIsFullscreen] = useState(false);
+export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonId, totalSlides = 20, toggleFullscreen: externalToggleFullscreen, isFullscreen: externalIsFullscreen }) {
+  const [internalIsFullscreen, setInternalIsFullscreen] = useState(false);
+
+  // Use external fullscreen control if provided (from useLessonPlayer, which includes orientation lock)
+  const isFullscreen = externalToggleFullscreen !== undefined ? externalIsFullscreen : internalIsFullscreen;
   const [currentSlide, setCurrentSlide] = useState(1);
   const [iframeKey, setIframeKey] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
