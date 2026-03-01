@@ -81,7 +81,7 @@ export default function BadgeUnlock({ badges, onClose }) {
             </div>
 
             <Button 
-              onClick={onClose}
+              onClick={handleClose}
               className="mt-6 w-full bg-white text-purple-600 hover:bg-white/90"
             >
               Awesome!
@@ -89,6 +89,7 @@ export default function BadgeUnlock({ badges, onClose }) {
           </div>
         </motion.div>
       </motion.div>
+      )}
     </AnimatePresence>
   );
 }
