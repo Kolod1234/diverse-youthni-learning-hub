@@ -16,6 +16,10 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
+import TrueFalseQuiz from '@/components/lesson/TrueFalseQuiz';
+import MatchingGame from '@/components/lesson/MatchingGame';
+import ShortAnswerQuiz from '@/components/lesson/ShortAnswerQuiz';
 
 export default function EnhancedLessonPlayer({
   lesson,
