@@ -6,12 +6,16 @@ import { CheckCircle, XCircle, Trophy, ArrowRight } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import MathRenderer from './MathRenderer';
 
-export default function TrueFalseQuiz({ questions, onComplete }) {
+export default function TrueFalseQuiz({ questions = [], onComplete }) {
   const [current, setCurrent] = useState(0);
   const [selected, setSelected] = useState(null);
   const [showResult, setShowResult] = useState(false);
   const [score, setScore] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
+
+  if (!questions || questions.length === 0) {
+    return <Card className="p-6 text-center text-gray-500">No true/false questions available</Card>;
+  }
 
   const q = questions[current];
 
