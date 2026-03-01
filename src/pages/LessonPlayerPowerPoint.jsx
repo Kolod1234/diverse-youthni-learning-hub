@@ -912,36 +912,43 @@ export default function LessonPlayerPowerPoint() {
         </DialogContent>
       </Dialog>
 
-      <Dialog open={showAISummary} onClose={() => setShowAISummary(false)} maxWidth="sm" fullWidth>
-        <DialogTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-purple-600"/>AI Summary</DialogTitle>
-        <DialogContent className="max-h-[80vh] overflow-y-auto">
-          {loadingSummary ? (
-            <div className="flex justify-center py-12"><div className="animate-spin rounded-full h-8 w-8 border-b-2 border-purple-600"></div></div>
-          ) : aiSummary ? (
-            <div className="space-y-4">
-              <div><h3 className="font-semibold mb-2 text-foreground">Summary</h3><p className="text-foreground">{aiSummary.summary}</p></div>
-              {aiSummary.key_points?.length > 0 && (
-                <div><h3 className="font-semibold mb-2 text-foreground">Key Points</h3>
-                  <ul className="space-y-2">{aiSummary.key_points.map((p, i) => <li key={i} className="flex gap-2"><CheckCircle className="w-4 h-4 text-green-600 mt-0.5"/><span className="text-foreground">{p}</span></li>)}</ul>
-                </div>
-              )}
-            </div>
-          ) : null}
-        </DialogContent>
-      </Dialog>
+      {/* Shared Notes Dialog */}
+      <NotesDialog
+        open={showNotes}
+        onOpenChange={setShowNotes}
+        slideKey={currentSlideIndex + 1}
+        notes={sharedNotes}
+        onSave={saveNote}
+        onExport={exportNotes}
+      />
 
-      <Dialog open={showNotes} onClose={() => setShowNotes(false)} maxWidth="sm" fullWidth>
-        <DialogTitle className="flex items-center gap-2"><BookOpen className="w-5 h-5 text-blue-600"/>Notes ({notes.length})</DialogTitle>
-        <DialogContent className="max-h-[80vh] overflow-y-auto">
-          <div className="flex gap-2">
-            <TextField value={currentNote} onChange={(e)=>setCurrentNote(e.target.value)} onKeyPress={(e)=>e.key==='Enter'&&addNote()} placeholder="Add a note..." size="small" fullWidth />
-            <Button onClick={addNote} className="gap-2"><Plus className="w-4 h-4"/>Add</Button>
-          </div>
-          <div className="mt-4 space-y-2">
-            {notes.length === 0 ? <p className="text-center text-muted-foreground py-8">No notes yet</p> : notes.map(n=><div key={n.id} className="p-3 bg-muted rounded border border-border"><div className="flex justify-between mb-1"><span className="text-xs font-semibold text-indigo-600">Slide {n.slideNumber}</span><button onClick={()=>setNotes(notes.filter(x=>x.id!==n.id))} className="text-red-500"><Trash2 size={14}/></button></div><p className="text-sm text-foreground">{n.content}</p></div>)}
-          </div>
-        </DialogContent>
-      </Dialog>
+      {/* Shared AI Assistant Dialog */}
+      <AIAssistantDialog
+        open={showAI}
+        onOpenChange={setShowAI}
+        aiTab={aiTab}
+        setAiTab={setAiTab}
+        aiLoading={loadingSummary}
+        aiResponse={aiResponse}
+        setAiResponse={setAiResponse}
+        aiSummary={aiSummary}
+        aiTranslation={aiTranslation}
+        targetLanguage={targetLanguage}
+        setTargetLanguage={setTargetLanguage}
+        onAsk={q => askAI(q, getCurrentSlideContext())}
+        onSummarise={() => generateAISummary(getCurrentSlideContext())}
+        onDefine={defineWord}
+        onTranslate={() => translateSlide(getCurrentSlideContext())}
+        slideLabel={`Slide ${currentSlideIndex + 1}`}
+      />
+
+      {/* Shared Bookmarks Panel */}
+      <BookmarksPanel
+        open={showBookmarks}
+        onOpenChange={setShowBookmarks}
+        bookmarks={bookmarkedSlides}
+        onJump={key => setCurrentSlideIndex(Number(key) - 1)}
+      />
 
       <Dialog open={showOutline} onClose={() => setShowOutline(false)} maxWidth="sm" fullWidth>
         <DialogTitle className="flex items-center gap-2"><List className="w-5 h-5"/>Outline</DialogTitle>
