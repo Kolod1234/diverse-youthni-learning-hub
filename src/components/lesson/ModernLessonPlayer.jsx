@@ -69,54 +69,45 @@ export default function ModernLessonPlayer({
     };
   }, [isPresentationMode]);
 
-  // Keyboard shortcuts (works in fullscreen)
+  // Keyboard shortcuts (works in fullscreen - uses document for proper event capture)
   useEffect(() => {
     const handleKeydown = (e) => {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
-      switch (e.key) {
-        case ' ':
-          e.preventDefault();
-          setIsPresentationMode(!isPresentationMode);
-          break;
-        case 'f':
-          e.preventDefault();
-          player.toggleFullscreen();
-          break;
-        case 'ArrowRight':
-        case 'l':
-          e.preventDefault();
-          if (currentSlide < totalSlides - 1) {
-            setCurrentSlide(currentSlide + 1);
-          } else {
-            onNext?.();
-          }
-          break;
-        case 'ArrowLeft':
-        case 'h':
-          e.preventDefault();
-          if (currentSlide > 0) {
-            setCurrentSlide(currentSlide - 1);
-          } else {
-            onPrev?.();
-          }
-          break;
-        case 'n':
-          e.preventDefault();
-          player.setShowNotes(v => !v);
-          break;
-        case 'a':
-          e.preventDefault();
-          player.setShowAI(v => !v);
-          break;
-        default:
-          break;
+      
+      const key = e.key.toLowerCase();
+      
+      if (key === ' ') {
+        e.preventDefault();
+        setIsPresentationMode(!isPresentationMode);
+      } else if (key === 'f') {
+        e.preventDefault();
+        player.toggleFullscreen();
+      } else if (key === 'arrowright' || key === 'l') {
+        e.preventDefault();
+        if (currentSlide < totalSlides - 1) {
+          setCurrentSlide(currentSlide + 1);
+        } else {
+          onNext?.();
+        }
+      } else if (key === 'arrowleft' || key === 'h') {
+        e.preventDefault();
+        if (currentSlide > 0) {
+          setCurrentSlide(currentSlide - 1);
+        } else {
+          onPrev?.();
+        }
+      } else if (key === 'n') {
+        e.preventDefault();
+        player.setShowNotes(v => !v);
+      } else if (key === 'a') {
+        e.preventDefault();
+        player.setShowAI(v => !v);
       }
     };
-    window.addEventListener('keydown', handleKeydown);
-    document.addEventListener('keydown', handleKeydown);
+    
+    document.addEventListener('keydown', handleKeydown, true); // Use capture phase
     return () => {
-      window.removeEventListener('keydown', handleKeydown);
-      document.removeEventListener('keydown', handleKeydown);
+      document.removeEventListener('keydown', handleKeydown, true);
     };
   }, [player, isPresentationMode, currentSlide, totalSlides, onNext, onPrev]);
 
@@ -142,19 +133,19 @@ export default function ModernLessonPlayer({
             isFullscreen={player.isFullscreen}
             toggleFullscreen={player.toggleFullscreen}
           />
-        ) : lesson?.video_url ? (
-          <iframe
-            src={lesson.video_url}
-            className="w-full h-full border-0"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-            title={lesson.title}
+        ) : lesson?.video_url && (lesson.content_type === 'video' || lesson.video_url.includes('youtube') || lesson.video_url.includes('vimeo') || lesson.video_url.match(/\.(mp4|webm|ogg)$/)) ? (
+          <UniversalLessonPlayer
+            lesson={lesson}
+            totalSlides={totalSlides}
+            isFullscreen={player.isFullscreen}
+            toggleFullscreen={player.toggleFullscreen}
           />
         ) : lesson?.file_url ? (
-          <iframe
-            src={lesson.file_url}
-            className="w-full h-full border-0"
-            title={lesson.title}
+          <UniversalLessonPlayer
+            lesson={lesson}
+            totalSlides={totalSlides}
+            isFullscreen={player.isFullscreen}
+            toggleFullscreen={player.toggleFullscreen}
           />
         ) : (
           <div className="w-full h-full flex items-center justify-center">
