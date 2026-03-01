@@ -674,19 +674,23 @@ export default function LessonPlayerClassic() {
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
 
-  // Use Modern player by default
+  // Use Enhanced player (modern with AI & quizzes)
+  const EnhancedLessonPlayer = React.lazy(() => import('@/components/lesson/EnhancedLessonPlayer'));
+  
   return (
-    <ModernLessonPlayer
-      lesson={lesson}
-      course={course}
-      isCompleted={isCompleted}
-      onComplete={() => markCompleteMutation.mutate()}
-      onNext={handleNextLesson}
-      onPrev={handlePrevLesson}
-      user={user}
-      enrollment={enrollment}
-      courseId={courseId}
-    />
+    <React.Suspense fallback={<div className="flex items-center justify-center h-screen">Loading...</div>}>
+      <EnhancedLessonPlayer
+        lesson={lesson}
+        course={course}
+        isCompleted={isCompleted}
+        onComplete={() => markCompleteMutation.mutate()}
+        onNext={handleNextLesson}
+        onPrev={handlePrevLesson}
+        user={user}
+        enrollment={enrollment}
+        courseId={courseId}
+      />
+    </React.Suspense>
   );
 
   // Old layout kept for reference (deprecated)
