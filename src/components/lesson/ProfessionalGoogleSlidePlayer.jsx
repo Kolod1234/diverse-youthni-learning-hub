@@ -325,16 +325,22 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
         }
 
         #slide-container.fullscreen {
-          position: fixed;
-          top: 0;
-          left: 0;
-          right: 0;
-          bottom: 0;
-          width: 100vw !important;
-          height: 100vh !important;
-          height: 100dvh !important;
-          z-index: 9999;
-          background: #000;
+          position: fixed !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+          width: 100% !important;
+          max-width: 100% !important;
+          height: 100% !important;
+          max-height: 100% !important;
+          z-index: 2147483647 !important;
+          background: #000 !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          border-radius: 0 !important;
+          transform: none !important;
+          overflow: hidden !important;
         }
 
         .slide-wrapper {
