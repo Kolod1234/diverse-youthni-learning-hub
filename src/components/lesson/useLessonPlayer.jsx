@@ -27,10 +27,11 @@ export default function useLessonPlayer({
   // ── Fullscreen ────────────────────────────────────────────────────────────
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const lockLandscape = useCallback(async () => {
+  const lockLandscape = useCallback(() => {
+    // Must be called synchronously within user gesture handler
     try {
       if (screen.orientation?.lock) {
-        await screen.orientation.lock('landscape');
+        screen.orientation.lock('landscape').catch(() => {});
       }
     } catch (_) {}
   }, []);
@@ -38,19 +39,16 @@ export default function useLessonPlayer({
   const enterFullscreen = useCallback(async () => {
     setIsFullscreen(true);
     const el = containerRef?.current;
+    // Attempt orientation lock immediately (within the user gesture)
+    lockLandscape();
     if (!el) return;
-    const req = el.requestFullscreen || el.webkitRequestFullscreen;
+    const req = el.requestFullscreen || el.webkitRequestFullscreen || el.mozRequestFullScreen || el.msRequestFullscreen;
     if (req) {
       try {
         await req.call(el);
-        // Lock after fullscreen is granted
-        await lockLandscape();
       } catch (_) {
-        // CSS fallback already set; still try orientation lock
-        await lockLandscape();
+        // CSS fullscreen fallback already applied via setIsFullscreen
       }
-    } else {
-      await lockLandscape();
     }
   }, [containerRef, lockLandscape]);
 
