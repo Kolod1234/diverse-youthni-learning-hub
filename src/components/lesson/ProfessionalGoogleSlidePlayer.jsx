@@ -111,27 +111,39 @@ export default function ProfessionalGoogleSlidePlayer({ googleSlidesUrl, lessonI
     (document.documentElement.requestFullscreen || document.documentElement.webkitRequestFullscreen);
 
   const toggleFullscreen = () => {
-    if (supportsNativeFullscreen) {
-      const elem = document.getElementById('slide-container');
-      if (!document.fullscreenElement && !document.webkitFullscreenElement) {
-        const req = elem?.requestFullscreen || elem?.webkitRequestFullscreen;
-        req?.call(elem);
-        setIsFullscreen(true);
-      } else {
-        const exit = document.exitFullscreen || document.webkitExitFullscreen;
-        exit?.call(document);
-        setIsFullscreen(false);
+    const elem = document.getElementById('slide-container');
+    const isCurrentlyFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+
+    if (!isFullscreen) {
+      // Enter fullscreen
+      if (supportsNativeFullscreen && elem) {
+        const req = elem.requestFullscreen || elem.webkitRequestFullscreen;
+        if (req) {
+          req.call(elem).catch(() => {
+            // Native fullscreen failed (e.g. APK WebView), fall back to CSS
+            setIsFullscreen(true);
+          });
+          return; // setIsFullscreen will be called via fullscreenchange event
+        }
       }
+      // CSS fallback (APK WebView, iOS Safari)
+      setIsFullscreen(true);
     } else {
-      // CSS-based fullscreen fallback for mobile (iOS Safari, PWAs, WebViews)
-      setIsFullscreen(prev => !prev);
+      // Exit fullscreen
+      if (isCurrentlyFullscreen) {
+        const exit = document.exitFullscreen || document.webkitExitFullscreen;
+        exit?.call(document).catch(() => setIsFullscreen(false));
+        return;
+      }
+      setIsFullscreen(false);
     }
   };
 
   const exitFullscreen = () => {
-    if (supportsNativeFullscreen && (document.fullscreenElement || document.webkitFullscreenElement)) {
+    const isCurrentlyFullscreen = document.fullscreenElement || document.webkitFullscreenElement;
+    if (isCurrentlyFullscreen) {
       const exit = document.exitFullscreen || document.webkitExitFullscreen;
-      exit?.call(document);
+      exit?.call(document).catch(() => {});
     }
     setIsFullscreen(false);
   };
