@@ -290,52 +290,20 @@ export default function LessonPlayerPowerPoint() {
     return lesson.file_url || null;
     })() : null;
   
-  // Bookmark functionality
-  const toggleBookmark = async (slideIndex) => {
-    const updatedBookmarks = bookmarkedSlides.includes(slideIndex)
-      ? bookmarkedSlides.filter(i => i !== slideIndex)
-      : [...bookmarkedSlides, slideIndex];
-    
-    setBookmarkedSlides(updatedBookmarks);
-    
-    const allBookmarks = { ...(user?.lesson_bookmarks || {}), [lessonId]: updatedBookmarks };
-    await base44.auth.updateMe({ lesson_bookmarks: allBookmarks });
-    toast.success(updatedBookmarks.includes(slideIndex) ? 'Bookmark added' : 'Bookmark removed');
-  };
+  const {
+    notes: sharedNotes, showNotes, setShowNotes, saveNote, exportNotes,
+    bookmarks: bookmarkedSlides, showBookmarks, setShowBookmarks, toggleBookmark,
+    showAI, setShowAI, aiTab, setAiTab, aiLoading: loadingSummary,
+    aiResponse, setAiResponse, aiSummary, aiTranslation,
+    targetLanguage, setTargetLanguage,
+    askAI, summariseSlide: generateAISummary, defineWord, translateSlide,
+  } = sharedPlayer;
 
-  // AI Summary generation - FIXED
-  const generateAISummary = async () => {
-    if (!lesson) return;
-    
-    setLoadingSummary(true);
-    setShowAISummary(true);
-    
-    try {
-      const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
-      const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
-      const slideContent = lessonHasSlides 
-        ? slides.map(s => `${s.title}: ${s.content}`).join('\n\n')
-        : 'Google Slides presentation';
-      
-      const response = await base44.integrations.Core.InvokeLLM({
-        prompt: `Analyze this lesson content and provide a concise, structured summary with key takeaways:\n\nLesson: ${lesson.title}\n\nContent:\n${slideContent}`,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            summary: { type: 'string' },
-            key_points: { type: 'array', items: { type: 'string' } },
-            suggested_focus: { type: 'string' }
-          }
-        }
-      });
-      
-      setAiSummary(response);
-    } catch (error) {
-      toast.error('Failed to generate summary');
-      setShowAISummary(false);
-    } finally {
-      setLoadingSummary(false);
-    }
+  const getCurrentSlideContext = () => {
+    if (!lesson) return '';
+    const slides = hasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
+    const slide = slides[currentSlideIndex];
+    return slide ? `${slide.title}: ${slide.content?.replace(/<[^>]*>/g, '')}` : lesson.title;
   };
 
   // Search functionality - FIXED
