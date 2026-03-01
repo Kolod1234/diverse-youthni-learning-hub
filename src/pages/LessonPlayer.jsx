@@ -136,7 +136,7 @@ export default function LessonPlayer() {
           </Box>
         </motion.div>
 
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 4 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 4 }}>
           {/* PowerPoint Style */}
           <motion.div
             initial={{ x: -100, opacity: 0 }}
@@ -302,13 +302,97 @@ export default function LessonPlayer() {
               </Box>
             </Box>
           </motion.div>
-        </Box>
+          </Box>
 
-        <motion.div
+          {/* Modern Style - NEW */}
+          <motion.div
+            initial={{ y: 100, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            transition={{ duration: 0.6, delay: 0.4 }}
+            whileHover={{ y: -8, transition: { duration: 0.3 } }}
+          >
+            <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', borderRadius: 6, boxShadow: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { borderColor: 'rgba(34, 197, 94, 0.5)' }, transition: 'all 0.3s', position: 'relative' }}>
+              <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.05), rgba(59, 130, 246, 0.05))', opacity: 0, '&:hover': { opacity: 1 }, transition: 'opacity 0.3s' }} />
+
+              <Box sx={{ aspectRatio: '16/9', background: 'linear-gradient(to bottom right, #22c55e, #3b82f6)', display: 'flex', alignItems: 'center', justifyContent: 'center', position: 'relative', overflow: 'hidden' }}>
+                <motion.div
+                  animate={{ rotate: [0, -5, 0] }}
+                  transition={{ duration: 3, repeat: Infinity }}
+                >
+                  <Sparkles size={128} color="white" style={{ filter: 'drop-shadow(0 20px 25px rgba(0,0,0,0.5))' }} />
+                </motion.div>
+                <Chip 
+                  label="MODERN" 
+                  size="small"
+                  sx={{ position: 'absolute', top: 16, right: 16, bgcolor: 'rgba(255,255,255,0.2)', backdropFilter: 'blur(12px)', color: 'white', fontSize: '0.75rem', fontWeight: 600 }}
+                />
+              </Box>
+
+              <Box sx={{ p: 4, position: 'relative', zIndex: 10 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
+                  <Typography variant="h4" sx={{ fontWeight: 700, color: 'white' }}>Modern Style</Typography>
+                  <Box sx={{ width: 48, height: 48, background: 'linear-gradient(to bottom right, #22c55e, #3b82f6)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                    <Sparkles size={24} color="white" />
+                  </Box>
+                </Box>
+
+                <Typography sx={{ color: '#d1d5db', mb: 3, lineHeight: 1.75 }}>
+                  Next-generation player with presentation mode, AI assistant, fullscreen landscape lock, and advanced learning tools.
+                </Typography>
+
+                <Box component="ul" sx={{ listStyle: 'none', p: 0, mb: 4, display: 'flex', flexDirection: 'column', gap: 1.5 }}>
+                  {[
+                    { icon: Sparkles, text: "AI Assistant (Ask/Summarize)" },
+                    { icon: Presentation, text: "Presentation Mode" },
+                    { icon: Zap, text: "Landscape Lock" },
+                    { icon: Star, text: "Advanced Controls" }
+                  ].map((item, idx) => (
+                    <motion.li
+                      key={idx}
+                      initial={{ x: -20, opacity: 0 }}
+                      animate={{ x: 0, opacity: 1 }}
+                      transition={{ delay: 0.6 + idx * 0.1 }}
+                    >
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, color: '#e5e7eb' }}>
+                        <Box sx={{ width: 32, height: 32, background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.2), rgba(59, 130, 246, 0.2))', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                          <item.icon size={16} color="#4ade80" />
+                        </Box>
+                        <Typography>{item.text}</Typography>
+                      </Box>
+                    </motion.li>
+                  ))}
+                </Box>
+
+                <Button
+                  onClick={() => savePreference('ModernLessonPlayer')}
+                  variant="contained"
+                  fullWidth
+                  endIcon={<ChevronRight size={20} />}
+                  sx={{
+                    background: 'linear-gradient(to right, #22c55e, #3b82f6)',
+                    color: 'white',
+                    fontWeight: 600,
+                    py: 3,
+                    borderRadius: 3,
+                    boxShadow: 4,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #4ade80, #60a5fa)',
+                      boxShadow: '0 10px 30px rgba(34, 197, 94, 0.5)',
+                    },
+                  }}
+                >
+                  Use Modern Style
+                </Button>
+              </Box>
+            </Box>
+          </motion.div>
+          </Box>
+
+          <motion.div
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           transition={{ delay: 1 }}
-        >
+          >
           <Box sx={{ textAlign: 'center', mt: 6, display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1 }}>
             <Sparkles size={16} color="#9ca3af" />
             <Typography sx={{ color: '#9ca3af', fontSize: '0.875rem' }}>
