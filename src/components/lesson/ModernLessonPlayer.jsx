@@ -6,6 +6,7 @@ import {
   Clock, Volume2, X, Menu, Lightbulb, Loader2, Send, Settings2
 } from 'lucide-react';
 import useLessonPlayer from './useLessonPlayer';
+import UniversalLessonPlayer from './UniversalLessonPlayer';
 
 export default function ModernLessonPlayer({
   lesson,
@@ -122,14 +123,36 @@ export default function ModernLessonPlayer({
           isPresentationMode ? 'bg-black' : 'bg-gray-900'
         }`}
       >
-        {/* Placeholder for actual lesson content */}
-        <div className="w-full h-full flex items-center justify-center">
-          <div className="text-center text-white">
-            <div className="text-6xl font-bold mb-4">{lesson?.title || 'Lesson'}</div>
-            <div className="text-2xl text-gray-400 mb-8">Slide {currentSlide + 1} of {totalSlides}</div>
-            <div className="text-xl text-gray-500">Lesson Player Ready</div>
+        {lesson?.google_slides_url ? (
+          <UniversalLessonPlayer
+            lesson={lesson}
+            totalSlides={totalSlides}
+            isFullscreen={player.isFullscreen}
+            toggleFullscreen={player.toggleFullscreen}
+          />
+        ) : lesson?.video_url ? (
+          <iframe
+            src={lesson.video_url}
+            className="w-full h-full border-0"
+            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+            allowFullScreen
+            title={lesson.title}
+          />
+        ) : lesson?.file_url ? (
+          <iframe
+            src={lesson.file_url}
+            className="w-full h-full border-0"
+            title={lesson.title}
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center">
+            <div className="text-center text-white">
+              <div className="text-6xl font-bold mb-4">{lesson?.title || 'Lesson'}</div>
+              <div className="text-2xl text-gray-400 mb-8">Slide {currentSlide + 1} of {totalSlides}</div>
+              <div className="text-xl text-gray-500">No content available</div>
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Control Bar - Hidden in true presentation mode */}
