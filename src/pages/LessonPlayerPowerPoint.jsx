@@ -25,6 +25,7 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
+import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
 
 
 export default function LessonPlayerPowerPoint() {
