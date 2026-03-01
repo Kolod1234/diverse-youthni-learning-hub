@@ -5,16 +5,16 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { 
   ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
-  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye, Sparkles
+  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye
 } from 'lucide-react';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
-import useLessonPlayer from '@/components/lesson/useLessonPlayer';
-import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
@@ -80,6 +80,7 @@ export default function LessonPlayerClassic() {
   const [showCertificate, setShowCertificate] = useState(false);
   const [showNotesSheet, setShowNotesSheet] = useState(false);
   const [showBookmarksSheet, setShowBookmarksSheet] = useState(false);
+  const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [focusModeEnabled, setFocusModeEnabled] = useState(false);
   const [currentXP, setCurrentXP] = useState(0);
@@ -105,24 +106,6 @@ export default function LessonPlayerClassic() {
   useEffect(() => {
     base44.auth.me().then(setUser);
   }, []);
-
-  // Shared player hook — provides fullscreen, notes, bookmarks, AI, keyboard shortcuts
-  const sharedPlayer = useLessonPlayer({
-    lessonId,
-    containerRef: mainContentRef,
-    user,
-    onNext: handleNextLesson,
-    onPrev: handlePrevLesson,
-  });
-
-  const {
-    isFullscreen, toggleFullscreen,
-    showNotes: showSharedNotes, setShowNotes: setShowSharedNotes,
-    showAI, setShowAI, aiTab, setAiTab, aiLoading,
-    aiResponse, setAiResponse, aiSummary,
-    aiTranslation, targetLanguage, setTargetLanguage,
-    askAI, summariseSlide, defineWord, translateSlide,
-  } = sharedPlayer;
 
   // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
@@ -387,10 +370,56 @@ export default function LessonPlayerClassic() {
     }
   };
 
+  // Shared player hook — must be after handleNextLesson / handlePrevLesson are defined
+  const {
+    showNotes, setShowNotes, notes: sharedNotes, saveNote, exportNotes,
+    showBookmarks, setShowBookmarks, bookmarks: sharedBookmarks,
+    showAI, setShowAI, aiTab, setAiTab, aiLoading,
+    aiResponse, setAiResponse, aiSummary, aiTranslation,
+    targetLanguage, setTargetLanguage,
+    askAI, summariseSlide, defineWord, translateSlide,
+  } = useLessonPlayer({
+    lessonId,
+    containerRef: mainContentRef,
+    user,
+    onNext: handleNextLesson,
+    onPrev: handlePrevLesson,
+  });
+
   useKeyboardShortcuts({
     onNext: handleNextLesson,
     onPrev: handlePrevLesson,
-    onToggleFullscreen: toggleFullscreen,
+    onToggleFullscreen: async () => {
+      try {
+        if (!document.fullscreenElement) {
+          if (mainContentRef.current) {
+            await mainContentRef.current.requestFullscreen?.().catch(async () => {
+              // Fallback: Use Screen Orientation API for mobile
+              if (screen.orientation?.lock) {
+                try {
+                  await screen.orientation.lock('landscape');
+                } catch (e) {
+                  console.log('Orientation lock not supported');
+                }
+              }
+            });
+          }
+        } else {
+          await document.exitFullscreen?.().catch(async () => {
+            // Fallback: Unlock orientation
+            if (screen.orientation?.unlock) {
+              try {
+                await screen.orientation.unlock();
+              } catch (e) {
+                console.log('Orientation unlock not supported');
+              }
+            }
+          });
+        }
+      } catch (err) {
+        console.error('Fullscreen error:', err);
+      }
+    },
     onBookmark: () => setShowBookmarksSheet(true),
     onSearch: () => searchInputRef.current?.focus()
   });
@@ -709,10 +738,6 @@ export default function LessonPlayerClassic() {
                 </Box>
               )}
               
-              <IconButton onClick={() => setShowAI(true)} title="AI Assistant (A)" sx={{ display: { xs: 'none', md: 'flex' } }}>
-                <Sparkles className="w-5 h-5 text-purple-500" />
-              </IconButton>
-
               <AccessibilityControls />
               
               <IconButton
@@ -1437,6 +1462,40 @@ export default function LessonPlayerClassic() {
       <BadgeUnlock 
         badges={newBadges}
         onClose={() => setShowBadges(false)}
+      />
+
+      {/* Shared Notes / AI / Bookmarks */}
+      <NotesDialog
+        open={showNotes}
+        onOpenChange={setShowNotes}
+        slideKey="lesson"
+        notes={sharedNotes}
+        onSave={saveNote}
+        onExport={exportNotes}
+      />
+      <AIAssistantDialog
+        open={showAI}
+        onOpenChange={setShowAI}
+        aiTab={aiTab}
+        setAiTab={setAiTab}
+        aiLoading={aiLoading}
+        aiResponse={aiResponse}
+        setAiResponse={setAiResponse}
+        aiSummary={aiSummary}
+        aiTranslation={aiTranslation}
+        targetLanguage={targetLanguage}
+        setTargetLanguage={setTargetLanguage}
+        onAsk={q => askAI(q, lesson?.title)}
+        onSummarise={() => summariseSlide(lesson?.title)}
+        onDefine={defineWord}
+        onTranslate={() => translateSlide(lesson?.title)}
+        slideLabel={lesson?.title}
+      />
+      <BookmarksPanel
+        open={showBookmarks}
+        onOpenChange={setShowBookmarks}
+        bookmarks={sharedBookmarks}
+        onJump={() => {}}
       />
 
       {/* Improved Focus Mode */}
