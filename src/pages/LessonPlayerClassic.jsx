@@ -33,6 +33,7 @@ import CertificateGenerator from '@/components/lesson/CertificateGenerator';
 import AccessibilityControls from '@/components/lesson/AccessibilityControls';
 import QuickActions from '@/components/lesson/QuickActions';
 import useKeyboardShortcuts from '@/components/lesson/useKeyboardShortcuts';
+import ModernLessonPlayer from '@/components/lesson/ModernLessonPlayer';
 import useProgressAutoSave from '@/components/lesson/useProgressAutoSave';
 import usePictureInPicture from '@/components/lesson/usePictureInPicture';
 import useHapticFeedback from '@/components/lesson/useHapticFeedback';
@@ -673,6 +674,22 @@ export default function LessonPlayerClassic() {
   const isCompleted = enrollment?.completed_lessons?.includes(lessonId);
   const slideUrl = getSlideEmbedUrl();
 
+  // Use Modern player by default
+  return (
+    <ModernLessonPlayer
+      lesson={lesson}
+      course={course}
+      isCompleted={isCompleted}
+      onComplete={() => markCompleteMutation.mutate()}
+      onNext={handleNextLesson}
+      onPrev={handlePrevLesson}
+      user={user}
+      enrollment={enrollment}
+      courseId={courseId}
+    />
+  );
+
+  // Old layout kept for reference (deprecated)
   return (
     <ErrorBoundary>
       {/* Network Status */}
