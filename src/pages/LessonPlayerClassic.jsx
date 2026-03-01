@@ -11,10 +11,10 @@ import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import MenuIcon from '@mui/icons-material/Menu';
 import CloseIcon from '@mui/icons-material/Close';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
-import useLessonPlayer from '@/components/lesson/useLessonPlayer';
-import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';
 import EnhancedMediaPlayer from '@/components/lesson/EnhancedMediaPlayer';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import FlashCards from '@/components/lesson/FlashCards';
@@ -83,6 +83,7 @@ export default function LessonPlayerClassic() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [showCommandPalette, setShowCommandPalette] = useState(false);
   const [focusModeEnabled, setFocusModeEnabled] = useState(false);
+  const mainContentRef2 = useRef(null); // alias to avoid conflict with existing mainContentRef
   const [currentXP, setCurrentXP] = useState(0);
   const [userLevel, setUserLevel] = useState(1);
   const [showXPGain, setShowXPGain] = useState(false);
