@@ -75,12 +75,22 @@ export default function LessonPlayerPowerPoint() {
     const loadUser = async () => {
       const userData = await base44.auth.me();
       setUser(userData);
-      if (userData?.lesson_bookmarks) {
-        setBookmarkedSlides(userData.lesson_bookmarks[lessonId] || []);
-      }
     };
     loadUser();
   }, [lessonId]);
+
+  // Shared player hook (fullscreen, notes, bookmarks, AI, keyboard shortcuts)
+  const sharedPlayer = useLessonPlayer({
+    lessonId,
+    containerRef: playerRef,
+    user,
+    onNext: () => {
+      if (hasSlides) setCurrentSlideIndex(prev => Math.min(sortedSlides.length - 1, prev + 1));
+    },
+    onPrev: () => {
+      if (hasSlides) setCurrentSlideIndex(prev => Math.max(0, prev - 1));
+    },
+  });
 
   // Data Fetching logic
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
