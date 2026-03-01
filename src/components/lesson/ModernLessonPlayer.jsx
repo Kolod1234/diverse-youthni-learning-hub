@@ -69,7 +69,7 @@ export default function ModernLessonPlayer({
     };
   }, [isPresentationMode]);
 
-  // Keyboard shortcuts
+  // Keyboard shortcuts (works in fullscreen)
   useEffect(() => {
     const handleKeydown = (e) => {
       if (e.target.tagName === 'TEXTAREA' || e.target.tagName === 'INPUT') return;
@@ -85,12 +85,20 @@ export default function ModernLessonPlayer({
         case 'ArrowRight':
         case 'l':
           e.preventDefault();
-          player.onNext?.();
+          if (currentSlide < totalSlides - 1) {
+            setCurrentSlide(currentSlide + 1);
+          } else {
+            onNext?.();
+          }
           break;
         case 'ArrowLeft':
         case 'h':
           e.preventDefault();
-          player.onPrev?.();
+          if (currentSlide > 0) {
+            setCurrentSlide(currentSlide - 1);
+          } else {
+            onPrev?.();
+          }
           break;
         case 'n':
           e.preventDefault();
@@ -105,8 +113,12 @@ export default function ModernLessonPlayer({
       }
     };
     window.addEventListener('keydown', handleKeydown);
-    return () => window.removeEventListener('keydown', handleKeydown);
-  }, [player, isPresentationMode]);
+    document.addEventListener('keydown', handleKeydown);
+    return () => {
+      window.removeEventListener('keydown', handleKeydown);
+      document.removeEventListener('keydown', handleKeydown);
+    };
+  }, [player, isPresentationMode, currentSlide, totalSlides, onNext, onPrev]);
 
   const slideProgress = ((currentSlide + 1) / totalSlides) * 100;
 
@@ -180,9 +192,15 @@ export default function ModernLessonPlayer({
               {/* Left Controls */}
               <div className="flex items-center gap-2">
                 <button
-                  onClick={() => currentSlide > 0 && setCurrentSlide(currentSlide - 1)}
+                  onClick={() => {
+                    if (currentSlide > 0) {
+                      setCurrentSlide(currentSlide - 1);
+                    } else {
+                      onPrev?.();
+                    }
+                  }}
                   className="p-2 hover:bg-gray-700 rounded-lg transition text-white"
-                  title="Previous (H)"
+                  title="Previous Lesson (H)"
                 >
                   <ChevronLeft size={20} />
                 </button>
@@ -190,9 +208,15 @@ export default function ModernLessonPlayer({
                   {currentSlide + 1} / {totalSlides}
                 </div>
                 <button
-                  onClick={() => currentSlide < totalSlides - 1 && setCurrentSlide(currentSlide + 1)}
+                  onClick={() => {
+                    if (currentSlide < totalSlides - 1) {
+                      setCurrentSlide(currentSlide + 1);
+                    } else {
+                      onNext?.();
+                    }
+                  }}
                   className="p-2 hover:bg-gray-700 rounded-lg transition text-white"
-                  title="Next (L)"
+                  title="Next Lesson (L)"
                 >
                   <ChevronRight size={20} />
                 </button>
@@ -288,8 +312,15 @@ export default function ModernLessonPlayer({
             className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-2 z-50"
           >
             <button
-              onClick={() => currentSlide > 0 && setCurrentSlide(currentSlide - 1)}
+              onClick={() => {
+                if (currentSlide > 0) {
+                  setCurrentSlide(currentSlide - 1);
+                } else {
+                  onPrev?.();
+                }
+              }}
               className="p-3 bg-orange-500 hover:bg-orange-600 rounded-full text-white transition"
+              title="Previous (H)"
             >
               <ChevronLeft size={24} />
             </button>
@@ -297,8 +328,15 @@ export default function ModernLessonPlayer({
               {currentSlide + 1} / {totalSlides}
             </div>
             <button
-              onClick={() => currentSlide < totalSlides - 1 && setCurrentSlide(currentSlide + 1)}
+              onClick={() => {
+                if (currentSlide < totalSlides - 1) {
+                  setCurrentSlide(currentSlide + 1);
+                } else {
+                  onNext?.();
+                }
+              }}
               className="p-3 bg-orange-500 hover:bg-orange-600 rounded-full text-white transition"
+              title="Next (L)"
             >
               <ChevronRight size={24} />
             </button>
