@@ -1150,11 +1150,9 @@ export default function LessonPlayerClassic() {
 
               {lesson.google_slides_url && (
                 <Box sx={{ my: { xs: 2, sm: 4 } }}>
-                  <EnhancedMediaPlayer
-                    type="google-slides"
-                    src={lesson.google_slides_url.includes('/embed') 
-                      ? lesson.google_slides_url 
-                      : lesson.google_slides_url.replace('/edit', '/embed')}
+                  <UniversalLessonPlayer
+                    lesson={lesson}
+                    totalSlides={lesson.slides?.length || 20}
                   />
                 </Box>
               )}
