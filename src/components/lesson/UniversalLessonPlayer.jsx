@@ -37,6 +37,8 @@ export default function UniversalLessonPlayer({ lesson, totalSlides, toggleFulls
         googleSlidesUrl={lesson.google_slides_url}
         lessonId={lesson.id}
         totalSlides={totalSlides || lesson.slides?.length || 20}
+        toggleFullscreen={toggleFullscreen}
+        isFullscreen={isFullscreen}
       />
     );
   }
