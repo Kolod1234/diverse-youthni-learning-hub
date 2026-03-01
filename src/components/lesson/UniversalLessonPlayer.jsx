@@ -17,7 +17,7 @@ import ProfessionalGoogleSlidePlayer from './ProfessionalGoogleSlidePlayer';
  * This component is only invoked when the lesson has external-embed content
  * (google slides, video, document file).
  */
-export default function UniversalLessonPlayer({ lesson, totalSlides }) {
+export default function UniversalLessonPlayer({ lesson, totalSlides, toggleFullscreen, isFullscreen }) {
   if (!lesson) return null;
 
   // ── Derive effective content type ──────────────────────────────────────────

@@ -1154,6 +1154,8 @@ export default function LessonPlayerClassic() {
                   <UniversalLessonPlayer
                     lesson={lesson}
                     totalSlides={lesson.slides?.length || 20}
+                    toggleFullscreen={toggleFullscreen}
+                    isFullscreen={isFullscreen}
                   />
                 </Box>
               )}
