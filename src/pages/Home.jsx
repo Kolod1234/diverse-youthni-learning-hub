@@ -118,16 +118,12 @@ export default function Home() {
     return 0;
   }).filter(c => selectedCategory === 'all' || c.category === selectedCategory);
 
-  const heroItems = heroImages.length > 0
-    ? heroImages.map(img => ({ image_url: img.image_url, title: '', subtitle: '', description: '', badge: '', cta_text: '', cta_link: '' }))
-    : [];
-
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <PageSEO title="Diverse Youth NI Learning Hub" description="Empowering young people through education" />
 
-      {/* Hero Carousel or Afterschool Hero fallback */}
-      {heroItems.length > 0 ? <HeroCarousel items={heroItems} /> : <AfterschoolHero />}
+      {/* Hero: always show Afterschool write-up; if hero images exist, use them as carousel background */}
+      {heroImages.length > 0 ? <HeroCarouselWithWriteup images={heroImages} /> : <AfterschoolHero />}
 
       {/* Community Carousel */}
       {carouselImages.length > 0 && (
