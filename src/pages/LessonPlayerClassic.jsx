@@ -106,8 +106,6 @@ export default function LessonPlayerClassic() {
     base44.auth.me().then(setUser);
   }, []);
 
-  // NOTE: useLessonPlayer is called AFTER handleNextLesson/handlePrevLesson are defined (below)
-
   // Load user XP and update streak (with retry logic and debouncing)
   useEffect(() => {
     if (!user) return;
