@@ -231,7 +231,7 @@ export default function EnhancedLessonPlayer({
       </AnimatePresence>
 
       {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden">
+      <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto">
         {/* Top Bar */}
         <div className="bg-slate-900 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
           <div className="flex items-center gap-4">
