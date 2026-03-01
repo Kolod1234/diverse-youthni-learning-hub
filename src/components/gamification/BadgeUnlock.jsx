@@ -1,12 +1,15 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Award, X } from 'lucide-react';
 import confetti from 'canvas-confetti';
 import { Button } from '@/components/ui/button';
 
 export default function BadgeUnlock({ badges, onClose }) {
+  const [visible, setVisible] = useState(false);
+
   useEffect(() => {
     if (badges && badges.length > 0) {
+      setVisible(true);
       confetti({
         particleCount: 100,
         spread: 70,
@@ -15,10 +18,14 @@ export default function BadgeUnlock({ badges, onClose }) {
     }
   }, [badges]);
 
-  if (!badges || badges.length === 0) return null;
+  const handleClose = () => {
+    setVisible(false);
+    setTimeout(() => onClose(), 300);
+  };
 
   return (
     <AnimatePresence>
+      {visible && badges && badges.length > 0 && (
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
