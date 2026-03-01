@@ -27,29 +27,18 @@ export default function useLessonPlayer({
   // ── Fullscreen ────────────────────────────────────────────────────────────
   const [isFullscreen, setIsFullscreen] = useState(false);
 
-  const lockLandscape = useCallback(() => {
-    // Call directly within user gesture for browser to allow it
+  const lockLandscape = useCallback(async () => {
+    if (!screen?.orientation?.lock) return;
     try {
-      if (screen.orientation?.lock) {
-        // Try landscape-primary first, fall back to landscape
-        screen.orientation.lock('landscape-primary').catch(() => {
-          screen.orientation.lock('landscape').catch((err) => {
-            console.warn('Landscape lock failed:', err);
-          });
-        });
-      }
-    } catch (err) {
-      console.warn('Orientation error:', err);
+      await screen.orientation.lock('landscape');
+    } catch {
+      // Silently fail - not all browsers/devices support orientation lock
     }
   }, []);
 
   const enterFullscreen = useCallback(async () => {
-    // Lock landscape FIRST, within user gesture, before any async calls
-    lockLandscape();
-    
     setIsFullscreen(true);
     const el = containerRef?.current;
-    
     if (!el) return;
     
     // Try native fullscreen
@@ -58,9 +47,12 @@ export default function useLessonPlayer({
       try {
         await req.call(el);
       } catch (err) {
-        console.warn('Native fullscreen failed, using CSS fallback:', err);
+        console.warn('Fullscreen request failed:', err);
       }
     }
+    
+    // Lock landscape after fullscreen is active
+    await lockLandscape();
   }, [containerRef, lockLandscape]);
 
   const exitFullscreen = useCallback(() => {
