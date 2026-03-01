@@ -301,16 +301,15 @@ export default function LessonPlayer() {
                 </Button>
               </Box>
             </Box>
-          </motion.div>
-          </Box>
+            </motion.div>
 
-          {/* Modern Style - NEW */}
-          <motion.div
+            {/* Modern Style - NEW */}
+            <motion.div
             initial={{ y: 100, opacity: 0 }}
             animate={{ y: 0, opacity: 1 }}
             transition={{ duration: 0.6, delay: 0.4 }}
             whileHover={{ y: -8, transition: { duration: 0.3 } }}
-          >
+            >
             <Box sx={{ bgcolor: 'rgba(255,255,255,0.1)', backdropFilter: 'blur(24px)', borderRadius: 6, boxShadow: 8, overflow: 'hidden', border: '1px solid rgba(255,255,255,0.2)', '&:hover': { borderColor: 'rgba(34, 197, 94, 0.5)' }, transition: 'all 0.3s', position: 'relative' }}>
               <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to bottom right, rgba(34, 197, 94, 0.05), rgba(59, 130, 246, 0.05))', opacity: 0, '&:hover': { opacity: 1 }, transition: 'opacity 0.3s' }} />
 
@@ -385,8 +384,8 @@ export default function LessonPlayer() {
                 </Button>
               </Box>
             </Box>
-          </motion.div>
-          </Box>
+            </motion.div>
+            </Box>
 
           <motion.div
           initial={{ opacity: 0 }}
