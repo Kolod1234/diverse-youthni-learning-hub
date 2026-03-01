@@ -399,26 +399,7 @@ export default function LessonPlayerPowerPoint() {
     }
   };
 
-  // Note-taking - FIXED
-  const addNote = () => {
-    if (!currentNote.trim() || !lesson) return;
-    
-    const lessonHasSlides = lesson?.slides && lesson.slides.length > 0;
-    const slides = lessonHasSlides ? [...lesson.slides].sort((a, b) => (a.order || 0) - (b.order || 0)) : [];
-    
-    const newNote = {
-      id: Date.now(),
-      content: currentNote,
-      slideIndex: currentSlideIndex,
-      slideTitle: slides[currentSlideIndex]?.title || 'Slide',
-      timestamp: new Date().toISOString(),
-      slideNumber: currentSlideIndex + 1
-    };
-    
-    setNotes([...notes, newNote]);
-    setCurrentNote('');
-    toast.success('Note saved');
-  };
+
 
   // Generate flashcards - FIXED
   const generateFlashcards = async () => {
