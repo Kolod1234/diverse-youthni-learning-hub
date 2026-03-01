@@ -211,20 +211,20 @@ export default function AdminRSSFeed() {
             </div>
           </div>
           <div className="flex gap-2">
-              <Button 
-                onClick={() => cleanupMutation.mutate()}
-                disabled={cleanupMutation.isPending}
-                variant="outline"
-                className="border-red-600 text-red-700 hover:bg-red-50"
-              >
-                <Trash2 className="w-4 h-4 mr-2" />
-                Clean Old News
-              </Button>
-              <Button 
-                onClick={() => {
-                  const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather'];
-                  sources.forEach(source => importFeedMutation.mutate(source));
-                }}
+            <Button 
+              onClick={() => cleanupMutation.mutate()}
+              disabled={cleanupMutation.isPending}
+              variant="outline"
+              className="border-red-600 text-red-700 hover:bg-red-50"
+            >
+              <Trash2 className="w-4 h-4 mr-2" />
+              Clean Old News
+            </Button>
+            <Button 
+              onClick={() => {
+                const sources = ['bbc', 'bbceducation', 'cnn', 'ocnni', 'ukhomeoffice', 'migrantni', 'eani', 'deni', 'govuk', 'ukparliament', 'metroweather', 'msn'];
+                sources.forEach(source => importFeedMutation.mutate(source));
+              }}
                 disabled={importFeedMutation.isPending}
                 variant="outline"
                 className="border-green-600 text-green-700 hover:bg-green-50"
@@ -272,6 +272,9 @@ export default function AdminRSSFeed() {
                   </DropdownMenuItem>
                   <DropdownMenuItem onClick={() => importFeedMutation.mutate('metroweather')}>
                     Metro UK
+                  </DropdownMenuItem>
+                  <DropdownMenuItem onClick={() => importFeedMutation.mutate('msn')}>
+                    MSN News
                   </DropdownMenuItem>
                 </DropdownMenuContent>
               </DropdownMenu>
@@ -465,6 +468,7 @@ export default function AdminRSSFeed() {
                     <option value="UKHOMEOFFICE">UK Home Office</option>
                     <option value="MIGRANTNI">Migrant NI</option>
                     <option value="METROWEATHER">Metro UK</option>
+                    <option value="MSN">MSN News</option>
                   </select>
                 </div>
 
