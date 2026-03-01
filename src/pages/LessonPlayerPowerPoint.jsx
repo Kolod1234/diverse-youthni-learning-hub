@@ -39,28 +39,16 @@ export default function LessonPlayerPowerPoint() {
   const urlCourseId = params.get('course');
 
   // State Management
-  const [isFullscreen, setIsFullscreen] = useState(false);
   const [isPresenting, setIsPresenting] = useState(false);
   const [showObjectives, setShowObjectives] = useState(true);
   const [currentSlideIndex, setCurrentSlideIndex] = useState(0);
   const [user, setUser] = useState(null);
-  const [bookmarkedSlides, setBookmarkedSlides] = useState([]);
   const [showSearch, setShowSearch] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
-  const [showAISummary, setShowAISummary] = useState(false);
-  const [aiSummary, setAiSummary] = useState('');
-  const [loadingSummary, setLoadingSummary] = useState(false);
   const [isDrawing, setIsDrawing] = useState(false);
   const [drawColor, setDrawColor] = useState('#FF0000');
   const [drawings, setDrawings] = useState([]);
   const [showOutline, setShowOutline] = useState(false);
-  const [showAIHelp, setShowAIHelp] = useState(false);
-  const [aiHelpLoading, setAIHelpLoading] = useState(false);
-  const [aiHelpResponse, setAIHelpResponse] = useState('');
-  const [aiHelpQuery, setAIHelpQuery] = useState('');
-  const [notes, setNotes] = useState([]);
-  const [currentNote, setCurrentNote] = useState('');
-  const [showNotes, setShowNotes] = useState(false);
   const [showFlashcards, setShowFlashcards] = useState(false);
   const [flashcards, setFlashcards] = useState([]);
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
@@ -74,11 +62,11 @@ export default function LessonPlayerPowerPoint() {
   });
   const [showAccessibility, setShowAccessibility] = useState(false);
   const [isMobileInfoOpen, setIsMobileInfoOpen] = useState(false);
-  
+
   // Touch state for Swipe
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
-  
+
   const playerRef = useRef(null);
   const canvasRef = useRef(null);
   const hideControlsTimeoutRef = useRef(null);
