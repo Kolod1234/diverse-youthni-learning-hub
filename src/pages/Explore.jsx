@@ -455,7 +455,7 @@ export default function Explore() {
   const stats = [
     { icon: BookOpen, label: 'Total Courses', value: coursesWithActualData.length, color: 'from-blue-500 to-cyan-500' },
     { icon: Users, label: 'Active Learners', value: allEnrollments.length, color: 'from-purple-500 to-pink-500' },
-    { icon: Star, label: 'Avg Rating', value: (coursesWithActualData.reduce((sum, c) => sum + (c.rating || 0), 0) / coursesWithActualData.length).toFixed(1), color: 'from-yellow-500 to-orange-500' },
+    { icon: Star, label: 'Avg Rating', value: coursesWithActualData.length > 0 ? (coursesWithActualData.filter(c => c.rating).reduce((sum, c) => sum + c.rating, 0) / (coursesWithActualData.filter(c => c.rating).length || 1)).toFixed(1) : '—', color: 'from-yellow-500 to-orange-500' },
     { icon: TrendingUp, label: 'Success Rate', value: '96%', color: 'from-green-500 to-emerald-500' }
   ];
 
