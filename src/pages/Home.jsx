@@ -126,8 +126,8 @@ export default function Home() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <PageSEO title="Diverse Youth NI Learning Hub" description="Empowering young people through education" />
 
-      {/* Hero Carousel */}
-      {heroItems.length > 0 && <HeroCarousel items={heroItems} />}
+      {/* Hero Carousel or Afterschool Hero fallback */}
+      {heroItems.length > 0 ? <HeroCarousel items={heroItems} /> : <AfterschoolHero />}
 
       {/* Community Carousel */}
       {carouselImages.length > 0 && (

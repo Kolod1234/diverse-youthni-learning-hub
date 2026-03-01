@@ -108,7 +108,6 @@ import Explore from './pages/Explore';
 import FileManager from './pages/FileManager';
 import GradeAssignments from './pages/GradeAssignments';
 import GroupProjectWorkspace from './pages/GroupProjectWorkspace';
-import Home from './pages/Home';
 import HomeGuest from './pages/HomeGuest';
 import HomeLeadership from './pages/HomeLeadership';
 import HomeLearning from './pages/HomeLearning';
@@ -159,6 +158,7 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
+import Home from './pages/Home';
 import __Layout from './Layout.jsx';
 
 
@@ -224,7 +224,6 @@ export const PAGES = {
     "FileManager": FileManager,
     "GradeAssignments": GradeAssignments,
     "GroupProjectWorkspace": GroupProjectWorkspace,
-    "Home": Home,
     "HomeGuest": HomeGuest,
     "HomeLeadership": HomeLeadership,
     "HomeLearning": HomeLearning,
@@ -275,6 +274,7 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
+    "Home": Home,
 }
 
 export const pagesConfig = {
