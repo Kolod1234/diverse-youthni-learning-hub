@@ -59,6 +59,7 @@ import AdminCourseBuilder from './pages/AdminCourseBuilder';
 import AdminDailyFacts from './pages/AdminDailyFacts';
 import AdminDashboard from './pages/AdminDashboard';
 import AdminDiscover from './pages/AdminDiscover';
+import AdminEvents from './pages/AdminEvents';
 import AdminLearningObjectives from './pages/AdminLearningObjectives';
 import AdminLibrary from './pages/AdminLibrary';
 import AdminLibraryDashboard from './pages/AdminLibraryDashboard';
@@ -101,6 +102,7 @@ import DataPresentation from './pages/DataPresentation';
 import DetailedCourseAnalytics from './pages/DetailedCourseAnalytics';
 import EnhancedContentAuthor from './pages/EnhancedContentAuthor';
 import EnterpriseIntegrations from './pages/EnterpriseIntegrations';
+import Events from './pages/Events';
 import ExpertContentCreator from './pages/ExpertContentCreator';
 import Explore from './pages/Explore';
 import FileManager from './pages/FileManager';
@@ -157,8 +159,6 @@ import WelcomeCover from './pages/WelcomeCover';
 import YouthWork from './pages/YouthWork';
 import YouthWorkLanding from './pages/YouthWorkLanding';
 import YouthWorkWorkbook from './pages/YouthWorkWorkbook';
-import Events from './pages/Events';
-import AdminEvents from './pages/AdminEvents';
 import __Layout from './Layout.jsx';
 
 
@@ -175,6 +175,7 @@ export const PAGES = {
     "AdminDailyFacts": AdminDailyFacts,
     "AdminDashboard": AdminDashboard,
     "AdminDiscover": AdminDiscover,
+    "AdminEvents": AdminEvents,
     "AdminLearningObjectives": AdminLearningObjectives,
     "AdminLibrary": AdminLibrary,
     "AdminLibraryDashboard": AdminLibraryDashboard,
@@ -217,6 +218,7 @@ export const PAGES = {
     "DetailedCourseAnalytics": DetailedCourseAnalytics,
     "EnhancedContentAuthor": EnhancedContentAuthor,
     "EnterpriseIntegrations": EnterpriseIntegrations,
+    "Events": Events,
     "ExpertContentCreator": ExpertContentCreator,
     "Explore": Explore,
     "FileManager": FileManager,
@@ -273,8 +275,6 @@ export const PAGES = {
     "YouthWork": YouthWork,
     "YouthWorkLanding": YouthWorkLanding,
     "YouthWorkWorkbook": YouthWorkWorkbook,
-    "Events": Events,
-    "AdminEvents": AdminEvents,
 }
 
 export const pagesConfig = {
