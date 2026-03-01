@@ -26,6 +26,8 @@ import DocumentViewer from '@/components/lesson/DocumentViewer';
 import LessonContentRenderer from '@/components/lesson/LessonContentRenderer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import useLessonPlayer from '@/components/lesson/useLessonPlayer';
+import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 
 
 export default function LessonPlayerPowerPoint() {
