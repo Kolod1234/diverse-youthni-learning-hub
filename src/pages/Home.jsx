@@ -51,7 +51,8 @@ export default function Home() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [sortBy, setSortBy] = useState('popular');
 
-  const pullToRefreshRef = usePullToRefresh(() => {
+  const queryClient = useQueryClient();
+  usePullToRefresh(() => {
     queryClient.invalidateQueries();
   });
 
