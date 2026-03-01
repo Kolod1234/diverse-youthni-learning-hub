@@ -42,7 +42,7 @@ export default function BadgeUnlock({ badges, onClose }) {
           onClick={(e) => e.stopPropagation()}
         >
           <button 
-            onClick={onClose}
+            onClick={handleClose}
             className="absolute top-4 right-4 text-white/80 hover:text-white"
           >
             <X className="w-6 h-6" />
