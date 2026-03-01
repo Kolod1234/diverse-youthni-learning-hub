@@ -632,10 +632,29 @@ export default function Home() {
                       <Typography sx={{ fontSize: '4rem', color: 'primary.main', opacity: 0.2, fontFamily: 'serif', mb: 1 }}>"</Typography>
                       <Typography sx={{ color: 'text.primary', lineHeight: 1.75, fontStyle: 'italic' }}>{review.comment}</Typography>
                     </Box>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'flex-start', pt: 2, borderTop: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', pt: 2, borderTop: 1, borderColor: 'rgba(0,0,0,0.1)' }}>
+                      <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                        {review.user_avatar ? (
+                          <Avatar src={review.user_avatar} alt={review.user_name} sx={{ width: 28, height: 28 }} />
+                        ) : (
+                          <Avatar sx={{ width: 28, height: 28, bgcolor: 'primary.main', fontSize: '0.75rem' }}>
+                            {review.user_name?.charAt(0) || '?'}
+                          </Avatar>
+                        )}
+                        <Box>
+                          <Typography variant="caption" sx={{ fontWeight: 600, color: 'text.primary', display: 'block' }}>
+                            {review.user_name || 'Anonymous'}
+                          </Typography>
+                          {review.instructor_name && (
+                            <Typography variant="caption" color="text.secondary">
+                              {review.instructor_name}
+                            </Typography>
+                          )}
+                        </Box>
+                      </Box>
                       <Typography variant="caption" color="text.secondary" sx={{ display: 'flex', alignItems: 'center', gap: 0.5 }}>
-                        <CheckCircle size={12} color="#22c55e" />
-                        {review.rating_type === 'course' ? 'Course Graduate' : 'Verified Learner'}
+                        <CheckCircle size={11} color="#22c55e" />
+                        Verified
                       </Typography>
                     </Box>
                   </Box>
