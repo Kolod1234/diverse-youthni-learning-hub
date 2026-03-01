@@ -119,6 +119,12 @@ export default function ModernLessonPlayer({
       className={`relative w-full h-screen bg-black overflow-hidden ${
         player.isFullscreen ? 'fullscreen' : ''
       }`}
+      style={{
+        width: '100%',
+        height: '100%',
+        maxHeight: '100vh',
+        position: player.isFullscreen ? 'fixed' : 'relative',
+      }}
     >
       {/* Content Area */}
       <div
