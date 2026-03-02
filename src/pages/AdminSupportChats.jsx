@@ -85,7 +85,7 @@ export default function AdminSupportChats() {
 
   const selectedChat = chats.find(c => c.id === selectedChatId);
 
-  const statusColor = { open: 'warning', closed: 'default', bot: 'info' };
+  const statusColor = { open: 'warning', closed: 'default', bot: 'info', live_agent: 'error' };
 
   return (
     <Container maxWidth="xl" sx={{ py: 4 }}>
