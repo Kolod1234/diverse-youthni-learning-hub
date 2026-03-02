@@ -40,6 +40,7 @@ export default function EnhancedLessonPlayer({
   const [expandedSections, setExpandedSections] = useState({});
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
+  const [showQuizPanel, setShowQuizPanel] = useState(false);
   const [interactiveContent, setInteractiveContent] = useState(null);
   const [loadingInteractives, setLoadingInteractives] = useState(false);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
