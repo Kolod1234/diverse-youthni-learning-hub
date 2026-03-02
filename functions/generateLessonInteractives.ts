@@ -219,6 +219,7 @@ Your questions are NEVER generic. They are always specific to the exact lesson t
       difficulty,
       questionTypes,
       keywords,
+      angleUsed: angle.label,
       summary: content.summary || null,
       contentChunks: content.contentChunks || [],
       examples: content.examples || [],
