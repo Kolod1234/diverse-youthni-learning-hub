@@ -111,6 +111,20 @@ Deno.serve(async (req) => {
 
     const difficultyLabel = { easy: 'EASY', intermediate: 'MEDIUM', advanced: 'HARD' }[difficulty] || 'MEDIUM';
 
+    // Rotate through distinct questioning angles to guarantee variety between generations
+    const questionAngles = [
+      { label: 'CAUSES & MECHANISMS', instruction: 'Focus questions on WHY and HOW things happen - causes, triggers, mechanisms, and processes.' },
+      { label: 'EFFECTS & CONSEQUENCES', instruction: 'Focus questions on WHAT HAPPENS as a result - outcomes, impacts, knock-on effects, and consequences.' },
+      { label: 'COMPARISONS & CONTRASTS', instruction: 'Focus questions on SIMILARITIES AND DIFFERENCES - compare processes, structures, or concepts against each other.' },
+      { label: 'REAL-WORLD APPLICATIONS', instruction: 'Focus questions on WHERE and HOW this applies in real life - practical uses, clinical examples, engineering scenarios, or everyday situations.' },
+      { label: 'EXCEPTIONS & EDGE CASES', instruction: 'Focus questions on WHEN things don\'t follow the expected pattern - exceptions, limitations, special conditions, and boundary cases.' },
+      { label: 'DEFINITIONS & TERMINOLOGY', instruction: 'Focus questions on PRECISE LANGUAGE - exact definitions, correct terminology, distinguishing between similar terms.' },
+      { label: 'SEQUENCES & PROCESSES', instruction: 'Focus questions on ORDER AND STEPS - what comes first, stages of processes, sequences of events.' },
+      { label: 'EVIDENCE & JUSTIFICATION', instruction: 'Focus questions on PROOF AND REASONING - what evidence supports a claim, how to justify a conclusion, what experiments or data show.' },
+    ];
+
+    const angle = questionAngles[randomSeed % questionAngles.length];
+
     const prompt = `You are a UK A-level examiner creating assessment questions for the following lesson. Your questions MUST be genuinely differentiated by the requested difficulty level.
 
 Lesson Title: ${lessonTitle}
