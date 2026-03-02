@@ -273,6 +273,13 @@ export default function EnhancedLessonPlayer({
               <MessageSquare className="w-5 h-5" />
             </button>
             <button
+              onClick={() => setShowQuizPanel(!showQuizPanel)}
+              className={`p-2 rounded-lg transition ${showQuizPanel ? 'bg-orange-500/20 text-orange-300' : 'hover:bg-slate-800 text-slate-400'}`}
+              title="Quiz Generator"
+            >
+              <Brain className="w-5 h-5" />
+            </button>
+            <button
               onClick={toggleFullscreen}
               className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400"
               title="Fullscreen"
