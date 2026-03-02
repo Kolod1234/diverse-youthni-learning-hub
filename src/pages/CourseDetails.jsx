@@ -133,7 +133,8 @@ export default function CourseDetails() {
       is_completed: false,
     }),
     onSuccess: () => {
-      queryClient.invalidateQueries(['enrollment', courseId]);
+      queryClient.invalidateQueries({ queryKey: ['enrollment', courseId, user?.email] });
+      queryClient.invalidateQueries({ queryKey: ['course-enrollments', courseId] });
     },
   });
 
