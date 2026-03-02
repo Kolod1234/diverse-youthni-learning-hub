@@ -9,7 +9,7 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const { lessonId, difficulty = 'intermediate', questionTypes = ['multiple_choice'], keywords = [] } = await req.json();
+    const { lessonId, difficulty = 'intermediate', questionTypes = ['multiple_choice'], keywords = [], generationIndex = 0, previousAngles = [], sessionSeed = 0 } = await req.json();
 
     // Get lesson details
     let lesson;
