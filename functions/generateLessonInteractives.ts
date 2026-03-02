@@ -170,15 +170,20 @@ SELF-CHECK before outputting: Are these questions noticeably different from what
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        model: 'gpt-4o-mini',
+        model: 'gpt-4o',
         messages: [
           { 
             role: 'system', 
-            content: `You are an A-level examination board content creator with expertise in creating rigorous, academically challenging assessment materials that STRICTLY align with specified learning objectives. You adapt your content difficulty precisely to the requested level (basic/intermediate/advanced). Your PRIMARY responsibility is ensuring every single question directly tests the provided learning objectives. Create questions that match A-level exam standards with proper mathematical notation, clear academic language, and appropriate depth. CRITICAL: For multiple choice questions, randomly vary which position (0, 1, 2, or 3) contains the correct answer - do NOT always make option 0 or 1 correct. Always respond with valid JSON only.` 
+            content: `You are a senior UK A-level examiner and assessment specialist. You create questions that are PRECISELY calibrated to the requested difficulty tier using Bloom's Taxonomy:
+- EASY = Remember/Understand (recall facts, define terms, identify concepts)
+- MEDIUM = Apply/Analyse (use knowledge in new situations, explain mechanisms, compare ideas)  
+- HARD = Evaluate/Create (critically assess, synthesise multiple concepts, construct arguments)
+
+Your questions are NEVER generic. They are always specific to the exact lesson topic provided. Wrong answer options are carefully crafted to target common misconceptions, not random fillers. Every question is unique in angle and phrasing. Always respond with valid JSON only.` 
           },
           { role: 'user', content: prompt }
         ],
-        temperature: 0.85,
+        temperature: 0.9,
         response_format: { type: "json_object" }
       }),
     });
