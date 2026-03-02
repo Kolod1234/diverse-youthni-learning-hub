@@ -337,7 +337,7 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
               {/* Fallback: no content matched */}
               {!quizData.quizQuestions?.length && !quizData.trueFalseQuestions?.length &&
                 !quizData.shortAnswerQuestions?.length && !quizData.essayQuestions?.length &&
-                !quizData.flashcards?.length && (
+                !quizData.flashCards?.length && (
                 <div className="text-center py-10 text-slate-400">
                   <p className="mb-3">No content generated. Try again.</p>
                   <button onClick={handleNewQuiz} className="text-orange-400 text-sm hover:underline">← Back</button>
