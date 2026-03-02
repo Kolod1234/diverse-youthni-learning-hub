@@ -135,7 +135,12 @@ export default function AdminSupportChats() {
                       </Typography>
                     </Box>
                   </Box>
-                  <Chip label={chat.status} size="small" color={statusColor[chat.status] || 'default'} sx={{ fontSize: 10, height: 18 }} />
+                  <Chip 
+                    label={chat.status === 'live_agent' ? '🔴 Live Agent' : chat.status} 
+                    size="small" 
+                    color={statusColor[chat.status] || 'default'} 
+                    sx={{ fontSize: 10, height: 18, fontWeight: chat.status === 'live_agent' ? 700 : 400 }} 
+                  />
                 </Box>
                 {chat.last_message && (
                   <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block', pl: 5 }}>
