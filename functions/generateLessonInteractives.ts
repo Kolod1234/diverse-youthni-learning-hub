@@ -108,11 +108,13 @@ Deno.serve(async (req) => {
 
     const randomSeed = Math.floor(Math.random() * 10000);
     const timestamp = Date.now();
+    // Use a combined seed that incorporates session, generation count, and random to ensure true uniqueness
+    const combinedSeed = (sessionSeed + generationIndex * 7919 + randomSeed) % 99999;
 
     const difficultyLabel = { easy: 'EASY', intermediate: 'MEDIUM', advanced: 'HARD' }[difficulty] || 'MEDIUM';
 
-    // Rotate through distinct questioning angles to guarantee variety between generations
-    const questionAngles = [
+    // Rotate through distinct questioning angles - exclude recently used ones
+    const allAngles = [
       { label: 'CAUSES & MECHANISMS', instruction: 'Focus questions on WHY and HOW things happen - causes, triggers, mechanisms, and processes.' },
       { label: 'EFFECTS & CONSEQUENCES', instruction: 'Focus questions on WHAT HAPPENS as a result - outcomes, impacts, knock-on effects, and consequences.' },
       { label: 'COMPARISONS & CONTRASTS', instruction: 'Focus questions on SIMILARITIES AND DIFFERENCES - compare processes, structures, or concepts against each other.' },
@@ -121,9 +123,14 @@ Deno.serve(async (req) => {
       { label: 'DEFINITIONS & TERMINOLOGY', instruction: 'Focus questions on PRECISE LANGUAGE - exact definitions, correct terminology, distinguishing between similar terms.' },
       { label: 'SEQUENCES & PROCESSES', instruction: 'Focus questions on ORDER AND STEPS - what comes first, stages of processes, sequences of events.' },
       { label: 'EVIDENCE & JUSTIFICATION', instruction: 'Focus questions on PROOF AND REASONING - what evidence supports a claim, how to justify a conclusion, what experiments or data show.' },
+      { label: 'MISCONCEPTIONS & COMMON ERRORS', instruction: 'Focus questions on what students typically get WRONG - common mistakes, misconceptions, and traps to avoid.' },
+      { label: 'QUANTITATIVE & DATA INTERPRETATION', instruction: 'Focus questions on NUMBERS, GRAPHS, and DATA - calculations, reading graphs, interpreting statistics, units.' },
     ];
 
-    const angle = questionAngles[randomSeed % questionAngles.length];
+    // Filter out recently used angles, then pick one
+    const availableAngles = allAngles.filter(a => !previousAngles.includes(a.label));
+    const anglePool = availableAngles.length > 0 ? availableAngles : allAngles;
+    const angle = anglePool[combinedSeed % anglePool.length];
 
     const prompt = `You are a UK A-level examiner creating assessment questions for the following lesson. Your questions MUST be genuinely differentiated by the requested difficulty level.
 
