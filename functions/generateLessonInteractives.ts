@@ -109,106 +109,59 @@ Deno.serve(async (req) => {
     const randomSeed = Math.floor(Math.random() * 10000);
     const timestamp = Date.now();
 
-    const prompt = `You are an A-level examination board content creator. Based on the following lesson, create rigorous assessment materials.
+    const difficultyLabel = { easy: 'EASY', intermediate: 'MEDIUM', advanced: 'HARD' }[difficulty] || 'MEDIUM';
+
+    const prompt = `You are a UK A-level examiner creating assessment questions for the following lesson. Your questions MUST be genuinely differentiated by the requested difficulty level.
 
 Lesson Title: ${lessonTitle}
 Lesson Description: ${lessonDescription}
 Learning Objectives:
 ${learningObjectives.map((obj, i) => `${i + 1}. ${obj}`).join('\n')}
 
-DIFFICULTY LEVEL: ${difficulty.toUpperCase()}
+===== DIFFICULTY: ${difficultyLabel} =====
 ${difficultyGuidance[difficulty] || difficultyGuidance.intermediate}
 ${keywordInstruction}
 
-QUESTION TYPES REQUESTED: ${questionTypes.join(', ')}
+QUESTION TYPES TO GENERATE: ${questionTypes.join(', ')}
 ${typeInstructions.map((t, i) => `${i + 1}. ${t}`).join('\n')}
 
-CONTENT ALIGNMENT REQUIREMENTS:
-1. ONLY create questions that DIRECTLY test the learning objectives listed above
-2. EVERY question MUST relate to the specific lesson title and description
-3. DO NOT include general knowledge questions - all content must be specifically about THIS lesson
-4. DO NOT introduce concepts not mentioned in the learning objectives
-5. Each question should explicitly address at least one of the numbered learning objectives
+STRICT CONTENT RULES:
+1. Questions MUST be directly about THIS lesson's specific content - not generic subject questions
+2. Each question must test a NAMED concept, process, or fact from the lesson title/description/objectives
+3. Do NOT write questions that could appear on any other lesson - they must be uniquely tied to this topic
+4. All distractors (wrong answers) must be specifically wrong for THIS topic, not random fillers
 
-VARIETY REQUIREMENT (Generation #${randomSeed} at ${timestamp}):
-Create COMPLETELY NEW and DIFFERENT questions from any previous generations while staying strictly within the lesson scope.
+ANTI-REPETITION (Run #${randomSeed}-${timestamp}):
+Generate FRESH questions. Vary the angle of questioning - ask about causes, effects, mechanisms, comparisons, exceptions, real-world applications, limitations, and specific examples.
 
-Generate the following in valid JSON format:
+Generate ONLY the requested question types in this JSON format:
 
 {
-  "summary": {
-    "overview": "concise 2-3 sentence overview of the entire lesson",
-    "keyPoints": ["bullet point 1", "bullet point 2", "bullet point 3"],
-    "prerequisites": ["prerequisite knowledge 1", "prerequisite knowledge 2"],
-    "realWorldRelevance": "why this topic matters in real life"
-  },
-  "contentChunks": [
-    {
-      "title": "digestible topic section title",
-      "summary": "2-3 sentence summary of this chunk",
-      "keyTakeaway": "single most important thing to remember",
-      "difficulty": "${difficulty}"
-    }
-  ],
-  "examples": [
-    {
-      "title": "example title",
-      "description": "detailed example explanation",
-      "type": "worked_example|case_study|real_world_application",
-      "difficulty": "${difficulty}",
-      "relatedConcepts": ["concept 1", "concept 2"]
-    }
-  ],
-  "resources": [
-    {
-      "title": "resource title",
-      "type": "video|article|interactive|book|research_paper",
-      "description": "what this resource covers and why it's useful",
-      "difficulty": "${difficulty}",
-      "estimatedTime": "time in minutes",
-      "url": "suggested search query or general URL pattern"
-    }
-  ],
-  "matchingPairs": [
-    { "left": "term or concept", "right": "definition or explanation" }
-  ],
   ${typeSchemas.join(',\n  ')},
   "flashCards": [
-    { "front": "question or term (use LaTeX for math/science)", "back": "answer or definition (use LaTeX for math/science)" }
+    { "front": "specific term/concept from THIS lesson", "back": "precise definition/explanation" }
   ],
   "essayQuestions": [
     {
-      "question": "essay prompt requiring detailed analysis or explanation",
-      "rubric": "key points that should be covered in a good answer",
-      "wordCount": ${difficulty === 'basic' ? 150 : difficulty === 'advanced' ? 400 : 250},
-      "tips": "guidance for students"
-    }
-  ],
-  "fillInTheBlanks": [
-    {
-      "text": "sentence with __blank__ markers for missing words",
-      "blanks": ["correct answer 1", "correct answer 2"],
-      "hint": "optional hint"
+      "question": "essay prompt at ${difficultyLabel} level",
+      "rubric": "mark scheme key points",
+      "wordCount": ${difficulty === 'easy' ? 150 : difficulty === 'advanced' ? 400 : 250},
+      "tips": "exam technique advice"
     }
   ]
 }
 
-STRICT REQUIREMENTS based on difficulty (${difficulty}):
-- Create exactly 6 matching pairs - ONLY use terms/concepts from the learning objectives
-${questionTypes.includes('multiple_choice') ? `- Create exactly 10 multiple choice quiz questions at ${difficulty} level` : ''}
-${questionTypes.includes('true_false') ? `- Create exactly 8 true/false questions at ${difficulty} level` : ''}
-${questionTypes.includes('short_answer') ? `- Create exactly 6 short answer questions at ${difficulty} level` : ''}
-- Create exactly 12 flashcards - ONLY covering terms from THIS lesson
-- Create exactly 3 essay questions at ${difficulty} level
-- Create exactly 5 fill-in-the-blank exercises
-- Use mathematical notation with LaTeX: $...$ for inline, $$...$$ for display
-- For chemistry: use \\ce{...} for chemical formulas (e.g., \\ce{H2SO4})
-- For multiple choice: distribute correct answers randomly across all 4 positions (not always 0 or 1)
+QUANTITY:
+${questionTypes.includes('multiple_choice') ? `- Exactly 10 MCQ questions. At ${difficultyLabel} level: ${difficulty === 'easy' ? 'test recall of facts only' : difficulty === 'advanced' ? 'require multi-concept reasoning, use A-level command words' : 'require application of concepts to scenarios'}` : ''}
+${questionTypes.includes('true_false') ? `- Exactly 8 true/false statements. At ${difficultyLabel} level: ${difficulty === 'easy' ? 'test basic factual accuracy' : difficulty === 'advanced' ? 'include nuanced statements that require careful analysis to classify' : 'test understanding of mechanisms and relationships'}` : ''}
+${questionTypes.includes('short_answer') ? `- Exactly 6 short answer questions. At ${difficultyLabel} level: ${difficulty === 'easy' ? '1-sentence factual answers' : difficulty === 'advanced' ? '3-4 sentence analytical responses citing specific mechanisms' : '2-3 sentence explanations'}` : ''}
+- Exactly 8 flashcards covering key terms from THIS specific lesson
+- Exactly 2 essay questions
 
-FINAL VALIDATION - Before submitting, verify:
-- Every question can be answered using ONLY knowledge from this lesson
-- All questions match the requested difficulty: ${difficulty}
-- ${keywords.length > 0 ? `Questions prioritise the requested keywords: ${keywords.join(', ')}` : 'Questions cover the breadth of the learning objectives'}`;
+NOTATION: Use LaTeX $...$ for inline math, $$...$$ for display math. Chemistry: \\ce{H2SO4}
+MCQ correct answer position: vary randomly across positions 0, 1, 2, 3 - do NOT cluster at position 0 or 1.
+
+SELF-CHECK before outputting: Are these questions noticeably different from what ${difficultyLabel === 'EASY' ? 'a medium' : difficultyLabel === 'HARD' ? 'a medium' : 'an easy or hard'} difficulty set would look like? If not, revise them.`;
 
     const response = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
