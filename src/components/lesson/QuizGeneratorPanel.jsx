@@ -147,6 +147,10 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
 
       if (response.data.success) {
         setQuizData(response.data);
+        // Track the angle used so next generation avoids it
+        if (response.data.angleUsed) {
+          previousAnglesRef.current = [...previousAnglesRef.current.slice(-3), response.data.angleUsed];
+        }
         setPhase('quiz');
       } else {
         toast.error('Failed to generate quiz. Try again.');
