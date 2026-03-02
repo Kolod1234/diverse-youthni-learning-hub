@@ -87,6 +87,9 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
 
   const [phase, setPhase] = useState('config'); // config | generating | quiz | result
   const [quizData, setQuizData] = useState(null);
+  // Track how many quizzes have been generated this session to force variety
+  const generationCountRef = useRef(0);
+  const previousAnglesRef = useRef([]);
 
   const [score, setScore] = useState(0);
   const [total, setTotal] = useState(0);
