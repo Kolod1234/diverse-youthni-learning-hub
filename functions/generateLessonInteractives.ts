@@ -145,8 +145,9 @@ STRICT CONTENT RULES:
 3. Do NOT write questions that could appear on any other lesson - they must be uniquely tied to this topic
 4. All distractors (wrong answers) must be specifically wrong for THIS topic, not random fillers
 
-ANTI-REPETITION (Run #${randomSeed}-${timestamp}):
-Generate FRESH questions. Vary the angle of questioning - ask about causes, effects, mechanisms, comparisons, exceptions, real-world applications, limitations, and specific examples.
+THIS GENERATION'S UNIQUE ANGLE — Run #${randomSeed}-${timestamp}: ${angle.label}
+${angle.instruction}
+All questions in this batch MUST be shaped around this angle. This guarantees each generation is distinctly different from others.
 
 Generate ONLY the requested question types in this JSON format:
 
