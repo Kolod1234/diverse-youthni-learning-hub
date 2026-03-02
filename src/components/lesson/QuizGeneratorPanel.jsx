@@ -323,11 +323,11 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
                   onComplete={(count) => handleQuizComplete(count, quizData.essayQuestions.length)}
                 />
               )}
-              {quizType === 'flashcards' && quizData.flashcards?.length > 0 && (
+              {quizType === 'flashcards' && quizData.flashCards?.length > 0 && (
                 <div>
-                  <FlashCards cards={quizData.flashcards} />
+                  <FlashCards cards={quizData.flashCards} />
                   <button
-                    onClick={() => handleQuizComplete(quizData.flashcards.length, quizData.flashcards.length)}
+                    onClick={() => handleQuizComplete(quizData.flashCards.length, quizData.flashCards.length)}
                     className="w-full mt-3 py-2 rounded-lg bg-green-600 hover:bg-green-700 text-white text-sm font-medium transition"
                   >
                     Done Studying ✓
