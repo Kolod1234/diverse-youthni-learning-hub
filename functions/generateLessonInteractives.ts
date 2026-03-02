@@ -152,9 +152,10 @@ STRICT CONTENT RULES:
 3. Do NOT write questions that could appear on any other lesson - they must be uniquely tied to this topic
 4. All distractors (wrong answers) must be specifically wrong for THIS topic, not random fillers
 
-THIS GENERATION'S UNIQUE ANGLE — Run #${randomSeed}-${timestamp}: ${angle.label}
+THIS GENERATION'S MANDATORY ANGLE — Session Run #${combinedSeed} (Generation ${generationIndex + 1}): ${angle.label}
 ${angle.instruction}
-All questions in this batch MUST be shaped around this angle. This guarantees each generation is distinctly different from others.
+Every single question in this batch MUST be shaped around this angle. Do NOT mix in questions from a different angle.
+Previously used angles (DO NOT repeat these): ${previousAngles.length > 0 ? previousAngles.join(', ') : 'none yet'}
 
 Generate ONLY the requested question types in this JSON format:
 
