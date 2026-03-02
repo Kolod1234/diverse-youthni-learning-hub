@@ -27,6 +27,51 @@ Deno.serve(async (req) => {
   const { chat_id, message } = await req.json();
   if (!chat_id || !message) return Response.json({ error: 'Missing params' }, { status: 400 });
 
+  // Detect live agent request
+  const isLiveAgentRequest = /live\s*agent/i.test(message.trim());
+
+  if (isLiveAgentRequest) {
+    const confirmMsg = "✋ **Connecting you to a live agent...** A member of our team has been notified and will join this chat shortly. Please hold on!";
+
+    // Save bot confirmation message
+    await base44.asServiceRole.entities.SupportMessage.create({
+      chat_id,
+      sender_role: 'bot',
+      sender_name: 'Support Bot',
+      content: confirmMsg
+    });
+
+    // Flag the chat as escalated
+    await base44.asServiceRole.entities.SupportChat.update(chat_id, {
+      last_message: confirmMsg.substring(0, 100),
+      last_message_at: new Date().toISOString(),
+      unread_user: true,
+      unread_admin: true,
+      live_agent_requested: true,
+      status: 'live_agent'
+    });
+
+    // Notify all admins via Notification entity
+    const allUsers = await base44.asServiceRole.entities.User.list('created_date', 500);
+    const adminsAndTutors = allUsers.filter(u => u.role === 'admin' || u.is_tutor === true);
+
+    const chatRecord = await base44.asServiceRole.entities.SupportChat.filter({ id: chat_id }, 'created_date', 1);
+    const userName = chatRecord?.[0]?.user_name || user.full_name || user.email;
+
+    await Promise.all(adminsAndTutors.map(admin =>
+      base44.asServiceRole.entities.Notification.create({
+        user_email: admin.email,
+        title: '🔴 Live Agent Requested',
+        message: `${userName} is requesting a live support agent. Open Support Chats to respond.`,
+        type: 'live_agent',
+        is_read: false,
+        link: '/AdminSupportChats'
+      }).catch(() => {}) // don't fail if one notification errors
+    ));
+
+    return Response.json({ reply: confirmMsg, live_agent_requested: true });
+  }
+
   // Fetch previous messages for conversation context
   const previousMessages = await base44.asServiceRole.entities.SupportMessage.filter(
     { chat_id },
