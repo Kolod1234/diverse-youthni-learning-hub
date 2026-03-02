@@ -125,6 +125,7 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
 
   const handleGenerate = async () => {
     setPhase('generating');
+    generationCountRef.current += 1;
     const typeMap = {
       mcq: ['multiple_choice'],
       true_false: ['true_false'],
@@ -138,7 +139,10 @@ export default function QuizGeneratorPanel({ lesson, onClose }) {
         lessonId: lesson.id,
         difficulty,
         questionTypes: typeMap[quizType],
-        keywords: lesson.learning_objectives || []
+        keywords: lesson.learning_objectives || [],
+        generationIndex: generationCountRef.current,
+        previousAngles: previousAnglesRef.current,
+        sessionSeed: Date.now(),
       });
 
       if (response.data.success) {
