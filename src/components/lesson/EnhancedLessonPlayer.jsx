@@ -378,6 +378,10 @@ export default function EnhancedLessonPlayer({
               </motion.div>
             )}
 
+            {showQuizPanel && (
+              <QuizGeneratorPanel lesson={lesson} onClose={() => setShowQuizPanel(false)} />
+            )}
+
             {showNotes && (
               <motion.div
                 initial={{ x: 320 }}
