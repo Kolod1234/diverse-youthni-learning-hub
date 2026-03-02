@@ -7,7 +7,7 @@ import {
   ChevronLeft, ChevronRight, Check, Menu, Search, X, Lock, Key,
   BookOpen, CheckCircle, Sparkles, MessageSquare, Clock, Eye,
   Bookmark, BookmarkCheck, Settings, Maximize2, Minimize2, Download,
-  Send, Lightbulb, Zap, Settings2, Loader2, RefreshCw
+  Send, Lightbulb, Zap, Settings2, Loader2, RefreshCw, Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
