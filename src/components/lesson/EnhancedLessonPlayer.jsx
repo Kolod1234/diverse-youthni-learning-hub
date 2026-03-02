@@ -20,6 +20,7 @@ import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
 import TrueFalseQuiz from '@/components/lesson/TrueFalseQuiz';
 import MatchingGame from '@/components/lesson/MatchingGame';
 import ShortAnswerQuiz from '@/components/lesson/ShortAnswerQuiz';
+import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 
 export default function EnhancedLessonPlayer({
   lesson,
