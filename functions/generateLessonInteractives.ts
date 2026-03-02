@@ -30,11 +30,30 @@ Deno.serve(async (req) => {
     const lessonTitle = lesson.title || '';
     const lessonDescription = lesson.description || '';
 
-    // Build difficulty guidance
+    // Build difficulty guidance with Bloom's taxonomy levels
     const difficultyGuidance = {
-      basic: 'Create straightforward recall and comprehension questions. Use simple language, direct questions, and test fundamental definitions and basic understanding. Suitable for students first encountering this topic.',
-      intermediate: 'Create application and analysis questions. Students should be able to apply concepts, interpret data, and make connections between ideas. Suitable for students with foundational knowledge.',
-      advanced: 'Create evaluation and synthesis questions. Questions should require higher-order thinking, multi-step reasoning, comparison of complex ideas, and critical analysis. Suitable for exam preparation at A-level standard.'
+      easy: `EASY LEVEL - Bloom's Taxonomy: Remember & Understand (Levels 1-2)
+- Test ONLY direct recall of facts, definitions, and basic identification
+- Questions must be answerable by simply remembering stated facts from the lesson
+- Use phrases like: "What is...", "Define...", "Which of the following is...", "Name...", "Identify..."
+- Wrong answer options should be plausible but clearly distinguishable from the correct answer
+- NO application, analysis, or reasoning required - pure knowledge recall only
+- Example style: "What is the function of the mitochondria?" NOT "How does mitochondrial dysfunction affect cellular respiration?"`,
+      intermediate: `MEDIUM LEVEL - Bloom's Taxonomy: Apply & Analyse (Levels 3-4)
+- Test application of knowledge to new scenarios and analysis of relationships
+- Students must USE their knowledge, not just recall it
+- Use phrases like: "Explain why...", "How does X affect Y...", "Compare...", "What would happen if...", "Calculate...", "Predict..."
+- Wrong answer options must be genuinely tricky - common misconceptions or partially correct answers
+- Require multi-step thinking or connecting two concepts together
+- Example style: "If the concentration of substrate doubles, explain the effect on enzyme reaction rate" NOT "What is enzyme activity?"`,
+      advanced: `HARD LEVEL - Bloom's Taxonomy: Evaluate & Create (Levels 5-6)
+- Test critical evaluation, synthesis of multiple concepts, and complex multi-step reasoning
+- Questions should challenge even well-prepared students
+- Use phrases like: "Evaluate...", "Justify...", "To what extent...", "Critically assess...", "Synthesise...", "Analyse the relationship between..."
+- Wrong answer options must be sophisticated - subtle distinctions, common A-level exam traps, or require ruling out plausible alternatives
+- Require integrating multiple learning objectives simultaneously
+- Questions should mirror actual A-level exam mark scheme language and structure
+- Example style: "Evaluate the evidence for and against the fluid mosaic model, considering how it explains membrane permeability" NOT "Describe the fluid mosaic model"`
     };
 
     // Build question type schema guidance
