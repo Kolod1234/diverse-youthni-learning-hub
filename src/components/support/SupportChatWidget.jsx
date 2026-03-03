@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { base44 } from '@/api/base44Client';
-import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { MessageCircle, X, Send, Minimize2, Bot, User } from 'lucide-react';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { MessageCircle, X, Send, Minimize2, Bot, User, PhoneOff } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
 
