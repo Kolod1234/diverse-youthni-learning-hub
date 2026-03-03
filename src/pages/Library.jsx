@@ -79,11 +79,8 @@ import { useLibraryPermissions } from '@/components/library/useLibraryPermission
 
 export default function Library() {
   const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('library_unlocked') === '1');
-
-  if (!unlocked) {
-    return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
-  }
-
+  const [user, setUser] = useState(null);
+  const [authChecked, setAuthChecked] = useState(false);
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
