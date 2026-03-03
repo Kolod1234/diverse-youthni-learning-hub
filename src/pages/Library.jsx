@@ -78,6 +78,12 @@ import AILibraryAssistant from '@/components/library/AILibraryAssistant';
 import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
 
 export default function Library() {
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('library_unlocked') === '1');
+
+  if (!unlocked) {
+    return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
+  }
+
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
