@@ -43,6 +43,18 @@ export default function NotificationBell() {
     const unsub = base44.entities.Notification.subscribe((event) => {
       if (event.data?.recipient_email === user.email) {
         queryClient.invalidateQueries({ queryKey: ['notifications', user.email] });
+        // Browser notification for urgent alerts
+        if (event.type === 'create' && event.data?.type === 'live_agent') {
+          if (Notification.permission === 'granted') {
+            new Notification(event.data.title, { body: event.data.message, icon: '/favicon.ico' });
+          } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission().then(perm => {
+              if (perm === 'granted') {
+                new Notification(event.data.title, { body: event.data.message, icon: '/favicon.ico' });
+              }
+            });
+          }
+        }
       }
     });
     return unsub;
