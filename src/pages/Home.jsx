@@ -289,6 +289,7 @@ export default function Home() {
                       component="img"
                       image={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop')}
                       alt={course.title}
+                      loading="lazy"
                       sx={{ width: '100%', height: '100%', objectFit: 'cover', '&:hover': { transform: 'scale(1.1) rotate(1deg)' }, transition: 'transform 0.7s' }}
                       onError={(e) => { e.target.src = 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&h=450&fit=crop'; }}
                     />
