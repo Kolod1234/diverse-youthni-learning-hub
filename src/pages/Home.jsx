@@ -143,7 +143,9 @@ export default function Home() {
       {/* Upcoming Sessions Banner */}
       {user && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <UpcomingSessionsWidget user={user} />
+          <Suspense fallback={<SectionFallback />}>
+            <UpcomingSessionsWidget user={user} />
+          </Suspense>
         </Container>
       )}
 
