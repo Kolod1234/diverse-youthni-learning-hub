@@ -60,13 +60,13 @@ Deno.serve(async (req) => {
 
     await Promise.all(adminsAndTutors.map(admin =>
       base44.asServiceRole.entities.Notification.create({
-        user_email: admin.email,
+        recipient_email: admin.email,
         title: '🔴 Live Agent Requested',
         message: `${userName} is requesting a live support agent. Open Support Chats to respond.`,
         type: 'live_agent',
         is_read: false,
-        link: '/AdminSupportChats'
-      }).catch(() => {}) // don't fail if one notification errors
+        action_url: '/AdminSupportChats'
+      }).catch(() => {})
     ));
 
     return Response.json({ reply: confirmMsg, live_agent_requested: true });
