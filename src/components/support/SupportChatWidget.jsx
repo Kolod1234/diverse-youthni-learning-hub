@@ -20,15 +20,31 @@ export default function SupportChatWidget() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Load or create chat session
+  // Load or create chat session - persist in localStorage so history survives refresh
   useEffect(() => {
     if (!open || !user) return;
-    const stored = sessionStorage.getItem('support_chat_id');
+    const storageKey = `support_chat_id_${user.email}`;
+    const stored = localStorage.getItem(storageKey);
     if (stored) {
-      setChatId(stored);
+      // Verify the chat still exists and is not closed
+      base44.entities.SupportChat.filter({ id: stored }, 'created_date', 1)
+        .then(results => {
+          const chat = results?.[0];
+          if (chat && chat.status !== 'closed') {
+            setChatId(stored);
+          } else {
+            // Chat closed or not found - create a new one
+            localStorage.removeItem(storageKey);
+            createNewChat(storageKey);
+          }
+        })
+        .catch(() => createNewChat(storageKey));
       return;
     }
-    // Create new chat
+    createNewChat(storageKey);
+  }, [open, user]);
+
+  const createNewChat = (storageKey) => {
     base44.entities.SupportChat.create({
       user_email: user.email,
       user_name: user.full_name || user.email,
@@ -36,9 +52,9 @@ export default function SupportChatWidget() {
       last_message_at: new Date().toISOString()
     }).then(chat => {
       setChatId(chat.id);
-      sessionStorage.setItem('support_chat_id', chat.id);
+      localStorage.setItem(storageKey, chat.id);
     });
-  }, [open, user]);
+  };
 
   const { data: messages = [] } = useQuery({
     queryKey: ['support-messages', chatId],
