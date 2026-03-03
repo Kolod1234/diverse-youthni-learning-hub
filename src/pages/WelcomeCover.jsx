@@ -44,11 +44,12 @@ export default function WelcomeCover() {
       // Logged-in user: save to database first
       await base44.auth.updateMe({ interest_type: interestType });
       
-      // Navigate to specific landing pages (not home variants)
+      // When changing pathway (forceShow), go directly to the pathway home page.
+      // On first-time selection, go to the landing/info page for orientation.
       if (interestType === 'leadership') {
-        navigate(createPageUrl('LeadershipLanding'));
+        navigate(createPageUrl(forceShow ? 'HomeLeadership' : 'LeadershipLanding'));
       } else if (interestType === 'youth_work') {
-        navigate(createPageUrl('YouthWorkLanding'));
+        navigate(createPageUrl(forceShow ? 'HomeYouthWork' : 'YouthWorkLanding'));
       } else if (interestType === 'learning') {
         navigate(createPageUrl('HomeLearning'));
       } else {
