@@ -33,8 +33,19 @@ export default function NotificationBell() {
     queryFn: () => base44.entities.Notification.filter({ recipient_email: user?.email }, '-created_date', 50),
     refetchOnWindowFocus: true,
     enabled: !!user?.email,
-    refetchInterval: 30000, // Poll every 30 seconds
+    refetchInterval: 10000, // Poll every 10 seconds
   });
+
+  // Real-time subscription for instant notifications (e.g. live agent alerts)
+  useEffect(() => {
+    if (!user?.email) return;
+    const unsub = base44.entities.Notification.subscribe((event) => {
+      if (event.data?.recipient_email === user.email) {
+        queryClient.invalidateQueries({ queryKey: ['notifications', user.email] });
+      }
+    });
+    return unsub;
+  }, [user?.email, queryClient]);
 
   const markAsReadMutation = useMutation({
     mutationFn: (notificationId) => base44.entities.Notification.update(notificationId, { is_read: true }),
