@@ -25,8 +25,9 @@ export default function FreeResourcesCenter() {
 
   const [selectedCategory, setSelectedCategory] = useState('all');
 
-  // Only show to enrolled students
-  if (!user || enrollments.length === 0) {
+  // Only show to tutors/admins
+  const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
+  if (!isTutorOrAdmin) {
     return null;
   }
 
