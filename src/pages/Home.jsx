@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
@@ -8,41 +8,46 @@ import { Button, IconButton, Card, CardContent, CardMedia, Typography, Chip, Box
 import { ArrowRight, Sparkles, Users, Star, Award, ChevronLeft, ChevronRight, BookOpen, TrendingUp, Zap, ClipboardList, Brain, Video, Target, Play, CheckCircle, Calendar, Clock, Rss } from 'lucide-react';
 import { motion } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
-import CategoryFilter from '@/components/courses/CategoryFilter';
-import SearchBar from '@/components/courses/SearchBar';
-import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget';
-import RSSFeedWidget from '@/components/feed/RSSFeedWidget';
+import PageSEO from '@/components/seo/PageSEO';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
-import WeatherWidget from '@/components/home/WeatherWidget';
-import ClockWidget from '@/components/home/ClockWidget';
-import QuoteWidget from '@/components/home/QuoteWidget';
-import StudentOfMonthWidget from '@/components/home/StudentOfMonthWidget';
-import CalendarWidget from '@/components/home/CalendarWidget';
-import UpcomingLessonsWidget from '@/components/home/UpcomingLessonsWidget';
-import FactOfDayWidget from '@/components/home/FactOfDayWidget';
-import EnhancedFactOfDay from '@/components/home/EnhancedFactOfDay';
-import RSSNotificationsWidget from '@/components/home/RSSNotificationsWidget';
-import SocialFeedWidget from '@/components/home/SocialFeedWidget';
-import DiscoverWidget from '@/components/home/DiscoverWidget';
-import WidgetCustomizer from '@/components/home/WidgetCustomizer';
-import WidgetSkeleton from '@/components/home/WidgetSkeleton';
-import PageSEO from '@/components/seo/PageSEO';
-import ImageGallerySection from '@/components/sections/ImageGallerySection';
-import VideoEmbedSection from '@/components/sections/VideoEmbedSection';
-import TeamMembersSection from '@/components/sections/TeamMembersSection';
-import FAQSection from '@/components/sections/FAQSection';
-import ContinueLearningSection from '@/components/home/ContinueLearningSection';
-import QuickStatsCard from '@/components/home/QuickStatsCard';
-import TrendingCoursesCarousel from '@/components/home/TrendingCoursesCarousel';
-import CategoryQuickAccess from '@/components/home/CategoryQuickAccess';
-import StudentSuccessStories from '@/components/home/StudentSuccessStories';
-import SubjectMasteryRoadmaps from '@/components/home/SubjectMasteryRoadmaps';
-import InstructorShowcase from '@/components/home/InstructorShowcase';
-import LearningStatisticsSection from '@/components/home/LearningStatisticsSection';
-import FreeResourcesCenter from '@/components/home/FreeResourcesCenter';
-import AboutUsSection from '@/components/home/AboutUsSection';
-import CommunityCarousel from '@/components/home/CommunityCarousel';
+
+// Lazy-load below-the-fold heavy components
+const UpcomingSessionsWidget = lazy(() => import('@/components/sessions/UpcomingSessionsWidget'));
+const RSSFeedWidget = lazy(() => import('@/components/feed/RSSFeedWidget'));
+const CommunityCarousel = lazy(() => import('@/components/home/CommunityCarousel'));
+const ImageGallerySection = lazy(() => import('@/components/sections/ImageGallerySection'));
+const VideoEmbedSection = lazy(() => import('@/components/sections/VideoEmbedSection'));
+const TeamMembersSection = lazy(() => import('@/components/sections/TeamMembersSection'));
+const FAQSection = lazy(() => import('@/components/sections/FAQSection'));
+const LearningStatisticsSection = lazy(() => import('@/components/home/LearningStatisticsSection'));
+const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMasteryRoadmaps'));
+const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
+const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
+const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection'));
+const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
+
+// Simple fallback for lazy sections
+const SectionFallback = () => <Box sx={{ height: 200 }} />;
+
+// Hook to observe when an element enters the viewport
+function useInView(options = {}) {
+  const ref = useRef(null);
+  const [inView, setInView] = useState(false);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    const observer = new IntersectionObserver(([entry]) => {
+      if (entry.isIntersecting) {
+        setInView(true);
+        observer.disconnect();
+      }
+    }, { rootMargin: '200px', ...options });
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, []);
+  return [ref, inView];
+}
 
 export default function Home() {
   const navigate = useNavigate();
