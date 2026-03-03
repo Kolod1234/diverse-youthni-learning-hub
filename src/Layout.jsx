@@ -320,6 +320,7 @@ function LayoutContent({ children, currentPageName }) {
               >
                 Explore
               </Button>
+              {(user?.is_tutor || user?.role === 'admin') && (
               <Button
                 component={Link}
                 to={createPageUrl('Library')}
@@ -333,6 +334,7 @@ function LayoutContent({ children, currentPageName }) {
               >
                 Library
               </Button>
+              )}
               <Button
                 component={Link}
                 to={createPageUrl('Dashboard')}
