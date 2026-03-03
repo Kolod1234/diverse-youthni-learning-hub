@@ -27,9 +27,9 @@ export default function SupportChatWidget() {
     const stored = localStorage.getItem(storageKey);
     if (stored) {
       // Verify the chat still exists and is not closed
-      base44.entities.SupportChat.filter({ id: stored }, 'created_date', 1)
+      base44.entities.SupportChat.filter({ user_email: user.email }, '-created_date', 50)
         .then(results => {
-          const chat = results?.[0];
+          const chat = results?.find(c => c.id === stored);
           if (chat && chat.status !== 'closed') {
             setChatId(stored);
           } else {
