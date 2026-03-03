@@ -284,6 +284,42 @@ export default function Dashboard() {
                   transition={{ delay: 0.5 }}
                 >
                   <Card sx={{ p: 2, border: 1, borderColor: 'divider', borderRadius: 4, boxShadow: 3 }}>
+                    {/* Top-level student tabs */}
+                    <Box sx={{ display: 'flex', gap: 1, mb: 3, flexWrap: 'wrap' }}>
+                      {[
+                        { key: 'courses', label: 'My Courses' },
+                        { key: 'assignments', label: 'Assignments' },
+                        { key: 'quizzes', label: 'Quizzes' },
+                      ].map(tab => (
+                        <button
+                          key={tab.key}
+                          onClick={() => setStudentTab(tab.key)}
+                          style={{
+                            padding: '8px 20px',
+                            borderRadius: 20,
+                            border: 'none',
+                            cursor: 'pointer',
+                            fontWeight: 600,
+                            fontSize: 14,
+                            background: studentTab === tab.key ? '#4f46e5' : '#f3f4f6',
+                            color: studentTab === tab.key ? '#fff' : '#374151',
+                            transition: 'all 0.2s',
+                          }}
+                        >
+                          {tab.label}
+                        </button>
+                      ))}
+                    </Box>
+
+                    {studentTab === 'assignments' && (
+                      <StudentAssignments enrollments={enrollments} user={user} />
+                    )}
+
+                    {studentTab === 'quizzes' && (
+                      <StudentQuizzes enrollments={enrollments} user={user} />
+                    )}
+
+                    {studentTab === 'courses' && (
                     <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
                       <Tab 
                         value="in-progress"
