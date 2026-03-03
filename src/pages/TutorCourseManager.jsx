@@ -90,23 +90,26 @@ export default function TutorCourseManager() {
   const approvedSubjects = tutorRequest?.[0]?.subjects || [];
 
   const { data: allCourses = [] } = useQuery({
-    queryKey: ['all-tutor-courses', user?.email],
+    queryKey: ['all-tutor-courses', user?.email, approvedSubjects?.join(',')],
     queryFn: async () => {
-      const me = await base44.auth.me();
-      if (me.role === 'admin') {
+      if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 100);
       }
-      // Return only courses where this tutor is assigned
-      const allC = await base44.entities.Course.list('-created_date', 500);
-      return allC.filter(c => (c.assigned_tutors || []).includes(me.email) || c.created_by === me.email);
+      if (!approvedSubjects || approvedSubjects.length === 0) return [];
+      // Return courses in the tutor's approved subjects (same as Overview/Dashboard)
+      const results = await Promise.all(
+        approvedSubjects.map(subject =>
+          base44.entities.Course.filter({ category: subject }, '-created_date', 50)
+        )
+      );
+      return results.flat();
     },
-    enabled: !!user,
+    enabled: !!user && (user.role === 'admin' || approvedSubjects !== null),
   });
 
-  // Verify the current course is assigned to this tutor (or admin)
+  // Allow access if admin OR if course category is within tutor's approved subjects
   const isAllowedToEditCourse = !course || user?.role === 'admin' ||
-    (course.assigned_tutors || []).includes(user?.email) ||
-    course.created_by === user?.email;
+    (approvedSubjects || []).includes(course.category);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],
