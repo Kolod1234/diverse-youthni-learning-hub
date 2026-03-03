@@ -695,10 +695,12 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Compass size={20} /></ListItemIcon>
                       <ListItemText primary="Explore" />
                     </ListItemButton>
+                    {isTutorOrAdmin && (
                     <ListItemButton component={Link} to={createPageUrl('Library')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><BookOpen size={20} /></ListItemIcon>
                       <ListItemText primary="Library" />
                     </ListItemButton>
+                    )}
                     <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><BookOpen size={20} /></ListItemIcon>
                       <ListItemText primary="My Learning" />
