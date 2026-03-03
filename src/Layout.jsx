@@ -927,12 +927,21 @@ function LayoutContent({ children, currentPageName }) {
                   </Link>
                 </ListItem>
                 <ListItem disablePadding>
-                  <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>
-                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
-                      My Learning
-                    </Typography>
-                  </Link>
+                 <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                   <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                     My Learning
+                   </Typography>
+                 </Link>
                 </ListItem>
+                {isTutorOrAdmin && (
+                <ListItem disablePadding>
+                 <Link to={createPageUrl('Library')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                   <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
+                     Library
+                   </Typography>
+                 </Link>
+                </ListItem>
+                )}
               </List>
             </Box>
 
