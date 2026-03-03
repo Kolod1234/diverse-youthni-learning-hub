@@ -257,34 +257,34 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                       />
                     </div>
                     
-                    <div className="p-5 flex-1 flex flex-col bg-white">
+                    <div className="p-5 flex-1 flex flex-col bg-card">
                       <div className="flex items-center gap-2 mb-3">
                         <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
                           {item.category || 'News'}
                         </Badge>
                         {item.published_date && (
-                          <span className="text-xs text-gray-500">
+                          <span className="text-xs text-muted-foreground">
                             {getTimeAgo(item.published_date)}
                           </span>
                         )}
                       </div>
                       
-                      <h3 className="text-lg font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-blue-500 transition-colors">
                         {decodeHTMLEntities(item.title)}
                       </h3>
                       
                       {item.description && (
-                        <p className="text-sm text-gray-600 mb-4 line-clamp-2 flex-1">
+                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
                           {decodeHTMLEntities(item.description)}
                         </p>
                       )}
                       
-                      <div className="flex items-center gap-4 text-gray-500 text-sm pt-3 border-t border-gray-100">
-                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                      <div className="flex items-center gap-4 text-muted-foreground text-sm pt-3 border-t border-border">
+                        <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
                           <ThumbsUp className="w-3.5 h-3.5" />
                           <span>{Math.floor(Math.random() * 100) + 10}</span>
                         </button>
-                        <button className="flex items-center gap-1 hover:text-blue-600 transition-colors">
+                        <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
                           <MessageCircle className="w-3.5 h-3.5" />
                           <span>{Math.floor(Math.random() * 30) + 1}</span>
                         </button>
