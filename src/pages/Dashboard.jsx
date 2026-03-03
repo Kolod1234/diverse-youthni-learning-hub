@@ -320,88 +320,90 @@ export default function Dashboard() {
                     )}
 
                     {studentTab === 'courses' && (
-                    <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
-                      <Tab 
-                        value="in-progress"
-                        icon={<Clock size={16} />}
-                        iconPosition="start"
-                        label={`In Progress (${inProgressEnrollments.length})`}
-                        sx={{ fontWeight: 500, px: 3, py: 1.5 }}
-                      />
-                      <Tab 
-                        value="completed"
-                        icon={<Award size={16} />}
-                        iconPosition="start"
-                        label={`Completed (${completedEnrollments.length})`}
-                        sx={{ fontWeight: 500, px: 3, py: 1.5 }}
-                      />
-                    </Tabs>
+                      <>
+                        <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
+                          <Tab 
+                            value="in-progress"
+                            icon={<Clock size={16} />}
+                            iconPosition="start"
+                            label={`In Progress (${inProgressEnrollments.length})`}
+                            sx={{ fontWeight: 500, px: 3, py: 1.5 }}
+                          />
+                          <Tab 
+                            value="completed"
+                            icon={<Award size={16} />}
+                            iconPosition="start"
+                            label={`Completed (${completedEnrollments.length})`}
+                            sx={{ fontWeight: 500, px: 3, py: 1.5 }}
+                          />
+                        </Tabs>
 
-                    {studentTab === 'courses' && tabValue === 'in-progress' && (
-                      <Box sx={{ mt: 3 }}>
-                        {loadingEnrollments ? (
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                            {[1, 2, 3].map(i => (
-                              <Card key={i} sx={{ p: 3, borderRadius: 4, border: 1, borderColor: 'divider' }} className="animate-pulse">
-                                <Box sx={{ display: 'flex', gap: 3 }}>
-                                  <Box sx={{ width: 224, height: 128, bgcolor: 'action.hover', borderRadius: 3 }} />
-                                  <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
-                                    <Box sx={{ height: 24, bgcolor: 'action.hover', borderRadius: 1, width: '66%' }} />
-                                    <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '33%' }} />
-                                    <Box sx={{ height: 12, bgcolor: 'action.hover', borderRadius: 1 }} />
-                                  </Box>
+                        {tabValue === 'in-progress' && (
+                          <Box sx={{ mt: 3 }}>
+                            {loadingEnrollments ? (
+                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                                {[1, 2, 3].map(i => (
+                                  <Card key={i} sx={{ p: 3, borderRadius: 4, border: 1, borderColor: 'divider' }} className="animate-pulse">
+                                    <Box sx={{ display: 'flex', gap: 3 }}>
+                                      <Box sx={{ width: 224, height: 128, bgcolor: 'action.hover', borderRadius: 3 }} />
+                                      <Box sx={{ flex: 1, display: 'flex', flexDirection: 'column', gap: 2 }}>
+                                        <Box sx={{ height: 24, bgcolor: 'action.hover', borderRadius: 1, width: '66%' }} />
+                                        <Box sx={{ height: 16, bgcolor: 'action.hover', borderRadius: 1, width: '33%' }} />
+                                        <Box sx={{ height: 12, bgcolor: 'action.hover', borderRadius: 1 }} />
+                                      </Box>
+                                    </Box>
+                                  </Card>
+                                ))}
+                              </Box>
+                            ) : inProgressEnrollments.length > 0 ? (
+                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                                {inProgressEnrollments.map((enrollment, index) => (
+                                  <ProgressCard
+                                    key={enrollment.id}
+                                    enrollment={enrollment}
+                                    course={courses.find(c => c.id === enrollment.course_id)}
+                                    index={index}
+                                  />
+                                ))}
+                              </Box>
+                            ) : (
+                              <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
+                                <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                                  <BookOpen size={32} color="#9ca3af" />
                                 </Box>
+                                <Typography variant="h6" sx={{ mb: 1 }}>No courses in progress</Typography>
+                                <Typography variant="body2" color="text.secondary">Start learning to see your progress here</Typography>
                               </Card>
-                            ))}
+                            )}
                           </Box>
-                        ) : inProgressEnrollments.length > 0 ? (
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                            {inProgressEnrollments.map((enrollment, index) => (
-                              <ProgressCard
-                                key={enrollment.id}
-                                enrollment={enrollment}
-                                course={courses.find(c => c.id === enrollment.course_id)}
-                                index={index}
-                              />
-                            ))}
-                          </Box>
-                        ) : (
-                          <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
-                            <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
-                              <BookOpen size={32} color="#9ca3af" />
-                            </Box>
-                            <Typography variant="h6" sx={{ mb: 1 }}>No courses in progress</Typography>
-                            <Typography variant="body2" color="text.secondary">Start learning to see your progress here</Typography>
-                          </Card>
                         )}
-                      </Box>
-                    )}
 
-                    {studentTab === 'courses' && tabValue === 'completed' && (
-                      <Box sx={{ mt: 3 }}>
-                        {completedEnrollments.length > 0 ? (
-                          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
-                            {completedEnrollments.map((enrollment, index) => (
-                              <ProgressCard
-                                key={enrollment.id}
-                                enrollment={enrollment}
-                                course={courses.find(c => c.id === enrollment.course_id)}
-                                index={index}
-                              />
-                            ))}
+                        {tabValue === 'completed' && (
+                          <Box sx={{ mt: 3 }}>
+                            {completedEnrollments.length > 0 ? (
+                              <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
+                                {completedEnrollments.map((enrollment, index) => (
+                                  <ProgressCard
+                                    key={enrollment.id}
+                                    enrollment={enrollment}
+                                    course={courses.find(c => c.id === enrollment.course_id)}
+                                    index={index}
+                                  />
+                                ))}
+                              </Box>
+                            ) : (
+                              <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
+                                <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
+                                  <Award size={32} color="#9ca3af" />
+                                </Box>
+                                <Typography variant="h6" sx={{ mb: 1 }}>No completed courses yet</Typography>
+                                <Typography variant="body2" color="text.secondary">Complete your first course to earn achievements</Typography>
+                              </Card>
+                            )}
                           </Box>
-                        ) : (
-                          <Card sx={{ textAlign: 'center', py: 8, borderRadius: 4, border: 1, borderColor: 'divider' }}>
-                            <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
-                              <Award size={32} color="#9ca3af" />
-                            </Box>
-                            <Typography variant="h6" sx={{ mb: 1 }}>No completed courses yet</Typography>
-                            <Typography variant="body2" color="text.secondary">Complete your first course to earn achievements</Typography>
-                          </Card>
                         )}
-                      </Box>
+                      </>
                     )}
-                    )} {/* end studentTab === 'courses' */}
                   </Card>
                 </motion.div>
               </Box>
