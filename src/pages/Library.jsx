@@ -123,11 +123,45 @@ export default function Library() {
 
   useEffect(() => {
     const loadUser = async () => {
-      const userData = await base44.auth.me();
+      const userData = await base44.auth.me().catch(() => null);
       setUser(userData);
+      setAuthChecked(true);
     };
     loadUser();
   }, []);
+
+  const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
+
+  // Show loading until auth is checked
+  if (!authChecked) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+        <Typography color="text.secondary">Loading...</Typography>
+      </Box>
+    );
+  }
+
+  // Block access if not tutor/admin
+  if (!isTutorOrAdmin) {
+    return (
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+        <Box sx={{ textAlign: 'center', maxWidth: 400, mx: 2 }}>
+          <Box sx={{ bgcolor: '#ef4444', p: 2, borderRadius: '50%', display: 'inline-flex', mb: 3, width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
+            <Lock size={28} color="white" />
+          </Box>
+          <Typography variant="h5" fontWeight={700} gutterBottom>Access Restricted</Typography>
+          <Typography variant="body2" color="text.secondary">
+            The BookBase Library is only accessible to tutors and administrators. Please contact your administrator if you need access.
+          </Typography>
+        </Box>
+      </Box>
+    );
+  }
+
+  // Show password gate for tutors (admins bypass it)
+  if (!unlocked && user?.role !== 'admin') {
+    return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
+  }
 
   const { data: resources = [] } = useQuery({
     queryKey: ['library-resources'],
