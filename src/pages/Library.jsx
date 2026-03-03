@@ -436,6 +436,10 @@ export default function Library() {
     }
   };
 
+  if (!unlocked) {
+    return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
+  }
+
   return (
     <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
           {/* Pull to Refresh Indicator */}
