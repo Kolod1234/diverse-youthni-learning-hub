@@ -22,7 +22,64 @@ import LibraryPermissionManager from '@/components/library/LibraryPermissionMana
 import AILibraryAssistant from '@/components/library/AILibraryAssistant';
 import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
 
+const LIBRARY_PASSWORD = 'Library20170';
+
+function LibraryPasswordGate({ onUnlock }) {
+  const [input, setInput] = useState('');
+  const [error, setError] = useState(false);
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (input === LIBRARY_PASSWORD) {
+      sessionStorage.setItem('library_unlocked', '1');
+      onUnlock();
+    } else {
+      setError(true);
+      setInput('');
+    }
+  };
+
+  return (
+    <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
+      <Box sx={{ width: '100%', maxWidth: 400, mx: 2 }}>
+        <Box sx={{ textAlign: 'center', mb: 4 }}>
+          <Box sx={{ bgcolor: '#4f46e5', p: 2, borderRadius: 3, display: 'inline-flex', mb: 2 }}>
+            <BookOpen size={32} color="white" />
+          </Box>
+          <Typography variant="h5" fontWeight={700}>BookBase Library</Typography>
+          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
+            Enter the library access password to continue
+          </Typography>
+        </Box>
+        <form onSubmit={handleSubmit}>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
+            <TextField
+              type="password"
+              label="Password"
+              value={input}
+              onChange={(e) => { setInput(e.target.value); setError(false); }}
+              error={error}
+              helperText={error ? 'Incorrect password. Please try again.' : ''}
+              fullWidth
+              autoFocus
+              sx={{ bgcolor: 'white' }}
+            />
+            <Button
+              type="submit"
+              variant="contained"
+              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 44 }}
+            >
+              Access Library
+            </Button>
+          </Box>
+        </form>
+      </Box>
+    </Box>
+  );
+}
+
 export default function Library() {
+  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('library_unlocked') === '1');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
