@@ -92,7 +92,6 @@ export default function Library() {
   const [editingBook, setEditingBook] = useState(null);
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
-  const [user, setUser] = useState(null);
   const [uploadingFile, setUploadingFile] = useState(false);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
