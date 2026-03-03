@@ -401,6 +401,7 @@ export default function Dashboard() {
                         )}
                       </Box>
                     )}
+                    )} {/* end studentTab === 'courses' */}
                   </Card>
                 </motion.div>
               </Box>
