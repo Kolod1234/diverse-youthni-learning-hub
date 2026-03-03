@@ -377,7 +377,7 @@ export default function Dashboard() {
                       </Box>
                     )}
 
-                    {tabValue === 'completed' && (
+                    {studentTab === 'courses' && tabValue === 'completed' && (
                       <Box sx={{ mt: 3 }}>
                         {completedEnrollments.length > 0 ? (
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
