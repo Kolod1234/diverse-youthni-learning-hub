@@ -53,60 +53,47 @@ Deno.serve(async (req) => {
 
     // Notify all admins, tutors and coordinators via Notification entity + email
     const allUsers = await base44.asServiceRole.entities.User.list('created_date', 500);
-    const supportAgents = allUsers.filter(u =>
-      u.role === 'admin' || u.is_tutor === true || (u.is_coordinator === true && !u.coordinator_banned)
-    );
+    const supportAgents = allUsers.filter(u => u.role === 'admin' || u.is_tutor === true || u.is_coordinator === true);
 
     const chatRecord = await base44.asServiceRole.entities.SupportChat.filter({ id: chat_id }, 'created_date', 1);
     const userName = chatRecord?.[0]?.user_name || user.full_name || user.email;
     const userEmail = chatRecord?.[0]?.user_email || user.email;
 
-    await Promise.all(supportAgents.map(async (agent) => {
+    const appUrl = `${Deno.env.get('BASE44_APP_ID') ? 'https://app.base44.com' : 'https://app.base44.com'}`;
+
+    await Promise.all(supportAgents.flatMap(agent => [
       // In-app notification
-      await base44.asServiceRole.entities.Notification.create({
+      base44.asServiceRole.entities.Notification.create({
         recipient_email: agent.email,
         title: '🔴 Live Agent Requested',
         message: `${userName} is requesting a live support agent. Open Support Chats to respond.`,
         type: 'live_agent',
         is_read: false,
         action_url: '/AdminSupportChats'
-      }).catch(() => {});
-
+      }).catch(() => {}),
       // Email notification
-      await base44.asServiceRole.integrations.Core.SendEmail({
+      base44.asServiceRole.integrations.Core.SendEmail({
         to: agent.email,
         subject: `🔴 Live Agent Requested by ${userName}`,
-        body: `
-<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
-  <div style="background: #003366; padding: 20px 24px; border-radius: 8px 8px 0 0;">
-    <h2 style="color: white; margin: 0; font-size: 20px;">🔴 Live Agent Requested</h2>
+        body: `<div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; padding: 20px;">
+  <div style="background: #003366; padding: 20px; border-radius: 8px 8px 0 0; text-align: center;">
+    <h1 style="color: white; margin: 0; font-size: 22px;">🔴 Live Agent Requested</h1>
   </div>
-  <div style="background: #f9fafb; padding: 24px; border: 1px solid #e5e7eb; border-radius: 0 0 8px 8px;">
-    <p style="color: #374151; font-size: 15px; margin-top: 0;">
-      A user is requesting a live support agent on the Diverse Youth NI platform.
-    </p>
-    <table style="width: 100%; border-collapse: collapse; margin-bottom: 20px;">
-      <tr>
-        <td style="padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; font-weight: bold; color: #6b7280; width: 140px;">User</td>
-        <td style="padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; color: #111827;">${userName}</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px 12px; background: #f9fafb; border: 1px solid #e5e7eb; font-weight: bold; color: #6b7280;">Email</td>
-        <td style="padding: 8px 12px; background: #f9fafb; border: 1px solid #e5e7eb; color: #111827;">${userEmail}</td>
-      </tr>
-      <tr>
-        <td style="padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; font-weight: bold; color: #6b7280;">Time</td>
-        <td style="padding: 8px 12px; background: #fff; border: 1px solid #e5e7eb; color: #111827;">${new Date().toLocaleString('en-GB', { timeZone: 'Europe/London' })}</td>
-      </tr>
-    </table>
-    <p style="color: #374151; font-size: 14px;">Please log in to the platform and visit <strong>Support Chats</strong> to assist this user as soon as possible.</p>
-    <a href="https://app.base44.com/AdminSupportChats" style="display: inline-block; background: #003366; color: white; padding: 10px 22px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 14px;">Open Support Chats</a>
+  <div style="background: #f8fafc; padding: 24px; border: 1px solid #e2e8f0; border-radius: 0 0 8px 8px;">
+    <p style="font-size: 16px; color: #1e293b; margin: 0 0 12px;">A user is requesting immediate live support:</p>
+    <div style="background: white; border-left: 4px solid #ef4444; padding: 12px 16px; border-radius: 4px; margin-bottom: 20px;">
+      <p style="margin: 0; font-size: 15px;"><strong>User:</strong> ${userName}</p>
+      <p style="margin: 4px 0 0; font-size: 14px; color: #64748b;"><strong>Email:</strong> ${userEmail}</p>
+    </div>
+    <p style="color: #475569; font-size: 14px;">Please log in to the platform and open <strong>Support Chats</strong> to respond to this user as soon as possible.</p>
+    <div style="text-align: center; margin-top: 24px;">
+      <a href="https://diverse-youth-ni.base44.app/AdminSupportChats" style="background: #003366; color: white; padding: 12px 28px; border-radius: 6px; text-decoration: none; font-weight: bold; font-size: 15px;">Open Support Chats</a>
+    </div>
+    <p style="margin-top: 20px; font-size: 12px; color: #94a3b8; text-align: center;">Diverse Youth NI — Support Notifications</p>
   </div>
-  <p style="color: #9ca3af; font-size: 12px; text-align: center; margin-top: 12px;">Diverse Youth NI — Support System</p>
-</div>
-        `.trim()
-      }).catch(() => {});
-    }));
+</div>`
+      }).catch(() => {})
+    ]));
 
     return Response.json({ reply: confirmMsg, live_agent_requested: true });
   }
