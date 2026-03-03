@@ -2,25 +2,12 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
-import { RefreshCw } from 'lucide-react';
+import { RefreshCw, Lock } from 'lucide-react';
 import { 
   Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
   Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem
 } from '@mui/material';
 import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
-import { createPageUrl } from '@/utils';
-import { toast } from 'sonner';
-import PDFViewer from '@/components/library/PDFViewer';
-import TagInput from '@/components/library/TagInput';
-import ShareDialog from '@/components/library/ShareDialog';
-import CommentsSection from '@/components/library/CommentsSection';
-import ActivityHistory from '@/components/library/ActivityHistory';
-import EditBookDialog from '@/components/library/EditBookDialog';
-import CoverPicker from '@/components/library/CoverPicker';
-import BulkUploadManager from '@/components/library/BulkUploadManager';
-import LibraryPermissionManager from '@/components/library/LibraryPermissionManager';
-import AILibraryAssistant from '@/components/library/AILibraryAssistant';
-import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
 
 const LIBRARY_PASSWORD = 'Library20170';
 
@@ -41,21 +28,19 @@ function LibraryPasswordGate({ onUnlock }) {
 
   return (
     <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center', bgcolor: '#f9fafb' }}>
-      <Box sx={{ width: '100%', maxWidth: 400, mx: 2 }}>
-        <Box sx={{ textAlign: 'center', mb: 4 }}>
-          <Box sx={{ bgcolor: '#4f46e5', p: 2, borderRadius: 3, display: 'inline-flex', mb: 2 }}>
-            <BookOpen size={32} color="white" />
-          </Box>
-          <Typography variant="h5" fontWeight={700}>BookBase Library</Typography>
-          <Typography variant="body2" color="text.secondary" sx={{ mt: 1 }}>
-            Enter the library access password to continue
-          </Typography>
+      <Box sx={{ width: '100%', maxWidth: 400, mx: 2, textAlign: 'center' }}>
+        <Box sx={{ bgcolor: '#4f46e5', p: 2, borderRadius: '50%', display: 'inline-flex', mb: 3, width: 64, height: 64, alignItems: 'center', justifyContent: 'center' }}>
+          <Lock size={28} color="white" />
         </Box>
+        <Typography variant="h5" fontWeight={700} gutterBottom>BookBase Library</Typography>
+        <Typography variant="body2" color="text.secondary" sx={{ mb: 4 }}>
+          This library is password protected. Enter the access password to continue.
+        </Typography>
         <form onSubmit={handleSubmit}>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
             <TextField
               type="password"
-              label="Password"
+              label="Library Password"
               value={input}
               onChange={(e) => { setInput(e.target.value); setError(false); }}
               error={error}
@@ -67,7 +52,8 @@ function LibraryPasswordGate({ onUnlock }) {
             <Button
               type="submit"
               variant="contained"
-              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 44 }}
+              size="large"
+              sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' }, minHeight: 48 }}
             >
               Access Library
             </Button>
@@ -77,9 +63,21 @@ function LibraryPasswordGate({ onUnlock }) {
     </Box>
   );
 }
+import { createPageUrl } from '@/utils';
+import { toast } from 'sonner';
+import PDFViewer from '@/components/library/PDFViewer';
+import TagInput from '@/components/library/TagInput';
+import ShareDialog from '@/components/library/ShareDialog';
+import CommentsSection from '@/components/library/CommentsSection';
+import ActivityHistory from '@/components/library/ActivityHistory';
+import EditBookDialog from '@/components/library/EditBookDialog';
+import CoverPicker from '@/components/library/CoverPicker';
+import BulkUploadManager from '@/components/library/BulkUploadManager';
+import LibraryPermissionManager from '@/components/library/LibraryPermissionManager';
+import AILibraryAssistant from '@/components/library/AILibraryAssistant';
+import { useLibraryPermissions } from '@/components/library/useLibraryPermissions';
 
 export default function Library() {
-  const [unlocked, setUnlocked] = useState(() => sessionStorage.getItem('library_unlocked') === '1');
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [selectedBook, setSelectedBook] = useState(null);
@@ -435,10 +433,6 @@ export default function Library() {
       setSuggestingTags(false);
     }
   };
-
-  if (!unlocked) {
-    return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
-  }
 
   return (
     <Box ref={scrollContainerRef} sx={{ minHeight: '100vh', bgcolor: '#f9fafb', position: 'relative' }}>
