@@ -552,28 +552,42 @@ export default function Home() {
       <EcosystemSection />
 
       {/* New Dynamic Sections */}
-      {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
-      {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
-      {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
-      {faqSection[0] && <FAQSection section={faqSection[0]} />}
+      <Suspense fallback={<SectionFallback />}>
+        {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
+        {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
+        {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
+        {faqSection[0] && <FAQSection section={faqSection[0]} />}
+      </Suspense>
 
       {/* Learning Statistics Section */}
-      <LearningStatisticsSection />
+      <Suspense fallback={<SectionFallback />}>
+        <LearningStatisticsSection />
+      </Suspense>
 
       {/* Subject Mastery Roadmaps */}
-      <SubjectMasteryRoadmaps />
+      <Suspense fallback={<SectionFallback />}>
+        <SubjectMasteryRoadmaps />
+      </Suspense>
 
       {/* Instructor Showcase */}
-      <InstructorShowcase />
+      <Suspense fallback={<SectionFallback />}>
+        <InstructorShowcase />
+      </Suspense>
 
       {/* Free Resources Center */}
-      <FreeResourcesCenter />
+      <Suspense fallback={<SectionFallback />}>
+        <FreeResourcesCenter />
+      </Suspense>
 
       {/* About Us Section */}
-      <AboutUsSection />
+      <Suspense fallback={<SectionFallback />}>
+        <AboutUsSection />
+      </Suspense>
 
       {/* Student Success Stories */}
-      <StudentSuccessStories />
+      <Suspense fallback={<SectionFallback />}>
+        <StudentSuccessStories />
+      </Suspense>
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
