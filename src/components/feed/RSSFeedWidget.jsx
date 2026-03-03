@@ -124,7 +124,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
     <div className="space-y-6">
       {/* Category Filters */}
       <div className="flex items-center gap-3 flex-wrap">
-        <div className="flex items-center gap-2 text-gray-600">
+        <div className="flex items-center gap-2 text-foreground/60">
           <Filter className="w-4 h-4" />
           <span className="text-sm font-medium">Filter:</span>
         </div>
@@ -140,7 +140,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
             className={`transition-all ${
               selectedCategory === category 
                 ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'hover:bg-gray-100'
+                : 'hover:bg-accent text-foreground border-border'
             }`}
           >
             {category === 'all' ? 'All' : category}
