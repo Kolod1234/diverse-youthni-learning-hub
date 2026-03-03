@@ -24,6 +24,7 @@ import StudentQuizzes from '@/components/dashboard/StudentQuizzes';
 export default function Dashboard() {
   const [user, setUser] = useState(null);
   const [tabValue, setTabValue] = useState('in-progress');
+  const [studentTab, setStudentTab] = useState('courses');
   const [accessDenied, setAccessDenied] = useState(false);
   const navigate = useNavigate();
 
