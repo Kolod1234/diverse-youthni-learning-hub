@@ -814,6 +814,7 @@ function HeroCarouselWithWriteup({ images }) {
                 component="img"
                 image={img.image_url}
                 alt=""
+                loading="lazy"
                 sx={{ width: '100%', height: '100%', objectFit: 'cover', position: 'absolute', inset: 0 }}
               />
             </Box>
