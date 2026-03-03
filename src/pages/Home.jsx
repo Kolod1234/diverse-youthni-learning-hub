@@ -12,6 +12,12 @@ import PageSEO from '@/components/seo/PageSEO';
 import useEmblaCarousel from 'embla-carousel-react';
 import Autoplay from 'embla-carousel-autoplay';
 
+// Removed unused eager imports: CategoryFilter, SearchBar, WeatherWidget, ClockWidget,
+// QuoteWidget, StudentOfMonthWidget, CalendarWidget, UpcomingLessonsWidget,
+// FactOfDayWidget, EnhancedFactOfDay, RSSNotificationsWidget, SocialFeedWidget,
+// DiscoverWidget, WidgetCustomizer, WidgetSkeleton, ContinueLearningSection,
+// QuickStatsCard, TrendingCoursesCarousel, CategoryQuickAccess (none rendered in JSX)
+
 // Lazy-load below-the-fold heavy components
 const UpcomingSessionsWidget = lazy(() => import('@/components/sessions/UpcomingSessionsWidget'));
 const RSSFeedWidget = lazy(() => import('@/components/feed/RSSFeedWidget'));
