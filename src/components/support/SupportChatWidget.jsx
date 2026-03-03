@@ -243,28 +243,37 @@ export default function SupportChatWidget() {
               <div ref={bottomRef} />
             </div>
 
+            {/* Closed banner */}
+            {isChatClosed && (
+              <div style={{ padding: '8px 14px', background: '#fef2f2', borderTop: '1px solid #fecaca', textAlign: 'center', fontSize: 12, color: '#b91c1c', flexShrink: 0 }}>
+                This chat has been closed. Start a new chat to get more help.
+              </div>
+            )}
+
             {/* Input */}
             <div style={{ padding: '10px 12px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: 8, background: 'white', flexShrink: 0 }}>
               <input
                 value={input}
                 onChange={e => setInput(e.target.value)}
                 onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
-                placeholder="Type a message..."
+                placeholder={isChatClosed ? 'Chat closed' : 'Type a message...'}
+                disabled={isChatClosed}
                 style={{
                   flex: 1, border: '1px solid #e2e8f0', borderRadius: 10, padding: '8px 12px',
-                  fontSize: 13, outline: 'none', background: '#f8fafc', color: '#1e293b'
+                  fontSize: 13, outline: 'none', background: isChatClosed ? '#f1f5f9' : '#f8fafc', color: '#1e293b',
+                  opacity: isChatClosed ? 0.6 : 1
                 }}
               />
               <button
                 onClick={handleSend}
-                disabled={!input.trim() || sending}
+                disabled={!input.trim() || sending || isChatClosed}
                 style={{
-                  background: input.trim() ? '#003366' : '#e2e8f0', border: 'none', borderRadius: 10,
+                  background: input.trim() && !isChatClosed ? '#003366' : '#e2e8f0', border: 'none', borderRadius: 10,
                   width: 38, height: 38, display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  cursor: input.trim() ? 'pointer' : 'not-allowed', transition: 'background 0.2s', flexShrink: 0
+                  cursor: input.trim() && !isChatClosed ? 'pointer' : 'not-allowed', transition: 'background 0.2s', flexShrink: 0
                 }}
               >
-                <Send size={16} color={input.trim() ? 'white' : '#94a3b8'} />
+                <Send size={16} color={input.trim() && !isChatClosed ? 'white' : '#94a3b8'} />
               </button>
             </div>
           </motion.div>
