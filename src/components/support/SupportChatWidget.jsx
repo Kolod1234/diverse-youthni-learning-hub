@@ -164,10 +164,13 @@ export default function SupportChatWidget() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
-                <button onClick={() => setMinimized(true)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
+                <button onClick={() => setMinimized(true)} title="Minimise" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
                   <Minimize2 size={15} />
                 </button>
-                <button onClick={() => setOpen(false)} style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
+                <button onClick={handleEndChat} title="End Chat" style={{ background: 'rgba(239,68,68,0.7)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center', gap: 4, fontSize: 11, fontWeight: 600 }}>
+                  <PhoneOff size={13} /> End
+                </button>
+                <button onClick={() => setOpen(false)} title="Close" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
                   <X size={15} />
                 </button>
               </div>
