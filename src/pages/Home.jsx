@@ -125,7 +125,9 @@ export default function Home() {
       {/* Community Carousel */}
       {carouselImages.length > 0 && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <CommunityCarousel images={carouselImages} />
+          <Suspense fallback={<SectionFallback />}>
+            <CommunityCarousel images={carouselImages} />
+          </Suspense>
         </Container>
       )}
 
