@@ -140,10 +140,39 @@ export default function AdminSupportChats() {
     <Container maxWidth="xl" sx={{ py: 4 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
         <HeadphonesIcon size={28} color="#003366" />
-        <Box>
-          <Typography variant="h4" fontWeight={700}>Support Chats</Typography>
+        <Box sx={{ flex: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Typography variant="h4" fontWeight={700}>Support Chats</Typography>
+            {chats.filter(c => c.status === 'live_agent').length > 0 && (
+              <Chip
+                label={`🔴 ${chats.filter(c => c.status === 'live_agent').length} Live Agent`}
+                color="error"
+                size="small"
+                sx={{ fontWeight: 700, animation: 'pulse 2s infinite' }}
+              />
+            )}
+            {chats.filter(c => c.unread_admin).length > 0 && (
+              <Chip
+                label={`${chats.filter(c => c.unread_admin).length} unread`}
+                color="warning"
+                size="small"
+              />
+            )}
+          </Box>
           <Typography color="text.secondary">Manage live support conversations with users</Typography>
         </Box>
+        <Button
+          size="small"
+          startIcon={<RefreshCw size={14} />}
+          onClick={() => {
+            queryClient.invalidateQueries({ queryKey: ['support-chats-admin'] });
+            if (selectedChatId) queryClient.invalidateQueries({ queryKey: ['support-messages-admin', selectedChatId] });
+          }}
+          variant="outlined"
+          sx={{ borderRadius: 2 }}
+        >
+          Refresh
+        </Button>
       </Box>
 
       <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: '320px 1fr' }, gap: 2, height: '70vh' }}>
