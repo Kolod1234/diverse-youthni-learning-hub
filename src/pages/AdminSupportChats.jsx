@@ -2,10 +2,10 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
-  Box, Container, Typography, Card, CardContent, Chip, TextField, IconButton,
-  Avatar, Divider, Badge, Button
+  Box, Container, Typography, Card, Chip, TextField, IconButton,
+  Avatar, Badge, Button
 } from '@mui/material';
-import { MessageCircle, Send, User, Bot, HeadphonesIcon, CheckCircle } from 'lucide-react';
+import { MessageCircle, Send, Bot, HeadphonesIcon, CheckCircle, RefreshCw } from 'lucide-react';
 import { formatDistanceToNow } from 'date-fns';
 
 export default function AdminSupportChats() {
