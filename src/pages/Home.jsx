@@ -64,52 +64,44 @@ export default function Home() {
   const { data: courses = [], isLoading } = useQuery({
     queryKey: ['home-courses'],
     queryFn: () => base44.entities.Course.list('-enrolled_count', 50),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: carouselImages = [] } = useQuery({
     queryKey: ['carousel-images', 'main'],
     queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'main', is_active: true }, 'order', 50),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: heroImages = [] } = useQuery({
     queryKey: ['carousel-images', 'hero'],
     queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'hero', is_active: true }, 'order', 10),
-  });
-
-  const { data: leadershipImages = [] } = useQuery({
-    queryKey: ['carousel-images', 'leadership'],
-    queryFn: () => base44.entities.CarouselImage.filter({ carousel_type: 'leadership', is_active: true }, 'order', 20),
+    staleTime: 10 * 60 * 1000,
   });
 
   const { data: blogPosts = [] } = useQuery({
     queryKey: ['blog-posts-home'],
     queryFn: () => base44.entities.BlogPost.filter({ is_published: true }, '-published_date', 3),
+    staleTime: 5 * 60 * 1000,
   });
 
   const { data: realReviews = [] } = useQuery({
     queryKey: ['home-reviews'],
     queryFn: () => base44.entities.Review.list('-created_date', 6),
+    staleTime: 5 * 60 * 1000,
   });
 
-  const { data: gallerySection = [] } = useQuery({
-    queryKey: ['page-sections-gallery'],
-    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'gallery', is_active: true }, 'order', 1),
+  // Consolidated page sections query (one round-trip)
+  const { data: allPageSections = [] } = useQuery({
+    queryKey: ['page-sections-home-all'],
+    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', is_active: true }, 'order', 100),
+    staleTime: 10 * 60 * 1000,
   });
 
-  const { data: videoSection = [] } = useQuery({
-    queryKey: ['page-sections-video'],
-    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'video', is_active: true }, 'order', 1),
-  });
-
-  const { data: teamSection = [] } = useQuery({
-    queryKey: ['page-sections-team'],
-    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'team', is_active: true }, 'order', 1),
-  });
-
-  const { data: faqSection = [] } = useQuery({
-    queryKey: ['page-sections-faq'],
-    queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'faq', is_active: true }, 'order', 1),
-  });
+  const gallerySection = allPageSections.filter(s => s.section_type === 'gallery').slice(0, 1);
+  const videoSection = allPageSections.filter(s => s.section_type === 'video').slice(0, 1);
+  const teamSection = allPageSections.filter(s => s.section_type === 'team').slice(0, 1);
+  const faqSection = allPageSections.filter(s => s.section_type === 'faq').slice(0, 1);
 
   useEffect(() => {
     base44.auth.me().then(setUser).catch(() => setUser(null));
