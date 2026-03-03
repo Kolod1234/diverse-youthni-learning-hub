@@ -59,6 +59,10 @@ export default function AdminSupportChats() {
     setReply('');
     setSending(true);
 
+    // If this is the first agent reply, notify the user
+    const chat = chats.find(c => c.id === selectedChatId);
+    const wasLiveAgent = chat?.status === 'live_agent';
+
     await base44.entities.SupportMessage.create({
       chat_id: selectedChatId,
       sender_role: 'agent',
@@ -72,6 +76,17 @@ export default function AdminSupportChats() {
       unread_user: true,
       status: 'open'
     });
+
+    // Send user a notification that an agent has joined
+    if (wasLiveAgent && chat?.user_email) {
+      await base44.entities.Notification.create({
+        recipient_email: chat.user_email,
+        title: '✅ Support Agent Connected',
+        message: `${adminUser?.full_name || 'A support agent'} has joined your chat and replied.`,
+        type: 'live_agent',
+        is_read: false,
+      }).catch(() => {});
+    }
 
     queryClient.invalidateQueries({ queryKey: ['support-messages-admin', selectedChatId] });
     queryClient.invalidateQueries({ queryKey: ['support-chats-admin'] });
