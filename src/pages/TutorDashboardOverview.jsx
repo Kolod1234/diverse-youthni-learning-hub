@@ -35,23 +35,23 @@ export default function TutorDashboardOverview() {
 
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
-  // Fetch ALL courses in this tutor's approved subjects (not just created_by)
+  // Fetch ALL courses: explicitly assigned to tutor OR in their approved subjects
   const { data: allCourses = [] } = useQuery({
     queryKey: ['tutor-assigned-courses', user?.email, approvedSubjects?.join(',')],
     queryFn: async () => {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 200);
       }
-      if (!approvedSubjects || approvedSubjects.length === 0) return [];
-      // Fetch courses for each approved subject
-      const results = await Promise.all(
-        approvedSubjects.map(subject =>
-          base44.entities.Course.filter({ category: subject }, '-created_date', 50)
+      const [assignedCourses, ...subjectResults] = await Promise.all([
+        base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100),
+        ...(approvedSubjects || []).map(subject =>
+          base44.entities.Course.filter({ category: subject.toLowerCase() }, '-created_date', 50)
         )
-      );
-      return results.flat();
+      ]);
+      const all = [...assignedCourses, ...subjectResults.flat()];
+      return [...new Map(all.map(c => [c.id, c])).values()];
     },
-    enabled: !!user && (user.role === 'admin' || approvedSubjects !== null),
+    enabled: !!user,
   });
 
   const myCourses = allCourses;

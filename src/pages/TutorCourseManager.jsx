@@ -95,16 +95,16 @@ export default function TutorCourseManager() {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 100);
       }
-      if (!approvedSubjects || approvedSubjects.length === 0) return [];
-      // Return courses in the tutor's approved subjects (same as Overview/Dashboard)
-      const results = await Promise.all(
-        approvedSubjects.map(subject =>
-          base44.entities.Course.filter({ category: subject }, '-created_date', 50)
+      const [assignedCourses, ...subjectResults] = await Promise.all([
+        base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100),
+        ...(approvedSubjects || []).map(subject =>
+          base44.entities.Course.filter({ category: subject.toLowerCase() }, '-created_date', 50)
         )
-      );
-      return results.flat();
+      ]);
+      const all = [...assignedCourses, ...subjectResults.flat()];
+      return [...new Map(all.map(c => [c.id, c])).values()];
     },
-    enabled: !!user && (user.role === 'admin' || approvedSubjects !== null),
+    enabled: !!user,
   });
 
   // Allow access if admin OR if course category is within tutor's approved subjects
