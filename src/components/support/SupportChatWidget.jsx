@@ -83,6 +83,17 @@ export default function SupportChatWidget() {
     if (open && !minimized) setUnread(0);
   }, [open, minimized, messages.length]);
 
+  const handleEndChat = async () => {
+    if (!chatId) return;
+    await base44.entities.SupportChat.update(chatId, { status: 'closed' });
+    // Clear stored chat so next open starts fresh
+    const storageKey = `support_chat_id_${user?.email}`;
+    localStorage.removeItem(storageKey);
+    setChatId(null);
+    setOpen(false);
+    queryClient.invalidateQueries({ queryKey: ['support-messages', chatId] });
+  };
+
   const handleSend = async () => {
     if (!input.trim() || !chatId || sending) return;
     const text = input.trim();
