@@ -462,7 +462,9 @@ export default function Home() {
               <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>Stay informed with our latest news and updates</Typography>
             </Box>
           </motion.div>
-          <RSSFeedWidget limit={6} />
+          <Suspense fallback={<SectionFallback />}>
+            <RSSFeedWidget limit={6} />
+          </Suspense>
         </Container>
       </Box>
 
