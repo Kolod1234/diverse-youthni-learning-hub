@@ -93,6 +93,7 @@ export default function Library() {
   const [showUploadDialog, setShowUploadDialog] = useState(false);
   const [showBulkUpload, setShowBulkUpload] = useState(false);
   const [uploadingFile, setUploadingFile] = useState(false);
+  const [user, setUser] = useState(null);
   const [uploadingCover, setUploadingCover] = useState(false);
   const [analyzing, setAnalyzing] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
