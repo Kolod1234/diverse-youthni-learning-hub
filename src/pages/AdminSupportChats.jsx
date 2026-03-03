@@ -33,14 +33,35 @@ export default function AdminSupportChats() {
     refetchInterval: 3000,
   });
 
-  // Real-time subscription
+  // Real-time subscriptions for messages and new chats
   useEffect(() => {
-    const unsub = base44.entities.SupportMessage.subscribe(() => {
+    const unsubMsg = base44.entities.SupportMessage.subscribe(() => {
       queryClient.invalidateQueries({ queryKey: ['support-messages-admin', selectedChatId] });
       queryClient.invalidateQueries({ queryKey: ['support-chats-admin'] });
     });
-    return unsub;
-  }, [selectedChatId]);
+    const unsubChat = base44.entities.SupportChat.subscribe((event) => {
+      queryClient.invalidateQueries({ queryKey: ['support-chats-admin'] });
+      // Browser notification for new live agent requests
+      if (event.type === 'update' && event.data?.status === 'live_agent' && event.data?.live_agent_requested) {
+        if (Notification.permission === 'granted') {
+          new Notification('🔴 Live Agent Requested', {
+            body: `${event.data.user_name || 'A user'} needs a live agent. Click to open Support Chats.`,
+            icon: '/favicon.ico'
+          });
+        } else if (Notification.permission !== 'denied') {
+          Notification.requestPermission().then(perm => {
+            if (perm === 'granted') {
+              new Notification('🔴 Live Agent Requested', {
+                body: `${event.data.user_name || 'A user'} needs a live agent.`,
+                icon: '/favicon.ico'
+              });
+            }
+          });
+        }
+      }
+    });
+    return () => { unsubMsg(); unsubChat(); };
+  }, [selectedChatId, queryClient]);
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
