@@ -94,7 +94,20 @@ export default function AdminSupportChats() {
   };
 
   const handleClose = async (chatId) => {
+    const chat = chats.find(c => c.id === chatId);
     await base44.entities.SupportChat.update(chatId, { status: 'closed' });
+
+    // Notify user their chat was closed by an agent
+    if (chat?.user_email) {
+      await base44.entities.Notification.create({
+        recipient_email: chat.user_email,
+        title: '💬 Chat Ended',
+        message: 'Your support chat has been closed by an agent. Open a new chat if you need further help.',
+        type: 'support',
+        is_read: false,
+      }).catch(() => {});
+    }
+
     queryClient.invalidateQueries({ queryKey: ['support-chats-admin'] });
   };
 
