@@ -63,6 +63,16 @@ export default function SupportChatWidget() {
     refetchInterval: 3000,
   });
 
+  const { data: chatRecord } = useQuery({
+    queryKey: ['support-chat-record', chatId],
+    queryFn: () => base44.entities.SupportChat.filter({ user_email: user?.email }, '-created_date', 10)
+      .then(results => results?.find(c => c.id === chatId) || null),
+    enabled: !!chatId && !!user?.email,
+    refetchInterval: 5000,
+  });
+
+  const isChatClosed = chatRecord?.status === 'closed';
+
   // Real-time subscription
   useEffect(() => {
     if (!chatId) return;
