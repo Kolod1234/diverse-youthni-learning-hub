@@ -818,7 +818,7 @@ function LayoutContent({ children, currentPageName }) {
           {[
             { label: 'Courses', page: 'Explore', icon: Compass, match: 'Explore' },
             { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
-            { label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' },
+            ...(isTutorOrAdmin ? [{ label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' }] : []),
             { label: 'Profile', page: 'Profile', icon: User, match: 'Profile' },
           ].map(({ label, page, icon: Icon, match }) => {
             const isActive = location.pathname.includes(match);
