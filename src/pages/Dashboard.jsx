@@ -18,6 +18,8 @@ import UpcomingSessionsWidget from '@/components/sessions/UpcomingSessionsWidget
 import RecommendedCourses from '@/components/dashboard/RecommendedCourses';
 import PersonalizedSubjects from '@/components/dashboard/PersonalizedSubjects';
 import StudentReminders from '@/components/dashboard/StudentReminders';
+import StudentAssignments from '@/components/dashboard/StudentAssignments';
+import StudentQuizzes from '@/components/dashboard/StudentQuizzes';
 
 export default function Dashboard() {
   const [user, setUser] = useState(null);
