@@ -14,6 +14,7 @@ export default function NotificationBell() {
   const [showNotifications, setShowNotifications] = useState(false);
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const prevUnreadRef = useRef(0);
 
   useEffect(() => {
     const loadUser = async () => {
