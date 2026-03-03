@@ -337,7 +337,7 @@ export default function Dashboard() {
                       />
                     </Tabs>
 
-                    {tabValue === 'in-progress' && (
+                    {studentTab === 'courses' && tabValue === 'in-progress' && (
                       <Box sx={{ mt: 3 }}>
                         {loadingEnrollments ? (
                           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2.5 }}>
