@@ -87,7 +87,7 @@ export default function TutorCourseManager() {
     enabled: !!user?.email && user?.role !== 'admin',
   });
 
-  const approvedSubjects = tutorRequest?.[0]?.subjects || [];
+  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequest?.[0]?.subjects || []);
 
   const { data: allCourses = [] } = useQuery({
     queryKey: ['all-tutor-courses', user?.email, approvedSubjects?.join(',')],
