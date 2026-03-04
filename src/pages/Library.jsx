@@ -140,6 +140,55 @@ export default function Library() {
     enabled: !!user && (user.role === 'admin' || user.is_tutor === true),
   });
 
+  // Check for book ID in sessionStorage from AI assistant
+  useEffect(() => {
+    const bookId = sessionStorage.getItem('openLibraryBookId');
+    if (bookId && resources.length > 0) {
+      const book = resources.find(r => r.id === bookId);
+      if (book) {
+        setSelectedBook(book);
+        sessionStorage.removeItem('openLibraryBookId');
+      }
+    }
+  }, [resources]);
+
+  const allTags = [...new Set(resources.flatMap(r => r.tags || []))].sort();
+
+  const filteredResources = useMemo(() => {
+    return resources.filter(resource => {
+      const matchesSearch = !searchQuery ||
+        resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        resource.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
+      const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
+      const matchesTags = selectedTags.length === 0 ||
+        selectedTags.some(tag => resource.tags?.includes(tag));
+      return matchesSearch && matchesCategory && matchesTags;
+    });
+  }, [resources, searchQuery, selectedCategory, selectedTags]);
+
+  const createMutation = useMutation({
+    mutationFn: (data) => base44.entities.LibraryResource.create(data),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['library-resources']);
+      setShowUploadDialog(false);
+      resetForm();
+      toast.success('Book uploaded successfully!');
+    }
+  });
+
+  const deleteMutation = useMutation({
+    mutationFn: (id) => base44.entities.LibraryResource.delete(id),
+    onSuccess: () => {
+      queryClient.invalidateQueries(['library-resources']);
+      toast.success('Book deleted successfully!');
+    },
+    onError: () => {
+      toast.error('Failed to delete book');
+    }
+  });
+
   // Show loading until auth is checked
   if (!authChecked) {
     return (
