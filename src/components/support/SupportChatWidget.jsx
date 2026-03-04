@@ -1,10 +1,89 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
-import { MessageCircle, X, Send, Minimize2, Bot, User, PhoneOff } from 'lucide-react';
+import { MessageCircle, X, Send, Minimize2, Bot, User, PhoneOff, Download, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import ReactMarkdown from 'react-markdown';
+import { format } from 'date-fns';
 
+// ─── Typing Indicator Dots ──────────────────────────────────────────────────
+function TypingDots() {
+  return (
+    <div style={{ display: 'flex', gap: 4, alignItems: 'center', padding: '10px 14px' }}>
+      {[0, 1, 2].map(j => (
+        <div key={j} style={{
+          width: 6, height: 6, borderRadius: '50%', background: '#94a3b8',
+          animation: `bounce 1s infinite ${j * 0.2}s`
+        }} />
+      ))}
+    </div>
+  );
+}
+
+// ─── Rating Modal ───────────────────────────────────────────────────────────
+function RatingModal({ onSubmit, onSkip }) {
+  const [rating, setRating] = useState(0);
+  const [hovered, setHovered] = useState(0);
+  const [comment, setComment] = useState('');
+
+  return (
+    <div style={{
+      position: 'absolute', inset: 0, background: 'rgba(0,0,0,0.45)',
+      display: 'flex', alignItems: 'center', justifyContent: 'center',
+      zIndex: 10, borderRadius: 16, padding: 20
+    }}>
+      <div style={{ background: 'white', borderRadius: 14, padding: 24, width: '100%', boxShadow: '0 8px 32px rgba(0,0,0,0.15)' }}>
+        <div style={{ textAlign: 'center', marginBottom: 16 }}>
+          <div style={{ fontSize: 28, marginBottom: 4 }}>⭐</div>
+          <div style={{ fontWeight: 700, fontSize: 15, color: '#1e293b' }}>How was your support experience?</div>
+          <div style={{ fontSize: 12, color: '#64748b', marginTop: 4 }}>Your feedback helps us improve</div>
+        </div>
+        <div style={{ display: 'flex', justifyContent: 'center', gap: 8, marginBottom: 14 }}>
+          {[1, 2, 3, 4, 5].map(s => (
+            <button
+              key={s}
+              onMouseEnter={() => setHovered(s)}
+              onMouseLeave={() => setHovered(0)}
+              onClick={() => setRating(s)}
+              style={{ background: 'none', border: 'none', cursor: 'pointer', padding: 2, transition: 'transform 0.1s', transform: hovered >= s || rating >= s ? 'scale(1.2)' : 'scale(1)' }}
+            >
+              <Star size={28} fill={hovered >= s || rating >= s ? '#f59e0b' : 'none'} color={hovered >= s || rating >= s ? '#f59e0b' : '#cbd5e1'} />
+            </button>
+          ))}
+        </div>
+        <textarea
+          value={comment}
+          onChange={e => setComment(e.target.value)}
+          placeholder="Any additional comments? (optional)"
+          rows={2}
+          style={{ width: '100%', border: '1px solid #e2e8f0', borderRadius: 8, padding: '8px 10px', fontSize: 12, resize: 'none', outline: 'none', boxSizing: 'border-box', color: '#1e293b' }}
+        />
+        <div style={{ display: 'flex', gap: 8, marginTop: 12 }}>
+          <button
+            onClick={onSkip}
+            style={{ flex: 1, padding: '8px 0', border: '1px solid #e2e8f0', borderRadius: 8, background: 'white', color: '#64748b', cursor: 'pointer', fontSize: 13 }}
+          >
+            Skip
+          </button>
+          <button
+            onClick={() => rating > 0 && onSubmit(rating, comment)}
+            disabled={rating === 0}
+            style={{
+              flex: 2, padding: '8px 0', border: 'none', borderRadius: 8,
+              background: rating > 0 ? '#003366' : '#e2e8f0',
+              color: rating > 0 ? 'white' : '#94a3b8',
+              cursor: rating > 0 ? 'pointer' : 'not-allowed', fontSize: 13, fontWeight: 600
+            }}
+          >
+            Submit Rating
+          </button>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// ─── Main Widget ─────────────────────────────────────────────────────────────
 export default function SupportChatWidget() {
   const [open, setOpen] = useState(false);
   const [minimized, setMinimized] = useState(false);
@@ -13,6 +92,10 @@ export default function SupportChatWidget() {
   const [input, setInput] = useState('');
   const [sending, setSending] = useState(false);
   const [unread, setUnread] = useState(0);
+  const [showRating, setShowRating] = useState(false);
+  const [ratingSubmitted, setRatingSubmitted] = useState(false);
+  const [userTyping, setUserTyping] = useState(false);
+  const typingTimerRef = useRef(null);
   const bottomRef = useRef(null);
   const queryClient = useQueryClient();
 
@@ -20,20 +103,18 @@ export default function SupportChatWidget() {
     base44.auth.me().then(setUser).catch(() => {});
   }, []);
 
-  // Load or create chat session - persist in localStorage so history survives refresh
+  // Load or create chat session
   useEffect(() => {
     if (!open || !user) return;
     const storageKey = `support_chat_id_${user.email}`;
     const stored = localStorage.getItem(storageKey);
     if (stored) {
-      // Verify the chat still exists and is not closed
       base44.entities.SupportChat.filter({ user_email: user.email }, '-created_date', 50)
         .then(results => {
           const chat = results?.find(c => c.id === stored);
           if (chat && chat.status !== 'closed') {
             setChatId(stored);
           } else {
-            // Chat closed or not found - create a new one
             localStorage.removeItem(storageKey);
             createNewChat(storageKey);
           }
@@ -87,30 +168,54 @@ export default function SupportChatWidget() {
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages]);
+  }, [messages, sending]);
 
   useEffect(() => {
     if (open && !minimized) setUnread(0);
   }, [open, minimized, messages.length]);
 
+  // User typing indicator
+  const handleInputChange = (e) => {
+    setInput(e.target.value);
+    setUserTyping(true);
+    clearTimeout(typingTimerRef.current);
+    typingTimerRef.current = setTimeout(() => setUserTyping(false), 1500);
+  };
+
   const handleEndChat = async () => {
     if (!chatId) return;
     await base44.entities.SupportChat.update(chatId, { status: 'closed' });
-    // Clear stored chat so next open starts fresh
     const storageKey = `support_chat_id_${user?.email}`;
     localStorage.removeItem(storageKey);
     setChatId(null);
-    setOpen(false);
     queryClient.invalidateQueries({ queryKey: ['support-messages', chatId] });
+    // Show rating modal
+    setShowRating(true);
+  };
+
+  const handleRatingSubmit = async (rating, comment) => {
+    // Store rating on the chat record (best effort)
+    if (chatId) {
+      await base44.entities.SupportChat.update(chatId, { rating, rating_comment: comment }).catch(() => {});
+    }
+    setShowRating(false);
+    setRatingSubmitted(true);
+    setOpen(false);
+  };
+
+  const handleRatingSkip = () => {
+    setShowRating(false);
+    setOpen(false);
   };
 
   const handleSend = async () => {
     if (!input.trim() || !chatId || sending) return;
     const text = input.trim();
     setInput('');
+    setUserTyping(false);
+    clearTimeout(typingTimerRef.current);
     setSending(true);
 
-    // Save user message
     await base44.entities.SupportMessage.create({
       chat_id: chatId,
       sender_role: 'user',
@@ -118,7 +223,6 @@ export default function SupportChatWidget() {
       content: text
     });
 
-    // Update chat
     await base44.entities.SupportChat.update(chatId, {
       last_message: text.substring(0, 100),
       last_message_at: new Date().toISOString(),
@@ -128,12 +232,40 @@ export default function SupportChatWidget() {
 
     queryClient.invalidateQueries({ queryKey: ['support-messages', chatId] });
 
-    // Get bot response
     await base44.functions.invoke('supportChatBot', { chat_id: chatId, message: text });
     queryClient.invalidateQueries({ queryKey: ['support-messages', chatId] });
 
     setSending(false);
   };
+
+  // Download transcript as .txt
+  const handleDownloadTranscript = useCallback(() => {
+    if (!messages.length) return;
+    const lines = [
+      `Support Chat Transcript`,
+      `Date: ${format(new Date(), 'PPpp')}`,
+      `User: ${user?.full_name || user?.email}`,
+      `─────────────────────────────────`,
+      '',
+      ...messages.map(msg => {
+        const time = msg.created_date ? format(new Date(msg.created_date), 'HH:mm') : '';
+        const who = msg.sender_role === 'user' ? (user?.full_name || 'You') : msg.sender_role === 'bot' ? 'Bot' : 'Support Agent';
+        return `[${time}] ${who}: ${msg.content}`;
+      }),
+      '',
+      `─────────────────────────────────`,
+      `Diverse Youth NI Support`
+    ];
+    const blob = new Blob([lines.join('\n')], { type: 'text/plain' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `support-transcript-${format(new Date(), 'yyyy-MM-dd')}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  }, [messages, user]);
 
   if (!user) return null;
 
@@ -148,8 +280,8 @@ export default function SupportChatWidget() {
             transition={{ duration: 0.2 }}
             style={{
               width: 340,
-              height: 480,
-              background: 'var(--chat-bg, white)',
+              height: 500,
+              background: 'white',
               borderRadius: 16,
               boxShadow: '0 8px 40px rgba(0,0,0,0.18)',
               display: 'flex',
@@ -157,8 +289,14 @@ export default function SupportChatWidget() {
               overflow: 'hidden',
               border: '1px solid rgba(0,0,0,0.08)',
               marginBottom: 12,
+              position: 'relative',
             }}
           >
+            {/* Rating modal overlay */}
+            {showRating && (
+              <RatingModal onSubmit={handleRatingSubmit} onSkip={handleRatingSkip} />
+            )}
+
             {/* Header */}
             <div style={{ background: '#003366', padding: '14px 16px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexShrink: 0 }}>
               <div style={{ display: 'flex', alignItems: 'center', gap: 10 }}>
@@ -174,6 +312,11 @@ export default function SupportChatWidget() {
                 </div>
               </div>
               <div style={{ display: 'flex', gap: 4 }}>
+                {messages.length > 0 && (
+                  <button onClick={handleDownloadTranscript} title="Download Transcript" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
+                    <Download size={14} />
+                  </button>
+                )}
                 <button onClick={() => setMinimized(true)} title="Minimise" style={{ background: 'rgba(255,255,255,0.15)', border: 'none', cursor: 'pointer', color: 'white', borderRadius: 6, padding: '4px 7px', display: 'flex', alignItems: 'center' }}>
                   <Minimize2 size={15} />
                 </button>
@@ -228,18 +371,28 @@ export default function SupportChatWidget() {
                   </div>
                 );
               })}
+
+              {/* Bot typing indicator */}
               {sending && (
                 <div style={{ display: 'flex', alignItems: 'flex-end', gap: 8 }}>
                   <div style={{ width: 28, height: 28, borderRadius: '50%', background: '#6366f1', display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
                     <Bot size={14} color="white" />
                   </div>
-                  <div style={{ background: 'white', borderRadius: '16px 16px 16px 4px', padding: '10px 14px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', display: 'flex', gap: 4, alignItems: 'center' }}>
-                    {[0, 1, 2].map(j => (
-                      <div key={j} style={{ width: 6, height: 6, borderRadius: '50%', background: '#94a3b8', animation: `bounce 1s infinite ${j * 0.2}s` }} />
-                    ))}
+                  <div style={{ background: 'white', borderRadius: '16px 16px 16px 4px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)' }}>
+                    <TypingDots />
                   </div>
                 </div>
               )}
+
+              {/* User typing indicator */}
+              {userTyping && !sending && (
+                <div style={{ display: 'flex', justifyContent: 'flex-end', alignItems: 'flex-end', gap: 8 }}>
+                  <div style={{ background: '#003366', borderRadius: '16px 16px 4px 16px', boxShadow: '0 1px 3px rgba(0,0,0,0.07)', opacity: 0.7 }}>
+                    <TypingDots />
+                  </div>
+                </div>
+              )}
+
               <div ref={bottomRef} />
             </div>
 
@@ -254,7 +407,7 @@ export default function SupportChatWidget() {
             <div style={{ padding: '10px 12px', borderTop: '1px solid #e2e8f0', display: 'flex', gap: 8, background: 'white', flexShrink: 0 }}>
               <input
                 value={input}
-                onChange={e => setInput(e.target.value)}
+                onChange={handleInputChange}
                 onKeyDown={e => e.key === 'Enter' && !e.shiftKey && handleSend()}
                 placeholder={isChatClosed ? 'Chat closed' : 'Type a message...'}
                 disabled={isChatClosed}
