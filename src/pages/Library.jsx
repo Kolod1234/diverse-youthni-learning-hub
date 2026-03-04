@@ -182,25 +182,6 @@ export default function Library() {
     }
   }, [resources]);
 
-  const [selectedTags, setSelectedTags] = useState([]);
-
-  // Get all unique tags from resources
-  const allTags = [...new Set(resources.flatMap(r => r.tags || []))].sort();
-
-  const filteredResources = useMemo(() => {
-    return resources.filter(resource => {
-      const matchesSearch = !searchQuery || 
-        resource.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.author?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        resource.tags?.some(tag => tag.toLowerCase().includes(searchQuery.toLowerCase()));
-      const matchesCategory = selectedCategory === 'all' || resource.category === selectedCategory;
-      const matchesTags = selectedTags.length === 0 || 
-        selectedTags.some(tag => resource.tags?.includes(tag));
-      return matchesSearch && matchesCategory && matchesTags;
-    });
-  }, [resources, searchQuery, selectedCategory, selectedTags]);
-
   const featuredBooks = filteredResources.filter(r => r.is_featured).slice(0, 5);
   const categories = [
     { id: 'all', label: 'All' },
