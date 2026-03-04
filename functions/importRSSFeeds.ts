@@ -66,65 +66,29 @@ async function parseRSSFeed(xmlText) {
 
     let imageUrl = null;
 
-    // 1. media:content — pick highest width
-    const mediaContentMatches = [...itemXml.matchAll(/<media:content[^>]*url=["']([^"']+)["'][^>]*>/gi)];
-    let bestMediaUrl = null;
-    let maxWidth = 0;
-    for (const m of mediaContentMatches) {
-      const fullTag = m[0];
-      const url = m[1];
-      const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
-      const width = widthMatch ? parseInt(widthMatch[1]) : 1;
-      if (width > maxWidth) {
-        maxWidth = width;
-        bestMediaUrl = url;
-      }
-    }
-    if (bestMediaUrl) imageUrl = bestMediaUrl;
+    // 1. media:thumbnail — just grab the first one, no width restriction
+    const anyThumb = itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
+    if (anyThumb) imageUrl = anyThumb[1];
 
-    // 2. enclosure with image type
-    if (!imageUrl) {
-      const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
-      if (enclosureMatch) imageUrl = enclosureMatch[1];
-    }
-
-    // 3. media:thumbnail — pick highest width
-    if (!imageUrl) {
-      const thumbMatches = [...itemXml.matchAll(/<media:thumbnail[^>]*url=["']([^"']+)["'][^>]*>/gi)];
-      let bestThumb = null;
-      let maxThumbWidth = 0;
-      for (const m of thumbMatches) {
-        const fullTag = m[0];
-        const url = m[1];
-        const widthMatch = fullTag.match(/width=["'](\d+)["']/i);
-        const width = widthMatch ? parseInt(widthMatch[1]) : 1;
-        if (width > maxThumbWidth) {
-          maxThumbWidth = width;
-          bestThumb = url;
-        }
-      }
-      if (bestThumb) imageUrl = bestThumb;
-    }
-
-    // 4. Any media:content (no width attribute)
+    // 2. media:content — just grab the first one
     if (!imageUrl) {
       const anyMedia = itemXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
       if (anyMedia) imageUrl = anyMedia[1];
     }
 
-    // 5. Any media:thumbnail (no width attribute)
+    // 3. enclosure with image type
     if (!imageUrl) {
-      const anyThumb = itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
-      if (anyThumb) imageUrl = anyThumb[1];
+      const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
+      if (enclosureMatch) imageUrl = enclosureMatch[1];
     }
 
-    // 6. MSN-specific image tag
+    // 4. MSN-specific image tag
     if (!imageUrl) {
       const msnImage = itemXml.match(/<image[^>]*url=["']([^"']+)["']/i);
       if (msnImage) imageUrl = msnImage[1];
     }
 
-    // 7. img tag inside description HTML
+    // 5. img tag inside description HTML
     if (!imageUrl) {
       imageUrl = extractImageFromContent(description);
     }
@@ -162,11 +126,11 @@ async function parseRSSFeed(xmlText) {
                       getTextContent(entryXml, 'published');
 
       let imageUrl = null;
-      const anyMedia = entryXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
-      if (anyMedia) imageUrl = anyMedia[1];
+      const anyThumb = entryXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
+      if (anyThumb) imageUrl = anyThumb[1];
       if (!imageUrl) {
-        const anyThumb = entryXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
-        if (anyThumb) imageUrl = anyThumb[1];
+        const anyMedia = entryXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
+        if (anyMedia) imageUrl = anyMedia[1];
       }
       if (!imageUrl) imageUrl = extractImageFromContent(description);
 
