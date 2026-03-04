@@ -132,6 +132,13 @@ export default function Library() {
 
   const isTutorOrAdmin = user && (user.is_tutor === true || user.role === 'admin');
 
+  // Always call hooks before any conditional returns
+  const { data: resources = [] } = useQuery({
+    queryKey: ['library-resources'],
+    queryFn: () => base44.entities.LibraryResource.list('-created_date', 500),
+    enabled: !!user && (user.role === 'admin' || user.is_tutor === true),
+  });
+
   // Show loading until auth is checked
   if (!authChecked) {
     return (
@@ -162,11 +169,6 @@ export default function Library() {
   if (!unlocked && user?.role !== 'admin') {
     return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
   }
-
-  const { data: resources = [] } = useQuery({
-    queryKey: ['library-resources'],
-    queryFn: () => base44.entities.LibraryResource.list('-created_date', 500)
-  });
 
   // Check for book ID in sessionStorage from AI assistant
   useEffect(() => {
