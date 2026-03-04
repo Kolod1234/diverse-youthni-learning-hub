@@ -220,18 +220,6 @@ export default function Library() {
     return <LibraryPasswordGate onUnlock={() => setUnlocked(true)} />;
   }
 
-  // Check for book ID in sessionStorage from AI assistant
-  useEffect(() => {
-    const bookId = sessionStorage.getItem('openLibraryBookId');
-    if (bookId && resources.length > 0) {
-      const book = resources.find(r => r.id === bookId);
-      if (book) {
-        setSelectedBook(book);
-        sessionStorage.removeItem('openLibraryBookId');
-      }
-    }
-  }, [resources]);
-
   const featuredBooks = filteredResources.filter(r => r.is_featured).slice(0, 5);
   const categories = [
     { id: 'all', label: 'All' },
