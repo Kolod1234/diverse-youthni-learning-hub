@@ -285,27 +285,6 @@ export default function Library() {
     return user.role === 'admin';
   };
 
-  const createMutation = useMutation({
-    mutationFn: (data) => base44.entities.LibraryResource.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['library-resources']);
-      setShowUploadDialog(false);
-      resetForm();
-      toast.success('Book uploaded successfully!');
-    }
-  });
-
-  const deleteMutation = useMutation({
-    mutationFn: (id) => base44.entities.LibraryResource.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['library-resources']);
-      toast.success('Book deleted successfully!');
-    },
-    onError: () => {
-      toast.error('Failed to delete book');
-    }
-  });
-
   const handleInitiateUpload = () => {
     fileInputRef.current?.click();
   };
