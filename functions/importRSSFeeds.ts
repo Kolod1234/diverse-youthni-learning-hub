@@ -66,29 +66,24 @@ async function parseRSSFeed(xmlText) {
 
     let imageUrl = null;
 
-    // 1. media:thumbnail — just grab the first one, no width restriction
     const anyThumb = itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
     if (anyThumb) imageUrl = anyThumb[1];
 
-    // 2. media:content — just grab the first one
     if (!imageUrl) {
       const anyMedia = itemXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
       if (anyMedia) imageUrl = anyMedia[1];
     }
 
-    // 3. enclosure with image type
     if (!imageUrl) {
       const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
       if (enclosureMatch) imageUrl = enclosureMatch[1];
     }
 
-    // 4. MSN-specific image tag
     if (!imageUrl) {
       const msnImage = itemXml.match(/<image[^>]*url=["']([^"']+)["']/i);
       if (msnImage) imageUrl = msnImage[1];
     }
 
-    // 5. img tag inside description HTML
     if (!imageUrl) {
       imageUrl = extractImageFromContent(description);
     }
@@ -110,7 +105,6 @@ async function parseRSSFeed(xmlText) {
     }
   }
 
-  // Atom format
   if (items.length === 0) {
     const entryMatches = xmlText.matchAll(/<entry>([\s\S]*?)<\/entry>/gi);
 
@@ -155,6 +149,23 @@ async function parseRSSFeed(xmlText) {
   return items;
 }
 
+async function fetchFeed(url) {
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 5000);
+  try {
+    const response = await fetch(url, {
+      headers: { 'User-Agent': 'Mozilla/5.0 (compatible; RSSImporter/1.0)' },
+      signal: controller['signal'],
+    });
+    clearTimeout(timeoutId);
+    if (!response.ok) return null;
+    return await response.text();
+  } catch (e) {
+    clearTimeout(timeoutId);
+    return null;
+  }
+}
+
 Deno.serve(async (req) => {
   try {
     const base44 = createClientFromRequest(req);
@@ -172,54 +183,54 @@ Deno.serve(async (req) => {
     const results = [];
     let totalImported = 0;
 
-    for (const currentSource of sourcesToImport) {
+    // Fetch all feeds in parallel to save time
+    const fetchPromises = sourcesToImport.map(async (currentSource) => {
       try {
         const feedUrl = RSS_FEEDS[currentSource];
+        const xmlText = await fetchFeed(feedUrl);
 
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000);
-
-        const response = await fetch(feedUrl, {
-          headers: { 'User-Agent': 'Mozilla/5.0 (compatible; RSSImporter/1.0)' },
-          signal: controller['signal'],
-        });
-
-        clearTimeout(timeoutId);
-
-        if (!response.ok) {
-          results.push({ source: currentSource.toUpperCase(), error: 'Failed to fetch: ' + response['statusText'] });
-          continue;
+        if (!xmlText) {
+          return { source: currentSource.toUpperCase(), error: 'Failed to fetch or timed out', imported: [] };
         }
 
-        const xmlText = await response.text();
         const items = await parseRSSFeed(xmlText);
-
-        const imported = [];
-        for (const item of items.slice(0, 10)) {
-          try {
-            const existing = await base44.asServiceRole.entities.RSSFeed.filter({ link: item['link'] });
-            if (existing.length === 0) {
-              const created = await base44.asServiceRole.entities.RSSFeed.create({
-                ...item,
-                category: currentSource.toUpperCase(),
-              });
-              imported.push(created);
-            }
-          } catch (e) {
-            console.error('Error importing item from ' + currentSource + ': ' + getMsg(e));
-          }
-        }
-
-        totalImported += imported.length;
-        results.push({
-          source: currentSource.toUpperCase(),
-          itemsFound: items.length,
-          itemsImported: imported.length,
-        });
-
+        return { source: currentSource.toUpperCase(), items, imported: [] };
       } catch (e) {
-        results.push({ source: currentSource.toUpperCase(), error: getMsg(e) });
+        return { source: currentSource.toUpperCase(), error: getMsg(e), imported: [] };
       }
+    });
+
+    const feedResults = await Promise.all(fetchPromises);
+
+    // Now save to DB sequentially
+    for (const feedResult of feedResults) {
+      if (feedResult['error']) {
+        results.push({ source: feedResult['source'], error: feedResult['error'] });
+        continue;
+      }
+
+      const imported = [];
+      for (const item of (feedResult['items'] || []).slice(0, 5)) {
+        try {
+          const existing = await base44.asServiceRole.entities.RSSFeed.filter({ link: item['link'] });
+          if (existing.length === 0) {
+            const created = await base44.asServiceRole.entities.RSSFeed.create({
+              ...item,
+              category: feedResult['source'],
+            });
+            imported.push(created);
+          }
+        } catch (e) {
+          console.error('DB error for ' + feedResult['source'] + ': ' + getMsg(e));
+        }
+      }
+
+      totalImported += imported.length;
+      results.push({
+        source: feedResult['source'],
+        itemsFound: (feedResult['items'] || []).length,
+        itemsImported: imported.length,
+      });
     }
 
     return Response.json({
