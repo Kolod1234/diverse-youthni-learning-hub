@@ -100,6 +100,7 @@ export default function Library() {
   const [tagSuggestions, setTagSuggestions] = useState([]);
   const [detailTabValue, setDetailTabValue] = useState('details');
   const [showPermissionManager, setShowPermissionManager] = useState(false);
+  const [selectedTags, setSelectedTags] = useState([]);
   const { canUpload, canEditBook: checkCanEditBook, canDeleteBook: checkCanDeleteBook, canManageUsers } = useLibraryPermissions(user?.email);
   const [formData, setFormData] = useState({
     title: '',
