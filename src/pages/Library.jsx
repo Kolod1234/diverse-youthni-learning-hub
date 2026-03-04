@@ -285,6 +285,19 @@ export default function Library() {
     return user.role === 'admin';
   };
 
+  const resetForm = () => {
+    setFormData({
+      title: '',
+      description: '',
+      category: 'gcse_books',
+      file_url: '',
+      cover_image: '',
+      author: '',
+      tags: [],
+      is_featured: false
+    });
+  };
+
   const handleInitiateUpload = () => {
     fileInputRef.current?.click();
   };
