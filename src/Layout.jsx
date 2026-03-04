@@ -191,7 +191,7 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'My Learning', href: createPageUrl('Dashboard'), icon: BookOpen },
     { name: 'Live Sessions', href: createPageUrl('Sessions'), icon: Video },
     { name: 'Youth Work', href: createPageUrl('YouthWork'), icon: GraduationCap },
-
+    { name: 'Library', href: createPageUrl('Library'), icon: BookOpen },
     { name: 'Learning Pathways', href: createPageUrl('StudentPathways'), icon: Award },
     { name: 'Community', href: createPageUrl('Community'), icon: MessageSquare },
     { name: 'Event Slides', href: createPageUrl('CommunityEventSlides'), icon: GraduationCap },
