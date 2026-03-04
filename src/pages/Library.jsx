@@ -449,19 +449,6 @@ export default function Library() {
     }
   };
 
-  const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      category: 'gcse_books',
-      file_url: '',
-      cover_image: '',
-      author: '',
-      tags: [],
-      is_featured: false
-    });
-  };
-
   const handleSuggestTags = async () => {
     setSuggestingTags(true);
     try {
