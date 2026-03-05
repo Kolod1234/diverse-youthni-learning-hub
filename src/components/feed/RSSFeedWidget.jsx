@@ -47,8 +47,7 @@ const getTimeAgo = (dateString) => {
   return format(past, 'MMM d');
 };
 
-function RSSFeedWidget({ limit = 6, initialLimit }) {
-  initialLimit = initialLimit ?? limit;
+function RSSFeedWidget({ initialLimit = 6 }) {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [displayCount, setDisplayCount] = useState(initialLimit);
   const [isLoadingMore, setIsLoadingMore] = useState(false);
