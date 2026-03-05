@@ -1,9 +1,3 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
-
-function getMsg(e) {
-  return e && e['message'] ? e['message'] : String(e);
-}
-
 const CCEA_PAPERS = {
   mathematics: {
     name: 'Mathematics',
@@ -233,9 +227,9 @@ Deno.serve(async (req) => {
 
     let paperKey = null;
     for (const entry of KEYWORD_MAP) {
-      for (const kw of entry.keywords) {
+      for (const kw of entry['keywords']) {
         if (searchStr.includes(kw)) {
-          paperKey = entry.key;
+          paperKey = entry['key'];
           break;
         }
       }
@@ -247,7 +241,7 @@ Deno.serve(async (req) => {
     if (!subjectData) {
       return Response.json({
         success: false,
-        message: 'No CCEA past papers found for this subject. Try visiting [ccea.org](https://ccea.org).uk directly.',
+        message: 'No CCEA past papers found for this subject.',
         ccea_url: 'https://ccea.org.uk/past-papers-mark-schemes',
       });
     }
@@ -258,7 +252,7 @@ Deno.serve(async (req) => {
     if (!yearPapers || yearPapers.length === 0) {
       return Response.json({
         success: false,
-        message: 'No papers found for ' + year + '. Try a different year or visit [ccea.org](https://ccea.org).uk directly.',
+        message: 'No papers found for ' + year + '. Try a different year.',
         ccea_url: 'https://ccea.org.uk/past-papers-mark-schemes',
       });
     }
