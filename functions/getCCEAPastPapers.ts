@@ -48,7 +48,7 @@ const CCEA_PAPERS = {
         { title: 'A-Level Biology AS1 2024 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
         { title: 'A-Level Biology AS2 2024 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
         { title: 'A-Level Biology A21 2024 - Physiology and Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-A2%201%3A%20Physiology%20and%20Ecosystems-Paper.pdf' },
-        { title: 'A-Level Biology A22 2024 - Genetics Evolution and Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-A2%202%3A%20Genetics%2C%20Evolution%20and%20Ecosystems-Paper.pdf' },
+        { title: 'A-Level Biology A22 2024 - Genetics Evolution Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-A2%202%3A%20Genetics%2C%20Evolution%20and%20Ecosystems-Paper.pdf' },
       ],
       2023: [
         { title: 'A-Level Biology AS1 2023 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2023-Summer/Standard/0/GCE-Biology-Summer2023-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
@@ -208,57 +208,40 @@ const CCEA_PAPERS = {
   },
 };
 
-const CATEGORY_MAP = {
-  mathematics: 'mathematics',
-  further_mathematics: 'mathematics',
-  biology: 'biology',
-  chemistry: 'chemistry',
-  physics: 'physics',
-  history: 'history',
-  english_language: 'english_language',
-  english_literature: 'english_literature',
-  geography: 'geography',
-  business_studies: 'business_studies',
-  economics: 'economics',
-};
+const KEYWORD_MAP = [
+  { keywords: ['math'], key: 'mathematics' },
+  { keywords: ['biology', 'bio'], key: 'biology' },
+  { keywords: ['chemistry', 'chem'], key: 'chemistry' },
+  { keywords: ['physics'], key: 'physics' },
+  { keywords: ['history'], key: 'history' },
+  { keywords: ['english language'], key: 'english_language' },
+  { keywords: ['english literature', 'english lit'], key: 'english_literature' },
+  { keywords: ['geography', 'geo'], key: 'geography' },
+  { keywords: ['business'], key: 'business_studies' },
+  { keywords: ['economics', 'econ'], key: 'economics' },
+];
 
 Deno.serve(async (req) => {
   try {
-    const base44 = createClientFromRequest(req);
-
-    if (req['method'] === 'GET') {
-      const courses = await base44.asServiceRole.entities.Course.list();
-      const courseList = courses.map((c) => ({
-        id: c['id'],
-        title: c['data'] ? c['data']['title'] : c['title'],
-        category: c['data'] ? c['data']['category'] : c['category'],
-        qualification_type: c['data'] ? c['data']['qualification_type'] : c['qualification_type'],
-        alevel_stage: c['data'] ? c['data']['alevel_stage'] : c['alevel_stage'],
-        exam_board: c['data'] ? c['data']['exam_board'] : c['exam_board'],
-      }));
-      return Response.json({ success: true, courses: courseList });
-    }
-
     const body = await req.json();
-    const courseId = body['course_id'];
+    const category = (body['category'] || '').toLowerCase();
+    const qualType = (body['qualification_type'] || 'alevel').toLowerCase();
     const year = parseInt(body['year'] || '2024');
+    const courseTitle = (body['course_title'] || '').toLowerCase();
 
-    if (!courseId) {
-      return Response.json({ error: 'course_id is required' }, { status: 400 });
+    const searchStr = category + ' ' + courseTitle;
+
+    let paperKey = null;
+    for (const entry of KEYWORD_MAP) {
+      for (const kw of entry.keywords) {
+        if (searchStr.includes(kw)) {
+          paperKey = entry.key;
+          break;
+        }
+      }
+      if (paperKey) break;
     }
 
-    const courses = await base44.asServiceRole.entities.Course.filter({ id: courseId });
-    if (!courses || courses.length === 0) {
-      return Response.json({ error: 'Course not found' }, { status: 404 });
-    }
-
-    const course = courses[0];
-    const courseData = course['data'] || course;
-    const category = courseData['category'] || '';
-    const qualType = courseData['qualification_type'] || 'alevel';
-    const courseTitle = courseData['title'] || 'Unknown Course';
-
-    const paperKey = CATEGORY_MAP[category];
     const subjectData = paperKey ? CCEA_PAPERS[paperKey] : null;
 
     if (!subjectData) {
@@ -282,7 +265,6 @@ Deno.serve(async (req) => {
 
     return Response.json({
       success: true,
-      course_title: courseTitle,
       subject: subjectData['name'],
       year: year,
       qualification: qualType.toUpperCase(),
@@ -290,6 +272,6 @@ Deno.serve(async (req) => {
     });
 
   } catch (e) {
-    return Response.json({ error: getMsg(e) }, { status: 500 });
+    return Response.json({ error: String(e) }, { status: 500 });
   }
 });
