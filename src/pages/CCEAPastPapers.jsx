@@ -21,11 +21,11 @@ export default function PastPapersPage() {
   }, [selectedCourseId, courses]);
 
   async function handleFetch() {
-    if (!selectedCourseId) return;
+    if (!selectedCourseId || !selectedCourse) return;
     setLoading(true);
     setResult(null);
     try {
-      const res = await fetch("/api/functions/fetchCCEAPastPapers", {
+      const res = await fetch("/api/functions/getCCEAPastPapers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
