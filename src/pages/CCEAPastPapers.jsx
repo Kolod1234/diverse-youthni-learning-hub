@@ -10,7 +10,7 @@ export default function PastPapersPage() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    Course.list().then(setCourses);
+    base44.entities.Course.list().then(setCourses);
   }, []);
 
   useEffect(() => {
