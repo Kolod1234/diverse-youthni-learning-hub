@@ -40,6 +40,7 @@ export default function PastPapersPage() {
 
   const aLevel = courses.filter((c) => c.qualification_type === "alevel");
   const gcse = courses.filter((c) => c.qualification_type === "gcse");
+  const msg = result ? [result.me](https://result.me)ssage : "";
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -54,7 +55,6 @@ export default function PastPapersPage() {
       </div>
 
       <div className="max-w-3xl mx-auto px-6 pb-16 space-y-6">
-
         <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-8">
           <h2 className="text-lg font-semibold text-gray-800 mb-6">Find Past Papers</h2>
           <div className="space-y-5">
@@ -170,7 +170,7 @@ export default function PastPapersPage() {
             <div className="text-2xl">⚠️</div>
             <div>
               <div className="font-semibold text-amber-800">No papers found</div>
-              <div className="text-sm text-amber-700 mt-1">{[result.me](https://result.me)ssage}</div>
+              <div className="text-sm text-amber-700 mt-1">{msg}</div>
               {result.ccea_url && (
                 <a
                   href={result.ccea_url}
