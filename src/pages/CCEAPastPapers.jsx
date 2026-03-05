@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Course } from "@/api/entities";
+import { base44 } from "@/api/base44Client";
 
 export default function PastPapersPage() {
   const [courses, setCourses] = useState([]);
