@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { base44 } from "@/api/base44Client";
+import { Course } from "@/api/entities";
 
 export default function PastPapersPage() {
   const [courses, setCourses] = useState([]);
@@ -10,7 +10,7 @@ export default function PastPapersPage() {
   const [result, setResult] = useState(null);
 
   useEffect(() => {
-    base44.entities.Course.list().then(setCourses);
+    Course.list().then(setCourses);
   }, []);
 
   useEffect(() => {
@@ -28,7 +28,12 @@ export default function PastPapersPage() {
       const res = await fetch("/api/functions/fetchCCEAPastPapers", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ course_id: selectedCourseId, year: parseInt(year) }),
+        body: JSON.stringify({
+          category: selectedCourse.category || "",
+          qualification_type: selectedCourse.qualification_type || "alevel",
+          course_title: selectedCourse.title || "",
+          year: parseInt(year),
+        }),
       });
       setResult(await res.json());
     } catch (e) {
@@ -170,8 +175,7 @@ export default function PastPapersPage() {
             <div className="text-2xl">⚠️</div>
             <div>
               <div className="font-semibold text-amber-800">No papers found</div>
-               
-<div className="text-sm text-amber-700 mt-1">{resultMsg}</div>
+              <div className="text-sm text-amber-700 mt-1">{resultMsg}</div>
               {result.ccea_url && (
                 <a
                   href={result.ccea_url}
