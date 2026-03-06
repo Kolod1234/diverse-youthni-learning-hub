@@ -10,7 +10,7 @@ import {
   User, Lock, Settings as SettingsIcon, Presentation, Layout,
   Camera, Save, ArrowLeft, CheckCircle2, AlertTriangle, Trash2, Bell
 } from 'lucide-react';
-import { Switch, FormControlLabel, FormGroup } from '@mui/material';
+import { Switch, FormGroup } from '@mui/material';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 
@@ -20,7 +20,6 @@ export default function Settings() {
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
-  // Pre-populate from cache so profile shows instantly on refresh
   const [fullName, setFullName] = useState(() => {
     try { return JSON.parse(localStorage.getItem('user_profile'))?.full_name || ''; } catch { return ''; }
   });
@@ -28,18 +27,13 @@ export default function Settings() {
     try { return JSON.parse(localStorage.getItem('user_profile'))?.avatar || ''; } catch { return ''; }
   });
 
-  // Password state
   const [currentPassword, setCurrentPassword] = useState('');
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
-
-  // Preferences state
-  const [playerPreference, setPlayerPreference] = useState('');
+  const [playerPreference, setPlayerPreference] = useState('LessonPlayerPowerPoint');
   const [showDeleteDialog, setShowDeleteDialog] = useState(false);
   const [deleteConfirmEmail, setDeleteConfirmEmail] = useState('');
   const [tabValue, setTabValue] = useState('profile');
-
-  // Notification preferences
   const [notifPrefs, setNotifPrefs] = useState({
     email_course_updates: true,
     email_new_sessions: true,
@@ -50,7 +44,8 @@ export default function Settings() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const userData = await [base44.auth.me](https://base44.auth.me)();
+        const authMe = [base44.auth.me](https://base44.auth.me);
+        const userData = await authMe();
         setUser(userData);
         setFullName(userData.full_name || '');
         setAvatarUrl(userData.avatar || '');
@@ -58,7 +53,6 @@ export default function Settings() {
         if (userData.notification_prefs) {
           setNotifPrefs(p => ({ ...p, ...userData.notification_prefs }));
         }
-        // Cache for instant load next time
         localStorage.setItem('user_profile', JSON.stringify({
           full_name: userData.full_name,
           avatar: userData.avatar,
@@ -73,10 +67,12 @@ export default function Settings() {
   }, []);
 
   const updateProfileMutation = useMutation({
-    mutationFn: async (data) => { await base44.auth.updateMe(data); },
+    mutationFn: async (data) => {
+      const updateMe = base44.auth.updateMe;
+      await updateMe(data);
+    },
     onSuccess: (_, data) => {
       queryClient.invalidateQueries(['user']);
-      // Keep cache in sync
       const cached = JSON.parse(localStorage.getItem('user_profile') || '{}');
       localStorage.setItem('user_profile', JSON.stringify({ ...cached, ...data }));
       toast.success('Profile updated successfully');
@@ -85,7 +81,10 @@ export default function Settings() {
   });
 
   const updatePreferenceMutation = useMutation({
-    mutationFn: async (preference) => { await base44.auth.updateMe({ player_preference: preference }); },
+    mutationFn: async (preference) => {
+      const updateMe = base44.auth.updateMe;
+      await updateMe({ player_preference: preference });
+    },
     onSuccess: () => {
       queryClient.invalidateQueries(['user']);
       toast.success('Preference updated successfully');
@@ -128,7 +127,8 @@ export default function Settings() {
       toast.success('Account deleted successfully.');
       setShowDeleteDialog(false);
       setDeleteConfirmEmail('');
-      setTimeout(() => base44.auth.logout(), 1500);
+      const logout = base44.auth.logout;
+      setTimeout(() => logout(), 1500);
     } catch {
       toast.error('Failed to delete account. Please contact support.');
     }
@@ -136,14 +136,15 @@ export default function Settings() {
 
   const saveNotifPrefs = async (newPrefs) => {
     setNotifPrefs(newPrefs);
-    await base44.auth.updateMe({ notification_prefs: newPrefs });
+    const updateMe = base44.auth.updateMe;
+    await updateMe({ notification_prefs: newPrefs });
     toast.success('Notification preferences saved');
   };
 
   if (loading) {
     return (
       <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-        <Box className="animate-spin rounded-full" sx={{ width: 48, height: 48, border: 2, borderColor: 'primary.main', borderBottomColor: 'transparent', borderRadius: '50%' }} />
+        <Box sx={{ width: 48, height: 48, border: '3px solid', borderColor: 'primary.main', borderBottomColor: 'transparent', borderRadius: '50%', animation: 'spin 1s linear infinite' }} />
       </Box>
     );
   }
@@ -152,7 +153,6 @@ export default function Settings() {
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
       <Container maxWidth="lg" sx={{ py: 4 }}>
 
-        {/* Header */}
         <motion.div initial={{ y: -20, opacity: 0 }} animate={{ y: 0, opacity: 1 }}>
           <Button variant="text" onClick={() => navigate(-1)} startIcon={<ArrowLeft size={16} />} sx={{ mb: 2 }}>
             Back
@@ -177,8 +177,6 @@ export default function Settings() {
                 <Typography variant="h6" fontWeight={600} sx={{ mb: 0.5 }}>Profile Information</Typography>
                 <Typography variant="body2" color="text.secondary" sx={{ mb: 3 }}>Update your profile details and avatar</Typography>
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
-
-                  {/* Avatar */}
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 3 }}>
                     <Box sx={{ position: 'relative' }}>
                       <Avatar src={avatarUrl} sx={{ width: 96, height: 96, fontSize: '2rem' }}>
@@ -202,13 +200,11 @@ export default function Settings() {
                     </Box>
                   </Box>
 
-                  {/* Full Name */}
                   <Box>
                     <InputLabel>Full Name</InputLabel>
                     <TextField fullWidth value={fullName} onChange={e => setFullName(e.target.value)} placeholder="Enter your full name" sx={{ mt: 1 }} />
                   </Box>
 
-                  {/* Email (read-only) */}
                   <Box>
                     <InputLabel>Email</InputLabel>
                     <TextField fullWidth value={user?.email || ''} disabled sx={{ mt: 1, bgcolor: '#f9fafb' }} />
@@ -294,7 +290,6 @@ export default function Settings() {
                 <Box sx={{ display: 'flex', flexDirection: 'column', gap: 3 }}>
                   <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
 
-                    {/* PowerPoint Style */}
                     <Button
                       onClick={() => handlePlayerPreferenceChange('LessonPlayerPowerPoint')}
                       disabled={updatePreferenceMutation.isPending}
@@ -322,7 +317,6 @@ export default function Settings() {
                       </Typography>
                     </Button>
 
-                    {/* Classic Style */}
                     <Button
                       onClick={() => handlePlayerPreferenceChange('LessonPlayerClassic')}
                       disabled={updatePreferenceMutation.isPending}
@@ -397,14 +391,13 @@ export default function Settings() {
                 </Box>
               </Card>
 
-              {/* Delete Confirmation Dialog */}
               <Dialog open={showDeleteDialog} onClose={() => setShowDeleteDialog(false)} maxWidth="sm" fullWidth>
                 <DialogTitle sx={{ bgcolor: '#fef2f2', color: '#dc2626', fontWeight: 700 }}>
                   Delete Account — Final Confirmation
                 </DialogTitle>
                 <DialogContent sx={{ mt: 2 }}>
                   <Typography color="error" variant="body2" fontWeight={600} sx={{ mb: 2 }}>
-                    ⚠️ This action is permanent and cannot be reversed!
+                    This action is permanent and cannot be reversed!
                   </Typography>
                   <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
                     All your data including courses, progress, achievements, and certificates will be permanently deleted.
