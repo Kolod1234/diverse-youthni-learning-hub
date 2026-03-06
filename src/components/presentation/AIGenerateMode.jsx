@@ -275,7 +275,6 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
             <Input
               type="number"
               min={3}
-              {/* FIX #2: Restored the truncated max prop — was cut off as "ma" */}
               max={30}
               value={slideCount}
               onChange={(e) => setSlideCount(Math.min(30, Math.max(3, parseInt(e.target.value) || 8)))}
