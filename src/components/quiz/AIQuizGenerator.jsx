@@ -15,10 +15,8 @@ async function searchWikimediaImage(query) {
   try {
     const searchQuery = encodeURIComponent(`${query} diagram science`);
 
-    // Try Wikipedia first
     const wpUrl = `https://en.wikipedia.org/w/api.php?action=query&list=search&srsearch=${searchQuery}&srnamespace=6&srlimit=5&format=json&origin=*`;
-    const wpRes = await fetch(wpUrl);
-    const wpData = await wpRes.json();
+    const wpData = await (await fetch(wpUrl)).json();
     for (const result of wpData?.query?.search || []) {
       const infoUrl = `https://en.wikipedia.org/w/api.php?action=query&titles=${encodeURIComponent(result.title)}&prop=imageinfo&iiprop=url|mime&format=json&origin=*`;
       const infoData = await (await fetch(infoUrl)).json();
@@ -26,7 +24,6 @@ async function searchWikimediaImage(query) {
       if (imageInfo?.url && imageInfo.mime?.startsWith('image/') && !imageInfo.mime.includes('svg')) return imageInfo.url;
     }
 
-    // Fallback: Wikimedia Commons
     const wcUrl = `https://commons.wikimedia.org/w/api.php?action=query&list=search&srsearch=${searchQuery}&srnamespace=6&srlimit=5&format=json&origin=*`;
     const wcData = await (await fetch(wcUrl)).json();
     for (const result of wcData?.query?.search || []) {
@@ -42,30 +39,43 @@ async function searchWikimediaImage(query) {
   }
 }
 
-// ── Shuffle options so correct answer isn't always A or B ───────────────────
+// ── Shuffle options (fixes A/B bias) ────────────────────────────────────────
 function shuffleQuestionOptions(question) {
   if (!['multiple_choice', 'true_false'].includes(question.question_type)) return question;
   if (!question.options || question.options.length < 2) return question;
 
-  const optionsWithMeta = question.options.map((text, idx) => ({
+  const correctIdx = typeof question.correct_answer === 'number'
+    ? question.correct_answer
+    : parseInt(question.correct_answer);
+
+  if (isNaN(correctIdx) || correctIdx < 0 || correctIdx >= question.options.length) return question;
+
+  const optionFeedback = question.option_feedback || {};
+
+  // Pair each option with metadata
+  const paired = question.options.map((text, idx) => ({
     text,
-    feedback: (question.option_feedback || {})[idx] || '',
-    isCorrect: idx === question.correct_answer,
+    feedback: optionFeedback[String(idx)] || optionFeedback[idx] || '',
+    isCorrect: idx === correctIdx,
   }));
 
   // Fisher-Yates shuffle
-  for (let i = optionsWithMeta.length - 1; i > 0; i--) {
+  for (let i = paired.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [optionsWithMeta[i], optionsWithMeta[j]] = [optionsWithMeta[j], optionsWithMeta[i]];
+    [paired[i], paired[j]] = [paired[j], paired[i]];
   }
 
+  // Rebuild with both string and number keys for option_feedback
   const newFeedback = {};
-  optionsWithMeta.forEach((o, idx) => { newFeedback[idx] = o.feedback; });
+  paired.forEach((o, idx) => {
+    newFeedback[String(idx)] = o.feedback;
+    newFeedback[idx] = o.feedback;
+  });
 
   return {
     ...question,
-    options: optionsWithMeta.map(o => o.text),
-    correct_answer: optionsWithMeta.findIndex(o => o.isCorrect),
+    options: paired.map(o => o.text),
+    correct_answer: paired.findIndex(o => o.isCorrect),
     option_feedback: newFeedback,
   };
 }
@@ -92,7 +102,6 @@ export default function AIQuizGenerator({ courses }) {
   const [searchingImages, setSearchingImages] = useState(false);
   const [generatedQuiz, setGeneratedQuiz] = useState(null);
 
-  // Past paper settings
   const [includePastPapers, setIncludePastPapers] = useState(false);
   const [pastPaperSubject, setPastPaperSubject] = useState('');
   const [pastPaperQualification, setPastPaperQualification] = useState('GCSE');
@@ -184,20 +193,19 @@ ${additionalContext ? `Context: ${additionalContext}` : ''}
 Difficulty: ${difficultyLine}
 
 Question type distribution:
-- ${distribution.multiple_choice} Multiple Choice (4 options each, MUST have exactly 4 plausible options)
+- ${distribution.multiple_choice} Multiple Choice (MUST have exactly 4 options each)
 ${distribution.short_answer ? `- ${distribution.short_answer} Short Answer` : ''}
 ${distribution.long_answer ? `- ${distribution.long_answer} Long Answer` : ''}
-${distribution.image_based ? `- ${distribution.image_based} Image/Diagram based (include image_search_query: 3-5 Wikimedia search words e.g. "alveoli structure diagram")` : ''}
+${distribution.image_based ? `- ${distribution.image_based} Image/Diagram based (include image_search_query with 3-5 Wikimedia search words)` : ''}
 ${distribution.true_false ? `- ${distribution.true_false} True/False` : ''}
 ${distribution.matching ? `- ${distribution.matching} Matching` : ''}
 
 STRICT REQUIREMENTS:
-1. For multiple choice: ALWAYS generate exactly 4 options. Distribute correct answers EVENLY across positions 0,1,2,3 — roughly equal numbers at each position across the quiz.
-2. Each wrong option must represent a specific common misconception.
-3. Chemistry/formulas as plain text: H2SO4 not LaTeX. Only use LaTeX ($...$) for complex math equations.
-4. Include option_feedback for every option explaining why it is right or wrong.
-5. For image questions: include image_search_query with specific Wikimedia terms.
-${mixedDifficulty ? '6. Include difficulty_level field: "easy", "medium", or "hard".' : ''}
+1. Multiple choice: exactly 4 options per question. Each wrong option must represent a common misconception.
+2. Chemistry/formulas as plain text: H2SO4 not LaTeX. Only LaTeX ($...$) for complex math.
+3. Include option_feedback for every option explaining why it is right or wrong.
+4. For image questions: include image_search_query with specific Wikimedia search terms.
+${mixedDifficulty ? '5. Include difficulty_level: "easy", "medium", or "hard" for each question.' : ''}
 
 Return JSON:
 {
@@ -208,7 +216,7 @@ Return JSON:
     "question_type": "multiple_choice|short_answer|long_answer|image_based|true_false|matching",
     ${mixedDifficulty ? '"difficulty_level": "easy|medium|hard",' : ''}
     "image_search_query": "wikimedia terms (image questions only)",
-    "options": ["A text","B text","C text","D text"],
+    "options": ["option text","option text","option text","option text"],
     "correct_answer": 0,
     "option_feedback": {"0":"...","1":"...","2":"...","3":"..."},
     "matching_pairs": [{"left":"","right":"","pair_id":1}],
@@ -262,7 +270,7 @@ Return JSON:
       );
       setSearchingImages(false);
 
-      // ── Shuffle options (fixes A/B bias) ──
+      // ── Shuffle options to fix A/B bias ──
       const shuffled = questionsWithImages.map(shuffleQuestionOptions);
 
       // ── Format past paper questions ──
@@ -293,7 +301,10 @@ Return JSON:
       const imgFound = allQuestions.filter(q => q.image_url).length;
       const imgTotal = allQuestions.filter(q => q.question_type === 'image_based').length;
       toast.success(
-        `Quiz generated! ${pastPaperFormatted.length > 0 ? `${pastPaperFormatted.length} past paper + ${aiFormatted.length} AI` : `${aiFormatted.length} AI questions`}${imgTotal > 0 ? ` · ${imgFound}/${imgTotal} diagrams found` : ''}`
+        `Quiz generated! ${pastPaperFormatted.length > 0
+          ? `${pastPaperFormatted.length} past paper + ${aiFormatted.length} AI`
+          : `${aiFormatted.length} AI questions`
+        }${imgTotal > 0 ? ` · ${imgFound}/${imgTotal} diagrams found` : ''}`
       );
     } catch (error) {
       toast.error('Failed to generate quiz. ' + (error?.message || 'Please try again.'), { duration: 5000 });
@@ -325,11 +336,10 @@ Return JSON:
     });
   };
 
-  // ── Render ──────────────────────────────────────────────────────────────────
   return (
     <div className="grid lg:grid-cols-2 gap-6">
 
-      {/* ── Left panel: inputs ── */}
+      {/* ── Left panel ── */}
       <Card className="p-6">
         <div className="flex items-center gap-3 mb-6">
           <div className="w-12 h-12 bg-gradient-to-br from-purple-600 to-indigo-600 rounded-xl flex items-center justify-center">
@@ -342,13 +352,11 @@ Return JSON:
         </div>
 
         <div className="space-y-4">
-          {/* Topic / Subtopic */}
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Topic *</Label><Input value={topic} onChange={e => setTopic(e.target.value)} placeholder="e.g., Respiration" /></div>
             <div><Label>Subtopic</Label><Input value={subtopic} onChange={e => setSubtopic(e.target.value)} placeholder="e.g., Alveoli" /></div>
           </div>
 
-          {/* Course */}
           <div>
             <Label>Publish Quiz To Course *</Label>
             <select value={courseId} onChange={e => { setCourseId(e.target.value); setLessonId(''); }} className="w-full h-10 px-3 rounded-md border border-gray-300">
@@ -358,7 +366,6 @@ Return JSON:
             <p className="text-xs text-gray-500 mt-1">Quiz will be visible to students enrolled in this course</p>
           </div>
 
-          {/* Lesson */}
           <div>
             <Label>Link to Lesson (Optional)</Label>
             <select value={lessonId} onChange={e => setLessonId(e.target.value)} className="w-full h-10 px-3 rounded-md border border-gray-300" disabled={!courseId}>
@@ -367,13 +374,11 @@ Return JSON:
             </select>
           </div>
 
-          {/* Context */}
           <div>
             <Label>Additional Context (Optional)</Label>
             <Textarea value={additionalContext} onChange={e => setAdditionalContext(e.target.value)} placeholder="Add specific topics, learning objectives, or context..." rows={3} />
           </div>
 
-          {/* Questions + Difficulty */}
           <div className="grid grid-cols-2 gap-4">
             <div>
               <Label>Number of Questions</Label>
@@ -393,7 +398,6 @@ Return JSON:
             </div>
           </div>
 
-          {/* Marks + Time */}
           <div className="grid grid-cols-2 gap-4">
             <div><Label>Marks per Question</Label><Input type="number" value={marksPerQuestion} onChange={e => setMarksPerQuestion(parseInt(e.target.value) || 1)} min="1" /></div>
             <div><Label>Time per Question (sec)</Label><Input type="number" value={timePerQuestion} onChange={e => setTimePerQuestion(parseInt(e.target.value) || 60)} min="10" /></div>
@@ -448,7 +452,7 @@ Return JSON:
               {[
                 [includeShortAnswer, setIncludeShortAnswer, 'Short Answer Questions'],
                 [includeLongAnswer, setIncludeLongAnswer, 'Long Answer Questions (essay-style)'],
-                [includeImageQuestions, setIncludeImageQuestions, 'Image/Diagram Based Questions (sourced from Wikimedia)'],
+                [includeImageQuestions, setIncludeImageQuestions, 'Image/Diagram Based Questions (Wikimedia)'],
                 [includeTrueFalse, setIncludeTrueFalse, 'True/False Questions'],
                 [includeMatching, setIncludeMatching, 'Matching Questions'],
               ].map(([checked, setter, label]) => (
@@ -466,7 +470,6 @@ Return JSON:
             )}
           </div>
 
-          {/* Generate button */}
           <Button onClick={handleGenerate} disabled={generating || searchingImages} className="w-full bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 h-12">
             {generating ? <><Loader2 className="w-5 h-5 mr-2 animate-spin" />Generating Quiz...</>
               : searchingImages ? <><Search className="w-5 h-5 mr-2 animate-pulse" />Finding Diagrams...</>
@@ -475,7 +478,7 @@ Return JSON:
         </div>
       </Card>
 
-      {/* ── Right panel: preview ── */}
+      {/* ── Right panel ── */}
       <Card className="p-6">
         <h2 className="text-xl font-semibold mb-6">Preview</h2>
 
@@ -487,7 +490,6 @@ Return JSON:
           </div>
         ) : (
           <div className="space-y-4">
-            {/* Quiz summary */}
             <div className="bg-gradient-to-br from-purple-50 to-indigo-50 rounded-lg p-4 border border-purple-200">
               <h3 className="font-bold text-lg text-gray-900 mb-1">{generatedQuiz.title}</h3>
               <p className="text-sm text-gray-600 mb-3">{generatedQuiz.description}</p>
@@ -504,14 +506,12 @@ Return JSON:
               </div>
             </div>
 
-            {/* Question list */}
             <div className="max-h-[500px] overflow-y-auto space-y-3">
               {generatedQuiz.questions.map((q, idx) => (
                 <Card key={idx} className="p-4 bg-gray-50">
                   <div className="flex items-start gap-2">
                     <span className="font-bold text-indigo-600 shrink-0">{idx + 1}.</span>
                     <div className="flex-1">
-                      {/* Question header badges */}
                       <div className="flex items-start gap-2 mb-2 flex-wrap">
                         <MathJax className="font-medium text-gray-900 flex-1">{q.question}</MathJax>
                         {q.source_label && (
@@ -579,7 +579,6 @@ Return JSON:
                           </div>
                         </div>
 
-                      /* MC / True-False options */
                       ) : q.options?.length > 0 ? (
                         <div className="space-y-2">
                           {q.options.map((opt, oi) => (
@@ -588,16 +587,15 @@ Return JSON:
                                 <MathJax>{q.question_type === 'true_false' ? opt : `${String.fromCharCode(65 + oi)}. ${opt}`}</MathJax>
                                 {q.correct_answer === oi && ' ✓'}
                               </div>
-                              {q.option_feedback?.[oi] && (
+                              {q.option_feedback?.[String(oi)] && (
                                 <div className={`text-xs px-2 py-1 rounded ml-4 ${q.correct_answer === oi ? 'bg-green-50 text-green-700 border-l-2 border-green-400' : 'bg-red-50 text-red-700 border-l-2 border-red-400'}`}>
-                                  <MathJax>💡 {q.option_feedback[oi]}</MathJax>
+                                  <MathJax>💡 {q.option_feedback[String(oi)]}</MathJax>
                                 </div>
                               )}
                             </div>
                           ))}
                         </div>
 
-                      /* Text answer */
                       ) : q.correct_text_answer ? (
                         <div className="bg-green-50 border-l-4 border-green-500 p-3 rounded">
                           <p className="text-xs font-semibold text-green-800 mb-1">Model Answer:</p>
@@ -605,7 +603,6 @@ Return JSON:
                         </div>
                       ) : null}
 
-                      {/* Explanation */}
                       {q.explanation && (
                         <div className="bg-indigo-50 border-l-4 border-indigo-500 p-3 rounded mt-2">
                           <p className="text-xs font-semibold text-indigo-800 mb-1">Explanation:</p>
@@ -613,7 +610,6 @@ Return JSON:
                         </div>
                       )}
 
-                      {/* Marks / time */}
                       <div className="flex gap-2 mt-2 flex-wrap">
                         <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded font-medium">{q.marks} mark{q.marks !== 1 ? 's' : ''}</span>
                         {q.time_limit_seconds && <span className="text-xs bg-orange-100 text-orange-700 px-2 py-0.5 rounded font-medium">⏱️ {q.time_limit_seconds}s</span>}
@@ -624,7 +620,6 @@ Return JSON:
               ))}
             </div>
 
-            {/* Save / Regenerate */}
             <div className="flex gap-3">
               <Button onClick={handleSaveGenerated} disabled={saveQuizMutation.isPending} className="flex-1 bg-green-600 hover:bg-green-700">
                 <Save className="w-4 h-4 mr-2" />
