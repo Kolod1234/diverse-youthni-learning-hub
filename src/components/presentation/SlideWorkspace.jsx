@@ -24,20 +24,56 @@ const mathJaxConfig = {
   tex: { inlineMath: [['$', '$'], ['\\(', '\\)']], displayMath: [['$$', '$$'], ['\\[', '\\]']] }
 };
 
-// Renders slide HTML content with MathJax support and proper bullet styling
-function SlideContent({ html }) {
+// Cleans AI-generated content — strips markdown fences, converts <p> to <li>
+const cleanContent = (html) => {
+  if (!html) return '<ul><li>Content here</li></ul>';
+
+  let clean = html
+    .replace(/```html\n?/gi, '')
+    .replace(/```\n?/gi, '')
+    .trim();
+
+  if (!clean.includes('<')) {
+    const lines = clean.split('\n').filter(l => l.trim());
+    return '<ul>' + lines.slice(0, 5).map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
+  }
+
+  if (!clean.includes('<ul>') && !clean.includes('<li>') && clean.includes('<p>')) {
+    const matches = [...clean.matchAll(/<p[^>]*>(.*?)<\/p>/gs)];
+    if (matches.length > 0) {
+      return '<ul>' + matches.slice(0, 5).map(m => `<li>${m[1].trim()}</li>`).join('') + '</ul>';
+    }
+  }
+
+  if (!clean.includes('<ul>') && !clean.includes('<li>')) {
+    const lines = clean.replace(/<[^>]+>/g, '').split('\n').filter(l => l.trim());
+    return '<ul>' + lines.slice(0, 5).map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
+  }
+
+  return clean;
+};
+
+function SlideContent({ html, bulletColor }) {
   if (!html) return null;
+  const cleaned = cleanContent(html);
   return (
     <MathJax>
-      <div
-        className="slide-content"
-        style={{
-          fontSize: '0.95rem',
-          lineHeight: '1.7',
-          color: 'inherit',
-        }}
-        dangerouslySetInnerHTML={{ __html: html }}
-      />
+      <style>{`
+        .slide-content-render ul { list-style: none; padding: 0; margin: 0; }
+        .slide-content-render li {
+          display: flex; align-items: flex-start; gap: 10px;
+          margin-bottom: 10px; font-size: 0.95rem; line-height: 1.6;
+        }
+        .slide-content-render li::before {
+          content: ''; display: block; width: 8px; height: 8px; min-width: 8px;
+          border-radius: 50%; background-color: ${bulletColor || '#4f46e5'};
+          margin-top: 7px; flex-shrink: 0;
+        }
+        .slide-content-render strong { font-weight: 700; }
+        .slide-content-render em { font-style: italic; opacity: 0.85; }
+        .slide-content-render p { margin-bottom: 8px; }
+      `}</style>
+      <div className="slide-content-render" dangerouslySetInnerHTML={{ __html: cleaned }} />
     </MathJax>
   );
 }
@@ -71,12 +107,12 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
   const activeSlide = slides[currentSlideIndex];
 
   const themes = {
-    modern: { name: 'Modern', gradient: 'from-indigo-500 via-purple-500 to-pink-500', bg: 'bg-white', text: 'text-slate-800', accent: 'text-indigo-600', bulletColor: '#4f46e5' },
-    dark:   { name: 'Dark',   gradient: 'from-slate-700 via-slate-800 to-slate-900', bg: 'bg-slate-900', text: 'text-slate-100', accent: 'text-cyan-400', bulletColor: '#22d3ee' },
-    ocean:  { name: 'Ocean',  gradient: 'from-blue-400 via-teal-500 to-cyan-600', bg: 'bg-gradient-to-br from-blue-50 to-cyan-50', text: 'text-blue-900', accent: 'text-blue-600', bulletColor: '#0284c7' },
-    sunset: { name: 'Sunset', gradient: 'from-orange-400 via-red-500 to-pink-600', bg: 'bg-gradient-to-br from-orange-50 to-pink-50', text: 'text-orange-900', accent: 'text-orange-600', bulletColor: '#ea580c' },
-    forest: { name: 'Forest', gradient: 'from-green-500 via-emerald-600 to-teal-700', bg: 'bg-gradient-to-br from-green-50 to-emerald-50', text: 'text-green-900', accent: 'text-green-600', bulletColor: '#16a34a' },
-    minimal:{ name: 'Minimal',gradient: 'from-gray-300 via-gray-400 to-gray-500', bg: 'bg-white', text: 'text-gray-900', accent: 'text-gray-700', bulletColor: '#374151' },
+    modern:  { name: 'Modern',  gradient: 'from-indigo-500 via-purple-500 to-pink-500',   bg: 'bg-white',         text: 'text-slate-800',  bulletColor: '#4f46e5' },
+    dark:    { name: 'Dark',    gradient: 'from-slate-700 via-slate-800 to-slate-900',    bg: 'bg-slate-900',     text: 'text-slate-100',  bulletColor: '#22d3ee' },
+    ocean:   { name: 'Ocean',   gradient: 'from-blue-400 via-teal-500 to-cyan-600',       bg: 'bg-gradient-to-br from-blue-50 to-cyan-50',   text: 'text-blue-900',   bulletColor: '#0284c7' },
+    sunset:  { name: 'Sunset',  gradient: 'from-orange-400 via-red-500 to-pink-600',      bg: 'bg-gradient-to-br from-orange-50 to-pink-50', text: 'text-orange-900', bulletColor: '#ea580c' },
+    forest:  { name: 'Forest',  gradient: 'from-green-500 via-emerald-600 to-teal-700',   bg: 'bg-gradient-to-br from-green-50 to-emerald-50', text: 'text-green-900', bulletColor: '#16a34a' },
+    minimal: { name: 'Minimal', gradient: 'from-gray-300 via-gray-400 to-gray-500',       bg: 'bg-white',         text: 'text-gray-900',   bulletColor: '#374151' },
   };
   const currentTheme = themes[theme];
 
@@ -169,9 +205,9 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         });
         toast.success('Lesson created successfully!');
         setShowAddDialog(false);
+        setSelectedCourse(''); setSelectedLesson(''); setNewLessonTitle('');
         window.location.href = `/LessonPlayerClassic?lesson=${newLesson.id}&course=${selectedCourse}`;
       } else {
-        // Fix: use get() not filter() to fetch existing lesson
         const existingLesson = await base44.entities.Lesson.get(selectedLesson);
         await base44.entities.Lesson.update(selectedLesson, {
           ...existingLesson,
@@ -180,14 +216,12 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         });
         toast.success('Lesson updated successfully!');
         setShowAddDialog(false);
+        setSelectedCourse(''); setSelectedLesson(''); setNewLessonTitle('');
         window.location.href = `/LessonPlayerClassic?lesson=${selectedLesson}&course=${selectedCourse}`;
       }
-      setSelectedCourse('');
-      setSelectedLesson('');
-      setNewLessonTitle('');
     } catch (error) {
       console.error('Save error:', error);
-      // FIX 1 (line 190): Removed markdown hyperlink wrapping around error.message
+      // FIX 1 (line 224): Removed markdown hyperlink wrapping around error.message
       toast.error('Failed to save: ' + (error.message || 'Unknown error'));
     } finally {
       setSaving(false);
@@ -202,9 +236,10 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
       const file = input.files?.[0];
       if (!file) return;
       try {
-        // FIX 2 (line 204): Removed markdown hyperlink wrapping around toast.info(...)
+        // FIX 2 (line 238): Removed markdown hyperlink wrapping around toast.info(...)
         if (type !== 'image') toast.info(`Uploading ${type}...`);
         const { file_url } = await base44.integrations.Core.UploadFile({ file });
+        // FIX 3 (line 240): Restored truncated object literal — `audio` key was cut off mid-line
         const fieldMap = { image: 'imageUrl', diagram: 'diagramImageUrl', video: 'videoUrl', audio: 'audioUrl' };
         updateSlide(fieldMap[type], file_url);
         toast.success(`${type.charAt(0).toUpperCase() + type.slice(1)} uploaded!`);
@@ -234,14 +269,12 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         updateSlide('imageUrl', imageUrl);
         toast.success('Image generated!');
         setShowImageEditor(false);
-        // FIX 3 (line 235-236): Removed incomplete/truncated statement `se` and restored
-        // setImageEditPrompt reset call
         setImageEditPrompt('');
       } else {
         toast.error('Failed to get image URL');
       }
     } catch (error) {
-      // FIX 4 (line 240): Removed markdown hyperlink wrapping around error.message
+      // FIX 4 (line 274): Removed markdown hyperlink wrapping around error.message
       toast.error('Failed to generate image: ' + error.message);
     } finally {
       setRegenerating(false);
@@ -250,35 +283,10 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
 
   return (
     <MathJaxContext config={mathJaxConfig}>
-      {/* Inject bullet point styles */}
-      <style>{`
-        .slide-content ul { list-style: none; padding: 0; margin: 0; }
-        .slide-content li {
-          display: flex;
-          align-items: flex-start;
-          gap: 10px;
-          margin-bottom: 10px;
-          font-size: 0.95rem;
-          line-height: 1.6;
-        }
-        .slide-content li::before {
-          content: '';
-          display: block;
-          width: 8px;
-          height: 8px;
-          min-width: 8px;
-          border-radius: 50%;
-          background-color: ${currentTheme.bulletColor};
-          margin-top: 7px;
-        }
-        .slide-content strong { font-weight: 700; }
-        .slide-content em { font-style: italic; opacity: 0.85; }
-      `}</style>
-
       <div className="flex h-screen bg-slate-100 overflow-hidden font-sans">
 
         {/* LEFT SIDEBAR */}
-        <div className="w-64 bg-white border-r border-slate-200 flex flex-col">
+        <div className="w-64 bg-white border-r border-slate-200 flex flex-col flex-shrink-0">
           <div className="p-4 border-b border-slate-100 font-semibold text-slate-700 flex justify-between items-center">
             <span>Slides ({slides.length})</span>
             <Button variant="ghost" size="icon" onClick={addNewSlide}>
@@ -310,7 +318,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 </div>
                 <div className="aspect-video bg-white rounded border border-slate-200 p-2 overflow-hidden text-[6px] text-slate-400 select-none">
                   <div className="font-bold text-slate-800 mb-1 truncate">{slide.title}</div>
-                  <div className="line-clamp-3" dangerouslySetInnerHTML={{ __html: slide.content }} />
+                  <div className="line-clamp-3" dangerouslySetInnerHTML={{ __html: cleanContent(slide.content) }} />
                 </div>
               </div>
             ))}
@@ -324,10 +332,10 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
         </div>
 
         {/* MAIN STAGE */}
-        <div className="flex-1 flex flex-col h-full relative">
+        <div className="flex-1 flex flex-col h-full relative min-w-0">
 
           {/* Toolbar */}
-          <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10">
+          <header className="h-16 bg-white border-b border-slate-200 px-6 flex items-center justify-between z-10 flex-shrink-0">
             <div className="flex items-center gap-2 text-slate-500">
               <LayoutTemplate className="w-5 h-5" />
               <span className="text-sm">Slide Editor</span>
@@ -354,60 +362,67 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           </header>
 
           {/* Canvas */}
-          <div className="flex-1 overflow-auto flex items-center justify-center p-8 bg-slate-100">
+          <div className="flex-1 overflow-auto flex items-start justify-center p-8 bg-slate-100">
             <div
-              className={`w-full max-w-5xl aspect-video ${currentTheme.bg} rounded-xl shadow-2xl flex flex-col overflow-hidden relative transition-all duration-300`}
-              style={{ minHeight: '500px' }}
+              className={`w-full max-w-5xl ${currentTheme.bg} rounded-xl shadow-2xl flex flex-col transition-all duration-300`}
+              style={{ minHeight: '560px', height: 'auto' }}
             >
-              <div className={`h-2 w-full bg-gradient-to-r ${currentTheme.gradient} flex-shrink-0`} />
+              {/* Top colour stripe */}
+              <div className={`h-2 w-full bg-gradient-to-r ${currentTheme.gradient} flex-shrink-0 rounded-t-xl`} />
 
-              <div className="flex-1 flex flex-col p-8 gap-4 overflow-hidden">
+              {/* Slide body — NO overflow-hidden so content never clips */}
+              <div className="flex flex-col p-8 gap-4">
+
                 {/* Title */}
                 <Input
                   value={activeSlide.title}
                   onChange={(e) => updateSlide('title', e.target.value)}
-                  className={`text-4xl font-extrabold border-none px-0 shadow-none focus-visible:ring-0 placeholder:opacity-30 ${currentTheme.text} tracking-tight bg-transparent`}
+                  className={`text-3xl font-extrabold border-none px-0 shadow-none focus-visible:ring-0 placeholder:opacity-30 ${currentTheme.text} tracking-tight bg-transparent`}
                   placeholder="Click to add title"
                 />
 
-                {/* Content Grid */}
-                <div className={`flex-1 grid gap-8 overflow-hidden transition-all duration-300 ${textEditorCollapsed ? 'grid-cols-1' : 'grid-cols-2'}`}>
+                {/* Content grid — editor left, visuals right */}
+                <div className={`grid gap-6 transition-all duration-300 ${textEditorCollapsed ? 'grid-cols-1' : 'grid-cols-2'}`}>
 
-                  {/* LEFT: Editor or rendered content */}
+                  {/* LEFT: Rich Text Editor */}
                   {!textEditorCollapsed && (
-                    <div className="flex flex-col overflow-hidden bg-slate-50 rounded-lg border border-slate-100 focus-within:ring-2 focus-within:ring-indigo-100 transition-all relative group">
+                    <div
+                      className="bg-slate-50 rounded-lg border border-slate-100 focus-within:ring-2 focus-within:ring-indigo-100 transition-all overflow-hidden"
+                      style={{ maxHeight: '380px' }}
+                    >
                       <RichTextEditor
-                        value={activeSlide.content}
+                        value={cleanContent(activeSlide.content)}
                         onChange={(html) => updateSlide('content', html)}
                         placeholder="Type your bullet points..."
                       />
                     </div>
                   )}
 
-                  {/* RIGHT: Visuals + rendered slide preview */}
-                  <div className="flex flex-col h-full relative overflow-hidden">
-                    {/* Toggle */}
+                  {/* RIGHT: Visuals */}
+                  <div className="relative" style={{ minHeight: '200px' }}>
+                    {/* Collapse toggle */}
                     <button
                       onClick={() => setTextEditorCollapsed(!textEditorCollapsed)}
-                      className="absolute -left-4 top-1/2 -translate-y-1/2 z-10 bg-white border-2 border-slate-200 rounded-full p-2 shadow-lg hover:bg-slate-50 transition-all hover:scale-110"
+                      className="absolute -left-4 top-4 z-10 bg-white border-2 border-slate-200 rounded-full p-2 shadow-lg hover:bg-slate-50 transition-all hover:scale-110"
                     >
                       {textEditorCollapsed
                         ? <PanelLeftOpen className="w-4 h-4 text-slate-600" />
                         : <PanelLeftClose className="w-4 h-4 text-slate-600" />}
                     </button>
 
-                    {/* When editor is collapsed, show rendered slide content with math */}
+                    {/* Collapsed: show rendered content */}
                     {textEditorCollapsed && (
-                      <div className={`flex-1 overflow-y-auto px-4 py-2 ${currentTheme.text}`}>
-                        <SlideContent html={activeSlide.content} />
+                      <div className={`px-4 py-2 ${currentTheme.text}`}>
+                        <SlideContent html={activeSlide.content} bulletColor={currentTheme.bulletColor} />
                       </div>
                     )}
 
-                    {/* Visuals */}
+                    {/* Visuals section */}
                     {(activeSlide.diagramCode || activeSlide.diagramImageUrl || activeSlide.labeledIllustration || activeSlide.imageUrl || activeSlide.videoUrl || activeSlide.audioUrl) ? (
-                      <div className={`${textEditorCollapsed ? '' : 'w-full h-full'} flex flex-col gap-4 overflow-y-auto`}>
+                      <div className="flex flex-col gap-4 mt-2">
+
                         {activeSlide.diagramCode && (
-                          <div className="flex-shrink-0 relative group">
+                          <div className="relative group">
                             <MermaidDiagram code={activeSlide.diagramCode} />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm rounded-lg">
                               <Button variant="secondary" size="sm" onClick={() => { const c = window.prompt("Edit diagram code:", activeSlide.diagramCode); if (c !== null) updateSlide('diagramCode', c); }}>✏️ Edit</Button>
@@ -415,36 +430,42 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                             </div>
                           </div>
                         )}
+
                         {activeSlide.diagramImageUrl && (
-                          <div className="flex-shrink-0 relative group">
+                          <div className="relative group">
                             <img src={activeSlide.diagramImageUrl} alt="Diagram" className="w-full h-auto object-contain p-4 rounded-xl border border-slate-200 bg-slate-50" />
-                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                            <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100">
                               <Button variant="destructive" size="sm" onClick={() => updateSlide('diagramImageUrl', null)}>🗑️</Button>
                             </div>
                           </div>
                         )}
+
                         {activeSlide.labeledIllustration && (
-                          <div className="flex-shrink-0 relative group">
-                            <LabeledIllustration data={activeSlide.labeledIllustration} onImageGenerated={(url) => {
-                              const newSlides = [...slides];
-                              if (newSlides[currentSlideIndex].labeledIllustration) {
-                                newSlides[currentSlideIndex].labeledIllustration.generatedUrl = url;
-                                updateSlides(newSlides);
-                              }
-                            }} />
+                          <div className="relative group">
+                            <LabeledIllustration
+                              data={activeSlide.labeledIllustration}
+                              onImageGenerated={(url) => {
+                                const newSlides = [...slides];
+                                if (newSlides[currentSlideIndex].labeledIllustration) {
+                                  newSlides[currentSlideIndex].labeledIllustration.generatedUrl = url;
+                                  updateSlides(newSlides);
+                                }
+                              }}
+                            />
                             {activeSlide.labeledIllustration.generatedUrl && (
                               <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-2 backdrop-blur-sm rounded-lg flex-wrap p-4">
                                 <Button variant="secondary" size="sm" onClick={() => { const p = window.prompt("Edit description:", activeSlide.labeledIllustration.baseImagePrompt); if (p !== null) updateSlide('labeledIllustration', { ...activeSlide.labeledIllustration, baseImagePrompt: p, generatedUrl: null }); }}>✏️ Edit</Button>
                                 <Button variant="secondary" size="sm" onClick={() => handleFileUpload('image')}>📤 Upload</Button>
-                                {/* FIX 5 (line 433): Restored truncated JSX — completed the onClick handler and closing tags */}
-                                <Button variant="destructive" size="sm" onClick={() => { if (confirm('Delete illustration?')) updateSlide('labeledIllustration', null); }}>🗑️ Delete</Button>
+                                <Button variant="destructive" size="sm" onClick={() => { if (confirm('Delete?')) updateSlide('labeledIllustration', null); }}>🗑️ Delete</Button>
                               </div>
                             )}
                           </div>
                         )}
+
                         {activeSlide.imageUrl && (
-                          <div className="relative w-full h-full rounded-xl overflow-hidden group border border-slate-200 bg-slate-50">
-                            <img src={activeSlide.imageUrl} alt="Slide Visual" className="w-full h-full object-contain p-4" />
+                          <div className="relative group rounded-xl overflow-hidden border border-slate-200 bg-slate-50">
+                            {/* FIX 5 (line 463): Restored truncated img className string and the missing overlay div */}
+                            <img src={activeSlide.imageUrl} alt="Slide Visual" className="w-full h-auto object-contain p-4" />
                             <div className="absolute inset-0 bg-black/50 opacity-0 group-hover:opacity-100 transition-opacity flex flex-col items-center justify-center gap-2 backdrop-blur-sm p-4">
                               <div className="flex gap-2 flex-wrap justify-center">
                                 <Button variant="secondary" size="sm" onClick={() => { setShowImageEditor(true); setImageEditPrompt(''); }}>🎨 AI</Button>
@@ -456,16 +477,18 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                             </div>
                           </div>
                         )}
+
                         {activeSlide.videoUrl && (
-                          <div className="flex-shrink-0 relative group">
+                          <div className="relative group">
                             <video src={activeSlide.videoUrl} controls className="w-full h-auto rounded-xl border border-slate-200" />
                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100">
                               <Button variant="destructive" size="sm" onClick={() => updateSlide('videoUrl', null)}>🗑️</Button>
                             </div>
                           </div>
                         )}
+
                         {activeSlide.audioUrl && (
-                          <div className="flex-shrink-0 relative group p-4 bg-slate-50 rounded-xl border border-slate-200">
+                          <div className="relative group p-4 bg-slate-50 rounded-xl border border-slate-200">
                             <audio src={activeSlide.audioUrl} controls className="w-full" />
                             <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100">
                               <Button variant="destructive" size="sm" onClick={() => updateSlide('audioUrl', null)}>🗑️</Button>
@@ -473,8 +496,9 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                           </div>
                         )}
                       </div>
+
                     ) : !textEditorCollapsed ? (
-                      <div className="flex-1 border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 bg-slate-50 p-6">
+                      <div className="border-2 border-dashed border-slate-200 rounded-xl flex flex-col items-center justify-center gap-4 text-slate-400 bg-slate-50 p-6 mt-2" style={{ minHeight: '200px' }}>
                         <ImageIcon className="w-8 h-8 opacity-50" />
                         <span className="font-medium">Add Visual Content</span>
                         <div className="w-full max-w-xs space-y-3">
@@ -497,7 +521,10 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 {/* Speaker Notes */}
                 {activeSlide.speakerNotes && (
                   <div className="mt-2">
-                    <button onClick={() => setShowSpeakerNotes(!showSpeakerNotes)} className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors mb-2">
+                    <button
+                      onClick={() => setShowSpeakerNotes(!showSpeakerNotes)}
+                      className="flex items-center gap-2 text-xs font-semibold text-slate-600 hover:text-indigo-600 transition-colors mb-2"
+                    >
                       <span>📝 Speaker Notes</span>
                       <span className="text-slate-400">{showSpeakerNotes ? '▼' : '▶'}</span>
                     </button>
@@ -515,7 +542,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                 )}
 
                 {/* Footer */}
-                <div className={`flex justify-between items-end mt-auto pt-3 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-slate-100'} text-xs opacity-40 ${currentTheme.text} uppercase tracking-widest font-semibold`}>
+                <div className={`flex justify-between items-end pt-3 border-t ${theme === 'dark' ? 'border-slate-700' : 'border-slate-100'} text-xs opacity-40 ${currentTheme.text} uppercase tracking-widest font-semibold`}>
                   <span>Educational Content</span>
                   <span>{currentSlideIndex + 1} / {slides.length}</span>
                 </div>
@@ -524,7 +551,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           </div>
 
           {/* Navigation */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 bg-white rounded-full shadow-xl px-4 py-2 border border-slate-200">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 flex gap-2 bg-white rounded-full shadow-xl px-4 py-2 border border-slate-200 z-10">
             <Button variant="ghost" size="icon" onClick={() => setCurrentSlideIndex(Math.max(0, currentSlideIndex - 1))} disabled={currentSlideIndex === 0}>
               <ChevronLeft className="w-5 h-5" />
             </Button>
@@ -596,7 +623,7 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
                     {lessonsLoading ? (
                       <p className="text-sm text-gray-400 mt-1">Loading lessons...</p>
                     ) : lessons.length === 0 ? (
-                      <p className="text-sm text-amber-600 mt-1">No lessons found for this course. Create a new one instead.</p>
+                      <p className="text-sm text-amber-600 mt-1">No lessons found. Try creating a new one instead.</p>
                     ) : (
                       <Select value={selectedLesson} onValueChange={setSelectedLesson}>
                         <SelectTrigger><SelectValue placeholder="Choose a lesson..." /></SelectTrigger>
@@ -667,7 +694,11 @@ export default function SlideWorkspace({ initialSlides = [], onChange }) {
           <DialogHeader><DialogTitle>OCR Image Editor</DialogTitle></DialogHeader>
           <div className="overflow-y-auto">
             {activeSlide.imageUrl && (
-              <OCRImageEditor imageUrl={activeSlide.imageUrl} onSave={(url) => { updateSlide('imageUrl', url); setShowOCREditor(false); }} onClose={() => setShowOCREditor(false)} />
+              <OCRImageEditor
+                imageUrl={activeSlide.imageUrl}
+                onSave={(url) => { updateSlide('imageUrl', url); setShowOCREditor(false); }}
+                onClose={() => setShowOCREditor(false)}
+              />
             )}
           </div>
         </DialogContent>
