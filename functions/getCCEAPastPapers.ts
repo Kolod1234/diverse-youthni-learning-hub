@@ -3,14 +3,17 @@ const CCEA_PAPERS = {
     name: 'Mathematics',
     gcse: {
       2024: [
-        { title: 'GCSE Mathematics 2024 - Unit 1 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Foundation%20Tier%2C%20Unit%201-Paper.pdf' },
-        { title: 'GCSE Mathematics 2024 - Unit 2 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Foundation%20Tier%2C%20Unit%202-Paper.pdf' },
-        { title: 'GCSE Mathematics 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
-        { title: 'GCSE Mathematics 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Mathematics 2024 - Foundation M1 (With Calculator)', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics%20-504-Summer2024-Foundation%20Tier%2C%20M1%20%28With%20calculator%29-Paper.pdf' },
+        { title: 'GCSE Mathematics 2024 - Higher Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Mathematics 2024 - Higher Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2024-Summer/Standard/0/GCSE-Mathematics-480-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
       2023: [
-        { title: 'GCSE Mathematics 2023 - Unit 1 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2023-Summer/Standard/0/GCSE-Mathematics-480-Summer2023-Foundation%20Tier%2C%20Unit%201-Paper.pdf' },
-        { title: 'GCSE Mathematics 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2023-Summer/Standard/0/GCSE-Mathematics-480-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Mathematics 2023 - Foundation M2 (With Calculator)', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2023-Summer/Standard/0/GCSE-Mathematics%20-504-Summer2023-Foundation%20Tier%2C%20M2%3A%20%28With%20calculator%29%20-MS.pdf' },
+        { title: 'GCSE Mathematics 2023 - Higher Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2023-Summer/Standard/0/GCSE-Mathematics-480-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Mathematics 2022 - Higher Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2022-Summer/Standard/0/GCSE-Mathematics-480-Summer2022-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Mathematics 2022 - Higher Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Mathematics%20%282017%29/2022-Summer/Standard/0/GCSE-Mathematics-480-Summer2022-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
     },
     alevel: {
@@ -24,17 +27,29 @@ const CCEA_PAPERS = {
         { title: 'A-Level Mathematics AS1 2023 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2023-Summer/Standard/0/GCE-Mathematics-Summer2023-AS%201%3A%20Pure%20Mathematics-Paper.pdf' },
         { title: 'A-Level Mathematics AS2 2023 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2023-Summer/Standard/0/GCE-Mathematics-Summer2023-AS%202%3A%20Applied%20Mathematics-Paper.pdf' },
       ],
+      2022: [
+        { title: 'A-Level Mathematics AS1 2022 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2022-Summer/Standard/0/GCE-Mathematics-Summer2022-AS%201%3A%20Pure%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS2 2022 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2022-Summer/Standard/0/GCE-Mathematics-Summer2022-AS%202%3A%20Applied%20Mathematics-Paper.pdf' },
+      ],
     },
   },
   biology: {
     name: 'Biology',
     gcse: {
       2024: [
-        { title: 'GCSE Biology 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-540-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
-        { title: 'GCSE Biology 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-540-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Biology 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-7-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Biology 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-7-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Biology 2024 - Unit 1 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-7-Summer2024-Foundation%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Biology 2024 - Unit 2 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2024-Summer/Standard/0/GCSE-Biology-7-Summer2024-Foundation%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
       2023: [
-        { title: 'GCSE Biology 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2023-Summer/Standard/0/GCSE-Biology-540-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Biology 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2023-Summer/Standard/0/GCSE-Biology-7-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Biology 2023 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2023-Summer/Standard/0/GCSE-Biology-7-Summer2023-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Biology 2023 - Unit 1 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2023-Summer/Standard/0/GCSE-Biology-7-Summer2023-Foundation%20Tier%2C%20Unit%201-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Biology 2022 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2022-Summer/Standard/0/GCSE-Biology-7-Summer2022-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Biology 2022 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Biology%20%282017%29/2022-Summer/Standard/0/GCSE-Biology-7-Summer2022-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
     },
     alevel: {
@@ -48,17 +63,26 @@ const CCEA_PAPERS = {
         { title: 'A-Level Biology AS1 2023 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2023-Summer/Standard/0/GCE-Biology-Summer2023-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
         { title: 'A-Level Biology AS2 2023 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2023-Summer/Standard/0/GCE-Biology-Summer2023-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
       ],
+      2022: [
+        { title: 'A-Level Biology AS1 2022 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2022-Summer/Standard/0/GCE-Biology-Summer2022-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
+        { title: 'A-Level Biology AS2 2022 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2022-Summer/Standard/0/GCE-Biology-Summer2022-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
+      ],
     },
   },
   chemistry: {
     name: 'Chemistry',
     gcse: {
       2024: [
-        { title: 'GCSE Chemistry 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2024-Summer/Standard/0/GCSE-Chemistry-550-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
-        { title: 'GCSE Chemistry 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2024-Summer/Standard/0/GCSE-Chemistry-550-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Chemistry 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2024-Summer/Standard/0/GCSE-Chemistry-468-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Chemistry 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2024-Summer/Standard/0/GCSE-Chemistry-468-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
       2023: [
-        { title: 'GCSE Chemistry 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2023-Summer/Standard/0/GCSE-Chemistry-550-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Chemistry 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2023-Summer/Standard/0/GCSE-Chemistry-468-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Chemistry 2023 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2023-Summer/Standard/0/GCSE-Chemistry-468-Summer2023-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Chemistry 2022 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2022-Summer/Standard/0/GCSE-Chemistry-468-Summer2022-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Chemistry 2022 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Chemistry%20%282017%29/2022-Summer/Standard/0/GCSE-Chemistry-468-Summer2022-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
     },
     alevel: {
@@ -72,6 +96,10 @@ const CCEA_PAPERS = {
         { title: 'A-Level Chemistry AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2023-Summer/Standard/0/GCE-Chemistry-Summer2023-AS%201-Paper.pdf' },
         { title: 'A-Level Chemistry AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2023-Summer/Standard/0/GCE-Chemistry-Summer2023-AS%202-Paper.pdf' },
       ],
+      2022: [
+        { title: 'A-Level Chemistry AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2022-Summer/Standard/0/GCE-Chemistry-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level Chemistry AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2022-Summer/Standard/0/GCE-Chemistry-Summer2022-AS%202-Paper.pdf' },
+      ],
     },
   },
   physics: {
@@ -80,9 +108,15 @@ const CCEA_PAPERS = {
       2024: [
         { title: 'GCSE Physics 2024 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2024-Summer/Standard/0/GCSE-Physics-575-Summer2024-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
         { title: 'GCSE Physics 2024 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2024-Summer/Standard/0/GCSE-Physics-575-Summer2024-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
+        { title: 'GCSE Physics 2024 - Unit 2 Foundation', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2024-Summer/Standard/0/GCSE-Physics-575-Summer2024-Foundation%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
       2023: [
         { title: 'GCSE Physics 2023 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2023-Summer/Standard/0/GCSE-Physics-575-Summer2023-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Physics 2023 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2023-Summer/Standard/0/GCSE-Physics-575-Summer2023-Higher%20Tier%2C%20Unit%202%20-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Physics 2022 - Unit 1 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2022-Summer/Standard/0/GCSE-Physics-575-Summer2022-Higher%20Tier%2C%20Unit%201-Paper.pdf' },
+        { title: 'GCSE Physics 2022 - Unit 2 Higher', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Physics%20%282017%29/2022-Summer/Standard/0/GCSE-Physics-575-Summer2022-Higher%20Tier%2C%20Unit%202-Paper.pdf' },
       ],
     },
     alevel: {
@@ -94,28 +128,11 @@ const CCEA_PAPERS = {
       ],
       2023: [
         { title: 'A-Level Physics AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2023-Summer/Standard/0/GCE-Physics-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level Physics AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2023-Summer/Standard/0/GCE-Physics-Summer2023-AS%202-Paper.pdf' },
       ],
-    },
-  },
-  history: {
-    name: 'History',
-    gcse: {
-      2024: [
-        { title: 'GCSE History 2024 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2024-Summer/Standard/0/GCSE-History-Summer2024-Unit%201-Paper.pdf' },
-        { title: 'GCSE History 2024 - Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2024-Summer/Standard/0/GCSE-History-Summer2024-Unit%202-Paper.pdf' },
-      ],
-      2023: [
-        { title: 'GCSE History 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2023-Summer/Standard/0/GCSE-History-Summer2023-Unit%201-Paper.pdf' },
-      ],
-    },
-    alevel: {
-      2024: [
-        { title: 'A-Level History AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level History AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%202-Paper.pdf' },
-        { title: 'A-Level History A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-A2%201-Paper.pdf' },
-      ],
-      2023: [
-        { title: 'A-Level History AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2023-Summer/Standard/0/GCE-History-Summer2023-AS%201-Paper.pdf' },
+      2022: [
+        { title: 'A-Level Physics AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2022-Summer/Standard/0/GCE-Physics-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level Physics AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2022-Summer/Standard/0/GCE-Physics-Summer2022-AS%202-Paper.pdf' },
       ],
     },
   },
@@ -123,11 +140,16 @@ const CCEA_PAPERS = {
     name: 'English Language',
     gcse: {
       2024: [
-        { title: 'GCSE English Language 2024 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-Summer/Standard/0/GCSE-English%20Language-Summer2024-Unit%201-Paper.pdf' },
-        { title: 'GCSE English Language 2024 - Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-Summer/Standard/0/GCSE-English%20Language-Summer2024-Unit%202-Paper.pdf' },
+        { title: 'GCSE English Language 2024 - Unit 1 (Summer)', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-November/Standard/0/GCSE-English%20Language-490-November2024-Unit%201%2C%20Writing%20for%20Purpose%20and%20Audience%20and%20Reading%20to%20Access%20Non-fiction%20and%20Media%20Texts-Paper.pdf' },
+        { title: 'GCSE English Language 2024 - Unit 4 (Summer)', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-Summer/Standard/0/GCSE-English%20Language-490-Summer2024-Unit%204%2C%20Personal%20or%20Creative%20writing%20and%20Reading%20Literary%20and%20Non-fiction%20Texts-Paper.pdf' },
       ],
       2023: [
-        { title: 'GCSE English Language 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2023-Summer/Standard/0/GCSE-English%20Language-Summer2023-Unit%201-Paper.pdf' },
+        { title: 'GCSE English Language 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2023-Summer/Standard/0/GCSE-English%20Language-490-Summer2023-Unit%201-Paper.pdf' },
+        { title: 'GCSE English Language 2023 - Unit 4', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2023-Summer/Standard/0/GCSE-English%20Language-490-Summer2023-Unit%204-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE English Language 2022 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2022-Summer/Standard/0/GCSE-English%20Language-490-Summer2022-Unit%201-Paper.pdf' },
+        { title: 'GCSE English Language 2022 - Unit 4', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2022-Summer/Standard/0/GCSE-English%20Language-490-Summer2022-Unit%204-Paper.pdf' },
       ],
     },
     alevel: {
@@ -137,6 +159,11 @@ const CCEA_PAPERS = {
       ],
       2023: [
         { title: 'A-Level English Language AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2023-Summer/Standard/0/GCE-English%20Language-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level English Language AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2023-Summer/Standard/0/GCE-English%20Language-Summer2023-AS%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'A-Level English Language AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2022-Summer/Standard/0/GCE-English%20Language-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level English Language AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2022-Summer/Standard/0/GCE-English%20Language-Summer2022-AS%202-Paper.pdf' },
       ],
     },
   },
@@ -149,6 +176,9 @@ const CCEA_PAPERS = {
       2023: [
         { title: 'GCSE English Literature 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Literature%20%282017%29/2023-Summer/Standard/0/GCSE-English%20Literature-Summer2023-Unit%201-Paper.pdf' },
       ],
+      2022: [
+        { title: 'GCSE English Literature 2022 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Literature%20%282017%29/2022-Summer/Standard/0/GCSE-English%20Literature-Summer2022-Unit%201-Paper.pdf' },
+      ],
     },
     alevel: {
       2024: [
@@ -158,6 +188,41 @@ const CCEA_PAPERS = {
       2023: [
         { title: 'A-Level English Literature AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2023-Summer/Standard/0/GCE-English%20Literature-Summer2023-AS%201-Paper.pdf' },
       ],
+      2022: [
+        { title: 'A-Level English Literature AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2022-Summer/Standard/0/GCE-English%20Literature-Summer2022-AS%201-Paper.pdf' },
+      ],
+    },
+  },
+  history: {
+    name: 'History',
+    gcse: {
+      2024: [
+        { title: 'GCSE History 2024 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2024-Summer/Standard/0/GCSE-History-Summer2024-Unit%201-Paper.pdf' },
+        { title: 'GCSE History 2024 - Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2024-Summer/Standard/0/GCSE-History-Summer2024-Unit%202-Paper.pdf' },
+      ],
+      2023: [
+        { title: 'GCSE History 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2023-Summer/Standard/0/GCSE-History-Summer2023-Unit%201-Paper.pdf' },
+        { title: 'GCSE History 2023 - Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2023-Summer/Standard/0/GCSE-History-Summer2023-Unit%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE History 2022 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2022-Summer/Standard/0/GCSE-History-Summer2022-Unit%201-Paper.pdf' },
+        { title: 'GCSE History 2022 - Unit 2', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20History%20%282017%29/2022-Summer/Standard/0/GCSE-History-Summer2022-Unit%202-Paper.pdf' },
+      ],
+    },
+    alevel: {
+      2024: [
+        { title: 'A-Level History AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%201-Paper.pdf' },
+        { title: 'A-Level History AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%202-Paper.pdf' },
+        { title: 'A-Level History A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-A2%201-Paper.pdf' },
+      ],
+      2023: [
+        { title: 'A-Level History AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2023-Summer/Standard/0/GCE-History-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level History AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2023-Summer/Standard/0/GCE-History-Summer2023-AS%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'A-Level History AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2022-Summer/Standard/0/GCE-History-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level History AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2022-Summer/Standard/0/GCE-History-Summer2022-AS%202-Paper.pdf' },
+      ],
     },
   },
   geography: {
@@ -166,11 +231,23 @@ const CCEA_PAPERS = {
       2024: [
         { title: 'GCSE Geography 2024 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Geography%20%282017%29/2024-Summer/Standard/0/GCSE-Geography-Summer2024-Unit%201-Paper.pdf' },
       ],
+      2023: [
+        { title: 'GCSE Geography 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Geography%20%282017%29/2023-Summer/Standard/0/GCSE-Geography-Summer2023-Unit%201-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Geography 2022 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Geography%20%282017%29/2022-Summer/Standard/0/GCSE-Geography-Summer2022-Unit%201-Paper.pdf' },
+      ],
     },
     alevel: {
       2024: [
         { title: 'A-Level Geography AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2024-Summer/Standard/0/GCE-Geography-Summer2024-AS%201-Paper.pdf' },
         { title: 'A-Level Geography A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2024-Summer/Standard/0/GCE-Geography-Summer2024-A2%201-Paper.pdf' },
+      ],
+      2023: [
+        { title: 'A-Level Geography AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2023-Summer/Standard/0/GCE-Geography-Summer2023-AS%201-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'A-Level Geography AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2022-Summer/Standard/0/GCE-Geography-Summer2022-AS%201-Paper.pdf' },
       ],
     },
   },
@@ -180,11 +257,25 @@ const CCEA_PAPERS = {
       2024: [
         { title: 'GCSE Business Studies 2024 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Business%20Studies%20%282017%29/2024-Summer/Standard/0/GCSE-Business%20Studies-Summer2024-Unit%201-Paper.pdf' },
       ],
+      2023: [
+        { title: 'GCSE Business Studies 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Business%20Studies%20%282017%29/2023-Summer/Standard/0/GCSE-Business%20Studies-Summer2023-Unit%201-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'GCSE Business Studies 2022 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20Business%20Studies%20%282017%29/2022-Summer/Standard/0/GCSE-Business%20Studies-Summer2022-Unit%201-Paper.pdf' },
+      ],
     },
     alevel: {
       2024: [
         { title: 'A-Level Business Studies AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2024-Summer/Standard/0/GCE-Business%20Studies-Summer2024-AS%201-Paper.pdf' },
         { title: 'A-Level Business Studies AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2024-Summer/Standard/0/GCE-Business%20Studies-Summer2024-AS%202-Paper.pdf' },
+      ],
+      2023: [
+        { title: 'A-Level Business Studies AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2023-Summer/Standard/0/GCE-Business%20Studies-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level Business Studies AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2023-Summer/Standard/0/GCE-Business%20Studies-Summer2023-AS%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'A-Level Business Studies AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2022-Summer/Standard/0/GCE-Business%20Studies-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level Business Studies AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2022-Summer/Standard/0/GCE-Business%20Studies-Summer2022-AS%202-Paper.pdf' },
       ],
     },
   },
@@ -197,6 +288,11 @@ const CCEA_PAPERS = {
       ],
       2023: [
         { title: 'A-Level Economics AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2023-Summer/Standard/0/GCE-Economics-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level Economics AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2023-Summer/Standard/0/GCE-Economics-Summer2023-AS%202-Paper.pdf' },
+      ],
+      2022: [
+        { title: 'A-Level Economics AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2022-Summer/Standard/0/GCE-Economics-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level Economics AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2022-Summer/Standard/0/GCE-Economics-Summer2022-AS%202-Paper.pdf' },
       ],
     },
   },
