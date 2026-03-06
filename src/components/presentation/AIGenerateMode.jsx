@@ -12,58 +12,57 @@ import KnowledgeBaseUploader from '@/components/ai/KnowledgeBaseUploader';
 export default function AIGenerateMode({ onSlidesGenerated }) {
   const [topic, setTopic] = useState('');
   const [description, setDescription] = useState('');
-  const [slideCount, setSlideCount] = useState(5);
+  const [slideCount, setSlideCount] = useState(8);
   const [includeSpeakerNotes, setIncludeSpeakerNotes] = useState(true);
-  const [contentType, setContentType] = useState('general'); 
+  const [contentType, setContentType] = useState('general');
   const [visualStyle, setVisualStyle] = useState('modern');
   const [aiProvider, setAiProvider] = useState('default');
   const [imageProvider, setImageProvider] = useState('base44');
-  const [visualMode, setVisualMode] = useState('both'); // 'images', 'diagrams', 'both'
+  const [visualMode, setVisualMode] = useState('both');
   const [generating, setGenerating] = useState(false);
   const [useAILearning, setUseAILearning] = useState(true);
 
-  const generateSlides = async () => {
-    if (!topic.trim()) {
-      toast.error('Please enter a topic');
-      return;
+  // FIX #3: Moved sanitizeSlideContent above generateSlides so it is defined
+  // before it is called. Arrow function (const) assignments are NOT hoisted,
+  // so calling them before their definition throws a ReferenceError at runtime.
+  const sanitizeSlideContent = (html) => {
+    if (!html) return '<ul><li>Content here</li></ul>';
+    // Wrap bare text in li if not already structured
+    if (!html.includes('<ul>') && !html.includes('<li>')) {
+      const lines = html.replace(/<[^>]+>/g, '').split('\n').filter(l => l.trim());
+      return '<ul>' + lines.slice(0, 5).map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
     }
+    return html;
+  };
+
+  const generateSlides = async () => {
+    if (!topic.trim()) { toast.error('Please enter a topic'); return; }
 
     setGenerating(true);
     try {
-      // Learn from past slides if enabled
       let learningContext = '';
       if (useAILearning) {
         try {
+          // FIX #1a: Removed Markdown link syntax — was [toast.info](https://toast.info)(...)
           toast.info('AI analyzing past presentations...');
-          const learningResult = await base44.functions.invoke('learnFromSlides', {
-            topic,
-            contentType
-          });
-          
+          const learningResult = await base44.functions.invoke('learnFromSlides', { topic, contentType });
           if (learningResult.data?.patterns) {
             const p = learningResult.data.patterns;
-            learningContext = `\n\n--- AI LEARNED PATTERNS (from ${learningResult.data.successfulSlidesCount} successful slides) ---
+            learningContext = `\n\n--- AI LEARNED PATTERNS ---
 PREFERRED STRUCTURES: ${p.slideStructures?.join('; ') || 'None yet'}
 VISUAL PATTERNS: ${p.visualPatterns?.join('; ') || 'Standard'}
 CONTENT ORGANIZATION: ${p.contentOrganization?.join('; ') || 'Default'}
 STYLE PREFERENCES: ${p.stylePreferences?.join('; ') || 'Modern'}
 TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
---- Apply these learned preferences to this presentation ---`;
+--- Apply these learned preferences ---`;
           }
         } catch (err) {
-          console.log('Learning failed, continuing with standard generation');
+          console.log('Learning failed, continuing');
         }
       }
-      
-      toast.info('Generating intelligent slides...');
 
-      // Specialized instructions for diagram types based on content
-      const diagramInstructions = {
-        general: 'Use "graph TD" (Flowcharts) or "mindmap" for concepts.',
-        code: 'Use "sequenceDiagram" to show code execution flow or "classDiagram" for architecture.',
-        math: 'Use "graph LR" to show logical steps or dependencies.',
-        history: 'Use "timeline" or "gantt" diagrams for chronological events.'
-      };
+      // FIX #1b: Removed Markdown link syntax — was [toast.info](https://toast.info)(...)
+      toast.info('Generating slides...');
 
       const styleGuides = {
         modern: 'modern textbook style, clean lines, vibrant colors, professional',
@@ -73,76 +72,61 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         technical: 'technical blueprint style, precise lines, engineering aesthetic'
       };
 
+      const diagramInstructions = {
+        general: 'Use "graph TD" (Flowcharts) or "mindmap" for concepts.',
+        code: 'Use "sequenceDiagram" for code flow or "classDiagram" for architecture.',
+        math: 'Use "graph LR" to show logical steps or dependencies.',
+        history: 'Use "timeline" or "gantt" diagrams for chronological events.'
+      };
+
       const prompt = `Create a COMPREHENSIVE educational presentation about "${topic}".
-      ${description ? `Additional context: ${description}` : ''}
-      ${learningContext}
+${description ? `Additional context: ${description}` : ''}
+${learningContext}
 
-      Content Type: ${contentType.toUpperCase()}
-      Visual Style: ${visualStyle.toUpperCase()} - ${styleGuides[visualStyle]}
+Content Type: ${contentType.toUpperCase()}
+Visual Style: ${visualStyle.toUpperCase()} - ${styleGuides[visualStyle]}
 
-      Generate exactly ${slideCount} slides with CONSISTENT visual style throughout.
+Generate EXACTLY ${slideCount} slides. This is a strict requirement — you MUST return exactly ${slideCount} slides, no more, no less.
 
-      --- VISUALIZATION STRATEGY (CRITICAL) ---
-      Visual Mode: ${visualMode.toUpperCase()}
-      ${visualMode === 'diagrams' ? 'ONLY use diagramCode (Mermaid.js) - NO labeledIllustration' : ''}
-      ${visualMode === 'images' ? 'ONLY use labeledIllustration - NO diagramCode' : ''}
-      ${visualMode === 'both' ? 'Use BOTH diagramCode AND labeledIllustration where appropriate' : ''}
+CRITICAL CONTENT RULES:
+1. Each slide covers ONE specific concept or subtopic only. Do NOT cram multiple topics into one slide.
+2. Content per slide: MAXIMUM 5 bullet points. Each bullet point is ONE short sentence (max 12 words).
+3. Use LaTeX math notation wrapped in $...$ for ALL scientific formulas, equations and notation.
+   Examples: $H_2SO_4$, $E = mc^2$, $\\frac{d}{dx}[x^n] = nx^{n-1}$, $\\sum_{i=1}^{n} x_i$
+4. Content HTML must use ONLY these tags: <ul>, <li>, <strong>, <em>. NO <p> tags, NO inline styles.
+5. Each <li> must be concise — one clear point per bullet.
+6. If contentType is "math" or "science", EVERY slide must include at least one LaTeX formula.
 
-      1. FLOWCHARTS/PROCESSES: Use 'diagramCode' (Mermaid.js)${visualMode === 'images' ? ' - SKIP THIS if mode is images-only' : ''}
-         - For: workflows, timelines, organizational charts, decision trees, process flows
-         - CRITICAL: Generate VALID Mermaid.js syntax only (no markdown blocks, no backticks, just raw code)
-         - ${diagramInstructions[contentType]}
-         - IMPORTANT MERMAID RULES:
-           * Node IDs must be simple (A, B, C1, step1) - NO spaces, NO special chars except underscore
-           * Node labels in brackets: A[Label Text]
-           * Connections: A-->B or A---|Label|-->B
-           * Valid examples:
-             - graph TD
-               G1[G1 Phase]-->S[S Phase]
-               S-->G2[G2 Phase]
-               G2-->M[M Phase]
-             - sequenceDiagram
-               User->>System: Request
-               System->>Database: Query
-         - Test your syntax mentally before outputting
+SLIDE STRUCTURE — follow this exact pattern:
+- Slide 1: Title/Introduction slide (overview of topic)
+- Slides 2 to ${slideCount - 1}: One concept per slide, progressing logically
+- Slide ${slideCount}: Summary/Conclusion slide
 
-      2. LABELED ILLUSTRATIONS (UNIVERSAL - works for ALL domains):${visualMode === 'diagrams' ? ' - SKIP THIS if mode is diagrams-only' : ''}
-         - For: ANY structure/system that needs pointing labels (anatomy, engines, geography, architecture, chemistry, etc.)
-         - Use 'labeledIllustration' object with:
-           * 'baseImagePrompt': Must describe the LAYOUT based on complexity
-           * 'labels': Array of 5-12 labels with 'text', 'x', 'y', and 'type' fields
+VISUALIZATION RULES:
+Visual Mode: ${visualMode.toUpperCase()}
+${visualMode === 'diagrams' ? '- ONLY use diagramCode (Mermaid.js) — NO labeledIllustration' : ''}
+${visualMode === 'images' ? '- ONLY use labeledIllustration — NO diagramCode' : ''}
+${visualMode === 'both' ? '- Use diagramCode OR labeledIllustration on every slide where visual adds value' : ''}
 
-         LAYOUT INSTRUCTIONS:
-         1. SIMPLE OBJECT (e.g. "Mitochondria"): "A single clean 3D cutaway of [Object], ${styleGuides[visualStyle]}, white background, with text labels"
+MERMAID DIAGRAM RULES (diagramCode field):
+- Raw Mermaid.js syntax only — no markdown, no backticks
+- Node IDs: simple alphanumeric only (A, B, C1, step1) — NO spaces, NO special chars
+- Node labels in brackets: A[Label Text]
+- Connections: A-->B
+- ${diagramInstructions[contentType]}
+- Example valid syntax:
+  graph TD
+  A[Start]-->B[Process]
+  B-->C[End]
 
-         2. LINEAR PROCESS (e.g. "Mitosis"): "A horizontal sequence of 4-5 distinct steps showing [Process], connected by arrows, ${styleGuides[visualStyle]}, white background, with text labels"
+LABELED ILLUSTRATION RULES (labeledIllustration field):
+- Use for: anatomy, chemistry structures, geography, engineering diagrams
+- baseImagePrompt: describe layout clearly, end with "clean white background, technical illustration style"
+- labels: 5-12 labels with text, x (0-100), y (0-100), type (header/pointer/subtext)
 
-         3. MULTI-STAGE PROCESS (e.g. "Meiosis", "Krebs Cycle"): "A scientific diagram split into TWO HORIZONTAL PANELS. Top panel shows [Stage 1] with 4 steps. Bottom panel shows [Stage 2] with 4 steps. Light gray panel backgrounds to distinguish rows, ${styleGuides[visualStyle]}, white background, with text labels"
+${includeSpeakerNotes ? 'Include speakerNotes for each slide (2-3 sentences for the presenter).' : ''}
 
-         LABEL TYPES & USAGE:
-         - 'header': PANEL TITLES (e.g., "Meiosis I") - place at top-left of each major section
-         - 'subtext': STEP NAMES (e.g., "Prophase I") - place above or below each cell/step
-         - 'pointer': TINY DETAILS (e.g., "Centromere") - point to specific features inside diagrams
-
-         UNIVERSAL EXAMPLES:
-         1. ENGINEERING: "Cutaway of jet engine" → labels: "Combustion Chamber" (pointer)
-         2. BIOLOGY PROCESS: "Meiosis stages" → labels: "Meiosis I" (header), "Prophase I" (subtext), "Chromosome" (pointer)
-         3. GEOGRAPHY: "Cross-section of volcano" → labels: "Volcanic Structure" (header), "Magma Chamber" (pointer)
-
-         MAINTAIN CONSISTENT ${visualStyle.toUpperCase()} STYLE across all illustrations
-
-         CRITICAL: ${visualMode === 'both' 
-         ? 'Use BOTH diagramCode AND labeledIllustration on slides where both are relevant. Every slide should have at least one visual.' 
-         : visualMode === 'diagrams' 
-          ? 'ONLY use diagramCode. Every slide needs a diagram.'
-          : 'ONLY use labeledIllustration. Every slide needs a labeled illustration.'}
-
-      --- CONTENT REQUIREMENTS ---
-      1. Write 5-7 detailed bullet points per slide.
-      2. Use semantic HTML (<ul>, <li>, <strong>, <em>).
-      3. No images <img> in the HTML content.
-
-      Return JSON with a "slides" array following this schema exactly.`;
+Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
 
       const jsonSchema = {
         type: 'object',
@@ -153,32 +137,27 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
               type: 'object',
               properties: {
                 title: { type: 'string' },
-                content: { type: 'string' },
+                content: { 
+                  type: 'string',
+                  description: 'HTML using ONLY <ul><li><strong><em> tags. Max 5 bullet points. Use $LaTeX$ for math/science formulas.'
+                },
                 diagramCode: { 
-                  type: 'string', 
-                  description: 'RAW Mermaid.js code ONLY (no markdown, no backticks). Must be valid syntax. Node IDs: simple alphanumeric only (A, B, step1). Node labels: in brackets [Text]. Example: graph TD\nA[Start]-->B[Process]-->C[End]' 
+                  type: 'string',
+                  description: 'RAW Mermaid.js syntax only. No backticks, no markdown fences.'
                 },
                 labeledIllustration: {
                   type: 'object',
-                  description: 'Use for ANY slide that needs a specific diagram with pointers (Engines, Maps, Anatomy, Architecture, Chemistry, etc.).',
                   properties: {
-                    baseImagePrompt: { 
-                      type: 'string',
-                      description: 'Describe the subject cleanly. CRITICAL: Must end with "clean white background, technical illustration style, with integrated text labels"'
-                    },
+                    baseImagePrompt: { type: 'string' },
                     labels: {
                       type: 'array',
                       items: {
                         type: 'object',
                         properties: {
-                          text: { type: 'string', description: 'Correct spelling of the label' },
-                          x: { type: 'number', description: 'X percentage (0-100) from left' },
-                          y: { type: 'number', description: 'Y percentage (0-100) from top' },
-                          type: {
-                            type: 'string',
-                            enum: ['header', 'pointer', 'subtext'],
-                            description: 'Use "header" for main sections, "pointer" for specific parts, "subtext" for extra details'
-                          }
+                          text: { type: 'string' },
+                          x: { type: 'number' },
+                          y: { type: 'number' },
+                          type: { type: 'string', enum: ['header', 'pointer', 'subtext'] }
                         }
                       }
                     }
@@ -192,8 +171,6 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
       };
 
       let slideData;
-
-      // Call the AI Provider
       if (aiProvider === 'perplexity') {
         const response = await base44.functions.invoke('perplexitySearch', {
           query: prompt,
@@ -209,30 +186,34 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         });
       }
 
-      let slides = slideData.slides || [];
-      
-      if (!Array.isArray(slides)) {
-        slides = [];
+      let slides = slideData?.slides || [];
+      if (!Array.isArray(slides) || slides.length === 0) {
+        throw new Error('AI returned no slides. Please try again.');
       }
 
-      // Add order and imageProvider to slides
+      // Enforce slide count — trim or warn
+      if (slides.length > slideCount) slides = slides.slice(0, slideCount);
+
       slides = slides.map((slide, idx) => ({
         ...slide,
+        id: Date.now() + idx,
         order: idx + 1,
-        labeledIllustration: slide.labeledIllustration 
+        // Clean up any AI content that slipped through with wrong tags
+        content: sanitizeSlideContent(slide.content),
+        labeledIllustration: slide.labeledIllustration
           ? { ...slide.labeledIllustration, imageProvider }
           : undefined
       }));
 
-      // Track slides for AI learning
+      // Track analytics
       if (useAILearning && slides.length > 0) {
         try {
-          await Promise.all(slides.map(slide => 
+          await Promise.all(slides.map(slide =>
             base44.entities.SlideAnalytics.create({
               slide_content: slide.content,
               slide_title: slide.title,
               topic,
-              visual_type: slide.diagramCode ? (slide.labeledIllustration ? 'both' : 'diagram') : 
+              visual_type: slide.diagramCode ? (slide.labeledIllustration ? 'both' : 'diagram') :
                            (slide.labeledIllustration ? 'image' : 'none'),
               content_type: contentType,
               visual_style: visualStyle,
@@ -245,10 +226,12 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
       }
 
       onSlidesGenerated(slides);
-      toast.success('Educational slides generated with diagrams and illustrations!');
+      toast.success(`${slides.length} slides generated!`);
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error('Failed to generate slides. Please try again.');
+      // FIX #1c: Removed Markdown link corruption — was [error.me](https://error.me)ssage
+      // which split the word "message" and always fell through to the fallback string.
+      toast.error(error.message || 'Failed to generate slides. Please try again.');
     } finally {
       setGenerating(false);
     }
@@ -263,7 +246,7 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         </div>
         <KnowledgeBaseUploader />
       </div>
-      
+
       <div className="space-y-4">
         <div className="space-y-2">
           <Label htmlFor="topic">Presentation Topic</Label>
@@ -288,19 +271,21 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
 
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-2">
-            <Label>Slide Count</Label>
+            <Label>Number of Slides</Label>
             <Input
               type="number"
-              min={1}
-              max={15}
+              min={3}
+              {/* FIX #2: Restored the truncated max prop — was cut off as "ma" */}
+              max={30}
               value={slideCount}
-              onChange={(e) => setSlideCount(parseInt(e.target.value))}
+              onChange={(e) => setSlideCount(Math.min(30, Math.max(3, parseInt(e.target.value) || 8)))}
             />
+            <p className="text-xs text-gray-400">3 – 30 slides</p>
           </div>
           <div className="space-y-2">
             <Label>Content Type</Label>
             <select
-              className="w-full flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+              className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
               value={contentType}
               onChange={(e) => setContentType(e.target.value)}
             >
@@ -313,9 +298,9 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         </div>
 
         <div className="space-y-2">
-          <Label>Visual Style (Applied to All Visuals)</Label>
+          <Label>Visual Style</Label>
           <select
-            className="w-full flex h-10 w-full items-center justify-between rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background placeholder:text-muted-foreground focus:outline-none focus:ring-2 focus:ring-ring focus:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50"
+            className="w-full h-10 rounded-md border border-input bg-background px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-ring"
             value={visualStyle}
             onChange={(e) => setVisualStyle(e.target.value)}
           >
@@ -328,141 +313,82 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         </div>
 
         <div className="flex items-center space-x-2">
-          <Switch
-            id="speaker-notes"
-            checked={includeSpeakerNotes}
-            onCheckedChange={setIncludeSpeakerNotes}
-          />
+          <Switch id="speaker-notes" checked={includeSpeakerNotes} onCheckedChange={setIncludeSpeakerNotes} />
           <Label htmlFor="speaker-notes">Generate Speaker Notes</Label>
-          </div>
+        </div>
 
-          <div className="flex items-center space-x-2">
-          <Switch
-            id="ai-learning"
-            checked={useAILearning}
-            onCheckedChange={setUseAILearning}
-          />
+        <div className="flex items-center space-x-2">
+          <Switch id="ai-learning" checked={useAILearning} onCheckedChange={setUseAILearning} />
           <Label htmlFor="ai-learning" className="flex items-center gap-2">
             <Brain className="w-4 h-4" />
-            Use AI Learning (analyzes your past slides & knowledge base)
+            Use AI Learning
           </Label>
-          </div>
+        </div>
 
-        <div className="space-y-4 pt-2">
+        <div>
+          <Label className="text-xs text-muted-foreground mb-2 block">Visual Content Type</Label>
+          <div className="flex gap-2">
+            {[['both', '📊 + 🖼️ Both'], ['diagrams', '📊 Diagrams'], ['images', '🖼️ Images']].map(([val, label]) => (
+              <Button
+                key={val}
+                variant={visualMode === val ? 'default' : 'outline'}
+                size="sm"
+                onClick={() => setVisualMode(val)}
+                className="text-xs flex-1"
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+        </div>
+
+        <div className="grid grid-cols-2 gap-4">
           <div>
-            <Label className="text-xs text-muted-foreground mb-2 block">Visual Content Type</Label>
-            <div className="flex gap-2">
-              <Button 
-                variant={visualMode === 'both' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setVisualMode('both')}
-                className="text-xs flex-1"
-              >
-                📊 + 🖼️ Both
-              </Button>
-              <Button 
-                variant={visualMode === 'diagrams' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setVisualMode('diagrams')}
-                className="text-xs flex-1"
-              >
-                📊 Diagrams
-              </Button>
-              <Button 
-                variant={visualMode === 'images' ? "default" : "outline"} 
-                size="sm"
-                onClick={() => setVisualMode('images')}
-                className="text-xs flex-1"
-              >
-                🖼️ Images
-              </Button>
+            <Label className="text-xs text-muted-foreground mb-2 block">Text AI Model</Label>
+            <div className="flex flex-col gap-2">
+              {[
+                ['default', 'Standard'],
+                ['default_research', 'Web Research'],
+                ['perplexity', 'Deep Research'],
+              ].map(([val, label]) => (
+                <Button
+                  key={val}
+                  variant={aiProvider === val ? 'default' : 'outline'}
+                  size="sm"
+                  onClick={() => setAiProvider(val)}
+                  className="text-xs w-full"
+                >
+                  {val === 'perplexity' && <BookOpen className="w-3 h-3 mr-1" />}
+                  {label}
+                </Button>
+              ))}
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-4">
-            <div>
-              <Label className="text-xs text-muted-foreground mb-2 block">Text AI Model</Label>
-              <div className="flex flex-col gap-2">
-                <Button 
-                  variant={aiProvider === 'default' ? "default" : "outline"} 
+          <div>
+            <Label className="text-xs text-muted-foreground mb-2 block">
+              Image Generator
+              {visualMode === 'diagrams' && <span className="text-xs text-gray-400 ml-1">(disabled)</span>}
+            </Label>
+            <div className="flex flex-col gap-2">
+              {[
+                ['base44', 'Base44 AI'],
+                ['dalle', 'DALL-E 3'],
+                ['flux2', 'Flux 2'],
+                ['canva', 'Canva AI'],
+                ['modelslab', 'ModelLabs'],
+              ].map(([val, label]) => (
+                <Button
+                  key={val}
+                  variant={imageProvider === val ? 'default' : 'outline'}
                   size="sm"
-                  onClick={() => setAiProvider('default')}
-                  className="text-xs w-full"
-                >
-                  Standard
-                </Button>
-                <Button 
-                  variant={aiProvider === 'default_research' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setAiProvider('default_research')}
-                  className="text-xs w-full"
-                >
-                  Web Research
-                </Button>
-                <Button 
-                  variant={aiProvider === 'perplexity' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setAiProvider('perplexity')}
-                  className="text-xs w-full"
-                >
-                  <BookOpen className="w-3 h-3 mr-1" />
-                  Deep Research
-                </Button>
-              </div>
-            </div>
-
-            <div>
-              <Label className="text-xs text-muted-foreground mb-2 block">
-                Image Generator
-                {visualMode === 'diagrams' && <span className="text-xs text-gray-400 ml-1">(disabled)</span>}
-              </Label>
-              <div className="flex flex-col gap-2">
-                <Button 
-                  variant={imageProvider === 'base44' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setImageProvider('base44')}
+                  onClick={() => setImageProvider(val)}
                   className="text-xs w-full"
                   disabled={visualMode === 'diagrams'}
                 >
-                  Base44 AI
+                  {label}
                 </Button>
-                <Button 
-                  variant={imageProvider === 'dalle' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setImageProvider('dalle')}
-                  className="text-xs w-full"
-                  disabled={visualMode === 'diagrams'}
-                >
-                  DALL-E 3
-                </Button>
-                <Button 
-                  variant={imageProvider === 'flux2' ? "default" : "outline"} 
-                  size="sm"
-                  onClick={() => setImageProvider('flux2')}
-                  className="text-xs w-full"
-                  disabled={visualMode === 'diagrams'}
-                >
-                  Flux 2
-                </Button>
-                <Button 
-                   variant={imageProvider === 'canva' ? "default" : "outline"} 
-                   size="sm"
-                   onClick={() => setImageProvider('canva')}
-                   className="text-xs w-full bg-gradient-to-r from-purple-500 to-blue-500 text-white hover:from-purple-600 hover:to-blue-600"
-                   disabled={visualMode === 'diagrams'}
-                 >
-                   Canva AI
-                 </Button>
-                 <Button 
-                   variant={imageProvider === 'modelslab' ? "default" : "outline"} 
-                   size="sm"
-                   onClick={() => setImageProvider('modelslab')}
-                   className="text-xs w-full"
-                   disabled={visualMode === 'diagrams'}
-                 >
-                   ModelLabs
-                 </Button>
-                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -475,15 +401,9 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         disabled={generating}
       >
         {generating ? (
-          <>
-            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-            {useAILearning ? 'AI Learning & Generating...' : 'Generating Diagrams...'}
-          </>
+          <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{useAILearning ? 'AI Learning & Generating...' : 'Generating...'}</>
         ) : (
-          <>
-            {useAILearning ? <Brain className="mr-2 h-4 w-4" /> : <Sparkles className="mr-2 h-4 w-4" />}
-            Generate {useAILearning ? 'Intelligent' : ''} Presentation
-          </>
+          <>{useAILearning ? <Brain className="mr-2 h-4 w-4" /> : <Sparkles className="mr-2 h-4 w-4" />}Generate {useAILearning ? 'Intelligent ' : ''}Presentation</>
         )}
       </Button>
     </div>
