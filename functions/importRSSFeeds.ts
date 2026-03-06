@@ -14,6 +14,9 @@ const RSS_FEEDS = {
   ukparliament: 'https://www.parliament.uk/site-information/rss-feeds/rss-education/',
 };
 
+// FIX #2: Named constant instead of a silent magic number in .slice()
+const MAX_ITEMS_PER_FEED = 5;
+
 function getMsg(e) {
   return e && e['message'] ? e['message'] : String(e);
 }
@@ -47,6 +50,14 @@ function extractImageFromContent(content) {
   return urlMatch ? urlMatch[1] : null;
 }
 
+// FIX #6: Safe date parser — guards against malformed pubDate strings
+// that would cause new Date(pubDate).toISOString() to throw a RangeError.
+function safeToISOString(dateStr) {
+  if (!dateStr) return new Date().toISOString();
+  const parsed = new Date(dateStr);
+  return isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
+}
+
 async function parseRSSFeed(xmlText) {
   const items = [];
 
@@ -75,7 +86,9 @@ async function parseRSSFeed(xmlText) {
     }
 
     if (!imageUrl) {
-      const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image/i);
+      // FIX #3: Closed the type attribute pattern to correctly match MIME types
+      // like image/jpeg, image/png, etc., without false-matching other values.
+      const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image\/[^"']*["']/i);
       if (enclosureMatch) imageUrl = enclosureMatch[1];
     }
 
@@ -100,7 +113,7 @@ async function parseRSSFeed(xmlText) {
         description: cleanDesc.substring(0, 500),
         link,
         image_url: imageUrl,
-        published_date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+        published_date: safeToISOString(pubDate), // FIX #6 applied
       });
     }
   }
@@ -140,7 +153,7 @@ async function parseRSSFeed(xmlText) {
           description: cleanDesc.substring(0, 500),
           link,
           image_url: imageUrl,
-          published_date: pubDate ? new Date(pubDate).toISOString() : new Date().toISOString(),
+          published_date: safeToISOString(pubDate), // FIX #6 applied
         });
       }
     }
@@ -157,9 +170,15 @@ async function fetchFeed(url) {
       headers: { 'User-Agent': 'Mozilla/5.0 (compatible; RSSImporter/1.0)' },
       signal: controller['signal'],
     });
+    if (!response.ok) {
+      clearTimeout(timeoutId);
+      return null;
+    }
+    // FIX #5: clearTimeout moved to AFTER response.text() completes so that
+    // slow body streams are also covered by the 5-second abort guard.
+    const text = await response.text();
     clearTimeout(timeoutId);
-    if (!response.ok) return null;
-    return await response.text();
+    return text;
   } catch (e) {
     clearTimeout(timeoutId);
     return null;
@@ -190,13 +209,16 @@ Deno.serve(async (req) => {
         const xmlText = await fetchFeed(feedUrl);
 
         if (!xmlText) {
-          return { source: currentSource.toUpperCase(), error: 'Failed to fetch or timed out', imported: [] };
+          // FIX #1: Removed the misleading `imported: []` field from fetch-phase results.
+          return { source: currentSource.toUpperCase(), error: 'Failed to fetch or timed out' };
         }
 
         const items = await parseRSSFeed(xmlText);
-        return { source: currentSource.toUpperCase(), items, imported: [] };
+        // FIX #1: Removed the misleading `imported: []` field from fetch-phase results.
+        return { source: currentSource.toUpperCase(), items };
       } catch (e) {
-        return { source: currentSource.toUpperCase(), error: getMsg(e), imported: [] };
+        // FIX #1: Removed the misleading `imported: []` field from fetch-phase results.
+        return { source: currentSource.toUpperCase(), error: getMsg(e) };
       }
     });
 
@@ -210,7 +232,8 @@ Deno.serve(async (req) => {
       }
 
       const imported = [];
-      for (const item of (feedResult['items'] || []).slice(0, 5)) {
+      // FIX #2: Use named constant MAX_ITEMS_PER_FEED instead of a silent magic number.
+      for (const item of (feedResult['items'] || []).slice(0, MAX_ITEMS_PER_FEED)) {
         try {
           const existing = await base44.asServiceRole.entities.RSSFeed.filter({ link: item['link'] });
           if (existing.length === 0) {
