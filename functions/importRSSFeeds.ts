@@ -62,6 +62,96 @@ function safeToISOString(dateStr) {
   return isNaN(parsed.getTime()) ? new Date().toISOString() : parsed.toISOString();
 }
 
+// IMAGE FIX: Replaces the previous single-match approach with a function that
+// collects ALL media:thumbnail and media:content candidates from an item block,
+// picks the one with the largest declared width, and then applies source-specific
+// URL rewrites to upgrade low-resolution URLs to their full-resolution equivalents.
+//
+// Root causes of blurry images per source:
+//
+//   BBC          — media:thumbnail is always 240px wide. The URL path contains
+//                  the size token "standard/240" which can be rewritten to
+//                  "standard/1024" (or higher) to get a full-resolution image.
+//
+//   The Guardian — publishes multiple media:content elements per item, each with
+//                  a different ?width= query parameter (140, 460, 700). The old
+//                  code matched the FIRST one (140px). We now pick the widest.
+//
+//   Daily Mail   — provides both a large media:content (full image, no size attr)
+//                  and a small media:thumbnail (154px wide). The old code matched
+//                  the thumbnail first. We now prefer the unsized media:content.
+//
+//   Sky News     — already provides 1920×1080 images; no rewrite needed.
+//   Independent  — already provides 1200px images; no rewrite needed.
+
+function getBestImageUrl(xmlBlock) {
+  // Collect all media:thumbnail and media:content candidates with their widths.
+  const candidates: Array<{ url: string; width: number }> = [];
+
+  // Match all media:thumbnail tags and record their width attribute (if present).
+  for (const m of xmlBlock.matchAll(/<media:thumbnail([^>]*)>/gi)) {
+    const attrs = m[1];
+    const urlMatch = attrs.match(/url=["']([^"']+)["']/i);
+    const widthMatch = attrs.match(/width=["']?(\d+)["']?/i);
+    if (urlMatch) {
+      candidates.push({
+        url: urlMatch[1],
+        width: widthMatch ? parseInt(widthMatch[1], 10) : 0,
+      });
+    }
+  }
+
+  // Match all media:content tags that carry an image MIME type or no type at all.
+  for (const m of xmlBlock.matchAll(/<media:content([^>]*)>/gi)) {
+    const attrs = m[1];
+    const typeMatch = attrs.match(/type=["']([^"']+)["']/i);
+    // Skip non-image media:content (e.g. video)
+    if (typeMatch && !typeMatch[1].startsWith('image')) continue;
+    const urlMatch = attrs.match(/url=["']([^"']+)["']/i);
+    const widthMatch = attrs.match(/width=["']?(\d+)["']?/i);
+    if (urlMatch) {
+      candidates.push({
+        url: urlMatch[1],
+        // Unsized media:content (e.g. Daily Mail full image) gets a high default
+        // so it is preferred over explicitly small thumbnails.
+        width: widthMatch ? parseInt(widthMatch[1], 10) : 9999,
+      });
+    }
+  }
+
+  // FIX #3: Closed the type attribute pattern to correctly match MIME types
+  // like image/jpeg, image/png, etc., without false-matching other values.
+  if (candidates.length === 0) {
+    const enclosureMatch = xmlBlock.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image\/[^"']*["']/i);
+    if (enclosureMatch) return enclosureMatch[1];
+    const genericImage = xmlBlock.match(/<image[^>]*url=["']([^"']+)["']/i);
+    if (genericImage) return genericImage[1];
+    return null;
+  }
+
+  // Pick the candidate with the largest declared width.
+  candidates.sort((a, b) => b.width - a.width);
+  let bestUrl = candidates[0].url;
+
+  // Decode HTML entities in the URL (e.g. Guardian uses &amp; in query strings).
+  bestUrl = bestUrl.replace(/&amp;/g, '&');
+
+  // SOURCE-SPECIFIC REWRITES
+  // BBC: "standard/240/" → "standard/1024/" for a full-resolution image.
+  bestUrl = bestUrl.replace(
+    /(ichef\.bbci\.co\.uk\/ace\/standard\/)(\d+)\//i,
+    '$11024/'
+  );
+
+  // Guardian: strip the ?width= query parameter so the CDN serves the master image.
+  // The base filename already points to the highest-quality source file.
+  if (bestUrl.includes('i.guim.co.uk')) {
+    bestUrl = bestUrl.replace(/\?.*$/, '');
+  }
+
+  return bestUrl;
+}
+
 async function parseRSSFeed(xmlText) {
   const items = [];
 
@@ -79,31 +169,8 @@ async function parseRSSFeed(xmlText) {
                     getTextContent(itemXml, 'dc:date') ||
                     getTextContent(itemXml, 'date');
 
-    let imageUrl = null;
-
-    const anyThumb = itemXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
-    if (anyThumb) imageUrl = anyThumb[1];
-
-    if (!imageUrl) {
-      const anyMedia = itemXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
-      if (anyMedia) imageUrl = anyMedia[1];
-    }
-
-    if (!imageUrl) {
-      // FIX #3: Closed the type attribute pattern to correctly match MIME types
-      // like image/jpeg, image/png, etc., without false-matching other values.
-      const enclosureMatch = itemXml.match(/<enclosure[^>]+url=["']([^"']+)["'][^>]*type=["']image\/[^"']*["']/i);
-      if (enclosureMatch) imageUrl = enclosureMatch[1];
-    }
-
-    if (!imageUrl) {
-      const msnImage = itemXml.match(/<image[^>]*url=["']([^"']+)["']/i);
-      if (msnImage) imageUrl = msnImage[1];
-    }
-
-    if (!imageUrl) {
-      imageUrl = extractImageFromContent(description);
-    }
+    // IMAGE FIX: use getBestImageUrl instead of first-match approach.
+    const imageUrl = getBestImageUrl(itemXml) || extractImageFromContent(description);
 
     const cleanDesc = description
       .replace(/<[^>]*>/g, '')
@@ -136,14 +203,8 @@ async function parseRSSFeed(xmlText) {
       const pubDate = getTextContent(entryXml, 'updated') ||
                       getTextContent(entryXml, 'published');
 
-      let imageUrl = null;
-      const anyThumb = entryXml.match(/<media:thumbnail[^>]*url=["']([^"']+)["']/i);
-      if (anyThumb) imageUrl = anyThumb[1];
-      if (!imageUrl) {
-        const anyMedia = entryXml.match(/<media:content[^>]*url=["']([^"']+)["']/i);
-        if (anyMedia) imageUrl = anyMedia[1];
-      }
-      if (!imageUrl) imageUrl = extractImageFromContent(description);
+      // IMAGE FIX: use getBestImageUrl instead of first-match approach.
+      const imageUrl = getBestImageUrl(entryXml) || extractImageFromContent(description);
 
       const cleanDesc = description
         .replace(/<[^>]*>/g, '')
