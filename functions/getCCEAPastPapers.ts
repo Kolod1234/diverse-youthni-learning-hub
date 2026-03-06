@@ -18,18 +18,17 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Mathematics AS1 2024 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2024-Summer/Standard/0/GCE-Mathematics-Summer2024-AS%201%3A%20Pure%20Mathematics-Paper.pdf' },
-        { title: 'A-Level Mathematics AS2 2024 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2024-Summer/Standard/0/GCE-Mathematics-Summer2024-AS%202%3A%20Applied%20Mathematics-Paper.pdf' },
-        { title: 'A-Level Mathematics A21 2024 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2024-Summer/Standard/0/GCE-Mathematics-Summer2024-A2%201%3A%20Pure%20Mathematics-Paper.pdf' },
-        { title: 'A-Level Mathematics A22 2024 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2024-Summer/Standard/0/GCE-Mathematics-Summer2024-A2%202%3A%20Applied%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS1 2024 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2024-Summer/Standard/0/GCE-Mathematics%20-502-Summer2024-AS%201%20%2C%20Pure%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS2 2024 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2024-Summer/Standard/0/GCE-Mathematics%20-502-Summer2024-AS%202%2C%20Applied%20Mathematics-Paper_0.pdf' },
+        { title: 'A-Level Mathematics A21 2024 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2024-Summer/Standard/0/GCE-Mathematics%20-502-Summer2024-A2%201%2C%20Pure%20Mathematics-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Mathematics AS1 2023 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2023-Summer/Standard/0/GCE-Mathematics-Summer2023-AS%201%3A%20Pure%20Mathematics-Paper.pdf' },
-        { title: 'A-Level Mathematics AS2 2023 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2023-Summer/Standard/0/GCE-Mathematics-Summer2023-AS%202%3A%20Applied%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS1 2023 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2023-Summer/Standard/0/GCE-Mathematics%20-502-Summer2023-AS%201%2C%20Pure%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS2 2023 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2023-Summer/Standard/0/GCE-Mathematics%20-502-Summer2023-AS%202%2C%20Applied%20Mathematics-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Mathematics AS1 2022 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2022-Summer/Standard/0/GCE-Mathematics-Summer2022-AS%201%3A%20Pure%20Mathematics-Paper.pdf' },
-        { title: 'A-Level Mathematics AS2 2022 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics/2022-Summer/Standard/0/GCE-Mathematics-Summer2022-AS%202%3A%20Applied%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS1 2022 - Pure Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2022-Summer/Standard/0/GCE-Mathematics%20-502-Summer2022-AS%201%2C%20Pure%20Mathematics-Paper.pdf' },
+        { title: 'A-Level Mathematics AS2 2022 - Applied Mathematics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Mathematics%20%282018%29/2022-Summer/Standard/0/GCE-Mathematics%20-502-Summer2022-AS%202%2C%20Applied%20Mathematics-Paper.pdf' },
       ],
     },
   },
@@ -73,18 +72,19 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Biology AS1 2024 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
-        { title: 'A-Level Biology AS2 2024 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
-        { title: 'A-Level Biology A21 2024 - Physiology and Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-A2%201%3A%20Physiology%20and%20Ecosystems-Paper.pdf' },
-        { title: 'A-Level Biology A22 2024 - Genetics Evolution Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2024-Summer/Standard/0/GCE-Biology-Summer2024-A2%202%3A%20Genetics%2C%20Evolution%20and%20Ecosystems-Paper.pdf' },
+        { title: 'A-Level Biology AS1 2024 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2024-Summer/Standard/0/GCE-Biology-43-Summer2024-AS%201%2C%20Molecules%20and%20Cells-Paper.pdf' },
+        { title: 'A-Level Biology AS2 2024 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2024-Summer/Standard/0/GCE-Biology-43-Summer2024-AS%202%2C%20Orgainisms%20and%20Biodiversity-Paper.pdf' },
+        { title: 'A-Level Biology A21 2024 - Physiology Coordination and Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2024-Summer/Standard/0/GCE-Biology-43-Summer2024-A2%201%2C%20Physiology%2C%20Coordination%20and%20Control%2C%20and%20Ecosystems-Paper.pdf' },
+        { title: 'A-Level Biology A22 2024 - Biochemistry Genetics and Evolutionary Trends', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2024-Summer/Standard/0/GCE-Biology-43-Summer2024-A2%202%2C%20Biochemistry%2C%20Genetics%20and%20Evolutionary%20Trends-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Biology AS1 2023 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2023-Summer/Standard/0/GCE-Biology-Summer2023-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
-        { title: 'A-Level Biology AS2 2023 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2023-Summer/Standard/0/GCE-Biology-Summer2023-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
+        { title: 'A-Level Biology AS1 2023 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2023-Summer/Standard/0/GCE-Biology-43-Summer2023-AS%201%2C%20Molecules%20and%20Cells-Paper.pdf' },
+        { title: 'A-Level Biology AS2 2023 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2023-Summer/Standard/0/GCE-Biology-43-Summer2023-AS%202%2C%20Organisms%20and%20Biodiversity-Paper.pdf' },
+        { title: 'A-Level Biology A21 2023 - Physiology Coordination and Ecosystems', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2023-Summer/Standard/0/GCE-Biology-43-Summer2023-A2%201%2C%20Physiology%2C%20Coordination%20and%20Control%2C%20and%20Ecosystems-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Biology AS1 2022 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2022-Summer/Standard/0/GCE-Biology-Summer2022-AS%201%3A%20Molecules%20and%20Cells-Paper.pdf' },
-        { title: 'A-Level Biology AS2 2022 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology/2022-Summer/Standard/0/GCE-Biology-Summer2022-AS%202%3A%20Organisms%20and%20Biodiversity-Paper.pdf' },
+        { title: 'A-Level Biology AS1 2022 - Molecules and Cells', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2022-Summer/Standard/0/GCE-Biology-43-Summer2022-AS%201%2C%20Molecules%20and%20Cells-Paper.pdf' },
+        { title: 'A-Level Biology AS2 2022 - Organisms and Biodiversity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Biology%20%282016%29/2022-Summer/Standard/0/GCE-Biology-43-Summer2022-AS%202%2C%20Organisms%20and%20Biodiversity-Paper.pdf' },
       ],
     },
   },
@@ -106,18 +106,19 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Chemistry AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2024-Summer/Standard/0/GCE-Chemistry-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level Chemistry AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2024-Summer/Standard/0/GCE-Chemistry-Summer2024-AS%202-Paper.pdf' },
-        { title: 'A-Level Chemistry A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2024-Summer/Standard/0/GCE-Chemistry-Summer2024-A2%201-Paper.pdf' },
-        { title: 'A-Level Chemistry A22 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2024-Summer/Standard/0/GCE-Chemistry-Summer2024-A2%202-Paper.pdf' },
+        { title: 'A-Level Chemistry AS1 2024 - Basic Concepts Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2024-Summer/Standard/0/GCE-Chemistry-467-Summer2024-AS%201%2C%20Basic%20concepts%20in%20Physical%20and%20Inorganic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry AS2 2024 - Further Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2024-Summer/Standard/0/GCE-Chemistry-467-Summer2024-AS%202%2C%20Further%20Physical%20and%20Inorganic%20Chemistry%20and%20an%20Introduction%20to%20Organic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry A21 2024 - Further Physical and Organic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2024-Summer/Standard/0/GCE-Chemistry-467-Summer2024-A2%201%2C%20Further%20Physical%20and%20Organic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry A22 2024 - Analytical Transition Metals and Organic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2024-Summer/Standard/0/GCE-Chemistry-467-Summer2024-A2%202%2C%20Analytical%2C%20Transition%20Metals%2C%20Electrochemistry%20and%20Further%20Organic%20Chemistry-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Chemistry AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2023-Summer/Standard/0/GCE-Chemistry-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level Chemistry AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2023-Summer/Standard/0/GCE-Chemistry-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level Chemistry AS1 2023 - Basic Concepts Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2023-Summer/Standard/0/GCE-Chemistry-467-Summer2023-AS%201%2C%20Basic%20concepts%20in%20Physical%20and%20Inorganic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry AS2 2023 - Further Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2023-Summer/Standard/0/GCE-Chemistry-467-Summer2023-AS%202%2C%20Further%20Physical%20and%20Inorganic%20Chemistry%20and%20an%20Introduction%20to%20Organic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry A21 2023 - Further Physical and Organic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2023-Summer/Standard/0/GCE-Chemistry-467-Summer2023-A2%201%2C%20Further%20Physical%20and%20Organic%20Chemistry-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Chemistry AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2022-Summer/Standard/0/GCE-Chemistry-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level Chemistry AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry/2022-Summer/Standard/0/GCE-Chemistry-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level Chemistry AS1 2022 - Basic Concepts Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2022-Summer/Standard/0/GCE-Chemistry-467-Summer2022-AS%201%2C%20Basic%20concepts%20in%20Physical%20and%20Inorganic%20Chemistry-Paper.pdf' },
+        { title: 'A-Level Chemistry AS2 2022 - Further Physical and Inorganic Chemistry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Chemistry%20%282016%29/2022-Summer/Standard/0/GCE-Chemistry-467-Summer2022-AS%202%2C%20Further%20Physical%20and%20Inorganic%20Chemistry%20and%20an%20Introduction%20to%20Organic%20Chemistry-Paper.pdf' },
       ],
     },
   },
@@ -140,18 +141,17 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Physics AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2024-Summer/Standard/0/GCE-Physics-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level Physics AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2024-Summer/Standard/0/GCE-Physics-Summer2024-AS%202-Paper.pdf' },
-        { title: 'A-Level Physics A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2024-Summer/Standard/0/GCE-Physics-Summer2024-A2%201-Paper.pdf' },
-        { title: 'A-Level Physics A22 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2024-Summer/Standard/0/GCE-Physics-Summer2024-A2%202-Paper.pdf' },
+        { title: 'A-Level Physics AS1 2024 - Forces Energy and Electricity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2024-Summer/Standard/0/GCE-Physics-574-Summer2024-AS%201%2C%20Forces%2C%20Energy%20and%20Electricity-Paper.pdf' },
+        { title: 'A-Level Physics AS2 2024 - Waves Photons and Astronomy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2024-Summer/Standard/0/GCE-Physics-574-Summer2024-AS%202%2C%20Waves%2C%20Photons%20and%20Astronomy-Paper.pdf' },
+        { title: 'A-Level Physics A21 2024 - Deformation Thermal Physics Circular Motion and Atomic Physics', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2024-Summer/Standard/0/GCE-Physics-574-Summer2024-A2%201%2C%20Deformation%20of%20Solids%2C%20Thermal%20Physics%2C%20Circular%20Motion%2C%20Oscillations%20and%20Atomic%20and%20Nuclear%20Physics-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Physics AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2023-Summer/Standard/0/GCE-Physics-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level Physics AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2023-Summer/Standard/0/GCE-Physics-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level Physics AS1 2023 - Forces Energy and Electricity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2023-Summer/Standard/0/GCE-Physics-574-Summer2023-AS%201%2C%20Forces%2C%20Energy%20and%20Electricity-Paper.pdf' },
+        { title: 'A-Level Physics AS2 2023 - Waves Photons and Astronomy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2023-Summer/Standard/0/GCE-Physics-574-Summer2023-AS%202%2C%20Waves%2C%20Photons%20and%20Astronomy-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Physics AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2022-Summer/Standard/0/GCE-Physics-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level Physics AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics/2022-Summer/Standard/0/GCE-Physics-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level Physics AS1 2022 - Forces Energy and Electricity', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2022-Summer/Standard/0/GCE-Physics-574-Summer2022-AS%201%2C%20Forces%2C%20Energy%20and%20Electricity-Paper.pdf' },
+        { title: 'A-Level Physics AS2 2022 - Waves Photons and Astronomy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Physics%20%282016%29/2022-Summer/Standard/0/GCE-Physics-574-Summer2022-AS%202%2C%20Waves%2C%20Photons%20and%20Astronomy-Paper.pdf' },
       ],
     },
   },
@@ -173,17 +173,17 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level History AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level History AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-AS%202-Paper.pdf' },
-        { title: 'A-Level History A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2024-Summer/Standard/0/GCE-History-Summer2024-A2%201-Paper.pdf' },
+        { title: 'A-Level History AS1 2024 - Historical Investigations and Interpretations', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2024-Summer/Standard/0/GCE-History-527-Summer2024-AS%201%2C%20Historical%20Investigations%20and%20Interpretations-Paper.pdf' },
+        { title: 'A-Level History AS2 2024 - Historical Conflict and Change', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2024-Summer/Standard/0/GCE-History-527-Summer2024-AS%202%2C%20Historical%20Conflict%20and%20Change-Paper.pdf' },
+        { title: 'A-Level History A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2024-Summer/Standard/0/GCE-History-527-Summer2024-A2%201-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level History AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2023-Summer/Standard/0/GCE-History-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level History AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2023-Summer/Standard/0/GCE-History-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level History AS1 2023 - Historical Investigations and Interpretations', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2023-Summer/Standard/0/GCE-History-527-Summer2023-AS%201%2C%20Historical%20Investigations%20and%20Interpretations-Paper.pdf' },
+        { title: 'A-Level History AS2 2023 - Historical Conflict and Change', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2023-Summer/Standard/0/GCE-History-527-Summer2023-AS%202%2C%20Historical%20Conflict%20and%20Change-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level History AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2022-Summer/Standard/0/GCE-History-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level History AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History/2022-Summer/Standard/0/GCE-History-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level History AS1 2022 - Historical Investigations and Interpretations', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2022-Summer/Standard/0/GCE-History-527-Summer2022-AS%201%2C%20Historical%20Investigations%20and%20Interpretations-Paper.pdf' },
+        { title: 'A-Level History AS2 2022 - Historical Conflict and Change', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20History%20%282019%29/2022-Summer/Standard/0/GCE-History-527-Summer2022-AS%202%2C%20Historical%20Conflict%20and%20Change-Paper.pdf' },
       ],
     },
   },
@@ -191,8 +191,8 @@ const CCEA_PAPERS = {
     name: 'English Language',
     gcse: {
       2024: [
-        { title: 'GCSE English Language 2024 - Unit 1 Writing & Reading Non-fiction', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-November/Standard/0/GCSE-English%20Language-490-November2024-Unit%201%2C%20Writing%20for%20Purpose%20and%20Audience%20and%20Reading%20to%20Access%20Non-fiction%20and%20Media%20Texts-Paper.pdf' },
-        { title: 'GCSE English Language 2024 - Unit 4 Personal Writing & Literary Reading', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-Summer/Standard/0/GCSE-English%20Language-490-Summer2024-Unit%204%2C%20Personal%20or%20Creative%20writing%20and%20Reading%20Literary%20and%20Non-fiction%20Texts-Paper.pdf' },
+        { title: 'GCSE English Language 2024 - Unit 1 Writing and Reading Non-fiction', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-November/Standard/0/GCSE-English%20Language-490-November2024-Unit%201%2C%20Writing%20for%20Purpose%20and%20Audience%20and%20Reading%20to%20Access%20Non-fiction%20and%20Media%20Texts-Paper.pdf' },
+        { title: 'GCSE English Language 2024 - Unit 4 Personal Writing and Literary Reading', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2024-Summer/Standard/0/GCSE-English%20Language-490-Summer2024-Unit%204%2C%20Personal%20or%20Creative%20writing%20and%20Reading%20Literary%20and%20Non-fiction%20Texts-Paper.pdf' },
       ],
       2023: [
         { title: 'GCSE English Language 2023 - Unit 1', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCSE/GCSE%20English%20Language%20%282017%29/2023-Summer/Standard/0/GCSE-English%20Language-490-Summer2023-Unit%201-Paper.pdf' },
@@ -205,16 +205,16 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level English Language AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2024-Summer/Standard/0/GCE-English%20Language-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level English Language AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2024-Summer/Standard/0/GCE-English%20Language-Summer2024-AS%202-Paper.pdf' },
+        { title: 'A-Level English Language AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2024-Summer/Standard/0/GCE-English%20Language-490-Summer2024-AS%201-Paper.pdf' },
+        { title: 'A-Level English Language AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2024-Summer/Standard/0/GCE-English%20Language-490-Summer2024-AS%202-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level English Language AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2023-Summer/Standard/0/GCE-English%20Language-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level English Language AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2023-Summer/Standard/0/GCE-English%20Language-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level English Language AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2023-Summer/Standard/0/GCE-English%20Language-490-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level English Language AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2023-Summer/Standard/0/GCE-English%20Language-490-Summer2023-AS%202-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level English Language AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2022-Summer/Standard/0/GCE-English%20Language-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level English Language AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language/2022-Summer/Standard/0/GCE-English%20Language-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level English Language AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2022-Summer/Standard/0/GCE-English%20Language-490-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level English Language AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Language%20%282016%29/2022-Summer/Standard/0/GCE-English%20Language-490-Summer2022-AS%202-Paper.pdf' },
       ],
     },
   },
@@ -233,14 +233,17 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level English Literature AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2024-Summer/Standard/0/GCE-English%20Literature-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level English Literature AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2024-Summer/Standard/0/GCE-English%20Literature-Summer2024-AS%202-Paper.pdf' },
+        { title: 'A-Level English Literature AS1 2024 - Poetry and Drama', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2024-Summer/Standard/0/GCE-English%20Literature-492-Summer2024-AS%201%2C%20The%20Study%20of%20Poetry%201900-Present%20and%20Drama%201900-Present-Paper.pdf' },
+        { title: 'A-Level English Literature AS2 2024 - Prose Pre 1900', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2024-Summer/Standard/0/GCE-English%20Literature-492-Summer2024-AS%202%2C%20The%20Study%20of%20Prose%20Pre%201900-Paper.pdf' },
+        { title: 'A-Level English Literature A22 2024 - Poetry Pre 1900 and Unseen Poetry', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2024-Summer/Standard/0/GCE-English%20Literature-492-Summer2024-A2%202%2C%20The%20Study%20of%20Poetry%20Pre%201900%20and%20Unseen%20Poetry-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level English Literature AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2023-Summer/Standard/0/GCE-English%20Literature-Summer2023-AS%201-Paper.pdf' },
+        { title: 'A-Level English Literature AS1 2023 - Poetry and Drama', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2023-Summer/Standard/0/GCE-English%20Literature-492-Summer2023-AS%201%2C%20The%20Study%20of%20Poetry%201900-Present%20and%20Drama%201900-Present-Paper.pdf' },
+        { title: 'A-Level English Literature AS2 2023 - Prose Pre 1900', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2023-Summer/Standard/0/GCE-English%20Literature-492-Summer2023-AS%202%2C%20The%20Study%20of%20Prose%20Pre%201900-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level English Literature AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature/2022-Summer/Standard/0/GCE-English%20Literature-Summer2022-AS%201-Paper.pdf' },
+        { title: 'A-Level English Literature AS1 2022 - Poetry and Drama', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2022-Summer/Standard/0/GCE-English%20Literature-492-Summer2022-AS%201%2C%20The%20Study%20of%20Poetry%201900-Present%20and%20Drama%201900-Present-Paper.pdf' },
+        { title: 'A-Level English Literature AS2 2022 - Prose Pre 1900', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20English%20Literature%20%282016%29/2022-Summer/Standard/0/GCE-English%20Literature-492-Summer2022-AS%202%2C%20The%20Study%20of%20Prose%20Pre%201900-Paper.pdf' },
       ],
     },
   },
@@ -262,16 +265,17 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Geography AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2024-Summer/Standard/0/GCE-Geography-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level Geography A21 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2024-Summer/Standard/0/GCE-Geography-Summer2024-A2%201-Paper.pdf' },
+        { title: 'A-Level Geography AS1 2024 - Physical Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2024-Summer/Standard/0/GCE-Geography-511-Summer2024-AS%201%2C%20Physical%20Geography-Paper.pdf' },
+        { title: 'A-Level Geography AS2 2024 - Human Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2024-Summer/Standard/0/GCE-Geography-511-Summer2024-AS%202%2C%20Human%20Geography-Paper.pdf' },
+        { title: 'A-Level Geography A21 2024 - Physical Processes Landforms and Management', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2024-Summer/Standard/0/GCE-Geography-511-Summer2024-A2%201%2C%20Physical%20Processes%2C%20Landforms%20and%20Management-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Geography AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2023-Summer/Standard/0/GCE-Geography-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level Geography AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2023-Summer/Standard/0/GCE-Geography-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level Geography AS1 2023 - Physical Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2023-Summer/Standard/0/GCE-Geography-511-Summer2023-AS%201%2C%20Physical%20Geography-Paper.pdf' },
+        { title: 'A-Level Geography AS2 2023 - Human Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2023-Summer/Standard/0/GCE-Geography-511-Summer2023-AS%202%2C%20Human%20Geography-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Geography AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2022-Summer/Standard/0/GCE-Geography-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level Geography AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography/2022-Summer/Standard/0/GCE-Geography-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level Geography AS1 2022 - Physical Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2022-Summer/Standard/0/GCE-Geography-511-Summer2022-AS%201%2C%20Physical%20Geography-Paper.pdf' },
+        { title: 'A-Level Geography AS2 2022 - Human Geography', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Geography%20%282018%29/2022-Summer/Standard/0/GCE-Geography-511-Summer2022-AS%202%2C%20Human%20Geography-Paper.pdf' },
       ],
     },
   },
@@ -293,16 +297,18 @@ const CCEA_PAPERS = {
     },
     alevel: {
       2024: [
-        { title: 'A-Level Business Studies AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2024-Summer/Standard/0/GCE-Business%20Studies-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level Business Studies AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2024-Summer/Standard/0/GCE-Business%20Studies-Summer2024-AS%202-Paper.pdf' },
+        { title: 'A-Level Business Studies AS1 2024 - Introduction to Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2024-Summer/Standard/0/GCE-Business%20Studies-465-Summer2024-AS%201%2C%20Introduction%20to%20Business-Paper.pdf' },
+        { title: 'A-Level Business Studies AS2 2024 - Growing the Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2024-Summer/Standard/0/GCE-Business%20Studies-465-Summer2024-AS%202%2C%20Growing%20the%20Business-Paper.pdf' },
+        { title: 'A-Level Business Studies A21 2024 - Strategic Decision Making', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2024-Summer/Standard/0/GCE-Business%20Studies-465-Summer2024-A2%201%2C%20Strategic%20Decision%20Making-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Business Studies AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2023-Summer/Standard/0/GCE-Business%20Studies-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level Business Studies AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2023-Summer/Standard/0/GCE-Business%20Studies-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level Business Studies AS1 2023 - Introduction to Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2023-Summer/Standard/0/GCE-Business%20Studies-465-Summer2023-AS%201%2C%20Introduction%20to%20Business-Paper.pdf' },
+        { title: 'A-Level Business Studies AS2 2023 - Growing the Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2023-Summer/Standard/0/GCE-Business%20Studies-465-Summer2023-AS%202%2C%20Growing%20the%20Business-Paper.pdf' },
+        { title: 'A-Level Business Studies A21 2023 - Strategic Decision Making', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2023-Summer/Standard/0/GCE-Business%20Studies-465-Summer2023-A2%201%2C%20Strategic%20Decision%20Making-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Business Studies AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2022-Summer/Standard/0/GCE-Business%20Studies-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level Business Studies AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies/2022-Summer/Standard/0/GCE-Business%20Studies-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level Business Studies AS1 2022 - Introduction to Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2022-Summer/Standard/0/GCE-Business%20Studies-465-Summer2022-AS%201%2C%20Introduction%20to%20Business-Paper.pdf' },
+        { title: 'A-Level Business Studies AS2 2022 - Growing the Business', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Business%20Studies%20%282016%29/2022-Summer/Standard/0/GCE-Business%20Studies-465-Summer2022-AS%202%2C%20Growing%20the%20Business-Paper.pdf' },
       ],
     },
   },
@@ -310,16 +316,16 @@ const CCEA_PAPERS = {
     name: 'Economics',
     alevel: {
       2024: [
-        { title: 'A-Level Economics AS1 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2024-Summer/Standard/0/GCE-Economics-Summer2024-AS%201-Paper.pdf' },
-        { title: 'A-Level Economics AS2 2024', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2024-Summer/Standard/0/GCE-Economics-Summer2024-AS%202-Paper.pdf' },
+        { title: 'A-Level Economics AS1 2024 - Markets and Market Failure', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2024-Summer/Standard/0/GCE-Economics-483-Summer2024-AS%201%2C%20Markets%20and%20Market%20Failure-Paper.pdf' },
+        { title: 'A-Level Economics AS2 2024 - Managing the National Economy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2024-Summer/Standard/0/GCE-Economics-483-Summer2024-AS%202%2C%20Managing%20the%20National%20Economy-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Economics AS1 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2023-Summer/Standard/0/GCE-Economics-Summer2023-AS%201-Paper.pdf' },
-        { title: 'A-Level Economics AS2 2023', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2023-Summer/Standard/0/GCE-Economics-Summer2023-AS%202-Paper.pdf' },
+        { title: 'A-Level Economics AS1 2023 - Markets and Market Failure', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2023-Summer/Standard/0/GCE-Economics-483-Summer2023-AS%201%2C%20Markets%20and%20Market%20Failure-Paper.pdf' },
+        { title: 'A-Level Economics AS2 2023 - Managing the National Economy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2023-Summer/Standard/0/GCE-Economics-483-Summer2023-AS%202%2C%20Managing%20the%20National%20Economy-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Economics AS1 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2022-Summer/Standard/0/GCE-Economics-Summer2022-AS%201-Paper.pdf' },
-        { title: 'A-Level Economics AS2 2022', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics/2022-Summer/Standard/0/GCE-Economics-Summer2022-AS%202-Paper.pdf' },
+        { title: 'A-Level Economics AS1 2022 - Markets and Market Failure', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2022-Summer/Standard/0/GCE-Economics-483-Summer2022-AS%201%2C%20Markets%20and%20Market%20Failure-Paper.pdf' },
+        { title: 'A-Level Economics AS2 2022 - Managing the National Economy', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Economics%20%282016%29/2022-Summer/Standard/0/GCE-Economics-483-Summer2022-AS%202%2C%20Managing%20the%20National%20Economy-Paper.pdf' },
       ],
     },
   },
@@ -347,16 +353,16 @@ const CCEA_PAPERS = {
     name: 'Environmental Technology',
     alevel: {
       2024: [
-        { title: "A-Level Environmental Technology AS1 2024 - Earth's Capacity to Support Human Activity", url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2024-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2024-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf' },
+        { title: "A-Level Environmental Technology AS1 2024 - Earth's Capacity to Support Human Activity", url: "https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2024-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2024-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf" },
         { title: 'A-Level Environmental Technology AS2 2024 - Renewable Energy Technologies', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2024-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2024-AS%202%2C%20Renewable%20Energy%20Technologies-Paper.pdf' },
         { title: 'A-Level Environmental Technology A21 2024 - Building and Managing a Sustainable Future', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2024-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2024-A2%201%2C%20Building%20and%20Managing%20a%20Sustainable%20Future-Paper.pdf' },
       ],
       2023: [
-        { title: "A-Level Environmental Technology AS1 2023 - Earth's Capacity to Support Human Activity", url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2023-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2023-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf' },
+        { title: "A-Level Environmental Technology AS1 2023 - Earth's Capacity to Support Human Activity", url: "https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2023-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2023-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf" },
         { title: 'A-Level Environmental Technology AS2 2023 - Renewable Energy Technologies', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2023-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2023-AS%202%2C%20Renewable%20Energy%20Technologies-Paper.pdf' },
       ],
       2022: [
-        { title: "A-Level Environmental Technology AS1 2022 - Earth's Capacity to Support Human Activity", url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2022-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2022-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf' },
+        { title: "A-Level Environmental Technology AS1 2022 - Earth's Capacity to Support Human Activity", url: "https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2022-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2022-AS%201%2C%20The%20Earth%27s%20Capacity%20to%20Support%20Human%20Activity-Paper.pdf" },
         { title: 'A-Level Environmental Technology AS2 2022 - Renewable Energy Technologies', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Environmental%20Technology%20%282016%29/2022-Summer/Standard/0/GCE-Environmental%20Technology-495-Summer2022-AS%202%2C%20Renewable%20Energy%20Technologies-Paper.pdf' },
       ],
     },
@@ -365,17 +371,17 @@ const CCEA_PAPERS = {
     name: 'Health and Social Care',
     alevel: {
       2024: [
-        { title: 'A-Level Health & Social Care AS3 2024 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
-        { title: 'A-Level Health & Social Care A23 2024 - Providing Services', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-A2%203%2C%20Providing%20Services-Paper.pdf' },
-        { title: 'A-Level Health & Social Care A26 2024 - Understanding Human Behaviour', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-A2%206%2C%20Understanding%20Human%20Behaviour-Paper.pdf' },
+        { title: 'A-Level Health and Social Care AS3 2024 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
+        { title: 'A-Level Health and Social Care A23 2024 - Providing Services', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-A2%203%2C%20Providing%20Services-Paper.pdf' },
+        { title: 'A-Level Health and Social Care A26 2024 - Understanding Human Behaviour', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2024-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2024-A2%206%2C%20Understanding%20Human%20Behaviour-Paper.pdf' },
       ],
       2023: [
-        { title: 'A-Level Health & Social Care AS3 2023 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2023-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2023-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
-        { title: 'A-Level Health & Social Care A26 2023 - Understanding Human Behaviour', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2023-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2023-A2%206%2C%20Understanding%20Human%20Behaviour-Paper.pdf' },
+        { title: 'A-Level Health and Social Care AS3 2023 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2023-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2023-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
+        { title: 'A-Level Health and Social Care A26 2023 - Understanding Human Behaviour', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2023-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2023-A2%206%2C%20Understanding%20Human%20Behaviour-Paper.pdf' },
       ],
       2022: [
-        { title: 'A-Level Health & Social Care AS3 2022 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2022-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2022-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
-        { title: 'A-Level Health & Social Care AS5 2022 - Adult Service Users', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2022-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2022-AS%205%2C%20Adult%20Service%20Users-Paper.pdf' },
+        { title: 'A-Level Health and Social Care AS3 2022 - Health and Well-being', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2022-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2022-AS%203%2C%20Health%20and%20Well-being-Paper.pdf' },
+        { title: 'A-Level Health and Social Care AS5 2022 - Adult Service Users', url: 'https://ccea.org.uk/downloads/docs/Past-Papers/cleared/GCE/GCE%20Health%20and%20Social%20Care%20%282016%29/2022-Summer/Standard/0/GCE-Health%20and%20Social%20Care-523-Summer2022-AS%205%2C%20Adult%20Service%20Users-Paper.pdf' },
       ],
     },
   },
