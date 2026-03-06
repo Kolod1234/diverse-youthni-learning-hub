@@ -50,7 +50,7 @@ export default function Settings() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const userData = await [base44.auth.me](https://base44.auth.me)();
+        const userData = await [base44,auth.me](https://base44.auth.me)();
         setUser(userData);
         setFullName(userData.full_name || '');
         setAvatarUrl(userData.avatar || '');
