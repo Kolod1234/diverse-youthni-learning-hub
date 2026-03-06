@@ -20,7 +20,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
 
   const firstLesson = courseLessons[0];
   const lessonId = enrollment?.current_lesson_id || firstLesson?.id;
-  
+
   return (
     <motion.div
       initial={{ opacity: 0, x: -20 }}
@@ -41,7 +41,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
               </div>
             )}
           </div>
-          
+
           <div className="flex-1 p-5">
             <div className="flex items-start justify-between gap-4">
               <div className="flex-1">
@@ -56,27 +56,27 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
                 {Math.round(enrollment.progress_percent || 0)}%
               </span>
             </div>
-            
+
             <div className="mb-3">
-              <Progress 
-                value={enrollment.progress_percent || 0} 
+              <Progress
+                value={enrollment.progress_percent || 0}
                 className="h-2.5"
               />
             </div>
-            
+
             <div className="flex items-center justify-between">
               <div className="flex items-center gap-4 text-sm text-gray-500">
                 <span className="flex items-center gap-1">
                   <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  {(enrollment.completed_lessons?.length || 0)}/{courseLessons.length} lessons
+                  {([enrollment.com](https://enrollment.com)pleted_lessons?.length || 0)}/{courseLessons.length} lessons
                 </span>
                 <span className="flex items-center gap-1">
                   <Clock className="w-4 h-4" />
                   {Math.round((course.duration_hours || 0) * (1 - (enrollment.progress_percent || 0) / 100))}h left
                 </span>
               </div>
-              
-              {lessonsLoading ? (
+
+              {lessonsLoading && !enrollment?.current_lesson_id ? (
                 <Button size="sm" className="bg-gray-300 rounded-full" disabled>
                   <Play className="w-4 h-4 mr-1" />
                   Loading...
