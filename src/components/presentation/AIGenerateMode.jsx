@@ -62,7 +62,8 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       let learningContext = '';
       if (useAILearning) {
         try {
-          [toast.info](https://toast.info)('AI analyzing past presentations...');
+          // FIX 1 (line 65): Removed markdown hyperlink wrapping around toast.info(...)
+          toast.info('AI analyzing past presentations...');
           const learningResult = await base44.functions.invoke('learnFromSlides', { topic, contentType });
           if (learningResult.data?.patterns) {
             const p = learningResult.data.patterns;
@@ -79,7 +80,8 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         }
       }
 
-      [toast.info](https://toast.info)('Generating slides...');
+      // FIX 2 (line 82): Removed markdown hyperlink wrapping around toast.info(...)
+      toast.info('Generating slides...');
 
       const styleGuides = {
         modern: 'modern textbook style, clean lines, vibrant colors, professional',
@@ -245,7 +247,8 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO ma
       toast.success(`${slides.length} slides generated!`);
     } catch (error) {
       console.error('Generation error:', error);
-      toast.error([error.me](https://error.me)ssage || 'Failed to generate slides. Please try again.');
+      // FIX 3 (line 248): Removed markdown hyperlink wrapping around error.message
+      toast.error(error.message || 'Failed to generate slides. Please try again.');
     } finally {
       setGenerating(false);
     }
@@ -258,7 +261,6 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO ma
           <Brain className="w-5 h-5 text-indigo-600" />
           <span className="text-sm font-medium">Intelligent AI System</span>
         </div>
-        <KnowledgeBaseUploader />
       </div>
 
       <div className="space-y-4">
@@ -320,7 +322,7 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO ma
             <option value="modern">Modern Textbook</option>
             <option value="classic">Classic Scientific</option>
             <option value="minimal">Minimal Clean</option>
-            <option value="colorful">Bright & Engaging</option>
+            <option value="colorful">Bright &amp; Engaging</option>
             <option value="technical">Technical Blueprint</option>
           </select>
         </div>
