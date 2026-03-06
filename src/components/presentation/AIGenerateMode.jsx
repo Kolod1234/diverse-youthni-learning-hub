@@ -22,17 +22,36 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
   const [generating, setGenerating] = useState(false);
   const [useAILearning, setUseAILearning] = useState(true);
 
-  // FIX #3: Moved sanitizeSlideContent above generateSlides so it is defined
-  // before it is called. Arrow function (const) assignments are NOT hoisted,
-  // so calling them before their definition throws a ReferenceError at runtime.
   const sanitizeSlideContent = (html) => {
     if (!html) return '<ul><li>Content here</li></ul>';
-    // Wrap bare text in li if not already structured
-    if (!html.includes('<ul>') && !html.includes('<li>')) {
-      const lines = html.replace(/<[^>]+>/g, '').split('\n').filter(l => l.trim());
+
+    // Strip markdown code fences AI sometimes wraps content in
+    let clean = html
+      .replace(/```html\n?/gi, '')
+      .replace(/```\n?/gi, '')
+      .trim();
+
+    // If plain text with no HTML tags at all, convert lines to bullets
+    if (!clean.includes('<')) {
+      const lines = clean.split('\n').filter(l => l.trim());
       return '<ul>' + lines.slice(0, 5).map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
     }
-    return html;
+
+    // If it has <p> tags but no bullets, convert paragraphs to bullet points
+    if (!clean.includes('<ul>') && !clean.includes('<li>') && clean.includes('<p>')) {
+      const matches = [...clean.matchAll(/<p[^>]*>(.*?)<\/p>/gs)];
+      if (matches.length > 0) {
+        return '<ul>' + matches.slice(0, 5).map(m => `<li>${m[1].trim()}</li>`).join('') + '</ul>';
+      }
+    }
+
+    // If has no list structure at all, wrap lines in bullets
+    if (!clean.includes('<ul>') && !clean.includes('<li>')) {
+      const lines = clean.replace(/<[^>]+>/g, '').split('\n').filter(l => l.trim());
+      return '<ul>' + lines.slice(0, 5).map(l => `<li>${l.trim()}</li>`).join('') + '</ul>';
+    }
+
+    return clean;
   };
 
   const generateSlides = async () => {
@@ -43,8 +62,7 @@ export default function AIGenerateMode({ onSlidesGenerated }) {
       let learningContext = '';
       if (useAILearning) {
         try {
-          // FIX #1a: Removed Markdown link syntax — was [toast.info](https://toast.info)(...)
-          toast.info('AI analyzing past presentations...');
+          [toast.info](https://toast.info)('AI analyzing past presentations...');
           const learningResult = await base44.functions.invoke('learnFromSlides', { topic, contentType });
           if (learningResult.data?.patterns) {
             const p = learningResult.data.patterns;
@@ -61,8 +79,7 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
         }
       }
 
-      // FIX #1b: Removed Markdown link syntax — was [toast.info](https://toast.info)(...)
-      toast.info('Generating slides...');
+      [toast.info](https://toast.info)('Generating slides...');
 
       const styleGuides = {
         modern: 'modern textbook style, clean lines, vibrant colors, professional',
@@ -93,9 +110,10 @@ CRITICAL CONTENT RULES:
 2. Content per slide: MAXIMUM 5 bullet points. Each bullet point is ONE short sentence (max 12 words).
 3. Use LaTeX math notation wrapped in $...$ for ALL scientific formulas, equations and notation.
    Examples: $H_2SO_4$, $E = mc^2$, $\\frac{d}{dx}[x^n] = nx^{n-1}$, $\\sum_{i=1}^{n} x_i$
-4. Content HTML must use ONLY these tags: <ul>, <li>, <strong>, <em>. NO <p> tags, NO inline styles.
+4. Content HTML must use ONLY these tags: <ul>, <li>, <strong>, <em>. NO <p> tags, NO inline styles, NO markdown.
 5. Each <li> must be concise — one clear point per bullet.
-6. If contentType is "math" or "science", EVERY slide must include at least one LaTeX formula.
+6. NEVER wrap content in markdown code fences like backtick backtick backtick html — output raw HTML only.
+7. If contentType is "math" or "science", EVERY slide must include at least one LaTeX formula.
 
 SLIDE STRUCTURE — follow this exact pattern:
 - Slide 1: Title/Introduction slide (overview of topic)
@@ -126,7 +144,7 @@ LABELED ILLUSTRATION RULES (labeledIllustration field):
 
 ${includeSpeakerNotes ? 'Include speakerNotes for each slide (2-3 sentences for the presenter).' : ''}
 
-Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
+Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO markdown fences anywhere in the response.`;
 
       const jsonSchema = {
         type: 'object',
@@ -137,11 +155,11 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
               type: 'object',
               properties: {
                 title: { type: 'string' },
-                content: { 
+                content: {
                   type: 'string',
-                  description: 'HTML using ONLY <ul><li><strong><em> tags. Max 5 bullet points. Use $LaTeX$ for math/science formulas.'
+                  description: 'Raw HTML ONLY using <ul><li><strong><em> tags. Max 5 bullet points. NO markdown, NO code fences, NO backticks.'
                 },
-                diagramCode: { 
+                diagramCode: {
                   type: 'string',
                   description: 'RAW Mermaid.js syntax only. No backticks, no markdown fences.'
                 },
@@ -191,21 +209,18 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
         throw new Error('AI returned no slides. Please try again.');
       }
 
-      // Enforce slide count — trim or warn
       if (slides.length > slideCount) slides = slides.slice(0, slideCount);
 
       slides = slides.map((slide, idx) => ({
         ...slide,
         id: Date.now() + idx,
         order: idx + 1,
-        // Clean up any AI content that slipped through with wrong tags
         content: sanitizeSlideContent(slide.content),
         labeledIllustration: slide.labeledIllustration
           ? { ...slide.labeledIllustration, imageProvider }
           : undefined
       }));
 
-      // Track analytics
       if (useAILearning && slides.length > 0) {
         try {
           await Promise.all(slides.map(slide =>
@@ -213,8 +228,9 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
               slide_content: slide.content,
               slide_title: slide.title,
               topic,
-              visual_type: slide.diagramCode ? (slide.labeledIllustration ? 'both' : 'diagram') :
-                           (slide.labeledIllustration ? 'image' : 'none'),
+              visual_type: slide.diagramCode
+                ? (slide.labeledIllustration ? 'both' : 'diagram')
+                : (slide.labeledIllustration ? 'image' : 'none'),
               content_type: contentType,
               visual_style: visualStyle,
               success_score: 100
@@ -229,9 +245,7 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
       toast.success(`${slides.length} slides generated!`);
     } catch (error) {
       console.error('Generation error:', error);
-      // FIX #1c: Removed Markdown link corruption — was [error.me](https://error.me)ssage
-      // which split the word "message" and always fell through to the fallback string.
-      toast.error(error.message || 'Failed to generate slides. Please try again.');
+      toast.error([error.me](https://error.me)ssage || 'Failed to generate slides. Please try again.');
     } finally {
       setGenerating(false);
     }
@@ -312,12 +326,20 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
         </div>
 
         <div className="flex items-center space-x-2">
-          <Switch id="speaker-notes" checked={includeSpeakerNotes} onCheckedChange={setIncludeSpeakerNotes} />
+          <Switch
+            id="speaker-notes"
+            checked={includeSpeakerNotes}
+            onCheckedChange={setIncludeSpeakerNotes}
+          />
           <Label htmlFor="speaker-notes">Generate Speaker Notes</Label>
         </div>
 
         <div className="flex items-center space-x-2">
-          <Switch id="ai-learning" checked={useAILearning} onCheckedChange={setUseAILearning} />
+          <Switch
+            id="ai-learning"
+            checked={useAILearning}
+            onCheckedChange={setUseAILearning}
+          />
           <Label htmlFor="ai-learning" className="flex items-center gap-2">
             <Brain className="w-4 h-4" />
             Use AI Learning
@@ -400,9 +422,15 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides.`;
         disabled={generating}
       >
         {generating ? (
-          <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{useAILearning ? 'AI Learning & Generating...' : 'Generating...'}</>
+          <>
+            <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+            {useAILearning ? 'AI Learning & Generating...' : 'Generating...'}
+          </>
         ) : (
-          <>{useAILearning ? <Brain className="mr-2 h-4 w-4" /> : <Sparkles className="mr-2 h-4 w-4" />}Generate {useAILearning ? 'Intelligent ' : ''}Presentation</>
+          <>
+            {useAILearning ? <Brain className="mr-2 h-4 w-4" /> : <Sparkles className="mr-2 h-4 w-4" />}
+            Generate {useAILearning ? 'Intelligent ' : ''}Presentation
+          </>
         )}
       </Button>
     </div>
