@@ -44,7 +44,7 @@ export default function Settings() {
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const authMe = [base44.auth.me](https://base44.auth.me);
+        const authMe = base44.auth.me;
         const userData = await authMe();
         setUser(userData);
         setFullName(userData.full_name || '');
@@ -111,7 +111,7 @@ export default function Settings() {
   const handlePasswordChange = () => {
     if (newPassword !== confirmPassword) { toast.error('Passwords do not match'); return; }
     if (newPassword.length < 6) { toast.error('Password must be at least 6 characters'); return; }
-    [toast.info](https://toast.info)('Password change feature coming soon');
+    toast.info('Password change feature coming soon');
   };
 
   const handlePlayerPreferenceChange = (preference) => {
