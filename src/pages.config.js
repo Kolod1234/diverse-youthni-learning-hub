@@ -127,6 +127,7 @@ import Library from './pages/Library';
 import LiveSessionHost from './pages/LiveSessionHost';
 import MessageCenter from './pages/MessageCenter';
 import NotificationCenter from './pages/NotificationCenter';
+import PastPaperSolver from './pages/PastPaperSolver';
 import PathManager from './pages/PathManager';
 import PathwayManager from './pages/PathwayManager';
 import PersonalDashboard from './pages/PersonalDashboard';
