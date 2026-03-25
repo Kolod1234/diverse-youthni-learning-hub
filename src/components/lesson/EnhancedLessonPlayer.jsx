@@ -417,22 +417,24 @@ export default function EnhancedLessonPlayer({
 
 
         {/* Bottom Controls */}
-        <div className="bg-slate-900 border-t border-slate-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex gap-2">
+        <div className="bg-slate-900 border-t border-slate-700 px-6 py-4 flex items-center justify-between gap-3 flex-wrap">
+          <div className="flex gap-2 items-center">
             <button
               onClick={onPrev}
               disabled={!prevLesson}
-              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 transition flex items-center gap-2 text-sm"
+              className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-40 transition flex items-center gap-2 text-sm font-medium border border-slate-600"
+              title="Go to previous topic"
             >
               <ChevronLeft className="w-4 h-4" />
-              Previous
+              Prev Topic
             </button>
             <button
               onClick={onNext}
               disabled={!nextLesson}
-              className="px-4 py-2 rounded-lg bg-slate-800 hover:bg-slate-700 disabled:opacity-50 transition flex items-center gap-2 text-sm"
+              className="px-4 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600 disabled:opacity-40 transition flex items-center gap-2 text-sm font-medium"
+              title="Go to next topic"
             >
-              Next
+              Next Topic
               <ChevronRight className="w-4 h-4" />
             </button>
           </div>
