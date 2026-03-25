@@ -384,6 +384,10 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
                   <ListItemText primary="CCEA Past Papers" />
                 </MenuItem>
+                <MenuItem component={Link} to={createPageUrl('PastPaperSolver')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><BookOpen size={20} color="#4f46e5" /></ListItemIcon>
+                  <ListItemText primary="Past Paper Solver 🧠" />
+                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('Sessions')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><Video size={20} color="#dc2626" /></ListItemIcon>
                   <ListItemText primary="Live Sessions" />
