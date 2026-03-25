@@ -281,6 +281,18 @@ export default function LessonEditor() {
                 onChange={(e) => setLessonForm({ ...lessonForm, google_slides_url: e.target.value, content_type: 'googleslides' })}
               />
               <p className="text-xs text-gray-500 mt-2">Students will see your Google Slides embedded in the lesson player</p>
+              <div className="mt-3">
+                <Label>Total Slides (slide count in your presentation)</Label>
+                <Input
+                  type="number"
+                  min={1}
+                  placeholder="e.g. 43"
+                  value={lessonForm.total_slides || ''}
+                  onChange={(e) => setLessonForm({ ...lessonForm, total_slides: parseInt(e.target.value) || null })}
+                  className="max-w-xs mt-1"
+                />
+                <p className="text-xs text-gray-500 mt-1">Set this so the slide counter in the player shows the correct total (e.g. "8 / 43")</p>
+              </div>
             </div>
           </Card>
 
