@@ -1174,7 +1174,7 @@ export default function LessonPlayerClassic() {
                 <Box sx={{ my: { xs: 2, sm: 4 } }}>
                   <UniversalLessonPlayer
                     lesson={lesson}
-                    totalSlides={lesson.slides?.length || 20}
+                    totalSlides={lesson.total_slides || lesson.slides?.length || 50}
                     toggleFullscreen={toggleFullscreen}
                     isFullscreen={isFullscreen}
                   />
