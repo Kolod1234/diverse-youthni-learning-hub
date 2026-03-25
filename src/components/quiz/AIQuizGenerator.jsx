@@ -104,8 +104,12 @@ export default function AIQuizGenerator({ courses }) {
 
   const [includePastPapers, setIncludePastPapers] = useState(false);
   const [pastPaperSubject, setPastPaperSubject] = useState('');
-  const [pastPaperQualification, setPastPaperQualification] = useState('GCSE');
-  const [pastPaperExamBoard, setPastPaperExamBoard] = useState('CCEA');
+  const [pastPaperQualifications, setPastPaperQualifications] = useState([]);
+  const [pastPaperExamBoards, setPastPaperExamBoards] = useState([]);
+  const [pastPaperYearFrom, setPastPaperYearFrom] = useState('');
+  const [pastPaperYearTo, setPastPaperYearTo] = useState('');
+  const [pastPaperQuestionNumber, setPastPaperQuestionNumber] = useState('');
+  const [pastPaperKeyword, setPastPaperKeyword] = useState('');
 
   const queryClient = useQueryClient();
 
