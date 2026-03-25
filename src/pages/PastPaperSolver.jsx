@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { base44 } from "@/api/base44Client";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
 import {
@@ -8,10 +8,16 @@ import {
 import ReactMarkdown from "react-markdown";
 
 const mathJaxConfig = {
-  loader: { load: ["input/tex", "output/chtml"] },
+  loader: { load: ["[tex]/ams", "input/tex", "output/chtml"] },
   tex: {
+    packages: { "[+]": ["ams"] },
     inlineMath: [["$", "$"], ["\\(", "\\)"]],
     displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+    processEscapes: true,
+    processEnvironments: true,
+  },
+  options: {
+    skipHtmlTags: ["script", "noscript", "style", "textarea", "pre"],
   },
 };
 
@@ -29,30 +35,105 @@ const SOLUTION_MODES = [
 ];
 
 const modeInstructions = {
-  full: `Provide a COMPLETE step-by-step worked solution. Number every step clearly. State the final answer prominently in bold. Use LaTeX for all mathematical expressions ($...$  for inline, $$...$$ for display). Format like a top-grade student's model answer.`,
-  hint: `Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Do NOT give the full answer or reveal the method entirely.`,
-  mark_scheme: `Write the answer as an examiner's mark scheme. Use bullet points. Each bullet = 1 mark awarded. Append [1] after each mark point. Include "accept" alternatives. End with "Total: X marks".`,
-  explain: `Explain the CONCEPT or SKILL being tested in plain, clear English suitable for a student. Use analogies where helpful. Then briefly show how it applies to this specific question. Minimise heavy notation.`,
+  full: `You are a friendly, encouraging GCSE tutor helping a 14–16 year old student understand this problem.
+
+IMPORTANT RULES FOR YOUR RESPONSE:
+1. Start with a short "What this question is asking" summary in 1–2 plain English sentences.
+2. Then show a COMPLETE step-by-step worked solution. Number EVERY step (Step 1, Step 2, etc.).
+3. After EACH step, write a short plain-English explanation in brackets like: *(This is because we need to convert km to m first)*
+4. State the FINAL ANSWER clearly on its own line, in bold, with the correct units.
+5. End with a "Key things to remember" section with 2–3 bullet points of tips.
+
+MATHS FORMATTING — THIS IS CRITICAL:
+- Use LaTeX for EVERY mathematical expression without exception.
+- Inline expressions: $expression$ — e.g. $x = 5$, $v = 30 \\text{ m/s}$
+- Display (standalone) equations: $$expression$$ on their own line
+- Write fractions as \\frac{numerator}{denominator} — e.g. $$\\frac{120}{1.5} = 80$$
+- Powers/indices: x^{2}, x^{3}, 10^{-3}
+- Square roots: \\sqrt{x}
+- Multiplication dot: \\times
+- Division: \\div or \\frac{}{}
+- Units always inside \\text{}: $30 \\text{ m/s}$, $5 \\text{ kg}$, $100 \\text{ cm}^2$
+- Subscripts: $v_1$, $T_1$, $H_2O$
+- Greek letters: \\alpha, \\beta, \\theta, \\pi, \\Delta, \\lambda
+- Do NOT write maths as plain text. Never write "x^2" without dollar signs.`,
+
+  hint: `You are a friendly GCSE tutor. Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Use simple, encouraging language suitable for a 14–16 year old. Do NOT give the full answer.
+
+For any maths in your hint, use LaTeX: inline $...$ or display $$...$$.`,
+
+  mark_scheme: `You are writing an examiner's mark scheme for this GCSE question.
+
+Format exactly like this:
+- Use bullet points, one per mark point
+- Each bullet ends with [1] to show it's worth 1 mark
+- Include "accept" alternatives where relevant
+- Use LaTeX for all maths: inline $...$ or display $$...$$
+- End with **Total: X marks**
+
+Keep language precise and examiner-appropriate.`,
+
+  explain: `You are a friendly GCSE tutor explaining a concept to a 14–16 year old.
+
+IMPORTANT RULES:
+1. Start with: "The BIG idea here is..." and explain in plain English.
+2. Use a real-life analogy or example to make it click.
+3. Show how the concept applies to this specific question.
+4. End with: "Top tip:" — one sentence exam technique advice.
+
+For any maths expressions, use LaTeX: inline $...$ or display $$...$$.
+Avoid jargon. Be warm, clear and encouraging.`,
 };
 
-function AnswerBlock({ text }) {
+// Strip any raw "```" code fences the model sometimes wraps around LaTeX
+function cleanMathText(text) {
+  if (!text) return "";
+  // Remove markdown code fences that sometimes wrap equations
+  return text
+    .replace(/```(?:latex|math)?\n?([\s\S]*?)```/g, "$1")
+    .replace(/`([^`]+)`/g, (_, inner) => {
+      // If the inner content looks like maths, wrap in inline LaTeX
+      if (/[=+\-*/^\\{}]/.test(inner)) return `$${inner}$`;
+      return `\`${inner}\``;
+    });
+}
+
+function AnswerBlock({ text, key: _key }) {
+  const cleaned = cleanMathText(text);
   return (
-    <MathJax>
-      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed">
+    <MathJax key={_key} dynamic>
+      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed text-base">
         <ReactMarkdown
           components={{
-            p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
+            p: ({ children }) => <p className="mb-4 leading-loose text-gray-800">{children}</p>,
             strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
-            ul: ({ children }) => <ul className="list-disc ml-5 mb-3 space-y-1">{children}</ul>,
-            ol: ({ children }) => <ol className="list-decimal ml-5 mb-3 space-y-1">{children}</ol>,
-            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
-            h2: ({ children }) => <h2 className="text-base font-bold mt-4 mb-2 text-gray-900">{children}</h2>,
-            h3: ({ children }) => <h3 className="text-sm font-bold mt-3 mb-1 text-gray-800">{children}</h3>,
-            code: ({ children }) => <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
-            blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-300 pl-4 italic text-gray-600 my-3">{children}</blockquote>,
+            em: ({ children }) => <em className="italic text-gray-700">{children}</em>,
+            ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-3">{children}</ol>,
+            li: ({ children }) => <li className="leading-loose text-gray-800">{children}</li>,
+            h2: ({ children }) => (
+              <h2 className="text-base font-bold mt-6 mb-2 text-indigo-800 border-b border-indigo-100 pb-1">{children}</h2>
+            ),
+            h3: ({ children }) => (
+              <h3 className="text-sm font-bold mt-4 mb-1 text-gray-800">{children}</h3>
+            ),
+            code: ({ inline, children }) =>
+              inline ? (
+                <code className="bg-amber-50 border border-amber-200 px-1.5 py-0.5 rounded text-sm font-mono text-amber-800">{children}</code>
+              ) : (
+                <pre className="bg-gray-50 border border-gray-200 rounded-xl p-4 overflow-x-auto text-sm font-mono my-3">
+                  <code>{children}</code>
+                </pre>
+              ),
+            blockquote: ({ children }) => (
+              <blockquote className="border-l-4 border-green-400 bg-green-50 pl-4 pr-3 py-2 rounded-r-xl text-gray-700 my-4 italic">
+                {children}
+              </blockquote>
+            ),
+            hr: () => <hr className="border-gray-200 my-4" />,
           }}
         >
-          {text}
+          {cleaned}
         </ReactMarkdown>
       </div>
     </MathJax>
@@ -71,15 +152,16 @@ export default function PastPaperSolver() {
   const [showHistory, setShowHistory] = useState(false);
   const [followUp, setFollowUp] = useState("");
   const [followUpSolving, setFollowUpSolving] = useState(false);
+  const [answerKey, setAnswerKey] = useState(0);
 
   // File / image upload state
-  const [uploadedFile, setUploadedFile] = useState(null); // { name, url, type: 'image'|'pdf'|'doc' }
+  const [uploadedFile, setUploadedFile] = useState(null);
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState("");
 
   // Full-paper mode
   const [fullPaperSolving, setFullPaperSolving] = useState(false);
-  const [paperSolutions, setPaperSolutions] = useState(null); // array of { question, answer }
+  const [paperSolutions, setPaperSolutions] = useState(null);
 
   const imageInputRef = useRef();
   const fileInputRef = useRef();
@@ -123,19 +205,21 @@ export default function PastPaperSolver() {
   // ── Build prompt ───────────────────────────────────────────────────────────
 
   const buildPrompt = (question, fileAttached, followUpQ = null) => {
-    const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""}.` : "";
+    const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""} — calibrate the depth of your answer accordingly.` : "";
 
     if (followUpQ) {
-      return `${followUpQ}
+      return `A GCSE student is asking a follow-up question about their homework. Answer clearly and simply for a 14–16 year old.
+
+Follow-up question: ${followUpQ}
 
 Context — the original question was:
 ${question}
 ${fileAttached ? "[An image/file of the question was also provided]" : ""}
 
-Continue helping the student with the follow-up. Be clear, educational, and concise.`;
+Be encouraging, clear, and use LaTeX for any maths ($...$ inline, $$...$$ for display equations). Explain WHY as well as HOW.`;
     }
 
-    return `You are an expert ${qualification} ${subject} examiner and tutor.
+    return `You are an expert, friendly ${qualification} ${subject} tutor helping a student aged 14–16.
 
 Subject: ${subject}
 Qualification: ${qualification}${marksLine}
@@ -146,11 +230,11 @@ ${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper
 
 ${modeInstructions[mode]}
 
-Formatting rules:
-- Use Markdown (bold, bullet points, numbered lists, headings).
-- Use LaTeX for ALL mathematical expressions: $...$ inline, $$...$$ for display equations.
-- Do NOT use raw Unicode maths symbols — wrap everything in LaTeX.
-- Keep language accessible to a ${qualification} student.`;
+CRITICAL FORMATTING REMINDER:
+- EVERY number, variable, formula, equation, unit MUST be in LaTeX.
+- Inline: $x = 5$, $F = ma$, $v = 30 \\text{ m/s}$
+- Display: $$v = \\frac{d}{t}$$ (on its own line)
+- NEVER write raw maths outside dollar signs. e.g. write $x^2$ not x^2, write $\\frac{1}{2}$ not 1/2.`;
   };
 
   // ── Solve single question ──────────────────────────────────────────────────
@@ -171,6 +255,7 @@ Formatting rules:
       });
 
       const answerText = typeof response === "string" ? response : response?.text || JSON.stringify(response);
+      const newKey = Date.now();
 
       const sol = {
         question: questionText,
@@ -180,10 +265,12 @@ Formatting rules:
         marks,
         mode,
         answer: answerText,
+        answerKey: newKey,
         followUps: [],
         timestamp: new Date().toLocaleTimeString(),
       };
       setSolution(sol);
+      setAnswerKey(newKey);
       setHistory((prev) => [sol, ...prev.slice(0, 9)]);
     } catch {
       alert("Failed to solve. Please try again.");
@@ -201,14 +288,13 @@ Formatting rules:
     setSolution(null);
 
     try {
-      // Step 1: Extract all questions from the paper
       const extractPrompt = `You are an expert ${qualification} ${subject} examiner.
 
-The attached file is a ${qualification} ${subject} past paper (it may be a question paper or mark scheme).
+The attached file is a ${qualification} ${subject} past paper.
 
 Extract EVERY question and sub-question from the document (e.g. 1, 1a, 1b, 2, 2a, 2(i), etc.).
 For each question include:
-- number: the question number/label as a string (e.g. "1", "2a", "3(i)")
+- number: the question number/label as a string
 - text: the full question text exactly as written
 - marks: the number of marks awarded (integer), or null if not shown
 
@@ -242,17 +328,16 @@ Return the result as a JSON object with a single key "questions" containing an a
         return;
       }
 
-      // Step 2: Solve each question
       const results = [];
       for (const q of questions) {
-        const prompt = `You are an expert ${qualification} ${subject} tutor.
+        const prompt = `You are a friendly, expert ${qualification} ${subject} tutor helping a student aged 14–16.
 
 Question ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}:
 ${q.text}
 
 ${modeInstructions[mode]}
 
-Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.`;
+CRITICAL: Use LaTeX for ALL maths — inline $...$ and display $$...$$.`;
 
         const ans = await base44.integrations.Core.InvokeLLM({
           prompt,
@@ -264,6 +349,7 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
           text: q.text,
           marks: q.marks,
           answer: typeof ans === "string" ? ans : ans?.text || "",
+          answerKey: Date.now() + Math.random(),
         });
       }
 
@@ -284,9 +370,10 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
       const prompt = buildPrompt(solution.question, !!solution.uploadedFile, followUp);
       const response = await base44.integrations.Core.InvokeLLM({ prompt, model: "claude_sonnet_4_6" });
       const answer = typeof response === "string" ? response : response?.text || JSON.stringify(response);
+      const fuKey = Date.now();
       setSolution((prev) => ({
         ...prev,
-        followUps: [...(prev.followUps || []), { question: followUp, answer }],
+        followUps: [...(prev.followUps || []), { question: followUp, answer, answerKey: fuKey }],
       }));
       setFollowUp("");
     } catch {
@@ -317,7 +404,7 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
             <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">🧠</div>
             <div>
               <h1 className="text-2xl font-bold">Past Paper AI Solver</h1>
-              <p className="text-blue-200 text-sm mt-0.5">Upload a past paper or type a question — powered by Claude AI</p>
+              <p className="text-blue-200 text-sm mt-0.5">Upload a past paper or type a question — step-by-step explanations, powered by AI</p>
             </div>
           </div>
         </div>
@@ -377,7 +464,6 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
                 </div>
               ) : (
                 <div className="grid grid-cols-2 gap-3">
-                  {/* Image upload */}
                   <button
                     onClick={() => imageInputRef.current?.click()}
                     disabled={uploading}
@@ -387,7 +473,6 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
                     <span className="text-xs font-medium">{uploading ? uploadProgress : "Photo / Screenshot"}</span>
                     <span className="text-xs text-gray-400">JPG, PNG, WEBP</span>
                   </button>
-                  {/* PDF/Doc upload */}
                   <button
                     onClick={() => fileInputRef.current?.click()}
                     disabled={uploading}
@@ -486,7 +571,7 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
               <div className="flex items-center gap-2 px-1">
                 <Sparkles className="w-5 h-5 text-purple-600" />
                 <h2 className="font-bold text-gray-800 text-lg">Full Paper Solutions</h2>
-                <span className="ml-auto text-xs text-gray-500 bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
+                <span className="ml-auto text-xs bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
               </div>
               {paperSolutions.map((q, i) => (
                 <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
@@ -495,9 +580,9 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
                     {q.marks && <span className="text-purple-100 text-xs">{q.marks} marks</span>}
                     <p className="text-white text-sm line-clamp-1 flex-1">{q.text}</p>
                   </div>
-                  <div className="px-6 py-4">
+                  <div className="px-6 py-5">
                     <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Solution</p>
-                    <AnswerBlock text={q.answer} />
+                    <AnswerBlock text={q.answer} key={q.answerKey} />
                   </div>
                 </div>
               ))}
@@ -536,21 +621,21 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
 
               {/* Answer */}
               <div className="px-6 py-5">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">AI Answer</p>
-                <AnswerBlock text={solution.answer} />
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-4">AI Explanation</p>
+                <AnswerBlock text={solution.answer} key={solution.answerKey} />
               </div>
 
               {/* Follow-up Q&As */}
               {solution.followUps?.length > 0 && (
-                <div className="border-t border-gray-100 px-6 py-4 space-y-4">
+                <div className="border-t border-gray-100 px-6 py-4 space-y-5">
                   {solution.followUps.map((fu, i) => (
                     <div key={i}>
-                      <div className="flex items-start gap-2 mb-2">
-                        <span className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 font-medium shrink-0">You</span>
+                      <div className="flex items-start gap-2 mb-3">
+                        <span className="text-xs bg-blue-100 text-blue-700 rounded-full px-2 py-0.5 font-medium shrink-0 mt-0.5">You</span>
                         <p className="text-sm text-gray-700">{fu.question}</p>
                       </div>
-                      <div className="bg-indigo-50 rounded-xl px-4 py-3">
-                        <AnswerBlock text={fu.answer} />
+                      <div className="bg-indigo-50 rounded-xl px-5 py-4 border border-indigo-100">
+                        <AnswerBlock text={fu.answer} key={fu.answerKey} />
                       </div>
                     </div>
                   ))}
@@ -558,15 +643,15 @@ Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.
               )}
 
               {/* Follow-up input */}
-              <div className="border-t border-gray-100 px-6 py-4">
-                <p className="text-xs text-gray-500 mb-2">Still confused? Ask a follow-up question…</p>
+              <div className="border-t border-gray-100 px-6 py-4 bg-gray-50">
+                <p className="text-xs font-semibold text-gray-500 mb-2">💬 Still confused? Ask a follow-up question…</p>
                 <div className="flex gap-2">
                   <input
                     type="text" value={followUp}
                     onChange={(e) => setFollowUp(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && askFollowUp()}
                     placeholder="e.g. Why do we divide by 1000 here?"
-                    className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    className="flex-1 border border-gray-200 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white"
                     disabled={followUpSolving}
                   />
                   <button
