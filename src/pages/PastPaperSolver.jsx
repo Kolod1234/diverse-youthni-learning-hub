@@ -1,11 +1,18 @@
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
-import { Loader2, Upload, Send, RotateCcw, BookOpen, Lightbulb, CheckCircle, ChevronDown, ChevronUp, Camera } from "lucide-react";
+import {
+  Loader2, Send, RotateCcw, BookOpen, Lightbulb, CheckCircle,
+  ChevronDown, ChevronUp, FileText, ImageIcon, X, Upload, Sparkles, Brain
+} from "lucide-react";
+import ReactMarkdown from "react-markdown";
 
 const mathJaxConfig = {
   loader: { load: ["input/tex", "output/chtml"] },
-  tex: { inlineMath: [["$", "$"], ["\\(", "\\)"]], displayMath: [["$$", "$$"], ["\\[", "\\]"]] },
+  tex: {
+    inlineMath: [["$", "$"], ["\\(", "\\)"]],
+    displayMath: [["$$", "$$"], ["\\[", "\\]"]],
+  },
 };
 
 const SUBJECTS = [
@@ -15,52 +22,107 @@ const SUBJECTS = [
 ];
 
 const SOLUTION_MODES = [
-  { id: "full", label: "Full Solution", desc: "Complete step-by-step worked answer" },
-  { id: "hint", label: "Hint Only", desc: "A nudge to get you started" },
-  { id: "mark_scheme", label: "Mark Scheme Style", desc: "Bullet points like an examiner would award" },
-  { id: "explain", label: "Explain Concept", desc: "Teach the underlying idea in plain English" },
+  { id: "full", label: "Full Solution", desc: "Complete step-by-step worked answer", emoji: "📝" },
+  { id: "hint", label: "Hint Only", desc: "A nudge to get you started", emoji: "💡" },
+  { id: "mark_scheme", label: "Mark Scheme", desc: "Examiner-style bullet points", emoji: "✅" },
+  { id: "explain", label: "Explain Concept", desc: "Plain English explanation", emoji: "🎓" },
 ];
+
+const modeInstructions = {
+  full: `Provide a COMPLETE step-by-step worked solution. Number every step clearly. State the final answer prominently in bold. Use LaTeX for all mathematical expressions ($...$  for inline, $$...$$ for display). Format like a top-grade student's model answer.`,
+  hint: `Give ONLY a helpful hint (2–3 sentences) pointing the student in the right direction WITHOUT solving it. Do NOT give the full answer or reveal the method entirely.`,
+  mark_scheme: `Write the answer as an examiner's mark scheme. Use bullet points. Each bullet = 1 mark awarded. Append [1] after each mark point. Include "accept" alternatives. End with "Total: X marks".`,
+  explain: `Explain the CONCEPT or SKILL being tested in plain, clear English suitable for a student. Use analogies where helpful. Then briefly show how it applies to this specific question. Minimise heavy notation.`,
+};
+
+function AnswerBlock({ text }) {
+  return (
+    <MathJax>
+      <div className="prose prose-sm max-w-none text-gray-800 leading-relaxed">
+        <ReactMarkdown
+          components={{
+            p: ({ children }) => <p className="mb-3 leading-relaxed">{children}</p>,
+            strong: ({ children }) => <strong className="font-bold text-gray-900">{children}</strong>,
+            ul: ({ children }) => <ul className="list-disc ml-5 mb-3 space-y-1">{children}</ul>,
+            ol: ({ children }) => <ol className="list-decimal ml-5 mb-3 space-y-1">{children}</ol>,
+            li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+            h2: ({ children }) => <h2 className="text-base font-bold mt-4 mb-2 text-gray-900">{children}</h2>,
+            h3: ({ children }) => <h3 className="text-sm font-bold mt-3 mb-1 text-gray-800">{children}</h3>,
+            code: ({ children }) => <code className="bg-gray-100 px-1.5 py-0.5 rounded text-xs font-mono">{children}</code>,
+            blockquote: ({ children }) => <blockquote className="border-l-4 border-blue-300 pl-4 italic text-gray-600 my-3">{children}</blockquote>,
+          }}
+        >
+          {text}
+        </ReactMarkdown>
+      </div>
+    </MathJax>
+  );
+}
 
 export default function PastPaperSolver() {
   const [subject, setSubject] = useState("Mathematics");
   const [qualification, setQualification] = useState("GCSE");
   const [questionText, setQuestionText] = useState("");
-  const [imageUrl, setImageUrl] = useState(null);
-  const [imagePreview, setImagePreview] = useState(null);
   const [mode, setMode] = useState("full");
   const [marks, setMarks] = useState("");
   const [solving, setSolving] = useState(false);
-  const [uploading, setUploading] = useState(false);
   const [solution, setSolution] = useState(null);
   const [history, setHistory] = useState([]);
   const [showHistory, setShowHistory] = useState(false);
   const [followUp, setFollowUp] = useState("");
   const [followUpSolving, setFollowUpSolving] = useState(false);
+
+  // File / image upload state
+  const [uploadedFile, setUploadedFile] = useState(null); // { name, url, type: 'image'|'pdf'|'doc' }
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState("");
+
+  // Full-paper mode
+  const [fullPaperSolving, setFullPaperSolving] = useState(false);
+  const [paperSolutions, setPaperSolutions] = useState(null); // array of { question, answer }
+
+  const imageInputRef = useRef();
   const fileInputRef = useRef();
+
+  // ── Upload handlers ────────────────────────────────────────────────────────
 
   const handleImageUpload = async (file) => {
     if (!file) return;
     setUploading(true);
+    setUploadProgress("Uploading image…");
     try {
-      const preview = URL.createObjectURL(file);
-      setImagePreview(preview);
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setImageUrl(file_url);
+      setUploadedFile({ name: file.name, url: file_url, type: "image", preview: URL.createObjectURL(file) });
     } catch {
-      alert("Failed to upload image. Please try again.");
+      alert("Image upload failed. Please try again.");
     } finally {
       setUploading(false);
+      setUploadProgress("");
     }
   };
 
-  const buildPrompt = (question, img, followUpQ = null) => {
-    const modeInstructions = {
-      full: `Provide a COMPLETE step-by-step worked solution. Show ALL working clearly numbered. State the final answer prominently. Use LaTeX for all maths ($...$). Lay out like an A-grade student's model answer.`,
-      hint: `Give ONLY a helpful hint (2-3 sentences max) that points the student in the right direction WITHOUT solving it for them. Do not give the full answer.`,
-      mark_scheme: `Write the answer as a mark scheme. Use bullet points. Each point = 1 mark. Mark with [1] at the end of each marking point. Include "accept" alternatives where relevant. Final line: "Total: X marks".`,
-      explain: `Explain the CONCEPT or SKILL being tested in plain, simple English. Use an analogy if helpful. Then briefly show how it applies to this specific question. Avoid heavy notation unless essential.`,
-    };
+  const handleDocUpload = async (file) => {
+    if (!file) return;
+    const ext = file.name.split(".").pop().toLowerCase();
+    const type = ext === "pdf" ? "pdf" : ["doc", "docx"].includes(ext) ? "doc" : "other";
+    setUploading(true);
+    setUploadProgress("Uploading file…");
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setUploadedFile({ name: file.name, url: file_url, type, preview: null });
+    } catch {
+      alert("File upload failed. Please try again.");
+    } finally {
+      setUploading(false);
+      setUploadProgress("");
+    }
+  };
 
+  const removeFile = () => setUploadedFile(null);
+
+  // ── Build prompt ───────────────────────────────────────────────────────────
+
+  const buildPrompt = (question, fileAttached, followUpQ = null) => {
     const marksLine = marks ? `\nThis question is worth ${marks} mark${marks !== "1" ? "s" : ""}.` : "";
 
     if (followUpQ) {
@@ -68,61 +130,163 @@ export default function PastPaperSolver() {
 
 Context — the original question was:
 ${question}
-${img ? "[An image of the question was also provided]" : ""}
+${fileAttached ? "[An image/file of the question was also provided]" : ""}
 
-Continue to assist the student with the above follow-up question. Be clear and educational.`;
+Continue helping the student with the follow-up. Be clear, educational, and concise.`;
     }
 
-    return `You are an expert ${qualification} ${subject} tutor. A student needs help with the following past paper question.
+    return `You are an expert ${qualification} ${subject} examiner and tutor.
 
 Subject: ${subject}
 Qualification: ${qualification}${marksLine}
 
-QUESTION:
+STUDENT QUESTION:
 ${question}
-${img ? "[See the attached image for diagrams/figures]" : ""}
+${fileAttached ? "[See the attached file/image for diagrams, graphs or the paper itself]" : ""}
 
 ${modeInstructions[mode]}
 
-Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for display maths. Keep the explanation student-friendly.`;
+Formatting rules:
+- Use Markdown (bold, bullet points, numbered lists, headings).
+- Use LaTeX for ALL mathematical expressions: $...$ inline, $$...$$ for display equations.
+- Do NOT use raw Unicode maths symbols — wrap everything in LaTeX.
+- Keep language accessible to a ${qualification} student.`;
   };
 
+  // ── Solve single question ──────────────────────────────────────────────────
+
   const solve = async () => {
-    if (!questionText.trim() && !imageUrl) return;
+    if (!questionText.trim() && !uploadedFile) return;
     setSolving(true);
     setSolution(null);
+    setPaperSolutions(null);
     try {
-      const prompt = buildPrompt(questionText, imageUrl);
+      const prompt = buildPrompt(questionText, !!uploadedFile);
+      const file_urls = uploadedFile ? [uploadedFile.url] : undefined;
+
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
-        file_urls: imageUrl ? [imageUrl] : undefined,
+        file_urls,
+        model: "claude_sonnet_4_6",
       });
+
+      const answerText = typeof response === "string" ? response : response?.text || JSON.stringify(response);
+
       const sol = {
         question: questionText,
-        imagePreview,
+        uploadedFile,
         subject,
         qualification,
         marks,
         mode,
-        answer: typeof response === "string" ? response : response?.text || JSON.stringify(response),
+        answer: answerText,
         followUps: [],
         timestamp: new Date().toLocaleTimeString(),
       };
       setSolution(sol);
       setHistory((prev) => [sol, ...prev.slice(0, 9)]);
-    } catch (e) {
+    } catch {
       alert("Failed to solve. Please try again.");
     } finally {
       setSolving(false);
     }
   };
 
+  // ── Solve full paper ───────────────────────────────────────────────────────
+
+  const solveFullPaper = async () => {
+    if (!uploadedFile) return;
+    setFullPaperSolving(true);
+    setPaperSolutions(null);
+    setSolution(null);
+
+    try {
+      // Step 1: Extract all questions from the paper
+      const extractPrompt = `You are an expert ${qualification} ${subject} examiner.
+
+The attached file is a ${qualification} ${subject} past paper.
+
+Your task:
+1. Extract EVERY question from the paper (including sub-questions like a, b, c, i, ii, etc.).
+2. Return them as a JSON array of objects with keys: "number" (e.g. "1a"), "text" (full question text), "marks" (integer or null).
+
+Return ONLY valid JSON. No prose before or after.
+
+Example:
+[
+  {"number": "1a", "text": "Calculate the speed of the car given...", "marks": 3},
+  {"number": "1b", "text": "Explain why...", "marks": 4}
+]`;
+
+      const extracted = await base44.integrations.Core.InvokeLLM({
+        prompt: extractPrompt,
+        file_urls: [uploadedFile.url],
+        model: "claude_sonnet_4_6",
+        response_json_schema: {
+          type: "object",
+          properties: {
+            questions: {
+              type: "array",
+              items: {
+                type: "object",
+                properties: {
+                  number: { type: "string" },
+                  text: { type: "string" },
+                  marks: { type: "number" },
+                },
+              },
+            },
+          },
+        },
+      });
+
+      const questions = extracted?.questions || [];
+      if (!questions.length) {
+        alert("Could not extract questions from the file. Try uploading a clearer image or PDF.");
+        return;
+      }
+
+      // Step 2: Solve each question
+      const results = [];
+      for (const q of questions) {
+        const prompt = `You are an expert ${qualification} ${subject} tutor.
+
+Question ${q.number}${q.marks ? ` [${q.marks} marks]` : ""}:
+${q.text}
+
+${modeInstructions[mode]}
+
+Use Markdown and LaTeX ($...$ inline, $$...$$ display). Be thorough but focused.`;
+
+        const ans = await base44.integrations.Core.InvokeLLM({
+          prompt,
+          model: "claude_sonnet_4_6",
+        });
+
+        results.push({
+          number: q.number,
+          text: q.text,
+          marks: q.marks,
+          answer: typeof ans === "string" ? ans : ans?.text || "",
+        });
+      }
+
+      setPaperSolutions(results);
+    } catch (e) {
+      alert("Failed to solve paper: " + (e?.message || "Unknown error"));
+    } finally {
+      setFullPaperSolving(false);
+    }
+  };
+
+  // ── Follow-up ──────────────────────────────────────────────────────────────
+
   const askFollowUp = async () => {
     if (!followUp.trim() || !solution) return;
     setFollowUpSolving(true);
     try {
-      const prompt = buildPrompt(solution.question, solution.imagePreview, followUp);
-      const response = await base44.integrations.Core.InvokeLLM({ prompt });
+      const prompt = buildPrompt(solution.question, !!solution.uploadedFile, followUp);
+      const response = await base44.integrations.Core.InvokeLLM({ prompt, model: "claude_sonnet_4_6" });
       const answer = typeof response === "string" ? response : response?.text || JSON.stringify(response);
       setSolution((prev) => ({
         ...prev,
@@ -138,12 +302,14 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
 
   const reset = () => {
     setQuestionText("");
-    setImageUrl(null);
-    setImagePreview(null);
+    setUploadedFile(null);
     setSolution(null);
+    setPaperSolutions(null);
     setFollowUp("");
     setMarks("");
   };
+
+  const hasInput = questionText.trim() || uploadedFile;
 
   return (
     <MathJaxContext config={mathJaxConfig}>
@@ -151,22 +317,23 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
 
         {/* Header */}
         <div className="bg-gradient-to-r from-blue-900 via-indigo-800 to-purple-800 text-white py-10 px-6">
-          <div className="max-w-4xl mx-auto">
-            <div className="flex items-center gap-4 mb-2">
-              <div className="w-12 h-12 bg-white/20 rounded-2xl flex items-center justify-center text-2xl">🧠</div>
-              <div>
-                <h1 className="text-2xl font-bold">GCSE Past Paper Solver</h1>
-                <p className="text-blue-200 text-sm">Type or photograph any past paper question — get instant AI help</p>
-              </div>
+          <div className="max-w-4xl mx-auto flex items-center gap-4">
+            <div className="w-14 h-14 bg-white/20 rounded-2xl flex items-center justify-center text-3xl">🧠</div>
+            <div>
+              <h1 className="text-2xl font-bold">Past Paper AI Solver</h1>
+              <p className="text-blue-200 text-sm mt-0.5">Upload a past paper or type a question — powered by Claude AI</p>
             </div>
           </div>
         </div>
 
         <div className="max-w-4xl mx-auto px-4 py-8 space-y-6">
 
-          {/* Input Card */}
+          {/* ── Input Card ── */}
           <div className="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 space-y-5">
-            <h2 className="font-semibold text-gray-800 text-lg">Your Question</h2>
+            <div className="flex items-center gap-2">
+              <Brain className="w-5 h-5 text-indigo-600" />
+              <h2 className="font-semibold text-gray-800 text-lg">Your Question</h2>
+            </div>
 
             {/* Subject & Qualification */}
             <div className="grid grid-cols-2 gap-4">
@@ -192,79 +359,90 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
               </div>
             </div>
 
+            {/* ── Upload Zone ── */}
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-2">Upload Paper or Image</label>
+              {uploadedFile ? (
+                <div className="flex items-center gap-3 p-3 bg-blue-50 border border-blue-200 rounded-xl">
+                  {uploadedFile.type === "image" && uploadedFile.preview ? (
+                    <img src={uploadedFile.preview} alt="Uploaded" className="h-16 w-24 object-cover rounded-lg border border-blue-200" />
+                  ) : (
+                    <div className="h-12 w-12 bg-red-100 rounded-lg flex items-center justify-center">
+                      <FileText className="w-6 h-6 text-red-500" />
+                    </div>
+                  )}
+                  <div className="flex-1 min-w-0">
+                    <p className="text-sm font-medium text-gray-800 truncate">{uploadedFile.name}</p>
+                    <p className="text-xs text-gray-500 capitalize">{uploadedFile.type} file uploaded ✓</p>
+                  </div>
+                  <button onClick={removeFile} className="p-1.5 rounded-full hover:bg-red-100 text-red-500 transition-all">
+                    <X className="w-4 h-4" />
+                  </button>
+                </div>
+              ) : (
+                <div className="grid grid-cols-2 gap-3">
+                  {/* Image upload */}
+                  <button
+                    onClick={() => imageInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-indigo-300 rounded-xl text-indigo-600 hover:bg-indigo-50 transition-all disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <ImageIcon className="w-6 h-6" />}
+                    <span className="text-xs font-medium">{uploading ? uploadProgress : "Photo / Screenshot"}</span>
+                    <span className="text-xs text-gray-400">JPG, PNG, WEBP</span>
+                  </button>
+                  {/* PDF/Doc upload */}
+                  <button
+                    onClick={() => fileInputRef.current?.click()}
+                    disabled={uploading}
+                    className="flex flex-col items-center gap-2 p-4 border-2 border-dashed border-purple-300 rounded-xl text-purple-600 hover:bg-purple-50 transition-all disabled:opacity-50"
+                  >
+                    {uploading ? <Loader2 className="w-6 h-6 animate-spin" /> : <Upload className="w-6 h-6" />}
+                    <span className="text-xs font-medium">{uploading ? uploadProgress : "Upload Full Paper"}</span>
+                    <span className="text-xs text-gray-400">PDF, DOC, DOCX</span>
+                  </button>
+                </div>
+              )}
+              <input ref={imageInputRef} type="file" accept="image/*" className="hidden"
+                onChange={(e) => handleImageUpload(e.target.files?.[0])} />
+              <input ref={fileInputRef} type="file" accept=".pdf,.doc,.docx" className="hidden"
+                onChange={(e) => handleDocUpload(e.target.files?.[0])} />
+            </div>
+
             {/* Question text */}
             <div>
-              <label className="block text-xs font-medium text-gray-600 mb-1">Paste or type the question</label>
+              <label className="block text-xs font-medium text-gray-600 mb-1">
+                Or type / paste a question <span className="text-gray-400">(optional if file uploaded)</span>
+              </label>
               <textarea
                 value={questionText}
                 onChange={(e) => setQuestionText(e.target.value)}
                 placeholder="e.g. A car travels 120 km in 1.5 hours. Calculate its average speed in m/s. Show all working. [3 marks]"
-                rows={5}
+                rows={4}
                 className="w-full border border-gray-200 rounded-xl px-4 py-3 text-sm text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none"
               />
             </div>
 
             {/* Marks */}
-            <div className="flex items-center gap-4">
-              <div className="w-32">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Marks (optional)</label>
-                <input
-                  type="number"
-                  min={1}
-                  max={25}
-                  value={marks}
-                  onChange={(e) => setMarks(e.target.value)}
-                  placeholder="e.g. 4"
-                  className="w-full h-9 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-
-              {/* Image upload */}
-              <div className="flex-1">
-                <label className="block text-xs font-medium text-gray-600 mb-1">Attach image (optional)</label>
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => fileInputRef.current?.click()}
-                    disabled={uploading}
-                    className="flex items-center gap-2 px-4 py-2 rounded-lg border-2 border-dashed border-blue-300 text-blue-600 text-sm hover:bg-blue-50 transition-all disabled:opacity-50"
-                  >
-                    {uploading ? <Loader2 className="w-4 h-4 animate-spin" /> : <Camera className="w-4 h-4" />}
-                    {uploading ? "Uploading…" : "Photo / Screenshot"}
-                  </button>
-                  {imagePreview && (
-                    <div className="relative">
-                      <img src={imagePreview} alt="Question" className="h-12 w-20 object-cover rounded-lg border border-gray-200" />
-                      <button
-                        onClick={() => { setImageUrl(null); setImagePreview(null); }}
-                        className="absolute -top-1.5 -right-1.5 w-5 h-5 bg-red-500 text-white rounded-full text-xs flex items-center justify-center"
-                      >×</button>
-                    </div>
-                  )}
-                  <input
-                    ref={fileInputRef}
-                    type="file"
-                    accept="image/*"
-                    className="hidden"
-                    onChange={(e) => handleImageUpload(e.target.files?.[0])}
-                  />
-                </div>
-              </div>
+            <div>
+              <label className="block text-xs font-medium text-gray-600 mb-1">Marks (optional)</label>
+              <input
+                type="number" min={1} max={25}
+                value={marks} onChange={(e) => setMarks(e.target.value)}
+                placeholder="e.g. 4"
+                className="w-32 h-9 border border-gray-200 rounded-lg px-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+              />
             </div>
 
-            {/* Solution Mode */}
+            {/* Mode picker */}
             <div>
               <label className="block text-xs font-medium text-gray-600 mb-2">What kind of help do you need?</label>
               <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                 {SOLUTION_MODES.map((m) => (
-                  <button
-                    key={m.id}
-                    onClick={() => setMode(m.id)}
-                    className={`p-3 rounded-xl border-2 text-left transition-all ${
-                      mode === m.id
-                        ? "border-blue-600 bg-blue-50"
-                        : "border-gray-200 hover:border-blue-300 bg-white"
-                    }`}
+                  <button key={m.id} onClick={() => setMode(m.id)}
+                    className={`p-3 rounded-xl border-2 text-left transition-all ${mode === m.id ? "border-blue-600 bg-blue-50" : "border-gray-200 hover:border-blue-300 bg-white"}`}
                   >
+                    <div className="text-base mb-0.5">{m.emoji}</div>
                     <div className={`text-xs font-semibold ${mode === m.id ? "text-blue-700" : "text-gray-700"}`}>{m.label}</div>
                     <div className="text-xs text-gray-400 mt-0.5 leading-tight">{m.desc}</div>
                   </button>
@@ -273,21 +451,31 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
             </div>
 
             {/* Action buttons */}
-            <div className="flex gap-3">
+            <div className="flex gap-3 flex-wrap">
               <button
                 onClick={solve}
-                disabled={solving || uploading || (!questionText.trim() && !imageUrl)}
-                className="flex-1 bg-gradient-to-r from-blue-700 to-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
+                disabled={solving || uploading || !hasInput || fullPaperSolving}
+                className="flex-1 min-w-[160px] bg-gradient-to-r from-blue-700 to-indigo-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
               >
-                {solving ? (
-                  <><Loader2 className="w-5 h-5 animate-spin" />Solving…</>
-                ) : (
-                  <><Lightbulb className="w-5 h-5" />Solve Question</>
-                )}
+                {solving
+                  ? <><Loader2 className="w-5 h-5 animate-spin" />Solving…</>
+                  : <><Lightbulb className="w-5 h-5" />Solve Question</>}
               </button>
-              {solution && (
+
+              {uploadedFile && (uploadedFile.type === "pdf" || uploadedFile.type === "doc" || uploadedFile.type === "image") && (
                 <button
-                  onClick={reset}
+                  onClick={solveFullPaper}
+                  disabled={solving || uploading || fullPaperSolving}
+                  className="flex-1 min-w-[160px] bg-gradient-to-r from-purple-700 to-pink-600 text-white font-semibold py-3 rounded-xl flex items-center justify-center gap-2 disabled:opacity-50 hover:shadow-lg transition-all"
+                >
+                  {fullPaperSolving
+                    ? <><Loader2 className="w-5 h-5 animate-spin" />Solving All Questions…</>
+                    : <><Sparkles className="w-5 h-5" />Solve Entire Paper</>}
+                </button>
+              )}
+
+              {(solution || paperSolutions) && (
+                <button onClick={reset}
                   className="px-4 py-3 rounded-xl border border-gray-200 text-gray-600 hover:bg-gray-50 transition-all flex items-center gap-2 text-sm"
                 >
                   <RotateCcw className="w-4 h-4" />New
@@ -296,10 +484,33 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
             </div>
           </div>
 
-          {/* Solution Card */}
+          {/* ── Full Paper Solutions ── */}
+          {paperSolutions && (
+            <div className="space-y-4">
+              <div className="flex items-center gap-2 px-1">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+                <h2 className="font-bold text-gray-800 text-lg">Full Paper Solutions</h2>
+                <span className="ml-auto text-xs text-gray-500 bg-purple-100 text-purple-700 px-2 py-0.5 rounded-full">{paperSolutions.length} questions</span>
+              </div>
+              {paperSolutions.map((q, i) => (
+                <div key={i} className="bg-white rounded-2xl shadow-sm border border-purple-100 overflow-hidden">
+                  <div className="bg-gradient-to-r from-purple-600 to-pink-600 px-5 py-3 flex items-center gap-3">
+                    <span className="bg-white/20 text-white text-sm font-bold px-2.5 py-0.5 rounded-full">Q{q.number}</span>
+                    {q.marks && <span className="text-purple-100 text-xs">{q.marks} marks</span>}
+                    <p className="text-white text-sm line-clamp-1 flex-1">{q.text}</p>
+                  </div>
+                  <div className="px-6 py-4">
+                    <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Solution</p>
+                    <AnswerBlock text={q.answer} />
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {/* ── Single Solution Card ── */}
           {solution && (
             <div className="bg-white rounded-2xl shadow-sm border border-blue-100 overflow-hidden">
-              {/* Header */}
               <div className="bg-gradient-to-r from-blue-600 to-indigo-600 px-6 py-4 flex items-center justify-between">
                 <div className="flex items-center gap-3 text-white">
                   <CheckCircle className="w-5 h-5" />
@@ -312,11 +523,16 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
               </div>
 
               {/* Question recap */}
-              {(solution.question || solution.imagePreview) && (
-                <div className="px-6 pt-4 pb-2 bg-gray-50 border-b border-gray-100">
-                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-1">Question</p>
-                  {solution.imagePreview && (
-                    <img src={solution.imagePreview} alt="Question" className="max-h-40 rounded-lg mb-2 border border-gray-200 object-contain" />
+              {(solution.question || solution.uploadedFile) && (
+                <div className="px-6 pt-4 pb-3 bg-gray-50 border-b border-gray-100">
+                  <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-2">Question</p>
+                  {solution.uploadedFile?.preview && (
+                    <img src={solution.uploadedFile.preview} alt="Uploaded" className="max-h-48 rounded-lg mb-2 border border-gray-200 object-contain" />
+                  )}
+                  {solution.uploadedFile && !solution.uploadedFile.preview && (
+                    <div className="flex items-center gap-2 mb-2 text-sm text-gray-600">
+                      <FileText className="w-4 h-4 text-red-500" /> {solution.uploadedFile.name}
+                    </div>
                   )}
                   {solution.question && <p className="text-sm text-gray-700">{solution.question}</p>}
                 </div>
@@ -324,12 +540,8 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
 
               {/* Answer */}
               <div className="px-6 py-5">
-                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">Answer</p>
-                <MathJax>
-                  <div className="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed">
-                    {solution.answer}
-                  </div>
-                </MathJax>
+                <p className="text-xs font-semibold text-gray-500 uppercase tracking-wide mb-3">AI Answer</p>
+                <AnswerBlock text={solution.answer} />
               </div>
 
               {/* Follow-up Q&As */}
@@ -342,11 +554,7 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
                         <p className="text-sm text-gray-700">{fu.question}</p>
                       </div>
                       <div className="bg-indigo-50 rounded-xl px-4 py-3">
-                        <MathJax>
-                          <div className="prose prose-sm max-w-none text-gray-800 whitespace-pre-wrap leading-relaxed text-sm">
-                            {fu.answer}
-                          </div>
-                        </MathJax>
+                        <AnswerBlock text={fu.answer} />
                       </div>
                     </div>
                   ))}
@@ -358,8 +566,7 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
                 <p className="text-xs text-gray-500 mb-2">Still confused? Ask a follow-up question…</p>
                 <div className="flex gap-2">
                   <input
-                    type="text"
-                    value={followUp}
+                    type="text" value={followUp}
                     onChange={(e) => setFollowUp(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && !e.shiftKey && askFollowUp()}
                     placeholder="e.g. Why do we divide by 1000 here?"
@@ -378,7 +585,7 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
             </div>
           )}
 
-          {/* History */}
+          {/* ── History ── */}
           {history.length > 0 && (
             <div className="bg-white rounded-2xl shadow-sm border border-gray-100">
               <button
@@ -391,13 +598,11 @@ Important: Use LaTeX notation wrapped in $...$ for inline maths and $$...$$ for 
               {showHistory && (
                 <div className="divide-y divide-gray-100 border-t border-gray-100">
                   {history.map((h, i) => (
-                    <button
-                      key={i}
-                      onClick={() => setSolution(h)}
+                    <button key={i} onClick={() => setSolution(h)}
                       className="w-full text-left px-6 py-3 hover:bg-indigo-50 transition-all"
                     >
                       <div className="flex items-center justify-between gap-2">
-                        <p className="text-sm text-gray-700 line-clamp-1 flex-1">{h.question || "(Image question)"}</p>
+                        <p className="text-sm text-gray-700 line-clamp-1 flex-1">{h.question || (h.uploadedFile?.name) || "(File question)"}</p>
                         <div className="flex items-center gap-2 shrink-0">
                           <span className="text-xs bg-blue-100 text-blue-700 px-2 py-0.5 rounded-full">{h.subject}</span>
                           <span className="text-xs text-gray-400">{h.timestamp}</span>
