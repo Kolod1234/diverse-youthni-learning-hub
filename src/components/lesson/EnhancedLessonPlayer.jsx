@@ -296,7 +296,7 @@ export default function EnhancedLessonPlayer({
             {lesson.google_slides_url || lesson.video_url || lesson.file_url ? (
               <UniversalLessonPlayer
                 lesson={lesson}
-                totalSlides={lesson.total_slides || lesson.slides?.length || 50}
+                totalSlides={lesson.total_slides || lesson.slides?.length || 1}
                 isFullscreen={isFullscreen}
                 toggleFullscreen={toggleFullscreen}
               />
