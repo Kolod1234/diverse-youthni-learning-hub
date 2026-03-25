@@ -432,6 +432,8 @@ Return JSON:
             {includePastPapers && (
               <div className="space-y-3 mt-2">
                 <p className="text-xs text-amber-700">Matched past paper questions will be mixed in and labelled with year and exam board.</p>
+
+                {/* Subject */}
                 <div>
                   <Label className="text-xs">Subject</Label>
                   <select value={pastPaperSubject} onChange={e => setPastPaperSubject(e.target.value)} className="w-full h-9 px-3 rounded-md border border-amber-300 text-sm bg-white">
@@ -439,28 +441,140 @@ Return JSON:
                     {['Mathematics','English','Biology','Chemistry','Physics','History','Geography','Religious Studies','French','Spanish','ICT','Business Studies','Other'].map(s => <option key={s} value={s}>{s}</option>)}
                   </select>
                 </div>
-                <div className="grid grid-cols-2 gap-2">
-                  <div>
-                    <Label className="text-xs">Qualification</Label>
-                    <select value={pastPaperQualification} onChange={e => setPastPaperQualification(e.target.value)} className="w-full h-9 px-3 rounded-md border border-amber-300 text-sm bg-white">
-                      <option value="">All</option>
-                      <option value="GCSE">GCSE</option>
-                      <option value="A-Level">A-Level</option>
-                      <option value="AS-Level">AS-Level</option>
-                    </select>
+
+                {/* Qualifications — multi-select chips */}
+                <div>
+                  <Label className="text-xs mb-1 block">Qualification <span className="text-amber-600 font-normal">(select multiple)</span></Label>
+                  <div className="flex flex-wrap gap-2">
+                    {['GCSE', 'AS-Level', 'A-Level', 'A2-Level'].map(q => {
+                      const active = pastPaperQualifications.includes(q);
+                      return (
+                        <button
+                          key={q}
+                          type="button"
+                          onClick={() => setPastPaperQualifications(prev =>
+                            active ? prev.filter(x => x !== q) : [...prev, q]
+                          )}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                            active
+                              ? 'bg-amber-600 text-white border-amber-600'
+                              : 'bg-white text-amber-700 border-amber-300 hover:border-amber-500'
+                          }`}
+                        >
+                          {q}
+                        </button>
+                      );
+                    })}
                   </div>
-                  <div>
-                    <Label className="text-xs">Exam Board</Label>
-                    <select value={pastPaperExamBoard} onChange={e => setPastPaperExamBoard(e.target.value)} className="w-full h-9 px-3 rounded-md border border-amber-300 text-sm bg-white">
-                      <option value="">All</option>
-                      <option value="CCEA">CCEA</option>
-                      <option value="AQA">AQA</option>
-                      <option value="Edexcel">Edexcel</option>
-                      <option value="OCR">OCR</option>
-                      <option value="WJEC">WJEC</option>
-                    </select>
+                  {pastPaperQualifications.length === 0 && <p className="text-xs text-amber-500 mt-1">None selected = all qualifications</p>}
+                </div>
+
+                {/* Exam Boards — multi-select chips */}
+                <div>
+                  <Label className="text-xs mb-1 block">Exam Board <span className="text-amber-600 font-normal">(select multiple)</span></Label>
+                  <div className="flex flex-wrap gap-2">
+                    {['CCEA', 'AQA', 'Edexcel', 'OCR', 'WJEC', 'SQA', 'Cambridge'].map(b => {
+                      const active = pastPaperExamBoards.includes(b);
+                      return (
+                        <button
+                          key={b}
+                          type="button"
+                          onClick={() => setPastPaperExamBoards(prev =>
+                            active ? prev.filter(x => x !== b) : [...prev, b]
+                          )}
+                          className={`px-3 py-1 rounded-full text-xs font-medium border transition-all ${
+                            active
+                              ? 'bg-amber-600 text-white border-amber-600'
+                              : 'bg-white text-amber-700 border-amber-300 hover:border-amber-500'
+                          }`}
+                        >
+                          {b}
+                        </button>
+                      );
+                    })}
+                  </div>
+                  {pastPaperExamBoards.length === 0 && <p className="text-xs text-amber-500 mt-1">None selected = all exam boards</p>}
+                </div>
+
+                {/* Year range */}
+                <div>
+                  <Label className="text-xs mb-1 block">Year Range</Label>
+                  <div className="flex items-center gap-2">
+                    <Input
+                      type="number"
+                      placeholder="From (e.g. 2018)"
+                      value={pastPaperYearFrom}
+                      onChange={e => setPastPaperYearFrom(e.target.value)}
+                      className="h-9 text-sm border-amber-300 flex-1"
+                      min="2000"
+                      max="2030"
+                    />
+                    <span className="text-amber-600 text-xs">–</span>
+                    <Input
+                      type="number"
+                      placeholder="To (e.g. 2024)"
+                      value={pastPaperYearTo}
+                      onChange={e => setPastPaperYearTo(e.target.value)}
+                      className="h-9 text-sm border-amber-300 flex-1"
+                      min="2000"
+                      max="2030"
+                    />
                   </div>
                 </div>
+
+                {/* Question number + keyword */}
+                <div className="grid grid-cols-2 gap-2">
+                  <div>
+                    <Label className="text-xs">Question Number</Label>
+                    <Input
+                      type="text"
+                      placeholder="e.g. 3a"
+                      value={pastPaperQuestionNumber}
+                      onChange={e => setPastPaperQuestionNumber(e.target.value)}
+                      className="h-9 text-sm border-amber-300"
+                    />
+                  </div>
+                  <div>
+                    <Label className="text-xs">Keyword in Question</Label>
+                    <Input
+                      type="text"
+                      placeholder="e.g. gradient"
+                      value={pastPaperKeyword}
+                      onChange={e => setPastPaperKeyword(e.target.value)}
+                      className="h-9 text-sm border-amber-300"
+                    />
+                  </div>
+                </div>
+
+                {/* Active filter summary */}
+                {(pastPaperQualifications.length > 0 || pastPaperExamBoards.length > 0 || pastPaperYearFrom || pastPaperYearTo || pastPaperQuestionNumber || pastPaperKeyword) && (
+                  <div className="bg-amber-100 rounded-md px-3 py-2 text-xs text-amber-800 flex items-center justify-between gap-2">
+                    <span>
+                      Filters active:{' '}
+                      {[
+                        pastPaperQualifications.length > 0 && pastPaperQualifications.join(', '),
+                        pastPaperExamBoards.length > 0 && pastPaperExamBoards.join(', '),
+                        (pastPaperYearFrom || pastPaperYearTo) && `${pastPaperYearFrom || '?'}–${pastPaperYearTo || '?'}`,
+                        pastPaperQuestionNumber && `Q${pastPaperQuestionNumber}`,
+                        pastPaperKeyword && `"${pastPaperKeyword}"`,
+                      ].filter(Boolean).join(' · ')}
+                    </span>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setPastPaperQualifications([]);
+                        setPastPaperExamBoards([]);
+                        setPastPaperYearFrom('');
+                        setPastPaperYearTo('');
+                        setPastPaperQuestionNumber('');
+                        setPastPaperKeyword('');
+                      }}
+                      className="underline text-amber-700 hover:text-amber-900 shrink-0"
+                    >
+                      Clear all
+                    </button>
+                  </div>
+                )}
               </div>
             )}
           </div>
