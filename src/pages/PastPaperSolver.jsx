@@ -204,24 +204,20 @@ Formatting rules:
       // Step 1: Extract all questions from the paper
       const extractPrompt = `You are an expert ${qualification} ${subject} examiner.
 
-The attached file is a ${qualification} ${subject} past paper.
+The attached file is a ${qualification} ${subject} past paper (it may be a question paper or mark scheme).
 
-Your task:
-1. Extract EVERY question from the paper (including sub-questions like a, b, c, i, ii, etc.).
-2. Return them as a JSON array of objects with keys: "number" (e.g. "1a"), "text" (full question text), "marks" (integer or null).
+Extract EVERY question and sub-question from the document (e.g. 1, 1a, 1b, 2, 2a, 2(i), etc.).
+For each question include:
+- number: the question number/label as a string (e.g. "1", "2a", "3(i)")
+- text: the full question text exactly as written
+- marks: the number of marks awarded (integer), or null if not shown
 
-Return ONLY valid JSON. No prose before or after.
-
-Example:
-[
-  {"number": "1a", "text": "Calculate the speed of the car given...", "marks": 3},
-  {"number": "1b", "text": "Explain why...", "marks": 4}
-]`;
+Return the result as a JSON object with a single key "questions" containing an array.`;
 
       const extracted = await base44.integrations.Core.InvokeLLM({
         prompt: extractPrompt,
         file_urls: [uploadedFile.url],
-        model: "claude_sonnet_4_6",
+        model: "gemini_3_pro",
         response_json_schema: {
           type: "object",
           properties: {
