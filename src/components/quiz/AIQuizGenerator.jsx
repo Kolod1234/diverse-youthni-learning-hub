@@ -150,13 +150,29 @@ export default function AIQuizGenerator({ courses }) {
         try {
           const filter = { is_published: true };
           if (pastPaperSubject) filter.subject = pastPaperSubject;
-          if (pastPaperQualification) filter.qualification_type = pastPaperQualification;
-          if (pastPaperExamBoard) filter.exam_board = pastPaperExamBoard;
-          const all = await base44.entities.PastPaperQuestion.filter(filter, '-year', 200);
+          const all = await base44.entities.PastPaperQuestion.filter(filter, '-year', 500);
+
           const topicL = topic.toLowerCase();
           const subtopicL = subtopic.toLowerCase();
+          const keywordL = pastPaperKeyword.trim().toLowerCase();
+          const yearFrom = pastPaperYearFrom ? parseInt(pastPaperYearFrom) : null;
+          const yearTo = pastPaperYearTo ? parseInt(pastPaperYearTo) : null;
+          const qNumFilter = pastPaperQuestionNumber.trim();
+
           pastPaperQuestions = all
             .filter(q => {
+              // Multi-select qualification filter
+              if (pastPaperQualifications.length > 0 && !pastPaperQualifications.includes(q.qualification_type)) return false;
+              // Multi-select exam board filter
+              if (pastPaperExamBoards.length > 0 && !pastPaperExamBoards.includes(q.exam_board)) return false;
+              // Year range filter
+              if (yearFrom && q.year && q.year < yearFrom) return false;
+              if (yearTo && q.year && q.year > yearTo) return false;
+              // Question number filter
+              if (qNumFilter && String(q.question_number) !== qNumFilter) return false;
+              // Keyword search in question text
+              if (keywordL && !(q.question_text || '').toLowerCase().includes(keywordL)) return false;
+              // Topic relevance
               const qt = (q.topic || '').toLowerCase();
               const qs = (q.subtopic || '').toLowerCase();
               return qt.includes(topicL) || topicL.includes(qt) ||
