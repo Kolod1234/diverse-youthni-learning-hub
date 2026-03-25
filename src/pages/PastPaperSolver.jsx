@@ -167,7 +167,7 @@ Formatting rules:
       const response = await base44.integrations.Core.InvokeLLM({
         prompt,
         file_urls,
-        model: "claude_sonnet_4_6",
+        model: file_urls ? "gemini_3_pro" : "claude_sonnet_4_6",
       });
 
       const answerText = typeof response === "string" ? response : response?.text || JSON.stringify(response);
