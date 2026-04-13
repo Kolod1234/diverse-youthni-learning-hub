@@ -69,7 +69,7 @@ export default function AdminDashboard() {
 
   const { data: lessons = [] } = useQuery({
     queryKey: ['all-lessons'],
-    queryFn: () => base44.entities.Lesson.list('-created_date', 1000),
+    queryFn: () => base44.entities.Lesson.list('-created_date', 5000),
   });
 
   const { data: quizzes = [] } = useQuery({
@@ -1134,14 +1134,11 @@ function LessonsManagement({ lessons, courses }) {
           <InputLabel>Filter by Course</InputLabel>
           <Select value={filterCourse} label="Filter by Course" onChange={(e) => setFilterCourse(e.target.value)}>
             <MenuItem value="all">All Courses ({lessons.length})</MenuItem>
-            {courses
-              .filter(c => lessons.some(l => l.course_id === c.id))
-              .map(c => (
-                <MenuItem key={c.id} value={c.id}>
-                  {c.title} ({lessons.filter(l => l.course_id === c.id).length})
-                </MenuItem>
-              ))
-            }
+            {courses.map(c => (
+              <MenuItem key={c.id} value={c.id}>
+                {c.title}
+              </MenuItem>
+            ))}
           </Select>
         </FormControl>
         {(searchQuery || filterCourse !== 'all') && (
