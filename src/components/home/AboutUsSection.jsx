@@ -9,8 +9,9 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export default function AboutUsSection() {
   const { data: siteContent = [] } = useQuery({
-    queryKey: ['site-content'],
-    queryFn: () => base44.entities.SiteContent.list('key', 1000),
+    queryKey: ['site-content-about-section'],
+    queryFn: () => base44.entities.SiteContent.filter({ section: 'home' }, 'key', 200),
+    staleTime: 5 * 60 * 1000,
   });
 
   const getContent = (key, defaultValue) => {
