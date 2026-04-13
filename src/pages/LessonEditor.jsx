@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -24,6 +24,7 @@ export default function LessonEditor() {
   const [user, setUser] = useState(null);
   const [lessonForm, setLessonForm] = useState({});
   const [uploading, setUploading] = useState(false);
+  const [converting, setConverting] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -294,6 +295,35 @@ export default function LessonEditor() {
                 <p className="text-xs text-gray-500 mt-1">Set this so the slide counter in the player shows the correct total (e.g. "8 / 43")</p>
               </div>
             </div>
+
+            {/* Convert to custom slides */}
+            {lessonId && lessonForm.google_slides_url && (
+              <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                <p className="text-sm font-semibold text-purple-800 mb-1">🎨 Convert to Custom Slides</p>
+                <p className="text-xs text-gray-600 mb-3">Renders each Google Slide as a high-quality image so the lesson player Prev/Next controls work fully. The original slides layout and styling are preserved pixel-perfectly.</p>
+                <Button
+                  type="button"
+                  variant="outline"
+                  className="border-purple-400 text-purple-700 hover:bg-purple-100"
+                  disabled={converting}
+                  onClick={async () => {
+                    setConverting(true);
+                    try {
+                      const res = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
+                      toast.success(`✅ Converted ${res.data?.slideCount || ''} slides! Save the lesson to apply.`);
+                      // Refresh lesson data so slides appear
+                      queryClient.invalidateQueries(['lesson', lessonId]);
+                    } catch (err) {
+                      toast.error('Conversion failed: ' + (err?.response?.data?.error || err.message));
+                    } finally {
+                      setConverting(false);
+                    }
+                  }}
+                >
+                  {converting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Converting...</> : <><RefreshCw className="w-4 h-4 mr-2" />Convert Slides Now</>}
+                </Button>
+              </div>
+            )}
           </Card>
 
           {/* Document Upload */}
