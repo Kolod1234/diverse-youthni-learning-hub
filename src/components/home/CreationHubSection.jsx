@@ -1,4 +1,8 @@
 import React from 'react';
+import { Link } from 'react-router-dom';
+import { createPageUrl } from '@/utils';
+import { Button } from '@mui/material';
+import { ArrowRight } from 'lucide-react';
 import { Box, Container, Typography, Chip, Card, CardContent } from '@mui/material';
 import { motion } from 'framer-motion';
 import { Heart, Palette, Code2, Leaf, Bot, Cpu, Globe, Users } from 'lucide-react';
@@ -226,7 +230,7 @@ export default function CreationHubSection() {
           })}
         </Box>
 
-        {/* Bottom tagline */}
+        {/* Bottom tagline + CTA */}
         <motion.div
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
@@ -236,14 +240,19 @@ export default function CreationHubSection() {
           <Box sx={{ textAlign: 'center', mt: 8 }}>
             <Typography
               variant="body1"
-              sx={{
-                color: 'text.secondary',
-                fontSize: '1.05rem',
-                fontStyle: 'italic',
-              }}
+              sx={{ color: 'text.secondary', fontSize: '1.05rem', fontStyle: 'italic', mb: 3 }}
             >
               Every learner is a creator. Every project is a step towards a better world. 🚀
             </Typography>
+            <Link to="/creation-hub" style={{ textDecoration: 'none' }}>
+              <Button
+                variant="contained"
+                endIcon={<ArrowRight size={18} />}
+                sx={{ bgcolor: '#003366', color: 'white', fontWeight: 700, px: 4, py: 1.5, borderRadius: 50, '&:hover': { bgcolor: '#002244' } }}
+              >
+                Explore the Creation Hub
+              </Button>
+            </Link>
           </Box>
         </motion.div>
       </Container>
