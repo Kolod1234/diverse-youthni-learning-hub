@@ -192,7 +192,7 @@ export default function AcademyManager() {
                 <Button
                   fullWidth
                   variant="outlined"
-                  onClick={() => navigate(`/AcademyBuilder?id=${academy.id}`)}
+                  onClick={() => navigate(`${createPageUrl('AcademyBuilder')}?id=${academy.id}`)}
                   startIcon={<BookOpen className="w-4 h-4" />}
                 >
                   Build Program
@@ -269,7 +269,7 @@ export default function AcademyManager() {
         onCreated={(academy) => {
           queryClient.invalidateQueries(['academies']);
           setShowAIDialog(false);
-          navigate(`/AcademyBuilder?id=${academy.id}`);
+          navigate(`${createPageUrl('AcademyBuilder')}?id=${academy.id}`);
         }}
       />
     </Container>
