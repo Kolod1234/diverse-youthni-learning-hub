@@ -9,6 +9,7 @@
     "submitter_name": { "type": "string", "description": "Name of submitter" },
     "submitter_email": { "type": "string", "description": "Email of submitter" },
     "image_url": { "type": "string", "description": "Cover image URL" },
+    "gallery_images": { "type": "array", "items": { "type": "string" }, "default": [], "description": "Additional project image URLs" },
     "video_url": { "type": "string", "description": "Demo video URL" },
     "project_link": { "type": "string", "description": "External link to the project" },
     "skills": { "type": "array", "items": { "type": "string" }, "default": [] },

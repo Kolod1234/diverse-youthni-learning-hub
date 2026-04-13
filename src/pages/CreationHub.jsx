@@ -122,7 +122,7 @@ const PROJECTS = [
 
 const ALL_CATEGORIES = ['All', ...PROJECTS.map(p => p.title)];
 
-const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '', image_url: '', video_url: '' };
+const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '', image_url: '', gallery_images: [], video_url: '' };
 
 export default function CreationHub() {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -133,8 +133,10 @@ export default function CreationHub() {
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
   const [user, setUser] = useState(null);
   const [imageUploading, setImageUploading] = useState(false);
+  const [galleryUploading, setGalleryUploading] = useState(false);
   const [videoUploading, setVideoUploading] = useState(false);
   const imageInputRef = useRef();
+  const galleryInputRef = useRef();
   const videoInputRef = useRef();
 
   useEffect(() => {
@@ -158,6 +160,27 @@ export default function CreationHub() {
     } finally {
       setImageUploading(false);
     }
+  };
+
+  const handleGalleryUpload = async (files) => {
+    if (!files?.length) return;
+    setGalleryUploading(true);
+    try {
+      const uploads = await Promise.all(
+        Array.from(files).map(file => base44.integrations.Core.UploadFile({ file }))
+      );
+      const urls = uploads.map(u => u.file_url);
+      setFormData(prev => ({ ...prev, gallery_images: [...prev.gallery_images, ...urls] }));
+    } catch {
+      setSnackbar({ open: true, message: 'Some images failed to upload. Please try again.', severity: 'error' });
+    } finally {
+      setGalleryUploading(false);
+      if (galleryInputRef.current) galleryInputRef.current.value = '';
+    }
+  };
+
+  const removeGalleryImage = (idx) => {
+    setFormData(prev => ({ ...prev, gallery_images: prev.gallery_images.filter((_, i) => i !== idx) }));
   };
 
   const handleVideoUpload = async (file) => {
@@ -195,6 +218,7 @@ export default function CreationHub() {
         submitter_email: formData.email,
         status: 'pending',
         image_url: formData.image_url || undefined,
+        gallery_images: formData.gallery_images.length ? formData.gallery_images : undefined,
         video_url: formData.video_url || undefined,
       });
       await base44.integrations.Core.SendEmail({
@@ -436,6 +460,36 @@ export default function CreationHub() {
                   sx={{ borderStyle: 'dashed', borderColor: 'rgba(124,58,237,0.4)', color: '#7c3aed', py: 2, borderRadius: 2,
                     '&:hover': { borderColor: '#7c3aed', bgcolor: 'rgba(124,58,237,0.04)' } }}>
                   {imageUploading ? 'Uploading...' : 'Upload Cover Image'}
+                </Button>
+              )}
+            </Box>
+
+            {/* Gallery Images */}
+            <Box>
+              <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ mb: 1, display: 'block' }}>Additional Images (optional — up to 10)</Typography>
+              <input ref={galleryInputRef} type="file" accept="image/*" multiple style={{ display: 'none' }}
+                onChange={e => handleGalleryUpload(e.target.files)} />
+              {formData.gallery_images.length > 0 && (
+                <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mb: 1 }}>
+                  {formData.gallery_images.map((url, idx) => (
+                    <Box key={idx} sx={{ position: 'relative', width: 80, height: 80 }}>
+                      <Box component="img" src={url} alt={`Gallery ${idx + 1}`}
+                        sx={{ width: 80, height: 80, objectFit: 'cover', borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
+                      <Box onClick={() => removeGalleryImage(idx)}
+                        sx={{ position: 'absolute', top: 2, right: 2, width: 18, height: 18, borderRadius: '50%', bgcolor: 'rgba(0,0,0,0.7)', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center', cursor: 'pointer', fontSize: '10px', fontWeight: 700, lineHeight: 1 }}>
+                        ×
+                      </Box>
+                    </Box>
+                  ))}
+                </Box>
+              )}
+              {formData.gallery_images.length < 10 && (
+                <Button variant="outlined" fullWidth
+                  startIcon={galleryUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                  onClick={() => galleryInputRef.current?.click()} disabled={galleryUploading}
+                  sx={{ borderStyle: 'dashed', borderColor: 'rgba(124,58,237,0.3)', color: '#7c3aed', py: 1.5, borderRadius: 2,
+                    '&:hover': { borderColor: '#7c3aed', bgcolor: 'rgba(124,58,237,0.04)' } }}>
+                  {galleryUploading ? 'Uploading...' : `Add Images (${formData.gallery_images.length}/10)`}
                 </Button>
               )}
             </Box>
