@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
+import AboutUsSection from '@/components/home/AboutUsSection.jsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
@@ -31,7 +32,7 @@ const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMaste
 const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
 const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
 const CreationHubSection = lazy(() => import('@/components/home/CreationHubSection'));
-const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection.jsx'));
+
 const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
 
 // Simple fallback for lazy sections
@@ -593,9 +594,7 @@ export default function Home() {
       </Suspense>
 
       {/* About Us Section */}
-      <Suspense fallback={<SectionFallback />}>
-        <AboutUsSection />
-      </Suspense>
+      <AboutUsSection />
 
       {/* Student Success Stories */}
       <Suspense fallback={<SectionFallback />}>
