@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
@@ -8,14 +8,16 @@ import {
   Box, Grid, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
   Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Divider
 } from '@mui/material';
-import { Award, Plus, Edit, Trash2, Users, CheckCircle, BookOpen } from 'lucide-react';
+import { Award, Plus, Edit, Trash2, Users, CheckCircle, BookOpen, Sparkles } from 'lucide-react';
 import { toast } from 'sonner';
+import AIAcademyGeneratorDialog from '@/components/academy/AIAcademyGeneratorDialog';
 
 export default function AcademyManager() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [user, setUser] = useState(null);
   const [showDialog, setShowDialog] = useState(false);
+  const [showAIDialog, setShowAIDialog] = useState(false);
   const [editingAcademy, setEditingAcademy] = useState(null);
   const [formData, setFormData] = useState({
     title: '',
@@ -128,13 +130,22 @@ export default function AcademyManager() {
           <Award className="w-8 h-8 text-blue-600" />
           <Typography variant="h4" fontWeight="bold">Learning Academies</Typography>
         </Box>
-        <Button
-          variant="contained"
-          onClick={() => setShowDialog(true)}
-          startIcon={<Plus className="w-5 h-5" />}
-        >
-          Create Academy
-        </Button>
+        <Box sx={{ display: 'flex', gap: 1 }}>
+          <Button
+            variant="outlined"
+            onClick={() => setShowAIDialog(true)}
+            startIcon={<Sparkles className="w-5 h-5" />}
+          >
+            AI Create
+          </Button>
+          <Button
+            variant="contained"
+            onClick={() => setShowDialog(true)}
+            startIcon={<Plus className="w-5 h-5" />}
+          >
+            Create Academy
+          </Button>
+        </Box>
       </Box>
 
       <Grid container spacing={3}>
@@ -250,6 +261,17 @@ export default function AcademyManager() {
           </Button>
         </DialogActions>
       </Dialog>
+
+      <AIAcademyGeneratorDialog
+        open={showAIDialog}
+        onClose={() => setShowAIDialog(false)}
+        user={user}
+        onCreated={(academy) => {
+          queryClient.invalidateQueries(['academies']);
+          setShowAIDialog(false);
+          navigate(`/AcademyBuilder?id=${academy.id}`);
+        }}
+      />
     </Container>
   );
 }
