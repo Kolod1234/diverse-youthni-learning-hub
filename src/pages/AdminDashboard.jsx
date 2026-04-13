@@ -1134,11 +1134,14 @@ function LessonsManagement({ lessons, courses }) {
           <InputLabel>Filter by Course</InputLabel>
           <Select value={filterCourse} label="Filter by Course" onChange={(e) => setFilterCourse(e.target.value)}>
             <MenuItem value="all">All Courses ({lessons.length})</MenuItem>
-            {courses.map(c => (
-              <MenuItem key={c.id} value={c.id}>
-                {c.title} ({lessons.filter(l => l.course_id === c.id).length})
-              </MenuItem>
-            ))}
+            {courses
+              .filter(c => lessons.some(l => l.course_id === c.id))
+              .map(c => (
+                <MenuItem key={c.id} value={c.id}>
+                  {c.title} ({lessons.filter(l => l.course_id === c.id).length})
+                </MenuItem>
+              ))
+            }
           </Select>
         </FormControl>
         {(searchQuery || filterCourse !== 'all') && (
