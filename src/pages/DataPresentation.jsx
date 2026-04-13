@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Box, Button, Card, CardContent, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Container, Typography } from '@mui/material';
-import { Sparkles, BarChart3, Save, BookOpen } from 'lucide-react';
-import AIGenerateMode from '@/components/presentation/AIGenerateMode';
+import { Box, Button, Card, CardContent, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem, Container, Typography } from '@mui/material';
+import { Sparkles, Save } from 'lucide-react';
+import EnhancedAIGenerateMode from '@/components/presentation/EnhancedAIGenerateMode';
 import SlideWorkspace from '@/components/presentation/SlideWorkspace';
 import { toast } from 'sonner';
 import { useQuery } from '@tanstack/react-query';
@@ -112,12 +112,8 @@ export default function DataPresentation() {
         </Box>
 
         {generatedSlides.length === 0 ? (
-          <Box sx={{ maxWidth: 800, mx: 'auto' }}>
-            <Card sx={{ p: 3 }}>
-              <CardContent>
-                <AIGenerateMode onSlidesGenerated={setGeneratedSlides} />
-              </CardContent>
-            </Card>
+          <Box sx={{ maxWidth: 'lg', mx: 'auto' }}>
+            <EnhancedAIGenerateMode onSlidesGenerated={setGeneratedSlides} />
           </Box>
         ) : (
           <Box sx={{ position: 'fixed', inset: 0, zIndex: 50, bgcolor: 'white' }}>
