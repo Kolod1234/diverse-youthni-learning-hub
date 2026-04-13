@@ -122,7 +122,7 @@ const PROJECTS = [
 
 const ALL_CATEGORIES = ['All', ...PROJECTS.map(p => p.title)];
 
-const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '', image_url: '', gallery_images: [], video_url: '' };
+const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '', image_url: '', gallery_images: [], video_url: '', _video_is_file: false };
 
 export default function CreationHub() {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -188,7 +188,7 @@ export default function CreationHub() {
     setVideoUploading(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setFormData(prev => ({ ...prev, video_url: file_url }));
+      setFormData(prev => ({ ...prev, video_url: file_url, _video_is_file: true }));
     } catch {
       setSnackbar({ open: true, message: 'Video upload failed. Please try again.', severity: 'error' });
     } finally {
@@ -499,21 +499,31 @@ export default function CreationHub() {
               <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ mb: 1, display: 'block' }}>Project Video (optional)</Typography>
               <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }}
                 onChange={e => handleVideoUpload(e.target.files?.[0])} />
-              {formData.video_url ? (
-                <Box sx={{ position: 'relative' }}>
+              {/* URL input */}
+              <TextField
+                size="small" fullWidth
+                placeholder="Paste a YouTube or Vimeo URL..."
+                value={formData.video_url && !formData.video_url.startsWith('http') === false && !formData._video_is_file ? formData.video_url : ''}
+                onChange={e => setFormData(f => ({ ...f, video_url: e.target.value, _video_is_file: false }))}
+                InputProps={{ startAdornment: <Video size={16} style={{ marginRight: 8, color: '#0369a1', flexShrink: 0 }} /> }}
+                sx={{ mb: 1 }}
+              />
+              <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mb: 1 }}>— or upload a file (max 50MB) —</Typography>
+              {formData._video_is_file && formData.video_url ? (
+                <Box>
                   <Box component="video" src={formData.video_url} controls
-                    sx={{ width: '100%', maxHeight: 180, borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
-                  <Button size="small" onClick={() => setFormData(f => ({ ...f, video_url: '' }))}
+                    sx={{ width: '100%', maxHeight: 160, borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
+                  <Button size="small" onClick={() => setFormData(f => ({ ...f, video_url: '', _video_is_file: false }))}
                     sx={{ mt: 0.5, color: 'error.main', fontSize: '0.75rem' }} startIcon={<X size={12} />}>
                     Remove video
                   </Button>
                 </Box>
               ) : (
-                <Button variant="outlined" fullWidth startIcon={videoUploading ? <Loader2 size={16} className="animate-spin" /> : <Video size={16} />}
+                <Button variant="outlined" fullWidth startIcon={videoUploading ? <Loader2 size={16} className="animate-spin" /> : <Upload size={16} />}
                   onClick={() => videoInputRef.current?.click()} disabled={videoUploading}
-                  sx={{ borderStyle: 'dashed', borderColor: 'rgba(3,105,161,0.4)', color: '#0369a1', py: 2, borderRadius: 2,
+                  sx={{ borderStyle: 'dashed', borderColor: 'rgba(3,105,161,0.4)', color: '#0369a1', py: 1.5, borderRadius: 2,
                     '&:hover': { borderColor: '#0369a1', bgcolor: 'rgba(3,105,161,0.04)' } }}>
-                  {videoUploading ? 'Uploading...' : 'Upload Project Video'}
+                  {videoUploading ? 'Uploading...' : 'Upload Video File'}
                 </Button>
               )}
             </Box>
