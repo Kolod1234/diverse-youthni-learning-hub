@@ -135,7 +135,7 @@ export default function AcademyBuilder() {
       <Box sx={{ mb: 4 }}>
         <Button
           startIcon={<ArrowLeft className="w-4 h-4" />}
-          onClick={() => navigate(createPageUrl('AcademyManager'))}
+          onClick={() => navigate('/AcademyManager')}
           sx={{ mb: 2 }}
         >
           Back to Academies

@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, lazy, Suspense } from 'react';
-import AboutUsSection from '@/components/home/AboutUsSection.jsx';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
@@ -27,26 +26,16 @@ const ImageGallerySection = lazy(() => import('@/components/sections/ImageGaller
 const VideoEmbedSection = lazy(() => import('@/components/sections/VideoEmbedSection'));
 const TeamMembersSection = lazy(() => import('@/components/sections/TeamMembersSection'));
 const FAQSection = lazy(() => import('@/components/sections/FAQSection'));
+const LearningStatisticsSection = lazy(() => import('@/components/home/LearningStatisticsSection'));
+const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMasteryRoadmaps'));
+const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
+const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
 const CreationHubSection = lazy(() => import('@/components/home/CreationHubSection'));
+const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection'));
+const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
 
 // Simple fallback for lazy sections
 const SectionFallback = () => <Box sx={{ height: 200 }} />;
-
-class ErrorBoundary extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = { hasError: false };
-  }
-
-  static getDerivedStateFromError() {
-    return { hasError: true };
-  }
-
-  render() {
-    if (this.state.hasError) return this.props.fallback || null;
-    return this.props.children;
-  }
-}
 
 // Hook to observe when an element enters the viewport
 function useInView(options = {}) {
@@ -143,11 +132,9 @@ export default function Home() {
       {/* Community Carousel */}
       {carouselImages.length > 0 && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <ErrorBoundary fallback={null}>
-            <Suspense fallback={<SectionFallback />}>
-              <CommunityCarousel images={carouselImages} />
-            </Suspense>
-          </ErrorBoundary>
+          <Suspense fallback={<SectionFallback />}>
+            <CommunityCarousel images={carouselImages} />
+          </Suspense>
         </Container>
       )}
 
@@ -163,11 +150,9 @@ export default function Home() {
       {/* Upcoming Sessions Banner */}
       {user && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <ErrorBoundary fallback={null}>
-            <Suspense fallback={<SectionFallback />}>
-              <UpcomingSessionsWidget user={user} />
-            </Suspense>
-          </ErrorBoundary>
+          <Suspense fallback={<SectionFallback />}>
+            <UpcomingSessionsWidget user={user} />
+          </Suspense>
         </Container>
       )}
 
@@ -454,11 +439,9 @@ export default function Home() {
       </Container>
 
       {/* Creation Hub Section */}
-      <ErrorBoundary fallback={null}>
-        <Suspense fallback={<SectionFallback />}>
-          <CreationHubSection />
-        </Suspense>
-      </ErrorBoundary>
+      <Suspense fallback={<SectionFallback />}>
+        <CreationHubSection />
+      </Suspense>
 
       {/* Why Choose Us Section - Dynamic */}
       <FeaturesSection />
@@ -492,11 +475,9 @@ export default function Home() {
               <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>Stay informed with our latest news and updates</Typography>
             </Box>
           </motion.div>
-          <ErrorBoundary fallback={null}>
-            <Suspense fallback={<SectionFallback />}>
-              <RSSFeedWidget limit={6} />
-            </Suspense>
-          </ErrorBoundary>
+          <Suspense fallback={<SectionFallback />}>
+            <RSSFeedWidget limit={6} />
+          </Suspense>
         </Container>
       </Box>
 
@@ -584,17 +565,42 @@ export default function Home() {
       <EcosystemSection />
 
       {/* New Dynamic Sections */}
-      <ErrorBoundary fallback={null}>
-        <Suspense fallback={<SectionFallback />}>
-          {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
-          {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
-          {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
-          {faqSection[0] && <FAQSection section={faqSection[0]} />}
-        </Suspense>
-      </ErrorBoundary>
+      <Suspense fallback={<SectionFallback />}>
+        {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
+        {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
+        {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
+        {faqSection[0] && <FAQSection section={faqSection[0]} />}
+      </Suspense>
+
+      {/* Learning Statistics Section */}
+      <Suspense fallback={<SectionFallback />}>
+        <LearningStatisticsSection />
+      </Suspense>
+
+      {/* Subject Mastery Roadmaps */}
+      <Suspense fallback={<SectionFallback />}>
+        <SubjectMasteryRoadmaps />
+      </Suspense>
+
+      {/* Instructor Showcase */}
+      <Suspense fallback={<SectionFallback />}>
+        <InstructorShowcase />
+      </Suspense>
+
+      {/* Free Resources Center */}
+      <Suspense fallback={<SectionFallback />}>
+        <FreeResourcesCenter />
+      </Suspense>
 
       {/* About Us Section */}
-      <AboutUsSection />
+      <Suspense fallback={<SectionFallback />}>
+        <AboutUsSection />
+      </Suspense>
+
+      {/* Student Success Stories */}
+      <Suspense fallback={<SectionFallback />}>
+        <StudentSuccessStories />
+      </Suspense>
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (

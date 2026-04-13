@@ -9,13 +9,12 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 
 export default function AboutUsSection() {
   const { data: siteContent = [] } = useQuery({
-    queryKey: ['site-content-about-section'],
-    queryFn: () => base44.entities.SiteContent.filter({ section: 'home' }, 'key', 200),
-    staleTime: 5 * 60 * 1000,
+    queryKey: ['site-content'],
+    queryFn: () => base44.entities.SiteContent.list('key', 1000),
   });
 
   const getContent = (key, defaultValue) => {
-    const item = siteContent.find((c) => c.key === key);
+    const item = siteContent.find(c => c.key === key);
     return item?.value || defaultValue;
   };
 
@@ -32,11 +31,12 @@ export default function AboutUsSection() {
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: '-100px' }}
+          viewport={{ once: true, margin: "-100px" }}
           transition={{ duration: 0.5 }}
           className="bg-card rounded-3xl overflow-hidden shadow-xl border border-border"
         >
           <div className="grid md:grid-cols-2 gap-0">
+            {/* Image Section */}
             <motion.div
               initial={{ opacity: 0, x: -30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -51,6 +51,7 @@ export default function AboutUsSection() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/20 to-transparent" />
             </motion.div>
 
+            {/* Content Section */}
             <motion.div
               initial={{ opacity: 0, x: 30 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -60,11 +61,11 @@ export default function AboutUsSection() {
               <div className="inline-block px-4 py-2 rounded-full bg-primary/10 text-primary text-sm font-bold mb-4 w-fit">
                 About Us
               </div>
-
+              
               <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-6">
                 {getContent('about_title', 'Providing The Platform For Young People To Thrive')}
               </h2>
-
+              
               <p className="text-muted-foreground text-lg leading-relaxed mb-6">
                 {getContent('about_description', 'Diverse Youth NI is dedicated to providing afterschool educational support and resources to young people across Northern Ireland. We believe in creating inclusive enabling environments where young people irrespective of colour, race or different cultural backgrounds can thrive and reach their full potential.')}
               </p>
@@ -73,6 +74,7 @@ export default function AboutUsSection() {
                 {getContent('about_mission', 'Among our mission is to break down barriers to education and create opportunities for all young people, regardless of their background. Through our carefully tailored approaches, dedicated and experienced tutors, and support structure, we help young people from marginalised communities in their academic work through homework club, AfterSchool lessons and transfer test preparation, to boost confidence, promote learning and provide them with the platform to develop in their academic journey.')}
               </p>
 
+              {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-4">
                 {stats.map((stat, idx) => {
                   const Icon = stat.icon;
