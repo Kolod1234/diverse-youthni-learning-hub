@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import {
@@ -9,7 +9,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import {
   Heart, Palette, Code2, Leaf, Bot, Cpu, Globe, Users,
-  ArrowLeft, Plus, Send, X
+  ArrowLeft, Plus, Send, X, ImageIcon, Video, Upload, Loader2
 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 
@@ -122,7 +122,7 @@ const PROJECTS = [
 
 const ALL_CATEGORIES = ['All', ...PROJECTS.map(p => p.title)];
 
-const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '' };
+const EMPTY_FORM = { name: '', email: '', projectTitle: '', category: '', description: '', whyShowcase: '', image_url: '', video_url: '' };
 
 export default function CreationHub() {
   const [activeCategory, setActiveCategory] = useState('All');
@@ -131,6 +131,47 @@ export default function CreationHub() {
   const [formData, setFormData] = useState(EMPTY_FORM);
   const [submitting, setSubmitting] = useState(false);
   const [snackbar, setSnackbar] = useState({ open: false, message: '', severity: 'success' });
+  const [user, setUser] = useState(null);
+  const [imageUploading, setImageUploading] = useState(false);
+  const [videoUploading, setVideoUploading] = useState(false);
+  const imageInputRef = useRef();
+  const videoInputRef = useRef();
+
+  useEffect(() => {
+    base44.auth.me().then(setUser).catch(() => setUser(null));
+  }, []);
+
+  const canSubmit = user && (
+    user.role === 'admin' ||
+    user.is_tutor === true ||
+    (user.is_coordinator === true && !user.coordinator_banned)
+  );
+
+  const handleImageUpload = async (file) => {
+    if (!file) return;
+    setImageUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData(prev => ({ ...prev, image_url: file_url }));
+    } catch {
+      setSnackbar({ open: true, message: 'Image upload failed. Please try again.', severity: 'error' });
+    } finally {
+      setImageUploading(false);
+    }
+  };
+
+  const handleVideoUpload = async (file) => {
+    if (!file) return;
+    setVideoUploading(true);
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      setFormData(prev => ({ ...prev, video_url: file_url }));
+    } catch {
+      setSnackbar({ open: true, message: 'Video upload failed. Please try again.', severity: 'error' });
+    } finally {
+      setVideoUploading(false);
+    }
+  };
 
   const filtered = activeCategory === 'All'
     ? PROJECTS
@@ -153,6 +194,8 @@ export default function CreationHub() {
         submitter_name: formData.name,
         submitter_email: formData.email,
         status: 'pending',
+        image_url: formData.image_url || undefined,
+        video_url: formData.video_url || undefined,
       });
       await base44.integrations.Core.SendEmail({
         to: 'admin@diverseyouthni.com',
@@ -372,6 +415,54 @@ export default function CreationHub() {
             <TextField label="Your Name *" value={formData.name} onChange={e => handleFormChange('name', e.target.value)} fullWidth size="small" />
             <TextField label="Your Email *" value={formData.email} onChange={e => handleFormChange('email', e.target.value)} fullWidth size="small" type="email" />
             <TextField label="Project Title *" value={formData.projectTitle} onChange={e => handleFormChange('projectTitle', e.target.value)} fullWidth size="small" />
+
+            {/* Cover Image Upload */}
+            <Box>
+              <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ mb: 1, display: 'block' }}>Cover Image (optional)</Typography>
+              <input ref={imageInputRef} type="file" accept="image/*" style={{ display: 'none' }}
+                onChange={e => handleImageUpload(e.target.files?.[0])} />
+              {formData.image_url ? (
+                <Box sx={{ position: 'relative', display: 'inline-block' }}>
+                  <Box component="img" src={formData.image_url} alt="Cover preview"
+                    sx={{ width: '100%', maxHeight: 180, objectFit: 'cover', borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
+                  <Button size="small" onClick={() => setFormData(f => ({ ...f, image_url: '' }))}
+                    sx={{ position: 'absolute', top: 6, right: 6, minWidth: 0, p: 0.5, bgcolor: 'rgba(0,0,0,0.6)', color: 'white', borderRadius: 1, '&:hover': { bgcolor: 'rgba(0,0,0,0.8)' } }}>
+                    <X size={14} />
+                  </Button>
+                </Box>
+              ) : (
+                <Button variant="outlined" fullWidth startIcon={imageUploading ? <Loader2 size={16} className="animate-spin" /> : <ImageIcon size={16} />}
+                  onClick={() => imageInputRef.current?.click()} disabled={imageUploading}
+                  sx={{ borderStyle: 'dashed', borderColor: 'rgba(124,58,237,0.4)', color: '#7c3aed', py: 2, borderRadius: 2,
+                    '&:hover': { borderColor: '#7c3aed', bgcolor: 'rgba(124,58,237,0.04)' } }}>
+                  {imageUploading ? 'Uploading...' : 'Upload Cover Image'}
+                </Button>
+              )}
+            </Box>
+
+            {/* Video Upload */}
+            <Box>
+              <Typography variant="caption" fontWeight={600} color="text.secondary" sx={{ mb: 1, display: 'block' }}>Project Video (optional)</Typography>
+              <input ref={videoInputRef} type="file" accept="video/*" style={{ display: 'none' }}
+                onChange={e => handleVideoUpload(e.target.files?.[0])} />
+              {formData.video_url ? (
+                <Box sx={{ position: 'relative' }}>
+                  <Box component="video" src={formData.video_url} controls
+                    sx={{ width: '100%', maxHeight: 180, borderRadius: 2, border: '2px solid', borderColor: 'divider' }} />
+                  <Button size="small" onClick={() => setFormData(f => ({ ...f, video_url: '' }))}
+                    sx={{ mt: 0.5, color: 'error.main', fontSize: '0.75rem' }} startIcon={<X size={12} />}>
+                    Remove video
+                  </Button>
+                </Box>
+              ) : (
+                <Button variant="outlined" fullWidth startIcon={videoUploading ? <Loader2 size={16} className="animate-spin" /> : <Video size={16} />}
+                  onClick={() => videoInputRef.current?.click()} disabled={videoUploading}
+                  sx={{ borderStyle: 'dashed', borderColor: 'rgba(3,105,161,0.4)', color: '#0369a1', py: 2, borderRadius: 2,
+                    '&:hover': { borderColor: '#0369a1', bgcolor: 'rgba(3,105,161,0.04)' } }}>
+                  {videoUploading ? 'Uploading...' : 'Upload Project Video'}
+                </Button>
+              )}
+            </Box>
             <FormControl fullWidth size="small">
               <InputLabel>Category</InputLabel>
               <Select
