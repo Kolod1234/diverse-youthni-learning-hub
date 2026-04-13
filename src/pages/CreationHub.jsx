@@ -187,7 +187,7 @@ export default function CreationHub() {
             </Button>
           </Link>
           <motion.div initial={{ opacity: 0, y: 24 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.6 }}>
-            <Chip label="🛠️ Open to Everyone" sx={{ px: 2, py: 1, bgcolor: 'rgba(255,255,255,0.15)', color: 'white', fontWeight: 700, mb: 3, height: 'auto', border: '1px solid rgba(255,255,255,0.3)' }} />
+
             <Typography variant="h1" sx={{ fontSize: { xs: '2.5rem', md: '4rem' }, fontWeight: 900, color: 'white', mb: 2, letterSpacing: '-0.02em' }}>
               Creation Hub 🚀
             </Typography>
