@@ -24,7 +24,7 @@ export default function RichTextAIPanel({ editor, aiLoading, setAiLoading, handl
         add_context_from_internet: false,
       });
 
-      editor.chain().focus().deleteRange({ from, to }).insertContent(result).run();
+      editor.chain().focus().deleteRange({ from, to }).insertContent(`<div>${result}</div>`).run();
       toast.dismiss(loadingToast);
       toast.success('Text enhanced');
       setShowAI(false);
