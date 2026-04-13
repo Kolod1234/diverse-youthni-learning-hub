@@ -84,11 +84,11 @@ TOPIC INSIGHTS: ${p.topicInsights || 'Researching...'}
       toast.info('Generating slides...');
 
       const styleGuides = {
-        modern: 'modern textbook style, clean lines, vibrant colors, professional',
-        classic: 'traditional scientific illustration, detailed, neutral colors, academic',
-        minimal: 'minimalist design, simple shapes, limited color palette, clean',
-        colorful: 'bright and engaging, multiple colors, playful yet educational',
-        technical: 'technical blueprint style, precise lines, engineering aesthetic'
+        modern: 'premium modern presentation design, clean visual hierarchy, elegant spacing, strong contrast, polished educational layout',
+        classic: 'refined academic presentation design, balanced composition, subtle color palette, formal and credible visual style',
+        minimal: 'minimal premium slide design, lots of white space, crisp typography, restrained accents, clean editorial look',
+        colorful: 'visually rich educational design, vibrant but controlled colors, engaging composition, modern classroom-friendly polish',
+        technical: 'technical presentation design, structured layout, data-driven visual language, precise diagrams, professional blueprint aesthetic'
       };
 
       const diagramInstructions = {
@@ -117,6 +117,15 @@ CRITICAL CONTENT RULES:
 6. NEVER wrap content in markdown code fences like backtick backtick backtick html — output raw HTML only.
 7. If contentType is "math" or "science", EVERY slide must include at least one LaTeX formula.
 
+PROFESSIONAL SLIDE DESIGN RULES:
+1. Titles must be short, punchy, and presentation-style, not paragraph-like.
+2. Each slide should have a clear layout intent such as: hero intro, comparison, process flow, concept explainer, timeline, formula breakdown, checklist, summary.
+3. Prefer content that is visually chunked into 3-5 strong bullets rather than dense explanation.
+4. Make slides feel visually dynamic by varying slide purpose across the deck.
+5. Include a visual on almost every slide where it improves understanding.
+6. Use concrete examples, comparisons, sequences, or frameworks to make slides feel polished.
+7. For intro and closing slides, make the content broader and more presentation-like rather than overly detailed.
+
 SLIDE STRUCTURE — follow this exact pattern:
 - Slide 1: Title/Introduction slide (overview of topic)
 - Slides 2 to ${slideCount - 1}: One concept per slide, progressing logically
@@ -134,6 +143,7 @@ MERMAID DIAGRAM RULES (diagramCode field):
 - Node labels in brackets: A[Label Text]
 - Connections: A-->B
 - ${diagramInstructions[contentType]}
+- Prefer diagrams that look presentation-worthy: clean flows, comparisons, systems, steps, cycles, hierarchies
 - Example valid syntax:
   graph TD
   A[Start]-->B[Process]
@@ -143,8 +153,15 @@ LABELED ILLUSTRATION RULES (labeledIllustration field):
 - Use for: anatomy, chemistry structures, geography, engineering diagrams
 - baseImagePrompt: describe layout clearly, end with "clean white background, technical illustration style"
 - labels: 5-12 labels with text, x (0-100), y (0-100), type (header/pointer/subtext)
+- Prompts should describe visually appealing, polished educational graphics, not generic stock visuals
 
 ${includeSpeakerNotes ? 'Include speakerNotes for each slide (2-3 sentences for the presenter).' : ''}
+
+OUTPUT QUALITY RULES:
+- Avoid repetitive titles like "Key Concept 1" or "Important Information"
+- Avoid generic bullets that could fit any topic
+- Make each slide feel distinct and purposeful
+- Favor clarity, elegance, and presentation quality over sheer volume of text
 
 Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO markdown fences anywhere in the response.`;
 
