@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.25';
 
 Deno.serve(async (req) => {
   try {
@@ -30,17 +30,12 @@ Deno.serve(async (req) => {
     }
 
     // Get access token for Google Slides
-    const accessToken = await base44.asServiceRole.connectors.getAccessToken('googleslides');
+    const { accessToken } = await base44.asServiceRole.connectors.getConnection('googleslides');
 
-    // Fetch presentation data from Google Slides API
+    // Fetch presentation data to get slide IDs, titles, and total_slides
     const presentationResponse = await fetch(
       `https://slides.googleapis.com/v1/presentations/${presentationId}`,
-      {
-        headers: {
-          'Authorization': `Bearer ${accessToken}`,
-          'Content-Type': 'application/json',
-        },
-      }
+      { headers: { 'Authorization': `Bearer ${accessToken}` } }
     );
 
     if (!presentationResponse.ok) {
@@ -52,16 +47,7 @@ Deno.serve(async (req) => {
     const presentation = await presentationResponse.json();
     const customSlides = [];
 
-    // Helper function to convert Google Slides color to hex
-    const rgbToHex = (color) => {
-      if (!color) return null;
-      const r = Math.round((color.red || 0) * 255);
-      const g = Math.round((color.green || 0) * 255);
-      const b = Math.round((color.blue || 0) * 255);
-      return `#${r.toString(16).padStart(2, '0')}${g.toString(16).padStart(2, '0')}${b.toString(16).padStart(2, '0')}`;
-    };
-
-    // Helper function to convert arrayBuffer to base64
+    // Helper: arrayBuffer → base64 data URL
     const arrayBufferToBase64 = (buffer) => {
       const bytes = new Uint8Array(buffer);
       let binary = '';
@@ -71,176 +57,106 @@ Deno.serve(async (req) => {
       return btoa(binary);
     };
 
-    // Process each slide
-    for (let i = 0; i < presentation.slides.length; i++) {
-      const slide = presentation.slides[i];
-      let title = '';
-      let content = '';
-      let imageUrl = null;
-      let videoUrl = null;
-      let audioUrl = null;
-      const images = [];
-
-      // Extract text and media from slide elements
-      if (slide.pageElements) {
-        for (const element of slide.pageElements) {
-          // Extract formatted text
-          if (element.shape?.text?.textElements) {
-            const paragraphStyle = element.shape.text.textElements[0]?.paragraphStyle;
-            const alignment = paragraphStyle?.alignment || 'START';
-            let alignStyle = alignment === 'CENTER' ? 'center' : alignment === 'END' ? 'right' : 'left';
-            
-            let formattedText = '';
-            
-            for (const textElement of element.shape.text.textElements) {
-              if (textElement.textRun?.content) {
-                const text = textElement.textRun.content;
-                const style = textElement.textRun.style || {};
-                
-                let styledText = text;
-                let inlineStyles = [];
-                
-                // Font size
-                if (style.fontSize?.magnitude) {
-                  inlineStyles.push(`font-size: ${style.fontSize.magnitude}pt`);
-                }
-                
-                // Font family
-                if (style.fontFamily) {
-                  inlineStyles.push(`font-family: "${style.fontFamily}"`);
-                }
-                
-                // Text color
-                if (style.foregroundColor?.opaqueColor?.rgbColor) {
-                  const color = rgbToHex(style.foregroundColor.opaqueColor.rgbColor);
-                  if (color) inlineStyles.push(`color: ${color}`);
-                }
-                
-                // Background color
-                if (style.backgroundColor?.opaqueColor?.rgbColor) {
-                  const bgColor = rgbToHex(style.backgroundColor.opaqueColor.rgbColor);
-                  if (bgColor) inlineStyles.push(`background-color: ${bgColor}`);
-                }
-                
-                // Bold
-                if (style.bold) {
-                  styledText = `<strong>${styledText}</strong>`;
-                }
-                
-                // Italic
-                if (style.italic) {
-                  styledText = `<em>${styledText}</em>`;
-                }
-                
-                // Underline
-                if (style.underline) {
-                  styledText = `<u>${styledText}</u>`;
-                }
-                
-                // Strikethrough
-                if (style.strikethrough) {
-                  styledText = `<s>${styledText}</s>`;
-                }
-                
-                // Apply inline styles
-                if (inlineStyles.length > 0) {
-                  styledText = `<span style="${inlineStyles.join('; ')}">${styledText}</span>`;
-                }
-                
-                formattedText += styledText;
-              }
-            }
-            
-            if (formattedText.trim()) {
-              const cleanText = formattedText.trim();
-              if (!title) {
-                title = cleanText.replace(/<[^>]*>/g, '').split('\n')[0];
-              }
-              // Wrap in paragraph with alignment
-              const paragraphs = cleanText.split('\n').filter(p => p.trim());
-              paragraphs.forEach(p => {
-                content += `<p style="text-align: ${alignStyle}; margin: 0.5em 0;">${p}</p>`;
-              });
-            }
-          }
-
-          // Extract images
-          if (element.image?.contentUrl) {
-            try {
-              console.log(`Fetching image from slide ${i}:`, element.image.contentUrl);
-              const imageResponse = await fetch(element.image.contentUrl);
-              
-              if (!imageResponse.ok) {
-                console.error(`Failed to fetch image: ${imageResponse.status} ${imageResponse.statusText}`);
-                continue;
-              }
-
-              const arrayBuffer = await imageResponse.arrayBuffer();
-              const contentType = imageResponse.headers.get('content-type') || 'image/png';
-              const base64Data = arrayBufferToBase64(arrayBuffer);
-              const dataUrl = `data:${contentType};base64,${base64Data}`;
-              
-              console.log(`Uploading image ${images.length} from slide ${i}, size: ${arrayBuffer.byteLength} bytes`);
-              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: dataUrl });
-              
-              if (!imageUrl) {
-                imageUrl = uploadResult.file_url;
-              }
-              images.push(uploadResult.file_url);
-              console.log(`Successfully uploaded image: ${uploadResult.file_url}`);
-            } catch (error) {
-              console.error(`Failed to process image from slide ${i}:`, error.message);
-            }
-          }
-
-          // Extract videos (Google Slides videos are usually from YouTube or Drive)
-          if (element.video) {
-            if (element.video.url) {
-              videoUrl = element.video.url;
-            } else if (element.video.source === 'YOUTUBE' && element.video.id) {
-              videoUrl = `https://www.youtube.com/embed/${element.video.id}`;
-            }
-          }
+    // Helper: extract plain title text from a slide
+    const extractTitle = (slide, index) => {
+      if (!slide.pageElements) return `Slide ${index + 1}`;
+      for (const el of slide.pageElements) {
+        if (el.shape?.placeholder?.type === 'TITLE' || el.shape?.placeholder?.type === 'CENTERED_TITLE') {
+          const text = el.shape?.text?.textElements
+            ?.filter(t => t.textRun?.content)
+            ?.map(t => t.textRun.content)
+            ?.join('')
+            ?.replace(/\n/g, ' ')
+            ?.trim();
+          if (text) return text;
         }
       }
+      // Fallback: first non-empty text shape
+      for (const el of slide.pageElements) {
+        const text = el.shape?.text?.textElements
+          ?.filter(t => t.textRun?.content)
+          ?.map(t => t.textRun.content)
+          ?.join('')
+          ?.replace(/\n/g, ' ')
+          ?.trim();
+        if (text) return text.substring(0, 80);
+      }
+      return `Slide ${index + 1}`;
+    };
 
-      // Add all images to content if multiple - responsive grid layout
-      if (images.length > 1) {
-        content += '<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-top: 1.5rem;">';
-        images.forEach(img => {
-          content += `<img src="${img}" alt="Slide image" style="width: 100%; height: auto; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1);" />`;
-        });
-        content += '</div>';
+    // Process each slide: render thumbnail → upload → store as image slide
+    for (let i = 0; i < presentation.slides.length; i++) {
+      const slide = presentation.slides[i];
+      const pageObjectId = slide.objectId;
+      const title = extractTitle(slide, i);
+
+      let imageUrl = null;
+
+      try {
+        // Use the Slides Thumbnail API — returns a pixel-perfect rendered PNG
+        const thumbResponse = await fetch(
+          `https://slides.googleapis.com/v1/presentations/${presentationId}/pages/${pageObjectId}/thumbnail?thumbnailProperties.thumbnailSize=LARGE`,
+          { headers: { 'Authorization': `Bearer ${accessToken}` } }
+        );
+
+        if (thumbResponse.ok) {
+          const thumbData = await thumbResponse.json();
+          const thumbUrl = thumbData.contentUrl;
+
+          if (thumbUrl) {
+            // Download the thumbnail image
+            const imgResponse = await fetch(thumbUrl);
+            if (imgResponse.ok) {
+              const buffer = await imgResponse.arrayBuffer();
+              const base64 = arrayBufferToBase64(buffer);
+              const dataUrl = `data:image/png;base64,${base64}`;
+
+              // Upload to app storage
+              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: dataUrl });
+              imageUrl = uploadResult.file_url;
+              console.log(`Slide ${i + 1}: uploaded thumbnail → ${imageUrl}`);
+            }
+          }
+        } else {
+          console.error(`Thumbnail API failed for slide ${i + 1}:`, await thumbResponse.text());
+        }
+      } catch (err) {
+        console.error(`Error processing slide ${i + 1}:`, err.message);
+      }
+
+      // Build slide content: full-width rendered image preserving all visual integrity
+      let content = '';
+      if (imageUrl) {
+        content = `<div style="text-align: center; width: 100%;"><img src="${imageUrl}" alt="${title}" style="width: 100%; max-width: 960px; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" /></div>`;
+      } else {
+        content = `<p style="color: #666; text-align: center;">Slide ${i + 1} — image could not be rendered.</p>`;
       }
 
       customSlides.push({
-        title: title || `Slide ${i + 1}`,
-        content: content || '<p>No content</p>',
+        title,
+        content,
         order: i,
-        imageUrl: imageUrl,
-        videoUrl: videoUrl,
-        audioUrl: audioUrl
       });
     }
 
-    // Update the lesson with custom slides
+    // Update lesson with rendered slides
     await base44.asServiceRole.entities.Lesson.update(lessonId, {
       content_type: 'richtext',
       slides: customSlides,
-      // Keep google_slides_url as backup - don't remove it
+      total_slides: customSlides.length,
     });
 
     return Response.json({
       success: true,
-      message: 'Google Slides converted to custom slides successfully',
-      slideCount: customSlides.length
+      message: `Converted ${customSlides.length} slides with full visual fidelity`,
+      slideCount: customSlides.length,
     });
 
   } catch (error) {
     console.error('Error converting Google Slides:', error);
-    return Response.json({ 
+    return Response.json({
       error: 'Failed to convert Google Slides',
-      details: error.message 
+      details: error.message,
     }, { status: 500 });
   }
 });
