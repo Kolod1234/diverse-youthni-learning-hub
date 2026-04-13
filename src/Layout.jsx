@@ -604,6 +604,10 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Calendar size={20} color="#16a34a" /></ListItemIcon>
                       <ListItemText primary="Event Manager" />
                     </MenuItem>
+                    <MenuItem component={Link} to="/admin-project-submissions" onClick={() => setMoreMenuAnchor(null)}>
+                      <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
+                      <ListItemText primary="Project Submissions" />
+                    </MenuItem>
                   </>
                 )}
 
