@@ -226,7 +226,7 @@ export default function CreationHub() {
         </Box>
 
         {/* Project Cards */}
-        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3 }}>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 3, overflow: 'visible' }}>
           <AnimatePresence mode="popLayout">
             {filtered.map((project, idx) => {
               const Icon = project.icon;
@@ -238,8 +238,9 @@ export default function CreationHub() {
                   animate={{ opacity: 1, scale: 1 }}
                   exit={{ opacity: 0, scale: 0.9 }}
                   transition={{ duration: 0.3, delay: idx * 0.05 }}
-                  whileHover={{ y: -8 }}
-                  style={{ cursor: 'pointer' }}
+
+                  style={{ cursor: 'pointer', position: 'relative', zIndex: 1 }}
+                  whileHover={{ y: -8, zIndex: 10 }}
                   onClick={() => setSelectedProject(project)}
                 >
                   <Card sx={{
