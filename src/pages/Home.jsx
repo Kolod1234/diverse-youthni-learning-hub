@@ -32,6 +32,22 @@ const CreationHubSection = lazy(() => import('@/components/home/CreationHubSecti
 // Simple fallback for lazy sections
 const SectionFallback = () => <Box sx={{ height: 200 }} />;
 
+class ErrorBoundary extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { hasError: false };
+  }
+
+  static getDerivedStateFromError() {
+    return { hasError: true };
+  }
+
+  render() {
+    if (this.state.hasError) return this.props.fallback || null;
+    return this.props.children;
+  }
+}
+
 // Hook to observe when an element enters the viewport
 function useInView(options = {}) {
   const ref = useRef(null);
@@ -127,9 +143,11 @@ export default function Home() {
       {/* Community Carousel */}
       {carouselImages.length > 0 && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <Suspense fallback={<SectionFallback />}>
-            <CommunityCarousel images={carouselImages} />
-          </Suspense>
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={<SectionFallback />}>
+              <CommunityCarousel images={carouselImages} />
+            </Suspense>
+          </ErrorBoundary>
         </Container>
       )}
 
@@ -145,9 +163,11 @@ export default function Home() {
       {/* Upcoming Sessions Banner */}
       {user && (
         <Container maxWidth="xl" sx={{ py: 6 }}>
-          <Suspense fallback={<SectionFallback />}>
-            <UpcomingSessionsWidget user={user} />
-          </Suspense>
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={<SectionFallback />}>
+              <UpcomingSessionsWidget user={user} />
+            </Suspense>
+          </ErrorBoundary>
         </Container>
       )}
 
@@ -434,9 +454,11 @@ export default function Home() {
       </Container>
 
       {/* Creation Hub Section */}
-      <Suspense fallback={<SectionFallback />}>
-        <CreationHubSection />
-      </Suspense>
+      <ErrorBoundary fallback={null}>
+        <Suspense fallback={<SectionFallback />}>
+          <CreationHubSection />
+        </Suspense>
+      </ErrorBoundary>
 
       {/* Why Choose Us Section - Dynamic */}
       <FeaturesSection />
@@ -470,9 +492,11 @@ export default function Home() {
               <Typography color="text.secondary" sx={{ fontSize: '1.125rem' }}>Stay informed with our latest news and updates</Typography>
             </Box>
           </motion.div>
-          <Suspense fallback={<SectionFallback />}>
-            <RSSFeedWidget limit={6} />
-          </Suspense>
+          <ErrorBoundary fallback={null}>
+            <Suspense fallback={<SectionFallback />}>
+              <RSSFeedWidget limit={6} />
+            </Suspense>
+          </ErrorBoundary>
         </Container>
       </Box>
 
@@ -560,12 +584,14 @@ export default function Home() {
       <EcosystemSection />
 
       {/* New Dynamic Sections */}
-      <Suspense fallback={<SectionFallback />}>
-        {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
-        {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
-        {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
-        {faqSection[0] && <FAQSection section={faqSection[0]} />}
-      </Suspense>
+      <ErrorBoundary fallback={null}>
+        <Suspense fallback={<SectionFallback />}>
+          {gallerySection[0] && <ImageGallerySection section={gallerySection[0]} />}
+          {videoSection[0] && <VideoEmbedSection section={videoSection[0]} />}
+          {teamSection[0] && <TeamMembersSection section={teamSection[0]} />}
+          {faqSection[0] && <FAQSection section={faqSection[0]} />}
+        </Suspense>
+      </ErrorBoundary>
 
       {/* About Us Section */}
       <AboutUsSection />
