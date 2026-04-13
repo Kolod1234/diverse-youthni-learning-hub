@@ -27,13 +27,7 @@ const ImageGallerySection = lazy(() => import('@/components/sections/ImageGaller
 const VideoEmbedSection = lazy(() => import('@/components/sections/VideoEmbedSection'));
 const TeamMembersSection = lazy(() => import('@/components/sections/TeamMembersSection'));
 const FAQSection = lazy(() => import('@/components/sections/FAQSection'));
-const LearningStatisticsSection = lazy(() => import('@/components/home/LearningStatisticsSection'));
-const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMasteryRoadmaps'));
-const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
-const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
 const CreationHubSection = lazy(() => import('@/components/home/CreationHubSection'));
-
-const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
 
 // Simple fallback for lazy sections
 const SectionFallback = () => <Box sx={{ height: 200 }} />;
@@ -573,33 +567,8 @@ export default function Home() {
         {faqSection[0] && <FAQSection section={faqSection[0]} />}
       </Suspense>
 
-      {/* Learning Statistics Section */}
-      <Suspense fallback={<SectionFallback />}>
-        <LearningStatisticsSection />
-      </Suspense>
-
-      {/* Subject Mastery Roadmaps */}
-      <Suspense fallback={<SectionFallback />}>
-        <SubjectMasteryRoadmaps />
-      </Suspense>
-
-      {/* Instructor Showcase */}
-      <Suspense fallback={<SectionFallback />}>
-        <InstructorShowcase />
-      </Suspense>
-
-      {/* Free Resources Center */}
-      <Suspense fallback={<SectionFallback />}>
-        <FreeResourcesCenter />
-      </Suspense>
-
       {/* About Us Section */}
       <AboutUsSection />
-
-      {/* Student Success Stories */}
-      <Suspense fallback={<SectionFallback />}>
-        <StudentSuccessStories />
-      </Suspense>
 
       {/* Real User Reviews Section */}
       {realReviews.length > 0 && (
