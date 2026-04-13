@@ -1,0 +1,23 @@
+{
+  "name": "ProjectSubmission",
+  "type": "object",
+  "properties": {
+    "title": { "type": "string", "description": "Project title" },
+    "category": { "type": "string", "description": "Project category" },
+    "description": { "type": "string", "description": "Short description" },
+    "long_description": { "type": "string", "description": "Full project details" },
+    "submitter_name": { "type": "string", "description": "Name of submitter" },
+    "submitter_email": { "type": "string", "description": "Email of submitter" },
+    "image_url": { "type": "string", "description": "Cover image URL" },
+    "video_url": { "type": "string", "description": "Demo video URL" },
+    "project_link": { "type": "string", "description": "External link to the project" },
+    "skills": { "type": "array", "items": { "type": "string" }, "default": [] },
+    "why_showcase": { "type": "string", "description": "Why it should be featured" },
+    "status": {
+      "type": "string",
+      "enum": ["pending", "approved", "rejected"],
+      "default": "pending"
+    }
+  },
+  "required": ["title", "submitter_name", "submitter_email"]
+}

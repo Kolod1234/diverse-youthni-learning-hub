@@ -8,6 +8,8 @@ import { pagesConfig } from './pages.config'
 import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import PageNotFound from './lib/PageNotFound';
 import CreationHub from './pages/CreationHub';
+import ProjectGallery from './pages/ProjectGallery';
+import ProjectDetail from './pages/ProjectDetail';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -62,6 +64,8 @@ const AuthenticatedApp = () => {
         />
       ))}
       <Route path="/creation-hub" element={<LayoutWrapper currentPageName="CreationHub"><CreationHub /></LayoutWrapper>} />
+      <Route path="/project-gallery" element={<LayoutWrapper currentPageName="ProjectGallery"><ProjectGallery /></LayoutWrapper>} />
+      <Route path="/project/:id" element={<LayoutWrapper currentPageName="ProjectDetail"><ProjectDetail /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );

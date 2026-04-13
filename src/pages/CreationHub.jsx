@@ -145,6 +145,15 @@ export default function CreationHub() {
     }
     setSubmitting(true);
     try {
+      await base44.entities.ProjectSubmission.create({
+        title: formData.projectTitle,
+        category: formData.category,
+        description: formData.description,
+        why_showcase: formData.whyShowcase,
+        submitter_name: formData.name,
+        submitter_email: formData.email,
+        status: 'pending',
+      });
       await base44.integrations.Core.SendEmail({
         to: 'admin@diverseyouthni.com',
         subject: `New Creation Hub Submission: ${formData.projectTitle}`,
@@ -194,6 +203,11 @@ export default function CreationHub() {
             >
               Submit Your Project
             </Button>
+            <Link to="/project-gallery" style={{ textDecoration: 'none' }}>
+              <Button variant="outlined" sx={{ borderColor: 'rgba(255,255,255,0.5)', color: 'white', fontWeight: 700, px: 4, py: 1.5, borderRadius: 50, ml: 2, '&:hover': { borderColor: 'white', bgcolor: 'rgba(255,255,255,0.1)' } }}>
+                View Project Gallery
+              </Button>
+            </Link>
           </motion.div>
         </Container>
       </Box>
