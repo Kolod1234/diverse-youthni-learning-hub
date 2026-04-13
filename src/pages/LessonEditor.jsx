@@ -48,6 +48,22 @@ export default function LessonEditor() {
     loadUser();
   }, []);
 
+  const { data: tutorCourses = [] } = useQuery({
+    queryKey: ['tutor-courses-for-lesson-editor', user?.email],
+    queryFn: async () => {
+      if (!user) return [];
+      if (user.role === 'admin') {
+        return base44.entities.Course.list('title', 5000);
+      }
+      // Tutors only see their assigned courses
+      const all = await base44.entities.Course.list('title', 5000);
+      return all.filter(c =>
+        (c.assigned_tutors || []).includes(user.email) || c.created_by === user.email
+      );
+    },
+    enabled: !!user,
+  });
+
   const { data: lesson, isLoading } = useQuery({
     queryKey: ['lesson', lessonId],
     queryFn: async () => {
@@ -56,12 +72,6 @@ export default function LessonEditor() {
       return lessons[0];
     },
     enabled: !!lessonId,
-    onSuccess: (data) => {
-      if (data) {
-        setLessonForm(data);
-      }
-    }
-  });
 
   useEffect(() => {
     if (lesson) {
@@ -192,6 +202,9 @@ export default function LessonEditor() {
                     className="w-full px-3 py-2 border rounded-lg"
                   >
                     <option value="">Select a course</option>
+                    {tutorCourses.map(c => (
+                      <option key={c.id} value={c.id}>{c.title}</option>
+                    ))}
                   </select>
                 </div>
               )}
