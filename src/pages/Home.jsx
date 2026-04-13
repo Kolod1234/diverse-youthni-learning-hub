@@ -31,7 +31,7 @@ const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMaste
 const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
 const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
 const CreationHubSection = lazy(() => import('@/components/home/CreationHubSection'));
-const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection.jsx'));
+const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection'));
 const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
 
 // Simple fallback for lazy sections
