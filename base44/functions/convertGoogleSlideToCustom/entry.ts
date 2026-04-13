@@ -29,10 +29,10 @@ Deno.serve(async (req) => {
       return Response.json({ error: 'Invalid Google Slides URL' }, { status: 400 });
     }
 
-    // Get access token for Google Slides
+    // Get access token for Google Slides API
     const { accessToken } = await base44.asServiceRole.connectors.getConnection('googleslides');
 
-    // Fetch presentation data to get slide IDs, titles, and total_slides
+    // Fetch presentation metadata to get slide IDs and titles
     const presentationResponse = await fetch(
       `https://slides.googleapis.com/v1/presentations/${presentationId}`,
       { headers: { 'Authorization': `Bearer ${accessToken}` } }
@@ -41,21 +41,15 @@ Deno.serve(async (req) => {
     if (!presentationResponse.ok) {
       const errorText = await presentationResponse.text();
       console.error('Google Slides API error:', errorText);
-      return Response.json({ error: 'Failed to fetch Google Slides presentation', details: errorText }, { status: 500 });
+      return Response.json({ error: 'Failed to fetch Google Slides presentation. Make sure the presentation is shared and accessible.', details: errorText }, { status: 500 });
     }
 
     const presentation = await presentationResponse.json();
-    const customSlides = [];
+    const slides = presentation.slides || [];
 
-    // Helper: arrayBuffer → base64 data URL
-    const arrayBufferToBase64 = (buffer) => {
-      const bytes = new Uint8Array(buffer);
-      let binary = '';
-      for (let i = 0; i < bytes.byteLength; i++) {
-        binary += String.fromCharCode(bytes[i]);
-      }
-      return btoa(binary);
-    };
+    if (slides.length === 0) {
+      return Response.json({ error: 'Presentation has no slides' }, { status: 400 });
+    }
 
     // Helper: extract plain title text from a slide
     const extractTitle = (slide, index) => {
@@ -84,71 +78,37 @@ Deno.serve(async (req) => {
       return `Slide ${index + 1}`;
     };
 
-    // Process each slide: render thumbnail → upload → store as image slide
-    for (let i = 0; i < presentation.slides.length; i++) {
-      const slide = presentation.slides[i];
+    // Build custom slides using per-slide embed URLs (no thumbnail API needed)
+    const customSlides = slides.map((slide, i) => {
       const pageObjectId = slide.objectId;
       const title = extractTitle(slide, i);
 
-      let imageUrl = null;
+      // Google Slides embed URL for a specific slide by its objectId
+      const embedUrl = `https://docs.google.com/presentation/d/${presentationId}/embed?rm=minimal&slide=id.${pageObjectId}`;
 
-      try {
-        // Use the Slides Thumbnail API — returns a pixel-perfect rendered PNG
-        const thumbResponse = await fetch(
-          `https://slides.googleapis.com/v1/presentations/${presentationId}/pages/${pageObjectId}/thumbnail?thumbnailProperties.thumbnailSize=LARGE`,
-          { headers: { 'Authorization': `Bearer ${accessToken}` } }
-        );
+      const content = `<div style="width:100%;aspect-ratio:16/9;overflow:hidden;border-radius:8px;box-shadow:0 4px 20px rgba(0,0,0,0.15);">
+  <iframe src="${embedUrl}" frameborder="0" allowfullscreen style="width:100%;height:100%;border:none;" title="${title}"></iframe>
+</div>`;
 
-        if (thumbResponse.ok) {
-          const thumbData = await thumbResponse.json();
-          const thumbUrl = thumbData.contentUrl;
-
-          if (thumbUrl) {
-            // Download the thumbnail image
-            const imgResponse = await fetch(thumbUrl);
-            if (imgResponse.ok) {
-              const buffer = await imgResponse.arrayBuffer();
-              const base64 = arrayBufferToBase64(buffer);
-              const dataUrl = `data:image/png;base64,${base64}`;
-
-              // Upload to app storage
-              const uploadResult = await base44.asServiceRole.integrations.Core.UploadFile({ file: dataUrl });
-              imageUrl = uploadResult.file_url;
-              console.log(`Slide ${i + 1}: uploaded thumbnail → ${imageUrl}`);
-            }
-          }
-        } else {
-          console.error(`Thumbnail API failed for slide ${i + 1}:`, await thumbResponse.text());
-        }
-      } catch (err) {
-        console.error(`Error processing slide ${i + 1}:`, err.message);
-      }
-
-      // Build slide content: full-width rendered image preserving all visual integrity
-      let content = '';
-      if (imageUrl) {
-        content = `<div style="text-align: center; width: 100%;"><img src="${imageUrl}" alt="${title}" style="width: 100%; max-width: 960px; height: auto; border-radius: 8px; box-shadow: 0 4px 20px rgba(0,0,0,0.15);" /></div>`;
-      } else {
-        content = `<p style="color: #666; text-align: center;">Slide ${i + 1} — image could not be rendered.</p>`;
-      }
-
-      customSlides.push({
+      return {
         title,
         content,
         order: i,
-      });
-    }
+      };
+    });
 
-    // Update lesson with rendered slides
+    // Update lesson with the generated slides
     await base44.asServiceRole.entities.Lesson.update(lessonId, {
       content_type: 'richtext',
       slides: customSlides,
       total_slides: customSlides.length,
     });
 
+    console.log(`Converted ${customSlides.length} slides using embed URLs for presentation ${presentationId}`);
+
     return Response.json({
       success: true,
-      message: `Converted ${customSlides.length} slides with full visual fidelity`,
+      message: `Converted ${customSlides.length} slides successfully`,
       slideCount: customSlides.length,
     });
 
