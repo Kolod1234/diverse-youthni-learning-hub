@@ -15,7 +15,7 @@ import {
 } from '@mui/material';
 import { 
   GraduationCap, Home, Compass, BookOpen, Award, Calendar, Search,
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle, Shield, UserCheck
+  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle, Shield, UserCheck, Sparkles
 } from 'lucide-react';
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
@@ -380,6 +380,10 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><GraduationCap size={20} color="#16a34a" /></ListItemIcon>
                   <ListItemText primary="Youth Work (OCN)" />
                 </MenuItem>
+                <MenuItem component={Link} to="/creation-hub" onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Sparkles size={20} color="#7c3aed" /></ListItemIcon>
+                  <ListItemText primary="Creation Hub 🚀" />
+                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('CCEAPastPapers')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><BookOpen size={20} color="#9333ea" /></ListItemIcon>
                   <ListItemText primary="CCEA Past Papers" />
@@ -708,6 +712,10 @@ function LayoutContent({ children, currentPageName }) {
                     <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><BookOpen size={20} /></ListItemIcon>
                       <ListItemText primary="My Learning" />
+                    </ListItemButton>
+                    <ListItemButton component={Link} to="/creation-hub" onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><Sparkles size={20} /></ListItemIcon>
+                      <ListItemText primary="Creation Hub 🚀" />
                     </ListItemButton>
 
                     {isCoordinator && !isTutorOrAdmin && (
