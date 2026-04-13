@@ -1059,6 +1059,8 @@ function LessonsManagement({ lessons, courses }) {
   const [showForm, setShowForm] = useState(false);
   const [editingLesson, setEditingLesson] = useState(null);
   const [formData, setFormData] = useState({ title: '', description: '', course_id: '', content_type: 'richtext' });
+  const [searchQuery, setSearchQuery] = useState('');
+  const [filterCourse, setFilterCourse] = useState('all');
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.Lesson.create(data),
@@ -1100,6 +1102,14 @@ function LessonsManagement({ lessons, courses }) {
     }
   };
 
+  const filteredLessons = lessons.filter(lesson => {
+    const matchesCourse = filterCourse === 'all' || lesson.course_id === filterCourse;
+    const matchesSearch = !searchQuery ||
+      lesson.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      lesson.section?.toLowerCase().includes(searchQuery.toLowerCase());
+    return matchesCourse && matchesSearch;
+  });
+
   return (
     <Box>
       <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mb: 3 }}>
@@ -1109,6 +1119,35 @@ function LessonsManagement({ lessons, courses }) {
         </Box>
         <Button variant="contained" startIcon={<Plus />} onClick={() => setShowForm(true)}>Add Lesson</Button>
       </Box>
+
+      {/* Search & Filter */}
+      <Box sx={{ display: 'flex', gap: 2, mb: 3, flexWrap: 'wrap' }}>
+        <TextField
+          placeholder="Search lessons by title or topic..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          size="small"
+          sx={{ flex: 1, minWidth: 200 }}
+          InputProps={{ startAdornment: <Search style={{ marginRight: 8, width: 16, height: 16, color: '#9ca3af' }} /> }}
+        />
+        <FormControl size="small" sx={{ minWidth: 220 }}>
+          <InputLabel>Filter by Course</InputLabel>
+          <Select value={filterCourse} label="Filter by Course" onChange={(e) => setFilterCourse(e.target.value)}>
+            <MenuItem value="all">All Courses ({lessons.length})</MenuItem>
+            {courses.map(c => (
+              <MenuItem key={c.id} value={c.id}>
+                {c.title} ({lessons.filter(l => l.course_id === c.id).length})
+              </MenuItem>
+            ))}
+          </Select>
+        </FormControl>
+        {(searchQuery || filterCourse !== 'all') && (
+          <Button variant="outlined" size="small" onClick={() => { setSearchQuery(''); setFilterCourse('all'); }}>Clear</Button>
+        )}
+      </Box>
+      <Typography variant="caption" color="textSecondary" sx={{ mb: 2, display: 'block' }}>
+        Showing {filteredLessons.length} of {lessons.length} lessons
+      </Typography>
 
       {(showForm || editingLesson) && (
         <Card sx={{ p: 3, mb: 3, bgcolor: '#eef2ff' }}>
@@ -1136,7 +1175,7 @@ function LessonsManagement({ lessons, courses }) {
       )}
 
       <Box sx={{ space: 1 }}>
-        {lessons.map((lesson) => {
+        {filteredLessons.map((lesson) => {
           const course = courses.find(c => c.id === lesson.course_id);
           return (
             <Card key={lesson.id} sx={{ p: 2, mb: 1 }}>
