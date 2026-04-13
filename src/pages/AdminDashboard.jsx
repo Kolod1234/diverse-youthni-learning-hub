@@ -1145,7 +1145,10 @@ function LessonsManagement({ lessons, courses }) {
                   <Typography variant="body2" sx={{ fontWeight: 600 }}>{lesson.title}</Typography>
                   <Typography variant="caption" color="textSecondary">{course?.title} • {lesson.content_type}</Typography>
                 </Box>
-                <Box sx={{ display: 'flex', gap: 1 }}>
+                <Box sx={{ display: 'flex', gap: 1, alignItems: 'center' }}>
+                  <Link to={`${createPageUrl('LessonEditor')}?id=${lesson.id}`} style={{ textDecoration: 'none' }}>
+                    <Button size="small" variant="contained" startIcon={<Edit style={{ width: 14, height: 14 }} />} sx={{ fontSize: '0.75rem', py: 0.5 }}>Open Editor</Button>
+                  </Link>
                   <IconButton size="small" onClick={() => { setEditingLesson(lesson); setFormData(lesson); }}>
                     <Edit style={{ width: 16, height: 16 }} />
                   </IconButton>
