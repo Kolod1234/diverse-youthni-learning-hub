@@ -49,7 +49,7 @@ export default function AdminDashboard() {
 
   const { data: courses = [] } = useQuery({
     queryKey: ['all-courses'],
-    queryFn: () => base44.entities.Course.list('-created_date', 500),
+    queryFn: () => base44.entities.Course.list('-created_date', 5000),
   });
 
   const { data: reviews = [] } = useQuery({
