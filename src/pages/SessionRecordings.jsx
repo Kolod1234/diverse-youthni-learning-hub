@@ -3,7 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import {
   Container, Card, Box, Typography, Grid, Button, TextField,
-  Chip, InputAdornment
+  Chip, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
 import { Video, Search, Play, Eye, Download, Clock } from 'lucide-react';
 import { motion } from 'framer-motion';

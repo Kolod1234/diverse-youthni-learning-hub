@@ -30,6 +30,7 @@ const LearningStatisticsSection = lazy(() => import('@/components/home/LearningS
 const SubjectMasteryRoadmaps = lazy(() => import('@/components/home/SubjectMasteryRoadmaps'));
 const InstructorShowcase = lazy(() => import('@/components/home/InstructorShowcase'));
 const FreeResourcesCenter = lazy(() => import('@/components/home/FreeResourcesCenter'));
+const CreationHubSection = lazy(() => import('@/components/home/CreationHubSection'));
 const AboutUsSection = lazy(() => import('@/components/home/AboutUsSection'));
 const StudentSuccessStories = lazy(() => import('@/components/home/StudentSuccessStories'));
 
@@ -436,6 +437,11 @@ export default function Home() {
           </motion.div>
         )}
       </Container>
+
+      {/* Creation Hub Section */}
+      <Suspense fallback={<SectionFallback />}>
+        <CreationHubSection />
+      </Suspense>
 
       {/* Why Choose Us Section - Dynamic */}
       <FeaturesSection />
@@ -1249,9 +1255,7 @@ function SuccessStoriesCarousel() {
     queryFn: () => base44.entities.PageSection.filter({ page_name: 'Home', section_type: 'success_stories', is_active: true }, 'order', 1),
   });
 
-  if (sections.length === 0) return null;
-
-  const section = sections[0];
+  const section = sections[0] || {};
   const stories = [1, 2, 3].map(num => ({
     category: section[`story${num}_category`] || '',
     tag: section[`story${num}_tag`] || '',
@@ -1266,18 +1270,20 @@ function SuccessStoriesCarousel() {
 
   useEffect(() => {
     if (!emblaApi) return;
-    
+
     const onSelect = () => {
       setSelectedIndex(emblaApi.selectedScrollSnap());
     };
-    
+
     emblaApi.on('select', onSelect);
     onSelect();
-    
+
     return () => {
       emblaApi.off('select', onSelect);
     };
   }, [emblaApi]);
+
+  if (sections.length === 0) return null;
 
   return (
     <Container maxWidth="xl" sx={{ py: 10 }}>

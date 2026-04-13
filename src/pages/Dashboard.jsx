@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useQuery } from '@tanstack/react-query';
+import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import { Link, useNavigate } from 'react-router-dom';
@@ -27,6 +27,10 @@ export default function Dashboard() {
   const [studentTab, setStudentTab] = useState('courses');
   const [accessDenied, setAccessDenied] = useState(false);
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const { isPulling, pullDistance } = usePullToRefresh(() => {
+    queryClient.invalidateQueries();
+  });
 
   useEffect(() => {
     const loadUser = async () => {
@@ -146,9 +150,7 @@ export default function Dashboard() {
     );
   }
 
-  const { isPulling, pullDistance } = usePullToRefresh(() => {
-    queryClient?.invalidateQueries();
-  });
+
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>

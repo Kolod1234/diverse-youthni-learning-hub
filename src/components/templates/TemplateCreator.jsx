@@ -7,6 +7,7 @@ import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { X, Save, FileText, LayoutTemplate, ClipboardList, Award, Star } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
 import { toast } from 'sonner';
 import SlideEditor from '@/components/editor/SlideEditor';
 

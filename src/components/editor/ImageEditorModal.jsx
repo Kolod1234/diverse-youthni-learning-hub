@@ -1101,7 +1101,7 @@ export default function ImageEditorModal({ imageUrl, onSave, onClose }) {
     const data = imageData.data;
     
     // Get target color from image
-    const idx = (Math.floor(y) * canvas.width + Math.floor(x)) * 4;
+    const idx = (Math.floor(y) * layer.canvas.width + Math.floor(x)) * 4;
     const tr = data[idx];
     const tg = data[idx + 1];
     const tb = data[idx + 2];

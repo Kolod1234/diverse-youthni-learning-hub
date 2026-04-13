@@ -1,7 +1,8 @@
 import React, { useState, useRef, useEffect } from 'react';
+import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { 
-  Play, Pause, Volume2, VolumeX, Maximize2, Minimize2, 
+  Play, Pause, Volume2, VolumeX, Maximize2, Minimize2, X,
   SkipForward, SkipBack, Loader2, Settings, ChevronRight, Gauge
 } from 'lucide-react';
 import { 

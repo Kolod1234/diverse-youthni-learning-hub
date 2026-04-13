@@ -9,7 +9,7 @@ export default function PeerReviewForm({ submission, onComplete }) {
   const queryClient = useQueryClient();
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState('');
-  const [strengths, setstrengths] = useState(['']);
+  const [strengths, setStrengths] = useState(['']);
   const [improvements, setImprovements] = useState(['']);
   const [criteriaScores, setCriteriaScores] = useState([
     { criterion: 'Quality', score: 0, comment: '' },

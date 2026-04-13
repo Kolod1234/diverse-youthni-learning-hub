@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { 
   Button, TextField, InputLabel, Card, Tabs, Tab, Avatar, 
   Box, Typography, Container, IconButton, Chip
 } from '@mui/material';
+import { Input } from '@/components/ui/input';
 import { 
   User, Calendar, Award, BookOpen, Clock, 
   Settings, Bell, Shield, Save, Camera
