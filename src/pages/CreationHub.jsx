@@ -4,7 +4,7 @@ import { createPageUrl } from '@/utils';
 import {
   Box, Container, Typography, Chip, Card, CardContent, Button,
   TextField, Dialog, DialogTitle, DialogContent, DialogActions,
-  Snackbar, Alert
+  Snackbar, Alert, FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import { motion, AnimatePresence } from 'framer-motion';
 import {
@@ -372,17 +372,17 @@ export default function CreationHub() {
             <TextField label="Your Name *" value={formData.name} onChange={e => handleFormChange('name', e.target.value)} fullWidth size="small" />
             <TextField label="Your Email *" value={formData.email} onChange={e => handleFormChange('email', e.target.value)} fullWidth size="small" type="email" />
             <TextField label="Project Title *" value={formData.projectTitle} onChange={e => handleFormChange('projectTitle', e.target.value)} fullWidth size="small" />
-            <Box>
-              <Typography variant="body2" sx={{ mb: 0.5, fontWeight: 500, color: 'text.secondary' }}>Category</Typography>
-              <select
+            <FormControl fullWidth size="small">
+              <InputLabel>Category</InputLabel>
+              <Select
                 value={formData.category}
+                label="Category"
                 onChange={e => handleFormChange('category', e.target.value)}
-                style={{ width: '100%', padding: '8px 12px', borderRadius: 8, border: '1px solid #ccc', fontSize: 14, background: 'white', color: formData.category ? '#1a1a1a' : '#9ca3af', outline: 'none' }}
               >
-                <option value="">Select a category...</option>
-                {PROJECTS.map(p => <option key={p.id} value={p.title}>{p.title}</option>)}
-              </select>
-            </Box>
+                <MenuItem value=""><em>Select a category...</em></MenuItem>
+                {PROJECTS.map(p => <MenuItem key={p.id} value={p.title}>{p.title}</MenuItem>)}
+              </Select>
+            </FormControl>
             <TextField
               label="Project Description *"
               value={formData.description}
