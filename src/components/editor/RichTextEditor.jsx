@@ -1364,18 +1364,8 @@ const CardGrid = Node.create({
   },
 });
 
-const MenuButton = ({ onClick, isActive, children, title }) => (
-  <button
-    onClick={onClick}
-    type="button"
-    title={title}
-    className={`p-2 rounded hover:bg-indigo-100 transition-colors ${
-      isActive ? 'bg-indigo-100 text-indigo-600' : 'text-gray-700'
-    }`}
-  >
-    {children}
-  </button>
-);
+import RichTextAIPanel from '@/components/editor/RichTextAIPanel';
+import MenuButton from '@/components/editor/MenuButton';
 
 export default function RichTextEditor({ value = '', onChange, placeholder, label }) {
   const [showInteractive, setShowInteractive] = React.useState(false);
