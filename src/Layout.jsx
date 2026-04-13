@@ -192,6 +192,7 @@ function LayoutContent({ children, currentPageName }) {
     { name: 'Live Sessions', href: createPageUrl('Sessions'), icon: Video },
     { name: 'Youth Work', href: createPageUrl('YouthWork'), icon: GraduationCap },
     { name: 'Library', href: createPageUrl('Library'), icon: BookOpen },
+    { name: 'Academies', href: createPageUrl('AcademyManager'), icon: Award },
     { name: 'Learning Pathways', href: createPageUrl('StudentPathways'), icon: Award },
     { name: 'Community', href: createPageUrl('Community'), icon: MessageSquare },
     { name: 'Event Slides', href: createPageUrl('CommunityEventSlides'), icon: GraduationCap },
@@ -397,6 +398,10 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemText primary="Live Sessions" />
                 </MenuItem>
                 <Divider />
+                <MenuItem component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMoreMenuAnchor(null)}>
+                  <ListItemIcon><Award size={20} color="#7c3aed" /></ListItemIcon>
+                  <ListItemText primary="Academies" />
+                </MenuItem>
                 <MenuItem component={Link} to={createPageUrl('MessageCenter')} onClick={() => setMoreMenuAnchor(null)}>
                   <ListItemIcon><MessageSquare size={20} color="#6366f1" /></ListItemIcon>
                   <ListItemText primary="Messages" />
@@ -716,6 +721,10 @@ function LayoutContent({ children, currentPageName }) {
                     <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><BookOpen size={20} /></ListItemIcon>
                       <ListItemText primary="My Learning" />
+                    </ListItemButton>
+                    <ListItemButton component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMobileMenuOpen(false)}>
+                      <ListItemIcon><Award size={20} /></ListItemIcon>
+                      <ListItemText primary="Academies" />
                     </ListItemButton>
                     <ListItemButton component={Link} to="/creation-hub" onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><Sparkles size={20} /></ListItemIcon>
