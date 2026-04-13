@@ -247,12 +247,21 @@ Return ONLY valid JSON with this structure:
 
 REMEMBER: Exactly ${numSlides} slides. Professional educational quality. ${curriculum} ${examBoard} aligned.`;
 
-      setCurrentStep(`🤖 Generating slides with ${aiProvider === 'default_research' ? 'Web Research' : aiProvider === 'perplexity' ? 'Deep Research' : 'Standard'} mode...`);
+      const modelMap = {
+        default: undefined,
+        default_research: undefined,
+        perplexity: 'gemini_3_1_pro',
+        gpt_5_4: 'gpt_5_4'
+      };
+      
+      const useWebResearch = aiProvider === 'default_research' || aiProvider === 'perplexity';
+      
+      setCurrentStep(`🤖 Generating slides with ${aiProvider === 'default_research' ? 'Web Research' : aiProvider === 'perplexity' ? 'Deep Research' : aiProvider === 'gpt_5_4' ? 'ChatGPT-4o' : 'Standard'} mode...`);
       
       const slideData = await base44.integrations.Core.InvokeLLM({
         prompt: slidesPrompt,
-        add_context_from_internet: aiProvider === 'default_research' || aiProvider === 'perplexity',
-        model: aiProvider === 'perplexity' ? 'gemini_3_1_pro' : undefined,
+        add_context_from_internet: useWebResearch,
+        model: modelMap[aiProvider],
         response_json_schema: {
           type: 'object',
           properties: {
@@ -356,8 +365,8 @@ Return JSON:
 
         const quizResult = await base44.integrations.Core.InvokeLLM({
           prompt: quizPrompt,
-          add_context_from_internet: aiProvider === 'default_research' || aiProvider === 'perplexity',
-          model: aiProvider === 'perplexity' ? 'gemini_3_1_pro' : undefined,
+          add_context_from_internet: useWebResearch,
+          model: modelMap[aiProvider],
           response_json_schema: {
             type: 'object',
             properties: {
@@ -393,8 +402,8 @@ Return JSON:
 
       const objectivesResult = await base44.integrations.Core.InvokeLLM({
         prompt: objectivesPrompt,
-        add_context_from_internet: aiProvider === 'default_research' || aiProvider === 'perplexity',
-        model: aiProvider === 'perplexity' ? 'gemini_3_1_pro' : undefined,
+        add_context_from_internet: useWebResearch,
+        model: modelMap[aiProvider],
         response_json_schema: {
           type: 'object',
           properties: {
@@ -851,6 +860,7 @@ Return JSON:
                           <SelectItem value="default">Standard</SelectItem>
                           <SelectItem value="default_research">Web Research</SelectItem>
                           <SelectItem value="perplexity">Deep Research</SelectItem>
+                          <SelectItem value="gpt_5_4">ChatGPT-4o (Premium)</SelectItem>
                         </SelectContent>
                       </Select>
                     </div>
