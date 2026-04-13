@@ -72,6 +72,7 @@ export default function LessonEditor() {
       return lessons[0];
     },
     enabled: !!lessonId,
+  });
 
   useEffect(() => {
     if (lesson) {
