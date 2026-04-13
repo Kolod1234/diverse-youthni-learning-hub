@@ -211,7 +211,20 @@ Return JSON with a "slides" array. REMEMBER: exactly ${slideCount} slides. NO ma
         throw new Error('AI returned no slides. Please try again.');
       }
 
-      if (slides.length > slideCount) slides = slides.slice(0, slideCount);
+      // Enforce exact slide count: truncate if too many, pad if too few
+      if (slides.length > slideCount) {
+        slides = slides.slice(0, slideCount);
+      } else if (slides.length < slideCount) {
+        // Pad with placeholder slides to reach requested count
+        const missingCount = slideCount - slides.length;
+        for (let i = 0; i < missingCount; i++) {
+          slides.push({
+            title: `Additional Content ${i + 1}`,
+            content: '<ul><li>Content to be added</li></ul>',
+            order: slides.length + 1
+          });
+        }
+      }
 
       slides = slides.map((slide, idx) => ({
         ...slide,
