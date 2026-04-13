@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import {
@@ -8,12 +9,12 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper,
   Avatar, Tooltip, CircularProgress, Alert
 } from '@mui/material';
-import { Edit, CheckCircle, XCircle, Clock, ExternalLink, Eye, Save, X } from 'lucide-react';
+import { Edit, CheckCircle, XCircle, Clock, ExternalLink, Eye, Save, X, LayoutGrid, List } from 'lucide-react';
 
 const STATUS_CONFIG = {
-  pending:  { label: 'Pending',  color: 'warning',  icon: Clock,        bg: '#fef3c7', text: '#92400e' },
-  approved: { label: 'Approved', color: 'success',  icon: CheckCircle,  bg: '#d1fae5', text: '#065f46' },
-  rejected: { label: 'Rejected', color: 'error',    icon: XCircle,      bg: '#fee2e2', text: '#991b1b' },
+  pending:  { label: 'Pending',  icon: Clock,       bg: '#fef3c7', text: '#92400e' },
+  approved: { label: 'Approved', icon: CheckCircle, bg: '#d1fae5', text: '#065f46' },
+  rejected: { label: 'Rejected', icon: XCircle,     bg: '#fee2e2', text: '#991b1b' },
 };
 
 const CATEGORIES = [
@@ -36,6 +37,7 @@ export default function AdminProjectSubmissions() {
   const [togglingId, setTogglingId] = useState(null);
   const [previewProject, setPreviewProject] = useState(null);
   const [feedback, setFeedback] = useState(null);
+  const [viewMode, setViewMode] = useState('kanban');
 
   const { data: user } = useQuery({
     queryKey: ['auth-me'],
@@ -55,7 +57,7 @@ export default function AdminProjectSubmissions() {
     );
   }
 
-  const filtered = projects.filter(p => p.status === tab || (tab === 'all'));
+  const filtered = projects.filter(p => tab === 'all' || p.status === tab);
 
   const showFeedback = (message, severity = 'success') => {
     setFeedback({ message, severity });
@@ -114,12 +116,26 @@ export default function AdminProjectSubmissions() {
     }
   };
 
+  const handleDragEnd = async (result) => {
+    if (!result.destination) return;
+    const newStatus = result.destination.droppableId;
+    const project = projects.find(p => p.id === result.draggableId);
+    if (!project || project.status === newStatus) return;
+    await handleStatusChange(project, newStatus);
+  };
+
   const tabCounts = {
     pending: projects.filter(p => p.status === 'pending').length,
     approved: projects.filter(p => p.status === 'approved').length,
     rejected: projects.filter(p => p.status === 'rejected').length,
     all: projects.length,
   };
+
+  const COLUMNS = [
+    { key: 'pending',  ...STATUS_CONFIG.pending },
+    { key: 'approved', ...STATUS_CONFIG.approved },
+    { key: 'rejected', ...STATUS_CONFIG.rejected },
+  ];
 
   return (
     <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
@@ -142,35 +158,139 @@ export default function AdminProjectSubmissions() {
           </Alert>
         )}
 
-        {/* Tabs */}
-        <Tabs
-          value={tab}
-          onChange={(_, v) => setTab(v)}
-          sx={{ mb: 3, borderBottom: 1, borderColor: 'divider' }}
-        >
-          {[
-            { key: 'pending',  label: 'Pending' },
-            { key: 'approved', label: 'Approved' },
-            { key: 'rejected', label: 'Rejected' },
-            { key: 'all',      label: 'All' },
-          ].map(t => (
-            <Tab
-              key={t.key}
-              value={t.key}
-              label={
-                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                  {t.label}
-                  <Chip label={tabCounts[t.key]} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
-                </Box>
-              }
-            />
-          ))}
-        </Tabs>
+        {/* View Toggle + Tabs */}
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Tabs value={tab} onChange={(_, v) => setTab(v)} sx={{ borderBottom: 0 }}>
+            {[
+              { key: 'pending',  label: 'Pending' },
+              { key: 'approved', label: 'Approved' },
+              { key: 'rejected', label: 'Rejected' },
+              { key: 'all',      label: 'All' },
+            ].map(t => (
+              <Tab
+                key={t.key}
+                value={t.key}
+                label={
+                  <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+                    {t.label}
+                    <Chip label={tabCounts[t.key]} size="small" sx={{ height: 20, fontSize: '0.7rem' }} />
+                  </Box>
+                }
+              />
+            ))}
+          </Tabs>
+          <Box sx={{ display: 'flex', gap: 1 }}>
+            <Tooltip title="Kanban Board">
+              <IconButton
+                onClick={() => setViewMode('kanban')}
+                sx={{ bgcolor: viewMode === 'kanban' ? 'primary.main' : 'transparent', color: viewMode === 'kanban' ? 'white' : 'inherit' }}
+              >
+                <LayoutGrid size={18} />
+              </IconButton>
+            </Tooltip>
+            <Tooltip title="Table View">
+              <IconButton
+                onClick={() => setViewMode('table')}
+                sx={{ bgcolor: viewMode === 'table' ? 'primary.main' : 'transparent', color: viewMode === 'table' ? 'white' : 'inherit' }}
+              >
+                <List size={18} />
+              </IconButton>
+            </Tooltip>
+          </Box>
+        </Box>
+        <Divider sx={{ mb: 3 }} />
 
         {isLoading ? (
           <Box sx={{ display: 'flex', justifyContent: 'center', py: 10 }}>
             <CircularProgress />
           </Box>
+        ) : viewMode === 'kanban' ? (
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 3, alignItems: 'start' }}>
+              {COLUMNS.map(col => {
+                const colProjects = projects.filter(p => p.status === col.key);
+                return (
+                  <Box key={col.key}>
+                    <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5, mb: 2, px: 1 }}>
+                      <Box sx={{ width: 10, height: 10, borderRadius: '50%', bgcolor: col.text }} />
+                      <Typography fontWeight={800} sx={{ fontSize: '0.95rem', color: col.text }}>{col.label}</Typography>
+                      <Chip label={colProjects.length} size="small" sx={{ bgcolor: col.bg, color: col.text, fontWeight: 700, height: 20, fontSize: '0.7rem', ml: 'auto' }} />
+                    </Box>
+                    <Droppable droppableId={col.key}>
+                      {(provided, snapshot) => (
+                        <Box
+                          ref={provided.innerRef}
+                          {...provided.droppableProps}
+                          sx={{
+                            minHeight: 200,
+                            bgcolor: snapshot.isDraggingOver ? col.bg : 'rgba(0,0,0,0.02)',
+                            borderRadius: 3,
+                            border: '2px dashed',
+                            borderColor: snapshot.isDraggingOver ? col.text : 'divider',
+                            p: 1.5,
+                            transition: 'all 0.2s',
+                            display: 'flex',
+                            flexDirection: 'column',
+                            gap: 1.5,
+                          }}
+                        >
+                          {colProjects.map((project, index) => (
+                            <Draggable key={project.id} draggableId={project.id} index={index}>
+                              {(prov, snap) => (
+                                <Card
+                                  ref={prov.innerRef}
+                                  {...prov.draggableProps}
+                                  {...prov.dragHandleProps}
+                                  sx={{
+                                    borderRadius: 3,
+                                    boxShadow: snap.isDragging ? '0 12px 32px rgba(0,0,0,0.18)' : '0 2px 8px rgba(0,0,0,0.07)',
+                                    border: '1px solid',
+                                    borderColor: snap.isDragging ? col.text : 'divider',
+                                    cursor: 'grab',
+                                    transition: 'box-shadow 0.2s',
+                                    bgcolor: 'background.paper',
+                                  }}
+                                >
+                                  <CardContent sx={{ p: 2, '&:last-child': { pb: 2 } }}>
+                                    {project.image_url && (
+                                      <Box component="img" src={project.image_url} alt={project.title}
+                                        sx={{ width: '100%', height: 100, objectFit: 'cover', borderRadius: 2, mb: 1.5 }} />
+                                    )}
+                                    {project.category && (
+                                      <Chip label={project.category} size="small" sx={{ mb: 1, fontSize: '0.65rem' }} />
+                                    )}
+                                    <Typography fontWeight={700} sx={{ fontSize: '0.88rem', mb: 0.5 }}>{project.title}</Typography>
+                                    <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.5, mb: 1.5 }}>
+                                      {project.description}
+                                    </Typography>
+                                    <Typography variant="caption" fontWeight={600} color="text.secondary">By {project.submitter_name}</Typography>
+                                    <Box sx={{ display: 'flex', gap: 0.5, mt: 1.5, justifyContent: 'flex-end' }}>
+                                      <Tooltip title="Preview">
+                                        <IconButton size="small" onClick={() => setPreviewProject(project)}><Eye size={14} /></IconButton>
+                                      </Tooltip>
+                                      <Tooltip title="Edit">
+                                        <IconButton size="small" onClick={() => openEdit(project)}><Edit size={14} /></IconButton>
+                                      </Tooltip>
+                                    </Box>
+                                  </CardContent>
+                                </Card>
+                              )}
+                            </Draggable>
+                          ))}
+                          {provided.placeholder}
+                          {colProjects.length === 0 && (
+                            <Box sx={{ textAlign: 'center', py: 4, color: 'text.disabled' }}>
+                              <Typography variant="caption">Drag cards here</Typography>
+                            </Box>
+                          )}
+                        </Box>
+                      )}
+                    </Droppable>
+                  </Box>
+                );
+              })}
+            </Box>
+          </DragDropContext>
         ) : filtered.length === 0 ? (
           <Box sx={{ textAlign: 'center', py: 10 }}>
             <Typography variant="h6" color="text.secondary">No {tab} submissions.</Typography>
@@ -231,51 +351,29 @@ export default function AdminProjectSubmissions() {
                       </TableCell>
                       <TableCell>
                         <Box sx={{ display: 'flex', gap: 0.5, justifyContent: 'flex-end' }}>
-                          {/* Preview */}
                           <Tooltip title="Preview">
-                            <IconButton size="small" onClick={() => setPreviewProject(project)}>
-                              <Eye size={16} />
-                            </IconButton>
+                            <IconButton size="small" onClick={() => setPreviewProject(project)}><Eye size={16} /></IconButton>
                           </Tooltip>
-                          {/* Edit */}
                           <Tooltip title="Edit">
-                            <IconButton size="small" onClick={() => openEdit(project)}>
-                              <Edit size={16} />
-                            </IconButton>
+                            <IconButton size="small" onClick={() => openEdit(project)}><Edit size={16} /></IconButton>
                           </Tooltip>
-                          {/* Status toggles */}
                           {project.status !== 'approved' && (
                             <Tooltip title="Approve">
-                              <IconButton
-                                size="small"
-                                disabled={togglingId === project.id}
-                                onClick={() => handleStatusChange(project, 'approved')}
-                                sx={{ color: '#065f46', bgcolor: '#d1fae5', '&:hover': { bgcolor: '#a7f3d0' } }}
-                              >
+                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'approved')} sx={{ color: '#065f46', bgcolor: '#d1fae5', '&:hover': { bgcolor: '#a7f3d0' } }}>
                                 {togglingId === project.id ? <CircularProgress size={14} /> : <CheckCircle size={16} />}
                               </IconButton>
                             </Tooltip>
                           )}
                           {project.status !== 'pending' && (
                             <Tooltip title="Set Pending">
-                              <IconButton
-                                size="small"
-                                disabled={togglingId === project.id}
-                                onClick={() => handleStatusChange(project, 'pending')}
-                                sx={{ color: '#92400e', bgcolor: '#fef3c7', '&:hover': { bgcolor: '#fde68a' } }}
-                              >
+                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'pending')} sx={{ color: '#92400e', bgcolor: '#fef3c7', '&:hover': { bgcolor: '#fde68a' } }}>
                                 <Clock size={16} />
                               </IconButton>
                             </Tooltip>
                           )}
                           {project.status !== 'rejected' && (
                             <Tooltip title="Reject">
-                              <IconButton
-                                size="small"
-                                disabled={togglingId === project.id}
-                                onClick={() => handleStatusChange(project, 'rejected')}
-                                sx={{ color: '#991b1b', bgcolor: '#fee2e2', '&:hover': { bgcolor: '#fecaca' } }}
-                              >
+                              <IconButton size="small" disabled={togglingId === project.id} onClick={() => handleStatusChange(project, 'rejected')} sx={{ color: '#991b1b', bgcolor: '#fee2e2', '&:hover': { bgcolor: '#fecaca' } }}>
                                 <XCircle size={16} />
                               </IconButton>
                             </Tooltip>
