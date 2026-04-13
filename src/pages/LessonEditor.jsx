@@ -13,6 +13,7 @@ import { toast } from 'sonner';
 import RichTextEditor from '@/components/editor/RichTextEditor';
 import SlideEditor from '@/components/editor/SlideEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
+import AILessonAssistant from '@/components/lesson/AILessonAssistant';
 
 export default function LessonEditor() {
   const location = useLocation();
@@ -431,6 +432,13 @@ export default function LessonEditor() {
               </Button>
             </div>
           </Card>
+
+          {/* AI Assistant */}
+          <AILessonAssistant
+            lessonTitle={lessonForm.title}
+            lessonContent={lessonForm.description}
+            learningObjectives={lessonForm.learning_objectives}
+          />
 
           {/* Custom Slides */}
           <Card className="p-6">
