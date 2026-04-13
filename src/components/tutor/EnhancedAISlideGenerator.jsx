@@ -247,53 +247,13 @@ Return ONLY valid JSON with this structure:
 
 REMEMBER: Exactly ${numSlides} slides. Professional educational quality. ${curriculum} ${examBoard} aligned.`;
 
-      let slideData;
-      if (aiProvider === 'perplexity') {
-        setCurrentStep('🔍 Using Perplexity for deep research...');
-        const response = await base44.functions.invoke('perplexitySearch', {
-          query: slidesPrompt,
-          return_json: true,
-          json_schema: {
-            type: 'object',
-            properties: {
-              lesson_outline: { type: 'object' },
-              slides: { type: 'array', items: { type: 'object' } }
-            }
-          }
-        });
-        slideData = response.data;
-      } else {
-        slideData = await base44.integrations.Core.InvokeLLM({
-          prompt: slidesPrompt,
-          add_context_from_internet: aiProvider === 'default_research',
-          response_json_schema: {
-            type: 'object',
-            properties: {
-              lesson_outline: {
-                type: 'object',
-                properties: {
-                  learning_objectives: { type: 'array', items: { type: 'string' } },
-                  key_concepts: { type: 'array', items: { type: 'string' } },
-                  prerequisites: { type: 'array', items: { type: 'string' } },
-                  difficulty_rating: { type: 'string' }
-                }
-              },
-              slides: {
-                type: 'array',
-                items: {
-                  type: 'object',
-                  properties: {
-                    title: { type: 'string' },
-                    content: { type: 'string' },
-                    speaker_notes: { type: 'string' },
-                    multimedia_suggestions: { type: 'object' }
-                  }
-                }
-              }
-            }
-          }
-        });
-      }
+      setCurrentStep(`🤖 Generating slides with ${aiProvider === 'default_research' ? 'Web Research' : aiProvider === 'perplexity' ? 'Deep Research' : 'Standard'} mode...`);
+      
+      const slideData = await base44.integrations.Core.InvokeLLM({
+        prompt: slidesPrompt,
+        add_context_from_internet: aiProvider === 'default_research' || aiProvider === 'perplexity',
+        model: aiProvider === 'perplexity' ? 'gemini_3_1_pro' : undefined,
+        response_json_schema: {
 
       let slides = slideData?.slides || [];
       if (!Array.isArray(slides) || slides.length === 0) {
@@ -373,50 +333,6 @@ REQUIREMENTS:
 - ${curriculum} ${examBoard} aligned
 
 Return JSON:
-{
-  "title": "Quiz Title",
-  "description": "Description",
-  "questions": [
-    {
-      "question": "Question text",
-      "options": ["A", "B", "C", "D"],
-      "correct_answer": 0,
-      "explanation": "Detailed explanation"
-    }
-  ],
-  "assessment_criteria": "What this assesses"
-}`;
-
-        const quizResult = await base44.integrations.Core.InvokeLLM({
-          prompt: quizPrompt,
-          add_context_from_internet: true,
-          response_json_schema: {
-            type: 'object',
-            properties: {
-              title: { type: 'string' },
-              description: { type: 'string' },
-              questions: { type: 'array', items: { type: 'object' } },
-              assessment_criteria: { type: 'string' }
-            }
-          }
-        });
-
-        if (quizResult?.questions?.length > 0) {
-          quiz = quizResult;
-        }
-      }
-
-      // Step 5: Generate learning objectives
-      setCurrentStep('🎯 Generating pedagogical materials...');
-      const objectivesPrompt = `For "${topic}" (${curriculum} ${examBoard}), create:
-
-1. Learning Objectives (5-7): Bloom's taxonomy verbs
-2. Success Criteria (5-7): Observable, student-friendly
-3. Common Misconceptions (4-6): Typical errors with explanations
-4. Extension Activities (4-6): Advanced learner tasks
-
-Return JSON:
-{
   "learning_objectives": ["Students will be able to..."],
   "success_criteria": ["I can explain..."],
   "common_misconceptions": ["Students often think..."],
@@ -425,17 +341,8 @@ Return JSON:
 
       const objectivesResult = await base44.integrations.Core.InvokeLLM({
         prompt: objectivesPrompt,
-        add_context_from_internet: true,
-        response_json_schema: {
-          type: 'object',
-          properties: {
-            learning_objectives: { type: 'array', items: { type: 'string' } },
-            success_criteria: { type: 'array', items: { type: 'string' } },
-            common_misconceptions: { type: 'array', items: { type: 'string' } },
-            extension_activities: { type: 'array', items: { type: 'string' } }
-          }
-        }
-      });
+        add_context_from_internet: aiProvider === 'default_research' || aiProvider === 'perplexity',
+        model: aiProvider === 'perplexity' ? 'gemini_3_1_pro' : undefined,
 
       // Track analytics
       if (useAILearning && slides.length > 0) {
