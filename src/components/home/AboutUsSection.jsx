@@ -2,10 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import PeopleIcon from '@mui/icons-material/People';
-import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
-import GpsFixedIcon from '@mui/icons-material/GpsFixed';
-import FavoriteIcon from '@mui/icons-material/Favorite';
+import { Users, Trophy, MapPin, Heart } from 'lucide-react';
 
 export default function AboutUsSection() {
   const { data: siteContent = [] } = useQuery({
@@ -19,10 +16,10 @@ export default function AboutUsSection() {
   };
 
   const stats = [
-    { icon: PeopleIcon, label: 'Active Students', value: getContent('about_stat_students', '500+') },
-    { icon: EmojiEventsIcon, label: 'Courses Offered', value: getContent('about_stat_courses', '50+') },
-    { icon: GpsFixedIcon, label: 'Success Rate', value: getContent('about_stat_success', '95%') },
-    { icon: FavoriteIcon, label: 'Years Experience', value: getContent('about_stat_years', '10+') },
+    { icon: Users, label: 'Active Students', value: getContent('about_stat_students', '500+') },
+    { icon: Trophy, label: 'Courses Offered', value: getContent('about_stat_courses', '50+') },
+    { icon: MapPin, label: 'Success Rate', value: getContent('about_stat_success', '95%') },
+    { icon: Heart, label: 'Years Experience', value: getContent('about_stat_years', '10+') },
   ];
 
   return (
@@ -87,7 +84,7 @@ export default function AboutUsSection() {
                       transition={{ delay: idx * 0.1 }}
                       className="bg-muted/50 rounded-xl p-4 text-center"
                     >
-                      <Icon sx={{ fontSize: 32, color: 'primary.main', mx: 'auto', mb: 1 }} />
+                      <Icon className="w-8 h-8 text-primary mx-auto mb-2" />
                       <div className="text-2xl font-bold text-foreground">{stat.value}</div>
                       <div className="text-sm text-muted-foreground">{stat.label}</div>
                     </motion.div>
