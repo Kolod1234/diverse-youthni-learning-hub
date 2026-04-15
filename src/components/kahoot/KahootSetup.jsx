@@ -97,6 +97,15 @@ export default function KahootSetup({ user, onGameCreated }) {
     updateQuestion(questionIndex, 'question_type', 'image_based');
   };
 
+  const handleQuestionMediaPaste = async (event, questionIndex) => {
+    const items = Array.from(event.clipboardData?.items || []);
+    const imageItem = items.find((item) => item.type.startsWith('image/'));
+    if (!imageItem) return;
+    event.preventDefault();
+    const file = imageItem.getAsFile();
+    await handleQuestionMediaUpload(questionIndex, file);
+  };
+
   const handleCreate = async () => {
     if (!title.trim() || questions.length === 0) return;
     setCreating(true);
@@ -281,7 +290,10 @@ export default function KahootSetup({ user, onGameCreated }) {
                 </div>
 
                 {q.question_type === 'image_based' && (
-                  <div className="mb-5 rounded-[28px] border-2 border-dashed border-gray-300 bg-[#f5eefb] p-6 text-center">
+                  <div
+                    className="mb-5 rounded-[28px] border-2 border-dashed border-gray-300 bg-[#f5eefb] p-6 text-center"
+                    onPaste={(e) => handleQuestionMediaPaste(e, qi)}
+                  >
                     {(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url) ? (
                       <div className="space-y-4">
                         <div className="flex justify-center">
@@ -301,13 +313,14 @@ export default function KahootSetup({ user, onGameCreated }) {
                         </div>
                         <div>
                           <p className="text-lg font-bold text-gray-800">Find and insert media</p>
-                          <p className="mt-1 text-sm text-gray-500">Upload an image for diagram-based questions</p>
+                          <p className="mt-1 text-sm text-gray-500">Upload or paste an image for diagram-based questions</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]">
                             <Upload className="h-4 w-4" /> Upload file
                             <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(qi, e.target.files?.[0] || null)} />
                           </label>
+                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">or press Ctrl/Cmd + V</span>
                         </div>
                       </div>
                     )}
