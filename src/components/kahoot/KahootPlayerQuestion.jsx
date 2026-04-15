@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Image as ImageIcon } from 'lucide-react';
 
 const COLORS = ['#e21b3c', '#1368ce', '#26890c', '#ffa602'];
 const SHAPES = ['▲', '●', '■', '♦'];
@@ -8,7 +8,9 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
   const qi = game.current_question_index || 0;
   const question = game.questions?.[qi];
   const [timeLeft, setTimeLeft] = useState(question?.time_limit_seconds || 20);
+  const [shortAnswer, setShortAnswer] = useState('');
   const showResults = game.status === 'results';
+  const isShortAnswer = question?.question_type === 'short_answer';
 
   useEffect(() => {
     if (showResults) return;
@@ -24,6 +26,10 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
 
     return () => clearInterval(interval);
   }, [game.question_started_at, showResults]);
+
+  useEffect(() => {
+    setShortAnswer('');
+  }, [qi]);
 
   if (!question) return null;
 
@@ -58,6 +64,9 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
               {isCorrect ? <CheckCircle className="w-14 h-14 text-white" /> : <XCircle className="w-14 h-14 text-white" />}
             </div>
             <h2 className="text-3xl font-black mb-2">{isCorrect ? 'Correct! 🎉' : 'Wrong!'}</h2>
+            {question.question_type === 'short_answer' && myAnswer?.text_answer && (
+              <p className="text-purple-200 mb-2">Your answer: {myAnswer.text_answer}</p>
+            )}
             {isCorrect && <p className="text-yellow-300 text-xl font-bold">+{myAnswer.points_earned} points</p>}
             <p className="text-purple-300 mt-4 animate-pulse">Waiting for host...</p>
           </>
@@ -85,25 +94,56 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
       {/* Question display */}
       <div className="px-4 mb-4">
         <div className="bg-white/10 rounded-2xl px-6 py-4 text-center">
+          {question.image_url && (
+            <div className="mb-4 flex justify-center">
+              <img src={question.image_url} alt="Question visual" className="max-h-56 rounded-2xl object-contain bg-white/10" />
+            </div>
+          )}
+          {question.question_type === 'image_based' && (
+            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
+              <ImageIcon className="w-4 h-4" /> Image-based question
+            </div>
+          )}
           <p className="text-white text-lg font-bold">{question.question}</p>
         </div>
       </div>
 
-      {/* Answer buttons — big colorful Kahoot-style */}
-      <div className="flex-1 grid grid-cols-2 gap-3 px-4 pb-6">
-        {question.options.map((opt, oi) => (
-          <button
-            key={oi}
-            onClick={() => onAnswer(oi)}
-            disabled={hasAnswered}
-            className="rounded-2xl text-white font-black text-xl flex flex-col items-center justify-center gap-2 p-4 active:scale-95 transition-transform disabled:opacity-40"
-            style={{ backgroundColor: COLORS[oi], minHeight: '120px' }}
-          >
-            <span className="text-3xl">{SHAPES[oi]}</span>
-            <span className="text-sm font-bold text-center leading-tight">{opt}</span>
-          </button>
-        ))}
-      </div>
+      {isShortAnswer ? (
+        <div className="flex-1 flex items-center justify-center px-4 pb-6">
+          <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl">
+            <input
+              className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-xl font-bold text-center focus:outline-none focus:border-purple-500 mb-4"
+              placeholder="Type your answer"
+              value={shortAnswer}
+              onChange={(e) => setShortAnswer(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && shortAnswer.trim() && onAnswer(shortAnswer)}
+              disabled={hasAnswered}
+            />
+            <button
+              onClick={() => onAnswer(shortAnswer)}
+              disabled={hasAnswered || !shortAnswer.trim()}
+              className="w-full bg-purple-600 text-white rounded-2xl py-4 text-lg font-black hover:bg-purple-700 disabled:opacity-40"
+            >
+              Submit Answer
+            </button>
+          </div>
+        </div>
+      ) : (
+        <div className="flex-1 grid grid-cols-2 gap-3 px-4 pb-6">
+          {question.options.map((opt, oi) => (
+            <button
+              key={oi}
+              onClick={() => onAnswer(oi)}
+              disabled={hasAnswered}
+              className="rounded-2xl text-white font-black text-xl flex flex-col items-center justify-center gap-2 p-4 active:scale-95 transition-transform disabled:opacity-40"
+              style={{ backgroundColor: COLORS[oi], minHeight: '120px' }}
+            >
+              <span className="text-3xl">{SHAPES[oi]}</span>
+              <span className="text-sm font-bold text-center leading-tight">{opt}</span>
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

@@ -12,7 +12,7 @@ function generatePin() {
 export default function KahootSetup({ user, onGameCreated }) {
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([
-    { question: '', options: ['', '', '', ''], correct_answer: 0, time_limit_seconds: 20, image_url: '' }
+    { question: '', question_type: 'multiple_choice', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }
   ]);
   const [importQuizId, setImportQuizId] = useState('');
   const [importPastQuestionsFile, setImportPastQuestionsFile] = useState(null);
@@ -34,8 +34,10 @@ export default function KahootSetup({ user, onGameCreated }) {
       .filter(q => q.question_type === 'multiple_choice' || !q.question_type)
       .map(q => ({
         question: q.question,
+        question_type: q.question_type === 'short_answer' ? 'short_answer' : (q.image_url ? 'image_based' : 'multiple_choice'),
         options: q.options || ['', '', '', ''],
         correct_answer: q.correct_answer || 0,
+        correct_text_answer: q.correct_text_answer || '',
         time_limit_seconds: q.time_limit_seconds || 20,
         image_url: q.image_url || '',
       }));
@@ -44,7 +46,7 @@ export default function KahootSetup({ user, onGameCreated }) {
   };
 
   const addQuestion = () => {
-    setQuestions([...questions, { question: '', options: ['', '', '', ''], correct_answer: 0, time_limit_seconds: 20, image_url: '' }]);
+    setQuestions([...questions, { question: '', question_type: 'multiple_choice', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }]);
   };
 
   const removeQuestion = (i) => {
@@ -210,30 +212,67 @@ export default function KahootSetup({ user, onGameCreated }) {
                 </div>
               </div>
               <input
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 mb-4 focus:outline-none focus:border-purple-500"
+                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 mb-3 focus:outline-none focus:border-purple-500"
                 placeholder="Enter question..."
                 value={q.question}
                 onChange={e => updateQuestion(qi, 'question', e.target.value)}
               />
-              <div className="grid grid-cols-2 gap-2">
-                {q.options.map((opt, oi) => (
-                  <div key={oi} className="flex items-center gap-2 rounded-xl p-2" style={{ backgroundColor: COLORS[oi] + '22', border: `2px solid ${q.correct_answer === oi ? COLORS[oi] : '#e5e7eb'}` }}>
-                    <button
-                      onClick={() => updateQuestion(qi, 'correct_answer', oi)}
-                      className="w-5 h-5 rounded-full border-2 flex-shrink-0"
-                      style={{ backgroundColor: q.correct_answer === oi ? COLORS[oi] : 'transparent', borderColor: COLORS[oi] }}
-                      title="Set as correct"
-                    />
-                    <input
-                      className="flex-1 bg-transparent focus:outline-none text-sm font-semibold"
-                      placeholder={`Option ${oi + 1}`}
-                      value={opt}
-                      onChange={e => updateOption(qi, oi, e.target.value)}
-                    />
-                  </div>
-                ))}
+              <div className="grid sm:grid-cols-2 gap-3 mb-4">
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Question type</label>
+                  <select
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                    value={q.question_type || 'multiple_choice'}
+                    onChange={e => updateQuestion(qi, 'question_type', e.target.value)}
+                  >
+                    <option value="multiple_choice">Multiple choice</option>
+                    <option value="image_based">Image-based</option>
+                    <option value="short_answer">Short answer</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Image URL</label>
+                  <input
+                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
+                    placeholder="https://..."
+                    value={q.image_url || ''}
+                    onChange={e => updateQuestion(qi, 'image_url', e.target.value)}
+                  />
+                </div>
               </div>
-              <p className="text-xs text-gray-400 mt-2">Click the circle to mark the correct answer</p>
+              {q.question_type === 'short_answer' ? (
+                <div>
+                  <label className="block text-xs font-bold text-gray-500 mb-1">Correct short answer</label>
+                  <input
+                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500"
+                    placeholder="Enter the correct answer"
+                    value={q.correct_text_answer || ''}
+                    onChange={e => updateQuestion(qi, 'correct_text_answer', e.target.value)}
+                  />
+                </div>
+              ) : (
+                <>
+                  <div className="grid grid-cols-2 gap-2">
+                    {q.options.map((opt, oi) => (
+                      <div key={oi} className="flex items-center gap-2 rounded-xl p-2" style={{ backgroundColor: COLORS[oi] + '22', border: `2px solid ${q.correct_answer === oi ? COLORS[oi] : '#e5e7eb'}` }}>
+                        <button
+                          onClick={() => updateQuestion(qi, 'correct_answer', oi)}
+                          className="w-5 h-5 rounded-full border-2 flex-shrink-0"
+                          style={{ backgroundColor: q.correct_answer === oi ? COLORS[oi] : 'transparent', borderColor: COLORS[oi] }}
+                          title="Set as correct"
+                        />
+                        <input
+                          className="flex-1 bg-transparent focus:outline-none text-sm font-semibold"
+                          placeholder={`Option ${oi + 1}`}
+                          value={opt}
+                          onChange={e => updateOption(qi, oi, e.target.value)}
+                        />
+                      </div>
+                    ))}
+                  </div>
+                  <p className="text-xs text-gray-400 mt-2">Click the circle to mark the correct answer</p>
+                </>
+              )}
             </div>
           ))}
         </div>

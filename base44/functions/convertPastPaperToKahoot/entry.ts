@@ -99,12 +99,15 @@ Return JSON.`;
           ? item.correct_answer
           : 0;
 
+        const imageUrl = cleanText(item.image_url);
         return {
           question: cleanText(item.question),
+          question_type: imageUrl ? 'image_based' : 'multiple_choice',
           options,
           correct_answer: correctAnswer,
+          correct_text_answer: '',
           time_limit_seconds: [20, 30, 45, 60].includes(item.time_limit_seconds) ? item.time_limit_seconds : 30,
-          image_url: cleanText(item.image_url),
+          image_url: imageUrl,
           visual_description: cleanText(item.visual_description),
         };
       });

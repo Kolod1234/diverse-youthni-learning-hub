@@ -44,19 +44,23 @@ export default function KahootPlay() {
     setPlayerInfo(info);
   };
 
-  const handleAnswer = async (selectedIndex) => {
+  const handleAnswer = async (answerValue) => {
     if (hasAnswered || !game || !playerInfo) return;
     setHasAnswered(true);
-    setLastAnswerIndex(selectedIndex);
 
     const q = game.questions[game.current_question_index];
-    const isCorrect = selectedIndex === q.correct_answer;
+    const isShortAnswer = q.question_type === 'short_answer';
+    const selectedIndex = isShortAnswer ? null : answerValue;
+    const textAnswer = isShortAnswer ? String(answerValue || '').trim() : '';
+    setLastAnswerIndex(selectedIndex);
+    const isCorrect = isShortAnswer
+      ? textAnswer.toLowerCase() === String(q.correct_text_answer || '').trim().toLowerCase()
+      : selectedIndex === q.correct_answer;
     const startedAt = new Date(game.question_started_at).getTime();
     const timeTakenMs = Date.now() - startedAt;
     const timeLimit = (q.time_limit_seconds || 20) * 1000;
     const points = isCorrect ? Math.round(1000 * (1 - timeTakenMs / timeLimit) + 200) : 0;
 
-    // Update participant in game
     const updatedParticipants = (game.participants || []).map((p) => {
       if (p.email === playerInfo.email) {
         return {
@@ -67,6 +71,7 @@ export default function KahootPlay() {
             {
               question_index: game.current_question_index,
               selected_answer: selectedIndex,
+              text_answer: textAnswer,
               is_correct: isCorrect,
               time_taken_ms: timeTakenMs,
               points_earned: points,

@@ -44,6 +44,15 @@
           "question": {
             "type": "string"
           },
+          "question_type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "image_based",
+              "short_answer"
+            ],
+            "default": "multiple_choice"
+          },
           "options": {
             "type": "array",
             "items": {
@@ -53,10 +62,16 @@
           "correct_answer": {
             "type": "number"
           },
+          "correct_text_answer": {
+            "type": "string"
+          },
           "time_limit_seconds": {
             "type": "number"
           },
           "image_url": {
+            "type": "string"
+          },
+          "visual_description": {
             "type": "string"
           }
         }
@@ -87,6 +102,9 @@
                 },
                 "selected_answer": {
                   "type": "number"
+                },
+                "text_answer": {
+                  "type": "string"
                 },
                 "is_correct": {
                   "type": "boolean"
