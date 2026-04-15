@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
 
 import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -161,65 +160,58 @@ function RSSFeedWidget({ initialLimit = 6 }) {
             rel="noopener noreferrer"
             className="block group"
           >
-            <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
+            <div className="overflow-hidden rounded-xl bg-card shadow transition-all duration-300 border-0 hover:shadow-2xl">
               <div className="relative h-96 overflow-hidden bg-black">
                 {featuredItem.image_url ? (
                   <img
                     src={featuredItem.image_url}
                     alt={featuredItem.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                     onError={(e) => {
                       e.target.src = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`;
                     }}
                   />
                 ) : (
                   <img
-                    src={`https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`}
+                    src="https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90"
                     alt={featuredItem.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
                   />
                 )}
-                
-                {/* Overlay gradient */}
                 <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
-                
-                {/* Content overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                   <div className="mb-3">
                     <span className={`inline-flex items-center rounded-md px-3 py-1 text-xs font-medium text-white ${getSourceStyle(featuredItem.category).badge}`}>
                       {featuredItem.category || 'Newsflare'}
                     </span>
                   </div>
-                  
-                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
+                  <h2 className="mb-4 text-3xl font-bold leading-tight transition-colors group-hover:text-blue-300 md:text-4xl">
                     {decodeHTMLEntities(featuredItem.title)}
                   </h2>
-                  
                   {featuredItem.description && (
-                    <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
+                    <p className="mb-4 max-w-4xl line-clamp-2 text-sm text-white/90 md:text-base">
                       {decodeHTMLEntities(featuredItem.description)}
                     </p>
                   )}
-                  
-                  <div className="flex items-center gap-6 text-white/80 text-sm">
-                    <button className="flex items-center gap-2 hover:text-white transition-colors">
-                      <ThumbsUp className="w-4 h-4" />
+                  <div className="flex items-center gap-6 text-sm text-white/80">
+                    <button type="button" className="flex items-center gap-2 transition-colors hover:text-white">
+                      <ThumbsUp className="h-4 w-4" />
                       <span>{Math.floor(Math.random() * 500) + 100}</span>
                     </button>
-                    <button className="flex items-center gap-2 hover:text-white transition-colors">
-                      <MessageCircle className="w-4 h-4" />
+                    <button type="button" className="flex items-center gap-2 transition-colors hover:text-white">
+                      <MessageCircle className="h-4 w-4" />
                       <span>{Math.floor(Math.random() * 50) + 5}</span>
                     </button>
                     {featuredItem.published_date && (
                       <div className="flex items-center gap-2">
-                        <Clock className="w-4 h-4" />
+                        <Clock className="h-4 w-4" />
                         {getTimeAgo(featuredItem.published_date)}
                       </div>
                     )}
                   </div>
                 </div>
               </div>
-            </Card>
+            </div>
           </a>
         </div>
       )}
@@ -237,20 +229,19 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                 rel="noopener noreferrer"
                 className="block group h-full"
               >
-                <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 h-full flex flex-col">
+                <div className="flex h-full flex-col overflow-hidden rounded-xl bg-card shadow transition-all duration-300 border-0 hover:shadow-xl">
                   <div className="relative h-48 overflow-hidden bg-gray-200">
                     <img
                       src={item.image_url || `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`}
                       alt={item.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      className="h-full w-full object-cover transition-transform duration-300 group-hover:scale-105"
                       onError={(e) => {
                         e.target.src = `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`;
                       }}
                     />
                   </div>
-                  
-                  <div className="p-5 flex-1 flex flex-col bg-card">
-                    <div className="flex items-center gap-2 mb-3">
+                  <div className="flex flex-1 flex-col bg-card p-5">
+                    <div className="mb-3 flex items-center gap-2">
                       <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs text-white ${sourceStyle.badge}`}>
                         {item.category || 'News'}
                       </span>
@@ -260,29 +251,26 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                         </span>
                       )}
                     </div>
-                    
-                    <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-blue-500 transition-colors">
+                    <h3 className="mb-2 line-clamp-2 text-lg font-bold text-foreground transition-colors group-hover:text-blue-500">
                       {decodeHTMLEntities(item.title)}
                     </h3>
-                    
                     {item.description && (
-                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
+                      <p className="mb-4 flex-1 line-clamp-2 text-sm text-muted-foreground">
                         {decodeHTMLEntities(item.description)}
                       </p>
                     )}
-                    
-                    <div className="flex items-center gap-4 text-muted-foreground text-sm pt-3 border-t border-border">
-                      <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                        <ThumbsUp className="w-3.5 h-3.5" />
+                    <div className="flex items-center gap-4 border-t border-border pt-3 text-sm text-muted-foreground">
+                      <button type="button" className="flex items-center gap-1 transition-colors hover:text-blue-500">
+                        <ThumbsUp className="h-3.5 w-3.5" />
                         <span>{Math.floor(Math.random() * 100) + 10}</span>
                       </button>
-                      <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                        <MessageCircle className="w-3.5 h-3.5" />
+                      <button type="button" className="flex items-center gap-1 transition-colors hover:text-blue-500">
+                        <MessageCircle className="h-3.5 w-3.5" />
                         <span>{Math.floor(Math.random() * 30) + 1}</span>
                       </button>
                     </div>
                   </div>
-                </Card>
+                </div>
               </a>
             </div>
           );
