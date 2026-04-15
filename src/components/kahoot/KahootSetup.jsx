@@ -15,9 +15,7 @@ export default function KahootSetup({ user, onGameCreated }) {
     { question: '', options: ['', '', '', ''], correct_answer: 0, time_limit_seconds: 20, image_url: '' }
   ]);
   const [importQuizId, setImportQuizId] = useState('');
-  const [importPaperCourseId, setImportPaperCourseId] = useState('');
-  const [importPaperYear, setImportPaperYear] = useState('2024');
-  const [importPaperUrl, setImportPaperUrl] = useState('');
+  const [importPastQuestionsFile, setImportPastQuestionsFile] = useState(null);
   const [creating, setCreating] = useState(false);
   const [importingPastPaper, setImportingPastPaper] = useState(false);
   const [showImport, setShowImport] = useState(false);
@@ -26,11 +24,6 @@ export default function KahootSetup({ user, onGameCreated }) {
   const { data: quizzes = [] } = useQuery({
     queryKey: ['all-quizzes'],
     queryFn: () => base44.entities.Quiz.list('title', 200),
-  });
-
-  const { data: courses = [] } = useQuery({
-    queryKey: ['kahoot-import-courses'],
-    queryFn: () => base44.entities.Course.list('title', 300),
   });
 
   const handleImport = () => {
@@ -49,8 +42,6 @@ export default function KahootSetup({ user, onGameCreated }) {
     if (imported.length > 0) setQuestions(imported);
     setShowImport(false);
   };
-
-  const selectedPastPaperCourse = courses.find(course => course.id === importPaperCourseId);
 
   const addQuestion = () => {
     setQuestions([...questions, { question: '', options: ['', '', '', ''], correct_answer: 0, time_limit_seconds: 20, image_url: '' }]);
@@ -73,20 +64,22 @@ export default function KahootSetup({ user, onGameCreated }) {
   };
 
   const handlePastPaperImport = async () => {
-    if (!selectedPastPaperCourse) return;
+    if (!importPastQuestionsFile) return;
 
     setImportingPastPaper(true);
-    const response = await base44.functions.invoke('convertPastPaperToKahoot', {
-      paperTitle: `${selectedPastPaperCourse.title} ${importPaperYear} Past Paper`,
-      paperUrl: importPaperUrl || 'https://ccea.org.uk/past-papers-mark-schemes',
+    const upload = await base44.integrations.Core.UploadFile({ file: importPastQuestionsFile });
+    const response = await base44.functions.invoke('convertUploadedPastQuestionsToKahoot', {
+      fileUrl: upload.file_url,
+      fileName: importPastQuestionsFile.name,
       maxQuestions: 8,
     });
 
     const converted = response.data?.questions || [];
     if (converted.length > 0) {
-      setTitle(response.data?.title || `${selectedPastPaperCourse.title} Kahoot`);
+      setTitle(response.data?.title || 'Past Questions Kahoot');
       setQuestions(converted);
       setShowPastPaperImport(false);
+      setImportPastQuestionsFile(null);
     }
     setImportingPastPaper(false);
   };
@@ -170,34 +163,20 @@ export default function KahootSetup({ user, onGameCreated }) {
             Import from past questions
           </button>
           {showPastPaperImport && (
-            <div className="mt-3 grid gap-3 md:grid-cols-3">
-              <select
-                className="border-2 border-gray-200 rounded-xl px-3 py-2"
-                value={importPaperCourseId}
-                onChange={e => setImportPaperCourseId(e.target.value)}
-              >
-                <option value="">Select subject...</option>
-                {courses.map(course => <option key={course.id} value={course.id}>{course.title}</option>)}
-              </select>
-              <select
-                className="border-2 border-gray-200 rounded-xl px-3 py-2"
-                value={importPaperYear}
-                onChange={e => setImportPaperYear(e.target.value)}
-              >
-                {['2024', '2023', '2022', '2021', '2020'].map(year => <option key={year} value={year}>{year}</option>)}
-              </select>
+            <div className="mt-3 grid gap-3">
               <input
-                className="border-2 border-gray-200 rounded-xl px-3 py-2 md:col-span-3"
-                placeholder="Optional paper URL"
-                value={importPaperUrl}
-                onChange={e => setImportPaperUrl(e.target.value)}
+                type="file"
+                accept=".pdf,.doc,.docx,.txt,.json,.csv"
+                onChange={e => setImportPastQuestionsFile(e.target.files?.[0] || null)}
+                className="border-2 border-gray-200 rounded-xl px-3 py-2"
               />
+              <p className="text-sm text-gray-500">Upload a past questions file and the engine will convert it into Kahoot-style multiple choice questions.</p>
               <button
                 onClick={handlePastPaperImport}
-                disabled={!importPaperCourseId || importingPastPaper}
-                className="md:col-span-3 bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
+                disabled={!importPastQuestionsFile || importingPastPaper}
+                className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
               >
-                {importingPastPaper ? <><Loader2 className="w-4 h-4 animate-spin" /> Converting...</> : 'Convert past questions to Kahoot'}
+                {importingPastPaper ? <><Loader2 className="w-4 h-4 animate-spin" /> Converting...</> : 'Upload and convert to Kahoot'}
               </button>
             </div>
           )}
