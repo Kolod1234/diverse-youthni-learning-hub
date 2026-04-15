@@ -84,9 +84,40 @@ Return JSON only.`;
       }
     });
 
-    const safeQuestions = (result.questions || [])
-      .filter((item) => cleanText(item.question))
-      .slice(0, maxQuestions)
+    const questionsWithVisuals = await Promise.all(
+      (result.questions || [])
+        .filter((item) => cleanText(item.question))
+        .slice(0, maxQuestions)
+        .map(async (item) => {
+          const visualDescription = cleanText(item.visual_description);
+          const visualSourceHint = cleanText(item.visual_source_hint).toLowerCase();
+          const hintedVisual = ['diagram_only', 'chart_only', 'table_only', 'figure_only', 'whole_page'].includes(visualSourceHint);
+          const directImageUrl = cleanText(item.image_url);
+
+          if (directImageUrl) {
+            return { ...item, image_url: directImageUrl };
+          }
+
+          if (!visualDescription && !hintedVisual) {
+            return item;
+          }
+
+          const visualResponse = await base44.functions.invoke('extractVisualForKahoot', {
+            fileUrl,
+            fileName,
+            question: item.question,
+            visualDescription,
+            visualSourceHint: hintedVisual ? visualSourceHint : 'whole_page',
+          });
+
+          return {
+            ...item,
+            image_url: cleanText(visualResponse.data?.extracted_image_url),
+          };
+        })
+    );
+
+    const safeQuestions = questionsWithVisuals
       .map((item) => {
         const normalizedOptions = Array.isArray(item.options)
           ? item.options.map(cleanText).filter(Boolean).slice(0, 4)
