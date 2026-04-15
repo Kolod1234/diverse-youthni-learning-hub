@@ -148,155 +148,152 @@ function RSSFeedWidget({ initialLimit = 6 }) {
         ))}
       </div>
 
-      <AnimatePresence mode="wait">
-        {/* Featured Story - Large Card */}
-        {featuredItem && (
-          <motion.div
-            key="featured-item"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.5 }}
+      {/* Featured Story - Large Card */}
+      {featuredItem && (
+        <motion.div
+          key="featured-item"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+        >
+          <a
+            href={featuredItem.link}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="block group"
           >
-            <a
-              href={featuredItem.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block group"
-            >
-              <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
-                <div className="relative h-96 overflow-hidden bg-black">
-                  {featuredItem.image_url ? (
-                    <img
-                      src={featuredItem.image_url}
-                      alt={featuredItem.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                      onError={(e) => {
-                        e.target.src = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`;
-                      }}
-                    />
-                  ) : (
-                    <img
-                      src={`https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`}
-                      alt={featuredItem.title}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                    />
+            <Card className="overflow-hidden hover:shadow-2xl transition-all duration-300 border-0">
+              <div className="relative h-96 overflow-hidden bg-black">
+                {featuredItem.image_url ? (
+                  <img
+                    src={featuredItem.image_url}
+                    alt={featuredItem.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.src = `https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`;
+                    }}
+                  />
+                ) : (
+                  <img
+                    src={`https://images.unsplash.com/photo-1504711434969-e33886168f5c?w=1200&h=600&fit=crop&auto=format&q=90`}
+                    alt={featuredItem.title}
+                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                  />
+                )}
+                
+                {/* Overlay gradient */}
+                <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                
+                {/* Content overlay */}
+                <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
+                  <div className="mb-3">
+                    <Badge className={`${getSourceStyle(featuredItem.category).badge} text-white border-0 px-3 py-1 text-xs font-medium`}>
+                      {featuredItem.category || 'Newsflare'}
+                    </Badge>
+                  </div>
+                  
+                  <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
+                    {decodeHTMLEntities(featuredItem.title)}
+                  </h2>
+                  
+                  {featuredItem.description && (
+                    <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
+                      {decodeHTMLEntities(featuredItem.description)}
+                    </p>
                   )}
                   
-                  {/* Overlay gradient */}
-                  <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/40 to-transparent" />
+                  <div className="flex items-center gap-6 text-white/80 text-sm">
+                    <button className="flex items-center gap-2 hover:text-white transition-colors">
+                      <ThumbsUp className="w-4 h-4" />
+                      <span>{Math.floor(Math.random() * 500) + 100}</span>
+                    </button>
+                    <button className="flex items-center gap-2 hover:text-white transition-colors">
+                      <MessageCircle className="w-4 h-4" />
+                      <span>{Math.floor(Math.random() * 50) + 5}</span>
+                    </button>
+                    {featuredItem.published_date && (
+                      <div className="flex items-center gap-2">
+                        <Clock className="w-4 h-4" />
+                        {getTimeAgo(featuredItem.published_date)}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </Card>
+          </a>
+        </motion.div>
+      )}
+
+      {/* Grid of Stories */}
+      <div className="grid md:grid-cols-2 gap-4">
+        {gridItems.map((item, index) => {
+          if (!item) return null;
+          const sourceStyle = getSourceStyle(item.category);
+          return (
+            <motion.div
+              key={item.id || `item-${index}`}
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.3 }}
+            >
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="block group h-full"
+              >
+                <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 h-full flex flex-col">
+                  <div className="relative h-48 overflow-hidden bg-gray-200">
+                    <img
+                      src={item.image_url || `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`}
+                      alt={item.title}
+                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+                      onError={(e) => {
+                        e.target.src = `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`;
+                      }}
+                    />
+                  </div>
                   
-                  {/* Content overlay */}
-                  <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
-                    <div className="mb-3">
-                      <Badge className={`${getSourceStyle(featuredItem.category).badge} text-white border-0 px-3 py-1 text-xs font-medium`}>
-                        {featuredItem.category || 'Newsflare'}
+                  <div className="p-5 flex-1 flex flex-col bg-card">
+                    <div className="flex items-center gap-2 mb-3">
+                      <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
+                        {item.category || 'News'}
                       </Badge>
+                      {item.published_date && (
+                        <span className="text-xs text-muted-foreground">
+                          {getTimeAgo(item.published_date)}
+                        </span>
+                      )}
                     </div>
                     
-                    <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
-                      {decodeHTMLEntities(featuredItem.title)}
-                    </h2>
+                    <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-blue-500 transition-colors">
+                      {decodeHTMLEntities(item.title)}
+                    </h3>
                     
-                    {featuredItem.description && (
-                      <p className="text-white/90 text-sm md:text-base mb-4 line-clamp-2 max-w-4xl">
-                        {decodeHTMLEntities(featuredItem.description)}
+                    {item.description && (
+                      <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
+                        {decodeHTMLEntities(item.description)}
                       </p>
                     )}
                     
-                    <div className="flex items-center gap-6 text-white/80 text-sm">
-                      <button className="flex items-center gap-2 hover:text-white transition-colors">
-                        <ThumbsUp className="w-4 h-4" />
-                        <span>{Math.floor(Math.random() * 500) + 100}</span>
+                    <div className="flex items-center gap-4 text-muted-foreground text-sm pt-3 border-t border-border">
+                      <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
+                        <ThumbsUp className="w-3.5 h-3.5" />
+                        <span>{Math.floor(Math.random() * 100) + 10}</span>
                       </button>
-                      <button className="flex items-center gap-2 hover:text-white transition-colors">
-                        <MessageCircle className="w-4 h-4" />
-                        <span>{Math.floor(Math.random() * 50) + 5}</span>
+                      <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
+                        <MessageCircle className="w-3.5 h-3.5" />
+                        <span>{Math.floor(Math.random() * 30) + 1}</span>
                       </button>
-                      {featuredItem.published_date && (
-                        <div className="flex items-center gap-2">
-                          <Clock className="w-4 h-4" />
-                          {getTimeAgo(featuredItem.published_date)}
-                        </div>
-                      )}
                     </div>
                   </div>
-                </div>
-              </Card>
-            </a>
-          </motion.div>
-        )}
-
-        {/* Grid of Stories */}
-        <div className="grid md:grid-cols-2 gap-4">
-          {gridItems.map((item, index) => {
-            if (!item) return null;
-            const sourceStyle = getSourceStyle(item.category);
-            return (
-              <motion.div
-                key={item.id || `item-${index}`}
-                initial={{ opacity: 0, scale: 0.95 }}
-                animate={{ opacity: 1, scale: 1 }}
-                exit={{ opacity: 0, scale: 0.95 }}
-                transition={{ duration: 0.3 }}
-              >
-                <a
-                  href={item.link}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block group h-full"
-                >
-                  <Card className="overflow-hidden hover:shadow-xl transition-all duration-300 border-0 h-full flex flex-col">
-                    <div className="relative h-48 overflow-hidden bg-gray-200">
-                      <img
-                        src={item.image_url || `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`}
-                        alt={item.title}
-                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-                        onError={(e) => {
-                          e.target.src = `https://images.unsplash.com/photo-1585776245991-cf89dd7fc73a?w=800&h=400&fit=crop&auto=format&q=85`;
-                        }}
-                      />
-                    </div>
-                    
-                    <div className="p-5 flex-1 flex flex-col bg-card">
-                      <div className="flex items-center gap-2 mb-3">
-                        <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
-                          {item.category || 'News'}
-                        </Badge>
-                        {item.published_date && (
-                          <span className="text-xs text-muted-foreground">
-                            {getTimeAgo(item.published_date)}
-                          </span>
-                        )}
-                      </div>
-                      
-                      <h3 className="text-lg font-bold text-foreground mb-2 line-clamp-2 group-hover:text-blue-500 transition-colors">
-                        {decodeHTMLEntities(item.title)}
-                      </h3>
-                      
-                      {item.description && (
-                        <p className="text-sm text-muted-foreground mb-4 line-clamp-2 flex-1">
-                          {decodeHTMLEntities(item.description)}
-                        </p>
-                      )}
-                      
-                      <div className="flex items-center gap-4 text-muted-foreground text-sm pt-3 border-t border-border">
-                        <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                          <ThumbsUp className="w-3.5 h-3.5" />
-                          <span>{Math.floor(Math.random() * 100) + 10}</span>
-                        </button>
-                        <button className="flex items-center gap-1 hover:text-blue-500 transition-colors">
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>{Math.floor(Math.random() * 30) + 1}</span>
-                        </button>
-                      </div>
-                    </div>
-                  </Card>
-                </a>
-              </motion.div>
-            );
-          })}
-        </div>
-      </AnimatePresence>
+                </Card>
+              </a>
+            </motion.div>
+          );
+        })}
+      </div>
 
       {/* Load More Button */}
       {hasMore && (
