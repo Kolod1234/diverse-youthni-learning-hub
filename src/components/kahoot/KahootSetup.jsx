@@ -11,7 +11,7 @@ function generatePin() {
 export default function KahootSetup({ user, onGameCreated }) {
   const [title, setTitle] = useState('');
   const [questions, setQuestions] = useState([
-    { question: '', question_type: 'multiple_choice', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }
+    { question: '', question_type: 'image_based', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }
   ]);
   const [importQuizId, setImportQuizId] = useState('');
   const [importPastQuestionsFile, setImportPastQuestionsFile] = useState(null);
@@ -41,12 +41,15 @@ export default function KahootSetup({ user, onGameCreated }) {
         time_limit_seconds: q.time_limit_seconds || 20,
         image_url: q.image_url || '',
       }));
-    if (imported.length > 0) setQuestions(imported);
+    if (imported.length > 0) {
+    setQuestions(imported);
+    setSelectedQuestionIndex(0);
+    }
     setShowImport(false);
   };
 
   const addQuestion = () => {
-    setQuestions([...questions, { question: '', question_type: 'multiple_choice', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }]);
+    setQuestions([...questions, { question: '', question_type: 'image_based', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }]);
   };
 
   const removeQuestion = (i) => {
