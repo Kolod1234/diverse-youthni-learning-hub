@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 
 import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
@@ -181,9 +180,9 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                 {/* Content overlay */}
                 <div className="absolute bottom-0 left-0 right-0 p-8 text-white">
                   <div className="mb-3">
-                    <Badge className={`${getSourceStyle(featuredItem.category).badge} text-white border-0 px-3 py-1 text-xs font-medium`}>
+                    <span className={`inline-flex items-center rounded-md px-3 py-1 text-xs font-medium text-white ${getSourceStyle(featuredItem.category).badge}`}>
                       {featuredItem.category || 'Newsflare'}
-                    </Badge>
+                    </span>
                   </div>
                   
                   <h2 className="text-3xl md:text-4xl font-bold mb-4 leading-tight group-hover:text-blue-300 transition-colors">
@@ -246,9 +245,9 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                   
                   <div className="p-5 flex-1 flex flex-col bg-card">
                     <div className="flex items-center gap-2 mb-3">
-                      <Badge className={`${sourceStyle.badge} text-white border-0 text-xs px-2 py-0.5`}>
+                      <span className={`inline-flex items-center rounded-md px-2 py-0.5 text-xs text-white ${sourceStyle.badge}`}>
                         {item.category || 'News'}
-                      </Badge>
+                      </span>
                       {item.published_date && (
                         <span className="text-xs text-muted-foreground">
                           {getTimeAgo(item.published_date)}
