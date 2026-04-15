@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Image as ImageIcon } from 'lucide-react';
+import { CheckCircle, XCircle, Image as ImageIcon, Clock3 } from 'lucide-react';
+import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
 
 const COLORS = ['#e21b3c', '#1368ce', '#26890c', '#ffa602'];
 const SHAPES = ['▲', '●', '■', '♦'];
@@ -42,14 +43,24 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
   // After answering — show waiting screen
   if (hasAnswered && !showResults) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 flex flex-col items-center justify-center text-white p-8">
-        <div className="w-20 h-20 rounded-full flex items-center justify-center text-5xl mb-6"
-          style={{ backgroundColor: COLORS[lastAnswerIndex] }}>
-          {SHAPES[lastAnswerIndex]}
+      <div className="min-h-screen relative overflow-hidden bg-[#6f4298] text-white">
+        <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#14d9e6]/70 via-[#2ec5ff]/45 to-[#ffb347]/60" />
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 text-center">
+          <div className="rounded-[32px] bg-white/18 p-10 shadow-2xl backdrop-blur-md">
+            {lastAnswerIndex != null && (
+              <div className="mx-auto mb-6 flex h-24 w-24 items-center justify-center rounded-full text-5xl shadow-2xl" style={{ backgroundColor: COLORS[lastAnswerIndex] }}>
+                {SHAPES[lastAnswerIndex]}
+              </div>
+            )}
+            <h2 className="text-4xl font-black text-white">Answer submitted!</h2>
+            <p className="mt-3 text-lg font-semibold text-white/85 animate-pulse">Waiting for others...</p>
+            <div className="mt-6 inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 shadow-xl">
+              <Clock3 className="h-5 w-5 text-[#6f4298]" />
+              <span className="text-3xl font-black text-[#6f4298]">{timeLeft}s</span>
+            </div>
+          </div>
         </div>
-        <h2 className="text-2xl font-black mb-2">Answer submitted!</h2>
-        <p className="text-purple-300 animate-pulse">Waiting for others...</p>
-        <div className="mt-6 text-5xl font-black text-white">{timeLeft}s</div>
       </div>
     );
   }
@@ -57,93 +68,109 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
   // Show results
   if (showResults) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 flex flex-col items-center justify-center text-white p-8">
-        {myAnswer ? (
-          <>
-            <div className={`w-24 h-24 rounded-full flex items-center justify-center mb-6 ${isCorrect ? 'bg-green-400' : 'bg-red-400'}`}>
-              {isCorrect ? <CheckCircle className="w-14 h-14 text-white" /> : <XCircle className="w-14 h-14 text-white" />}
-            </div>
-            <h2 className="text-3xl font-black mb-2">{isCorrect ? 'Correct! 🎉' : 'Wrong!'}</h2>
-            {question.question_type === 'short_answer' && myAnswer?.text_answer && (
-              <p className="text-purple-200 mb-2">Your answer: {myAnswer.text_answer}</p>
+      <div className="min-h-screen relative overflow-hidden bg-[#6f4298] text-white">
+        <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#14d9e6]/70 via-[#2ec5ff]/45 to-[#ffb347]/60" />
+        <div className="relative z-10 flex min-h-screen items-center justify-center px-6 py-10">
+          <div className="w-full max-w-2xl rounded-[36px] bg-white/18 p-8 text-center shadow-2xl backdrop-blur-md md:p-10">
+            {myAnswer ? (
+              <>
+                <div className={`mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full shadow-2xl ${isCorrect ? 'bg-green-400' : 'bg-red-400'}`}>
+                  {isCorrect ? <CheckCircle className="h-16 w-16 text-white" /> : <XCircle className="h-16 w-16 text-white" />}
+                </div>
+                <h2 className="text-4xl font-black text-white">{isCorrect ? 'Correct!' : 'Not quite!'}</h2>
+                {question.question_type === 'short_answer' && myAnswer?.text_answer && (
+                  <p className="mt-3 text-lg font-semibold text-white/85">Your answer: {myAnswer.text_answer}</p>
+                )}
+                {isCorrect && <p className="mt-4 text-2xl font-black text-yellow-200">+{myAnswer.points_earned} points</p>}
+                <p className="mt-6 text-lg font-semibold text-white/80 animate-pulse">Waiting for host...</p>
+              </>
+            ) : (
+              <>
+                <div className="mx-auto mb-6 flex h-28 w-28 items-center justify-center rounded-full bg-red-400 shadow-2xl">
+                  <XCircle className="h-16 w-16 text-white" />
+                </div>
+                <h2 className="text-4xl font-black text-white">Time’s up!</h2>
+                <p className="mt-6 text-lg font-semibold text-white/80 animate-pulse">Waiting for host...</p>
+              </>
             )}
-            {isCorrect && <p className="text-yellow-300 text-xl font-bold">+{myAnswer.points_earned} points</p>}
-            <p className="text-purple-300 mt-4 animate-pulse">Waiting for host...</p>
-          </>
-        ) : (
-          <>
-            <XCircle className="w-20 h-20 text-red-400 mb-4" />
-            <h2 className="text-2xl font-black mb-2">Time's up!</h2>
-            <p className="text-purple-300 animate-pulse">Waiting for host...</p>
-          </>
-        )}
+          </div>
+        </div>
       </div>
     );
   }
 
   // Active question — show answer buttons
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 flex flex-col">
-      {/* Timer */}
-      <div className="flex justify-center py-4">
-        <div className="w-16 h-16 rounded-full bg-white flex items-center justify-center shadow-xl">
-          <span className="text-2xl font-black text-purple-900">{timeLeft}</span>
-        </div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-[#6f4298] text-white">
+      <div className="absolute inset-0 bg-cover bg-center opacity-30" style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }} />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#14d9e6]/70 via-[#2ec5ff]/45 to-[#ffb347]/60" />
 
-      {/* Question display */}
-      <div className="px-4 mb-4">
-        <div className="bg-white/10 rounded-2xl px-6 py-4 text-center">
-          {question.image_url && (
-            <div className="mb-4 flex justify-center">
-              <img src={question.image_url} alt="Question visual" className="max-h-56 rounded-2xl object-contain bg-white/10" />
-            </div>
-          )}
-          {question.question_type === 'image_based' && (
-            <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/15 px-3 py-1 text-xs font-bold text-white">
-              <ImageIcon className="w-4 h-4" /> Image-based question
-            </div>
-          )}
-          <p className="text-white text-lg font-bold">{question.question}</p>
-        </div>
-      </div>
-
-      {isShortAnswer ? (
-        <div className="flex-1 flex items-center justify-center px-4 pb-6">
-          <div className="w-full max-w-xl bg-white rounded-3xl p-6 shadow-2xl">
-            <input
-              className="w-full border-2 border-gray-200 rounded-2xl px-5 py-4 text-xl font-bold text-center focus:outline-none focus:border-purple-500 mb-4"
-              placeholder="Type your answer"
-              value={shortAnswer}
-              onChange={(e) => setShortAnswer(e.target.value)}
-              onKeyDown={(e) => e.key === 'Enter' && shortAnswer.trim() && onAnswer(shortAnswer)}
-              disabled={hasAnswered}
-            />
-            <button
-              onClick={() => onAnswer(shortAnswer)}
-              disabled={hasAnswered || !shortAnswer.trim()}
-              className="w-full bg-purple-600 text-white rounded-2xl py-4 text-lg font-black hover:bg-purple-700 disabled:opacity-40"
-            >
-              Submit Answer
-            </button>
+      <div className="relative z-10 flex min-h-screen flex-col px-3 py-3 md:px-6 md:py-5">
+        <div className="mb-3 flex items-center justify-center">
+          <div className="inline-flex items-center gap-3 rounded-full bg-white px-5 py-3 shadow-2xl">
+            <Clock3 className="h-5 w-5 text-[#6f4298]" />
+            <span className="text-3xl font-black text-[#6f4298]">{timeLeft}</span>
           </div>
         </div>
-      ) : (
-        <div className="flex-1 grid grid-cols-2 gap-3 px-4 pb-6">
-          {question.options.map((opt, oi) => (
-            <button
-              key={oi}
-              onClick={() => onAnswer(oi)}
-              disabled={hasAnswered}
-              className="rounded-2xl text-white font-black text-xl flex flex-col items-center justify-center gap-2 p-4 active:scale-95 transition-transform disabled:opacity-40"
-              style={{ backgroundColor: COLORS[oi], minHeight: '120px' }}
-            >
-              <span className="text-3xl">{SHAPES[oi]}</span>
-              <span className="text-sm font-bold text-center leading-tight">{opt}</span>
-            </button>
-          ))}
+
+        <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-4">
+          <div className="rounded-[34px] bg-white/14 p-4 shadow-2xl backdrop-blur-md md:p-6">
+            <div className="rounded-[30px] bg-white/18 p-4 text-center backdrop-blur-sm md:p-6">
+              {question.image_url && (
+                <div className="mb-4 flex justify-center">
+                  <img src={question.image_url} alt="Question visual" className="max-h-[42vh] w-full max-w-2xl rounded-[28px] object-cover shadow-2xl" />
+                </div>
+              )}
+              {question.question_type === 'image_based' && (
+                <div className="mb-3 inline-flex items-center gap-2 rounded-full bg-white/20 px-4 py-1.5 text-xs font-black uppercase tracking-[0.2em] text-white">
+                  <ImageIcon className="h-4 w-4" /> Image question
+                </div>
+              )}
+              <div className="inline-block rounded-2xl bg-[#fff6cf] px-5 py-3 shadow-lg">
+                <p className="text-xl font-black text-[#3b2b1a] md:text-3xl">{question.question}</p>
+              </div>
+            </div>
+          </div>
+
+          {isShortAnswer ? (
+            <div className="mx-auto w-full max-w-2xl rounded-[32px] bg-white p-6 shadow-2xl md:p-8">
+              <input
+                className="mb-4 w-full rounded-2xl border-2 border-gray-200 px-5 py-4 text-xl font-bold text-center text-gray-900 focus:border-[#6f4298] focus:outline-none"
+                placeholder="Type your answer"
+                value={shortAnswer}
+                onChange={(e) => setShortAnswer(e.target.value)}
+                onKeyDown={(e) => e.key === 'Enter' && shortAnswer.trim() && onAnswer(shortAnswer)}
+                disabled={hasAnswered}
+              />
+              <button
+                onClick={() => onAnswer(shortAnswer)}
+                disabled={hasAnswered || !shortAnswer.trim()}
+                className="w-full rounded-2xl bg-[#6f4298] py-4 text-lg font-black text-white shadow-xl hover:bg-[#5c347f] disabled:opacity-40"
+              >
+                Submit Answer
+              </button>
+            </div>
+          ) : (
+            <div className={`grid gap-3 pb-2 ${question.options?.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
+              {question.options.map((opt, oi) => (
+                <button
+                  key={oi}
+                  onClick={() => onAnswer(oi)}
+                  disabled={hasAnswered}
+                  className="flex min-h-[120px] items-center justify-center rounded-[24px] px-4 py-5 text-center text-white shadow-2xl transition-transform active:scale-95 disabled:opacity-40 md:min-h-[140px]"
+                  style={{ backgroundColor: COLORS[oi] }}
+                >
+                  <div className="flex flex-col items-center justify-center gap-2">
+                    <span className="text-3xl font-black md:text-4xl">{SHAPES[oi]}</span>
+                    <span className="text-lg font-black leading-tight md:text-2xl">{opt}</span>
+                  </div>
+                </button>
+              ))}
+            </div>
+          )}
         </div>
-      )}
+      </div>
     </div>
   );
 }
