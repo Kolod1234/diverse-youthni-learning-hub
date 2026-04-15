@@ -127,28 +127,25 @@ function RSSFeedWidget({ initialLimit = 6 }) {
   return (
     <div className="space-y-6">
       {/* Category Filters */}
-      <div className="flex items-center gap-3 flex-wrap">
+      <div className="flex flex-wrap items-center gap-3">
         <div className="flex items-center gap-2 text-foreground/60">
-          <Filter className="w-4 h-4" />
+          <Filter className="h-4 w-4" />
           <span className="text-sm font-medium">Filter:</span>
         </div>
-        {categories.filter(Boolean).map((category, index) => (
-          <button
-            key={`${category}-${index}`}
-            type="button"
-            onClick={() => {
-              setSelectedCategory(category);
-              setDisplayCount(initialLimit);
-            }}
-            className={`inline-flex h-8 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors ${
-              selectedCategory === category
-                ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
-                : 'border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground'
-            }`}
-          >
-            {category === 'all' ? 'All' : category}
-          </button>
-        ))}
+        <select
+          value={selectedCategory}
+          onChange={(e) => {
+            setSelectedCategory(e.target.value);
+            setDisplayCount(initialLimit);
+          }}
+          className="h-9 rounded-md border border-input bg-background px-3 text-sm text-foreground shadow-sm focus:outline-none focus:ring-1 focus:ring-ring"
+        >
+          {categories.filter(Boolean).map((category, index) => (
+            <option key={`${category}-${index}`} value={category}>
+              {category === 'all' ? 'All' : category}
+            </option>
+          ))}
+        </select>
       </div>
 
       {/* Featured Story - Large Card */}
