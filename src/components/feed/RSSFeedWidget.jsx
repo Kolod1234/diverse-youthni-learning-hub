@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
 
 import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
@@ -286,25 +285,24 @@ function RSSFeedWidget({ initialLimit = 6 }) {
       {/* Load More Button */}
       {hasMore && (
         <div className="flex justify-center pt-6">
-          <Button
+          <button
+            type="button"
             onClick={handleLoadMore}
             disabled={isLoadingMore}
-            variant="outline"
-            size="lg"
-            className="hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300"
+            className="inline-flex h-10 items-center justify-center rounded-md border border-input bg-background px-8 text-sm font-medium shadow-sm transition-colors hover:bg-blue-50 hover:text-blue-700 hover:border-blue-300 disabled:pointer-events-none disabled:opacity-50"
           >
             {isLoadingMore ? (
               <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
                 Loading...
               </>
             ) : (
               <>
                 See more
-                <ArrowRight className="w-4 h-4 ml-2" />
+                <ArrowRight className="ml-2 h-4 w-4" />
               </>
             )}
-          </Button>
+          </button>
         </div>
       )}
 
