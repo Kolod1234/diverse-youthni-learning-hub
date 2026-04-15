@@ -17,6 +17,28 @@ import ModuleCourseLessonsPreview from '@/components/academy/ModuleCourseLessons
 export default function AcademyBuilder() {
   const location = useLocation();
   const navigate = useNavigate();
+
+  const { data: currentUser } = useQuery({
+    queryKey: ['auth-me'],
+    queryFn: () => base44.auth.me(),
+    staleTime: 30000,
+  });
+
+  const isAllowed = currentUser && (
+    currentUser.role === 'admin' ||
+    currentUser.is_tutor === true ||
+    currentUser.is_coordinator === true
+  );
+
+  if (currentUser && !isAllowed) {
+    return (
+      <Container maxWidth="sm" sx={{ py: 8, textAlign: 'center' }}>
+        <Typography variant="h5" fontWeight="bold" gutterBottom>Access Restricted</Typography>
+        <Typography color="text.secondary">This page is only available to tutors, admins, and coordinators.</Typography>
+        <Button sx={{ mt: 3 }} variant="contained" onClick={() => navigate('/')}>Go Home</Button>
+      </Container>
+    );
+  }
   const queryClient = useQueryClient();
   const params = new URLSearchParams(location.search);
   const academyId = params.get('id');
