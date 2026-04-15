@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
+import { Trophy, Sparkles } from 'lucide-react';
 import KahootJoin from '@/components/kahoot/KahootJoin';
 import KahootPlayerLobby from '@/components/kahoot/KahootPlayerLobby';
 import KahootPlayerQuestion from '@/components/kahoot/KahootPlayerQuestion';
 import KahootFinished from '@/components/kahoot/KahootFinished';
+import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
 
 export default function KahootPlay() {
   const queryClient = useQueryClient();
@@ -92,8 +94,13 @@ export default function KahootPlay() {
 
   if (!game) {
     return (
-      <div className="min-h-screen bg-purple-900 flex items-center justify-center">
-        <div className="w-12 h-12 border-4 border-white border-t-transparent rounded-full animate-spin" />
+      <div className="min-h-screen relative overflow-hidden bg-[#6f4298]">
+        <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#14d9e6]/70 via-[#2ec5ff]/45 to-[#ffb347]/60" />
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center text-white">
+          <div className="mb-5 h-14 w-14 rounded-full border-4 border-white border-t-transparent animate-spin" />
+          <p className="text-lg font-black uppercase tracking-[0.25em] text-white/80">Loading game</p>
+        </div>
       </div>
     );
   }
@@ -119,18 +126,31 @@ export default function KahootPlay() {
     const sorted = [...(game.participants || [])].sort((a, b) => (b.score || 0) - (a.score || 0));
     const myRank = sorted.findIndex(p => p.email === playerInfo.email) + 1;
     return (
-      <div className="min-h-screen bg-purple-900 flex flex-col items-center justify-center text-white p-8">
-        <h2 className="text-3xl font-bold mb-2">Leaderboard</h2>
-        <p className="text-purple-200 mb-8">Your rank: #{myRank} • Score: {me?.score || 0}</p>
-        <div className="w-full max-w-md space-y-2">
-          {sorted.slice(0, 5).map((p, i) => (
-            <div key={p.email} className={`flex items-center justify-between rounded-xl px-4 py-3 font-semibold ${p.email === playerInfo.email ? 'bg-yellow-400 text-yellow-900' : 'bg-white/20'}`}>
-              <span>#{i + 1} {p.name}</span>
-              <span>{p.score || 0} pts</span>
-            </div>
-          ))}
+      <div className="min-h-screen relative overflow-hidden bg-[#6f4298] p-6 text-white">
+        <div className="absolute inset-0 bg-cover bg-center opacity-25" style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }} />
+        <div className="absolute inset-0 bg-gradient-to-br from-[#14d9e6]/70 via-[#2ec5ff]/45 to-[#ffb347]/60" />
+        <div className="relative z-10 flex min-h-screen flex-col items-center justify-center">
+          <div className="mb-5 flex h-24 w-24 items-center justify-center rounded-full bg-yellow-400 shadow-2xl">
+            <Trophy className="h-12 w-12 text-yellow-900" />
+          </div>
+          <p className="text-sm font-black uppercase tracking-[0.3em] text-white/75">Leaderboard</p>
+          <h2 className="mt-2 text-4xl font-black md:text-5xl">You’re #{myRank}</h2>
+          <p className="mt-3 rounded-full bg-white/18 px-5 py-2 text-lg font-bold shadow-xl backdrop-blur-sm">Score: {me?.score || 0} pts</p>
+
+          <div className="mt-8 w-full max-w-xl space-y-3 rounded-[36px] bg-white/14 p-5 shadow-2xl backdrop-blur-md md:p-6">
+            {sorted.slice(0, 5).map((p, i) => (
+              <div key={p.email} className={`flex items-center justify-between rounded-3xl px-5 py-4 font-bold shadow-lg ${p.email === playerInfo.email ? 'bg-yellow-400 text-yellow-900' : 'bg-white/14 text-white'}`}>
+                <span>#{i + 1} {p.name}</span>
+                <span>{p.score || 0} pts</span>
+              </div>
+            ))}
+          </div>
+
+          <div className="mt-8 inline-flex items-center gap-2 rounded-full bg-white/14 px-5 py-3 text-white/85 shadow-xl backdrop-blur-sm">
+            <Sparkles className="h-4 w-4" />
+            <span className="font-semibold animate-pulse">Waiting for host...</span>
+          </div>
         </div>
-        <p className="mt-8 text-purple-300 animate-pulse">Waiting for host...</p>
       </div>
     );
   }
