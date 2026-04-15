@@ -53,6 +53,8 @@ Rules:
 - Use a time limit between 20 and 60 seconds.
 - IMPORTANT: if a question depends on a diagram, chart, graph, table, labelled image, map, or visual, keep it as a diagram-based Kahoot question.
 - For diagram-based questions, include a short description of the visual and keep the question understandable with the attached image if available.
+- For every visual question, include a visual_source_hint describing the best image to show in Kahoot.
+- visual_source_hint must be one of: "diagram_only", "chart_only", "table_only", "figure_only", "whole_page".
 
 Return JSON.`;
 
@@ -75,7 +77,8 @@ Return JSON.`;
                 time_limit_seconds: { type: 'number' },
                 explanation: { type: 'string' },
                 image_url: { type: 'string' },
-                visual_description: { type: 'string' }
+                visual_description: { type: 'string' },
+                visual_source_hint: { type: 'string' }
               }
             }
           }
@@ -100,9 +103,11 @@ Return JSON.`;
           : 0;
 
         const imageUrl = cleanText(item.image_url);
+        const visualSourceHint = cleanText(item.visual_source_hint).toLowerCase();
+        const isVisualQuestion = !!imageUrl || !!cleanText(item.visual_description) || ['diagram_only', 'chart_only', 'table_only', 'figure_only', 'whole_page'].includes(visualSourceHint);
         return {
           question: cleanText(item.question),
-          question_type: imageUrl ? 'image_based' : 'multiple_choice',
+          question_type: isVisualQuestion ? 'image_based' : 'multiple_choice',
           options,
           correct_answer: correctAnswer,
           correct_text_answer: '',

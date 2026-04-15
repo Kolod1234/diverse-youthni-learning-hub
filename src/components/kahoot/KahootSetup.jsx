@@ -172,7 +172,7 @@ export default function KahootSetup({ user, onGameCreated }) {
                 onChange={e => setImportPastQuestionsFile(e.target.files?.[0] || null)}
                 className="border-2 border-gray-200 rounded-xl px-3 py-2"
               />
-              <p className="text-sm text-gray-500">Upload a past questions file and the engine will convert it into Kahoot-style multiple choice questions.</p>
+              <p className="text-sm text-gray-500">Upload a past questions file and the engine will convert it into Kahoot-style questions, marking visual ones as image-based when a diagram or page snapshot is available.</p>
               <button
                 onClick={handlePastPaperImport}
                 disabled={!importPastQuestionsFile || importingPastPaper}
