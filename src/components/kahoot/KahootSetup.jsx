@@ -1,7 +1,7 @@
 import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
 
 function generatePin() {
@@ -80,10 +80,18 @@ export default function KahootSetup({ user, onGameCreated }) {
     if (converted.length > 0) {
       setTitle(response.data?.title || 'Past Questions Kahoot');
       setQuestions(converted);
+      setSelectedQuestionIndex(0);
       setShowPastPaperImport(false);
       setImportPastQuestionsFile(null);
     }
     setImportingPastPaper(false);
+  };
+
+  const handleQuestionMediaUpload = async (questionIndex, file) => {
+    if (!file) return;
+    const upload = await base44.integrations.Core.UploadFile({ file });
+    updateQuestion(questionIndex, 'image_url', upload.file_url);
+    updateQuestion(questionIndex, 'question_type', 'image_based');
   };
 
   const handleCreate = async () => {
@@ -138,7 +146,7 @@ export default function KahootSetup({ user, onGameCreated }) {
                   <span className="text-sm font-black text-gray-700">{qi + 1} {q.question_type === 'short_answer' ? 'True or false' : 'Quiz'}</span>
                   <span className="rounded-full bg-[#00c985] px-2 py-0.5 text-xs font-black text-white">★</span>
                 </div>
-                <p className="line-clamp-2 text-sm font-semibold text-gray-700">{q.question || 'Replace this with a more challenging question...'}</p>
+                <p className="line-clamp-2 text-sm font-semibold text-gray-700">{q.question || 'Untitled question'}</p>
                 <div className="mt-3 grid grid-cols-2 gap-2">
                   {q.options?.slice(0, 4).map((opt, oi) => (
                     <div key={oi} className="h-7 rounded-lg" style={{ backgroundColor: KAHOOT_COLORS[oi], opacity: 0.9 }} />
@@ -240,7 +248,7 @@ export default function KahootSetup({ user, onGameCreated }) {
 
                 <input
                   className="mb-4 w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-xl font-semibold focus:border-[#6f4298] focus:outline-none"
-                  placeholder="Replace this with a more challenging question..."
+                  placeholder="Enter your question"
                   value={q.question}
                   onChange={e => updateQuestion(qi, 'question', e.target.value)}
                 />
@@ -254,24 +262,52 @@ export default function KahootSetup({ user, onGameCreated }) {
                       onChange={e => updateQuestion(qi, 'question_type', e.target.value)}
                     >
                       <option value="multiple_choice">Multiple choice</option>
-                      <option value="image_based">Image-based</option>
+                      <option value="image_based">Diagram based</option>
                       <option value="short_answer">Short answer</option>
                     </select>
                   </div>
                   <div>
-                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Image URL</label>
+                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Media URL</label>
                     <input
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                      placeholder="https://..."
+                      placeholder="Paste image URL"
                       value={q.image_url || ''}
                       onChange={e => updateQuestion(qi, 'image_url', e.target.value)}
                     />
                   </div>
                 </div>
 
-                {(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url) && (
-                  <div className="mb-5 flex justify-center">
-                    <img src={(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                {q.question_type === 'image_based' && (
+                  <div className="mb-5 rounded-[28px] border-2 border-dashed border-gray-300 bg-[#f5eefb] p-6 text-center">
+                    {(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url) ? (
+                      <div className="space-y-4">
+                        <div className="flex justify-center">
+                          <img src={(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow">
+                            <Upload className="h-4 w-4" /> Replace media
+                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(qi, e.target.files?.[0] || null)} />
+                          </label>
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="space-y-4">
+                        <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#6f4298] shadow">
+                          <ImagePlus className="h-8 w-8" />
+                        </div>
+                        <div>
+                          <p className="text-lg font-bold text-gray-800">Find and insert media</p>
+                          <p className="mt-1 text-sm text-gray-500">Upload an image for diagram-based questions</p>
+                        </div>
+                        <div className="flex flex-wrap items-center justify-center gap-3">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]">
+                            <Upload className="h-4 w-4" /> Upload file
+                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(qi, e.target.files?.[0] || null)} />
+                          </label>
+                        </div>
+                      </div>
+                    )}
                   </div>
                 )}
 
