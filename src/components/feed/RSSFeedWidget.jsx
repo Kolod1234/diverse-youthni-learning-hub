@@ -129,22 +129,21 @@ function RSSFeedWidget({ initialLimit = 6 }) {
           <span className="text-sm font-medium">Filter:</span>
         </div>
         {categories.map((category) => (
-          <Button
+          <button
             key={category}
-            size="sm"
-            variant={selectedCategory === category ? 'default' : 'outline'}
+            type="button"
             onClick={() => {
               setSelectedCategory(category);
               setDisplayCount(initialLimit);
             }}
-            className={`transition-all ${
-              selectedCategory === category 
-                ? 'bg-blue-600 hover:bg-blue-700 text-white' 
-                : 'hover:bg-accent text-foreground border-border'
+            className={`inline-flex h-8 items-center justify-center whitespace-nowrap rounded-md border px-3 text-xs font-medium transition-colors ${
+              selectedCategory === category
+                ? 'border-blue-600 bg-blue-600 text-white hover:bg-blue-700'
+                : 'border-border bg-background text-foreground hover:bg-accent hover:text-accent-foreground'
             }`}
           >
             {category === 'all' ? 'All' : category}
-          </Button>
+          </button>
         ))}
       </div>
 
