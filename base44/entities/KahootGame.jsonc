@@ -1,0 +1,112 @@
+{
+  "name": "KahootGame",
+  "type": "object",
+  "properties": {
+    "pin": {
+      "type": "string",
+      "description": "6-digit game PIN"
+    },
+    "title": {
+      "type": "string",
+      "description": "Game title"
+    },
+    "host_email": {
+      "type": "string",
+      "description": "Email of the tutor hosting the game"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "lobby",
+        "question",
+        "results",
+        "leaderboard",
+        "finished"
+      ],
+      "default": "lobby",
+      "description": "Current game state"
+    },
+    "current_question_index": {
+      "type": "number",
+      "default": 0,
+      "description": "Index of the current question being shown"
+    },
+    "question_started_at": {
+      "type": "string",
+      "description": "ISO timestamp when current question started"
+    },
+    "questions": {
+      "type": "array",
+      "description": "List of questions for this game",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number"
+          },
+          "time_limit_seconds": {
+            "type": "number"
+          },
+          "image_url": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "participants": {
+      "type": "array",
+      "description": "List of joined players",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "answers": {
+            "type": "array",
+            "items": {
+              "type": "object",
+              "properties": {
+                "question_index": {
+                  "type": "number"
+                },
+                "selected_answer": {
+                  "type": "number"
+                },
+                "is_correct": {
+                  "type": "boolean"
+                },
+                "time_taken_ms": {
+                  "type": "number"
+                },
+                "points_earned": {
+                  "type": "number"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "pin",
+    "title",
+    "host_email"
+  ]
+}
