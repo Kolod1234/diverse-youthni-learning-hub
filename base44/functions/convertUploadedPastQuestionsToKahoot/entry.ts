@@ -49,6 +49,9 @@ Rules:
 - Keep each option under 80 characters if possible.
 - Use a time limit between 20 and 60 seconds.
 - Prefer actual answers from the source when possible.
+- IMPORTANT: if a question depends on a diagram, chart, graph, table, labelled image, map, or visual, keep it as a diagram-based Kahoot question.
+- For diagram-based questions, include a short description of the visual and keep the question understandable with the attached image.
+- If the uploaded file contains visible diagrams, extract and preserve them when possible.
 
 Return JSON only.`;
 
@@ -68,7 +71,9 @@ Return JSON only.`;
                 options: { type: 'array', items: { type: 'string' } },
                 correct_answer: { type: 'number' },
                 time_limit_seconds: { type: 'number' },
-                explanation: { type: 'string' }
+                explanation: { type: 'string' },
+                image_url: { type: 'string' },
+                visual_description: { type: 'string' }
               }
             }
           }
@@ -97,7 +102,8 @@ Return JSON only.`;
           options,
           correct_answer: correctAnswer,
           time_limit_seconds: [20, 30, 45, 60].includes(item.time_limit_seconds) ? item.time_limit_seconds : 30,
-          image_url: '',
+          image_url: cleanText(item.image_url),
+          visual_description: cleanText(item.visual_description),
         };
       });
 
