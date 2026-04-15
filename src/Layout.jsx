@@ -397,7 +397,7 @@ function LayoutContent({ children, currentPageName }) {
                   <ListItemIcon><Video size={20} color="#dc2626" /></ListItemIcon>
                   <ListItemText primary="Live Sessions" />
                 </MenuItem>
-                {user && (
+                {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                   <MenuItem component={Link} to="/kahoot-host" onClick={() => setMoreMenuAnchor(null)}>
                     <ListItemIcon><Sparkles size={20} color="#f59e0b" /></ListItemIcon>
                     <ListItemText primary="Kahoot" />
@@ -732,7 +732,7 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemIcon><Award size={20} /></ListItemIcon>
                       <ListItemText primary="Academies" />
                     </ListItemButton>
-                    {user && (
+                    {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                       <ListItemButton component={Link} to="/kahoot-host" onClick={() => setMobileMenuOpen(false)}>
                         <ListItemIcon><Sparkles size={20} /></ListItemIcon>
                         <ListItemText primary="Kahoot" />
