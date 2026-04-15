@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { CheckCircle, XCircle, Image as ImageIcon, Type, Clock3, Users } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
+import KahootLiveMetrics from '@/components/kahoot/KahootLiveMetrics';
 
 export default function KahootHostQuestion({ game, showResults, onShowResults, onNext }) {
   const qi = game.current_question_index || 0;
@@ -78,6 +79,17 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
             {question.image_url && (
               <div className="rounded-[28px] bg-white/10 p-3 shadow-2xl backdrop-blur-sm">
                 <img src={question.image_url} alt="Question visual" className="max-h-[300px] w-full max-w-md rounded-3xl object-cover md:max-w-lg" />
+              </div>
+            )}
+
+            {!showResults && !isShortAnswer && (
+              <div className="w-full max-w-5xl">
+                <KahootLiveMetrics
+                  question={question}
+                  answerCounts={answerCounts}
+                  totalPlayers={totalPlayers}
+                  totalAnswered={totalAnswered}
+                />
               </div>
             )}
 
