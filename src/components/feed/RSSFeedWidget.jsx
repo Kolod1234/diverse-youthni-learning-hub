@@ -4,7 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
-import { motion } from 'framer-motion';
+
 import { Rss, ExternalLink, Clock, ArrowRight, Filter, Loader2, ThumbsUp, MessageCircle, Share2 } from 'lucide-react';
 import { format } from 'date-fns';
 
@@ -81,7 +81,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
     return daysSincePublished <= 3;
   });
 
-  const categories = ['all', ...new Set(recentItems.map(item => item.category).filter(Boolean))];
+  const categories = ['all', ...new Set(recentItems.map(item => item.category).filter(c => c && typeof c === 'string'))];
   
   const filteredItems = selectedCategory === 'all' 
     ? recentItems 
@@ -150,12 +150,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
 
       {/* Featured Story - Large Card */}
       {featuredItem && (
-        <motion.div
-          key="featured-item"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-        >
+        <div>
           <a
             href={featuredItem.link}
             target="_blank"
@@ -222,7 +217,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
               </div>
             </Card>
           </a>
-        </motion.div>
+        </div>
       )}
 
       {/* Grid of Stories */}
@@ -231,12 +226,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
           if (!item) return null;
           const sourceStyle = getSourceStyle(item.category);
           return (
-            <motion.div
-              key={item.id || `item-${index}`}
-              initial={{ opacity: 0, scale: 0.95 }}
-              animate={{ opacity: 1, scale: 1 }}
-              transition={{ duration: 0.3 }}
-            >
+            <div key={item.id || `item-${index}`}>
               <a
                 href={item.link}
                 target="_blank"
@@ -290,7 +280,7 @@ function RSSFeedWidget({ initialLimit = 6 }) {
                   </div>
                 </Card>
               </a>
-            </motion.div>
+            </div>
           );
         })}
       </div>
