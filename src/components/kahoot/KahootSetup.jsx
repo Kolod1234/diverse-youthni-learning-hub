@@ -1,9 +1,8 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2 } from 'lucide-react';
-
-const COLORS = ['#e21b3c', '#1368ce', '#26890c', '#ffa602'];
+import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle } from 'lucide-react';
+import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
 
 function generatePin() {
   return Math.floor(100000 + Math.random() * 900000).toString();
@@ -20,6 +19,7 @@ export default function KahootSetup({ user, onGameCreated }) {
   const [importingPastPaper, setImportingPastPaper] = useState(false);
   const [showImport, setShowImport] = useState(false);
   const [showPastPaperImport, setShowPastPaperImport] = useState(false);
+  const [selectedQuestionIndex, setSelectedQuestionIndex] = useState(0);
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['all-quizzes'],
@@ -102,195 +102,225 @@ export default function KahootSetup({ user, onGameCreated }) {
     onGameCreated(game.id);
   };
 
+  const selectedQuestion = useMemo(
+    () => questions[selectedQuestionIndex] || questions[0],
+    [questions, selectedQuestionIndex]
+  );
+
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 p-6">
-      <div className="max-w-3xl mx-auto">
-        <div className="flex items-center gap-3 mb-8">
-          <div className="w-12 h-12 bg-yellow-400 rounded-2xl flex items-center justify-center">
-            <Zap className="w-7 h-7 text-yellow-900" />
-          </div>
-          <div>
-            <h1 className="text-3xl font-black text-white">Create Kahoot</h1>
-            <p className="text-purple-300">Host a live quiz game</p>
-          </div>
-        </div>
+    <div className="min-h-screen relative overflow-hidden bg-[#6f4298] p-4 md:p-6">
+      <div
+        className="absolute inset-0 bg-cover bg-center opacity-20"
+        style={{ backgroundImage: `url(${KAHOOT_BACKGROUND})` }}
+      />
+      <div className="absolute inset-0 bg-gradient-to-br from-[#7d4aa8]/90 via-[#7f58b4]/85 to-[#5f2f8b]/95" />
 
-        <div className="bg-white rounded-2xl p-6 mb-4 shadow-xl">
-          <label className="block text-sm font-bold text-gray-700 mb-1">Game Title</label>
-          <input
-            className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 text-lg font-semibold focus:outline-none focus:border-purple-500"
-            placeholder="My Epic Quiz"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-          />
-        </div>
-
-        {/* Import from Quiz */}
-        <div className="bg-white rounded-2xl p-4 mb-4 shadow-xl">
-          <button
-            className="flex items-center gap-2 text-purple-700 font-semibold"
-            onClick={() => setShowImport(!showImport)}
-          >
-            {showImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            Import from existing Quiz
-          </button>
-          {showImport && (
-            <div className="mt-3 flex gap-2">
-              <select
-                className="flex-1 border-2 border-gray-200 rounded-xl px-3 py-2"
-                value={importQuizId}
-                onChange={e => setImportQuizId(e.target.value)}
-              >
-                <option value="">Select a quiz...</option>
-                {quizzes.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
-              </select>
-              <button
-                onClick={handleImport}
-                className="bg-purple-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-purple-700"
-              >
-                Import
-              </button>
+      <div className="relative z-10 mx-auto grid max-w-7xl gap-4 lg:grid-cols-[280px_minmax(0,1fr)]">
+        <aside className="rounded-[28px] bg-white/95 p-4 shadow-2xl">
+          <div className="mb-4 flex items-center gap-3">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#f7c948]">
+              <Zap className="h-7 w-7 text-[#5b2b86]" />
             </div>
-          )}
-        </div>
-
-        {/* Import from Past Papers */}
-        <div className="bg-white rounded-2xl p-4 mb-4 shadow-xl">
-          <button
-            className="flex items-center gap-2 text-indigo-700 font-semibold"
-            onClick={() => setShowPastPaperImport(!showPastPaperImport)}
-          >
-            {showPastPaperImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-            <FileQuestion className="w-4 h-4" />
-            Import from past questions
-          </button>
-          {showPastPaperImport && (
-            <div className="mt-3 grid gap-3">
-              <input
-                type="file"
-                accept=".pdf,.doc,.docx,.txt,.json,.csv"
-                onChange={e => setImportPastQuestionsFile(e.target.files?.[0] || null)}
-                className="border-2 border-gray-200 rounded-xl px-3 py-2"
-              />
-              <p className="text-sm text-gray-500">Upload a past questions file and the engine will convert it into Kahoot-style questions, marking visual ones as image-based when a diagram or page snapshot is available.</p>
-              <button
-                onClick={handlePastPaperImport}
-                disabled={!importPastQuestionsFile || importingPastPaper}
-                className="bg-indigo-600 text-white px-4 py-2 rounded-xl font-semibold hover:bg-indigo-700 disabled:opacity-50 flex items-center justify-center gap-2"
-              >
-                {importingPastPaper ? <><Loader2 className="w-4 h-4 animate-spin" /> Converting...</> : 'Upload and convert to Kahoot'}
-              </button>
+            <div>
+              <h1 className="text-xl font-black text-gray-900">Quiz</h1>
+              <p className="text-sm font-medium text-gray-500">{questions.length} question{questions.length !== 1 ? 's' : ''}</p>
             </div>
-          )}
-        </div>
+          </div>
 
-        {/* Questions */}
-        <div className="space-y-4 mb-4">
-          {questions.map((q, qi) => (
-            <div key={qi} className="bg-white rounded-2xl p-5 shadow-xl">
-              <div className="flex items-center justify-between mb-3">
-                <span className="font-black text-gray-700">Question {qi + 1}</span>
-                <div className="flex items-center gap-3">
-                  <label className="text-sm text-gray-500">
-                    Timer:
-                    <select
-                      className="ml-2 border border-gray-200 rounded-lg px-2 py-1 text-sm"
-                      value={q.time_limit_seconds}
-                      onChange={e => updateQuestion(qi, 'time_limit_seconds', parseInt(e.target.value))}
-                    >
-                      <option value={10}>10s</option>
-                      <option value={20}>20s</option>
-                      <option value={30}>30s</option>
-                      <option value={60}>60s</option>
-                    </select>
-                  </label>
-                  {questions.length > 1 && (
-                    <button onClick={() => removeQuestion(qi)} className="text-red-400 hover:text-red-600">
-                      <Trash2 className="w-4 h-4" />
-                    </button>
-                  )}
+          <div className="max-h-[70vh] space-y-3 overflow-y-auto pr-1">
+            {questions.map((q, qi) => (
+              <button
+                key={qi}
+                onClick={() => setSelectedQuestionIndex(qi)}
+                className={`w-full rounded-2xl border p-3 text-left transition ${qi === selectedQuestionIndex ? 'border-[#2f80ed] bg-[#eff6ff]' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+              >
+                <div className="mb-2 flex items-center justify-between">
+                  <span className="text-sm font-black text-gray-700">{qi + 1} {q.question_type === 'short_answer' ? 'True or false' : 'Quiz'}</span>
+                  <span className="rounded-full bg-[#00c985] px-2 py-0.5 text-xs font-black text-white">★</span>
                 </div>
-              </div>
-              <input
-                className="w-full border-2 border-gray-200 rounded-xl px-4 py-2 mb-3 focus:outline-none focus:border-purple-500"
-                placeholder="Enter question..."
-                value={q.question}
-                onChange={e => updateQuestion(qi, 'question', e.target.value)}
-              />
-              <div className="grid sm:grid-cols-2 gap-3 mb-4">
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Question type</label>
-                  <select
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
-                    value={q.question_type || 'multiple_choice'}
-                    onChange={e => updateQuestion(qi, 'question_type', e.target.value)}
-                  >
-                    <option value="multiple_choice">Multiple choice</option>
-                    <option value="image_based">Image-based</option>
-                    <option value="short_answer">Short answer</option>
+                <p className="line-clamp-2 text-sm font-semibold text-gray-700">{q.question || 'Replace this with a more challenging question...'}</p>
+                <div className="mt-3 grid grid-cols-2 gap-2">
+                  {q.options?.slice(0, 4).map((opt, oi) => (
+                    <div key={oi} className="h-7 rounded-lg" style={{ backgroundColor: KAHOOT_COLORS[oi], opacity: 0.9 }} />
+                  ))}
+                </div>
+              </button>
+            ))}
+          </div>
+
+          <button
+            onClick={addQuestion}
+            className="mt-4 flex w-full items-center justify-center gap-2 rounded-2xl bg-[#1368ce] py-3 font-black text-white shadow-lg hover:bg-[#0f56ab]"
+          >
+            <Plus className="h-5 w-5" /> Add
+          </button>
+        </aside>
+
+        <div className="space-y-4">
+          <div className="rounded-[28px] bg-white px-6 py-5 shadow-2xl">
+            <label className="mb-2 block text-sm font-black uppercase tracking-wide text-[#6f4298]">Game title</label>
+            <input
+              className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-lg font-semibold focus:border-[#6f4298] focus:outline-none"
+              placeholder="My Epic Quiz"
+              value={title}
+              onChange={e => setTitle(e.target.value)}
+            />
+          </div>
+
+          <div className="grid gap-4 xl:grid-cols-2">
+            <div className="rounded-[28px] bg-white/95 p-4 shadow-2xl">
+              <button className="flex items-center gap-2 font-black text-[#6f4298]" onClick={() => setShowImport(!showImport)}>
+                {showImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                Import from existing quiz
+              </button>
+              {showImport && (
+                <div className="mt-3 flex gap-2">
+                  <select className="flex-1 rounded-xl border-2 border-gray-200 px-3 py-2" value={importQuizId} onChange={e => setImportQuizId(e.target.value)}>
+                    <option value="">Select a quiz...</option>
+                    {quizzes.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
                   </select>
+                  <button onClick={handleImport} className="rounded-xl bg-[#6f4298] px-4 py-2 font-bold text-white hover:bg-[#5c347f]">Import</button>
                 </div>
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Image URL</label>
+              )}
+            </div>
+
+            <div className="rounded-[28px] bg-white/95 p-4 shadow-2xl">
+              <button className="flex items-center gap-2 font-black text-[#6f4298]" onClick={() => setShowPastPaperImport(!showPastPaperImport)}>
+                {showPastPaperImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                <FileQuestion className="w-4 h-4" />
+                Import past questions
+              </button>
+              {showPastPaperImport && (
+                <div className="mt-3 grid gap-3">
                   <input
-                    className="w-full border border-gray-200 rounded-xl px-3 py-2 text-sm"
-                    placeholder="https://..."
-                    value={q.image_url || ''}
-                    onChange={e => updateQuestion(qi, 'image_url', e.target.value)}
+                    type="file"
+                    accept=".pdf,.doc,.docx,.txt,.json,.csv"
+                    onChange={e => setImportPastQuestionsFile(e.target.files?.[0] || null)}
+                    className="rounded-xl border-2 border-gray-200 px-3 py-2"
                   />
+                  <p className="text-sm text-gray-500">Upload a file and visual questions will use attached extracted images when available.</p>
+                  <button
+                    onClick={handlePastPaperImport}
+                    disabled={!importPastQuestionsFile || importingPastPaper}
+                    className="flex items-center justify-center gap-2 rounded-xl bg-[#1368ce] px-4 py-2 font-bold text-white hover:bg-[#0f56ab] disabled:opacity-50"
+                  >
+                    {importingPastPaper ? <><Loader2 className="w-4 h-4 animate-spin" /> Converting...</> : 'Upload and convert'}
+                  </button>
                 </div>
-              </div>
-              {q.question_type === 'short_answer' ? (
-                <div>
-                  <label className="block text-xs font-bold text-gray-500 mb-1">Correct short answer</label>
-                  <input
-                    className="w-full border-2 border-gray-200 rounded-xl px-4 py-3 focus:outline-none focus:border-purple-500"
-                    placeholder="Enter the correct answer"
-                    value={q.correct_text_answer || ''}
-                    onChange={e => updateQuestion(qi, 'correct_text_answer', e.target.value)}
-                  />
+              )}
+            </div>
+          </div>
+
+          <div className="space-y-5">
+            {questions.map((q, qi) => (
+              <div key={qi} className={`rounded-[32px] bg-white/95 p-5 shadow-2xl ${qi === selectedQuestionIndex ? 'ring-4 ring-[#2f80ed]/30' : ''}`}>
+                <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+                  <span className="text-lg font-black text-gray-800">Question {qi + 1}</span>
+                  <div className="flex items-center gap-3">
+                    <label className="text-sm font-semibold text-gray-500">
+                      Timer
+                      <select
+                        className="ml-2 rounded-lg border border-gray-200 px-2 py-1 text-sm"
+                        value={q.time_limit_seconds}
+                        onChange={e => updateQuestion(qi, 'time_limit_seconds', parseInt(e.target.value))}
+                      >
+                        <option value={10}>10s</option>
+                        <option value={20}>20s</option>
+                        <option value={30}>30s</option>
+                        <option value={60}>60s</option>
+                      </select>
+                    </label>
+                    {questions.length > 1 && (
+                      <button onClick={() => removeQuestion(qi)} className="rounded-xl bg-red-50 p-2 text-red-500 hover:bg-red-100">
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    )}
+                  </div>
                 </div>
-              ) : (
-                <>
-                  <div className="grid grid-cols-2 gap-2">
+
+                <input
+                  className="mb-4 w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-xl font-semibold focus:border-[#6f4298] focus:outline-none"
+                  placeholder="Replace this with a more challenging question..."
+                  value={q.question}
+                  onChange={e => updateQuestion(qi, 'question', e.target.value)}
+                />
+
+                <div className="mb-4 grid gap-3 sm:grid-cols-2">
+                  <div>
+                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Question type</label>
+                    <select
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                      value={q.question_type || 'multiple_choice'}
+                      onChange={e => updateQuestion(qi, 'question_type', e.target.value)}
+                    >
+                      <option value="multiple_choice">Multiple choice</option>
+                      <option value="image_based">Image-based</option>
+                      <option value="short_answer">Short answer</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Image URL</label>
+                    <input
+                      className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
+                      placeholder="https://..."
+                      value={q.image_url || ''}
+                      onChange={e => updateQuestion(qi, 'image_url', e.target.value)}
+                    />
+                  </div>
+                </div>
+
+                {(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url) && (
+                  <div className="mb-5 flex justify-center">
+                    <img src={(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                  </div>
+                )}
+
+                {q.question_type === 'short_answer' ? (
+                  <div>
+                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Correct short answer</label>
+                    <input
+                      className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 focus:border-[#6f4298] focus:outline-none"
+                      placeholder="Enter the correct answer"
+                      value={q.correct_text_answer || ''}
+                      onChange={e => updateQuestion(qi, 'correct_text_answer', e.target.value)}
+                    />
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
                     {q.options.map((opt, oi) => (
-                      <div key={oi} className="flex items-center gap-2 rounded-xl p-2" style={{ backgroundColor: COLORS[oi] + '22', border: `2px solid ${q.correct_answer === oi ? COLORS[oi] : '#e5e7eb'}` }}>
-                        <button
-                          onClick={() => updateQuestion(qi, 'correct_answer', oi)}
-                          className="w-5 h-5 rounded-full border-2 flex-shrink-0"
-                          style={{ backgroundColor: q.correct_answer === oi ? COLORS[oi] : 'transparent', borderColor: COLORS[oi] }}
-                          title="Set as correct"
-                        />
-                        <input
-                          className="flex-1 bg-transparent focus:outline-none text-sm font-semibold"
-                          placeholder={`Option ${oi + 1}`}
-                          value={opt}
-                          onChange={e => updateOption(qi, oi, e.target.value)}
-                        />
+                      <div key={oi} className="rounded-[18px] px-5 py-5 text-white shadow-lg" style={{ backgroundColor: KAHOOT_COLORS[oi] }}>
+                        <div className="flex items-center gap-4">
+                          <div className="text-3xl font-black">{KAHOOT_SHAPES[oi]}</div>
+                          <input
+                            className="flex-1 bg-transparent text-lg font-bold placeholder:text-white/80 focus:outline-none"
+                            placeholder={`Answer ${oi + 1}`}
+                            value={opt}
+                            onChange={e => updateOption(qi, oi, e.target.value)}
+                          />
+                          <button
+                            onClick={() => updateQuestion(qi, 'correct_answer', oi)}
+                            className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-white/10"
+                            title="Set as correct"
+                          >
+                            {q.correct_answer === oi ? <CheckCircle className="h-7 w-7 text-white" /> : <span className="h-5 w-5 rounded-full border-2 border-white" />}
+                          </button>
+                        </div>
                       </div>
                     ))}
                   </div>
-                  <p className="text-xs text-gray-400 mt-2">Click the circle to mark the correct answer</p>
-                </>
-              )}
-            </div>
-          ))}
+                )}
+              </div>
+            ))}
+          </div>
+
+          <button
+            onClick={handleCreate}
+            disabled={creating || !title.trim() || questions.length === 0}
+            className="w-full rounded-[24px] bg-[#f7c948] py-4 text-xl font-black text-[#4b2a74] shadow-xl hover:bg-[#f3bf2b] disabled:opacity-50"
+          >
+            {creating ? 'Creating...' : 'Launch Game'}
+          </button>
         </div>
-
-        <button
-          onClick={addQuestion}
-          className="w-full bg-white/20 text-white border-2 border-white/40 rounded-2xl py-3 font-bold hover:bg-white/30 flex items-center justify-center gap-2 mb-4"
-        >
-          <Plus className="w-5 h-5" /> Add Question
-        </button>
-
-        <button
-          onClick={handleCreate}
-          disabled={creating || !title.trim() || questions.length === 0}
-          className="w-full bg-yellow-400 text-yellow-900 rounded-2xl py-4 text-xl font-black hover:bg-yellow-300 disabled:opacity-50 shadow-xl"
-        >
-          {creating ? 'Creating...' : '🚀 Launch Game!'}
-        </button>
       </div>
     </div>
   );
