@@ -6,6 +6,7 @@ import KahootSetup from '@/components/kahoot/KahootSetup';
 import KahootLobby from '@/components/kahoot/KahootLobby';
 import KahootHostQuestion from '@/components/kahoot/KahootHostQuestion';
 import KahootHostLeaderboard from '@/components/kahoot/KahootHostLeaderboard';
+import KahootFastestLeaderboard from '@/components/kahoot/KahootFastestLeaderboard';
 import KahootFinished from '@/components/kahoot/KahootFinished';
 
 export default function KahootHost() {
@@ -13,6 +14,7 @@ export default function KahootHost() {
   const queryClient = useQueryClient();
   const [gameId, setGameId] = useState(null);
   const timerRef = useRef(null);
+  const transitionTimerRef = useRef(null);
 
   const { data: user } = useQuery({
     queryKey: ['auth-me'],
@@ -64,7 +66,17 @@ export default function KahootHost() {
   };
 
   const handleShowLeaderboard = () => {
+    clearTimeout(transitionTimerRef.current);
     updateGame.mutate({ status: 'leaderboard' });
+    transitionTimerRef.current = setTimeout(() => {
+      const latestGame = queryClient.getQueryData(['kahoot-game', gameId]) || game;
+      const nextIndex = (latestGame?.current_question_index || 0) + 1;
+      if (nextIndex >= (latestGame?.questions?.length || 0)) {
+        updateGame.mutate({ status: 'finished' });
+      } else {
+        handleStartQuestion(nextIndex);
+      }
+    }, 5000);
   };
 
   const handleNextQuestion = () => {
@@ -81,7 +93,10 @@ export default function KahootHost() {
   };
 
   useEffect(() => {
-    return () => clearTimeout(timerRef.current);
+    return () => {
+      clearTimeout(timerRef.current);
+      clearTimeout(transitionTimerRef.current);
+    };
   }, []);
 
   if (!gameId) {
@@ -123,14 +138,7 @@ export default function KahootHost() {
   }
 
   if (game.status === 'leaderboard') {
-    const isLast = (game.current_question_index || 0) >= game.questions.length - 1;
-    return (
-      <KahootHostLeaderboard
-        game={game}
-        onNext={isLast ? handleFinish : handleNextQuestion}
-        isLast={isLast}
-      />
-    );
+    return <KahootFastestLeaderboard game={game} />;
   }
 
   if (game.status === 'finished') {
