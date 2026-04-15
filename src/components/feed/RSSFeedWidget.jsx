@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card } from '@/components/ui/card';
@@ -79,11 +79,18 @@ function RSSFeedWidget({ initialLimit = 6 }) {
     return daysSincePublished <= 3;
   });
 
-  const categories = ['all', ...new Set(recentItems.map(item => item.category).filter(c => c && typeof c === 'string'))];
-  
-  const filteredItems = selectedCategory === 'all' 
-    ? recentItems 
-    : recentItems.filter(item => item.category === selectedCategory);
+  const categories = useMemo(() => {
+    const normalizedCategories = recentItems
+      .map((item) => item?.category)
+      .filter((category) => typeof category === 'string' && category.trim().length > 0)
+      .map((category) => category.trim());
+
+    return ['all', ...Array.from(new Set(normalizedCategories))];
+  }, [recentItems]);
+
+  const filteredItems = selectedCategory === 'all'
+    ? recentItems
+    : recentItems.filter((item) => item?.category === selectedCategory);
   
   const displayedItems = filteredItems.slice(0, displayCount);
   const hasMore = displayedItems.length < filteredItems.length;
@@ -126,9 +133,9 @@ function RSSFeedWidget({ initialLimit = 6 }) {
           <Filter className="w-4 h-4" />
           <span className="text-sm font-medium">Filter:</span>
         </div>
-        {categories.map((category) => (
+        {categories.filter(Boolean).map((category, index) => (
           <button
-            key={category}
+            key={`${category}-${index}`}
             type="button"
             onClick={() => {
               setSelectedCategory(category);
