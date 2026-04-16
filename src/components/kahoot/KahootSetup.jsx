@@ -36,17 +36,27 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   }, [title, selectedQuestionType, questionCount, onSetupConfigChange]);
 
   useEffect(() => {
-    setQuestions((current) => {
-      const next = Array.from({ length: questionCount }, (_, index) => {
-        const existing = current[index];
-        return existing && existing.question_type === selectedQuestionType
-          ? existing
-          : createQuestionByType(selectedQuestionType);
-      });
-      return next;
-    });
+    setQuestions((current) => current.map((question) => (
+      question.question_type === selectedQuestionType
+        ? question
+        : createQuestionByType(selectedQuestionType)
+    )));
     setSelectedQuestionIndex(0);
-  }, [selectedQuestionType, questionCount]);
+  }, [selectedQuestionType]);
+
+  useEffect(() => {
+    setQuestions((current) => {
+      if (current.length === questionCount) return current;
+      if (current.length < questionCount) {
+        return [
+          ...current,
+          ...Array.from({ length: questionCount - current.length }, () => createQuestionByType(selectedQuestionType))
+        ];
+      }
+      return current.slice(0, questionCount);
+    });
+    setSelectedQuestionIndex((current) => Math.min(current, Math.max(0, questionCount - 1)));
+  }, [questionCount, selectedQuestionType]);
 
   const handleImport = () => {
     const quiz = quizzes.find(q => q.id === importQuizId);
