@@ -908,7 +908,7 @@ function GradesView({ course, courses }) {
                   <div className="font-medium text-gray-900 text-sm">{sub.student_name || sub.created_by}</div>
                   <div className="text-xs text-gray-500">{sub.title || 'Assignment submission'}</div>
                 </div>
-                <Link to={createPageUrl('GradeAssignments') + `?submissionId=${sub.id}`}><Button size="sm" className="bg-amber-600 hover:bg-amber-700 text-white">Grade</Button></Link>
+                <Link to={createPageUrl('GradeAssignments') + `?submissionId=${sub.id}`}><Button size="sm" className="border border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
               </div>
             ))}
           </div>
