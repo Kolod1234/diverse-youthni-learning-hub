@@ -56,6 +56,21 @@ export default function TutorDashboardOverview() {
 
   const myCourses = allCourses;
 
+  const { data: lessonsByCourse = {} } = useQuery({
+    queryKey: ['tutor-course-lessons', myCourses.map(c => c.id).join(',')],
+    queryFn: async () => {
+      if (myCourses.length === 0) return {};
+      const results = await Promise.all(
+        myCourses.map(async (course) => {
+          const lessons = await base44.entities.Lesson.filter({ course_id: course.id }, 'order', 500);
+          return [course.id, lessons];
+        })
+      );
+      return Object.fromEntries(results);
+    },
+    enabled: myCourses.length > 0,
+  });
+
   // Enrollments across tutor's courses
   const { data: enrollments = [] } = useQuery({
     queryKey: ['tutor-course-enrollments', myCourses.map(c => c.id).join(',')],
@@ -271,6 +286,7 @@ export default function TutorDashboardOverview() {
                 <div className="divide-y divide-gray-100">
                   {myCourses.slice(0, 6).map((course, i) => {
                     const courseEnrollments = enrollments.filter(e => e.course_id === course.id);
+                    const courseLessons = lessonsByCourse[course.id] || [];
                     const avgProg = courseEnrollments.length > 0
                       ? Math.round(courseEnrollments.reduce((s, e) => s + (e.progress_percent || 0), 0) / courseEnrollments.length)
                       : 0;
@@ -289,8 +305,10 @@ export default function TutorDashboardOverview() {
                         </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-gray-900 truncate">{course.title}</p>
-                          <div className="flex items-center gap-3 mt-1">
+                          <div className="flex flex-wrap items-center gap-3 mt-1">
                             <span className="text-xs text-gray-500 capitalize">{course.category?.replace(/_/g, ' ')}</span>
+                            <span className="text-xs text-gray-400">•</span>
+                            <span className="text-xs text-gray-500">{courseLessons.length} lesson{courseLessons.length !== 1 ? 's' : ''}</span>
                             <span className="text-xs text-gray-400">•</span>
                             <span className="text-xs text-gray-500 flex items-center gap-1">
                               <Users className="w-3 h-3" /> {courseEnrollments.length} students
