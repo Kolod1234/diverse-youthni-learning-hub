@@ -389,14 +389,41 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                 )}
 
                 {['short_answer', 'long_answer', 'fill_in_gap'].includes(selectedQuestion.question_type) ? (
-                  <div>
-                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Correct answer</label>
-                    <input
-                      className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 focus:border-[#6f4298] focus:outline-none"
-                      placeholder={selectedQuestion.question_type === 'long_answer' ? 'Enter the expected long answer' : 'Enter the correct answer'}
-                      value={selectedQuestion.correct_text_answer || ''}
-                      onChange={e => updateQuestion(selectedQuestionIndex, 'correct_text_answer', e.target.value)}
-                    />
+                  <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+                    {KAHOOT_COLORS.map((color, oi) => {
+                      const isPrimaryAnswer = oi === 0;
+                      return (
+                        <div key={oi} className="rounded-[18px] px-5 py-5 text-white shadow-lg" style={{ backgroundColor: color }}>
+                          <div className="flex items-center gap-4">
+                            <div className="text-3xl font-black">{KAHOOT_SHAPES[oi] || '•'}</div>
+                            <input
+                              className="flex-1 bg-transparent text-lg font-bold placeholder:text-white/80 focus:outline-none"
+                              placeholder={
+                                oi === 0
+                                  ? (selectedQuestion.question_type === 'long_answer' ? 'Enter the expected long answer' : 'Enter the correct answer')
+                                  : `Optional answer ${oi + 1}`
+                              }
+                              value={isPrimaryAnswer ? (selectedQuestion.correct_text_answer || '') : (selectedQuestion.options?.[oi] || '')}
+                              onChange={e => {
+                                if (isPrimaryAnswer) {
+                                  updateQuestion(selectedQuestionIndex, 'correct_text_answer', e.target.value);
+                                } else {
+                                  updateOption(selectedQuestionIndex, oi, e.target.value);
+                                }
+                              }}
+                            />
+                            <button
+                              type="button"
+                              onClick={() => updateQuestion(selectedQuestionIndex, 'correct_answer', oi)}
+                              className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-white/10"
+                              title={isPrimaryAnswer ? 'Main answer' : 'Optional answer slot'}
+                            >
+                              {isPrimaryAnswer ? <CheckCircle className="h-7 w-7 text-white" /> : <span className="h-5 w-5 rounded-full border-2 border-white" />}
+                            </button>
+                          </div>
+                        </div>
+                      );
+                    })}
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
