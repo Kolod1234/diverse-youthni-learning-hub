@@ -43,6 +43,11 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
     queryFn: () => base44.entities.Quiz.list('title', 200),
   });
 
+  const { data: kahootGames = [] } = useQuery({
+    queryKey: ['all-kahoot-games'],
+    queryFn: () => base44.entities.KahootGame.list('title', 200),
+  });
+
   useEffect(() => {
     onSetupConfigChange?.({
       title,
@@ -75,10 +80,10 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   }, [questionCount, selectedQuestionType]);
 
   const handleImport = () => {
-    const quiz = quizzes.find(q => q.id === importQuizId);
-    if (!quiz) return;
-    setTitle(quiz.title);
-    const imported = (quiz.questions || [])
+    const source = quizzes.find(q => q.id === importQuizId) || kahootGames.find(q => q.id === importQuizId);
+    if (!source) return;
+    setTitle(source.title);
+    const imported = (source.questions || [])
       .filter(q => q.question_type === 'multiple_choice' || !q.question_type)
       .map(q => ({
         question: q.question,
@@ -281,13 +286,22 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
             <div className="rounded-[28px] bg-white/95 p-4 shadow-2xl">
               <button className="flex items-center gap-2 font-black text-[#6f4298]" onClick={() => setShowImport(!showImport)}>
                 {showImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                Import from existing quiz
+                Import from question bank
               </button>
               {showImport && (
                 <div className="mt-3 flex gap-2">
                   <select className="flex-1 rounded-xl border-2 border-gray-200 px-3 py-2" value={importQuizId} onChange={e => setImportQuizId(e.target.value)}>
-                    <option value="">Select a quiz...</option>
-                    {quizzes.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
+                    <option value="">Select a question bank...</option>
+                    {kahootGames.length > 0 && (
+                      <optgroup label="Existing Kahoot games">
+                        {kahootGames.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
+                      </optgroup>
+                    )}
+                    {quizzes.length > 0 && (
+                      <optgroup label="Quiz library">
+                        {quizzes.map(q => <option key={q.id} value={q.id}>{q.title}</option>)}
+                      </optgroup>
+                    )}
                   </select>
                   <button onClick={handleImport} className="rounded-xl bg-[#6f4298] px-4 py-2 font-bold text-white hover:bg-[#5c347f]">Import</button>
                 </div>
