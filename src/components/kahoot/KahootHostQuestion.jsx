@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Image as ImageIcon, Type, Clock3, Users, Video } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { CheckCircle, XCircle, Image as ImageIcon, Type, Clock3, Users, Video, Shield, SkipForward, Zap, CircleOff } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
 import KahootLiveMetrics from '@/components/kahoot/KahootLiveMetrics';
 
@@ -52,6 +52,11 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
   });
   const totalAnswered = isShortAnswer ? shortAnswers.length : answerCounts.reduce((a, b) => a + b, 0);
   const totalPlayers = (game.participants || []).length;
+  const activePowerUps = useMemo(() => {
+    return (game.participants || [])
+      .filter((participant) => participant.active_power_up)
+      .map((participant) => ({ name: participant.name, powerUp: participant.active_power_up }));
+  }, [game.participants]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#6f4298]">
@@ -89,6 +94,22 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
           </div>
 
           <div className="mt-5 flex flex-col items-center gap-5">
+            {!showResults && activePowerUps.length > 0 && (
+              <div className="w-full max-w-5xl rounded-[24px] bg-white/12 px-5 py-4 text-white shadow-2xl backdrop-blur-sm">
+                <p className="mb-3 text-sm font-black uppercase tracking-[0.2em] text-white/70">Active power-ups</p>
+                <div className="flex flex-wrap gap-2">
+                  {activePowerUps.map((entry, index) => (
+                    <div key={`${entry.name}-${index}`} className="rounded-full bg-white/15 px-4 py-2 text-sm font-bold">
+                      {entry.powerUp === 'double_points' && '⚡'}
+                      {entry.powerUp === 'shield' && '🛡'}
+                      {entry.powerUp === 'skip_question' && '⏭'}
+                      {entry.powerUp === 'fifty_fifty' && '⭕'}
+                      {' '}{entry.name}
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
             {(question.image_url || question.video_url) && (
               <div className="rounded-[28px] bg-white/10 p-3 shadow-2xl backdrop-blur-sm">
                 {question.video_url ? (

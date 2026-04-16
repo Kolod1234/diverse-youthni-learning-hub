@@ -46,6 +46,23 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
         </div>
 
         {!isHost && playerInfo && <KahootAnswerReview game={game} playerInfo={playerInfo} />}
+        {!isHost && playerInfo && (
+          <div className="w-full max-w-3xl rounded-2xl bg-white/10 p-4 backdrop-blur-sm">
+            <h3 className="mb-3 text-center text-xl font-black text-purple-200">Power-ups Earned</h3>
+            {(() => {
+              const me = (game.participants || []).find((p) => p.email === playerInfo.email);
+              const inventory = me?.power_ups || {};
+              return (
+                <div className="grid grid-cols-2 gap-3 text-center md:grid-cols-4">
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">⚡</div><div className="text-sm font-bold">Double</div><div className="text-xl font-black">{inventory.double_points || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">🛡</div><div className="text-sm font-bold">Shield</div><div className="text-xl font-black">{inventory.shield || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">⭕</div><div className="text-sm font-bold">50/50</div><div className="text-xl font-black">{inventory.fifty_fifty || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">⏭</div><div className="text-sm font-bold">Skip</div><div className="text-xl font-black">{inventory.skip_question || 0}</div></div>
+                </div>
+              );
+            })()}
+          </div>
+        )}
       </div>
 
       <button

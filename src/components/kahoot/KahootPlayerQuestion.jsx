@@ -1,5 +1,6 @@
-import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Image as ImageIcon, Clock3 } from 'lucide-react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { CheckCircle, XCircle, Image as ImageIcon, Clock3, Shield, CircleOff, SkipForward, Zap } from 'lucide-react';
+import { base44 } from '@/api/base44Client';
 import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
 
 const COLORS = ['#e21b3c', '#1368ce', '#26890c', '#ffa602'];
@@ -10,6 +11,7 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
   const question = game.questions?.[qi];
   const [timeLeft, setTimeLeft] = useState(question?.time_limit_seconds || 20);
   const [shortAnswer, setShortAnswer] = useState('');
+  const [usingPowerUp, setUsingPowerUp] = useState(false);
   const showResults = game.status === 'results';
   const isShortAnswer = question?.question_type === 'short_answer';
 
@@ -34,11 +36,75 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
 
   if (!question) return null;
 
-  const myAnswer = (game.participants || [])
-    .find(p => p.email === playerInfo.email)
-    ?.answers?.find(a => a.question_index === qi);
-
+  const me = (game.participants || []).find(p => p.email === playerInfo.email);
+  const myAnswer = me?.answers?.find(a => a.question_index === qi);
   const isCorrect = myAnswer?.is_correct;
+  const inventory = me?.power_ups || {
+    double_points: 0,
+    shield: 0,
+    skip_question: 0,
+    fifty_fifty: 0,
+  };
+  const activePowerUp = me?.active_power_up || '';
+  const hiddenOptions = useMemo(() => {
+    if (activePowerUp !== 'fifty_fifty' || isShortAnswer) return [];
+    return (question?.options || [])
+      .map((_, index) => index)
+      .filter(index => index !== question.correct_answer)
+      .slice(0, 2);
+  }, [activePowerUp, isShortAnswer, question]);
+
+  const updateParticipantState = async (updater) => {
+    const updatedParticipants = (game.participants || []).map((participant) => {
+      if (participant.email !== playerInfo.email) return participant;
+      return updater(participant);
+    });
+    await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
+  };
+
+  const handleUsePowerUp = async (type) => {
+    if (hasAnswered || showResults || usingPowerUp) return;
+    if (!inventory[type]) return;
+    setUsingPowerUp(true);
+
+    if (type === 'skip_question') {
+      await updateParticipantState((participant) => ({
+        ...participant,
+        power_ups: {
+          ...inventory,
+          skip_question: Math.max(0, (inventory.skip_question || 0) - 1),
+        },
+        active_power_up: '',
+        answers: [
+          ...(participant.answers || []),
+          {
+            question_index: qi,
+            selected_answer: null,
+            text_answer: '',
+            is_correct: true,
+            time_taken_ms: 0,
+            points_earned: 300,
+            used_power_up: 'skip_question',
+          },
+        ],
+        score: (participant.score || 0) + 300,
+      }));
+      onAnswer('__skip__');
+      setUsingPowerUp(false);
+      return;
+    }
+
+    await updateParticipantState((participant) => ({
+      ...participant,
+      power_ups: {
+        ...inventory,
+        [type]: Math.max(0, (inventory[type] || 0) - 1),
+      },
+      active_power_up: type,
+    }));
+
+    setUsingPowerUp(false);
+  };
 
   // After answering — show waiting screen
   if (hasAnswered && !showResults) {
@@ -117,6 +183,12 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
         <div className="mx-auto flex w-full max-w-5xl flex-1 flex-col justify-center gap-4">
           <div className="rounded-[34px] bg-white/14 p-4 shadow-2xl backdrop-blur-md md:p-6">
             <div className="rounded-[30px] bg-white/18 p-4 text-center backdrop-blur-sm md:p-6">
+              <div className="mb-4 flex flex-wrap justify-center gap-2">
+                <button onClick={() => handleUsePowerUp('double_points')} disabled={!inventory.double_points || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⚡ Double x{inventory.double_points}</button>
+                <button onClick={() => handleUsePowerUp('shield')} disabled={!inventory.shield || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">🛡 Shield x{inventory.shield}</button>
+                {!isShortAnswer && <button onClick={() => handleUsePowerUp('fifty_fifty')} disabled={!inventory.fifty_fifty || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⭕ 50/50 x{inventory.fifty_fifty}</button>}
+                <button onClick={() => handleUsePowerUp('skip_question')} disabled={!inventory.skip_question || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⏭ Skip x{inventory.skip_question}</button>
+              </div>
               {question.image_url && (
                 <div className="mb-4 flex justify-center">
                   <img src={question.image_url} alt="Question visual" className="max-h-[42vh] w-full max-w-2xl rounded-[28px] object-cover shadow-2xl" />
@@ -153,20 +225,23 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
             </div>
           ) : (
             <div className={`grid gap-3 pb-2 ${question.options?.length === 2 ? 'grid-cols-2' : 'grid-cols-2'}`}>
-              {question.options.map((opt, oi) => (
-                <button
-                  key={oi}
-                  onClick={() => onAnswer(oi)}
-                  disabled={hasAnswered}
-                  className="flex min-h-[120px] items-center justify-center rounded-[24px] px-4 py-5 text-center text-white shadow-2xl transition-transform active:scale-95 disabled:opacity-40 md:min-h-[140px]"
-                  style={{ backgroundColor: COLORS[oi] }}
-                >
-                  <div className="flex flex-col items-center justify-center gap-2">
-                    <span className="text-3xl font-black md:text-4xl">{SHAPES[oi]}</span>
-                    <span className="text-lg font-black leading-tight md:text-2xl">{opt}</span>
-                  </div>
-                </button>
-              ))}
+              {question.options.map((opt, oi) => {
+                const isHidden = hiddenOptions.includes(oi);
+                return (
+                  <button
+                    key={oi}
+                    onClick={() => onAnswer(oi)}
+                    disabled={hasAnswered || isHidden}
+                    className="flex min-h-[120px] items-center justify-center rounded-[24px] px-4 py-5 text-center text-white shadow-2xl transition-transform active:scale-95 disabled:opacity-40 md:min-h-[140px]"
+                    style={{ backgroundColor: COLORS[oi] }}
+                  >
+                    <div className="flex flex-col items-center justify-center gap-2">
+                      <span className="text-3xl font-black md:text-4xl">{SHAPES[oi]}</span>
+                      <span className="text-lg font-black leading-tight md:text-2xl">{isHidden ? 'Removed' : opt}</span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           )}
         </div>

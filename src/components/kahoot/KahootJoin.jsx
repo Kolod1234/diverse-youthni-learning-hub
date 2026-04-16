@@ -62,7 +62,19 @@ export default function KahootJoin({ onJoined }) {
     if (!existing) {
       const updatedParticipants = [
         ...(game.participants || []),
-        { name: name.trim(), email: userEmail, score: 0, answers: [] },
+        {
+          name: name.trim(),
+          email: userEmail,
+          score: 0,
+          power_ups: {
+            double_points: 0,
+            shield: 0,
+            skip_question: 0,
+            fifty_fifty: 0,
+          },
+          active_power_up: '',
+          answers: [],
+        },
       ];
       await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
     }

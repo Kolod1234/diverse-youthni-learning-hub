@@ -119,6 +119,26 @@
           "score": {
             "type": "number"
           },
+          "power_ups": {
+            "type": "object",
+            "properties": {
+              "double_points": {
+                "type": "number"
+              },
+              "shield": {
+                "type": "number"
+              },
+              "skip_question": {
+                "type": "number"
+              },
+              "fifty_fifty": {
+                "type": "number"
+              }
+            }
+          },
+          "active_power_up": {
+            "type": "string"
+          },
           "answers": {
             "type": "array",
             "items": {
@@ -141,6 +161,9 @@
                 },
                 "points_earned": {
                   "type": "number"
+                },
+                "used_power_up": {
+                  "type": "string"
                 }
               }
             }

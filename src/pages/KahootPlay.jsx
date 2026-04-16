@@ -48,26 +48,51 @@ export default function KahootPlay() {
 
   const handleAnswer = async (answerValue) => {
     if (hasAnswered || !game || !playerInfo) return;
+    if (answerValue === '__skip__') {
+      setHasAnswered(true);
+      setLastAnswerIndex(null);
+      queryClient.invalidateQueries(['kahoot-game-play', gameId]);
+      return;
+    }
+
     setHasAnswered(true);
 
     const q = game.questions[game.current_question_index];
+    const participant = (game.participants || []).find((p) => p.email === playerInfo.email);
     const isShortAnswer = q.question_type === 'short_answer';
     const selectedIndex = isShortAnswer ? null : answerValue;
     const textAnswer = isShortAnswer ? String(answerValue || '').trim() : '';
+    const activePowerUp = participant?.active_power_up || '';
     setLastAnswerIndex(selectedIndex);
-    const isCorrect = isShortAnswer
+    const rawCorrect = isShortAnswer
       ? textAnswer.toLowerCase() === String(q.correct_text_answer || '').trim().toLowerCase()
       : selectedIndex === q.correct_answer;
+    const isCorrect = activePowerUp === 'shield' ? true : rawCorrect;
     const startedAt = new Date(game.question_started_at).getTime();
     const timeTakenMs = Date.now() - startedAt;
     const timeLimit = (q.time_limit_seconds || 20) * 1000;
-    const points = isCorrect ? Math.round(1000 * (1 - timeTakenMs / timeLimit) + 200) : 0;
+    const basePoints = isCorrect ? Math.round(1000 * (1 - timeTakenMs / timeLimit) + 200) : 0;
+    const points = activePowerUp === 'double_points' ? basePoints * 2 : basePoints;
 
     const updatedParticipants = (game.participants || []).map((p) => {
       if (p.email === playerInfo.email) {
+        const nextPowerUps = {
+          double_points: p.power_ups?.double_points || 0,
+          shield: p.power_ups?.shield || 0,
+          skip_question: p.power_ups?.skip_question || 0,
+          fifty_fifty: p.power_ups?.fifty_fifty || 0,
+        };
         return {
           ...p,
           score: (p.score || 0) + points,
+          active_power_up: '',
+          power_ups: {
+            ...nextPowerUps,
+            double_points: nextPowerUps.double_points + (isCorrect && (game.current_question_index + 1) % 3 === 0 ? 1 : 0),
+            shield: nextPowerUps.shield + (isCorrect && (game.current_question_index + 1) % 4 === 0 ? 1 : 0),
+            skip_question: nextPowerUps.skip_question + (isCorrect && (game.current_question_index + 1) % 5 === 0 ? 1 : 0),
+            fifty_fifty: nextPowerUps.fifty_fifty + (isCorrect && (game.current_question_index + 1) % 2 === 0 ? 1 : 0),
+          },
           answers: [
             ...(p.answers || []),
             {
@@ -77,6 +102,7 @@ export default function KahootPlay() {
               is_correct: isCorrect,
               time_taken_ms: timeTakenMs,
               points_earned: points,
+              used_power_up: activePowerUp,
             },
           ],
         };
