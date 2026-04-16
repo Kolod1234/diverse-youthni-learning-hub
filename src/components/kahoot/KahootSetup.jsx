@@ -286,17 +286,17 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
           </div>
 
           <div className="space-y-5">
-            {questions.map((q, qi) => (
-              <div key={qi} className={`rounded-[32px] bg-white/95 p-5 shadow-2xl ${qi === selectedQuestionIndex ? 'ring-4 ring-[#2f80ed]/30' : ''}`}>
+            {selectedQuestion && (
+              <div className="rounded-[32px] bg-white/95 p-5 shadow-2xl ring-4 ring-[#2f80ed]/30">
                 <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
-                  <span className="text-lg font-black text-gray-800">Question {qi + 1}</span>
+                  <span className="text-lg font-black text-gray-800">Question {selectedQuestionIndex + 1}</span>
                   <div className="flex items-center gap-3">
                     <label className="text-sm font-semibold text-gray-500">
                       Timer
                       <select
                         className="ml-2 rounded-lg border border-gray-200 px-2 py-1 text-sm"
-                        value={q.time_limit_seconds}
-                        onChange={e => updateQuestion(qi, 'time_limit_seconds', parseInt(e.target.value))}
+                        value={selectedQuestion.time_limit_seconds}
+                        onChange={e => updateQuestion(selectedQuestionIndex, 'time_limit_seconds', parseInt(e.target.value))}
                       >
                         <option value={10}>10s</option>
                         <option value={20}>20s</option>
@@ -305,7 +305,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                       </select>
                     </label>
                     {questions.length > 1 && (
-                      <button onClick={() => removeQuestion(qi)} className="rounded-xl bg-red-50 p-2 text-red-500 hover:bg-red-100">
+                      <button onClick={() => removeQuestion(selectedQuestionIndex)} className="rounded-xl bg-red-50 p-2 text-red-500 hover:bg-red-100">
                         <Trash2 className="w-4 h-4" />
                       </button>
                     )}
@@ -315,8 +315,8 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                 <input
                   className="mb-4 w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-xl font-semibold focus:border-[#6f4298] focus:outline-none"
                   placeholder="Enter your question"
-                  value={q.question}
-                  onChange={e => updateQuestion(qi, 'question', e.target.value)}
+                  value={selectedQuestion.question}
+                  onChange={e => updateQuestion(selectedQuestionIndex, 'question', e.target.value)}
                 />
 
                 <div className="mb-4 grid gap-3 sm:grid-cols-2">
@@ -324,16 +324,16 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Question type</label>
                     <select
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                      value={q.question_type || 'multiple_choice'}
+                      value={selectedQuestion.question_type || 'multiple_choice'}
                       onChange={e => {
                         const nextType = e.target.value;
                         const nextQuestion = createQuestionByType(nextType);
-                        updateQuestion(qi, 'question_type', nextType);
-                        updateQuestion(qi, 'options', nextQuestion.options);
-                        updateQuestion(qi, 'correct_answer', nextQuestion.correct_answer);
-                        updateQuestion(qi, 'correct_text_answer', nextQuestion.correct_text_answer);
-                        updateQuestion(qi, 'prompt_label', nextQuestion.prompt_label);
-                        updateQuestion(qi, 'time_limit_seconds', nextQuestion.time_limit_seconds);
+                        updateQuestion(selectedQuestionIndex, 'question_type', nextType);
+                        updateQuestion(selectedQuestionIndex, 'options', nextQuestion.options);
+                        updateQuestion(selectedQuestionIndex, 'correct_answer', nextQuestion.correct_answer);
+                        updateQuestion(selectedQuestionIndex, 'correct_text_answer', nextQuestion.correct_text_answer);
+                        updateQuestion(selectedQuestionIndex, 'prompt_label', nextQuestion.prompt_label);
+                        updateQuestion(selectedQuestionIndex, 'time_limit_seconds', nextQuestion.time_limit_seconds);
                       }}
                     >
                       {questionTypes.map(type => <option key={type.value} value={type.value}>{type.label}</option>)}
@@ -344,26 +344,26 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     <input
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
                       placeholder="Paste image URL"
-                      value={q.image_url || ''}
-                      onChange={e => updateQuestion(qi, 'image_url', e.target.value)}
+                      value={selectedQuestion.image_url || ''}
+                      onChange={e => updateQuestion(selectedQuestionIndex, 'image_url', e.target.value)}
                     />
                   </div>
                 </div>
 
-                {['image_based', 'identification_autism'].includes(q.question_type) && (
+                {['image_based', 'identification_autism'].includes(selectedQuestion.question_type) && (
                   <div
                     className="mb-5 rounded-[28px] border-2 border-dashed border-gray-300 bg-[#f5eefb] p-6 text-center"
-                    onPaste={(e) => handleQuestionMediaPaste(e, qi)}
+                    onPaste={(e) => handleQuestionMediaPaste(e, selectedQuestionIndex)}
                   >
-                    {(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url) ? (
+                    {selectedQuestion.image_url ? (
                       <div className="space-y-4">
                         <div className="flex justify-center">
-                          <img src={(qi === selectedQuestionIndex ? selectedQuestion?.image_url : q.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          <img src={selectedQuestion.image_url} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow">
                             <Upload className="h-4 w-4" /> Replace media
-                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(qi, e.target.files?.[0] || null)} />
+                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                           </label>
                         </div>
                       </div>
@@ -379,7 +379,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]">
                             <Upload className="h-4 w-4" /> Upload file
-                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(qi, e.target.files?.[0] || null)} />
+                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                           </label>
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">or press Ctrl/Cmd + V</span>
                         </div>
@@ -388,19 +388,19 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                   </div>
                 )}
 
-                {['short_answer', 'long_answer', 'fill_in_gap'].includes(q.question_type) ? (
+                {['short_answer', 'long_answer', 'fill_in_gap'].includes(selectedQuestion.question_type) ? (
                   <div>
                     <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Correct answer</label>
                     <input
                       className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 focus:border-[#6f4298] focus:outline-none"
-                      placeholder={q.question_type === 'long_answer' ? 'Enter the expected long answer' : 'Enter the correct answer'}
-                      value={q.correct_text_answer || ''}
-                      onChange={e => updateQuestion(qi, 'correct_text_answer', e.target.value)}
+                      placeholder={selectedQuestion.question_type === 'long_answer' ? 'Enter the expected long answer' : 'Enter the correct answer'}
+                      value={selectedQuestion.correct_text_answer || ''}
+                      onChange={e => updateQuestion(selectedQuestionIndex, 'correct_text_answer', e.target.value)}
                     />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {q.options.map((opt, oi) => (
+                    {selectedQuestion.options.map((opt, oi) => (
                       <div key={oi} className="rounded-[18px] px-5 py-5 text-white shadow-lg" style={{ backgroundColor: KAHOOT_COLORS[oi] || '#6b7280' }}>
                         <div className="flex items-center gap-4">
                           <div className="text-3xl font-black">{KAHOOT_SHAPES[oi] || '•'}</div>
@@ -408,14 +408,14 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                             className="flex-1 bg-transparent text-lg font-bold placeholder:text-white/80 focus:outline-none"
                             placeholder={`Answer ${oi + 1}`}
                             value={opt}
-                            onChange={e => updateOption(qi, oi, e.target.value)}
+                            onChange={e => updateOption(selectedQuestionIndex, oi, e.target.value)}
                           />
                           <button
-                            onClick={() => updateQuestion(qi, 'correct_answer', oi)}
+                            onClick={() => updateQuestion(selectedQuestionIndex, 'correct_answer', oi)}
                             className="flex h-12 w-12 items-center justify-center rounded-full border-4 border-white bg-white/10"
                             title="Set as correct"
                           >
-                            {q.correct_answer === oi ? <CheckCircle className="h-7 w-7 text-white" /> : <span className="h-5 w-5 rounded-full border-2 border-white" />}
+                            {selectedQuestion.correct_answer === oi ? <CheckCircle className="h-7 w-7 text-white" /> : <span className="h-5 w-5 rounded-full border-2 border-white" />}
                           </button>
                         </div>
                       </div>
@@ -423,7 +423,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                   </div>
                 )}
               </div>
-            ))}
+            )}
           </div>
 
           <button
