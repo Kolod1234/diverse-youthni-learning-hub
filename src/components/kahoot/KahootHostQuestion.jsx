@@ -9,19 +9,32 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
   const [timeLeft, setTimeLeft] = useState(question?.time_limit_seconds || 20);
 
   useEffect(() => {
-    if (showResults) return;
-    const start = new Date(game.question_started_at).getTime();
-    const limit = (question?.time_limit_seconds || 20) * 1000;
+    setTimeLeft(question?.time_limit_seconds || 20);
+  }, [qi, question?.time_limit_seconds]);
 
-    const interval = setInterval(() => {
+  useEffect(() => {
+    if (showResults || !game.question_started_at || !question) return;
+
+    const start = new Date(game.question_started_at).getTime();
+    const limitSeconds = question.time_limit_seconds || 20;
+    const limit = limitSeconds * 1000;
+
+    const updateRemaining = () => {
       const elapsed = Date.now() - start;
       const remaining = Math.max(0, Math.ceil((limit - elapsed) / 1000));
       setTimeLeft(remaining);
+      return remaining;
+    };
+
+    updateRemaining();
+
+    const interval = setInterval(() => {
+      const remaining = updateRemaining();
       if (remaining === 0) clearInterval(interval);
     }, 200);
 
     return () => clearInterval(interval);
-  }, [game.question_started_at, showResults]);
+  }, [game.question_started_at, question?.time_limit_seconds, qi, showResults, question]);
 
   if (!question) return null;
 
