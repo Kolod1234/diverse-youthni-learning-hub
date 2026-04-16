@@ -34,8 +34,6 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
     setShortAnswer('');
   }, [qi]);
 
-  if (!question) return null;
-
   const me = (game.participants || []).find(p => p.email === playerInfo.email);
   const myAnswer = me?.answers?.find(a => a.question_index === qi);
   const isCorrect = myAnswer?.is_correct;
@@ -50,9 +48,11 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
     if (activePowerUp !== 'fifty_fifty' || isShortAnswer) return [];
     return (question?.options || [])
       .map((_, index) => index)
-      .filter(index => index !== question.correct_answer)
+      .filter(index => index !== question?.correct_answer)
       .slice(0, 2);
   }, [activePowerUp, isShortAnswer, question]);
+
+  if (!question) return null;
 
   const updateParticipantState = async (updater) => {
     const updatedParticipants = (game.participants || []).map((participant) => {

@@ -36,9 +36,15 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
     return () => clearInterval(interval);
   }, [game.question_started_at, question?.time_limit_seconds, qi, showResults, question]);
 
+  const isShortAnswer = question?.question_type === 'short_answer';
+  const activePowerUps = useMemo(() => {
+    return (game.participants || [])
+      .filter((participant) => participant.active_power_up)
+      .map((participant) => ({ name: participant.name, powerUp: participant.active_power_up }));
+  }, [game.participants]);
+
   if (!question) return null;
 
-  const isShortAnswer = question.question_type === 'short_answer';
   const answerCounts = [0, 0, 0, 0];
   const shortAnswers = [];
   (game.participants || []).forEach(p => {
@@ -52,11 +58,6 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
   });
   const totalAnswered = isShortAnswer ? shortAnswers.length : answerCounts.reduce((a, b) => a + b, 0);
   const totalPlayers = (game.participants || []).length;
-  const activePowerUps = useMemo(() => {
-    return (game.participants || [])
-      .filter((participant) => participant.active_power_up)
-      .map((participant) => ({ name: participant.name, powerUp: participant.active_power_up }));
-  }, [game.participants]);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#6f4298]">
