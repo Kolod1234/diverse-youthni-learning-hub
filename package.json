@@ -13,7 +13,7 @@
   },
   "dependencies": {
     "@base44/sdk": "^0.8.26",
-    "@base44/vite-plugin": "^1.0.9",
+    "@base44/vite-plugin": "^1.0.10",
     "@code-by-dwayne/react-scorm-provider": "^1.0.0",
     "@cyntler/react-doc-viewer": "^1.16.2",
     "@emotion/react": "^11.11.0",
