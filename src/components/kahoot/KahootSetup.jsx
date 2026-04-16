@@ -1,4 +1,11 @@
 import React, { useEffect, useMemo, useState } from 'react';
+
+function normalizeImageUrl(url) {
+  if (!url) return '';
+  return url.includes('/api/apps/') && url.includes('/files/mp/public/')
+    ? url.replace('/files/mp/public/', '/files/public/')
+    : url;
+}
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload } from 'lucide-react';
@@ -130,9 +137,10 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   const handleQuestionMediaUpload = async (questionIndex, file) => {
     if (!file) return;
     const upload = await base44.integrations.Core.UploadFile({ file });
+    const imageUrl = normalizeImageUrl(upload.file_url);
     setQuestions((current) => current.map((question, index) => (
       index === questionIndex
-        ? { ...question, image_url: upload.file_url, question_type: 'image_based' }
+        ? { ...question, image_url: imageUrl, question_type: 'image_based' }
         : question
     )));
   };
@@ -358,7 +366,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
                       placeholder="Paste image URL"
                       value={selectedQuestion.image_url || ''}
-                      onChange={e => updateQuestion(selectedQuestionIndex, 'image_url', e.target.value)}
+                      onChange={e => updateQuestion(selectedQuestionIndex, 'image_url', normalizeImageUrl(e.target.value))}
                     />
                   </div>
                 </div>
@@ -371,7 +379,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     {selectedQuestion.image_url ? (
                       <div className="space-y-4">
                         <div className="flex justify-center">
-                          <img src={selectedQuestion.image_url} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          <img src={normalizeImageUrl(selectedQuestion.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow" htmlFor={`question-media-${selectedQuestionIndex}`}>
