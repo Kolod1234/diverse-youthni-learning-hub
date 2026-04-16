@@ -49,7 +49,11 @@
             "enum": [
               "multiple_choice",
               "image_based",
-              "short_answer"
+              "true_false",
+              "fill_in_the_gap",
+              "autism_identification",
+              "short_answer",
+              "long_answer"
             ],
             "default": "multiple_choice"
           },

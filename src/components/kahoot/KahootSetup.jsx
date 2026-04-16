@@ -3,16 +3,17 @@ import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
+import { QUESTION_TYPE_OPTIONS, buildQuestionsByType } from '@/components/kahoot/questionTypeOptions';
 
 function generatePin() {
   return Math.floor(100000 + Math.random() * 900000).toString();
 }
 
-export default function KahootSetup({ user, onGameCreated }) {
-  const [title, setTitle] = useState('');
-  const [questions, setQuestions] = useState([
-    { question: '', question_type: 'image_based', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }
-  ]);
+export default function KahootSetup({ user, onGameCreated, setupConfig }) {
+  const [title, setTitle] = useState(setupConfig?.title || '');
+  const [questions, setQuestions] = useState(
+    buildQuestionsByType(setupConfig?.questionType || 'multiple_choice', setupConfig?.questionCount || 10)
+  );
   const [importQuizId, setImportQuizId] = useState('');
   const [importPastQuestionsFile, setImportPastQuestionsFile] = useState(null);
   const [creating, setCreating] = useState(false);
@@ -49,7 +50,9 @@ export default function KahootSetup({ user, onGameCreated }) {
   };
 
   const addQuestion = () => {
-    setQuestions([...questions, { question: '', question_type: 'image_based', options: ['', '', '', ''], correct_answer: 0, correct_text_answer: '', time_limit_seconds: 20, image_url: '' }]);
+    const nextType = questions[selectedQuestionIndex]?.question_type || setupConfig?.questionType || 'multiple_choice';
+    const nextQuestion = buildQuestionsByType(nextType, 1)[0];
+    setQuestions([...questions, nextQuestion]);
   };
 
   const removeQuestion = (i) => {
@@ -127,6 +130,11 @@ export default function KahootSetup({ user, onGameCreated }) {
     [questions, selectedQuestionIndex]
   );
 
+  const selectedQuestionTypeLabel = useMemo(() => {
+    const option = QUESTION_TYPE_OPTIONS.find((item) => item.value === selectedQuestion?.question_type);
+    return option?.label || 'Quiz';
+  }, [selectedQuestion]);
+
   return (
     <div className="min-h-screen relative overflow-hidden bg-[#6f4298] p-4 md:p-6">
       <div
@@ -143,7 +151,7 @@ export default function KahootSetup({ user, onGameCreated }) {
             </div>
             <div>
               <h1 className="text-xl font-black text-gray-900">Strands of Ideas</h1>
-              <p className="text-sm font-medium text-gray-500">{questions.length} question{questions.length !== 1 ? 's' : ''}</p>
+              <p className="text-sm font-medium text-gray-500">{questions.length} question{questions.length !== 1 ? 's' : ''} · {selectedQuestionTypeLabel}</p>
             </div>
           </div>
 
@@ -155,7 +163,7 @@ export default function KahootSetup({ user, onGameCreated }) {
                 className={`w-full rounded-2xl border p-3 text-left transition ${qi === selectedQuestionIndex ? 'border-[#2f80ed] bg-[#eff6ff]' : 'border-gray-200 bg-white hover:border-gray-300'}`}
               >
                 <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-black text-gray-700">{qi + 1} {q.question_type === 'short_answer' ? 'True or false' : 'Quiz'}</span>
+                  <span className="text-sm font-black text-gray-700">{qi + 1} {QUESTION_TYPE_OPTIONS.find((item) => item.value === q.question_type)?.label || 'Quiz'}</span>
                   <span className="rounded-full bg-[#00c985] px-2 py-0.5 text-xs font-black text-white">★</span>
                 </div>
                 <p className="line-clamp-2 text-sm font-semibold text-gray-700">{q.question || 'Untitled question'}</p>
@@ -271,11 +279,19 @@ export default function KahootSetup({ user, onGameCreated }) {
                     <select
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
                       value={q.question_type || 'multiple_choice'}
-                      onChange={e => updateQuestion(qi, 'question_type', e.target.value)}
+                      onChange={e => {
+                        const nextType = e.target.value;
+                        const nextQuestion = buildQuestionsByType(nextType, 1)[0];
+                        updateQuestion(qi, 'question_type', nextType);
+                        updateQuestion(qi, 'options', nextQuestion.options || []);
+                        updateQuestion(qi, 'correct_answer', nextQuestion.correct_answer || 0);
+                        updateQuestion(qi, 'correct_text_answer', q.correct_text_answer || '');
+                        updateQuestion(qi, 'time_limit_seconds', nextQuestion.time_limit_seconds || q.time_limit_seconds || 20);
+                      }}
                     >
-                      <option value="multiple_choice">Multiple choice</option>
-                      <option value="image_based">Diagram based</option>
-                      <option value="short_answer">Short answer</option>
+                      {QUESTION_TYPE_OPTIONS.map((option) => (
+                        <option key={option.value} value={option.value}>{option.label}</option>
+                      ))}
                     </select>
                   </div>
                   <div>
@@ -327,22 +343,24 @@ export default function KahootSetup({ user, onGameCreated }) {
                   </div>
                 )}
 
-                {q.question_type === 'short_answer' ? (
+                {['short_answer', 'fill_in_the_gap', 'long_answer'].includes(q.question_type) ? (
                   <div>
-                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Correct short answer</label>
+                    <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">
+                      {q.question_type === 'long_answer' ? 'Model answer' : 'Correct answer'}
+                    </label>
                     <input
                       className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 focus:border-[#6f4298] focus:outline-none"
-                      placeholder="Enter the correct answer"
+                      placeholder={q.question_type === 'fill_in_the_gap' ? 'Enter the missing word or phrase' : 'Enter the correct answer'}
                       value={q.correct_text_answer || ''}
                       onChange={e => updateQuestion(qi, 'correct_text_answer', e.target.value)}
                     />
                   </div>
                 ) : (
                   <div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-                    {q.options.map((opt, oi) => (
-                      <div key={oi} className="rounded-[18px] px-5 py-5 text-white shadow-lg" style={{ backgroundColor: KAHOOT_COLORS[oi] }}>
+                    {(q.options || []).map((opt, oi) => (
+                      <div key={oi} className="rounded-[18px] px-5 py-5 text-white shadow-lg" style={{ backgroundColor: KAHOOT_COLORS[oi] || '#1368ce' }}>
                         <div className="flex items-center gap-4">
-                          <div className="text-3xl font-black">{KAHOOT_SHAPES[oi]}</div>
+                          <div className="text-3xl font-black">{KAHOOT_SHAPES[oi] || '●'}</div>
                           <input
                             className="flex-1 bg-transparent text-lg font-bold placeholder:text-white/80 focus:outline-none"
                             placeholder={`Answer ${oi + 1}`}

@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { useNavigate } from 'react-router-dom';
 import KahootSetup from '@/components/kahoot/KahootSetup';
+import KahootQuestionTypeSelector from '@/components/kahoot/KahootQuestionTypeSelector';
 import KahootLobby from '@/components/kahoot/KahootLobby';
 import KahootHostQuestion from '@/components/kahoot/KahootHostQuestion';
 import KahootHostLeaderboard from '@/components/kahoot/KahootHostLeaderboard';
@@ -13,6 +14,7 @@ export default function KahootHost() {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const [gameId, setGameId] = useState(null);
+  const [setupConfig, setSetupConfig] = useState(null);
   const timerRef = useRef(null);
   const transitionTimerRef = useRef(null);
 
@@ -114,8 +116,12 @@ export default function KahootHost() {
     );
   }
 
+  if (!gameId && !setupConfig) {
+    return <KahootQuestionTypeSelector onContinue={setSetupConfig} />;
+  }
+
   if (!gameId) {
-    return <KahootSetup user={user} onGameCreated={handleGameCreated} />;
+    return <KahootSetup user={user} onGameCreated={handleGameCreated} setupConfig={setupConfig} />;
   }
 
   if (!game) {
