@@ -286,7 +286,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
             <div className="rounded-[28px] bg-white/95 p-4 shadow-2xl">
               <button className="flex items-center gap-2 font-black text-[#6f4298]" onClick={() => setShowImport(!showImport)}>
                 {showImport ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
-                Import from question bank
+                Import questions from saved quizzes and Kahoot games
               </button>
               {showImport && (
                 <div className="mt-3 flex gap-2">

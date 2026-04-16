@@ -9,6 +9,7 @@ import KahootHostQuestion from '@/components/kahoot/KahootHostQuestion';
 import KahootHostLeaderboard from '@/components/kahoot/KahootHostLeaderboard';
 import KahootFastestLeaderboard from '@/components/kahoot/KahootFastestLeaderboard';
 import KahootFinished from '@/components/kahoot/KahootFinished';
+import { QUESTION_TYPE_OPTIONS } from '@/components/kahoot/questionTypes';
 
 export default function KahootHost() {
   const navigate = useNavigate();
@@ -121,7 +122,7 @@ export default function KahootHost() {
   }
 
   if (!gameId) {
-    return <KahootSetup user={user} onGameCreated={handleGameCreated} setupConfig={setupConfig} questionTypes={setupConfig ? [{ value: setupConfig.questionType || setupConfig.selectedQuestionType, label: 'Selected type' }] : []} />;
+    return <KahootSetup user={user} onGameCreated={handleGameCreated} setupConfig={setupConfig} questionTypes={QUESTION_TYPE_OPTIONS} />;
   }
 
   if (!game) {
