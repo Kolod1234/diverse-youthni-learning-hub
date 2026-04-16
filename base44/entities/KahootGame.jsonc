@@ -10,6 +10,17 @@
       "type": "string",
       "description": "Game title"
     },
+    "category": {
+      "type": "string",
+      "description": "Game subject or category"
+    },
+    "tags": {
+      "type": "array",
+      "description": "Optional tags for easier searching",
+      "items": {
+        "type": "string"
+      }
+    },
     "host_email": {
       "type": "string",
       "description": "Email of the tutor hosting the game"
@@ -50,8 +61,8 @@
               "multiple_choice",
               "image_based",
               "true_false",
-              "fill_in_the_gap",
-              "autism_identification",
+              "fill_in_gap",
+              "identification_autism",
               "short_answer",
               "long_answer"
             ],
@@ -69,6 +80,12 @@
           "correct_text_answer": {
             "type": "string"
           },
+          "accepted_answers": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
           "time_limit_seconds": {
             "type": "number"
           },
@@ -76,6 +93,12 @@
             "type": "string"
           },
           "visual_description": {
+            "type": "string"
+          },
+          "prompt_label": {
+            "type": "string"
+          },
+          "video_url": {
             "type": "string"
           }
         }

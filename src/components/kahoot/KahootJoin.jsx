@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useMemo, useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Zap, Hash, User2 } from 'lucide-react';
+import { Zap, Hash, User2, Search } from 'lucide-react';
+import { useQuery } from '@tanstack/react-query';
 import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
 
 export default function KahootJoin({ onJoined }) {
@@ -10,17 +11,36 @@ export default function KahootJoin({ onJoined }) {
   const [game, setGame] = useState(null);
   const [error, setError] = useState('');
   const [joining, setJoining] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState('all');
+
+  const { data: lobbyGames = [] } = useQuery({
+    queryKey: ['kahoot-lobby-games'],
+    queryFn: () => base44.entities.KahootGame.filter({ status: 'lobby' }, '-created_date', 100),
+  });
+
+  const categories = useMemo(() => {
+    return [...new Set(lobbyGames.map(game => game.category).filter(Boolean))].sort();
+  }, [lobbyGames]);
+
+  const filteredGames = useMemo(() => {
+    const normalizedPin = pin.trim();
+    return lobbyGames.filter((item) => {
+      const matchesCategory = selectedCategory === 'all' || item.category === selectedCategory;
+      const matchesSearch = !normalizedPin || item.pin?.includes(normalizedPin) || item.title?.toLowerCase().includes(normalizedPin.toLowerCase()) || item.category?.toLowerCase().includes(normalizedPin.toLowerCase()) || (item.tags || []).some(tag => tag.toLowerCase().includes(normalizedPin.toLowerCase()));
+      return matchesCategory && matchesSearch;
+    });
+  }, [lobbyGames, selectedCategory, pin]);
 
   const handleFindGame = async () => {
     setError('');
     setJoining(true);
-    const games = await base44.entities.KahootGame.filter({ pin: pin.trim(), status: 'lobby' });
-    if (games.length === 0) {
+    const exactMatch = lobbyGames.find(item => item.pin === pin.trim());
+    if (!exactMatch) {
       setError('No active game found with that PIN. Make sure the host has started a lobby.');
       setJoining(false);
       return;
     }
-    setGame(games[0]);
+    setGame(exactMatch);
     setStep('name');
     setJoining(false);
   };
@@ -75,16 +95,56 @@ export default function KahootJoin({ onJoined }) {
                   <Hash className="h-7 w-7" />
                 </div>
                 <h2 className="text-3xl font-black text-gray-900">Enter Strands of Ideas PIN</h2>
-                <p className="mt-2 text-sm font-medium text-gray-500">Ask your host for the 6-digit PIN</p>
+                <p className="mt-2 text-sm font-medium text-gray-500">Ask your host for the 6-digit PIN or pick a lobby by category</p>
               </div>
-              <input
-                className="mb-3 w-full rounded-3xl border-2 border-gray-200 px-5 py-5 text-center text-4xl font-black tracking-[0.35em] text-gray-900 focus:border-[#6f4298] focus:outline-none"
-                placeholder="000000"
-                maxLength={6}
-                value={pin}
-                onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
-                onKeyDown={e => e.key === 'Enter' && pin.length === 6 && handleFindGame()}
-              />
+              <div className="mb-3 grid gap-3">
+                <input
+                  className="w-full rounded-3xl border-2 border-gray-200 px-5 py-5 text-center text-4xl font-black tracking-[0.35em] text-gray-900 focus:border-[#6f4298] focus:outline-none"
+                  placeholder="000000"
+                  maxLength={6}
+                  value={pin}
+                  onChange={e => setPin(e.target.value.replace(/\D/g, ''))}
+                  onKeyDown={e => e.key === 'Enter' && pin.length === 6 && handleFindGame()}
+                />
+                <select
+                  className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-sm font-semibold text-gray-900 focus:border-[#6f4298] focus:outline-none"
+                  value={selectedCategory}
+                  onChange={(e) => setSelectedCategory(e.target.value)}
+                >
+                  <option value="all">All categories</option>
+                  {categories.map((category) => (
+                    <option key={category} value={category}>{category}</option>
+                  ))}
+                </select>
+                <div className="rounded-3xl border-2 border-gray-200 bg-gray-50 p-4 text-left">
+                  <div className="mb-3 flex items-center gap-2 text-sm font-black uppercase tracking-[0.2em] text-[#6f4298]">
+                    <Search className="h-4 w-4" /> Available lobbies
+                  </div>
+                  <div className="max-h-56 space-y-2 overflow-y-auto">
+                    {filteredGames.length > 0 ? filteredGames.map((item) => (
+                      <button
+                        key={item.id}
+                        type="button"
+                        onClick={() => {
+                          setPin(item.pin || '');
+                          setError('');
+                        }}
+                        className="w-full rounded-2xl bg-white px-4 py-3 text-left shadow-sm transition hover:bg-[#f5eefb]"
+                      >
+                        <div className="flex items-center justify-between gap-3">
+                          <div>
+                            <p className="font-black text-gray-900">{item.title}</p>
+                            <p className="text-xs font-semibold text-gray-500">{item.category || 'General'}{item.tags?.length ? ` • ${item.tags.join(', ')}` : ''}</p>
+                          </div>
+                          <span className="rounded-full bg-[#6f4298] px-3 py-1 text-sm font-black text-white">{item.pin}</span>
+                        </div>
+                      </button>
+                    )) : (
+                      <p className="text-sm font-semibold text-gray-500">No lobby matches this filter yet.</p>
+                    )}
+                  </div>
+                </div>
+              </div>
               {error && <p className="mb-3 text-center text-sm font-semibold text-red-500">{error}</p>}
               <button
                 onClick={handleFindGame}

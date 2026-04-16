@@ -27,6 +27,8 @@ function generatePin() {
 
 export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupConfigChange, questionTypes = [] }) {
   const [title, setTitle] = useState(setupConfig?.title || '');
+  const [category, setCategory] = useState(setupConfig?.category || '');
+  const [tags, setTags] = useState(setupConfig?.tagsText || '');
   const [selectedQuestionType, setSelectedQuestionType] = useState(setupConfig?.selectedQuestionType || setupConfig?.questionType || 'multiple_choice');
   const [questionCount, setQuestionCount] = useState(setupConfig?.questionCount || 5);
   const [questions, setQuestions] = useState(() => Array.from({ length: setupConfig?.questionCount || 5 }, () => createQuestionByType(setupConfig?.selectedQuestionType || setupConfig?.questionType || 'multiple_choice')));
@@ -51,10 +53,12 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   useEffect(() => {
     onSetupConfigChange?.({
       title,
+      category,
+      tagsText: tags,
       selectedQuestionType,
       questionCount,
     });
-  }, [title, selectedQuestionType, questionCount, onSetupConfigChange]);
+  }, [title, category, tags, selectedQuestionType, questionCount, onSetupConfigChange]);
 
   useEffect(() => {
     setQuestions((current) => current.map((question) => (
@@ -83,6 +87,8 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
     const source = quizzes.find(q => q.id === importQuizId) || kahootGames.find(q => q.id === importQuizId);
     if (!source) return;
     setTitle(source.title);
+    setCategory(source.category || '');
+    setTags((source.tags || []).join(', '));
     const imported = (source.questions || [])
       .filter(q => q.question_type === 'multiple_choice' || !q.question_type)
       .map(q => ({
@@ -181,6 +187,8 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
     const game = await base44.entities.KahootGame.create({
       pin,
       title,
+      category: category.trim(),
+      tags: tags.split(',').map(tag => tag.trim()).filter(Boolean),
       host_email: user?.email,
       status: 'lobby',
       current_question_index: 0,
@@ -254,6 +262,26 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                 value={title}
                 onChange={e => setTitle(e.target.value)}
               />
+            </div>
+            <div className="grid gap-4 md:grid-cols-2">
+              <div>
+                <label className="mb-2 block text-sm font-black uppercase tracking-wide text-[#6f4298]">Category</label>
+                <input
+                  className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-sm font-semibold focus:border-[#6f4298] focus:outline-none"
+                  placeholder="e.g. Maths, English, Science"
+                  value={category}
+                  onChange={e => setCategory(e.target.value)}
+                />
+              </div>
+              <div>
+                <label className="mb-2 block text-sm font-black uppercase tracking-wide text-[#6f4298]">Tags</label>
+                <input
+                  className="w-full rounded-2xl border-2 border-gray-200 px-4 py-3 text-sm font-semibold focus:border-[#6f4298] focus:outline-none"
+                  placeholder="fractions, algebra, gcse"
+                  value={tags}
+                  onChange={e => setTags(e.target.value)}
+                />
+              </div>
             </div>
             <div className="grid gap-4 md:grid-cols-2">
               <div>
