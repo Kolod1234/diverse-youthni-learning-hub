@@ -1,5 +1,6 @@
 import React from 'react';
-import { Trophy } from 'lucide-react';
+import { Trophy, BarChart3 } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import KahootAnswerReview from '@/components/kahoot/KahootAnswerReview';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
@@ -65,12 +66,22 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
         )}
       </div>
 
-      <button
-        onClick={onClose}
-        className="w-full max-w-lg bg-white text-purple-900 rounded-2xl py-4 text-xl font-black hover:bg-gray-100 shadow-xl"
-      >
-        {isHost ? '✓ Close Game' : '🏠 Go Home'}
-      </button>
+      <div className="w-full max-w-lg space-y-3">
+        {isHost && (
+          <Link
+            to={`/kahoot-analytics?gameId=${game.id}`}
+            className="flex w-full items-center justify-center gap-2 rounded-2xl bg-yellow-400 py-4 text-xl font-black text-yellow-950 hover:bg-yellow-300 shadow-xl"
+          >
+            <BarChart3 className="h-5 w-5" /> View Analytics
+          </Link>
+        )}
+        <button
+          onClick={onClose}
+          className="w-full bg-white text-purple-900 rounded-2xl py-4 text-xl font-black hover:bg-gray-100 shadow-xl"
+        >
+          {isHost ? '✓ Close Game' : '🏠 Go Home'}
+        </button>
+      </div>
     </div>
   );
 }
