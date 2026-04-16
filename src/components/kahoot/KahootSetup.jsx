@@ -1,12 +1,16 @@
 import React, { useEffect, useMemo, useState } from 'react';
+import { base44 } from '@/api/base44Client';
 
 function normalizeImageUrl(url) {
   if (!url) return '';
-  return url.includes('/api/apps/') && url.includes('/files/mp/public/')
-    ? url.replace('/files/mp/public/', '/files/public/')
-    : url;
+  if (url.includes('/api/apps/') && url.includes('/files/mp/public/')) {
+    return url.replace('/files/mp/public/', '/files/public/');
+  }
+  if (url.includes('/api/apps/') && url.includes('/files/public/')) {
+    return url.replace('/api/apps/', '/images/public/').replace(/\/files\/public\/.+?\//, '/');
+  }
+  return url;
 }
-import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
 import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
@@ -379,7 +383,7 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     {selectedQuestion.image_url ? (
                       <div className="space-y-4">
                         <div className="flex justify-center">
-                          <img src={normalizeImageUrl(selectedQuestion.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          <img key={normalizeImageUrl(selectedQuestion.image_url)} src={normalizeImageUrl(selectedQuestion.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow" htmlFor={`question-media-${selectedQuestionIndex}`}>
