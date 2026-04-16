@@ -741,7 +741,7 @@ function HomeView({ courses, user }) {
                     <div className="font-medium text-gray-900 text-sm">{course.title}</div>
                     <div className="text-xs text-gray-500 mt-0.5 capitalize">{course.category?.replace(/_/g, ' ')} · {courseEnrollments.length} students</div>
                   </div>
-                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}><Button variant="outline" size="sm">Manage</Button></Link>
+                  <Link to={createPageUrl('TutorCourseManager') + `?courseId=${course.id}`}><Button variant="outline" size="sm" className="border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Manage course</Button></Link>
                 </div>
               );
             })}
@@ -761,7 +761,7 @@ function HomeView({ courses, user }) {
                   <div className="font-medium text-gray-900 text-sm truncate">{session.title}</div>
                   <div className="text-xs text-gray-500">{new Date(session.scheduled_date).toLocaleDateString('en-GB')} at {session.scheduled_time}</div>
                 </div>
-                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">Start</Button></Link>
+                <Link to={createPageUrl('VideoSession') + `?id=${session.id}`}><Button size="sm" className="bg-purple-600 hover:bg-purple-700 text-white text-xs">Start session</Button></Link>
               </div>
             ))}
             {upcomingSessions.length === 0 && <p className="text-sm text-gray-500 text-center py-4">No upcoming sessions.<br /><Link to={createPageUrl('ScheduleSession')} className="text-purple-600 hover:underline">Schedule one now</Link></p>}
