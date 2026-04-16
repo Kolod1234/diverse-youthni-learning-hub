@@ -1,5 +1,6 @@
 import React from 'react';
-import { Trophy, Star } from 'lucide-react';
+import { Trophy } from 'lucide-react';
+import KahootAnswerReview from '@/components/kahoot/KahootAnswerReview';
 
 const MEDALS = ['🥇', '🥈', '🥉'];
 
@@ -20,28 +21,31 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
         )}
       </div>
 
-      {/* Top 3 podium */}
-      <div className="w-full max-w-lg">
-        <h3 className="text-xl font-black text-center mb-4 text-purple-200">Final Results</h3>
-        <div className="space-y-3">
-          {sorted.slice(0, 10).map((p, i) => (
-            <div
-              key={p.email}
-              className={`flex items-center gap-4 rounded-2xl px-5 py-4 ${
-                playerInfo && p.email === playerInfo.email
-                  ? 'bg-yellow-400 text-yellow-900'
-                  : i < 3 ? 'bg-white/30' : 'bg-white/10'
-              }`}
-            >
-              <span className="text-2xl">{MEDALS[i] || `#${i + 1}`}</span>
-              <span className="flex-1 font-black text-lg">{p.name}</span>
-              <div className="text-right">
-                <span className="font-black text-xl">{p.score || 0}</span>
-                <span className="text-xs opacity-70 ml-1">pts</span>
+      <div className="w-full max-w-5xl grid gap-6 lg:grid-cols-2 lg:items-start">
+        <div className="w-full max-w-lg lg:max-w-none mx-auto">
+          <h3 className="text-xl font-black text-center mb-4 text-purple-200">Final Results</h3>
+          <div className="space-y-3">
+            {sorted.slice(0, 10).map((p, i) => (
+              <div
+                key={p.email}
+                className={`flex items-center gap-4 rounded-2xl px-5 py-4 ${
+                  playerInfo && p.email === playerInfo.email
+                    ? 'bg-yellow-400 text-yellow-900'
+                    : i < 3 ? 'bg-white/30' : 'bg-white/10'
+                }`}
+              >
+                <span className="text-2xl">{MEDALS[i] || `#${i + 1}`}</span>
+                <span className="flex-1 font-black text-lg">{p.name}</span>
+                <div className="text-right">
+                  <span className="font-black text-xl">{p.score || 0}</span>
+                  <span className="text-xs opacity-70 ml-1">pts</span>
+                </div>
               </div>
-            </div>
-          ))}
+            ))}
+          </div>
         </div>
+
+        {!isHost && playerInfo && <KahootAnswerReview game={game} playerInfo={playerInfo} />}
       </div>
 
       <button
