@@ -69,8 +69,8 @@ export default function GradeAssignments() {
           <p className="text-gray-500">{assignment?.title}</p>
         </div>
 
-        <Card className="p-6">
-          <h2 className="text-xl font-semibold mb-6">Student Submissions</h2>
+        <Card className="p-6 bg-white text-slate-900">
+          <h2 className="text-xl font-semibold mb-6 text-slate-900">Student Submissions</h2>
           
           <div className="space-y-4">
             {submissions.map((submission) => (
