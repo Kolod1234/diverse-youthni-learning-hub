@@ -179,16 +179,16 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
               <button
                 key={qi}
                 onClick={() => setSelectedQuestionIndex(qi)}
-                className={`w-full rounded-2xl border p-3 text-left transition ${qi === selectedQuestionIndex ? 'border-[#2f80ed] bg-[#eff6ff]' : 'border-gray-200 bg-white hover:border-gray-300'}`}
+                className={`w-full rounded-[24px] border p-4 text-left shadow-sm transition ${qi === selectedQuestionIndex ? 'border-[#2f80ed] bg-white ring-4 ring-[#2f80ed]/20' : 'border-gray-200 bg-white hover:border-gray-300'}`}
               >
-                <div className="mb-2 flex items-center justify-between">
-                  <span className="text-sm font-black text-gray-700">{qi + 1} {questionTypes.find(type => type.value === q.question_type)?.label || 'Question'}</span>
-                  <span className="rounded-full bg-[#00c985] px-2 py-0.5 text-xs font-black text-white">★</span>
+                <div className="mb-3 flex items-center justify-between gap-3">
+                  <span className="text-base font-black text-gray-800">Question {qi + 1}</span>
+                  <span className="rounded-full bg-[#00c985] px-2.5 py-0.5 text-xs font-black text-white">★</span>
                 </div>
-                <p className="line-clamp-2 text-sm font-semibold text-gray-700">{q.question || 'Untitled question'}</p>
-                <div className="mt-3 grid grid-cols-2 gap-2">
-                  {q.options?.slice(0, 4).map((opt, oi) => (
-                    <div key={oi} className="h-7 rounded-lg" style={{ backgroundColor: KAHOOT_COLORS[oi], opacity: 0.9 }} />
+                <p className="mb-4 line-clamp-2 text-base font-bold text-gray-700">{q.question || 'Untitled question'}</p>
+                <div className="grid grid-cols-2 gap-2">
+                  {KAHOOT_COLORS.map((color, oi) => (
+                    <div key={oi} className="h-8 rounded-xl" style={{ backgroundColor: color }} />
                   ))}
                 </div>
               </button>
