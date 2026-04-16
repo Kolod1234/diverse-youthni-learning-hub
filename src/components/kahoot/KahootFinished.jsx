@@ -11,7 +11,7 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
     <div className="min-h-screen bg-gradient-to-br from-purple-900 to-indigo-900 flex flex-col items-center justify-between p-8 text-white">
       <div className="text-center">
         <Trophy className="w-16 h-16 text-yellow-400 mx-auto mb-3" />
-        <h1 className="text-4xl font-black mb-1">Game Over!</h1>
+        <h1 className="text-4xl font-black mb-1">Strands of Ideas Complete!</h1>
         <p className="text-purple-300 text-lg">{game.title}</p>
         {!isHost && myRank && (
           <div className="mt-4 bg-white/20 rounded-2xl px-6 py-3 inline-block">

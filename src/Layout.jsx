@@ -400,7 +400,7 @@ function LayoutContent({ children, currentPageName }) {
                 {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                   <MenuItem component={Link} to="/kahoot-host" onClick={() => setMoreMenuAnchor(null)}>
                     <ListItemIcon><Sparkles size={20} color="#f59e0b" /></ListItemIcon>
-                    <ListItemText primary="Kahoot" />
+                    <ListItemText primary="Strands of Ideas" />
                   </MenuItem>
                 )}
                 <Divider />
@@ -735,7 +735,7 @@ function LayoutContent({ children, currentPageName }) {
                     {(user?.is_tutor || user?.is_coordinator || user?.role === 'admin') && (
                       <ListItemButton component={Link} to="/kahoot-host" onClick={() => setMobileMenuOpen(false)}>
                         <ListItemIcon><Sparkles size={20} /></ListItemIcon>
-                        <ListItemText primary="Kahoot" />
+                        <ListItemText primary="Strands of Ideas" />
                       </ListItemButton>
                     )}
                     <ListItemButton component={Link} to="/creation-hub" onClick={() => setMobileMenuOpen(false)}>

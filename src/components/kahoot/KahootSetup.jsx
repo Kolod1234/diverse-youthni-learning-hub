@@ -142,7 +142,7 @@ export default function KahootSetup({ user, onGameCreated }) {
               <Zap className="h-7 w-7 text-[#5b2b86]" />
             </div>
             <div>
-              <h1 className="text-xl font-black text-gray-900">Quiz</h1>
+              <h1 className="text-xl font-black text-gray-900">Strands of Ideas</h1>
               <p className="text-sm font-medium text-gray-500">{questions.length} question{questions.length !== 1 ? 's' : ''}</p>
             </div>
           </div>

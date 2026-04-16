@@ -63,7 +63,7 @@ export default function KahootJoin({ onJoined }) {
           </div>
           <div className="text-white">
             <p className="text-sm font-black uppercase tracking-[0.3em] text-white/75">Join game</p>
-            <span className="text-4xl font-black">KAHOOT!</span>
+            <span className="text-4xl font-black">STRANDS OF IDEAS</span>
           </div>
         </div>
 
@@ -74,7 +74,7 @@ export default function KahootJoin({ onJoined }) {
                 <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-2xl bg-[#ede9fe] text-[#6f4298]">
                   <Hash className="h-7 w-7" />
                 </div>
-                <h2 className="text-3xl font-black text-gray-900">Enter Game PIN</h2>
+                <h2 className="text-3xl font-black text-gray-900">Enter Strands of Ideas PIN</h2>
                 <p className="mt-2 text-sm font-medium text-gray-500">Ask your host for the 6-digit PIN</p>
               </div>
               <input
@@ -91,7 +91,7 @@ export default function KahootJoin({ onJoined }) {
                 disabled={pin.length !== 6 || joining}
                 className="w-full rounded-3xl bg-[#6f4298] py-4 text-lg font-black text-white shadow-xl hover:bg-[#5c347f] disabled:opacity-40"
               >
-                {joining ? 'Searching...' : 'Find Game'}
+                {joining ? 'Searching...' : 'Find Session'}
               </button>
             </>
           ) : (
@@ -116,7 +116,7 @@ export default function KahootJoin({ onJoined }) {
                 disabled={!name.trim() || joining}
                 className="w-full rounded-3xl bg-[#1368ce] py-4 text-lg font-black text-white shadow-xl hover:bg-[#0f56ab] disabled:opacity-40"
               >
-                {joining ? 'Joining...' : 'Join Game'}
+                {joining ? 'Joining...' : 'Join Session'}
               </button>
             </>
           )}
