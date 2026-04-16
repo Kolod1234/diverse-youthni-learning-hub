@@ -18,6 +18,7 @@ export function createQuestionByType(type) {
     accepted_answers: [],
     time_limit_seconds: 20,
     image_url: '',
+    video_url: '',
     visual_description: '',
     prompt_label: ''
   };

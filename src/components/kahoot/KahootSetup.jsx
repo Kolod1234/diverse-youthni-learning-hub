@@ -17,7 +17,7 @@ function normalizeImageUrl(url) {
   return url;
 }
 import { useQuery } from '@tanstack/react-query';
-import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload } from 'lucide-react';
+import { Plus, Trash2, ChevronDown, ChevronUp, Zap, FileQuestion, Loader2, CheckCircle, ImagePlus, Upload, Video } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
 import { createQuestionByType } from '@/components/kahoot/questionTypes';
 
@@ -146,10 +146,16 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   const handleQuestionMediaUpload = async (questionIndex, file) => {
     if (!file) return;
     const upload = await base44.integrations.Core.UploadFile({ file });
-    const imageUrl = normalizeImageUrl(upload.file_url);
+    const isVideo = file.type?.startsWith('video/');
+    const mediaUrl = isVideo ? upload.file_url : normalizeImageUrl(upload.file_url);
     setQuestions((current) => current.map((question, index) => (
       index === questionIndex
-        ? { ...question, image_url: imageUrl, question_type: 'image_based' }
+        ? {
+            ...question,
+            image_url: isVideo ? '' : mediaUrl,
+            video_url: isVideo ? mediaUrl : '',
+            question_type: 'image_based'
+          }
         : question
     )));
   };
@@ -373,9 +379,14 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     <label className="mb-1 block text-xs font-black uppercase tracking-wide text-gray-500">Media URL</label>
                     <input
                       className="w-full rounded-xl border border-gray-200 px-3 py-2 text-sm"
-                      placeholder="Paste image URL"
-                      value={selectedQuestion.image_url || ''}
-                      onChange={e => updateQuestion(selectedQuestionIndex, 'image_url', normalizeImageUrl(e.target.value))}
+                      placeholder="Paste image or video URL"
+                      value={selectedQuestion.video_url || selectedQuestion.image_url || ''}
+                      onChange={e => {
+                        const value = e.target.value;
+                        const isVideo = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(value);
+                        updateQuestion(selectedQuestionIndex, 'image_url', isVideo ? '' : normalizeImageUrl(value));
+                        updateQuestion(selectedQuestionIndex, 'video_url', isVideo ? value : '');
+                      }}
                     />
                   </div>
                 </div>
@@ -385,33 +396,37 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                     className="mb-5 rounded-[28px] border-2 border-dashed border-gray-300 bg-[#f5eefb] p-6 text-center"
                     onPaste={(e) => handleQuestionMediaPaste(e, selectedQuestionIndex)}
                   >
-                    {selectedQuestion.image_url ? (
+                    {selectedQuestion.image_url || selectedQuestion.video_url ? (
                       <div className="space-y-4">
                         <div className="flex justify-center">
-                          <img key={normalizeImageUrl(selectedQuestion.image_url)} src={normalizeImageUrl(selectedQuestion.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          {selectedQuestion.video_url ? (
+                            <video key={selectedQuestion.video_url} src={selectedQuestion.video_url} controls className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          ) : (
+                            <img key={normalizeImageUrl(selectedQuestion.image_url)} src={normalizeImageUrl(selectedQuestion.image_url)} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
+                          )}
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow" htmlFor={`question-media-${selectedQuestionIndex}`}>
                             <Upload className="h-4 w-4" /> Replace media
                           </label>
-                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
+                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*,video/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                         </div>
                       </div>
                     ) : (
                       <div className="space-y-4">
                         <div className="mx-auto flex h-16 w-16 items-center justify-center rounded-2xl bg-white text-[#6f4298] shadow">
-                          <ImagePlus className="h-8 w-8" />
+                          <Video className="h-8 w-8" />
                         </div>
                         <div>
                           <p className="text-lg font-bold text-gray-800">Find and insert media</p>
-                          <p className="mt-1 text-sm text-gray-500">Upload or paste an image for this question style</p>
+                          <p className="mt-1 text-sm text-gray-500">Upload or paste an image or video for this question style</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
                           <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]" htmlFor={`question-media-${selectedQuestionIndex}`}>
                             <Upload className="h-4 w-4" /> Upload file
                           </label>
-                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
-                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">or press Ctrl/Cmd + V</span>
+                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*,video/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
+                          <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">or press Ctrl/Cmd + V for images</span>
                         </div>
                       </div>
                     )}

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { CheckCircle, XCircle, Image as ImageIcon, Type, Clock3, Users } from 'lucide-react';
+import { CheckCircle, XCircle, Image as ImageIcon, Type, Clock3, Users, Video } from 'lucide-react';
 import { KAHOOT_BACKGROUND, KAHOOT_COLORS, KAHOOT_SHAPES } from '@/components/kahoot/kahootTheme';
 import KahootLiveMetrics from '@/components/kahoot/KahootLiveMetrics';
 
@@ -89,9 +89,13 @@ export default function KahootHostQuestion({ game, showResults, onShowResults, o
           </div>
 
           <div className="mt-5 flex flex-col items-center gap-5">
-            {question.image_url && (
+            {(question.image_url || question.video_url) && (
               <div className="rounded-[28px] bg-white/10 p-3 shadow-2xl backdrop-blur-sm">
-                <img src={question.image_url} alt="Question visual" className="max-h-[300px] w-full max-w-md rounded-3xl object-cover md:max-w-lg" />
+                {question.video_url ? (
+                  <video src={question.video_url} controls className="max-h-[300px] w-full max-w-md rounded-3xl object-cover md:max-w-lg" />
+                ) : (
+                  <img src={question.image_url} alt="Question visual" className="max-h-[300px] w-full max-w-md rounded-3xl object-cover md:max-w-lg" />
+                )}
               </div>
             )}
 
