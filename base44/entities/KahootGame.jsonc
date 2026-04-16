@@ -119,6 +119,9 @@
           "score": {
             "type": "number"
           },
+          "coins": {
+            "type": "number"
+          },
           "power_ups": {
             "type": "object",
             "properties": {
@@ -133,11 +136,31 @@
               },
               "fifty_fifty": {
                 "type": "number"
+              },
+              "freeze_opponents": {
+                "type": "number"
+              },
+              "reveal_answer": {
+                "type": "number"
+              },
+              "steal_points": {
+                "type": "number"
               }
             }
           },
           "active_power_up": {
             "type": "string"
+          },
+          "power_up_effects": {
+            "type": "object",
+            "properties": {
+              "frozen_until_question": {
+                "type": "number"
+              },
+              "reveal_answer_for_question": {
+                "type": "number"
+              }
+            }
           },
           "answers": {
             "type": "array",

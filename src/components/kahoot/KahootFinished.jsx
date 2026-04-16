@@ -59,6 +59,10 @@ export default function KahootFinished({ game, isHost, playerInfo, onClose }) {
                   <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">🛡</div><div className="text-sm font-bold">Shield</div><div className="text-xl font-black">{inventory.shield || 0}</div></div>
                   <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">⭕</div><div className="text-sm font-bold">50/50</div><div className="text-xl font-black">{inventory.fifty_fifty || 0}</div></div>
                   <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">⏭</div><div className="text-sm font-bold">Skip</div><div className="text-xl font-black">{inventory.skip_question || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">❄️</div><div className="text-sm font-bold">Freeze</div><div className="text-xl font-black">{inventory.freeze_opponents || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">💡</div><div className="text-sm font-bold">Reveal</div><div className="text-xl font-black">{inventory.reveal_answer || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">🪙</div><div className="text-sm font-bold">Steal</div><div className="text-xl font-black">{inventory.steal_points || 0}</div></div>
+                  <div className="rounded-2xl bg-white/10 p-3"><div className="text-2xl">💰</div><div className="text-sm font-bold">Coins</div><div className="text-xl font-black">{me?.coins || 0}</div></div>
                 </div>
               );
             })()}

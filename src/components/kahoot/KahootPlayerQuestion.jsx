@@ -1,7 +1,9 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { CheckCircle, XCircle, Image as ImageIcon, Clock3, Shield, CircleOff, SkipForward, Zap } from 'lucide-react';
+import { CheckCircle, XCircle, Image as ImageIcon, Clock3 } from 'lucide-react';
 import { base44 } from '@/api/base44Client';
 import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
+import KahootPowerUpShop from '@/components/kahoot/KahootPowerUpShop';
+import { createEmptyEffects, createEmptyPowerUps, POWER_UP_DEFINITIONS } from '@/components/kahoot/powerUps';
 
 const COLORS = ['#e21b3c', '#1368ce', '#26890c', '#ffa602'];
 const SHAPES = ['▲', '●', '■', '♦'];
@@ -37,13 +39,11 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
   const me = (game.participants || []).find(p => p.email === playerInfo.email);
   const myAnswer = me?.answers?.find(a => a.question_index === qi);
   const isCorrect = myAnswer?.is_correct;
-  const inventory = me?.power_ups || {
-    double_points: 0,
-    shield: 0,
-    skip_question: 0,
-    fifty_fifty: 0,
-  };
+  const inventory = { ...createEmptyPowerUps(), ...(me?.power_ups || {}) };
   const activePowerUp = me?.active_power_up || '';
+  const effects = { ...createEmptyEffects(), ...(me?.power_up_effects || {}) };
+  const isFrozen = effects.frozen_until_question === qi;
+  const revealCorrectAnswer = effects.reveal_answer_for_question === qi;
   const hiddenOptions = useMemo(() => {
     if (activePowerUp !== 'fifty_fifty' || isShortAnswer) return [];
     return (question?.options || [])
@@ -62,6 +62,23 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
     await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
   };
 
+  const handleBuyPowerUp = async (type) => {
+    const definition = POWER_UP_DEFINITIONS[type];
+    if (!definition || (me?.coins || 0) < definition.cost) return;
+
+    await updateParticipantState((participant) => {
+      const nextInventory = { ...createEmptyPowerUps(), ...(participant.power_ups || {}) };
+      return {
+        ...participant,
+        coins: Math.max(0, (participant.coins || 0) - definition.cost),
+        power_ups: {
+          ...nextInventory,
+          [type]: (nextInventory[type] || 0) + 1,
+        },
+      };
+    });
+  };
+
   const handleUsePowerUp = async (type) => {
     if (hasAnswered || showResults || usingPowerUp) return;
     if (!inventory[type]) return;
@@ -70,6 +87,7 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
     if (type === 'skip_question') {
       await updateParticipantState((participant) => ({
         ...participant,
+        coins: (participant.coins || 0) + 30,
         power_ups: {
           ...inventory,
           skip_question: Math.max(0, (inventory.skip_question || 0) - 1),
@@ -90,6 +108,50 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
         score: (participant.score || 0) + 300,
       }));
       onAnswer('__skip__');
+      setUsingPowerUp(false);
+      return;
+    }
+
+    if (type === 'freeze_opponents') {
+      const updatedParticipants = (game.participants || []).map((participant) => {
+        const nextInventory = { ...createEmptyPowerUps(), ...(participant.power_ups || {}) };
+        const nextEffects = { ...createEmptyEffects(), ...(participant.power_up_effects || {}) };
+        if (participant.email === playerInfo.email) {
+          return {
+            ...participant,
+            power_ups: {
+              ...nextInventory,
+              freeze_opponents: Math.max(0, (nextInventory.freeze_opponents || 0) - 1),
+            },
+            active_power_up: '',
+          };
+        }
+        return {
+          ...participant,
+          power_up_effects: {
+            ...nextEffects,
+            frozen_until_question: qi,
+          },
+        };
+      });
+      await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
+      setUsingPowerUp(false);
+      return;
+    }
+
+    if (type === 'reveal_answer') {
+      await updateParticipantState((participant) => ({
+        ...participant,
+        power_ups: {
+          ...inventory,
+          reveal_answer: Math.max(0, (inventory.reveal_answer || 0) - 1),
+        },
+        power_up_effects: {
+          ...effects,
+          reveal_answer_for_question: qi,
+        },
+        active_power_up: '',
+      }));
       setUsingPowerUp(false);
       return;
     }
@@ -184,10 +246,21 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
           <div className="rounded-[34px] bg-white/14 p-4 shadow-2xl backdrop-blur-md md:p-6">
             <div className="rounded-[30px] bg-white/18 p-4 text-center backdrop-blur-sm md:p-6">
               <div className="mb-4 flex flex-wrap justify-center gap-2">
-                <button onClick={() => handleUsePowerUp('double_points')} disabled={!inventory.double_points || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⚡ Double x{inventory.double_points}</button>
-                <button onClick={() => handleUsePowerUp('shield')} disabled={!inventory.shield || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">🛡 Shield x{inventory.shield}</button>
-                {!isShortAnswer && <button onClick={() => handleUsePowerUp('fifty_fifty')} disabled={!inventory.fifty_fifty || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⭕ 50/50 x{inventory.fifty_fifty}</button>}
-                <button onClick={() => handleUsePowerUp('skip_question')} disabled={!inventory.skip_question || hasAnswered || usingPowerUp} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⏭ Skip x{inventory.skip_question}</button>
+                <button onClick={() => handleUsePowerUp('double_points')} disabled={!inventory.double_points || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⚡ Double x{inventory.double_points}</button>
+                <button onClick={() => handleUsePowerUp('shield')} disabled={!inventory.shield || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">🛡 Shield x{inventory.shield}</button>
+                {!isShortAnswer && <button onClick={() => handleUsePowerUp('fifty_fifty')} disabled={!inventory.fifty_fifty || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⭕ 50/50 x{inventory.fifty_fifty}</button>}
+                <button onClick={() => handleUsePowerUp('skip_question')} disabled={!inventory.skip_question || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">⏭ Skip x{inventory.skip_question}</button>
+                <button onClick={() => handleUsePowerUp('freeze_opponents')} disabled={!inventory.freeze_opponents || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">❄️ Freeze x{inventory.freeze_opponents}</button>
+                <button onClick={() => handleUsePowerUp('reveal_answer')} disabled={!inventory.reveal_answer || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">💡 Reveal x{inventory.reveal_answer}</button>
+                <button onClick={() => handleUsePowerUp('steal_points')} disabled={!inventory.steal_points || hasAnswered || usingPowerUp || isFrozen} className="rounded-full bg-white/90 px-4 py-2 text-sm font-black text-[#6f4298] disabled:opacity-40">🪙 Steal x{inventory.steal_points}</button>
+              </div>
+              {isFrozen && (
+                <div className="mb-4 rounded-2xl bg-blue-500/20 px-4 py-3 text-sm font-black text-white">
+                  You are frozen for this question and cannot use power-ups.
+                </div>
+              )}
+              <div className="mb-4 rounded-2xl bg-white/10 px-4 py-3 text-center text-sm font-black text-white">
+                Coins: {me?.coins || 0}
               </div>
               {question.image_url && (
                 <div className="mb-4 flex justify-center">
@@ -202,8 +275,15 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
               <div className="inline-block rounded-2xl bg-[#fff6cf] px-5 py-3 shadow-lg">
                 <p className="text-xl font-black text-[#3b2b1a] md:text-3xl">{question.question}</p>
               </div>
+              {revealCorrectAnswer && !isShortAnswer && (
+                <div className="mt-4 rounded-2xl bg-emerald-500/20 px-4 py-3 text-sm font-black text-white">
+                  Correct answer revealed: {question.options?.[question.correct_answer] || '—'}
+                </div>
+              )}
             </div>
           </div>
+
+          <KahootPowerUpShop coins={me?.coins || 0} inventory={inventory} onBuy={handleBuyPowerUp} disabled={hasAnswered || usingPowerUp} />
 
           {isShortAnswer ? (
             <div className="mx-auto w-full max-w-2xl rounded-[32px] bg-white p-6 shadow-2xl md:p-8">
@@ -231,7 +311,7 @@ export default function KahootPlayerQuestion({ game, playerInfo, hasAnswered, la
                   <button
                     key={oi}
                     onClick={() => onAnswer(oi)}
-                    disabled={hasAnswered || isHidden}
+                    disabled={hasAnswered || isHidden || isFrozen}
                     className="flex min-h-[120px] items-center justify-center rounded-[24px] px-4 py-5 text-center text-white shadow-2xl transition-transform active:scale-95 disabled:opacity-40 md:min-h-[140px]"
                     style={{ backgroundColor: COLORS[oi] }}
                   >

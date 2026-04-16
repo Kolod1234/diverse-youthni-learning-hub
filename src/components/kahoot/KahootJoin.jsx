@@ -3,6 +3,7 @@ import { base44 } from '@/api/base44Client';
 import { Zap, Hash, User2, Search } from 'lucide-react';
 import { useQuery } from '@tanstack/react-query';
 import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
+import { createEmptyEffects, createEmptyPowerUps } from '@/components/kahoot/powerUps';
 
 export default function KahootJoin({ onJoined }) {
   const [pin, setPin] = useState('');
@@ -66,12 +67,9 @@ export default function KahootJoin({ onJoined }) {
           name: name.trim(),
           email: userEmail,
           score: 0,
-          power_ups: {
-            double_points: 0,
-            shield: 0,
-            skip_question: 0,
-            fifty_fifty: 0,
-          },
+          coins: 150,
+          power_ups: createEmptyPowerUps(),
+          power_up_effects: createEmptyEffects(),
           active_power_up: '',
           answers: [],
         },

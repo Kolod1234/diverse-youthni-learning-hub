@@ -7,6 +7,7 @@ import KahootPlayerLobby from '@/components/kahoot/KahootPlayerLobby';
 import KahootPlayerQuestion from '@/components/kahoot/KahootPlayerQuestion';
 import KahootFinished from '@/components/kahoot/KahootFinished';
 import { KAHOOT_BACKGROUND } from '@/components/kahoot/kahootTheme';
+import { createEmptyEffects, createEmptyPowerUps } from '@/components/kahoot/powerUps';
 
 export default function KahootPlay() {
   const queryClient = useQueryClient();
@@ -63,6 +64,7 @@ export default function KahootPlay() {
     const selectedIndex = isShortAnswer ? null : answerValue;
     const textAnswer = isShortAnswer ? String(answerValue || '').trim() : '';
     const activePowerUp = participant?.active_power_up || '';
+    const effects = participant?.power_up_effects || createEmptyEffects();
     setLastAnswerIndex(selectedIndex);
     const rawCorrect = isShortAnswer
       ? textAnswer.toLowerCase() === String(q.correct_text_answer || '').trim().toLowerCase()
@@ -72,19 +74,26 @@ export default function KahootPlay() {
     const timeTakenMs = Date.now() - startedAt;
     const timeLimit = (q.time_limit_seconds || 20) * 1000;
     const basePoints = isCorrect ? Math.round(1000 * (1 - timeTakenMs / timeLimit) + 200) : 0;
-    const points = activePowerUp === 'double_points' ? basePoints * 2 : basePoints;
+    const doubledPoints = activePowerUp === 'double_points' ? basePoints * 2 : basePoints;
+    const stolePoints = activePowerUp === 'steal_points' && isCorrect ? 250 : 0;
+    const points = doubledPoints + stolePoints;
+    const earnedCoins = isCorrect ? 60 : 20;
+
+    let stolenFromEmail = null;
+    if (stolePoints) {
+      const donor = (game.participants || []).find((p) => p.email !== playerInfo.email && (p.score || 0) >= 250);
+      stolenFromEmail = donor?.email || null;
+    }
 
     const updatedParticipants = (game.participants || []).map((p) => {
+      const nextPowerUps = { ...createEmptyPowerUps(), ...(p.power_ups || {}) };
+      const nextEffects = { ...createEmptyEffects(), ...(p.power_up_effects || {}) };
+
       if (p.email === playerInfo.email) {
-        const nextPowerUps = {
-          double_points: p.power_ups?.double_points || 0,
-          shield: p.power_ups?.shield || 0,
-          skip_question: p.power_ups?.skip_question || 0,
-          fifty_fifty: p.power_ups?.fifty_fifty || 0,
-        };
         return {
           ...p,
           score: (p.score || 0) + points,
+          coins: (p.coins || 0) + earnedCoins,
           active_power_up: '',
           power_ups: {
             ...nextPowerUps,
@@ -92,6 +101,14 @@ export default function KahootPlay() {
             shield: nextPowerUps.shield + (isCorrect && (game.current_question_index + 1) % 4 === 0 ? 1 : 0),
             skip_question: nextPowerUps.skip_question + (isCorrect && (game.current_question_index + 1) % 5 === 0 ? 1 : 0),
             fifty_fifty: nextPowerUps.fifty_fifty + (isCorrect && (game.current_question_index + 1) % 2 === 0 ? 1 : 0),
+            freeze_opponents: nextPowerUps.freeze_opponents + (isCorrect && (game.current_question_index + 1) % 3 === 0 ? 1 : 0),
+            reveal_answer: nextPowerUps.reveal_answer + (isCorrect && (game.current_question_index + 1) % 4 === 0 ? 1 : 0),
+            steal_points: nextPowerUps.steal_points + (isCorrect && (game.current_question_index + 1) % 5 === 0 ? 1 : 0),
+          },
+          power_up_effects: {
+            ...nextEffects,
+            frozen_until_question: nextEffects.frozen_until_question,
+            reveal_answer_for_question: effects.reveal_answer_for_question === game.current_question_index ? -1 : nextEffects.reveal_answer_for_question,
           },
           answers: [
             ...(p.answers || []),
@@ -107,7 +124,23 @@ export default function KahootPlay() {
           ],
         };
       }
-      return p;
+
+      if (stolenFromEmail && p.email === stolenFromEmail) {
+        return {
+          ...p,
+          score: Math.max(0, (p.score || 0) - 250),
+        };
+      }
+
+      return {
+        ...p,
+        active_power_up: p.active_power_up === 'freeze_opponents' ? '' : p.active_power_up,
+        power_up_effects: {
+          ...nextEffects,
+          frozen_until_question: nextEffects.frozen_until_question === game.current_question_index ? -1 : nextEffects.frozen_until_question,
+          reveal_answer_for_question: nextEffects.reveal_answer_for_question,
+        },
+      };
     });
 
     await base44.entities.KahootGame.update(game.id, { participants: updatedParticipants });
