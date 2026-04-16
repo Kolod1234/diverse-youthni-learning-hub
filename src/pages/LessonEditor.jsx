@@ -161,18 +161,20 @@ export default function LessonEditor() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
-        <div className="max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-          <Button variant="ghost" onClick={() => navigate(-1)} size="sm">
-            <ArrowLeft className="w-4 h-4 mr-2" />
-            Back
-          </Button>
-          <h1 className="text-xl font-bold text-gray-900">
-            {lessonId ? 'Edit Lesson' : 'Create New Lesson'}
-          </h1>
+        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center justify-between gap-3 sm:flex-1">
+            <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0">
+              <ArrowLeft className="w-4 h-4 mr-2" />
+              Back
+            </Button>
+            <h1 className="text-base sm:text-xl font-bold text-gray-900 text-right sm:text-center sm:flex-1">
+              {lessonId ? 'Edit Lesson' : 'Create New Lesson'}
+            </h1>
+          </div>
           <Button 
             onClick={() => saveMutation.mutate()} 
             disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
-            className="bg-indigo-600"
+            className="bg-indigo-600 w-full sm:w-auto"
           >
             {saveMutation.isPending ? (
               <>
@@ -189,12 +191,12 @@ export default function LessonEditor() {
         </div>
       </div>
 
-      <div className="max-w-6xl mx-auto px-6 py-8">
+      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 overflow-x-hidden">
         <div className="space-y-6">
           {/* Basic Info */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6"
             <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-            <div className="grid md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!lessonId && !courseId && (
                 <div className="md:col-span-2">
                   <Label>Course *</Label>
@@ -234,13 +236,13 @@ export default function LessonEditor() {
                 value={lessonForm.duration_minutes || ''} 
                 onChange={(e) => setLessonForm({ ...lessonForm, duration_minutes: parseInt(e.target.value) })}
                 placeholder="10"
-                className="max-w-xs"
+                className="w-full sm:max-w-xs"
               />
             </div>
           </Card>
 
           {/* Description */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Lesson Description</h2>
             <RichTextEditor
               value={lessonForm.description || ''}
@@ -250,7 +252,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Video Content */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <Video className="w-5 h-5 text-red-600" />
               <h2 className="text-lg font-semibold">Video Content</h2>
@@ -284,7 +286,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Google Slides */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <Presentation className="w-5 h-5 text-yellow-600" />
               <h2 className="text-lg font-semibold">Google Slides Presentation</h2>
@@ -305,7 +307,7 @@ export default function LessonEditor() {
                   placeholder="e.g. 43"
                   value={lessonForm.total_slides || ''}
                   onChange={(e) => setLessonForm({ ...lessonForm, total_slides: parseInt(e.target.value) || null })}
-                  className="max-w-xs mt-1"
+                  className="w-full sm:max-w-xs mt-1"
                 />
                 <p className="text-xs text-gray-500 mt-1">Set this so the slide counter in the player shows the correct total (e.g. "8 / 43")</p>
               </div>
@@ -342,7 +344,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Document Upload */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <FileText className="w-5 h-5 text-blue-600" />
               <h2 className="text-lg font-semibold">Upload Document (PPT, PDF, Word)</h2>
@@ -389,7 +391,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Learning Objectives */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <div className="flex items-center gap-2 mb-4">
               <Target className="w-5 h-5 text-green-600" />
               <h2 className="text-lg font-semibold">Learning Objectives (CCEA)</h2>
@@ -441,7 +443,7 @@ export default function LessonEditor() {
           />
 
           {/* Custom Slides */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Written Lesson Content (Slides)</h2>
             <SlideEditor
               slides={lessonForm.slides || []}
@@ -451,7 +453,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Resources */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Supplementary Materials</h2>
             <FileUploadManager
               resources={lessonForm.resources || []}
@@ -460,7 +462,7 @@ export default function LessonEditor() {
           </Card>
 
           {/* Options */}
-          <Card className="p-6">
+          <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Lesson Options</h2>
             <div className="flex items-center gap-3">
               <input 
@@ -477,14 +479,14 @@ export default function LessonEditor() {
           </Card>
 
           {/* Save Button (Bottom) */}
-          <div className="flex justify-end gap-3 pb-8">
-            <Button variant="outline" onClick={() => navigate(-1)}>
+          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pb-8">
+            <Button variant="outline" onClick={() => navigate(-1)} className="w-full sm:w-auto">
               Cancel
             </Button>
             <Button 
               onClick={() => saveMutation.mutate()} 
               disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
-              className="bg-indigo-600"
+              className="bg-indigo-600 w-full sm:w-auto"
               size="lg"
             >
               {saveMutation.isPending ? (
