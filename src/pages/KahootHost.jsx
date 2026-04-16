@@ -121,7 +121,7 @@ export default function KahootHost() {
   }
 
   if (!gameId) {
-    return <KahootSetup user={user} onGameCreated={handleGameCreated} setupConfig={setupConfig} />;
+    return <KahootSetup user={user} onGameCreated={handleGameCreated} setupConfig={setupConfig} questionTypes={setupConfig ? [{ value: setupConfig.questionType || setupConfig.selectedQuestionType, label: 'Selected type' }] : []} />;
   }
 
   if (!game) {

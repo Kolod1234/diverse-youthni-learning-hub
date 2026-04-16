@@ -11,9 +11,9 @@ function generatePin() {
 
 export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupConfigChange, questionTypes = [] }) {
   const [title, setTitle] = useState(setupConfig?.title || '');
-  const [selectedQuestionType, setSelectedQuestionType] = useState(setupConfig?.selectedQuestionType || 'multiple_choice');
+  const [selectedQuestionType, setSelectedQuestionType] = useState(setupConfig?.selectedQuestionType || setupConfig?.questionType || 'multiple_choice');
   const [questionCount, setQuestionCount] = useState(setupConfig?.questionCount || 5);
-  const [questions, setQuestions] = useState(() => Array.from({ length: setupConfig?.questionCount || 5 }, () => createQuestionByType(setupConfig?.selectedQuestionType || 'multiple_choice')));
+  const [questions, setQuestions] = useState(() => Array.from({ length: setupConfig?.questionCount || 5 }, () => createQuestionByType(setupConfig?.selectedQuestionType || setupConfig?.questionType || 'multiple_choice')));
   const [importQuizId, setImportQuizId] = useState('');
   const [importPastQuestionsFile, setImportPastQuestionsFile] = useState(null);
   const [creating, setCreating] = useState(false);
