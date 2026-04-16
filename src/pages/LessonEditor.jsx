@@ -194,7 +194,7 @@ export default function LessonEditor() {
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 overflow-x-hidden">
         <div className="space-y-6">
           {/* Basic Info */}
-          <Card className="p-4 sm:p-6"
+          <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               {!lessonId && !courseId && (
