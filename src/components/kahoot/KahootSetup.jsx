@@ -4,10 +4,15 @@ import { base44 } from '@/api/base44Client';
 function normalizeImageUrl(url) {
   if (!url) return '';
   if (url.includes('/api/apps/') && url.includes('/files/mp/public/')) {
-    return url.replace('/files/mp/public/', '/files/public/');
+    const normalized = url.replace('/files/mp/public/', '/files/public/');
+    return normalizeImageUrl(normalized);
   }
-  if (url.includes('/api/apps/') && url.includes('/files/public/')) {
-    return url.replace('/api/apps/', '/images/public/').replace(/\/files\/public\/.+?\//, '/');
+  if (url.includes('base44.app/api/apps/') && url.includes('/files/public/')) {
+    const match = url.match(/\/api\/apps\/([^/]+)\/files\/public\/([^/]+)\/(.+)$/);
+    if (match) {
+      const [, , ownerId, fileName] = match;
+      return `https://media.base44.com/images/public/${ownerId}/${fileName}`;
+    }
   }
   return url;
 }
