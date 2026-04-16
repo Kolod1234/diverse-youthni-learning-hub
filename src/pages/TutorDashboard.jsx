@@ -914,7 +914,7 @@ function GradesView({ course, courses }) {
           </div>
         </div>
       )}
-      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full">View All Submissions & Grades</Button></Link>}
+      {targetCourseId && <Link to={createPageUrl('GradeAssignments') + `?courseId=${targetCourseId}`}><Button variant="outline" className="w-full border-slate-300 bg-white text-slate-900 hover:bg-slate-50">View all submissions and grades</Button></Link>}
     </div>
   );
 }
