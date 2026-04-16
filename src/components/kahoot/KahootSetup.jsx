@@ -130,8 +130,11 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
   const handleQuestionMediaUpload = async (questionIndex, file) => {
     if (!file) return;
     const upload = await base44.integrations.Core.UploadFile({ file });
-    updateQuestion(questionIndex, 'image_url', upload.file_url);
-    updateQuestion(questionIndex, 'question_type', 'image_based');
+    setQuestions((current) => current.map((question, index) => (
+      index === questionIndex
+        ? { ...question, image_url: upload.file_url, question_type: 'image_based' }
+        : question
+    )));
   };
 
   const handleQuestionMediaPaste = async (event, questionIndex) => {
@@ -371,10 +374,10 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                           <img src={selectedQuestion.image_url} alt="Question visual" className="max-h-64 rounded-3xl object-cover shadow-lg" />
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
-                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-white px-4 py-2 font-bold text-[#6f4298] shadow" htmlFor={`question-media-${selectedQuestionIndex}`}>
                             <Upload className="h-4 w-4" /> Replace media
-                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                           </label>
+                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                         </div>
                       </div>
                     ) : (
@@ -387,10 +390,10 @@ export default function KahootSetup({ user, onGameCreated, setupConfig, onSetupC
                           <p className="mt-1 text-sm text-gray-500">Upload or paste an image for this question style</p>
                         </div>
                         <div className="flex flex-wrap items-center justify-center gap-3">
-                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]">
+                          <label className="inline-flex cursor-pointer items-center gap-2 rounded-2xl bg-[#1368ce] px-4 py-2 font-bold text-white shadow hover:bg-[#0f56ab]" htmlFor={`question-media-${selectedQuestionIndex}`}>
                             <Upload className="h-4 w-4" /> Upload file
-                            <input type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                           </label>
+                          <input id={`question-media-${selectedQuestionIndex}`} type="file" accept="image/*" className="hidden" onChange={e => handleQuestionMediaUpload(selectedQuestionIndex, e.target.files?.[0] || null)} />
                           <span className="text-xs font-semibold uppercase tracking-wide text-gray-500">or press Ctrl/Cmd + V</span>
                         </div>
                       </div>
