@@ -12,6 +12,7 @@ import {
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
@@ -293,7 +294,13 @@ export default function EnhancedLessonPlayer({
         <div className="flex-1 overflow-hidden flex gap-4 p-4">
           {/* Main Content */}
           <div ref={mainContentRef} className="flex-1 bg-slate-800/30 rounded-lg overflow-auto">
-            {lesson.google_slides_url || lesson.video_url || lesson.file_url ? (
+            {lesson.manus_slides_url ? (
+              <div className="w-full h-full flex items-center justify-center p-4 overflow-y-auto">
+                <div className="w-full max-w-3xl">
+                  <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
+                </div>
+              </div>
+            ) : lesson.google_slides_url || lesson.video_url || lesson.file_url ? (
               <UniversalLessonPlayer
                 lesson={lesson}
                 totalSlides={lesson.total_slides || lesson.slides?.length || 1}

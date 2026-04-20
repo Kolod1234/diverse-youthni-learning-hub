@@ -24,6 +24,7 @@ import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import DocumentViewer from '@/components/lesson/DocumentViewer';
 import FeedbackButton from '@/components/lesson/FeedbackButton';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
+import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
 
@@ -506,6 +507,12 @@ export default function LessonPlayerPowerPoint() {
             <div className="flex-1 w-full h-full overflow-hidden bg-black relative" style={{ minHeight: 0 }}>
               {lesson?.file_url && lesson?.file_type === 'pptx' ? (
                 <DocumentViewer fileUrl={lesson.file_url} fileType={lesson.file_type} />
+              ) : lesson?.manus_slides_url && !hasSlides ? (
+                <div className="w-full h-full flex items-center justify-center p-4 overflow-y-auto">
+                  <div className="w-full max-w-3xl">
+                    <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
+                  </div>
+                </div>
               ) : (lesson?.google_slides_url) && !hasSlides ? (
                 <UniversalLessonPlayer lesson={lesson} totalSlides={sortedSlides.length || 20} />
               ) : hasSlides ? (
