@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw, Play } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,6 +14,7 @@ import RichTextEditor from '@/components/editor/RichTextEditor';
 import SlideEditor from '@/components/editor/SlideEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
+import FullscreenPresenter from '@/components/presentation/FullscreenPresenter';
 
 export default function LessonEditor() {
   const location = useLocation();
@@ -26,6 +27,7 @@ export default function LessonEditor() {
   const [lessonForm, setLessonForm] = useState({});
   const [uploading, setUploading] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [presenting, setPresenting] = useState(false);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -171,6 +173,18 @@ export default function LessonEditor() {
               {lessonId ? 'Edit Lesson' : 'Create New Lesson'}
             </h1>
           </div>
+          <div className="flex gap-2 w-full sm:w-auto">
+          <Button
+            type="button"
+            variant="outline"
+            onClick={() => setPresenting(true)}
+            disabled={!(lessonForm.slides || []).length}
+            className="w-full sm:w-auto"
+            title={(lessonForm.slides || []).length ? 'Launch full-screen presenter' : 'Add slides to present'}
+          >
+            <Play className="w-4 h-4 mr-2" />
+            Present
+          </Button>
           <Button 
             onClick={() => saveMutation.mutate()} 
             disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
@@ -188,8 +202,18 @@ export default function LessonEditor() {
               </>
             )}
           </Button>
+          </div>
         </div>
       </div>
+
+      {presenting && (
+        <FullscreenPresenter
+          slides={lessonForm.slides || []}
+          onClose={() => setPresenting(false)}
+          transition="fade"
+          showNotesByDefault={false}
+        />
+      )}
 
       <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 overflow-x-hidden">
         <div className="space-y-6">
