@@ -464,6 +464,8 @@ export default function LessonEditor() {
             lessonTitle={lessonForm.title}
             lessonContent={lessonForm.description}
             learningObjectives={lessonForm.learning_objectives}
+            existingSlides={lessonForm.slides || []}
+            onSlidesGenerated={(slides) => setLessonForm({ ...lessonForm, slides })}
           />
 
           {/* Custom Slides */}
