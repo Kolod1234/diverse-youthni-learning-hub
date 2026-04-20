@@ -1,0 +1,143 @@
+{
+  "name": "Lesson",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "title": {
+      "type": "string",
+      "description": "Lesson title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Lesson description"
+    },
+    "learning_objectives": {
+      "type": "array",
+      "description": "CCEA-aligned learning objectives for this lesson",
+      "items": {
+        "type": "string"
+      }
+    },
+    "content_type": {
+      "type": "string",
+      "enum": [
+        "richtext",
+        "googleslides",
+        "document",
+        "manusslides"
+      ],
+      "default": "richtext",
+      "description": "Type of lesson content"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Uploaded document URL (PPT, PDF, Word)"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "Document file type (pptx, pdf, docx)"
+    },
+    "google_slides_url": {
+      "type": "string",
+      "description": "Google Slides presentation URL"
+    },
+    "manus_slides_url": {
+      "type": "string",
+      "description": "Manus public share URL for slides"
+    },
+    "total_slides": {
+      "type": "number",
+      "description": "Total number of slides in the Google Slides presentation"
+    },
+    "h5p_content_url": {
+      "type": "string",
+      "description": "H5P interactive content embed URL"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "Video URL for the lesson"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "description": "Lesson duration in minutes"
+    },
+    "order": {
+      "type": "number",
+      "description": "Order in the course curriculum"
+    },
+    "section": {
+      "type": "string",
+      "description": "Section/module name"
+    },
+    "is_preview": {
+      "type": "boolean",
+      "default": false,
+      "description": "Can be previewed without enrollment"
+    },
+    "drip_schedule_days": {
+      "type": "number",
+      "description": "Days after enrollment when lesson unlocks (0 = immediate)"
+    },
+    "prerequisite_lesson_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Lesson IDs that must be completed before accessing this lesson"
+    },
+    "resources": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "url": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "slides": {
+      "type": "array",
+      "description": "Written lesson content in slides/pages",
+      "items": {
+        "type": "object",
+        "properties": {
+          "title": {
+            "type": "string",
+            "description": "Slide title"
+          },
+          "content": {
+            "type": "string",
+            "description": "Rich text HTML content"
+          },
+          "order": {
+            "type": "number",
+            "description": "Slide order"
+          }
+        }
+      }
+    },
+    "default_player": {
+      "type": "string",
+      "enum": [
+        "LessonPlayerClassic",
+        "LessonPlayerPowerPoint"
+      ],
+      "description": "Default player type for this lesson (set by tutor/admin)"
+    }
+  },
+  "required": [
+    "course_id",
+    "title",
+    "order"
+  ]
+}

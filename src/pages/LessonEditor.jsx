@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw, Play } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw, Play, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -366,6 +366,23 @@ export default function LessonEditor() {
                 </Button>
               </div>
             )}
+          </Card>
+
+          {/* Manus Slides */}
+          <Card className="p-4 sm:p-6">
+            <div className="flex items-center gap-2 mb-4">
+              <Sparkles className="w-5 h-5 text-purple-600" />
+              <h2 className="text-lg font-semibold">Manus Slides</h2>
+            </div>
+            <div>
+              <Label>Manus Public Share URL</Label>
+              <Input
+                placeholder="https://manus.space/share/..."
+                value={lessonForm.manus_slides_url || ''}
+                onChange={(e) => setLessonForm({ ...lessonForm, manus_slides_url: e.target.value, content_type: e.target.value ? 'manusslides' : (lessonForm.content_type || 'richtext') })}
+              />
+              <p className="text-xs text-gray-500 mt-2">Paste the public share link from Manus. Students will see the slides embedded in the lesson player, just like Google Slides.</p>
+            </div>
           </Card>
 
           {/* Document Upload */}

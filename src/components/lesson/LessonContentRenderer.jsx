@@ -2,6 +2,7 @@ import React from 'react';
 import { AlertCircle, FileText, Film, PuzzleIcon, Zap } from 'lucide-react';
 import DocumentViewer from './DocumentViewer';
 import GoogleSlidePlayer from './GoogleSlidePlayer';
+import ManusSlidePlayer from './ManusSlidePlayer';
 
 /**
  * Unified content renderer for different lesson content types
@@ -28,6 +29,11 @@ export default function LessonContentRenderer({ lesson, className = "" }) {
         <div className="w-full h-full rounded-lg overflow-hidden shadow-lg">
           <GoogleSlidePlayer url={lesson.google_slides_url} />
         </div>
+      )}
+
+      {/* Manus Slides */}
+      {contentType === 'manusslides' && lesson.manus_slides_url && (
+        <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
       )}
 
       {/* Document (PPTX, PDF, Word) */}
@@ -189,6 +195,8 @@ function hasContent(lesson, contentType) {
   switch (contentType) {
     case 'googleslides':
       return !!lesson.google_slides_url;
+    case 'manusslides':
+      return !!lesson.manus_slides_url;
     case 'document':
       return !!lesson.file_url;
     case 'video':
