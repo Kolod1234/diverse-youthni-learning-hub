@@ -194,16 +194,18 @@ Each slide's "content" must be a short HTML snippet using basic tags only: <h2>,
             <Button
               onClick={generateSlides}
               disabled={loading}
-              variant="outline"
-              className="text-left h-auto flex-col items-start p-3 border-purple-300 bg-white hover:bg-purple-50"
+              className="relative text-left h-auto flex-col items-start p-4 bg-gradient-to-br from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white shadow-lg ring-2 ring-purple-300 ring-offset-2 col-span-2 lg:col-span-1"
             >
+              <span className="absolute top-2 right-2 text-[10px] font-bold bg-yellow-400 text-yellow-900 rounded-full px-2 py-0.5">
+                ★ AI
+              </span>
               {loading && activeTool === 'slides' ? (
-                <Loader2 className="w-4 h-4 animate-spin mb-2 text-purple-600" />
+                <Loader2 className="w-5 h-5 animate-spin mb-2 text-white" />
               ) : (
-                <LayoutTemplate className="w-4 h-4 mb-2 text-purple-600" />
+                <LayoutTemplate className="w-5 h-5 mb-2 text-white" />
               )}
-              <span className="font-semibold text-sm">Generate Slides</span>
-              <span className="text-xs text-gray-500">Full lesson deck from title</span>
+              <span className="font-bold text-sm text-white">Generate Slides</span>
+              <span className="text-xs text-purple-100">Full lesson deck from title</span>
             </Button>
 
             <Button
