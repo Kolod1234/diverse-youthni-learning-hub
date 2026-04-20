@@ -27,6 +27,7 @@ export default function LessonEditor() {
   const [lessonForm, setLessonForm] = useState({});
   const [uploading, setUploading] = useState(false);
   const [converting, setConverting] = useState(false);
+  const [convertingPptx, setConvertingPptx] = useState(false);
   const [presenting, setPresenting] = useState(false);
 
   useEffect(() => {
@@ -374,26 +375,68 @@ export default function LessonEditor() {
               <h2 className="text-lg font-semibold">Upload Document (PPT, PDF, Word)</h2>
             </div>
             {lessonForm.file_url ? (
-              <div className="mt-3 bg-green-50 border border-green-200 rounded-lg p-3">
-                <div className="flex items-center justify-between">
-                  <p className="text-sm text-green-800">✓ {lessonForm.file_type?.toUpperCase()} uploaded</p>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => {
-                      setLessonForm({ 
-                        ...lessonForm, 
-                        file_url: null, 
-                        file_type: null,
-                        content_type: 'richtext'
-                      });
-                      toast.success('Document removed');
-                    }}
-                    className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                  >
-                    Remove
-                  </Button>
+              <div className="mt-3 space-y-3">
+                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
+                  <div className="flex items-center justify-between">
+                    <p className="text-sm text-green-800">✓ {lessonForm.file_type?.toUpperCase()} uploaded</p>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => {
+                        setLessonForm({ 
+                          ...lessonForm, 
+                          file_url: null, 
+                          file_type: null,
+                          content_type: 'richtext'
+                        });
+                        toast.success('Document removed');
+                      }}
+                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
+                    >
+                      Remove
+                    </Button>
+                  </div>
                 </div>
+                {lessonForm.file_type?.toLowerCase() === 'pptx' && (
+                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
+                    <p className="text-sm font-semibold text-purple-800 mb-1">🎨 Convert PPTX to Editable Slides</p>
+                    <p className="text-xs text-gray-600 mb-3">
+                      Extracts text from each slide in your PowerPoint and populates the Slide Editor below so you can edit them directly.
+                      {(lessonForm.slides || []).length > 0 && (
+                        <span className="block mt-1 text-amber-700 font-medium">⚠ Existing slides will be replaced.</span>
+                      )}
+                    </p>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      className="border-purple-400 text-purple-700 hover:bg-purple-100"
+                      disabled={convertingPptx}
+                      onClick={async () => {
+                        setConvertingPptx(true);
+                        try {
+                          const res = await base44.functions.invoke('convertPptxToCustomSlides', { fileUrl: lessonForm.file_url });
+                          const extractedSlides = res.data?.slides || [];
+                          if (!extractedSlides.length) {
+                            toast.error('No slides were extracted from the PPTX');
+                            return;
+                          }
+                          setLessonForm({ ...lessonForm, slides: extractedSlides });
+                          toast.success(`✅ Extracted ${extractedSlides.length} slides! Review and save.`);
+                        } catch (err) {
+                          toast.error('Conversion failed: ' + (err?.response?.data?.error || err.message));
+                        } finally {
+                          setConvertingPptx(false);
+                        }
+                      }}
+                    >
+                      {convertingPptx ? (
+                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Converting...</>
+                      ) : (
+                        <><RefreshCw className="w-4 h-4 mr-2" />Convert to Editable Slides</>
+                      )}
+                    </Button>
+                  </div>
+                )}
               </div>
             ) : (
               <>
