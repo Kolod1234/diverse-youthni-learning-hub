@@ -381,7 +381,7 @@ export default function LessonEditor() {
                 value={lessonForm.manus_slides_url || ''}
                 onChange={(e) => setLessonForm({ ...lessonForm, manus_slides_url: e.target.value, content_type: e.target.value ? 'manusslides' : (lessonForm.content_type || 'richtext') })}
               />
-              <p className="text-xs text-gray-500 mt-2">Paste the public share link from Manus. Students will see the slides embedded in the lesson player, just like Google Slides.</p>
+              <p className="text-xs text-gray-500 mt-2">Paste the public share link from Manus. Because Manus blocks embedding, students will see a branded "Open Manus Slides" button that opens the deck in a new tab. For fully embedded slides, export from Manus as PPTX/PDF and use the Document Upload below.</p>
             </div>
           </Card>
 
