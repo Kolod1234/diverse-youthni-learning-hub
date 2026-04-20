@@ -1,0 +1,85 @@
+{
+  "name": "AssetLibrary",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Display name of the asset"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description or notes about the asset"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL of the stored asset file"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Optional smaller preview URL (falls back to file_url)"
+    },
+    "asset_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "canva_design",
+        "illustration",
+        "icon",
+        "background",
+        "logo",
+        "other"
+      ],
+      "default": "image",
+      "description": "Type of asset for filtering"
+    },
+    "source": {
+      "type": "string",
+      "enum": [
+        "upload",
+        "canva",
+        "ai_generated",
+        "url_import",
+        "other"
+      ],
+      "default": "upload",
+      "description": "Where the asset originated"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Original URL if imported from Canva or an external source"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Tags to help find and organise the asset"
+    },
+    "folder": {
+      "type": "string",
+      "description": "Optional folder name to group assets"
+    },
+    "width": {
+      "type": "number",
+      "description": "Original image width in pixels"
+    },
+    "height": {
+      "type": "number",
+      "description": "Original image height in pixels"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times this asset has been reused"
+    },
+    "is_shared": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, the asset is visible to all users (admins can set this)"
+    }
+  },
+  "required": [
+    "name",
+    "file_url"
+  ]
+}

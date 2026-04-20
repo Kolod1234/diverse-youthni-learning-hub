@@ -14,6 +14,7 @@ import AdminProjectSubmissions from './pages/AdminProjectSubmissions';
 import KahootHost from './pages/KahootHost';
 import KahootPlay from './pages/KahootPlay';
 import KahootAnalytics from './pages/KahootAnalytics';
+import AssetLibrary from './pages/AssetLibrary';
 import { AuthProvider, useAuth } from '@/lib/AuthContext';
 import UserNotRegisteredError from '@/components/UserNotRegisteredError';
 
@@ -74,6 +75,7 @@ const AuthenticatedApp = () => {
       <Route path="/kahoot-host" element={<LayoutWrapper currentPageName="KahootHost"><KahootHost /></LayoutWrapper>} />
       <Route path="/kahoot-play" element={<LayoutWrapper currentPageName="KahootPlay"><KahootPlay /></LayoutWrapper>} />
       <Route path="/kahoot-analytics" element={<LayoutWrapper currentPageName="KahootAnalytics"><KahootAnalytics /></LayoutWrapper>} />
+      <Route path="/asset-library" element={<LayoutWrapper currentPageName="AssetLibrary"><AssetLibrary /></LayoutWrapper>} />
       <Route path="*" element={<PageNotFound />} />
     </Routes>
   );
