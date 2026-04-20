@@ -59,7 +59,7 @@ const getSafeItems = (items) => {
     if (Number.isNaN(published.getTime())) return false;
 
     const daysSincePublished = (Date.now() - published.getTime()) / (1000 * 60 * 60 * 24);
-    return daysSincePublished <= 3;
+    return daysSincePublished <= 14;
   });
 };
 
@@ -74,7 +74,12 @@ function RSSFeedWidget({ initialLimit = 6 }) {
     refetchInterval: 300000,
   });
 
-  const recentItems = useMemo(() => getSafeItems(feedItems), [feedItems]);
+  const recentItems = useMemo(() => {
+    const filtered = getSafeItems(feedItems);
+    if (filtered.length > 0) return filtered;
+    // Fallback: if nothing is within the recency window, show the latest items anyway
+    return (Array.isArray(feedItems) ? feedItems : []).filter((item) => item && item.title && item.link);
+  }, [feedItems]);
 
   const categories = useMemo(() => {
     const values = recentItems
