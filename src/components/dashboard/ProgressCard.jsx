@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Play, Clock, CheckCircle } from 'lucide-react';
+import { Card, Box, Button, Typography, LinearProgress, Stack } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -20,6 +20,7 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
 
   const firstLesson = courseLessons[0];
   const lessonId = enrollment?.current_lesson_id || firstLesson?.id;
+  const progressPercent = Math.round(enrollment.progress_percent || 0);
 
   return (
     <motion.div
@@ -27,77 +28,91 @@ export default function ProgressCard({ enrollment, course, index = 0 }) {
       animate={{ opacity: 1, x: 0 }}
       transition={{ duration: 0.4, delay: index * 0.1 }}
     >
-      <Card className="overflow-hidden border-0 shadow-sm hover:shadow-lg transition-all duration-300 bg-white">
-        <div className="flex flex-col sm:flex-row">
-          <div className="sm:w-48 h-32 sm:h-auto relative overflow-hidden">
-            <img
+      <Card sx={{ overflow: 'hidden', border: 0, boxShadow: 1, '&:hover': { boxShadow: 4 }, transition: 'box-shadow 0.3s', bgcolor: 'background.paper', borderRadius: 3 }}>
+        <Stack direction={{ xs: 'column', sm: 'row' }}>
+          <Box sx={{ width: { sm: 192 }, height: { xs: 128, sm: 'auto' }, position: 'relative', overflow: 'hidden', flexShrink: 0 }}>
+            <Box
+              component="img"
               src={course.thumbnail || 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=800&q=80'}
               alt={course.title}
-              className="w-full h-full object-cover"
+              loading="lazy"
+              sx={{ width: '100%', height: '100%', objectFit: 'cover', display: 'block' }}
             />
             {enrollment.is_completed && (
-              <div className="absolute inset-0 bg-emerald-500/90 flex items-center justify-center">
-                <CheckCircle className="w-10 h-10 text-white" />
-              </div>
+              <Box sx={{ position: 'absolute', inset: 0, bgcolor: 'rgba(16, 185, 129, 0.9)', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                <CheckCircleIcon sx={{ fontSize: 40, color: 'white' }} />
+              </Box>
             )}
-          </div>
+          </Box>
 
-          <div className="flex-1 p-5">
-            <div className="flex items-start justify-between gap-4">
-              <div className="flex-1">
-                <h3 className="font-semibold text-gray-900 mb-1 line-clamp-1">
+          <Box sx={{ flex: 1, p: 2.5 }}>
+            <Stack direction="row" alignItems="flex-start" justifyContent="space-between" spacing={2}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="subtitle1" fontWeight={600} noWrap sx={{ color: 'text.primary', mb: 0.5 }}>
                   {course.title}
-                </h3>
-                <p className="text-sm text-gray-500 mb-3">
+                </Typography>
+                <Typography variant="body2" sx={{ color: 'text.secondary', mb: 1.5 }}>
                   {course.instructor}
-                </p>
-              </div>
-              <span className="text-sm font-bold text-indigo-600">
-                {Math.round(enrollment.progress_percent || 0)}%
-              </span>
-            </div>
+                </Typography>
+              </Box>
+              <Typography variant="body2" fontWeight={700} sx={{ color: 'primary.main' }}>
+                {progressPercent}%
+              </Typography>
+            </Stack>
 
-            <div className="mb-3">
-              <Progress
-                value={enrollment.progress_percent || 0}
-                className="h-2.5"
+            <Box sx={{ mb: 1.5 }}>
+              <LinearProgress
+                variant="determinate"
+                value={progressPercent}
+                sx={{ height: 10, borderRadius: 5 }}
               />
-            </div>
+            </Box>
 
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4 text-sm text-gray-500">
-                <span className="flex items-center gap-1">
-                  <CheckCircle className="w-4 h-4 text-emerald-500" />
-                  {(enrollment.completed_lessons?.length || 0)}/{courseLessons.length} lessons
-                </span>
-                <span className="flex items-center gap-1">
-                  <Clock className="w-4 h-4" />
-                  {Math.round((course.duration_hours || 0) * (1 - (enrollment.progress_percent || 0) / 100))}h left
-                </span>
-              </div>
+            <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ flexWrap: 'wrap', gap: 1 }}>
+              <Stack direction="row" spacing={2} alignItems="center" sx={{ color: 'text.secondary' }}>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <CheckCircleIcon sx={{ fontSize: 16, color: '#10b981' }} />
+                  <Typography variant="caption">
+                    {(enrollment.completed_lessons?.length || 0)}/{courseLessons.length} lessons
+                  </Typography>
+                </Stack>
+                <Stack direction="row" alignItems="center" spacing={0.5}>
+                  <AccessTimeIcon sx={{ fontSize: 16 }} />
+                  <Typography variant="caption">
+                    {Math.round((course.duration_hours || 0) * (1 - progressPercent / 100))}h left
+                  </Typography>
+                </Stack>
+              </Stack>
 
               {lessonsLoading && !enrollment?.current_lesson_id ? (
-                <Button size="sm" className="bg-gray-300 rounded-full" disabled>
-                  <Play className="w-4 h-4 mr-1" />
+                <Button size="small" disabled startIcon={<PlayArrowIcon sx={{ fontSize: 16 }} />} sx={{ borderRadius: 50 }}>
                   Loading...
                 </Button>
               ) : lessonId ? (
-                <Link to={createPageUrl('LessonPlayerClassic') + `?course=${course.id}&lesson=${lessonId}`}>
-                  <Button size="sm" className="bg-indigo-600 hover:bg-indigo-700 rounded-full">
-                    <Play className="w-4 h-4 mr-1" />
-                    {enrollment.is_completed ? 'Review' : 'Continue'}
-                  </Button>
-                </Link>
+                <Button
+                  component={Link}
+                  to={createPageUrl('LessonPlayerClassic') + `?course=${course.id}&lesson=${lessonId}`}
+                  size="small"
+                  variant="contained"
+                  startIcon={<PlayArrowIcon sx={{ fontSize: 16 }} />}
+                  sx={{ borderRadius: 50 }}
+                >
+                  {enrollment.is_completed ? 'Review' : 'Continue'}
+                </Button>
               ) : (
-                <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-                  <Button size="sm" variant="outline" className="rounded-full">
-                    View Course
-                  </Button>
-                </Link>
+                <Button
+                  component={Link}
+                  to={createPageUrl('CourseDetails') + `?id=${course.id}`}
+                  size="small"
+                  variant="outlined"
+                  sx={{ borderRadius: 50 }}
+                >
+                  View Course
+                </Button>
               )}
-            </div>
-          </div>
-        </div>
+            </Stack>
+          </Box>
+        </Stack>
       </Card>
     </motion.div>
   );

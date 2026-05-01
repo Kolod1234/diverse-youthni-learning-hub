@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Button } from '@/components/ui/button';
-import { Play, TrendingUp, Target } from 'lucide-react';
+import { Card, Box, Button, Typography, LinearProgress, Stack } from '@mui/material';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
 import { motion } from 'framer-motion';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
@@ -33,46 +33,63 @@ export default function CourseProgressWidget({ enrollments, courses }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ delay: 0.2 }}
     >
-      <Card className="p-6 border-0 shadow-sm bg-gradient-to-br from-indigo-50 to-violet-50">
-        <div className="flex items-start gap-3 mb-4">
-          <div className="w-12 h-12 bg-indigo-600 rounded-xl flex items-center justify-center">
-            <TrendingUp className="w-6 h-6 text-white" />
-          </div>
-          <div className="flex-1">
-            <h3 className="font-semibold text-gray-900 mb-1">Continue Your Progress</h3>
-            <p className="text-sm text-gray-600">You're {progressPercent}% through {course.title}</p>
-          </div>
-        </div>
+      <Card sx={{ p: 3, border: 0, boxShadow: 1, background: 'linear-gradient(135deg, #eef2ff, #f5f3ff)', borderRadius: 3 }}>
+        <Stack direction="row" alignItems="flex-start" spacing={1.5} sx={{ mb: 2 }}>
+          <Box sx={{ width: 48, height: 48, bgcolor: '#4f46e5', borderRadius: 2.5, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+            <TrendingUpIcon sx={{ fontSize: 24, color: 'white' }} />
+          </Box>
+          <Box sx={{ flex: 1 }}>
+            <Typography variant="subtitle1" fontWeight={600} sx={{ color: 'text.primary', mb: 0.5 }}>
+              Continue Your Progress
+            </Typography>
+            <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+              You're {progressPercent}% through {course.title}
+            </Typography>
+          </Box>
+        </Stack>
 
-        <div className="mb-4">
-          <div className="flex items-center justify-between text-sm text-gray-600 mb-2">
-            <span className="flex items-center gap-1">
-              <Target className="w-4 h-4" />
-              {lessonsLeft} lessons remaining
-            </span>
-            <span className="font-semibold text-indigo-600">{progressPercent}%</span>
-          </div>
-          <Progress value={progressPercent} className="h-3" />
-        </div>
+        <Box sx={{ mb: 2 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1 }}>
+            <Stack direction="row" alignItems="center" spacing={0.5} sx={{ color: 'text.secondary' }}>
+              <GpsFixedIcon sx={{ fontSize: 16 }} />
+              <Typography variant="caption">{lessonsLeft} lessons remaining</Typography>
+            </Stack>
+            <Typography variant="caption" fontWeight={600} sx={{ color: '#4f46e5' }}>
+              {progressPercent}%
+            </Typography>
+          </Stack>
+          <LinearProgress
+            variant="determinate"
+            value={progressPercent}
+            sx={{ height: 12, borderRadius: 6 }}
+          />
+        </Box>
 
         {lessonsLoading ? (
-          <Button className="w-full bg-gray-300" disabled>
-            <Play className="w-4 h-4 mr-2" />
+          <Button fullWidth disabled startIcon={<PlayArrowIcon />}>
             Loading...
           </Button>
         ) : lessonId ? (
-          <Link to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}>
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
-              <Play className="w-4 h-4 mr-2" />
-              Continue Learning
-            </Button>
-          </Link>
+          <Button
+            component={Link}
+            to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}
+            fullWidth
+            variant="contained"
+            startIcon={<PlayArrowIcon />}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+          >
+            Continue Learning
+          </Button>
         ) : (
-          <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-            <Button className="w-full bg-indigo-600 hover:bg-indigo-700">
-              View Course
-            </Button>
-          </Link>
+          <Button
+            component={Link}
+            to={createPageUrl('CourseDetails') + `?id=${course.id}`}
+            fullWidth
+            variant="contained"
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+          >
+            View Course
+          </Button>
         )}
       </Card>
     </motion.div>

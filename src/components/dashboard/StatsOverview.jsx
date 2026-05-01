@@ -1,6 +1,9 @@
 import React from 'react';
-import { Card } from '@/components/ui/card';
-import { BookOpen, Clock, Award, TrendingUp } from 'lucide-react';
+import { Box, Card, Typography } from '@mui/material';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 import { motion } from 'framer-motion';
 
 export default function StatsOverview({ enrollments, courses, achievements }) {
@@ -17,35 +20,35 @@ export default function StatsOverview({ enrollments, courses, achievements }) {
     {
       label: 'Courses Enrolled',
       value: enrollments?.length || 0,
-      icon: BookOpen,
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-50',
+      icon: MenuBookIcon,
+      iconBg: '#dbeafe',
+      iconColor: '#2563eb',
     },
     {
       label: 'Hours Learned',
       value: Math.round(totalHoursLearned),
-      icon: Clock,
-      color: 'from-purple-500 to-pink-500',
-      bgColor: 'bg-purple-50',
+      icon: AccessTimeIcon,
+      iconBg: '#f3e8ff',
+      iconColor: '#9333ea',
     },
     {
       label: 'Completed',
       value: completedCourses,
-      icon: Award,
-      color: 'from-emerald-500 to-teal-500',
-      bgColor: 'bg-emerald-50',
+      icon: EmojiEventsIcon,
+      iconBg: '#d1fae5',
+      iconColor: '#059669',
     },
     {
       label: 'Avg Progress',
       value: `${Math.round(averageProgress)}%`,
-      icon: TrendingUp,
-      color: 'from-orange-500 to-amber-500',
-      bgColor: 'bg-orange-50',
+      icon: TrendingUpIcon,
+      iconBg: '#ffedd5',
+      iconColor: '#ea580c',
     },
   ];
 
   return (
-    <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', lg: 'repeat(4, 1fr)' }, gap: 2 }}>
       {stats.map((stat, index) => {
         const Icon = stat.icon;
         return (
@@ -55,26 +58,20 @@ export default function StatsOverview({ enrollments, courses, achievements }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.4, delay: index * 0.1 }}
           >
-            <Card className="p-5 border-0 shadow-sm hover:shadow-md transition-shadow bg-white">
-              <div className={`w-12 h-12 rounded-xl ${stat.bgColor} flex items-center justify-center mb-4`}>
-                <Icon className={`w-6 h-6 bg-gradient-to-r ${stat.color} bg-clip-text text-transparent`} 
-                  style={{ stroke: `url(#gradient-${index})` }}
-                />
-                <svg width="0" height="0">
-                  <defs>
-                    <linearGradient id={`gradient-${index}`} x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor={stat.color.includes('blue') ? '#3b82f6' : stat.color.includes('purple') ? '#a855f7' : stat.color.includes('emerald') ? '#10b981' : '#f97316'} />
-                      <stop offset="100%" stopColor={stat.color.includes('blue') ? '#06b6d4' : stat.color.includes('purple') ? '#ec4899' : stat.color.includes('emerald') ? '#14b8a6' : '#f59e0b'} />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </div>
-              <p className="text-3xl font-bold text-gray-900 mb-1">{stat.value}</p>
-              <p className="text-sm text-gray-500">{stat.label}</p>
+            <Card sx={{ p: 2.5, border: 0, boxShadow: 1, '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.2s', bgcolor: 'background.paper', borderRadius: 3 }}>
+              <Box sx={{ width: 48, height: 48, borderRadius: 2.5, bgcolor: stat.iconBg, display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 2 }}>
+                <Icon sx={{ fontSize: 24, color: stat.iconColor }} />
+              </Box>
+              <Typography variant="h4" fontWeight={700} sx={{ color: 'text.primary', mb: 0.5 }}>
+                {stat.value}
+              </Typography>
+              <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                {stat.label}
+              </Typography>
             </Card>
           </motion.div>
         );
       })}
-    </div>
+    </Box>
   );
 }
