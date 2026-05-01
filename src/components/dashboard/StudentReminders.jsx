@@ -3,10 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { Card, Box, Typography } from '@mui/material';
-import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
-import MenuBookIcon from '@mui/icons-material/MenuBook';
-import BoltIcon from '@mui/icons-material/Bolt';
+import { Clock, AlertCircle, BookOpen, Zap } from 'lucide-react';
 
 export default function StudentReminders({ user }) {
   const { data: reminders = [] } = useQuery({
@@ -60,7 +57,7 @@ export default function StudentReminders({ user }) {
       >
         <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider', textAlign: 'center' }}>
           <Box sx={{ width: 64, height: 64, bgcolor: 'action.hover', borderRadius: 4, display: 'flex', alignItems: 'center', justifyContent: 'center', mx: 'auto', mb: 2 }}>
-            <AccessTimeIcon sx={{ fontSize: 32, color: '#9ca3af' }} />
+            <Clock size={32} color="#9ca3af" />
           </Box>
           <Typography variant="h6" sx={{ mb: 1 }}>No reminders</Typography>
           <Typography variant="body2" color="text.secondary">You're all caught up!</Typography>
@@ -78,7 +75,7 @@ export default function StudentReminders({ user }) {
       <Card sx={{ p: 4, borderRadius: 4, boxShadow: 3, border: 1, borderColor: 'divider' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 2, mb: 3 }}>
           <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #fbbf24, #f59e0b)', borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
-            <ErrorOutlineIcon sx={{ fontSize: 20, color: 'white' }} />
+            <AlertCircle size={20} color="white" />
           </Box>
           <Typography variant="h6" fontWeight={600}>Your Reminders</Typography>
         </Box>
@@ -108,9 +105,9 @@ export default function StudentReminders({ user }) {
               >
                 <Box sx={{ mt: 0.5 }}>
                   {reminder.type === 'course_progress' ? (
-                    <MenuBookIcon sx={{ fontSize: 20, color: reminder.priority === 'high' ? '#ef4444' : '#3b82f6' }} />
+                    <BookOpen size={20} color={reminder.priority === 'high' ? '#ef4444' : '#3b82f6'} />
                   ) : (
-                    <BoltIcon sx={{ fontSize: 20, color: reminder.priority === 'high' ? '#ef4444' : '#3b82f6' }} />
+                    <Zap size={20} color={reminder.priority === 'high' ? '#ef4444' : '#3b82f6'} />
                   )}
                 </Box>
                 <Box sx={{ flex: 1 }}>
