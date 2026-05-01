@@ -1,25 +1,11 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Trophy, Medal, Award, TrendingUp } from 'lucide-react';
-
-function SimpleAvatar({ name, avatar, highlight }) {
-  if (avatar) {
-    return (
-      <img
-        src={avatar}
-        alt={name || 'User'}
-        className="h-12 w-12 rounded-full object-cover"
-      />
-    );
-  }
-
-  return (
-    <div className={`flex h-12 w-12 items-center justify-center rounded-full text-sm font-semibold ${highlight ? 'bg-white/20 text-white' : 'bg-gray-200 text-gray-700'}`}>
-      {(name || 'U').charAt(0)}
-    </div>
-  );
-}
+import { Box, Card, Avatar, Stack, Typography, Skeleton } from '@mui/material';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import WorkspacePremiumIcon from '@mui/icons-material/WorkspacePremium';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
 
 export default function Leaderboard({ limit = 10 }) {
   const { data: leaderboard = [], isLoading } = useQuery({
@@ -42,84 +28,143 @@ export default function Leaderboard({ limit = 10 }) {
 
   if (isLoading) {
     return (
-      <div className="rounded-xl border bg-card p-6 text-card-foreground shadow">
-        <div className="animate-pulse space-y-4">
+      <Card sx={{ p: 3, boxShadow: 1, border: 1, borderColor: 'divider' }}>
+        <Stack spacing={2}>
           {[0, 1, 2, 3, 4].map((index) => (
-            <div key={index} className="h-16 rounded-lg bg-gray-200" />
+            <Skeleton key={index} variant="rounded" height={64} sx={{ borderRadius: 2 }} />
           ))}
-        </div>
-      </div>
+        </Stack>
+      </Card>
     );
   }
 
   return (
-    <div className="rounded-xl border bg-gradient-to-br from-yellow-50 to-orange-50 p-6 text-card-foreground shadow">
-      <div className="mb-6 flex items-center gap-3">
-        <Trophy className="h-8 w-8 text-yellow-600" />
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">Leaderboard</h2>
-          <p className="text-sm text-gray-600">Top performers this month</p>
-        </div>
-      </div>
+    <Card
+      sx={{
+        p: 3,
+        background: 'linear-gradient(135deg, #fefce8, #fff7ed)',
+        border: 1,
+        borderColor: 'divider',
+        boxShadow: 1,
+      }}
+    >
+      <Stack direction="row" alignItems="center" spacing={1.5} sx={{ mb: 3 }}>
+        <EmojiEventsIcon sx={{ fontSize: 32, color: '#ca8a04' }} />
+        <Box>
+          <Typography variant="h5" fontWeight={700} sx={{ color: 'text.primary' }}>
+            Leaderboard
+          </Typography>
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            Top performers this month
+          </Typography>
+        </Box>
+      </Stack>
 
-      <div className="space-y-3">
+      <Stack spacing={1.5}>
         {leaderboard.map((entry) => {
-          const highlight = entry.rank <= 3;
-          const rowClass = entry.rank === 1
-            ? 'bg-gradient-to-r from-yellow-400 to-yellow-500 text-white shadow-lg'
-            : entry.rank === 2
-            ? 'bg-gradient-to-r from-gray-300 to-gray-400 text-gray-800 shadow-md'
-            : entry.rank === 3
-            ? 'bg-gradient-to-r from-orange-400 to-orange-500 text-white shadow-md'
-            : 'bg-white text-gray-800';
+          const isFirst = entry.rank === 1;
+          const isSecond = entry.rank === 2;
+          const isThird = entry.rank === 3;
+          const highlight = isFirst || isSecond || isThird;
+
+          let bgGradient = 'white';
+          let textColor = 'text.primary';
+          let shadow = 0;
+
+          if (isFirst) {
+            bgGradient = 'linear-gradient(to right, #facc15, #eab308)';
+            textColor = 'white';
+            shadow = 4;
+          } else if (isSecond) {
+            bgGradient = 'linear-gradient(to right, #d1d5db, #9ca3af)';
+            textColor = '#1f2937';
+            shadow = 2;
+          } else if (isThird) {
+            bgGradient = 'linear-gradient(to right, #fb923c, #f97316)';
+            textColor = 'white';
+            shadow = 2;
+          }
 
           return (
-            <div key={entry.id || `${entry.created_by}-${entry.rank}`} className={`flex items-center gap-4 rounded-xl p-4 transition-all ${rowClass}`}>
-              <div className="flex h-12 w-12 flex-shrink-0 items-center justify-center">
-                {entry.rank === 1 && <Trophy className="h-8 w-8" />}
-                {entry.rank === 2 && <Medal className="h-8 w-8" />}
-                {entry.rank === 3 && <Award className="h-8 w-8" />}
-                {entry.rank > 3 && <span className="text-2xl font-bold text-gray-500">#{entry.rank}</span>}
-              </div>
+            <Stack
+              key={entry.id || `${entry.created_by}-${entry.rank}`}
+              direction="row"
+              alignItems="center"
+              spacing={2}
+              sx={{
+                p: 2,
+                borderRadius: 3,
+                background: bgGradient,
+                color: textColor,
+                boxShadow: shadow,
+                transition: 'all 0.2s',
+              }}
+            >
+              <Box sx={{ width: 48, height: 48, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0 }}>
+                {isFirst && <EmojiEventsIcon sx={{ fontSize: 32 }} />}
+                {isSecond && <MilitaryTechIcon sx={{ fontSize: 32 }} />}
+                {isThird && <WorkspacePremiumIcon sx={{ fontSize: 32 }} />}
+                {entry.rank > 3 && (
+                  <Typography variant="h5" fontWeight={700} sx={{ color: 'text.disabled' }}>
+                    #{entry.rank}
+                  </Typography>
+                )}
+              </Box>
 
-              <SimpleAvatar
-                name={entry.user.full_name || 'Anonymous'}
-                avatar={entry.user.avatar}
-                highlight={highlight}
-              />
+              <Avatar
+                src={entry.user.avatar}
+                alt={entry.user.full_name || 'User'}
+                sx={{
+                  width: 48,
+                  height: 48,
+                  bgcolor: highlight ? 'rgba(255,255,255,0.2)' : '#e5e7eb',
+                  color: highlight ? 'white' : '#374151',
+                  fontWeight: 600,
+                }}
+              >
+                {(entry.user.full_name || 'U').charAt(0)}
+              </Avatar>
 
-              <div className="min-w-0 flex-1">
-                <h3 className="truncate font-semibold">{entry.user.full_name || 'Anonymous'}</h3>
-                <div className="flex items-center gap-2 text-sm">
-                  <span className={highlight ? 'opacity-90' : 'text-gray-600'}>
+              <Box sx={{ flex: 1, minWidth: 0 }}>
+                <Typography variant="subtitle1" fontWeight={600} noWrap>
+                  {entry.user.full_name || 'Anonymous'}
+                </Typography>
+                <Stack direction="row" alignItems="center" spacing={1} sx={{ fontSize: '0.875rem' }}>
+                  <Typography variant="body2" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : 'text.secondary' }}>
                     Level {entry.level || 1}
-                  </span>
+                  </Typography>
                   {entry.streak_days > 0 && (
                     <>
-                      <span>•</span>
-                      <span className={highlight ? 'opacity-90' : 'text-orange-600'}>
+                      <Typography variant="body2">•</Typography>
+                      <Typography variant="body2" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : '#ea580c' }}>
                         🔥 {entry.streak_days} day streak
-                      </span>
+                      </Typography>
                     </>
                   )}
-                </div>
-              </div>
+                </Stack>
+              </Box>
 
-              <div className="text-right">
-                <div className="text-2xl font-bold">{entry.points?.toLocaleString() || 0}</div>
-                <div className={`text-xs ${highlight ? 'opacity-90' : 'text-gray-500'}`}>points</div>
-              </div>
-            </div>
+              <Box sx={{ textAlign: 'right' }}>
+                <Typography variant="h5" fontWeight={700}>
+                  {entry.points?.toLocaleString() || 0}
+                </Typography>
+                <Typography variant="caption" sx={{ opacity: highlight ? 0.9 : 1, color: highlight ? 'inherit' : 'text.disabled' }}>
+                  points
+                </Typography>
+              </Box>
+            </Stack>
           );
         })}
-      </div>
+      </Stack>
 
       {leaderboard.length === 0 && (
-        <div className="py-12 text-center">
-          <TrendingUp className="mx-auto mb-4 h-16 w-16 text-gray-300" />
-          <p className="text-gray-500">No learners yet. Be the first to earn points!</p>
-        </div>
+        <Box sx={{ py: 6, textAlign: 'center' }}>
+          <TrendingUpIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+            No learners yet. Be the first to earn points!
+          </Typography>
+        </Box>
       )}
-    </div>
+    </Card>
   );
 }
