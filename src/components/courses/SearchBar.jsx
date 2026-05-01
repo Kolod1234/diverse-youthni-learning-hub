@@ -1,16 +1,15 @@
-import React, { useState } from 'react';
+import React from 'react';
+import { Input } from '@/components/ui/input';
+import { Button } from '@/components/ui/button';
 import {
-  TextField,
-  InputAdornment,
-  Button,
-  Menu,
-  MenuItem,
-  ListSubheader,
-  Divider,
-  Stack,
-} from '@mui/material';
-import SearchIcon from '@mui/icons-material/Search';
-import TuneIcon from '@mui/icons-material/Tune';
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
+import { Search, SlidersHorizontal } from 'lucide-react';
 
 const SORT_OPTIONS = [
   { value: 'popular', label: 'Most Popular' },
@@ -19,89 +18,43 @@ const SORT_OPTIONS = [
 ];
 
 export default function SearchBar({ value, onChange, sortBy, onSortChange }) {
-  const [anchorEl, setAnchorEl] = useState(null);
-  const open = Boolean(anchorEl);
-
-  const handleOpen = (e) => setAnchorEl(e.currentTarget);
-  const handleClose = () => setAnchorEl(null);
-
-  const handleSort = (sortValue) => {
-    onSortChange(sortValue);
-    handleClose();
-  };
-
   return (
-    <Stack direction="row" spacing={1.5} sx={{ width: '100%' }}>
-      <TextField
-        type="text"
-        placeholder="Search courses, topics, instructors..."
-        value={value}
-        onChange={(e) => onChange(e.target.value)}
-        fullWidth
-        InputProps={{
-          startAdornment: (
-            <InputAdornment position="start">
-              <SearchIcon sx={{ color: 'text.disabled' }} />
-            </InputAdornment>
-          ),
-          sx: {
-            height: 48,
-            borderRadius: 3,
-            bgcolor: 'background.paper',
-            fontSize: '1rem',
-          },
-        }}
-        sx={{
-          '& .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'divider',
-          },
-          '& .Mui-focused .MuiOutlinedInput-notchedOutline': {
-            borderColor: 'primary.main',
-            borderWidth: 2,
-          },
-        }}
-      />
+    <div className="flex gap-3 w-full">
+      <div className="relative flex-1">
+        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-gray-400" />
+        <Input
+          type="text"
+          placeholder="Search courses, topics, instructors..."
+          value={value}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-12 pl-10 rounded-2xl bg-white text-base"
+        />
+      </div>
 
-      <Button
-        variant="outlined"
-        onClick={handleOpen}
-        startIcon={<TuneIcon />}
-        sx={{
-          height: 48,
-          px: 2,
-          borderRadius: 3,
-          borderColor: 'divider',
-          bgcolor: 'background.paper',
-          color: 'text.primary',
-          textTransform: 'none',
-          fontWeight: 600,
-          flexShrink: 0,
-          '&:hover': { bgcolor: 'action.hover', borderColor: 'divider' },
-        }}
-      >
-        Sort
-      </Button>
-
-      <Menu
-        anchorEl={anchorEl}
-        open={open}
-        onClose={handleClose}
-        anchorOrigin={{ vertical: 'bottom', horizontal: 'right' }}
-        transformOrigin={{ vertical: 'top', horizontal: 'right' }}
-        PaperProps={{ sx: { minWidth: 192, mt: 0.5, borderRadius: 2 } }}
-      >
-        <ListSubheader sx={{ lineHeight: '32px', fontWeight: 700 }}>Sort by</ListSubheader>
-        <Divider sx={{ my: 0.5 }} />
-        {SORT_OPTIONS.map((opt) => (
-          <MenuItem
-            key={opt.value}
-            selected={sortBy === opt.value}
-            onClick={() => handleSort(opt.value)}
+      <DropdownMenu>
+        <DropdownMenuTrigger asChild>
+          <Button
+            variant="outline"
+            className="h-12 px-4 rounded-2xl bg-white font-semibold gap-2"
           >
-            {opt.label}
-          </MenuItem>
-        ))}
-      </Menu>
-    </Stack>
+            <SlidersHorizontal className="w-4 h-4" />
+            Sort
+          </Button>
+        </DropdownMenuTrigger>
+        <DropdownMenuContent align="end" className="w-48">
+          <DropdownMenuLabel>Sort by</DropdownMenuLabel>
+          <DropdownMenuSeparator />
+          {SORT_OPTIONS.map((opt) => (
+            <DropdownMenuItem
+              key={opt.value}
+              onClick={() => onSortChange(opt.value)}
+              className={sortBy === opt.value ? 'bg-accent' : ''}
+            >
+              {opt.label}
+            </DropdownMenuItem>
+          ))}
+        </DropdownMenuContent>
+      </DropdownMenu>
+    </div>
   );
 }
