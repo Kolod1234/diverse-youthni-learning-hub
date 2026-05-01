@@ -1,11 +1,14 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { FileText, Clock, CheckCircle, Upload, Send, ChevronDown, ChevronUp } from 'lucide-react';
+import { Card, Box, Button, Typography, Chip, Stack, TextField, Skeleton } from '@mui/material';
+import DescriptionIcon from '@mui/icons-material/Description';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import UploadIcon from '@mui/icons-material/Upload';
+import SendIcon from '@mui/icons-material/Send';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
 import { toast } from 'sonner';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -85,30 +88,37 @@ export default function StudentAssignments({ enrollments, user }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <Stack spacing={1.5}>
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+          <Skeleton key={i} variant="rounded" height={80} sx={{ borderRadius: 2 }} />
         ))}
-      </div>
+      </Stack>
     );
   }
 
   if (assignments.length === 0) {
     return (
-      <div className="text-center py-14 bg-gray-50 rounded-2xl">
-        <FileText className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p className="font-medium text-gray-600">No assignments yet</p>
-        <p className="text-sm text-gray-400 mt-1">Assignments from your enrolled courses will appear here</p>
-      </div>
+      <Box sx={{ textAlign: 'center', py: 7, bgcolor: 'action.hover', borderRadius: 4 }}>
+        <DescriptionIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 1.5 }} />
+        <Typography variant="body1" fontWeight={500} sx={{ color: 'text.secondary' }}>
+          No assignments yet
+        </Typography>
+        <Typography variant="body2" sx={{ color: 'text.disabled', mt: 0.5 }}>
+          Assignments from your enrolled courses will appear here
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <Stack spacing={1.5}>
       {assignments.map((assignment, i) => {
         const submission = getSubmission(assignment.id);
         const overdue = isOverdue(assignment.due_date) && !submission;
         const isExpanded = expandedAssignment === assignment.id;
+        const borderColor = overdue ? '#fecaca' : submission ? '#bbf7d0' : 'divider';
+        const iconBg = submission ? '#dcfce7' : overdue ? '#fee2e2' : '#dbeafe';
+        const iconColor = submission ? '#16a34a' : overdue ? '#dc2626' : '#2563eb';
 
         return (
           <motion.div
@@ -117,50 +127,75 @@ export default function StudentAssignments({ enrollments, user }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className={`overflow-hidden border ${overdue ? 'border-red-200' : submission ? 'border-green-200' : 'border-gray-200'}`}>
-              <div
-                className="flex items-center gap-4 p-4 cursor-pointer hover:bg-gray-50 transition-colors"
+            <Card sx={{ overflow: 'hidden', border: 1, borderColor, boxShadow: 0 }}>
+              <Box
                 onClick={() => setExpandedAssignment(isExpanded ? null : assignment.id)}
+                sx={{
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: 2,
+                  p: 2,
+                  cursor: 'pointer',
+                  '&:hover': { bgcolor: 'action.hover' },
+                  transition: 'background-color 0.15s',
+                }}
               >
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  submission ? 'bg-green-100' : overdue ? 'bg-red-100' : 'bg-blue-100'
-                }`}>
+                <Box
+                  sx={{
+                    width: 40,
+                    height: 40,
+                    borderRadius: 2.5,
+                    bgcolor: iconBg,
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    flexShrink: 0,
+                  }}
+                >
                   {submission ? (
-                    <CheckCircle className="w-5 h-5 text-green-600" />
+                    <CheckCircleIcon sx={{ fontSize: 20, color: iconColor }} />
                   ) : (
-                    <FileText className={`w-5 h-5 ${overdue ? 'text-red-600' : 'text-blue-600'}`} />
+                    <DescriptionIcon sx={{ fontSize: 20, color: iconColor }} />
                   )}
-                </div>
+                </Box>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 truncate">{assignment.title}</h3>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Stack direction="row" alignItems="center" spacing={1} sx={{ flexWrap: 'wrap' }}>
+                    <Typography variant="subtitle2" fontWeight={600} noWrap sx={{ color: 'text.primary' }}>
+                      {assignment.title}
+                    </Typography>
                     {submission ? (
-                      <Badge className="bg-green-100 text-green-700 border-0 text-xs">Submitted</Badge>
+                      <Chip label="Submitted" size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: '#dcfce7', color: '#15803d' }} />
                     ) : overdue ? (
-                      <Badge className="bg-red-100 text-red-700 border-0 text-xs">Overdue</Badge>
+                      <Chip label="Overdue" size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: '#fee2e2', color: '#b91c1c' }} />
                     ) : (
-                      <Badge className="bg-blue-100 text-blue-700 border-0 text-xs">Pending</Badge>
+                      <Chip label="Pending" size="small" sx={{ height: 20, fontSize: '0.7rem', bgcolor: '#dbeafe', color: '#1d4ed8' }} />
                     )}
                     {submission?.is_graded && (
-                      <Badge className="bg-purple-100 text-purple-700 border-0 text-xs">
-                        Graded: {submission.grade}/{assignment.total_points}
-                      </Badge>
+                      <Chip
+                        label={`Graded: ${submission.grade}/${assignment.total_points}`}
+                        size="small"
+                        sx={{ height: 20, fontSize: '0.7rem', bgcolor: '#f3e8ff', color: '#7e22ce' }}
+                      />
                     )}
-                  </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500">
+                  </Stack>
+                  <Stack direction="row" spacing={1.5} alignItems="center" sx={{ mt: 0.5, color: 'text.secondary' }}>
                     {assignment.due_date && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        Due {new Date(assignment.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
-                      </span>
+                      <Stack direction="row" alignItems="center" spacing={0.5}>
+                        <AccessTimeIcon sx={{ fontSize: 12 }} />
+                        <Typography variant="caption">
+                          Due {new Date(assignment.due_date).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
+                        </Typography>
+                      </Stack>
                     )}
-                    <span>{assignment.total_points || 100} pts</span>
-                  </div>
-                </div>
+                    <Typography variant="caption">{assignment.total_points || 100} pts</Typography>
+                  </Stack>
+                </Box>
 
-                {isExpanded ? <ChevronUp className="w-4 h-4 text-gray-400 flex-shrink-0" /> : <ChevronDown className="w-4 h-4 text-gray-400 flex-shrink-0" />}
-              </div>
+                {isExpanded
+                  ? <KeyboardArrowUpIcon sx={{ fontSize: 18, color: 'text.disabled', flexShrink: 0 }} />
+                  : <KeyboardArrowDownIcon sx={{ fontSize: 18, color: 'text.disabled', flexShrink: 0 }} />}
+              </Box>
 
               <AnimatePresence>
                 {isExpanded && (
@@ -168,72 +203,101 @@ export default function StudentAssignments({ enrollments, user }) {
                     initial={{ height: 0, opacity: 0 }}
                     animate={{ height: 'auto', opacity: 1 }}
                     exit={{ height: 0, opacity: 0 }}
-                    className="overflow-hidden"
+                    style={{ overflow: 'hidden' }}
                   >
-                    <div className="px-4 pb-4 border-t border-gray-100 pt-4 space-y-4">
-                      {assignment.description && (
-                        <p className="text-sm text-gray-600">{assignment.description}</p>
-                      )}
+                    <Box sx={{ px: 2, pb: 2, pt: 2, borderTop: 1, borderColor: 'divider' }}>
+                      <Stack spacing={2}>
+                        {assignment.description && (
+                          <Typography variant="body2" sx={{ color: 'text.secondary' }}>
+                            {assignment.description}
+                          </Typography>
+                        )}
 
-                      {submission ? (
-                        <div className="bg-green-50 border border-green-200 rounded-xl p-4">
-                          <p className="text-sm font-semibold text-green-800 mb-1 flex items-center gap-2">
-                            <CheckCircle className="w-4 h-4" /> Your Submission
-                          </p>
-                          {submission.content && <p className="text-sm text-gray-700 mt-2">{submission.content}</p>}
-                          {submission.file_urls?.length > 0 && (
-                            <div className="mt-2 space-y-1">
-                              {submission.file_urls.map((url, i) => (
-                                <a key={i} href={url} target="_blank" rel="noopener noreferrer" className="text-xs text-blue-600 hover:underline block">
-                                  Attachment {i + 1}
-                                </a>
-                              ))}
-                            </div>
-                          )}
-                          {submission.feedback && (
-                            <div className="mt-3 pt-3 border-t border-green-200">
-                              <p className="text-xs font-semibold text-green-800">Tutor Feedback:</p>
-                              <p className="text-sm text-gray-700 mt-1">{submission.feedback}</p>
-                            </div>
-                          )}
-                        </div>
-                      ) : (
-                        <div className="space-y-3">
-                          <Textarea
-                            placeholder="Write your response here..."
-                            value={submissionText[assignment.id] || ''}
-                            onChange={(e) => setSubmissionText(prev => ({ ...prev, [assignment.id]: e.target.value }))}
-                            rows={4}
-                          />
-                          <div className="flex items-center gap-3 flex-wrap">
-                            <label className="cursor-pointer">
-                              <input
-                                type="file"
-                                className="hidden"
-                                onChange={(e) => handleFileUpload(e, assignment.id)}
+                        {submission ? (
+                          <Box sx={{ bgcolor: '#f0fdf4', border: 1, borderColor: '#bbf7d0', borderRadius: 2, p: 2 }}>
+                            <Stack direction="row" alignItems="center" spacing={1}>
+                              <CheckCircleIcon sx={{ fontSize: 16, color: '#15803d' }} />
+                              <Typography variant="body2" fontWeight={600} sx={{ color: '#15803d' }}>
+                                Your Submission
+                              </Typography>
+                            </Stack>
+                            {submission.content && (
+                              <Typography variant="body2" sx={{ color: 'text.secondary', mt: 1 }}>
+                                {submission.content}
+                              </Typography>
+                            )}
+                            {submission.file_urls?.length > 0 && (
+                              <Stack spacing={0.5} sx={{ mt: 1 }}>
+                                {submission.file_urls.map((url, j) => (
+                                  <Typography
+                                    key={j}
+                                    component="a"
+                                    href={url}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    variant="caption"
+                                    sx={{ color: '#2563eb', textDecoration: 'none', '&:hover': { textDecoration: 'underline' } }}
+                                  >
+                                    Attachment {j + 1}
+                                  </Typography>
+                                ))}
+                              </Stack>
+                            )}
+                            {submission.feedback && (
+                              <Box sx={{ mt: 1.5, pt: 1.5, borderTop: 1, borderColor: '#bbf7d0' }}>
+                                <Typography variant="caption" fontWeight={600} sx={{ color: '#15803d' }}>
+                                  Tutor Feedback:
+                                </Typography>
+                                <Typography variant="body2" sx={{ color: 'text.secondary', mt: 0.5 }}>
+                                  {submission.feedback}
+                                </Typography>
+                              </Box>
+                            )}
+                          </Box>
+                        ) : (
+                          <Stack spacing={1.5}>
+                            <TextField
+                              multiline
+                              rows={4}
+                              placeholder="Write your response here..."
+                              value={submissionText[assignment.id] || ''}
+                              onChange={(e) => setSubmissionText(prev => ({ ...prev, [assignment.id]: e.target.value }))}
+                              fullWidth
+                            />
+                            <Stack direction="row" alignItems="center" spacing={1.5} sx={{ flexWrap: 'wrap' }}>
+                              <Button
+                                component="label"
+                                variant="outlined"
+                                size="small"
+                                startIcon={<UploadIcon sx={{ fontSize: 14 }} />}
                                 disabled={uploading}
-                              />
-                              <Button type="button" variant="outline" size="sm" className="gap-2" disabled={uploading}>
-                                <Upload className="w-3.5 h-3.5" />
+                              >
                                 {uploading ? 'Uploading...' : 'Attach File'}
+                                <input
+                                  type="file"
+                                  hidden
+                                  onChange={(e) => handleFileUpload(e, assignment.id)}
+                                  disabled={uploading}
+                                />
                               </Button>
-                            </label>
-                            {(uploadedFiles[assignment.id] || []).map((f, i) => (
-                              <span key={i} className="text-xs text-gray-500 bg-gray-100 px-2 py-1 rounded">{f.name}</span>
-                            ))}
-                            <Button
-                              size="sm"
-                              className="bg-indigo-600 hover:bg-indigo-700 gap-2 ml-auto"
-                              onClick={() => handleSubmit(assignment)}
-                              disabled={submitMutation.isPending}
-                            >
-                              <Send className="w-3.5 h-3.5" />
-                              {submitMutation.isPending ? 'Submitting...' : 'Submit'}
-                            </Button>
-                          </div>
-                        </div>
-                      )}
-                    </div>
+                              {(uploadedFiles[assignment.id] || []).map((f, j) => (
+                                <Chip key={j} label={f.name} size="small" sx={{ height: 22, fontSize: '0.7rem' }} />
+                              ))}
+                              <Button
+                                size="small"
+                                variant="contained"
+                                startIcon={<SendIcon sx={{ fontSize: 14 }} />}
+                                onClick={() => handleSubmit(assignment)}
+                                disabled={submitMutation.isPending}
+                                sx={{ ml: 'auto', bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+                              >
+                                {submitMutation.isPending ? 'Submitting...' : 'Submit'}
+                              </Button>
+                            </Stack>
+                          </Stack>
+                        )}
+                      </Stack>
+                    </Box>
                   </motion.div>
                 )}
               </AnimatePresence>
@@ -241,6 +305,6 @@ export default function StudentAssignments({ enrollments, user }) {
           </motion.div>
         );
       })}
-    </div>
+    </Stack>
   );
 }
