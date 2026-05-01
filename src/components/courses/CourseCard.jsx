@@ -1,37 +1,38 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardContent } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Button } from '@/components/ui/button';
-import { Star, Clock, Users, BookOpen } from 'lucide-react';
+import { Card, CardContent, Chip, Button, Box, Typography, Divider } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { motion } from 'framer-motion';
 
 const levelColors = {
-  beginner: 'bg-green-100 text-green-700',
-  intermediate: 'bg-yellow-100 text-yellow-700',
-  advanced: 'bg-red-100 text-red-700',
+  beginner: { bgcolor: '#dcfce7', color: '#15803d' },
+  intermediate: { bgcolor: '#fef9c3', color: '#a16207' },
+  advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
 const getCategoryBgColor = (category) => {
   const colors = {
-    mathematics: 'bg-blue-100 text-blue-700',
-    english: 'bg-purple-100 text-purple-700',
-    biology: 'bg-emerald-100 text-emerald-700',
-    chemistry: 'bg-amber-100 text-amber-700',
-    physics: 'bg-indigo-100 text-indigo-700',
-    history: 'bg-rose-100 text-rose-700',
-    geography: 'bg-teal-100 text-teal-700',
+    mathematics: { bgcolor: '#dbeafe', color: '#1d4ed8' },
+    english: { bgcolor: '#f3e8ff', color: '#7e22ce' },
+    biology: { bgcolor: '#d1fae5', color: '#047857' },
+    chemistry: { bgcolor: '#fef3c7', color: '#b45309' },
+    physics: { bgcolor: '#e0e7ff', color: '#4338ca' },
+    history: { bgcolor: '#ffe4e6', color: '#be123c' },
+    geography: { bgcolor: '#ccfbf1', color: '#0f766e' },
   };
-  return colors[category] || 'bg-gray-100 text-gray-600';
+  return colors[category] || { bgcolor: '#f3f4f6', color: '#4b5563' };
 };
 
 export default function CourseCard({ course, index = 0 }) {
-  // ✅ PERF: cap stagger so the 50th card doesn't wait 5s. Also keep the
-  // animation short so cards become visible almost immediately.
   const animDelay = Math.min(index, 6) * 0.03;
-  // First few visible cards load eagerly; the rest defer until they scroll into view.
   const isAboveFold = index < 6;
+
+  const categoryStyle = getCategoryBgColor(course.category);
+  const levelStyle = levelColors[course.level] || levelColors.beginner;
 
   return (
     <motion.div
@@ -39,101 +40,164 @@ export default function CourseCard({ course, index = 0 }) {
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: animDelay }}
     >
-      <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-        <Card className="rounded-3xl overflow-hidden shadow-md border-2 border-transparent hover:shadow-xl hover:border-primary group h-full transition-all duration-500">
+      <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
+        <Card
+          sx={{
+            borderRadius: 6,
+            overflow: 'hidden',
+            boxShadow: 3,
+            border: '2px solid transparent',
+            height: '100%',
+            transition: 'all 0.5s',
+            '&:hover': {
+              boxShadow: 8,
+              borderColor: 'primary.main',
+              '& .course-card-img': { transform: 'scale(1.1)' },
+            },
+          }}
+        >
           {/* Image Section */}
-          <div className="relative aspect-video bg-gradient-to-br from-gray-200 to-gray-300 overflow-hidden">
-            <img
+          <Box sx={{ position: 'relative', aspectRatio: '16/9', background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)', overflow: 'hidden' }}>
+            <Box
+              component="img"
+              className="course-card-img"
               src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&q=75')}
               alt={course.title}
               loading={isAboveFold ? 'eager' : 'lazy'}
-              decoding="async"
-              className="absolute inset-0 w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+              sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s' }}
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-transparent to-transparent" />
+            <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent, transparent)' }} />
 
             {/* Top-left badges */}
-            <div className="absolute top-3 left-3 flex flex-col gap-2">
+            <Box sx={{ position: 'absolute', top: 12, left: 12, display: 'flex', flexDirection: 'column', gap: 1 }}>
               {course.is_featured && (
-                <Badge className="bg-gradient-to-r from-amber-500 to-orange-500 text-white font-bold text-xs shadow-lg border-0">
-                  ⭐ Featured
-                </Badge>
+                <Chip
+                  label="⭐ Featured"
+                  size="small"
+                  sx={{ background: 'linear-gradient(to right, #f59e0b, #f97316)', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }}
+                />
               )}
-              <Badge className={`${getCategoryBgColor(course.category)} capitalize font-semibold text-xs shadow-md border-0`}>
-                {course.category}
-              </Badge>
-            </div>
+              <Chip
+                label={course.category}
+                size="small"
+                sx={{ ...categoryStyle, textTransform: 'capitalize', fontWeight: 600, fontSize: '0.7rem', boxShadow: 1, border: 0 }}
+              />
+            </Box>
 
             {/* Top-right badges */}
-            <div className="absolute top-3 right-3 flex flex-col gap-2 items-end">
-              <Badge className={`${levelColors[course.level] || levelColors.beginner} capitalize font-semibold shadow-md border-0`}>
-                {course.level}
-              </Badge>
+            <Box sx={{ position: 'absolute', top: 12, right: 12, display: 'flex', flexDirection: 'column', gap: 1, alignItems: 'flex-end' }}>
+              <Chip
+                label={course.level}
+                size="small"
+                sx={{ ...levelStyle, textTransform: 'capitalize', fontWeight: 600, boxShadow: 1, border: 0 }}
+              />
               {!course.price || course.price === 0 ? (
-                <Badge className="bg-green-500 text-white font-bold text-xs shadow-lg border-0">Free</Badge>
+                <Chip label="Free" size="small" sx={{ bgcolor: '#22c55e', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }} />
               ) : (
-                <Badge className="bg-indigo-600 text-white font-bold text-xs shadow-lg border-0">£{course.price}</Badge>
+                <Chip label={`£${course.price}`} size="small" sx={{ bgcolor: '#4f46e5', color: 'white', fontWeight: 700, fontSize: '0.7rem', boxShadow: 2, border: 0 }} />
               )}
-            </div>
-          </div>
+            </Box>
+          </Box>
 
           {/* Content Section */}
-          <CardContent className="p-6 relative z-10">
-            {/* Title */}
-            <h3 className="text-lg font-bold mb-2 line-clamp-2 group-hover:text-primary transition-colors">
+          <CardContent sx={{ p: 3, position: 'relative', zIndex: 10 }}>
+            <Typography
+              variant="h6"
+              sx={{
+                fontSize: '1.125rem',
+                fontWeight: 700,
+                mb: 1,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+                color: 'text.primary',
+                transition: 'color 0.2s',
+                '&:hover': { color: 'primary.main' },
+              }}
+            >
               {course.title}
-            </h3>
+            </Typography>
 
-            {/* Description */}
-            <p className="text-sm text-gray-500 mb-4 line-clamp-2">
+            <Typography
+              variant="body2"
+              sx={{
+                color: 'text.secondary',
+                mb: 2,
+                display: '-webkit-box',
+                WebkitLineClamp: 2,
+                WebkitBoxOrient: 'vertical',
+                overflow: 'hidden',
+              }}
+            >
               {course.description}
-            </p>
+            </Typography>
 
             {/* Stats Row */}
-            <div className="flex divide-x divide-gray-200 mb-4">
-              <div className="flex-1 text-center">
-                <div className="text-sm font-bold">{course.duration_hours || 0}h</div>
-                <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                  <Clock className="w-3 h-3" />
-                  Duration
-                </div>
-              </div>
-              <div className="flex-1 text-center">
-                <div className="text-sm font-bold">{course.lesson_count || course.total_lessons || 0}</div>
-                <div className="flex items-center justify-center gap-1 text-xs text-gray-500">
-                  <BookOpen className="w-3 h-3" />
-                  Lessons
-                </div>
-              </div>
-              <div className="flex-1 text-center">
+            <Box sx={{ display: 'flex', mb: 2 }}>
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
+                <Typography variant="body2" fontWeight={700}>{course.duration_hours || 0}h</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, color: 'text.secondary' }}>
+                  <AccessTimeIcon sx={{ fontSize: 12 }} />
+                  <Typography variant="caption">Duration</Typography>
+                </Box>
+              </Box>
+              <Divider orientation="vertical" flexItem />
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
+                <Typography variant="body2" fontWeight={700}>{course.lesson_count || course.total_lessons || 0}</Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, color: 'text.secondary' }}>
+                  <MenuBookIcon sx={{ fontSize: 12 }} />
+                  <Typography variant="caption">Lessons</Typography>
+                </Box>
+              </Box>
+              <Divider orientation="vertical" flexItem />
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
                 {course.rating ? (
                   <>
-                    <div className="text-sm font-bold">{course.rating.toFixed(1)}</div>
-                    <div className="flex items-center justify-center gap-1 text-xs text-amber-500">
-                      <Star className="w-3 h-3" />
-                      Rating
-                    </div>
+                    <Typography variant="body2" fontWeight={700}>{course.rating.toFixed(1)}</Typography>
+                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5, color: '#f59e0b' }}>
+                      <StarIcon sx={{ fontSize: 12 }} />
+                      <Typography variant="caption">Rating</Typography>
+                    </Box>
                   </>
                 ) : (
                   <>
-                    <div className="text-sm font-bold text-gray-400">N/A</div>
-                    <div className="text-xs text-gray-500">No Rating</div>
+                    <Typography variant="body2" fontWeight={700} sx={{ color: 'text.disabled' }}>N/A</Typography>
+                    <Typography variant="caption" color="text.secondary">No Rating</Typography>
                   </>
                 )}
-              </div>
-            </div>
+              </Box>
+            </Box>
 
             {/* Enrollment count */}
             {course.enrolled_count > 0 && (
-              <div className="flex items-center justify-center gap-2 mb-4 py-2 bg-gray-50 rounded-xl">
-                <Users className="w-4 h-4 text-indigo-600" />
-                <span className="text-sm font-semibold">{course.enrolled_count.toLocaleString()}</span>
-                <span className="text-sm text-gray-500">students enrolled</span>
-              </div>
+              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2, py: 1, bgcolor: 'action.hover', borderRadius: 3 }}>
+                <PeopleIcon sx={{ fontSize: 16, color: '#4f46e5' }} />
+                <Typography variant="body2" fontWeight={600}>{course.enrolled_count.toLocaleString()}</Typography>
+                <Typography variant="body2" color="text.secondary">students enrolled</Typography>
+              </Box>
             )}
 
             {/* CTA Button */}
-            <Button className="w-full py-3 px-4 rounded-2xl font-bold bg-gradient-to-r from-[#003366] to-blue-700 hover:from-[#002244] hover:to-blue-900 text-white shadow-md hover:shadow-lg hover:scale-[1.02] transition-all duration-300">
+            <Button
+              variant="contained"
+              fullWidth
+              sx={{
+                py: 1.5,
+                px: 2,
+                borderRadius: 3,
+                fontWeight: 700,
+                background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                color: 'white',
+                boxShadow: 2,
+                '&:hover': {
+                  background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                  boxShadow: 4,
+                  transform: 'scale(1.02)',
+                },
+                transition: 'all 0.3s',
+              }}
+            >
               View Course →
             </Button>
           </CardContent>

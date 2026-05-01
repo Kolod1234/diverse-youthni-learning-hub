@@ -13,10 +13,56 @@ import {
   Divider, Drawer, List, ListItem, ListItemIcon, ListItemText, ListItemButton,
   Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions, TextField
 } from '@mui/material';
-import { 
-  GraduationCap, Home, Compass, BookOpen, Award, Calendar, Search,
-  Settings, LogOut, Menu, User, ClipboardList, BarChart3, MessageSquare, MoreVertical, Video, Layout as LayoutIcon, Users, Bell, ArrowLeft, CheckCircle, Shield, UserCheck, Sparkles
-} from 'lucide-react';
+import SchoolIcon from '@mui/icons-material/School';
+import HomeIcon from '@mui/icons-material/Home';
+import ExploreIcon from '@mui/icons-material/Explore';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import SearchIcon from '@mui/icons-material/Search';
+import SettingsIcon from '@mui/icons-material/Settings';
+import LogoutIcon from '@mui/icons-material/Logout';
+import MenuIcon from '@mui/icons-material/Menu';
+import PersonIcon from '@mui/icons-material/Person';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ChatIcon from '@mui/icons-material/Chat';
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import GroupIcon from '@mui/icons-material/Group';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ShieldIcon from '@mui/icons-material/Shield';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+// Aliases preserve existing JSX usage (size + color props supported)
+const iconWrap = (IconCmp) => ({ size, color, ...rest }) => <IconCmp sx={{ fontSize: size || 20, color: color || 'inherit' }} {...rest} />;
+const GraduationCap = iconWrap(SchoolIcon);
+const Home = iconWrap(HomeIcon);
+const Compass = iconWrap(ExploreIcon);
+const BookOpen = iconWrap(MenuBookIcon);
+const Award = iconWrap(EmojiEventsIcon);
+const Calendar = iconWrap(CalendarTodayIcon);
+const Search = iconWrap(SearchIcon);
+const Settings = iconWrap(SettingsIcon);
+const LogOut = iconWrap(LogoutIcon);
+const Menu = iconWrap(MenuIcon);
+const User = iconWrap(PersonIcon);
+const ClipboardList = iconWrap(AssignmentIcon);
+const BarChart3 = iconWrap(BarChartIcon);
+const MessageSquare = iconWrap(ChatIcon);
+const MoreVertical = iconWrap(MoreVertIcon);
+const Video = iconWrap(VideocamIcon);
+const LayoutIcon = iconWrap(DashboardIcon);
+const Users = iconWrap(GroupIcon);
+const Bell = iconWrap(NotificationsIcon);
+const ArrowLeft = iconWrap(ArrowBackIcon);
+const CheckCircle = iconWrap(CheckCircleIcon);
+const Shield = iconWrap(ShieldIcon);
+const UserCheck = iconWrap(HowToRegIcon);
+const Sparkles = iconWrap(AutoAwesomeIcon);
 import NotificationBell from '@/components/notifications/NotificationBell';
 import BecomeCoordinatorButton from '@/components/coordinator/BecomeCoordinatorButton';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
