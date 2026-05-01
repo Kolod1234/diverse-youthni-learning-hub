@@ -1,28 +1,46 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Users, BookOpen, CheckCircle, XCircle, Download, UserX,
-  Calendar, FileText, Award, Settings, MessageSquare, Bell,
-  AlertCircle, TrendingUp, BarChart3, Send
-} from 'lucide-react';
+import {
+  Card, Button, TextField, Chip, Tabs, Tab, Avatar, LinearProgress,
+  Dialog, DialogContent, DialogTitle, DialogActions,
+  Box, Container, Typography, Stack
+} from '@mui/material';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DownloadIcon from '@mui/icons-material/Download';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import DescriptionIcon from '@mui/icons-material/Description';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SettingsIcon from '@mui/icons-material/Settings';
+import ChatIcon from '@mui/icons-material/Chat';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import SendIcon from '@mui/icons-material/Send';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Users = _w(PeopleIcon), BookOpen = _w(MenuBookIcon), CheckCircle = _w(CheckCircleIcon), XCircle = _w(CancelIcon);
+const Download = _w(DownloadIcon), UserX = _w(PersonOffIcon), Calendar = _w(CalendarTodayIcon), FileText = _w(DescriptionIcon);
+const Award = _w(EmojiEventsIcon), Settings = _w(SettingsIcon), MessageSquare = _w(ChatIcon), Bell = _w(NotificationsIcon);
+const AlertCircle = _w(ErrorOutlineIcon), TrendingUp = _w(TrendingUpIcon), BarChart3 = _w(BarChartIcon), Send = _w(SendIcon);
+// Compatibility shims so existing JSX (Card, Button, Input, Textarea, Badge, Tabs, Avatar, Progress) continues working with MUI
+const Input = (props) => <TextField fullWidth size="small" {...props} />;
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={4} {...props} />;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const TabsList = ({ children }) => <Stack direction="row" spacing={1} sx={{ borderBottom: 1, borderColor: 'divider', mb: 2 }}>{children}</Stack>;
+const TabsTrigger = ({ children, value, ...props }) => <Button size="small" variant="text" {...props}>{children}</Button>;
+const TabsContent = ({ children, value }) => <Box>{children}</Box>;
+const AvatarImage = () => null;
+const AvatarFallback = ({ children }) => <>{children}</>;
+const DialogHeader = ({ children }) => <>{children}</>;
+const DialogTrigger = ({ children }) => <>{children}</>;
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ height: 8, borderRadius: 1 }} />;
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
-import { Progress } from '@/components/ui/progress';
-import {
-  Dialog,
-  DialogContent,
-  DialogHeader,
-  DialogTitle,
-  DialogTrigger,
-} from '@/components/ui/dialog';
 
 export default function AdminYouthWork() {
   const [user, setUser] = useState(null);

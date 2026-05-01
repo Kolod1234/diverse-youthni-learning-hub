@@ -1,13 +1,14 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Label } from '@/components/ui/label';
-import { Star, Edit, Trash2 } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, Button, TextField,
+  Dialog, DialogTitle, DialogContent, DialogActions, CircularProgress
+} from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import StarBorderIcon from '@mui/icons-material/StarBorder';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'sonner';
 
 export default function AdminReviews() {
@@ -16,12 +17,8 @@ export default function AdminReviews() {
   const [editDialog, setEditDialog] = useState(false);
   const queryClient = useQueryClient();
 
-  React.useEffect(() => {
-    const loadUser = async () => {
-      const userData = await base44.auth.me();
-      setUser(userData);
-    };
-    loadUser();
+  useEffect(() => {
+    base44.auth.me().then(setUser);
   }, []);
 
   const { data: reviews = [], isLoading } = useQuery({
@@ -62,126 +59,119 @@ export default function AdminReviews() {
 
   if (user?.role !== 'admin') {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <p className="text-gray-500">Admin access required</p>
-      </div>
+      <Box sx={{ minHeight: '100vh', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">Admin access required</Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      <div className="max-w-7xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Review Management</h1>
-          <p className="text-gray-600">Edit and manage all user reviews</p>
-        </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', p: 3 }}>
+      <Container maxWidth="xl">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>Review Management</Typography>
+          <Typography color="text.secondary">Edit and manage all user reviews</Typography>
+        </Box>
 
         {isLoading ? (
-          <div className="text-center py-12">
-            <div className="animate-spin w-8 h-8 border-2 border-indigo-600 border-t-transparent rounded-full mx-auto"></div>
-          </div>
+          <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+            <CircularProgress sx={{ color: '#4f46e5' }} />
+          </Box>
         ) : (
-          <div className="grid md:grid-cols-2 gap-4">
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)' }, gap: 2 }}>
             {reviews.map((review) => (
-              <Card key={review.id} className="p-6">
-                <div className="flex items-center justify-between mb-4">
+              <Card key={review.id} sx={{ p: 3 }}>
+                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 2 }}>
                   <Button
-                    size="sm"
-                    variant="outline"
-                    onClick={() => {
-                      setEditingReview(review);
-                      setEditDialog(true);
-                    }}
+                    size="small"
+                    variant="outlined"
+                    startIcon={<EditIcon sx={{ fontSize: 16 }} />}
+                    onClick={() => { setEditingReview(review); setEditDialog(true); }}
                   >
-                    <Edit className="w-4 h-4 mr-2" />
                     Edit
                   </Button>
                   <Button
-                    size="sm"
-                    variant="destructive"
+                    size="small"
+                    variant="contained"
+                    color="error"
+                    startIcon={<DeleteIcon sx={{ fontSize: 16 }} />}
                     onClick={() => {
                       if (confirm('Delete this review?')) {
                         deleteMutation.mutate(review.id);
                       }
                     }}
                   >
-                    <Trash2 className="w-4 h-4 mr-2" />
                     Delete
                   </Button>
-                </div>
-                <div className="flex items-center gap-2 mb-2">
-                  <div className="flex gap-1">
+                </Box>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
+                  <Box sx={{ display: 'flex', gap: 0.25 }}>
                     {[...Array(5)].map((_, i) => (
-                      <Star
-                        key={i}
-                        className={`w-4 h-4 ${
-                          i < review.rating ? 'fill-yellow-400 text-yellow-400' : 'text-gray-300'
-                        }`}
-                      />
+                      i < review.rating
+                        ? <StarIcon key={i} sx={{ fontSize: 16, color: '#facc15' }} />
+                        : <StarBorderIcon key={i} sx={{ fontSize: 16, color: '#d1d5db' }} />
                     ))}
-                  </div>
-                  <span className="text-xs text-gray-500">
+                  </Box>
+                  <Typography variant="caption" color="text.secondary">
                     {review.rating_type || 'course'} review
-                  </span>
-                </div>
-                <p className="text-sm text-gray-700 mb-3">"{review.comment}"</p>
-                <div className="flex items-center gap-2 text-xs text-gray-500">
-                  <span className="font-medium">{review.user_name || review.created_by}</span>
-                  <span>•</span>
-                  <span>{new Date(review.created_date).toLocaleDateString()}</span>
-                </div>
+                  </Typography>
+                </Box>
+                <Typography variant="body2" sx={{ mb: 1.5, color: 'text.primary' }}>
+                  "{review.comment}"
+                </Typography>
+                <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                  <Typography variant="caption" fontWeight={500}>
+                    {review.user_name || review.created_by}
+                  </Typography>
+                  <Typography variant="caption">•</Typography>
+                  <Typography variant="caption">
+                    {new Date(review.created_date).toLocaleDateString()}
+                  </Typography>
+                </Box>
               </Card>
             ))}
-          </div>
+          </Box>
         )}
-      </div>
+      </Container>
 
-      <Dialog open={editDialog} onOpenChange={setEditDialog}>
-        <DialogContent className="max-w-2xl">
-          <DialogHeader>
-            <DialogTitle>Edit Review</DialogTitle>
-          </DialogHeader>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Label htmlFor="user_name">User Name</Label>
-              <Input
-                id="user_name"
+      <Dialog open={editDialog} onClose={() => setEditDialog(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>Edit Review</DialogTitle>
+        <Box component="form" onSubmit={handleSubmit}>
+          <DialogContent>
+            <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+              <TextField
+                label="User Name"
                 name="user_name"
-                defaultValue={editingReview?.user_name || editingReview?.created_by}
+                defaultValue={editingReview?.user_name || editingReview?.created_by || ''}
                 required
+                fullWidth
               />
-            </div>
-            <div>
-              <Label htmlFor="rating">Rating (1-5)</Label>
-              <Input
-                id="rating"
+              <TextField
+                label="Rating (1-5)"
                 name="rating"
                 type="number"
-                min="1"
-                max="5"
-                defaultValue={editingReview?.rating}
+                inputProps={{ min: 1, max: 5 }}
+                defaultValue={editingReview?.rating || 5}
                 required
+                fullWidth
               />
-            </div>
-            <div>
-              <Label htmlFor="comment">Comment</Label>
-              <Textarea
-                id="comment"
+              <TextField
+                label="Comment"
                 name="comment"
+                multiline
                 rows={4}
-                defaultValue={editingReview?.comment}
+                defaultValue={editingReview?.comment || ''}
                 required
+                fullWidth
               />
-            </div>
-            <div className="flex justify-end gap-2">
-              <Button type="button" variant="outline" onClick={() => setEditDialog(false)}>
-                Cancel
-              </Button>
-              <Button type="submit">Save Changes</Button>
-            </div>
-          </form>
-        </DialogContent>
+            </Box>
+          </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={() => setEditDialog(false)}>Cancel</Button>
+            <Button type="submit" variant="contained">Save Changes</Button>
+          </DialogActions>
+        </Box>
       </Dialog>
-    </div>
+    </Box>
   );
 }

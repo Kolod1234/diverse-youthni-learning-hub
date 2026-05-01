@@ -6,7 +6,18 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, Chip, IconButton,
   LinearProgress, Alert, Switch, FormControlLabel, Tooltip, Divider
 } from '@mui/material';
-import { Upload, Plus, Bell, Trash2, CheckCircle, Star, AlertTriangle, Info, Link } from 'lucide-react';
+import UploadIcon from '@mui/icons-material/Upload';
+import AddIcon from '@mui/icons-material/Add';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import StarIcon from '@mui/icons-material/Star';
+import WarningIcon from '@mui/icons-material/Warning';
+import InfoIcon from '@mui/icons-material/Info';
+import LinkIcon from '@mui/icons-material/Link';
+const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Upload = _w(UploadIcon), Plus = _w(AddIcon), Bell = _w(NotificationsIcon), Trash2 = _w(DeleteIcon);
+const CheckCircle = _w(CheckCircleIcon), Star = _w(StarIcon), AlertTriangle = _w(WarningIcon), Info = _w(InfoIcon), Link = _w(LinkIcon);
 import { LinearProgress as MuiLinearProgress } from '@mui/material';
 
 export default function AdminAppVersion() {

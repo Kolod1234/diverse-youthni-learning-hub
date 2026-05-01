@@ -6,7 +6,17 @@ import {
   MenuItem, Select, FormControl, InputLabel, Chip, Alert, LinearProgress,
   Divider, Avatar, IconButton, Tab, Tabs, Switch, FormControlLabel, Tooltip
 } from '@mui/material';
-import { Bell, Send, Users, User, Trash2, CheckCircle, Mail, Eye } from 'lucide-react';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import SendIcon from '@mui/icons-material/Send';
+import PeopleIcon from '@mui/icons-material/People';
+import PersonIcon from '@mui/icons-material/Person';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MailIcon from '@mui/icons-material/Mail';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Bell = _w(NotificationsIcon), Send = _w(SendIcon), Users = _w(PeopleIcon), User = _w(PersonIcon);
+const Trash2 = _w(DeleteIcon), CheckCircle = _w(CheckCircleIcon), Mail = _w(MailIcon), Eye = _w(VisibilityIcon);
 import { format } from 'date-fns';
 
 const ROLES = [

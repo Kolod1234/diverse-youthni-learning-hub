@@ -1,28 +1,25 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Upload, Plus, Edit, Trash2, BookOpen } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, CardContent, CardMedia, Button, TextField, Stack,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'sonner';
+
+const EMPTY_FORM = {
+  title: '', description: '', category: 'document', file_url: '',
+  cover_image: '', author: '', tags: [], is_featured: false
+};
 
 export default function AdminLibrary() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingResource, setEditingResource] = useState(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'document',
-    file_url: '',
-    cover_image: '',
-    author: '',
-    tags: [],
-    is_featured: false
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [uploadingFile, setUploadingFile] = useState(false);
 
   const queryClient = useQueryClient();
@@ -34,42 +31,28 @@ export default function AdminLibrary() {
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.LibraryResource.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['library-resources']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Resource added!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['library-resources']); setShowDialog(false); resetForm(); toast.success('Resource added!'); }
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.LibraryResource.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['library-resources']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Resource updated!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['library-resources']); setShowDialog(false); resetForm(); toast.success('Resource updated!'); }
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.LibraryResource.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['library-resources']);
-      toast.success('Resource deleted');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['library-resources']); toast.success('Resource deleted'); }
   });
 
   const handleUploadFile = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     setUploadingFile(true);
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData({ ...formData, file_url });
       toast.success('File uploaded!');
-    } catch (error) {
+    } catch {
       toast.error('Upload failed');
     } finally {
       setUploadingFile(false);
@@ -79,27 +62,19 @@ export default function AdminLibrary() {
   const handleUploadCover = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData({ ...formData, cover_image: file_url });
       toast.success('Cover image uploaded!');
-    } catch (error) {
+    } catch {
       toast.error('Upload failed');
     }
   };
 
   const handleSubmit = () => {
-    if (!formData.title || !formData.file_url) {
-      toast.error('Title and file are required');
-      return;
-    }
-
-    if (editingResource) {
-      updateMutation.mutate({ id: editingResource.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
-    }
+    if (!formData.title || !formData.file_url) { toast.error('Title and file are required'); return; }
+    if (editingResource) updateMutation.mutate({ id: editingResource.id, data: formData });
+    else createMutation.mutate(formData);
   };
 
   const handleEdit = (resource) => {
@@ -118,115 +93,96 @@ export default function AdminLibrary() {
   };
 
   const resetForm = () => {
-    setFormData({
-      title: '',
-      description: '',
-      category: 'document',
-      file_url: '',
-      cover_image: '',
-      author: '',
-      tags: [],
-      is_featured: false
-    });
+    setFormData(EMPTY_FORM);
     setEditingResource(null);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Library Management</h1>
-            <p className="text-gray-600">Manage educational resources</p>
-          </div>
-          <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-indigo-600">
-            <Plus className="w-4 h-4" />
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
+      <Container maxWidth="xl">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 4 }}>
+          <Box>
+            <Typography variant="h4" fontWeight={700}>Library Management</Typography>
+            <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage educational resources</Typography>
+          </Box>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}>
             Add Resource
           </Button>
-        </div>
+        </Stack>
 
-        <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
           {resources.map((resource) => (
-            <Card key={resource.id} className="overflow-hidden">
+            <Card key={resource.id} sx={{ overflow: 'hidden' }}>
               {resource.cover_image && (
-                <img src={resource.cover_image} alt={resource.title} className="w-full h-48 object-cover" />
+                <CardMedia component="img" image={resource.cover_image} alt={resource.title} sx={{ height: 192, objectFit: 'cover' }} />
               )}
-              <div className="p-4">
-                <h3 className="font-bold text-gray-900 mb-2">{resource.title}</h3>
-                <p className="text-sm text-gray-600 mb-2 line-clamp-2">{resource.description}</p>
-                <p className="text-xs text-gray-500 mb-4">{resource.category}</p>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(resource)}>
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-600" onClick={() => {
-                    if (confirm('Delete this resource?')) deleteMutation.mutate(resource.id);
-                  }}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+              <CardContent>
+                <Typography fontWeight={700} sx={{ mb: 1 }}>{resource.title}</Typography>
+                <Typography variant="body2" color="text.secondary" sx={{ mb: 1, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>
+                  {resource.description}
+                </Typography>
+                <Typography variant="caption" color="text.disabled" sx={{ display: 'block', mb: 2 }}>{resource.category}</Typography>
+                <Stack direction="row" spacing={1}>
+                  <IconButton size="small" onClick={() => handleEdit(resource)} sx={{ border: 1, borderColor: 'divider' }}>
+                    <EditIcon sx={{ fontSize: 16 }} />
+                  </IconButton>
+                  <IconButton size="small" onClick={() => { if (confirm('Delete this resource?')) deleteMutation.mutate(resource.id); }} sx={{ border: 1, borderColor: 'divider' }}>
+                    <DeleteIcon sx={{ fontSize: 16, color: '#dc2626' }} />
+                  </IconButton>
+                </Stack>
+              </CardContent>
             </Card>
           ))}
-        </div>
+        </Box>
 
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
-            <DialogHeader>
-              <DialogTitle>{editingResource ? 'Edit Resource' : 'Add Resource'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              <div>
-                <Label>Title *</Label>
-                <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-              </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
-              </div>
-              <div>
-                <Label>Category</Label>
-                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border rounded-lg">
-                  <option value="book">Book</option>
-                  <option value="document">Document</option>
-                  <option value="video">Video</option>
-                  <option value="article">Article</option>
-                  <option value="research">Research</option>
-                  <option value="other">Other</option>
-                </select>
-              </div>
-              <div>
-                <Label>File * {uploadingFile && '(Uploading...)'}</Label>
-                <Input type="file" onChange={handleUploadFile} disabled={uploadingFile} />
-                {formData.file_url && <p className="text-xs text-green-600 mt-1">✓ File uploaded</p>}
-              </div>
-              <div>
-                <Label>Cover Image</Label>
-                <Input type="file" accept="image/*" onChange={handleUploadCover} />
-                {formData.cover_image && <img src={formData.cover_image} alt="Cover" className="mt-2 h-24 rounded" />}
-              </div>
-              <div>
-                <Label>Author</Label>
-                <Input value={formData.author} onChange={(e) => setFormData({ ...formData, author: e.target.value })} />
-              </div>
-              <div>
-                <Label>Tags (comma separated)</Label>
-                <Input value={formData.tags.join(', ')} onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })} />
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} />
-                <Label>Featured</Label>
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setShowDialog(false); resetForm(); }} className="flex-1">Cancel</Button>
-                <Button onClick={handleSubmit} disabled={uploadingFile} className="flex-1 bg-indigo-600">
-                  {editingResource ? 'Update' : 'Add'}
-                </Button>
-              </div>
-            </div>
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>{editingResource ? 'Edit Resource' : 'Add Resource'}</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <TextField label="Title *" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth />
+              <TextField label="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} multiline rows={3} fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select value={formData.category} label="Category" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                  <MenuItem value="book">Book</MenuItem>
+                  <MenuItem value="document">Document</MenuItem>
+                  <MenuItem value="video">Video</MenuItem>
+                  <MenuItem value="article">Article</MenuItem>
+                  <MenuItem value="research">Research</MenuItem>
+                  <MenuItem value="other">Other</MenuItem>
+                </Select>
+              </FormControl>
+              <Box>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>File * {uploadingFile && '(Uploading...)'}</Typography>
+                <input type="file" onChange={handleUploadFile} disabled={uploadingFile} style={{ width: '100%' }} />
+                {formData.file_url && <Typography variant="caption" sx={{ color: '#16a34a', mt: 0.5, display: 'block' }}>✓ File uploaded</Typography>}
+              </Box>
+              <Box>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>Cover Image</Typography>
+                <input type="file" accept="image/*" onChange={handleUploadCover} style={{ width: '100%' }} />
+                {formData.cover_image && <Box component="img" src={formData.cover_image} alt="Cover" sx={{ mt: 1, height: 96, borderRadius: 1 }} />}
+              </Box>
+              <TextField label="Author" value={formData.author} onChange={(e) => setFormData({ ...formData, author: e.target.value })} fullWidth />
+              <TextField
+                label="Tags (comma separated)"
+                value={formData.tags.join(', ')}
+                onChange={(e) => setFormData({ ...formData, tags: e.target.value.split(',').map(t => t.trim()).filter(Boolean) })}
+                fullWidth
+              />
+              <FormControlLabel
+                control={<Checkbox checked={formData.is_featured} onChange={(e) => setFormData({ ...formData, is_featured: e.target.checked })} />}
+                label="Featured"
+              />
+            </Stack>
           </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
+            <Button variant="contained" onClick={handleSubmit} disabled={uploadingFile} sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}>
+              {editingResource ? 'Update' : 'Add'}
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

@@ -7,12 +7,11 @@ import {
   TableRow, Dialog, DialogTitle, DialogContent, DialogActions, Select, MenuItem,
   FormControl, InputLabel, Alert, AlertTitle, IconButton, Grid, Badge
 } from '@mui/material';
-import { 
-  Shield, Users, BookOpen, MessageSquare, Image as ImageIcon,
-  Palette, FileText, Award, Settings, Trash2, Ban, CheckCircle,
-  Upload, Eye, Edit, Search, Send, UserCog, Video, Brain, Calendar,
-  TrendingUp, Key, Database, Lock, Plus, EyeOff, Download, UserCheck, GraduationCap, X, Sparkles, AlertCircle
-} from 'lucide-react';
+import {
+  Shield, Users, BookOpen, MessageSquare, Palette, FileText, Award, Settings,
+  Trash2, CheckCircle, Upload, Eye, EyeOff, Edit, Search, Send, UserCog, Video,
+  Brain, Calendar, TrendingUp, Database, Lock, Plus, GraduationCap, X
+} from '@/components/admin/AdminDashboardIcons';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';

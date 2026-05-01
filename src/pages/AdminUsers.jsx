@@ -3,13 +3,21 @@ import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Search, UserPlus, Shield, User, Mail, Calendar, Loader2, Send, Eye, Users } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, CardContent, Button, TextField, Chip, Avatar,
+  Select, MenuItem, FormControl, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions,
+  Table, TableHead, TableBody, TableRow, TableCell, TableContainer, Paper, IconButton,
+  CircularProgress, InputAdornment
+} from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
+import PersonAddIcon from '@mui/icons-material/PersonAdd';
+import ShieldIcon from '@mui/icons-material/Shield';
+import PersonIcon from '@mui/icons-material/Person';
+import EmailIcon from '@mui/icons-material/Email';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import SendIcon from '@mui/icons-material/Send';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import PeopleIcon from '@mui/icons-material/People';
 import { format } from 'date-fns';
 
 export default function AdminUsers() {
@@ -89,7 +97,6 @@ export default function AdminUsers() {
       alert('Please select users and enter subject and message');
       return;
     }
-    
     try {
       for (const user of selectedUsers) {
         await base44.integrations.Core.SendEmail({
@@ -109,22 +116,6 @@ export default function AdminUsers() {
     }
   };
 
-  const toggleUserSelection = (user) => {
-    setSelectedUsers(prev => 
-      prev.find(u => u.id === user.id)
-        ? prev.filter(u => u.id !== user.id)
-        : [...prev, user]
-    );
-  };
-
-  const selectAllFiltered = () => {
-    if (selectedUsers.length === filteredUsers.length) {
-      setSelectedUsers([]);
-    } else {
-      setSelectedUsers([...filteredUsers]);
-    }
-  };
-
   const filteredUsers = users.filter(user => {
     const matchesSearch = user.full_name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
                          user.email?.toLowerCase().includes(searchQuery.toLowerCase());
@@ -133,372 +124,318 @@ export default function AdminUsers() {
   });
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
+      <Container maxWidth="xl">
         {/* Header */}
-        <div className="bg-white rounded-xl shadow-sm p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-3xl font-bold text-gray-900 mb-2">User Management</h1>
-              <p className="text-gray-600">Manage all users registered on the platform</p>
-            </div>
-            <Button 
+        <Card sx={{ p: 3, mb: 3 }}>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', flexWrap: 'wrap', gap: 2, mb: 3 }}>
+            <Box>
+              <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>User Management</Typography>
+              <Typography color="text.secondary">Manage all users registered on the platform</Typography>
+            </Box>
+            <Button
               onClick={() => setShowInvite(!showInvite)}
-              className="bg-orange-600 hover:bg-orange-700"
+              variant="contained"
+              startIcon={<PersonAddIcon />}
+              sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
             >
-              <UserPlus className="w-4 h-4 mr-2" />
               Invite User
             </Button>
-          </div>
+          </Box>
 
-          {/* Invite Form */}
           {showInvite && (
-            <div className="bg-orange-50 border border-orange-200 rounded-lg p-4 mb-6">
-              <h3 className="font-semibold text-gray-900 mb-3">Invite New User</h3>
-              <div className="flex gap-3">
-                <Input
+            <Box sx={{ bgcolor: '#fff7ed', border: 1, borderColor: '#fed7aa', borderRadius: 2, p: 2, mb: 3 }}>
+              <Typography fontWeight={600} sx={{ mb: 1.5 }}>Invite New User</Typography>
+              <Box sx={{ display: 'flex', gap: 1.5, flexWrap: 'wrap' }}>
+                <TextField
+                  size="small"
                   placeholder="Email address"
                   value={inviteEmail}
                   onChange={(e) => setInviteEmail(e.target.value)}
-                  className="flex-1"
+                  sx={{ flex: 1, minWidth: 200 }}
                 />
-                <Select value={inviteRole} onValueChange={setInviteRole}>
-                  <SelectTrigger className="w-32">
-                    <SelectValue />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="user">User</SelectItem>
-                    <SelectItem value="admin">Admin</SelectItem>
-                  </SelectContent>
-                </Select>
-                <Button 
+                <FormControl size="small" sx={{ minWidth: 120 }}>
+                  <Select value={inviteRole} onChange={(e) => setInviteRole(e.target.value)}>
+                    <MenuItem value="user">User</MenuItem>
+                    <MenuItem value="admin">Admin</MenuItem>
+                  </Select>
+                </FormControl>
+                <Button
                   onClick={handleInvite}
                   disabled={inviteMutation.isPending}
-                  className="bg-orange-600 hover:bg-orange-700"
+                  variant="contained"
+                  sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
                 >
-                  {inviteMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : 'Invite'}
+                  {inviteMutation.isPending ? <CircularProgress size={20} sx={{ color: 'white' }} /> : 'Invite'}
                 </Button>
-              </div>
-            </div>
+              </Box>
+            </Box>
           )}
 
-          {/* Filters */}
-          <div className="flex gap-4">
-            <div className="flex-1 relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-gray-400" />
-              <Input
-                placeholder="Search by name or email..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="pl-10"
-              />
-            </div>
-            <Select value={roleFilter} onValueChange={setRoleFilter}>
-              <SelectTrigger className="w-40">
-                <SelectValue placeholder="Role" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All Roles</SelectItem>
-                <SelectItem value="admin">Admin</SelectItem>
-                <SelectItem value="user">User</SelectItem>
-              </SelectContent>
-            </Select>
-          </div>
-        </div>
+          <Box sx={{ display: 'flex', gap: 2, flexWrap: 'wrap' }}>
+            <TextField
+              size="small"
+              placeholder="Search by name or email..."
+              value={searchQuery}
+              onChange={(e) => setSearchQuery(e.target.value)}
+              sx={{ flex: 1, minWidth: 200 }}
+              InputProps={{
+                startAdornment: (
+                  <InputAdornment position="start">
+                    <SearchIcon sx={{ color: 'text.secondary' }} />
+                  </InputAdornment>
+                ),
+              }}
+            />
+            <FormControl size="small" sx={{ minWidth: 160 }}>
+              <InputLabel>Role</InputLabel>
+              <Select value={roleFilter} label="Role" onChange={(e) => setRoleFilter(e.target.value)}>
+                <MenuItem value="all">All Roles</MenuItem>
+                <MenuItem value="admin">Admin</MenuItem>
+                <MenuItem value="user">User</MenuItem>
+              </Select>
+            </FormControl>
+          </Box>
+        </Card>
 
         {/* Stats */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
-                <User className="w-6 h-6 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Total Users</p>
-                <p className="text-2xl font-bold text-gray-900">{users.length}</p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-orange-100 flex items-center justify-center">
-                <Shield className="w-6 h-6 text-orange-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Admins</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {users.filter(u => u.role === 'admin').length}
-                </p>
-              </div>
-            </div>
-          </div>
-          <div className="bg-white rounded-xl shadow-sm p-6">
-            <div className="flex items-center gap-4">
-              <div className="w-12 h-12 rounded-full bg-green-100 flex items-center justify-center">
-                <User className="w-6 h-6 text-green-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Regular Users</p>
-                <p className="text-2xl font-bold text-gray-900">
-                  {users.filter(u => u.role === 'user').length}
-                </p>
-              </div>
-            </div>
-          </div>
-        </div>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3, mb: 3 }}>
+          <Card sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: '#dbeafe', color: '#2563eb', width: 48, height: 48 }}><PersonIcon /></Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Total Users</Typography>
+                <Typography variant="h5" fontWeight={700}>{users.length}</Typography>
+              </Box>
+            </Box>
+          </Card>
+          <Card sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 48, height: 48 }}><ShieldIcon /></Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Admins</Typography>
+                <Typography variant="h5" fontWeight={700}>{users.filter(u => u.role === 'admin').length}</Typography>
+              </Box>
+            </Box>
+          </Card>
+          <Card sx={{ p: 3 }}>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
+              <Avatar sx={{ bgcolor: '#dcfce7', color: '#16a34a', width: 48, height: 48 }}><PersonIcon /></Avatar>
+              <Box>
+                <Typography variant="caption" color="text.secondary">Regular Users</Typography>
+                <Typography variant="h5" fontWeight={700}>{users.filter(u => u.role === 'user').length}</Typography>
+              </Box>
+            </Box>
+          </Card>
+        </Box>
 
-        {/* Users List */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        {/* Users Table */}
+        <Card sx={{ overflow: 'hidden' }}>
           {isLoading ? (
-            <div className="flex items-center justify-center py-12">
-              <Loader2 className="w-8 h-8 animate-spin text-gray-400" />
-            </div>
+            <Box sx={{ display: 'flex', justifyContent: 'center', py: 6 }}>
+              <CircularProgress />
+            </Box>
           ) : filteredUsers.length === 0 ? (
-            <div className="text-center py-12">
-              <User className="w-12 h-12 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-600">No users found</p>
-            </div>
+            <Box sx={{ textAlign: 'center', py: 6 }}>
+              <PersonIcon sx={{ fontSize: 48, color: 'text.disabled', mb: 2 }} />
+              <Typography color="text.secondary">No users found</Typography>
+            </Box>
           ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      User
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Email
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Role
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Registered
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
+            <TableContainer component={Paper} elevation={0}>
+              <Table>
+                <TableHead sx={{ bgcolor: 'action.hover' }}>
+                  <TableRow>
+                    <TableCell>USER</TableCell>
+                    <TableCell>EMAIL</TableCell>
+                    <TableCell>ROLE</TableCell>
+                    <TableCell>REGISTERED</TableCell>
+                    <TableCell>STATUS</TableCell>
+                    <TableCell align="right">ACTIONS</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
                   {filteredUsers.map((user) => (
-                    <tr key={user.id} className="hover:bg-gray-50 transition">
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <Avatar className="h-10 w-10">
-                            <AvatarImage src={user.avatar} />
-                            <AvatarFallback className="bg-orange-100 text-orange-600">
-                              {user.full_name?.charAt(0) || 'U'}
-                            </AvatarFallback>
+                    <TableRow key={user.id} hover>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+                          <Avatar src={user.avatar} sx={{ bgcolor: '#ffedd5', color: '#ea580c' }}>
+                            {user.full_name?.charAt(0) || 'U'}
                           </Avatar>
-                          <div className="ml-4">
-                            <div className="text-sm font-medium text-gray-900">{user.full_name || 'Unknown'}</div>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center text-sm text-gray-600">
-                          <Mail className="w-4 h-4 mr-2 text-gray-400" />
-                          {user.email}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge 
-                          className={user.role === 'admin' 
-                            ? 'bg-orange-100 text-orange-700 hover:bg-orange-100' 
-                            : 'bg-blue-100 text-blue-700 hover:bg-blue-100'
-                          }
-                        >
-                          {user.role === 'admin' ? <Shield className="w-3 h-3 mr-1" /> : <User className="w-3 h-3 mr-1" />}
-                          {user.role}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                        <div className="flex items-center">
-                          <Calendar className="w-4 h-4 mr-2 text-gray-400" />
-                          {user.created_date ? format(new Date(user.created_date), 'MMM d, yyyy') : 'N/A'}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex gap-2">
-                          {user.is_tutor && (
-                            <Badge variant="outline" className="text-xs">Tutor</Badge>
-                          )}
-                          {user.is_coordinator && (
-                            <Badge variant="outline" className="text-xs">Coordinator</Badge>
-                          )}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap text-right">
-                        <div className="flex gap-2 justify-end">
-                          <Link to={createPageUrl('AdminUserProfile') + `?userId=${user.id}`}>
-                            <Button variant="outline" size="sm">
-                              <Eye className="w-4 h-4 mr-2" />
-                              View Profile
-                            </Button>
-                          </Link>
+                          <Typography variant="body2" fontWeight={500}>{user.full_name || 'Unknown'}</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                          <EmailIcon sx={{ fontSize: 16 }} />
+                          <Typography variant="body2">{user.email}</Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Chip
+                          icon={user.role === 'admin' ? <ShieldIcon sx={{ fontSize: 12 }} /> : <PersonIcon sx={{ fontSize: 12 }} />}
+                          label={user.role}
+                          size="small"
+                          sx={{
+                            bgcolor: user.role === 'admin' ? '#ffedd5' : '#dbeafe',
+                            color: user.role === 'admin' ? '#c2410c' : '#1d4ed8',
+                            fontWeight: 600,
+                          }}
+                        />
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
+                          <CalendarTodayIcon sx={{ fontSize: 14 }} />
+                          <Typography variant="body2">
+                            {user.created_date ? format(new Date(user.created_date), 'MMM d, yyyy') : 'N/A'}
+                          </Typography>
+                        </Box>
+                      </TableCell>
+                      <TableCell>
+                        <Box sx={{ display: 'flex', gap: 0.5 }}>
+                          {user.is_tutor && <Chip label="Tutor" size="small" variant="outlined" />}
+                          {user.is_coordinator && <Chip label="Coordinator" size="small" variant="outlined" />}
+                        </Box>
+                      </TableCell>
+                      <TableCell align="right">
+                        <Box sx={{ display: 'flex', gap: 1, justifyContent: 'flex-end' }}>
                           <Button
-                            variant="outline"
-                            size="sm"
-                            onClick={() => setMessageUser(user)}
+                            component={Link}
+                            to={createPageUrl('AdminUserProfile') + `?userId=${user.id}`}
+                            variant="outlined"
+                            size="small"
+                            startIcon={<VisibilityIcon sx={{ fontSize: 16 }} />}
                           >
-                            <Send className="w-4 h-4" />
+                            View Profile
                           </Button>
-                        </div>
-                      </td>
-                    </tr>
+                          <IconButton size="small" onClick={() => setMessageUser(user)} sx={{ border: 1, borderColor: 'divider' }}>
+                            <SendIcon sx={{ fontSize: 16 }} />
+                          </IconButton>
+                        </Box>
+                      </TableCell>
+                    </TableRow>
                   ))}
-                </tbody>
-              </table>
-            </div>
+                </TableBody>
+              </Table>
+            </TableContainer>
           )}
-        </div>
+        </Card>
 
-        <div className="mt-4 text-sm text-gray-500 text-center">
+        <Typography variant="body2" color="text.secondary" sx={{ textAlign: 'center', mt: 2 }}>
           Showing {filteredUsers.length} of {users.length} users
-        </div>
-      </div>
+        </Typography>
+      </Container>
 
       {/* Email Dialog */}
-      {messageUser && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setMessageUser(null)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl m-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <Send className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Send Email</h3>
-                <p className="text-sm text-gray-500">To: {messageUser.full_name} ({messageUser.email})</p>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Subject</label>
-                <Input
-                  value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
-                  placeholder="Email subject..."
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Message</label>
-                <Textarea
-                  value={emailBody}
-                  onChange={(e) => setEmailBody(e.target.value)}
-                  placeholder="Type your message..."
-                  rows={8}
-                />
-              </div>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleSendEmail}
-                  disabled={sendEmailMutation.isPending}
-                  className="flex-1 bg-orange-600 hover:bg-orange-700"
-                >
-                  {sendEmailMutation.isPending ? (
-                    <><Loader2 className="w-4 h-4 mr-2 animate-spin" /> Sending...</>
-                  ) : (
-                    <><Send className="w-4 h-4 mr-2" /> Send Email</>
-                  )}
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setMessageUser(null);
-                    setEmailSubject('');
-                    setEmailBody('');
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
+      <Dialog open={!!messageUser} onClose={() => setMessageUser(null)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 40, height: 40 }}><SendIcon /></Avatar>
+            <Box>
+              <Typography variant="h6" fontWeight={700}>Send Email</Typography>
+              <Typography variant="caption" color="text.secondary">
+                To: {messageUser?.full_name} ({messageUser?.email})
+              </Typography>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="Subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              placeholder="Email subject..."
+              fullWidth
+            />
+            <TextField
+              label="Message"
+              value={emailBody}
+              onChange={(e) => setEmailBody(e.target.value)}
+              placeholder="Type your message..."
+              multiline
+              rows={8}
+              fullWidth
+            />
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => { setMessageUser(null); setEmailSubject(''); setEmailBody(''); }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleSendEmail}
+            disabled={sendEmailMutation.isPending}
+            variant="contained"
+            startIcon={sendEmailMutation.isPending ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <SendIcon />}
+            sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+          >
+            {sendEmailMutation.isPending ? 'Sending...' : 'Send Email'}
+          </Button>
+        </DialogActions>
+      </Dialog>
 
       {/* Bulk Email Dialog */}
-      {showBulkEmail && (
-        <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50" onClick={() => setShowBulkEmail(false)}>
-          <div className="bg-white rounded-2xl p-6 w-full max-w-lg shadow-xl m-4" onClick={(e) => e.stopPropagation()}>
-            <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 rounded-full bg-orange-100 flex items-center justify-center">
-                <Users className="w-5 h-5 text-orange-600" />
-              </div>
-              <div>
-                <h3 className="text-xl font-bold">Send Bulk Email</h3>
-                <p className="text-sm text-gray-500">To {selectedUsers.length} selected users</p>
-              </div>
-            </div>
-            
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium mb-2">Subject</label>
-                <Input
-                  value={emailSubject}
-                  onChange={(e) => setEmailSubject(e.target.value)}
-                  placeholder="Email subject..."
-                />
-              </div>
-              
-              <div>
-                <label className="block text-sm font-medium mb-2">Message</label>
-                <Textarea
-                  value={emailBody}
-                  onChange={(e) => setEmailBody(e.target.value)}
-                  placeholder="Type your announcement or message..."
-                  rows={8}
-                />
-              </div>
-
-              <div className="bg-gray-50 rounded-lg p-3">
-                <p className="text-xs font-medium text-gray-700 mb-2">Recipients ({selectedUsers.length}):</p>
-                <div className="flex flex-wrap gap-1">
-                  {selectedUsers.slice(0, 10).map((user) => (
-                    <Badge key={user.id} variant="outline" className="text-xs">
-                      {user.full_name}
-                    </Badge>
-                  ))}
-                  {selectedUsers.length > 10 && (
-                    <Badge variant="outline" className="text-xs">
-                      +{selectedUsers.length - 10} more
-                    </Badge>
-                  )}
-                </div>
-              </div>
-              
-              <div className="flex gap-3">
-                <Button
-                  onClick={handleBulkEmail}
-                  className="flex-1 bg-orange-600 hover:bg-orange-700"
-                >
-                  <Send className="w-4 h-4 mr-2" />
-                  Send to All
-                </Button>
-                <Button
-                  variant="outline"
-                  onClick={() => {
-                    setShowBulkEmail(false);
-                    setEmailSubject('');
-                    setEmailBody('');
-                  }}
-                  className="flex-1"
-                >
-                  Cancel
-                </Button>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-    </div>
+      <Dialog open={showBulkEmail} onClose={() => setShowBulkEmail(false)} maxWidth="sm" fullWidth>
+        <DialogTitle>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
+            <Avatar sx={{ bgcolor: '#ffedd5', color: '#ea580c', width: 40, height: 40 }}><PeopleIcon /></Avatar>
+            <Box>
+              <Typography variant="h6" fontWeight={700}>Send Bulk Email</Typography>
+              <Typography variant="caption" color="text.secondary">To {selectedUsers.length} selected users</Typography>
+            </Box>
+          </Box>
+        </DialogTitle>
+        <DialogContent>
+          <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2, mt: 1 }}>
+            <TextField
+              label="Subject"
+              value={emailSubject}
+              onChange={(e) => setEmailSubject(e.target.value)}
+              fullWidth
+            />
+            <TextField
+              label="Message"
+              value={emailBody}
+              onChange={(e) => setEmailBody(e.target.value)}
+              multiline
+              rows={8}
+              fullWidth
+            />
+            <Box sx={{ bgcolor: 'action.hover', borderRadius: 2, p: 1.5 }}>
+              <Typography variant="caption" fontWeight={600} sx={{ display: 'block', mb: 1 }}>
+                Recipients ({selectedUsers.length}):
+              </Typography>
+              <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 0.5 }}>
+                {selectedUsers.slice(0, 10).map((user) => (
+                  <Chip key={user.id} label={user.full_name} size="small" variant="outlined" />
+                ))}
+                {selectedUsers.length > 10 && (
+                  <Chip label={`+${selectedUsers.length - 10} more`} size="small" variant="outlined" />
+                )}
+              </Box>
+            </Box>
+          </Box>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            variant="outlined"
+            onClick={() => { setShowBulkEmail(false); setEmailSubject(''); setEmailBody(''); }}
+          >
+            Cancel
+          </Button>
+          <Button
+            onClick={handleBulkEmail}
+            variant="contained"
+            startIcon={<SendIcon />}
+            sx={{ bgcolor: '#ea580c', '&:hover': { bgcolor: '#c2410c' } }}
+          >
+            Send to All
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Box>
   );
 }

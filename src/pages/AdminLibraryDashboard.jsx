@@ -9,7 +9,13 @@ import {
   XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer, 
   ScatterChart, Scatter
 } from 'recharts';
-import { TrendingUp, BookOpen, Users, Search, Layers } from 'lucide-react';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
+import LayersIcon from '@mui/icons-material/Layers';
+const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const TrendingUp = _w(TrendingUpIcon), BookOpen = _w(MenuBookIcon), Users = _w(PeopleIcon), Search = _w(SearchIcon), Layers = _w(LayersIcon);
 
 const CATEGORY_COLORS = {
   youth_work: '#4f46e5',

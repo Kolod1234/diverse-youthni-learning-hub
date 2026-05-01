@@ -2,11 +2,22 @@ import React, { useState, useEffect } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Sparkles, Award, Target, Zap, Users, BookOpen, MessageCircle, LayoutGrid, Copy, Save, AlertCircle, Film } from 'lucide-react';
+import { Button, Dialog, DialogContent, DialogTitle } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import ViewModuleIcon from '@mui/icons-material/ViewModule';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import MovieIcon from '@mui/icons-material/Movie';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Plus = _w(AddIcon), Sparkles = _w(AutoAwesomeIcon), Award = _w(EmojiEventsIcon), Users = _w(PeopleIcon);
+const BookOpen = _w(MenuBookIcon), MessageCircle = _w(ChatBubbleOutlineIcon), LayoutGrid = _w(ViewModuleIcon);
+const AlertCircle = _w(ErrorOutlineIcon), Film = _w(MovieIcon);
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { motion, AnimatePresence } from 'framer-motion';
 import LivePreview from '@/components/pagebuilder/LivePreview';
 import SectionPreview from '@/components/pagebuilder/SectionPreview';
@@ -412,11 +423,9 @@ export default function AdminPageBuilder() {
         />
       )}
 
-      <Dialog open={showTemplates} onOpenChange={setShowTemplates}>
-        <DialogContent className="max-w-5xl max-h-[90vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle className="text-2xl font-bold">Choose a Template</DialogTitle>
-          </DialogHeader>
+      <Dialog open={showTemplates} onClose={() => setShowTemplates(false)} maxWidth="lg" fullWidth>
+        <DialogTitle sx={{ fontSize: '1.5rem', fontWeight: 700 }}>Choose a Template</DialogTitle>
+        <DialogContent>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6">
             {SECTION_TEMPLATES.map((template, idx) => {
               const Icon = template.icon;
@@ -443,7 +452,6 @@ export default function AdminPageBuilder() {
           </div>
         </DialogContent>
       </Dialog>
-
       <UnsavedChangesModal
         open={showUnsavedModal}
         onSave={() => {

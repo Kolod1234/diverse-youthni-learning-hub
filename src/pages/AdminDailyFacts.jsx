@@ -1,24 +1,27 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Textarea } from '@/components/ui/textarea';
-import { Label } from '@/components/ui/label';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Lightbulb, Sparkles, Loader, Beaker, BookOpen, Leaf, Zap, RotateCw } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, Button, TextField, Stack,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import RefreshIcon from '@mui/icons-material/Refresh';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import FactCard from '@/components/facts/FactCard.jsx';
 
+const EMPTY_FORM = { fact: '', category: 'science', is_active: true };
+
 export default function AdminDailyFacts() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingFact, setEditingFact] = useState(null);
-  const [formData, setFormData] = useState({
-    fact: '',
-    category: 'science',
-    is_active: true
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
   const [generatingFact, setGeneratingFact] = useState(false);
 
   const queryClient = useQueryClient();
@@ -30,57 +33,33 @@ export default function AdminDailyFacts() {
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.DailyFact.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['daily-facts']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Fact added!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['daily-facts']); setShowDialog(false); resetForm(); toast.success('Fact added!'); }
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.DailyFact.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['daily-facts']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Fact updated!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['daily-facts']); setShowDialog(false); resetForm(); toast.success('Fact updated!'); }
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.DailyFact.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['daily-facts']);
-      toast.success('Fact deleted');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['daily-facts']); toast.success('Fact deleted'); }
   });
 
   const handleSubmit = () => {
-    if (!formData.fact) {
-      toast.error('Fact is required');
-      return;
-    }
-
-    if (editingFact) {
-      updateMutation.mutate({ id: editingFact.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
-    }
+    if (!formData.fact) { toast.error('Fact is required'); return; }
+    if (editingFact) updateMutation.mutate({ id: editingFact.id, data: formData });
+    else createMutation.mutate(formData);
   };
 
   const handleEdit = (fact) => {
     setEditingFact(fact);
-    setFormData({
-      fact: fact.fact,
-      category: fact.category,
-      is_active: fact.is_active
-    });
+    setFormData({ fact: fact.fact, category: fact.category, is_active: fact.is_active });
     setShowDialog(true);
   };
 
   const resetForm = () => {
-    setFormData({ fact: '', category: 'science', is_active: true });
+    setFormData(EMPTY_FORM);
     setEditingFact(null);
   };
 
@@ -88,7 +67,6 @@ export default function AdminDailyFacts() {
     setGeneratingFact(true);
     try {
       const result = await base44.functions.invoke('fetchDailyFactsFromSources');
-      
       if (result.data.success) {
         queryClient.invalidateQueries(['daily-facts']);
         toast.success(`Added ${result.data.factsAdded} unique facts from ${result.data.sourcesAttempted} sources!`);
@@ -98,160 +76,114 @@ export default function AdminDailyFacts() {
       }
     } catch (error) {
       toast.error('Failed to generate facts from sources');
-      console.error(error);
     } finally {
       setGeneratingFact(false);
     }
   };
 
-  const getCategoryIcon = (category) => {
-    const icons = { science: Beaker, history: BookOpen, nature: Leaf, technology: Zap };
-    return icons[category] || Lightbulb;
+  const stats = {
+    total: facts.length,
+    active: facts.filter(f => f.is_active).length,
+    byCategory: ['science', 'history', 'nature', 'technology', 'general'].reduce((acc, cat) => {
+      acc[cat] = facts.filter(f => f.category === cat).length;
+      return acc;
+    }, {})
   };
-
-  const getStats = () => {
-    return {
-      total: facts.length,
-      active: facts.filter(f => f.is_active).length,
-      byCategory: ['science', 'history', 'nature', 'technology', 'general'].reduce((acc, cat) => {
-        acc[cat] = facts.filter(f => f.category === cat).length;
-        return acc;
-      }, {})
-    };
-  };
-
-  const stats = getStats();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-blue-50 to-purple-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        {/* Header */}
-        <motion.div
-          initial={{ opacity: 0, y: -20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex items-center justify-between mb-10"
-        >
-          <div>
-            <h1 className="text-4xl font-bold text-gray-900 mb-2">Daily Facts Library</h1>
-            <p className="text-gray-600">Manage engaging facts across multiple categories</p>
-          </div>
-          <div className="flex gap-3">
-            <Button onClick={() => queryClient.invalidateQueries(['daily-facts'])} className="gap-2 bg-gray-600 hover:bg-gray-700">
-              <RotateCw className="w-4 h-4" />
-              Refresh
-            </Button>
-            <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-blue-600 hover:bg-blue-700">
-              <Plus className="w-4 h-4" />
-              Add Fact
-            </Button>
-            <Button onClick={() => { resetForm(); setShowDialog(true); generateFactWithAI(); }} className="gap-2 bg-purple-600 hover:bg-purple-700" disabled={generatingFact}>
-              <Sparkles className="w-4 h-4" />
-              {generatingFact ? 'Fetching...' : 'Fetch from Sources'}
-            </Button>
-          </div>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eff6ff, #f5f3ff)', py: 4 }}>
+      <Container maxWidth="xl">
+        <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 5, flexWrap: 'wrap', gap: 2 }}>
+            <Box>
+              <Typography variant="h3" fontWeight={700}>Daily Facts Library</Typography>
+              <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage engaging facts across multiple categories</Typography>
+            </Box>
+            <Stack direction="row" spacing={1.5} flexWrap="wrap">
+              <Button variant="contained" startIcon={<RefreshIcon />} onClick={() => queryClient.invalidateQueries(['daily-facts'])} sx={{ bgcolor: '#4b5563', '&:hover': { bgcolor: '#374151' } }}>
+                Refresh
+              </Button>
+              <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+                Add Fact
+              </Button>
+              <Button variant="contained" startIcon={<AutoAwesomeIcon />} onClick={generateFactWithAI} disabled={generatingFact} sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}>
+                {generatingFact ? 'Fetching...' : 'Fetch from Sources'}
+              </Button>
+            </Stack>
+          </Stack>
         </motion.div>
 
-        {/* Stats Cards */}
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.1 }}
-          className="grid grid-cols-2 md:grid-cols-5 gap-4 mb-8"
-        >
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-            <p className="text-gray-600 text-sm font-medium">Total Facts</p>
-            <p className="text-3xl font-bold text-gray-900 mt-2">{stats.total}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-gray-200 shadow-sm">
-            <p className="text-gray-600 text-sm font-medium">Active</p>
-            <p className="text-3xl font-bold text-green-600 mt-2">{stats.active}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-blue-200 shadow-sm">
-            <p className="text-blue-600 text-sm font-medium">Science</p>
-            <p className="text-2xl font-bold text-blue-700 mt-2">{stats.byCategory.science}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-purple-200 shadow-sm">
-            <p className="text-purple-600 text-sm font-medium">History</p>
-            <p className="text-2xl font-bold text-purple-700 mt-2">{stats.byCategory.history}</p>
-          </div>
-          <div className="bg-white rounded-xl p-4 border border-green-200 shadow-sm">
-            <p className="text-green-600 text-sm font-medium">Nature</p>
-            <p className="text-2xl font-bold text-green-700 mt-2">{stats.byCategory.nature}</p>
-          </div>
+        <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: 'repeat(2, 1fr)', md: 'repeat(5, 1fr)' }, gap: 2, mb: 4 }}>
+            {[
+              { label: 'Total Facts', value: stats.total, color: 'text.primary', border: 'divider' },
+              { label: 'Active', value: stats.active, color: '#16a34a', border: 'divider' },
+              { label: 'Science', value: stats.byCategory.science, color: '#1d4ed8', border: '#bfdbfe' },
+              { label: 'History', value: stats.byCategory.history, color: '#7e22ce', border: '#e9d5ff' },
+              { label: 'Nature', value: stats.byCategory.nature, color: '#15803d', border: '#bbf7d0' },
+            ].map((s) => (
+              <Card key={s.label} sx={{ p: 2, border: 1, borderColor: s.border }}>
+                <Typography variant="caption" sx={{ color: s.color, fontWeight: 500 }}>{s.label}</Typography>
+                <Typography variant="h4" fontWeight={700} sx={{ color: s.color, mt: 1 }}>{s.value}</Typography>
+              </Card>
+            ))}
+          </Box>
         </motion.div>
 
-        {/* Facts Grid */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.2 }}
-          className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
-        >
-          {facts.length > 0 ? (
-            facts.map((fact, index) => (
-              <div key={fact.id} className="relative group">
-                <FactCard fact={fact} index={index} />
-                {/* Action buttons overlay */}
-                <motion.div
-                  initial={{ opacity: 0 }}
-                  whileHover={{ opacity: 1 }}
-                  className="absolute top-4 right-4 flex gap-2"
-                >
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(fact)} className="shadow-lg">
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-600 shadow-lg" onClick={() => {
-                    if (confirm('Delete this fact?')) deleteMutation.mutate(fact.id);
-                  }}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </motion.div>
-              </div>
-            ))
-          ) : (
-            <motion.div
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="col-span-full text-center py-16"
-            >
-              <Lightbulb className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-              <p className="text-gray-500 text-lg">No facts yet. Create one or fetch from sources!</p>
-            </motion.div>
-          )}
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.2 }}>
+          <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', lg: 'repeat(3, 1fr)' }, gap: 3 }}>
+            {facts.length > 0 ? (
+              facts.map((fact, index) => (
+                <Box key={fact.id} sx={{ position: 'relative', '&:hover .fact-actions': { opacity: 1 } }}>
+                  <FactCard fact={fact} index={index} />
+                  <Stack direction="row" spacing={1} className="fact-actions" sx={{ position: 'absolute', top: 16, right: 16, opacity: 0, transition: 'opacity 0.2s' }}>
+                    <IconButton size="small" onClick={() => handleEdit(fact)} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
+                      <EditIcon sx={{ fontSize: 16 }} />
+                    </IconButton>
+                    <IconButton size="small" onClick={() => { if (confirm('Delete this fact?')) deleteMutation.mutate(fact.id); }} sx={{ bgcolor: 'background.paper', boxShadow: 2, '&:hover': { bgcolor: 'background.paper' } }}>
+                      <DeleteIcon sx={{ fontSize: 16, color: '#dc2626' }} />
+                    </IconButton>
+                  </Stack>
+                </Box>
+              ))
+            ) : (
+              <Box sx={{ gridColumn: '1 / -1', textAlign: 'center', py: 8 }}>
+                <LightbulbIcon sx={{ fontSize: 64, color: 'text.disabled', mb: 2 }} />
+                <Typography color="text.secondary">No facts yet. Create one or fetch from sources!</Typography>
+              </Box>
+            )}
+          </Box>
         </motion.div>
 
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingFact ? 'Edit Fact' : 'Add Fact'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              <div>
-                <Label>Fact *</Label>
-                <Textarea value={formData.fact} onChange={(e) => setFormData({ ...formData, fact: e.target.value })} rows={4} />
-              </div>
-              <div>
-                <Label>Category</Label>
-                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border rounded-lg">
-                  <option value="science">Science</option>
-                  <option value="history">History</option>
-                  <option value="nature">Nature</option>
-                  <option value="technology">Technology</option>
-                  <option value="space">Space</option>
-                </select>
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} />
-                <Label>Active</Label>
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setShowDialog(false); resetForm(); }} className="flex-1">Cancel</Button>
-                <Button onClick={handleSubmit} className="flex-1 bg-blue-600">{editingFact ? 'Update' : 'Add'}</Button>
-              </div>
-            </div>
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>{editingFact ? 'Edit Fact' : 'Add Fact'}</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <TextField label="Fact *" value={formData.fact} onChange={(e) => setFormData({ ...formData, fact: e.target.value })} multiline rows={4} fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select value={formData.category} label="Category" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                  <MenuItem value="science">Science</MenuItem>
+                  <MenuItem value="history">History</MenuItem>
+                  <MenuItem value="nature">Nature</MenuItem>
+                  <MenuItem value="technology">Technology</MenuItem>
+                  <MenuItem value="space">Space</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControlLabel
+                control={<Checkbox checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} />}
+                label="Active"
+              />
+            </Stack>
           </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
+            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#2563eb', '&:hover': { bgcolor: '#1d4ed8' } }}>
+              {editingFact ? 'Update' : 'Add'}
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

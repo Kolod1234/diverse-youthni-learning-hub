@@ -1,17 +1,21 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Card } from '@/components/ui/card';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
-  GraduationCap, Calendar, MessageSquare, BookOpen, Send, Bell,
-  Clock, User, ChevronRight, Loader2, X, CheckCircle, AlertCircle
-} from 'lucide-react';
+  Box, Container, Typography, Card, Button, TextField, Chip, Avatar, Stack, Tabs, Tab,
+  IconButton, CircularProgress
+} from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import ChatIcon from '@mui/icons-material/Chat';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import SendIcon from '@mui/icons-material/Send';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
 
@@ -23,8 +27,8 @@ export default function AdminTutorMonitor() {
   const [reminderOpen, setReminderOpen] = useState(false);
   const [reminderMessage, setReminderMessage] = useState('');
   const [reminderSubject, setReminderSubject] = useState('');
+  const [tab, setTab] = useState('courses');
 
-  // Fetch all tutors
   const { data: allUsers = [] } = useQuery({
     queryKey: ['all-users-for-monitor'],
     queryFn: async () => {
@@ -35,44 +39,36 @@ export default function AdminTutorMonitor() {
 
   const tutors = allUsers.filter(u => u.is_tutor || u.role === 'admin');
 
-  // Fetch all courses (with assigned_tutors)
   const { data: courses = [] } = useQuery({
     queryKey: ['all-courses'],
     queryFn: () => base44.entities.Course.list('-created_date', 500),
   });
 
-  // Fetch tutor availability
   const { data: availability = [] } = useQuery({
     queryKey: ['all-tutor-availability'],
     queryFn: () => base44.entities.TutorAvailability.list('-created_date', 500),
   });
 
-  // Fetch session bookings
   const { data: bookings = [] } = useQuery({
     queryKey: ['all-bookings'],
     queryFn: () => base44.entities.SessionBooking.list('-created_date', 500),
   });
 
-  // Fetch ungraded submissions
   const { data: submissions = [] } = useQuery({
     queryKey: ['ungraded-submissions'],
     queryFn: () => base44.entities.Submission.filter({ is_graded: false }, '-created_date', 200),
   });
 
-  // Fetch assignments for context
   const { data: assignments = [] } = useQuery({
     queryKey: ['all-assignments'],
     queryFn: () => base44.entities.Assignment.list('-created_date', 200),
   });
 
-  // Chat room mutation
   const sendChatMutation = useMutation({
     mutationFn: async ({ tutorEmail, tutorName, message }) => {
-      // Find or create direct chat room between admin and tutor
       const existing = await base44.entities.ChatRoom.filter({ type: 'direct' }, '-created_date', 500);
       let room = existing.find(r =>
-        r.participant_emails?.includes(tutorEmail) &&
-        r.participant_emails?.includes('admin')
+        r.participant_emails?.includes(tutorEmail) && r.participant_emails?.includes('admin')
       );
       if (!room) {
         room = await base44.entities.ChatRoom.create({
@@ -102,384 +98,300 @@ export default function AdminTutorMonitor() {
     onError: () => toast.error('Failed to send message'),
   });
 
-  // Email reminder mutation
   const sendReminderMutation = useMutation({
     mutationFn: async ({ tutorEmail, subject, body }) => {
       await base44.integrations.Core.SendEmail({
-        to: tutorEmail,
-        subject,
-        body,
-        from_name: 'Diverse Youth NI Admin'
+        to: tutorEmail, subject, body, from_name: 'Diverse Youth NI Admin'
       });
     },
     onSuccess: () => {
       toast.success('Reminder sent!');
-      setReminderMessage('');
-      setReminderSubject('');
-      setReminderOpen(false);
+      setReminderMessage(''); setReminderSubject(''); setReminderOpen(false);
     },
     onError: () => toast.error('Failed to send reminder'),
   });
 
-  const getTutorCourses = (tutorEmail) =>
-    courses.filter(c => c.assigned_tutors?.includes(tutorEmail));
-
-  const getTutorAvailability = (tutorEmail) =>
-    availability.filter(a => a.tutor_email === tutorEmail);
-
-  const getTutorBookings = (tutorEmail) =>
-    bookings.filter(b => b.tutor_email === tutorEmail);
-
-  const getTutorUngradedCount = (tutorEmail) => {
-    const tutorCourseIds = getTutorCourses(tutorEmail).map(c => c.id);
-    const tutorAssignmentIds = assignments
-      .filter(a => tutorCourseIds.includes(a.course_id))
-      .map(a => a.id);
-    return submissions.filter(s => tutorAssignmentIds.includes(s.assignment_id)).length;
+  const getTutorCourses = (email) => courses.filter(c => c.assigned_tutors?.includes(email));
+  const getTutorAvailability = (email) => availability.filter(a => a.tutor_email === email);
+  const getTutorBookings = (email) => bookings.filter(b => b.tutor_email === email);
+  const getTutorUngradedCount = (email) => {
+    const ids = getTutorCourses(email).map(c => c.id);
+    const aids = assignments.filter(a => ids.includes(a.course_id)).map(a => a.id);
+    return submissions.filter(s => aids.includes(s.assignment_id)).length;
   };
 
-  const openChat = (tutor) => {
-    setSelectedTutor(tutor);
-    setChatOpen(true);
-    setReminderOpen(false);
-  };
-
+  const openChat = (tutor) => { setSelectedTutor(tutor); setChatOpen(true); setReminderOpen(false); };
   const openReminder = (tutor) => {
-    setSelectedTutor(tutor);
-    setReminderOpen(true);
-    setChatOpen(false);
-    const ungradedCount = getTutorUngradedCount(tutor.email);
+    setSelectedTutor(tutor); setReminderOpen(true); setChatOpen(false);
+    const count = getTutorUngradedCount(tutor.email);
     setReminderSubject('Reminder: Student Coursework Needs Assessment');
-    setReminderMessage(
-      `Hi ${tutor.full_name},\n\nThis is a reminder that you currently have ${ungradedCount} ungraded student submission(s) awaiting your assessment.\n\nPlease log in to the platform and review the outstanding work at your earliest convenience.\n\nThank you,\nAdmin Team`
-    );
+    setReminderMessage(`Hi ${tutor.full_name},\n\nThis is a reminder that you currently have ${count} ungraded student submission(s) awaiting your assessment.\n\nPlease log in to the platform and review the outstanding work at your earliest convenience.\n\nThank you,\nAdmin Team`);
   };
+
+  const renderStat = (label, value, Icon, bgcolor, color) => (
+    <Card sx={{ p: 2 }}>
+      <Stack direction="row" spacing={1.5} alignItems="center">
+        <Avatar sx={{ width: 40, height: 40, bgcolor, color }}>
+          <Icon sx={{ fontSize: 20 }} />
+        </Avatar>
+        <Box>
+          <Typography variant="caption" color="text.secondary">{label}</Typography>
+          <Typography variant="h5" fontWeight={700}>{value}</Typography>
+        </Box>
+      </Stack>
+    </Card>
+  );
 
   return (
-    <div className="min-h-screen bg-gray-50 py-6">
-      <div className="max-w-6xl mx-auto px-4">
-        <div className="mb-6">
-          <h1 className="text-2xl font-bold text-gray-900">Tutor Monitor</h1>
-          <p className="text-gray-500 text-sm mt-1">Monitor tutor activity, calendars, and communicate with tutors</p>
-        </div>
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 3 }}>
+      <Container maxWidth="lg">
+        <Box sx={{ mb: 3 }}>
+          <Typography variant="h5" fontWeight={700}>Tutor Monitor</Typography>
+          <Typography variant="body2" color="text.secondary">Monitor tutor activity, calendars, and communicate with tutors</Typography>
+        </Box>
 
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
-                <GraduationCap className="w-5 h-5 text-purple-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Active Tutors</p>
-                <p className="text-2xl font-bold">{tutors.length}</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
-                <Calendar className="w-5 h-5 text-blue-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Total Bookings</p>
-                <p className="text-2xl font-bold">{bookings.length}</p>
-              </div>
-            </div>
-          </Card>
-          <Card className="p-4">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center">
-                <AlertCircle className="w-5 h-5 text-red-600" />
-              </div>
-              <div>
-                <p className="text-sm text-gray-500">Ungraded Submissions</p>
-                <p className="text-2xl font-bold">{submissions.length}</p>
-              </div>
-            </div>
-          </Card>
-        </div>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 2, mb: 3 }}>
+          {renderStat('Active Tutors', tutors.length, SchoolIcon, '#f3e8ff', '#9333ea')}
+          {renderStat('Total Bookings', bookings.length, CalendarTodayIcon, '#dbeafe', '#2563eb')}
+          {renderStat('Ungraded Submissions', submissions.length, ErrorOutlineIcon, '#fee2e2', '#dc2626')}
+        </Box>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Tutor List */}
-          <div className="lg:col-span-1 space-y-3">
-            <h2 className="font-semibold text-gray-700 text-sm uppercase tracking-wide">Tutors</h2>
+        <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '1fr 2fr' }, gap: 3 }}>
+          <Box>
+            <Typography variant="caption" fontWeight={600} sx={{ textTransform: 'uppercase', letterSpacing: 1, color: 'text.secondary', mb: 1.5, display: 'block' }}>
+              Tutors
+            </Typography>
             {tutors.length === 0 && (
-              <Card className="p-4 text-center text-gray-400 text-sm">No tutors found</Card>
+              <Card sx={{ p: 2, textAlign: 'center', color: 'text.disabled' }}>No tutors found</Card>
             )}
-            {tutors.map(tutor => {
-              const ungradedCount = getTutorUngradedCount(tutor.email);
-              const tutorCourseCount = getTutorCourses(tutor.email).length;
-              return (
-                <Card
-                  key={tutor.id}
-                  className={`p-3 cursor-pointer transition-all border-2 ${selectedTutor?.id === tutor.id ? 'border-indigo-500 bg-indigo-50' : 'border-transparent hover:border-indigo-200'}`}
-                  onClick={() => { setSelectedTutor(tutor); setChatOpen(false); setReminderOpen(false); }}
-                >
-                  <div className="flex items-center gap-3">
-                    <Avatar className="h-10 w-10">
-                      <AvatarImage src={tutor.avatar} />
-                      <AvatarFallback className="bg-indigo-100 text-indigo-700">{tutor.full_name?.charAt(0)}</AvatarFallback>
-                    </Avatar>
-                    <div className="flex-1 min-w-0">
-                      <p className="font-medium text-sm text-gray-900 truncate">{tutor.full_name}</p>
-                      <p className="text-xs text-gray-500 truncate">{tutor.email}</p>
-                      <div className="flex gap-1 mt-1">
-                        <Badge variant="outline" className="text-xs py-0">{tutorCourseCount} courses</Badge>
-                        {ungradedCount > 0 && (
-                          <Badge className="text-xs py-0 bg-red-100 text-red-700">{ungradedCount} ungraded</Badge>
-                        )}
-                      </div>
-                    </div>
-                    <ChevronRight className="w-4 h-4 text-gray-400" />
-                  </div>
-                </Card>
-              );
-            })}
-          </div>
+            <Stack spacing={1.5}>
+              {tutors.map(tutor => {
+                const ungraded = getTutorUngradedCount(tutor.email);
+                const courseCount = getTutorCourses(tutor.email).length;
+                const isSelected = selectedTutor?.id === tutor.id;
+                return (
+                  <Card
+                    key={tutor.id}
+                    onClick={() => { setSelectedTutor(tutor); setChatOpen(false); setReminderOpen(false); }}
+                    sx={{
+                      p: 1.5, cursor: 'pointer', border: 2, transition: 'all 0.2s',
+                      borderColor: isSelected ? '#6366f1' : 'transparent',
+                      bgcolor: isSelected ? '#eef2ff' : 'background.paper',
+                      '&:hover': { borderColor: isSelected ? '#6366f1' : '#c7d2fe' }
+                    }}
+                  >
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Avatar src={tutor.avatar} sx={{ bgcolor: '#e0e7ff', color: '#4338ca' }}>
+                        {tutor.full_name?.charAt(0)}
+                      </Avatar>
+                      <Box sx={{ flex: 1, minWidth: 0 }}>
+                        <Typography variant="body2" fontWeight={500} noWrap>{tutor.full_name}</Typography>
+                        <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{tutor.email}</Typography>
+                        <Stack direction="row" spacing={0.5} sx={{ mt: 0.5 }}>
+                          <Chip label={`${courseCount} courses`} size="small" variant="outlined" sx={{ height: 18, fontSize: '0.65rem' }} />
+                          {ungraded > 0 && <Chip label={`${ungraded} ungraded`} size="small" sx={{ bgcolor: '#fee2e2', color: '#b91c1c', height: 18, fontSize: '0.65rem' }} />}
+                        </Stack>
+                      </Box>
+                      <ChevronRightIcon sx={{ fontSize: 16, color: 'text.disabled' }} />
+                    </Stack>
+                  </Card>
+                );
+              })}
+            </Stack>
+          </Box>
 
-          {/* Detail Panel */}
-          <div className="lg:col-span-2">
+          <Box>
             {!selectedTutor ? (
-              <Card className="p-10 text-center text-gray-400">
-                <GraduationCap className="w-12 h-12 mx-auto mb-3 opacity-30" />
-                <p>Select a tutor to view their activity</p>
+              <Card sx={{ p: 5, textAlign: 'center', color: 'text.disabled' }}>
+                <SchoolIcon sx={{ fontSize: 48, mb: 1.5, opacity: 0.3 }} />
+                <Typography>Select a tutor to view their activity</Typography>
               </Card>
             ) : (
-              <div className="space-y-4">
-                {/* Tutor Header */}
-                <Card className="p-4">
-                  <div className="flex items-center justify-between flex-wrap gap-3">
-                    <div className="flex items-center gap-3">
-                      <Avatar className="h-12 w-12">
-                        <AvatarImage src={selectedTutor.avatar} />
-                        <AvatarFallback className="bg-indigo-100 text-indigo-700">{selectedTutor.full_name?.charAt(0)}</AvatarFallback>
+              <Stack spacing={2}>
+                <Card sx={{ p: 2 }}>
+                  <Stack direction="row" justifyContent="space-between" alignItems="center" flexWrap="wrap" spacing={1.5}>
+                    <Stack direction="row" spacing={1.5} alignItems="center">
+                      <Avatar src={selectedTutor.avatar} sx={{ width: 48, height: 48, bgcolor: '#e0e7ff', color: '#4338ca' }}>
+                        {selectedTutor.full_name?.charAt(0)}
                       </Avatar>
-                      <div>
-                        <h3 className="font-bold text-gray-900">{selectedTutor.full_name}</h3>
-                        <p className="text-sm text-gray-500">{selectedTutor.email}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button size="sm" variant="outline" onClick={() => openChat(selectedTutor)}>
-                        <MessageSquare className="w-4 h-4 mr-1" />
-                        Chat
-                      </Button>
-                      <Button size="sm" className="bg-amber-500 hover:bg-amber-600" onClick={() => openReminder(selectedTutor)}>
-                        <Bell className="w-4 h-4 mr-1" />
+                      <Box>
+                        <Typography fontWeight={700}>{selectedTutor.full_name}</Typography>
+                        <Typography variant="body2" color="text.secondary">{selectedTutor.email}</Typography>
+                      </Box>
+                    </Stack>
+                    <Stack direction="row" spacing={1}>
+                      <Button size="small" variant="outlined" startIcon={<ChatIcon sx={{ fontSize: 16 }} />} onClick={() => openChat(selectedTutor)}>Chat</Button>
+                      <Button size="small" variant="contained" startIcon={<NotificationsIcon sx={{ fontSize: 16 }} />} onClick={() => openReminder(selectedTutor)} sx={{ bgcolor: '#f59e0b', '&:hover': { bgcolor: '#d97706' } }}>
                         Send Reminder
                       </Button>
-                    </div>
-                  </div>
+                    </Stack>
+                  </Stack>
                 </Card>
 
-                {/* Chat Panel */}
                 {chatOpen && (
-                  <Card className="p-4 border-indigo-200 bg-indigo-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-sm flex items-center gap-2">
-                        <MessageSquare className="w-4 h-4 text-indigo-600" />
-                        Send Message to {selectedTutor.full_name}
-                      </h4>
-                      <Button variant="ghost" size="sm" onClick={() => setChatOpen(false)}><X className="w-4 h-4" /></Button>
-                    </div>
-                    <Textarea
-                      value={chatMessage}
-                      onChange={e => setChatMessage(e.target.value)}
-                      placeholder="Type your message..."
-                      rows={3}
-                      className="mb-3 bg-white"
+                  <Card sx={{ p: 2, border: 1, borderColor: '#c7d2fe', bgcolor: '#eef2ff' }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <ChatIcon sx={{ fontSize: 16, color: '#4f46e5' }} />
+                        <Typography variant="body2" fontWeight={600}>Send Message to {selectedTutor.full_name}</Typography>
+                      </Stack>
+                      <IconButton size="small" onClick={() => setChatOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
+                    </Stack>
+                    <TextField
+                      multiline rows={3} fullWidth placeholder="Type your message..."
+                      value={chatMessage} onChange={(e) => setChatMessage(e.target.value)}
+                      sx={{ mb: 1.5, bgcolor: 'background.paper' }}
                     />
-                    <div className="flex gap-2 justify-end">
-                      <Button variant="outline" size="sm" onClick={() => setChatOpen(false)}>Cancel</Button>
+                    <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                      <Button size="small" variant="outlined" onClick={() => setChatOpen(false)}>Cancel</Button>
                       <Button
-                        size="sm"
-                        className="bg-indigo-600"
+                        size="small" variant="contained"
+                        startIcon={sendChatMutation.isPending ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <SendIcon sx={{ fontSize: 14 }} />}
                         disabled={!chatMessage.trim() || sendChatMutation.isPending}
                         onClick={() => sendChatMutation.mutate({ tutorEmail: selectedTutor.email, tutorName: selectedTutor.full_name, message: chatMessage })}
+                        sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
                       >
-                        {sendChatMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Send className="w-4 h-4 mr-1" />}
                         Send
                       </Button>
-                    </div>
+                    </Stack>
                   </Card>
                 )}
 
-                {/* Reminder Panel */}
                 {reminderOpen && (
-                  <Card className="p-4 border-amber-200 bg-amber-50">
-                    <div className="flex items-center justify-between mb-3">
-                      <h4 className="font-semibold text-sm flex items-center gap-2">
-                        <Bell className="w-4 h-4 text-amber-600" />
-                        Assessment Reminder for {selectedTutor.full_name}
-                      </h4>
-                      <Button variant="ghost" size="sm" onClick={() => setReminderOpen(false)}><X className="w-4 h-4" /></Button>
-                    </div>
-                    <Input
-                      value={reminderSubject}
-                      onChange={e => setReminderSubject(e.target.value)}
-                      placeholder="Email subject"
-                      className="mb-2 bg-white"
+                  <Card sx={{ p: 2, border: 1, borderColor: '#fde68a', bgcolor: '#fefce8' }}>
+                    <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 1.5 }}>
+                      <Stack direction="row" spacing={1} alignItems="center">
+                        <NotificationsIcon sx={{ fontSize: 16, color: '#d97706' }} />
+                        <Typography variant="body2" fontWeight={600}>Assessment Reminder for {selectedTutor.full_name}</Typography>
+                      </Stack>
+                      <IconButton size="small" onClick={() => setReminderOpen(false)}><CloseIcon sx={{ fontSize: 16 }} /></IconButton>
+                    </Stack>
+                    <TextField
+                      placeholder="Email subject" fullWidth value={reminderSubject}
+                      onChange={(e) => setReminderSubject(e.target.value)} sx={{ mb: 1, bgcolor: 'background.paper' }}
                     />
-                    <Textarea
-                      value={reminderMessage}
-                      onChange={e => setReminderMessage(e.target.value)}
-                      placeholder="Reminder message..."
-                      rows={5}
-                      className="mb-3 bg-white"
+                    <TextField
+                      multiline rows={5} placeholder="Reminder message..." fullWidth value={reminderMessage}
+                      onChange={(e) => setReminderMessage(e.target.value)} sx={{ mb: 1.5, bgcolor: 'background.paper' }}
                     />
-                    <div className="flex gap-2 justify-end">
-                      <Button variant="outline" size="sm" onClick={() => setReminderOpen(false)}>Cancel</Button>
+                    <Stack direction="row" justifyContent="flex-end" spacing={1}>
+                      <Button size="small" variant="outlined" onClick={() => setReminderOpen(false)}>Cancel</Button>
                       <Button
-                        size="sm"
-                        className="bg-amber-500 hover:bg-amber-600"
+                        size="small" variant="contained"
+                        startIcon={sendReminderMutation.isPending ? <CircularProgress size={14} sx={{ color: 'white' }} /> : <NotificationsIcon sx={{ fontSize: 14 }} />}
                         disabled={!reminderMessage.trim() || sendReminderMutation.isPending}
                         onClick={() => sendReminderMutation.mutate({ tutorEmail: selectedTutor.email, subject: reminderSubject, body: reminderMessage })}
+                        sx={{ bgcolor: '#f59e0b', '&:hover': { bgcolor: '#d97706' } }}
                       >
-                        {sendReminderMutation.isPending ? <Loader2 className="w-4 h-4 animate-spin" /> : <Bell className="w-4 h-4 mr-1" />}
                         Send Email Reminder
                       </Button>
-                    </div>
+                    </Stack>
                   </Card>
                 )}
 
-                <Tabs defaultValue="courses">
-                  <TabsList className="w-full">
-                    <TabsTrigger value="courses" className="flex-1">
-                      <BookOpen className="w-4 h-4 mr-1" />
-                      Courses
-                    </TabsTrigger>
-                    <TabsTrigger value="availability" className="flex-1">
-                      <Clock className="w-4 h-4 mr-1" />
-                      Availability
-                    </TabsTrigger>
-                    <TabsTrigger value="bookings" className="flex-1">
-                      <Calendar className="w-4 h-4 mr-1" />
-                      Bookings
-                    </TabsTrigger>
-                    <TabsTrigger value="coursework" className="flex-1">
-                      <AlertCircle className="w-4 h-4 mr-1" />
-                      Coursework
-                    </TabsTrigger>
-                  </TabsList>
-
-                  {/* Assigned Courses */}
-                  <TabsContent value="courses" className="mt-3 space-y-2">
-                    {getTutorCourses(selectedTutor.email).length === 0 ? (
-                      <Card className="p-6 text-center text-gray-400 text-sm">
-                        No courses assigned to this tutor
-                      </Card>
-                    ) : (
-                      getTutorCourses(selectedTutor.email).map(course => (
-                        <Card key={course.id} className="p-3">
-                          <div className="flex items-center gap-3">
-                            {course.thumbnail && (
-                              <img src={course.thumbnail} alt={course.title} className="w-12 h-10 object-cover rounded" />
-                            )}
-                            <div className="flex-1">
-                              <p className="font-medium text-sm">{course.title}</p>
-                              <p className="text-xs text-gray-500 capitalize">{course.category?.replace(/_/g, ' ')} • {course.enrolled_count || 0} students</p>
-                            </div>
-                            <Badge variant="outline" className="text-xs">{course.qualification_type?.toUpperCase()}</Badge>
-                          </div>
-                        </Card>
-                      ))
-                    )}
-                  </TabsContent>
-
-                  {/* Availability */}
-                  <TabsContent value="availability" className="mt-3 space-y-2">
-                    {getTutorAvailability(selectedTutor.email).length === 0 ? (
-                      <Card className="p-6 text-center text-gray-400 text-sm">
-                        No availability slots configured
-                      </Card>
-                    ) : (
-                      getTutorAvailability(selectedTutor.email).map(slot => (
-                        <Card key={slot.id} className="p-3">
-                          <div className="flex items-center gap-3">
-                            <Clock className="w-4 h-4 text-indigo-500 flex-shrink-0" />
-                            <div>
-                              <p className="text-sm font-medium">{slot.day_of_week} — {slot.start_time} to {slot.end_time}</p>
-                              <p className="text-xs text-gray-500">{slot.session_type || 'Any'} • {slot.max_students || 1} student(s)</p>
-                            </div>
-                            <Badge className={`ml-auto text-xs ${slot.is_active !== false ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500'}`}>
-                              {slot.is_active !== false ? 'Active' : 'Paused'}
-                            </Badge>
-                          </div>
-                        </Card>
-                      ))
-                    )}
-                  </TabsContent>
-
-                  {/* Bookings Calendar */}
-                  <TabsContent value="bookings" className="mt-3 space-y-2">
-                    {getTutorBookings(selectedTutor.email).length === 0 ? (
-                      <Card className="p-6 text-center text-gray-400 text-sm">
-                        No bookings found for this tutor
-                      </Card>
-                    ) : (
-                      getTutorBookings(selectedTutor.email).map(booking => (
-                        <Card key={booking.id} className="p-3">
-                          <div className="flex items-center gap-3">
-                            <Calendar className="w-4 h-4 text-blue-500 flex-shrink-0" />
-                            <div className="flex-1">
-                              <p className="text-sm font-medium">{booking.student_name || booking.student_email}</p>
-                              <p className="text-xs text-gray-500">
-                                {booking.session_date ? format(new Date(booking.session_date), 'MMM d, yyyy') : 'Date TBD'}
-                                {booking.session_time ? ` at ${booking.session_time}` : ''}
-                              </p>
-                            </div>
-                            <Badge className={`text-xs ${
-                              booking.status === 'confirmed' ? 'bg-green-100 text-green-700' :
-                              booking.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
-                              'bg-gray-100 text-gray-600'
-                            }`}>
-                              {booking.status || 'pending'}
-                            </Badge>
-                          </div>
-                        </Card>
-                      ))
-                    )}
-                  </TabsContent>
-
-                  {/* Ungraded Coursework */}
-                  <TabsContent value="coursework" className="mt-3 space-y-2">
-                    {(() => {
-                      const tutorCourseIds = getTutorCourses(selectedTutor.email).map(c => c.id);
-                      const tutorAssignmentIds = assignments.filter(a => tutorCourseIds.includes(a.course_id)).map(a => a.id);
-                      const ungradedSubs = submissions.filter(s => tutorAssignmentIds.includes(s.assignment_id));
-                      return ungradedSubs.length === 0 ? (
-                        <Card className="p-6 text-center text-sm">
-                          <CheckCircle className="w-8 h-8 text-green-400 mx-auto mb-2" />
-                          <p className="text-gray-400">All submissions graded — great work!</p>
-                        </Card>
-                      ) : (
-                        ungradedSubs.map(sub => {
-                          const assignment = assignments.find(a => a.id === sub.assignment_id);
-                          return (
-                            <Card key={sub.id} className="p-3 border-red-100">
-                              <div className="flex items-center gap-3">
-                                <AlertCircle className="w-4 h-4 text-red-500 flex-shrink-0" />
-                                <div className="flex-1">
-                                  <p className="text-sm font-medium">{sub.student_name || sub.student_email}</p>
-                                  <p className="text-xs text-gray-500">{assignment?.title || 'Assignment'}</p>
-                                  <p className="text-xs text-gray-400">
-                                    Submitted: {sub.submitted_date ? format(new Date(sub.submitted_date), 'MMM d, yyyy') : 'Unknown'}
-                                  </p>
-                                </div>
-                                <Badge className="bg-red-100 text-red-700 text-xs">Ungraded</Badge>
-                              </div>
-                            </Card>
-                          );
-                        })
-                      );
-                    })()}
-                  </TabsContent>
+                <Tabs value={tab} onChange={(_, v) => setTab(v)} variant="fullWidth" sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                  <Tab value="courses" icon={<MenuBookIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Courses" />
+                  <Tab value="availability" icon={<AccessTimeIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Availability" />
+                  <Tab value="bookings" icon={<CalendarTodayIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Bookings" />
+                  <Tab value="coursework" icon={<ErrorOutlineIcon sx={{ fontSize: 16 }} />} iconPosition="start" label="Coursework" />
                 </Tabs>
-              </div>
+
+                <Stack spacing={1}>
+                  {tab === 'courses' && (getTutorCourses(selectedTutor.email).length === 0 ? (
+                    <Card sx={{ p: 4, textAlign: 'center', color: 'text.disabled' }}>No courses assigned to this tutor</Card>
+                  ) : getTutorCourses(selectedTutor.email).map(course => (
+                    <Card key={course.id} sx={{ p: 1.5 }}>
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        {course.thumbnail && <Box component="img" src={course.thumbnail} sx={{ width: 48, height: 40, objectFit: 'cover', borderRadius: 1 }} />}
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" fontWeight={500}>{course.title}</Typography>
+                          <Typography variant="caption" color="text.secondary" sx={{ textTransform: 'capitalize' }}>
+                            {course.category?.replace(/_/g, ' ')} • {course.enrolled_count || 0} students
+                          </Typography>
+                        </Box>
+                        <Chip label={course.qualification_type?.toUpperCase()} size="small" variant="outlined" />
+                      </Stack>
+                    </Card>
+                  )))}
+
+                  {tab === 'availability' && (getTutorAvailability(selectedTutor.email).length === 0 ? (
+                    <Card sx={{ p: 4, textAlign: 'center', color: 'text.disabled' }}>No availability slots configured</Card>
+                  ) : getTutorAvailability(selectedTutor.email).map(slot => (
+                    <Card key={slot.id} sx={{ p: 1.5 }}>
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <AccessTimeIcon sx={{ fontSize: 16, color: '#6366f1' }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" fontWeight={500}>{slot.day_of_week} — {slot.start_time} to {slot.end_time}</Typography>
+                          <Typography variant="caption" color="text.secondary">{slot.session_type || 'Any'} • {slot.max_students || 1} student(s)</Typography>
+                        </Box>
+                        <Chip
+                          label={slot.is_active !== false ? 'Active' : 'Paused'}
+                          size="small"
+                          sx={{ bgcolor: slot.is_active !== false ? '#dcfce7' : '#f3f4f6', color: slot.is_active !== false ? '#15803d' : '#6b7280' }}
+                        />
+                      </Stack>
+                    </Card>
+                  )))}
+
+                  {tab === 'bookings' && (getTutorBookings(selectedTutor.email).length === 0 ? (
+                    <Card sx={{ p: 4, textAlign: 'center', color: 'text.disabled' }}>No bookings found for this tutor</Card>
+                  ) : getTutorBookings(selectedTutor.email).map(booking => (
+                    <Card key={booking.id} sx={{ p: 1.5 }}>
+                      <Stack direction="row" spacing={1.5} alignItems="center">
+                        <CalendarTodayIcon sx={{ fontSize: 16, color: '#3b82f6' }} />
+                        <Box sx={{ flex: 1 }}>
+                          <Typography variant="body2" fontWeight={500}>{booking.student_name || booking.student_email}</Typography>
+                          <Typography variant="caption" color="text.secondary">
+                            {booking.session_date ? format(new Date(booking.session_date), 'MMM d, yyyy') : 'Date TBD'}
+                            {booking.session_time ? ` at ${booking.session_time}` : ''}
+                          </Typography>
+                        </Box>
+                        <Chip
+                          label={booking.status || 'pending'}
+                          size="small"
+                          sx={{
+                            bgcolor: booking.status === 'confirmed' ? '#dcfce7' : booking.status === 'pending' ? '#fef9c3' : '#f3f4f6',
+                            color: booking.status === 'confirmed' ? '#15803d' : booking.status === 'pending' ? '#854d0e' : '#4b5563'
+                          }}
+                        />
+                      </Stack>
+                    </Card>
+                  )))}
+
+                  {tab === 'coursework' && (() => {
+                    const ids = getTutorCourses(selectedTutor.email).map(c => c.id);
+                    const aids = assignments.filter(a => ids.includes(a.course_id)).map(a => a.id);
+                    const ungraded = submissions.filter(s => aids.includes(s.assignment_id));
+                    return ungraded.length === 0 ? (
+                      <Card sx={{ p: 4, textAlign: 'center' }}>
+                        <CheckCircleIcon sx={{ fontSize: 32, color: '#86efac', mb: 1 }} />
+                        <Typography color="text.disabled">All submissions graded — great work!</Typography>
+                      </Card>
+                    ) : ungraded.map(sub => {
+                      const assignment = assignments.find(a => a.id === sub.assignment_id);
+                      return (
+                        <Card key={sub.id} sx={{ p: 1.5, border: 1, borderColor: '#fee2e2' }}>
+                          <Stack direction="row" spacing={1.5} alignItems="center">
+                            <ErrorOutlineIcon sx={{ fontSize: 16, color: '#ef4444' }} />
+                            <Box sx={{ flex: 1 }}>
+                              <Typography variant="body2" fontWeight={500}>{sub.student_name || sub.student_email}</Typography>
+                              <Typography variant="caption" color="text.secondary" sx={{ display: 'block' }}>{assignment?.title || 'Assignment'}</Typography>
+                              <Typography variant="caption" color="text.disabled">
+                                Submitted: {sub.submitted_date ? format(new Date(sub.submitted_date), 'MMM d, yyyy') : 'Unknown'}
+                              </Typography>
+                            </Box>
+                            <Chip label="Ungraded" size="small" sx={{ bgcolor: '#fee2e2', color: '#b91c1c' }} />
+                          </Stack>
+                        </Card>
+                      );
+                    });
+                  })()}
+                </Stack>
+              </Stack>
             )}
-          </div>
-        </div>
-      </div>
-    </div>
+          </Box>
+        </Box>
+      </Container>
+    </Box>
   );
 }

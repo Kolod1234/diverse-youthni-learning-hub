@@ -3,8 +3,14 @@ import { useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Button } from '@/components/ui/button';
-import { Plus, GripVertical, Trash2, Edit, Eye, EyeOff, Image } from 'lucide-react';
+import { Box, Container, Typography, Card, Button, Chip, IconButton, Stack } from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+import ImageIcon from '@mui/icons-material/Image';
 import { toast } from 'sonner';
 import PageSectionEditor from '@/components/admin/PageSectionEditor';
 import CourseBasicInfoEditor from '@/components/admin/CourseBasicInfoEditor';
@@ -34,165 +40,124 @@ export default function AdminCourseBuilder() {
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.PageSection.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['course-sections']);
-      toast.success('Section deleted');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['course-sections']); toast.success('Section deleted'); }
   });
 
   const toggleActiveMutation = useMutation({
     mutationFn: ({ id, is_active }) => base44.entities.PageSection.update(id, { is_active }),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['course-sections']);
-    }
+    onSuccess: () => queryClient.invalidateQueries(['course-sections'])
   });
 
   const reorderMutation = useMutation({
     mutationFn: async (reorderedSections) => {
       await Promise.all(
-        reorderedSections.map((section, index) =>
-          base44.entities.PageSection.update(section.id, { order: index })
-        )
+        reorderedSections.map((section, index) => base44.entities.PageSection.update(section.id, { order: index }))
       );
     },
-    onSuccess: () => {
-      queryClient.invalidateQueries(['course-sections']);
-    }
+    onSuccess: () => queryClient.invalidateQueries(['course-sections'])
   });
 
   const handleDragEnd = (result) => {
     if (!result.destination) return;
-    
     const items = Array.from(sections);
     const [reorderedItem] = items.splice(result.source.index, 1);
     items.splice(result.destination.index, 0, reorderedItem);
-    
     reorderMutation.mutate(items);
   };
 
   if (!courseId || !course) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <p className="text-gray-500 mb-4">No course selected</p>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Typography color="text.secondary">No course selected</Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto p-6">
-        <div className="bg-white rounded-lg shadow-sm border p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h1 className="text-2xl font-bold">Course Landing Page Builder</h1>
-              <p className="text-gray-500">{course.title}</p>
-            </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => setEditingBasicInfo(true)}>
-                <Image className="w-4 h-4 mr-2" />
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default' }}>
+      <Container maxWidth="xl" sx={{ p: 3 }}>
+        <Card sx={{ p: 3 }}>
+          <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+            <Box>
+              <Typography variant="h5" fontWeight={700}>Course Landing Page Builder</Typography>
+              <Typography variant="body2" color="text.secondary">{course.title}</Typography>
+            </Box>
+            <Stack direction="row" spacing={1}>
+              <Button variant="outlined" startIcon={<ImageIcon sx={{ fontSize: 16 }} />} onClick={() => setEditingBasicInfo(true)}>
                 Edit Thumbnail
               </Button>
-              <Button onClick={() => setEditingSection({ course_id: courseId })}>
-                <Plus className="w-4 h-4 mr-2" />
+              <Button variant="contained" startIcon={<AddIcon sx={{ fontSize: 16 }} />} onClick={() => setEditingSection({ course_id: courseId })}>
                 Add Section
               </Button>
-            </div>
-          </div>
+            </Stack>
+          </Stack>
 
           {sections.length === 0 ? (
-            <div className="text-center py-12 bg-gray-50 rounded-lg border-2 border-dashed">
-              <p className="text-gray-500 mb-4">No custom sections yet</p>
-              <Button onClick={() => setEditingSection({ course_id: courseId })}>
-                <Plus className="w-4 h-4 mr-2" />
+            <Box sx={{ textAlign: 'center', py: 6, bgcolor: 'action.hover', borderRadius: 2, border: '2px dashed', borderColor: 'divider' }}>
+              <Typography color="text.secondary" sx={{ mb: 2 }}>No custom sections yet</Typography>
+              <Button variant="contained" startIcon={<AddIcon sx={{ fontSize: 16 }} />} onClick={() => setEditingSection({ course_id: courseId })}>
                 Add First Section
               </Button>
-            </div>
+            </Box>
           ) : (
             <DragDropContext onDragEnd={handleDragEnd}>
               <Droppable droppableId="sections">
                 {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="space-y-3"
-                  >
+                  <Stack {...provided.droppableProps} ref={provided.innerRef} spacing={1.5}>
                     {sections.map((section, index) => (
                       <Draggable key={section.id} draggableId={section.id} index={index}>
                         {(provided, snapshot) => (
-                          <div
+                          <Card
                             ref={provided.innerRef}
                             {...provided.draggableProps}
-                            className={`bg-white border rounded-lg p-4 ${
-                              snapshot.isDragging ? 'shadow-lg' : ''
-                            } ${!section.is_active ? 'opacity-50' : ''}`}
+                            sx={{
+                              p: 2,
+                              boxShadow: snapshot.isDragging ? 4 : 1,
+                              opacity: section.is_active ? 1 : 0.5,
+                            }}
                           >
-                            <div className="flex items-center gap-4">
-                              <div {...provided.dragHandleProps}>
-                                <GripVertical className="w-5 h-5 text-gray-400" />
-                              </div>
-                              <div className="flex-1">
-                                <div className="flex items-center gap-2 mb-1">
-                                  <span className="text-xs font-medium px-2 py-1 bg-indigo-100 text-indigo-700 rounded">
-                                    {section.section_type}
-                                  </span>
-                                </div>
-                                <h3 className="font-semibold">{section.title || 'Untitled'}</h3>
-                              </div>
-                              <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => toggleActiveMutation.mutate({ 
-                                    id: section.id, 
-                                    is_active: !section.is_active 
-                                  })}
+                            <Stack direction="row" alignItems="center" spacing={2}>
+                              <Box {...provided.dragHandleProps} sx={{ cursor: 'grab' }}>
+                                <DragIndicatorIcon sx={{ fontSize: 20, color: 'text.disabled' }} />
+                              </Box>
+                              <Box sx={{ flex: 1 }}>
+                                <Chip label={section.section_type} size="small" sx={{ bgcolor: '#e0e7ff', color: '#4338ca', fontSize: '0.65rem', mb: 0.5 }} />
+                                <Typography fontWeight={600}>{section.title || 'Untitled'}</Typography>
+                              </Box>
+                              <Stack direction="row" spacing={1}>
+                                <IconButton
+                                  size="small"
+                                  onClick={() => toggleActiveMutation.mutate({ id: section.id, is_active: !section.is_active })}
                                 >
-                                  {section.is_active ? <Eye className="w-4 h-4" /> : <EyeOff className="w-4 h-4" />}
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => setEditingSection(section)}
-                                >
-                                  <Edit className="w-4 h-4" />
-                                </Button>
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  onClick={() => deleteMutation.mutate(section.id)}
-                                >
-                                  <Trash2 className="w-4 h-4 text-red-500" />
-                                </Button>
-                              </div>
-                            </div>
-                          </div>
+                                  {section.is_active ? <VisibilityIcon sx={{ fontSize: 16 }} /> : <VisibilityOffIcon sx={{ fontSize: 16 }} />}
+                                </IconButton>
+                                <IconButton size="small" onClick={() => setEditingSection(section)}>
+                                  <EditIcon sx={{ fontSize: 16 }} />
+                                </IconButton>
+                                <IconButton size="small" onClick={() => deleteMutation.mutate(section.id)}>
+                                  <DeleteIcon sx={{ fontSize: 16, color: '#ef4444' }} />
+                                </IconButton>
+                              </Stack>
+                            </Stack>
+                          </Card>
                         )}
                       </Draggable>
                     ))}
                     {provided.placeholder}
-                  </div>
+                  </Stack>
                 )}
               </Droppable>
             </DragDropContext>
           )}
-        </div>
-      </div>
+        </Card>
+      </Container>
 
       {editingSection && (
-        <PageSectionEditor
-          section={editingSection}
-          onClose={() => setEditingSection(null)}
-        />
+        <PageSectionEditor section={editingSection} onClose={() => setEditingSection(null)} />
       )}
-
       {editingBasicInfo && (
-        <CourseBasicInfoEditor
-          course={course}
-          onClose={() => setEditingBasicInfo(false)}
-        />
+        <CourseBasicInfoEditor course={course} onClose={() => setEditingBasicInfo(false)} />
       )}
-    </div>
+    </Box>
   );
 }

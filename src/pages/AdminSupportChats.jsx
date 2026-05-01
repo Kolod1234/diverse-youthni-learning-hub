@@ -5,7 +5,15 @@ import {
   Box, Container, Typography, Card, Chip, TextField, IconButton,
   Avatar, Badge, Button
 } from '@mui/material';
-import { MessageCircle, Send, Bot, HeadphonesIcon, CheckCircle, RefreshCw } from 'lucide-react';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import SendIcon from '@mui/icons-material/Send';
+import SmartToyIcon from '@mui/icons-material/SmartToy';
+import HeadsetMicIcon from '@mui/icons-material/HeadsetMic';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RefreshIcon from '@mui/icons-material/Refresh';
+const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const MessageCircle = _w(ChatBubbleOutlineIcon), Send = _w(SendIcon), Bot = _w(SmartToyIcon);
+const HeadphonesIcon = _w(HeadsetMicIcon), CheckCircle = _w(CheckCircleIcon), RefreshCw = _w(RefreshIcon);
 import { formatDistanceToNow } from 'date-fns';
 
 export default function AdminSupportChats() {

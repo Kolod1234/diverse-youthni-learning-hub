@@ -7,7 +7,13 @@ import {
   DialogTitle, DialogContent, DialogActions, List, ListItem,
   ListItemText, IconButton, Alert, Checkbox, FormControlLabel
 } from '@mui/material';
-import { Users, Shield, Edit, Save, Search } from 'lucide-react';
+import PeopleIcon from '@mui/icons-material/People';
+import ShieldIcon from '@mui/icons-material/Shield';
+import EditIcon from '@mui/icons-material/Edit';
+import SaveIcon from '@mui/icons-material/Save';
+import SearchIcon from '@mui/icons-material/Search';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Users = _w(PeopleIcon), Shield = _w(ShieldIcon), Edit = _w(EditIcon), Save = _w(SaveIcon), Search = _w(SearchIcon);
 import { toast } from 'sonner';
 import { ROLES, PERMISSIONS, ROLE_PERMISSIONS } from '@/components/permissions/permissions';
 import PermissionGate from '@/components/permissions/PermissionGate';

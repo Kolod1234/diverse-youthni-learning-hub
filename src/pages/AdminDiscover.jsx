@@ -1,26 +1,22 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Plus, Edit, Trash2, Sparkles } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, Button, TextField, Stack, Chip,
+  Dialog, DialogTitle, DialogContent, DialogActions,
+  FormControl, InputLabel, Select, MenuItem, FormControlLabel, Checkbox, IconButton
+} from '@mui/material';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 import { toast } from 'sonner';
+
+const EMPTY_FORM = { title: '', description: '', category: 'announcement', image_url: '', link: '', is_active: true };
 
 export default function AdminDiscover() {
   const [showDialog, setShowDialog] = useState(false);
   const [editingContent, setEditingContent] = useState(null);
-  const [formData, setFormData] = useState({
-    title: '',
-    description: '',
-    category: 'announcement',
-    image_url: '',
-    link: '',
-    is_active: true
-  });
+  const [formData, setFormData] = useState(EMPTY_FORM);
 
   const queryClient = useQueryClient();
 
@@ -31,56 +27,35 @@ export default function AdminDiscover() {
 
   const createMutation = useMutation({
     mutationFn: (data) => base44.entities.DiscoverContent.create(data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['discover-content']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Content added!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['discover-content']); setShowDialog(false); resetForm(); toast.success('Content added!'); }
   });
 
   const updateMutation = useMutation({
     mutationFn: ({ id, data }) => base44.entities.DiscoverContent.update(id, data),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['discover-content']);
-      setShowDialog(false);
-      resetForm();
-      toast.success('Content updated!');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['discover-content']); setShowDialog(false); resetForm(); toast.success('Content updated!'); }
   });
 
   const deleteMutation = useMutation({
     mutationFn: (id) => base44.entities.DiscoverContent.delete(id),
-    onSuccess: () => {
-      queryClient.invalidateQueries(['discover-content']);
-      toast.success('Content deleted');
-    }
+    onSuccess: () => { queryClient.invalidateQueries(['discover-content']); toast.success('Content deleted'); }
   });
 
   const handleUploadImage = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
       setFormData({ ...formData, image_url: file_url });
       toast.success('Image uploaded!');
-    } catch (error) {
+    } catch {
       toast.error('Upload failed');
     }
   };
 
   const handleSubmit = () => {
-    if (!formData.title) {
-      toast.error('Title is required');
-      return;
-    }
-
-    if (editingContent) {
-      updateMutation.mutate({ id: editingContent.id, data: formData });
-    } else {
-      createMutation.mutate(formData);
-    }
+    if (!formData.title) { toast.error('Title is required'); return; }
+    if (editingContent) updateMutation.mutate({ id: editingContent.id, data: formData });
+    else createMutation.mutate(formData);
   };
 
   const handleEdit = (item) => {
@@ -97,99 +72,87 @@ export default function AdminDiscover() {
   };
 
   const resetForm = () => {
-    setFormData({ title: '', description: '', category: 'announcement', image_url: '', link: '', is_active: true });
+    setFormData(EMPTY_FORM);
     setEditingContent(null);
   };
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between mb-8">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Discover Content</h1>
-            <p className="text-gray-600">Manage tech news, gossips, and announcements</p>
-          </div>
-          <Button onClick={() => { resetForm(); setShowDialog(true); }} className="gap-2 bg-purple-600">
-            <Plus className="w-4 h-4" />
+    <Box sx={{ minHeight: '100vh', bgcolor: 'background.default', py: 4 }}>
+      <Container maxWidth="lg">
+        <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 4 }}>
+          <Box>
+            <Typography variant="h4" fontWeight={700}>Discover Content</Typography>
+            <Typography color="text.secondary" sx={{ mt: 0.5 }}>Manage tech news, gossips, and announcements</Typography>
+          </Box>
+          <Button variant="contained" startIcon={<AddIcon />} onClick={() => { resetForm(); setShowDialog(true); }} sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}>
             Add Content
           </Button>
-        </div>
+        </Stack>
 
-        <div className="space-y-4">
+        <Stack spacing={2}>
           {content.map((item) => (
-            <Card key={item.id} className="p-6">
-              <div className="flex items-start gap-4">
+            <Card key={item.id} sx={{ p: 3 }}>
+              <Stack direction="row" spacing={2} alignItems="flex-start">
                 {item.image_url && (
-                  <img src={item.image_url} alt={item.title} className="w-24 h-24 rounded-lg object-cover" />
+                  <Box component="img" src={item.image_url} alt={item.title} sx={{ width: 96, height: 96, borderRadius: 2, objectFit: 'cover' }} />
                 )}
-                <div className="flex-1">
-                  <h3 className="font-bold text-gray-900 mb-2">{item.title}</h3>
-                  <p className="text-sm text-gray-600 mb-2">{item.description}</p>
-                  <div className="flex items-center gap-2">
-                    <span className="text-xs bg-purple-100 text-purple-700 px-2 py-1 rounded">{item.category.replace('_', ' ')}</span>
-                    <span className={`text-xs px-2 py-1 rounded ${item.is_active ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-700'}`}>
-                      {item.is_active ? 'Active' : 'Inactive'}
-                    </span>
-                  </div>
-                </div>
-                <div className="flex gap-2">
-                  <Button size="sm" variant="outline" onClick={() => handleEdit(item)}>
-                    <Edit className="w-4 h-4" />
-                  </Button>
-                  <Button size="sm" variant="outline" className="text-red-600" onClick={() => {
-                    if (confirm('Delete this content?')) deleteMutation.mutate(item.id);
-                  }}>
-                    <Trash2 className="w-4 h-4" />
-                  </Button>
-                </div>
-              </div>
+                <Box sx={{ flex: 1 }}>
+                  <Typography fontWeight={700} sx={{ mb: 1 }}>{item.title}</Typography>
+                  <Typography variant="body2" color="text.secondary" sx={{ mb: 1 }}>{item.description}</Typography>
+                  <Stack direction="row" spacing={1}>
+                    <Chip label={item.category.replace('_', ' ')} size="small" sx={{ bgcolor: '#f3e8ff', color: '#7e22ce' }} />
+                    <Chip
+                      label={item.is_active ? 'Active' : 'Inactive'}
+                      size="small"
+                      sx={{ bgcolor: item.is_active ? '#dcfce7' : '#f3f4f6', color: item.is_active ? '#15803d' : '#374151' }}
+                    />
+                  </Stack>
+                </Box>
+                <Stack direction="row" spacing={1}>
+                  <IconButton size="small" onClick={() => handleEdit(item)}><EditIcon sx={{ fontSize: 18 }} /></IconButton>
+                  <IconButton size="small" onClick={() => { if (confirm('Delete this content?')) deleteMutation.mutate(item.id); }}>
+                    <DeleteIcon sx={{ fontSize: 18, color: '#dc2626' }} />
+                  </IconButton>
+                </Stack>
+              </Stack>
             </Card>
           ))}
-        </div>
+        </Stack>
 
-        <Dialog open={showDialog} onOpenChange={setShowDialog}>
-          <DialogContent className="max-w-2xl">
-            <DialogHeader>
-              <DialogTitle>{editingContent ? 'Edit Content' : 'Add Content'}</DialogTitle>
-            </DialogHeader>
-            <div className="space-y-4 mt-4">
-              <div>
-                <Label>Title *</Label>
-                <Input value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} />
-              </div>
-              <div>
-                <Label>Description</Label>
-                <Textarea value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} rows={3} />
-              </div>
-              <div>
-                <Label>Category</Label>
-                <select value={formData.category} onChange={(e) => setFormData({ ...formData, category: e.target.value })} className="w-full px-3 py-2 border rounded-lg">
-                  <option value="tech_news">Tech News</option>
-                  <option value="gossip">Gossip</option>
-                  <option value="announcement">Announcement</option>
-                </select>
-              </div>
-              <div>
-                <Label>Image</Label>
-                <Input type="file" accept="image/*" onChange={handleUploadImage} />
-                {formData.image_url && <img src={formData.image_url} alt="Preview" className="mt-2 h-24 rounded" />}
-              </div>
-              <div>
-                <Label>Link (optional)</Label>
-                <Input value={formData.link} onChange={(e) => setFormData({ ...formData, link: e.target.value })} placeholder="https://..." />
-              </div>
-              <div className="flex items-center gap-2">
-                <input type="checkbox" checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} />
-                <Label>Active</Label>
-              </div>
-              <div className="flex gap-3">
-                <Button variant="outline" onClick={() => { setShowDialog(false); resetForm(); }} className="flex-1">Cancel</Button>
-                <Button onClick={handleSubmit} className="flex-1 bg-purple-600">{editingContent ? 'Update' : 'Add'}</Button>
-              </div>
-            </div>
+        <Dialog open={showDialog} onClose={() => setShowDialog(false)} maxWidth="sm" fullWidth>
+          <DialogTitle>{editingContent ? 'Edit Content' : 'Add Content'}</DialogTitle>
+          <DialogContent>
+            <Stack spacing={2} sx={{ mt: 1 }}>
+              <TextField label="Title *" value={formData.title} onChange={(e) => setFormData({ ...formData, title: e.target.value })} fullWidth />
+              <TextField label="Description" value={formData.description} onChange={(e) => setFormData({ ...formData, description: e.target.value })} multiline rows={3} fullWidth />
+              <FormControl fullWidth>
+                <InputLabel>Category</InputLabel>
+                <Select value={formData.category} label="Category" onChange={(e) => setFormData({ ...formData, category: e.target.value })}>
+                  <MenuItem value="tech_news">Tech News</MenuItem>
+                  <MenuItem value="gossip">Gossip</MenuItem>
+                  <MenuItem value="announcement">Announcement</MenuItem>
+                </Select>
+              </FormControl>
+              <Box>
+                <Typography variant="body2" sx={{ mb: 0.5 }}>Image</Typography>
+                <input type="file" accept="image/*" onChange={handleUploadImage} style={{ width: '100%' }} />
+                {formData.image_url && <Box component="img" src={formData.image_url} alt="Preview" sx={{ mt: 1, height: 96, borderRadius: 1 }} />}
+              </Box>
+              <TextField label="Link (optional)" value={formData.link} onChange={(e) => setFormData({ ...formData, link: e.target.value })} placeholder="https://..." fullWidth />
+              <FormControlLabel
+                control={<Checkbox checked={formData.is_active} onChange={(e) => setFormData({ ...formData, is_active: e.target.checked })} />}
+                label="Active"
+              />
+            </Stack>
           </DialogContent>
+          <DialogActions>
+            <Button variant="outlined" onClick={() => { setShowDialog(false); resetForm(); }}>Cancel</Button>
+            <Button variant="contained" onClick={handleSubmit} sx={{ bgcolor: '#9333ea', '&:hover': { bgcolor: '#7e22ce' } }}>
+              {editingContent ? 'Update' : 'Add'}
+            </Button>
+          </DialogActions>
         </Dialog>
-      </div>
-    </div>
+      </Container>
+    </Box>
   );
 }

@@ -1,12 +1,17 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Sparkles, RefreshCw, CheckCircle, AlertCircle, Plus, Edit, X } from 'lucide-react';
+import {
+  Box, Container, Typography, Card, Button, TextField, Stack, IconButton, CircularProgress,
+  Dialog, DialogTitle, DialogContent, DialogActions
+} from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import CloseIcon from '@mui/icons-material/Close';
 import { toast } from 'sonner';
 
 export default function AdminLearningObjectives() {
@@ -20,9 +25,7 @@ export default function AdminLearningObjectives() {
     queryFn: () => base44.entities.Lesson.list('created_date', 500)
   });
 
-  const lessonsWithoutObjectives = lessons.filter(l => 
-    !l.learning_objectives || l.learning_objectives.length === 0
-  );
+  const lessonsWithoutObjectives = lessons.filter(l => !l.learning_objectives || l.learning_objectives.length === 0);
 
   const updateAllMutation = useMutation({
     mutationFn: async () => {
@@ -34,17 +37,12 @@ export default function AdminLearningObjectives() {
       queryClient.invalidateQueries(['all-lessons']);
       toast.success(`Successfully updated ${data.processed} lessons!`);
     },
-    onError: (error) => {
-      toast.error('Failed to update learning objectives');
-      console.error(error);
-    }
+    onError: () => toast.error('Failed to update learning objectives')
   });
 
   const saveManualMutation = useMutation({
     mutationFn: async ({ lessonId, objectives }) => {
-      await base44.entities.Lesson.update(lessonId, {
-        learning_objectives: objectives
-      });
+      await base44.entities.Lesson.update(lessonId, { learning_objectives: objectives });
     },
     onSuccess: () => {
       queryClient.invalidateQueries(['all-lessons']);
@@ -52,208 +50,163 @@ export default function AdminLearningObjectives() {
       setManualObjectives([]);
       toast.success('Learning objectives saved!');
     },
-    onError: (error) => {
-      toast.error('Failed to save objectives');
-      console.error(error);
-    }
+    onError: () => toast.error('Failed to save objectives')
   });
 
   if (isLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-8">
-        <div className="max-w-4xl mx-auto">
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600 mx-auto mb-4"></div>
-            <p className="text-gray-600">Loading lessons...</p>
-          </div>
-        </div>
-      </div>
+      <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eef2ff)', p: 4, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+        <Stack alignItems="center" spacing={2}>
+          <CircularProgress sx={{ color: '#4f46e5' }} />
+          <Typography color="text.secondary">Loading lessons...</Typography>
+        </Stack>
+      </Box>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-indigo-50 p-8">
-      <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Learning Objectives Manager</h1>
-          <p className="text-gray-600">Update CCEA-aligned learning objectives for all lessons</p>
-        </div>
+    <Box sx={{ minHeight: '100vh', background: 'linear-gradient(to bottom right, #f8fafc, #eef2ff)', p: 4 }}>
+      <Container maxWidth="md">
+        <Box sx={{ mb: 4 }}>
+          <Typography variant="h4" fontWeight={700} sx={{ mb: 0.5 }}>Learning Objectives Manager</Typography>
+          <Typography color="text.secondary">Update CCEA-aligned learning objectives for all lessons</Typography>
+        </Box>
 
-        <Card className="p-6 mb-6">
-          <div className="flex items-center justify-between mb-6">
-            <div>
-              <h2 className="text-xl font-semibold text-gray-900 mb-2">Status Overview</h2>
-              <p className="text-gray-600">
-                <span className="font-semibold text-indigo-600">{lessons.length}</span> total lessons
-              </p>
-              <p className="text-gray-600">
-                <span className="font-semibold text-orange-600">{lessonsWithoutObjectives.length}</span> lessons need objectives
-              </p>
-            </div>
+        <Card sx={{ p: 3, mb: 3 }}>
+          <Stack direction="row" justifyContent="space-between" alignItems="center" sx={{ mb: 3 }}>
+            <Box>
+              <Typography variant="h6" fontWeight={600} sx={{ mb: 1 }}>Status Overview</Typography>
+              <Typography color="text.secondary">
+                <strong style={{ color: '#4f46e5' }}>{lessons.length}</strong> total lessons
+              </Typography>
+              <Typography color="text.secondary">
+                <strong style={{ color: '#ea580c' }}>{lessonsWithoutObjectives.length}</strong> lessons need objectives
+              </Typography>
+            </Box>
             <Button
+              variant="contained"
+              size="large"
+              startIcon={updateAllMutation.isPending ? <CircularProgress size={16} sx={{ color: 'white' }} /> : <AutoAwesomeIcon />}
               onClick={() => updateAllMutation.mutate()}
               disabled={updateAllMutation.isPending || lessonsWithoutObjectives.length === 0}
-              className="bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 gap-2"
-              size="lg"
+              sx={{ background: 'linear-gradient(to right, #4f46e5, #9333ea)', '&:hover': { background: 'linear-gradient(to right, #4338ca, #7e22ce)' } }}
             >
-              {updateAllMutation.isPending ? (
-                <>
-                  <div className="animate-spin rounded-full h-4 w-4 border-2 border-white border-t-transparent" />
-                  Updating...
-                </>
-              ) : (
-                <>
-                  <Sparkles className="w-5 h-5" />
-                  Update All Learning Objectives
-                </>
-              )}
+              {updateAllMutation.isPending ? 'Updating...' : 'Update All Learning Objectives'}
             </Button>
-          </div>
+          </Stack>
 
           {lessonsWithoutObjectives.length === 0 && (
-            <div className="bg-green-50 border border-green-200 rounded-lg p-4 flex items-center gap-3">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              <p className="text-green-800 font-medium">All lessons have learning objectives!</p>
-            </div>
+            <Box sx={{ bgcolor: '#f0fdf4', border: 1, borderColor: '#bbf7d0', borderRadius: 2, p: 2, display: 'flex', alignItems: 'center', gap: 1.5 }}>
+              <CheckCircleIcon sx={{ color: '#16a34a' }} />
+              <Typography fontWeight={500} sx={{ color: '#166534' }}>All lessons have learning objectives!</Typography>
+            </Box>
           )}
         </Card>
 
         {updateResult && (
-          <Card className="p-6 mb-6 border-green-200 bg-green-50">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4 flex items-center gap-2">
-              <CheckCircle className="w-5 h-5 text-green-600" />
-              Update Complete
-            </h3>
-            <div className="space-y-2 text-sm">
-              <p className="text-gray-700">
-                <span className="font-semibold">Total lessons processed:</span> {updateResult.total_lessons}
-              </p>
-              <p className="text-gray-700">
-                <span className="font-semibold">Successfully updated:</span> {updateResult.processed}
-              </p>
+          <Card sx={{ p: 3, mb: 3, border: 1, borderColor: '#bbf7d0', bgcolor: '#f0fdf4' }}>
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 2 }}>
+              <CheckCircleIcon sx={{ color: '#16a34a' }} />
+              <Typography variant="h6" fontWeight={600}>Update Complete</Typography>
+            </Stack>
+            <Stack spacing={1}>
+              <Typography variant="body2"><strong>Total lessons processed:</strong> {updateResult.total_lessons}</Typography>
+              <Typography variant="body2"><strong>Successfully updated:</strong> {updateResult.processed}</Typography>
               {updateResult.failed > 0 && (
-                <p className="text-red-600">
-                  <span className="font-semibold">Failed:</span> {updateResult.failed}
-                </p>
+                <Typography variant="body2" sx={{ color: '#dc2626' }}><strong>Failed:</strong> {updateResult.failed}</Typography>
               )}
-            </div>
-            <Button
-              onClick={() => window.location.reload()}
-              variant="outline"
-              className="mt-4 gap-2"
-              size="sm"
-            >
-              <RefreshCw className="w-4 h-4" />
+            </Stack>
+            <Button size="small" variant="outlined" startIcon={<RefreshIcon sx={{ fontSize: 16 }} />} onClick={() => window.location.reload()} sx={{ mt: 2 }}>
               Refresh Page
             </Button>
           </Card>
         )}
 
-        <Card className="p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Lessons Without Objectives</h3>
+        <Card sx={{ p: 3 }}>
+          <Typography variant="h6" fontWeight={600} sx={{ mb: 2 }}>Lessons Without Objectives</Typography>
           {lessonsWithoutObjectives.length === 0 ? (
-            <p className="text-gray-500 text-center py-8">All lessons have learning objectives! 🎉</p>
+            <Typography color="text.secondary" sx={{ textAlign: 'center', py: 4 }}>All lessons have learning objectives! 🎉</Typography>
           ) : (
-            <div className="space-y-2 max-h-96 overflow-y-auto">
+            <Stack spacing={1} sx={{ maxHeight: 384, overflowY: 'auto' }}>
               {lessonsWithoutObjectives.map((lesson) => (
-                <div key={lesson.id} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                  <AlertCircle className="w-4 h-4 text-orange-500 shrink-0" />
-                  <div className="flex-1 min-w-0">
-                    <p className="font-medium text-gray-900 truncate">{lesson.title}</p>
-                    <p className="text-xs text-gray-500 truncate">{lesson.course_id}</p>
-                  </div>
+                <Stack key={lesson.id} direction="row" alignItems="center" spacing={1.5} sx={{ p: 1.5, bgcolor: 'action.hover', borderRadius: 1 }}>
+                  <ErrorOutlineIcon sx={{ fontSize: 16, color: '#f97316', flexShrink: 0 }} />
+                  <Box sx={{ flex: 1, minWidth: 0 }}>
+                    <Typography variant="body2" fontWeight={500} noWrap>{lesson.title}</Typography>
+                    <Typography variant="caption" color="text.secondary" noWrap sx={{ display: 'block' }}>{lesson.course_id}</Typography>
+                  </Box>
                   <Button
-                    size="sm"
-                    variant="outline"
+                    size="small"
+                    variant="outlined"
+                    startIcon={<EditIcon sx={{ fontSize: 12 }} />}
                     onClick={() => {
                       setEditingLesson(lesson);
                       setManualObjectives(lesson.learning_objectives || ['']);
                     }}
                   >
-                    <Edit className="w-3 h-3 mr-1" />
                     Add
                   </Button>
-                </div>
+                </Stack>
               ))}
-            </div>
+            </Stack>
           )}
         </Card>
-      </div>
+      </Container>
 
-      {/* Manual Objectives Editor Dialog */}
-      <Dialog open={!!editingLesson} onOpenChange={() => {
-        setEditingLesson(null);
-        setManualObjectives([]);
-      }}>
-        <DialogContent className="max-w-2xl max-h-[80vh] overflow-y-auto">
-          <DialogHeader>
-            <DialogTitle>Add Learning Objectives: {editingLesson?.title}</DialogTitle>
-          </DialogHeader>
-          <div className="space-y-4 mt-4">
+      <Dialog
+        open={!!editingLesson}
+        onClose={() => { setEditingLesson(null); setManualObjectives([]); }}
+        maxWidth="sm"
+        fullWidth
+      >
+        <DialogTitle>Add Learning Objectives: {editingLesson?.title}</DialogTitle>
+        <DialogContent>
+          <Stack spacing={2} sx={{ mt: 1 }}>
             {manualObjectives.map((obj, idx) => (
-              <div key={idx} className="flex gap-2">
-                <Textarea
+              <Stack key={idx} direction="row" spacing={1}>
+                <TextField
+                  multiline
+                  rows={2}
+                  fullWidth
+                  placeholder={`Learning objective ${idx + 1}`}
                   value={obj}
                   onChange={(e) => {
                     const updated = [...manualObjectives];
                     updated[idx] = e.target.value;
                     setManualObjectives(updated);
                   }}
-                  placeholder={`Learning objective ${idx + 1}`}
-                  className="flex-1"
-                  rows={2}
                 />
-                <Button
-                  size="icon"
-                  variant="ghost"
-                  onClick={() => {
-                    setManualObjectives(manualObjectives.filter((_, i) => i !== idx));
-                  }}
-                >
-                  <X className="w-4 h-4" />
-                </Button>
-              </div>
+                <IconButton onClick={() => setManualObjectives(manualObjectives.filter((_, i) => i !== idx))}>
+                  <CloseIcon sx={{ fontSize: 16 }} />
+                </IconButton>
+              </Stack>
             ))}
             <Button
-              variant="outline"
+              variant="outlined"
+              fullWidth
+              startIcon={<AddIcon sx={{ fontSize: 16 }} />}
               onClick={() => setManualObjectives([...manualObjectives, ''])}
-              className="w-full gap-2"
             >
-              <Plus className="w-4 h-4" />
               Add Objective
             </Button>
-            <div className="flex gap-3 pt-4">
-              <Button
-                onClick={() => {
-                  setEditingLesson(null);
-                  setManualObjectives([]);
-                }}
-                variant="outline"
-                className="flex-1"
-              >
-                Cancel
-              </Button>
-              <Button
-                onClick={() => {
-                  const filtered = manualObjectives.filter(o => o.trim());
-                  if (filtered.length === 0) {
-                    toast.error('Please add at least one objective');
-                    return;
-                  }
-                  saveManualMutation.mutate({
-                    lessonId: editingLesson.id,
-                    objectives: filtered
-                  });
-                }}
-                disabled={saveManualMutation.isPending}
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-              >
-                {saveManualMutation.isPending ? 'Saving...' : 'Save Objectives'}
-              </Button>
-            </div>
-          </div>
+          </Stack>
         </DialogContent>
+        <DialogActions>
+          <Button variant="outlined" onClick={() => { setEditingLesson(null); setManualObjectives([]); }}>Cancel</Button>
+          <Button
+            variant="contained"
+            disabled={saveManualMutation.isPending}
+            onClick={() => {
+              const filtered = manualObjectives.filter(o => o.trim());
+              if (filtered.length === 0) { toast.error('Please add at least one objective'); return; }
+              saveManualMutation.mutate({ lessonId: editingLesson.id, objectives: filtered });
+            }}
+            sx={{ bgcolor: '#4f46e5', '&:hover': { bgcolor: '#4338ca' } }}
+          >
+            {saveManualMutation.isPending ? 'Saving...' : 'Save Objectives'}
+          </Button>
+        </DialogActions>
       </Dialog>
-    </div>
+    </Box>
   );
 }

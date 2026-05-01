@@ -7,7 +7,18 @@ import {
   Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel,
   IconButton, Avatar, Tabs, Tab, Divider
 } from '@mui/material';
-import { Calendar, Plus, Trash2, Edit, Users, MapPin, Wifi, Eye, EyeOff } from 'lucide-react';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import PeopleIcon from '@mui/icons-material/People';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import WifiIcon from '@mui/icons-material/Wifi';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import VisibilityOffIcon from '@mui/icons-material/VisibilityOff';
+const _w = (I) => ({ size, color, style, ...r }) => <I style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Calendar = _w(CalendarTodayIcon), Plus = _w(AddIcon), Trash2 = _w(DeleteIcon), Edit = _w(EditIcon);
+const Users = _w(PeopleIcon), MapPin = _w(LocationOnIcon), Wifi = _w(WifiIcon), Eye = _w(VisibilityIcon), EyeOff = _w(VisibilityOffIcon);
 import { format, parseISO } from 'date-fns';
 import { toast } from 'sonner';
 
