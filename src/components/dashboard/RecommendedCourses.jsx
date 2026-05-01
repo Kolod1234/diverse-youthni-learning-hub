@@ -3,10 +3,11 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { Sparkles, Clock, Users, ArrowRight } from 'lucide-react';
+import { Card, Button, Chip, Box, Typography, Stack } from '@mui/material';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
 import { motion } from 'framer-motion';
 
 export default function RecommendedCourses({ userEnrollments }) {
@@ -17,13 +18,10 @@ export default function RecommendedCourses({ userEnrollments }) {
   });
 
   const enrolledCourseIds = userEnrollments.map(e => e.course_id);
-  
-  // Get user's categories from enrolled courses
   const enrolledCategories = allCourses
     .filter(c => enrolledCourseIds.includes(c.id))
     .map(c => c.category);
 
-  // Recommend courses: same category but not enrolled, or popular courses
   const recommendedCourses = allCourses
     .filter(course => !enrolledCourseIds.includes(course.id))
     .sort((a, b) => {
@@ -37,21 +35,23 @@ export default function RecommendedCourses({ userEnrollments }) {
   if (recommendedCourses.length === 0) return null;
 
   return (
-    <div className="bg-white rounded-2xl p-6 shadow-sm border border-gray-100">
-      <div className="flex items-center justify-between mb-6">
-        <div className="flex items-center gap-2">
-          <Sparkles className="w-5 h-5 text-indigo-600" />
-          <h3 className="font-semibold text-gray-900">Recommended For You</h3>
-        </div>
-        <Link to={createPageUrl('Explore')}>
-          <Button variant="ghost" size="sm">
-            View All
-            <ArrowRight className="w-4 h-4 ml-2" />
-          </Button>
-        </Link>
-      </div>
+    <Card sx={{ p: 3, borderRadius: 4, boxShadow: 1, border: 1, borderColor: 'divider' }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 3 }}>
+        <Stack direction="row" alignItems="center" spacing={1}>
+          <AutoAwesomeIcon sx={{ fontSize: 20, color: '#4f46e5' }} />
+          <Typography variant="subtitle1" fontWeight={600}>Recommended For You</Typography>
+        </Stack>
+        <Button
+          component={Link}
+          to={createPageUrl('Explore')}
+          size="small"
+          endIcon={<ArrowForwardIcon sx={{ fontSize: 16 }} />}
+        >
+          View All
+        </Button>
+      </Stack>
 
-      <div className="space-y-3">
+      <Stack spacing={1.5}>
         {recommendedCourses.map((course, index) => (
           <motion.div
             key={course.id}
@@ -59,45 +59,46 @@ export default function RecommendedCourses({ userEnrollments }) {
             animate={{ opacity: 1, x: 0 }}
             transition={{ delay: index * 0.1 }}
           >
-            <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`}>
-              <Card className="p-4 hover:shadow-md transition-all cursor-pointer">
-                <div className="flex gap-4">
-                  <img 
-                    src={course.thumbnail} 
-                    alt={course.title}
-                    className="w-20 h-20 rounded-lg object-cover"
-                  />
-                  <div className="flex-1 min-w-0">
-                    <h4 className="font-medium text-gray-900 mb-1 line-clamp-1">
-                      {course.title}
-                    </h4>
-                    <p className="text-xs text-gray-500 mb-2 line-clamp-2">
-                      {course.description}
-                    </p>
-                    <div className="flex items-center gap-2 flex-wrap">
-                      <Badge variant="outline" className="text-xs capitalize">
-                        {course.category}
-                      </Badge>
-                      {course.duration_hours && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                          <Clock className="w-3 h-3" />
-                          {course.duration_hours}h
-                        </div>
-                      )}
-                      {course.enrolled_count > 0 && (
-                        <div className="flex items-center gap-1 text-xs text-gray-500">
-                          <Users className="w-3 h-3" />
-                          {course.enrolled_count}
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                </div>
-              </Card>
-            </Link>
+            <Card
+              component={Link}
+              to={createPageUrl('CourseDetails') + `?id=${course.id}`}
+              sx={{ p: 2, display: 'block', textDecoration: 'none', color: 'inherit', '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.2s' }}
+            >
+              <Stack direction="row" spacing={2}>
+                <Box
+                  component="img"
+                  src={course.thumbnail}
+                  alt={course.title}
+                  sx={{ width: 80, height: 80, borderRadius: 2, objectFit: 'cover' }}
+                />
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Typography variant="body2" fontWeight={500} noWrap sx={{ mb: 0.5 }}>
+                    {course.title}
+                  </Typography>
+                  <Typography variant="caption" color="text.secondary" sx={{ display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', mb: 1 }}>
+                    {course.description}
+                  </Typography>
+                  <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                    <Chip label={course.category} size="small" variant="outlined" sx={{ textTransform: 'capitalize', fontSize: '0.7rem', height: 20 }} />
+                    {course.duration_hours && (
+                      <Stack direction="row" spacing={0.5} alignItems="center" sx={{ color: 'text.secondary' }}>
+                        <AccessTimeIcon sx={{ fontSize: 12 }} />
+                        <Typography variant="caption">{course.duration_hours}h</Typography>
+                      </Stack>
+                    )}
+                    {course.enrolled_count > 0 && (
+                      <Stack direction="row" spacing={0.5} alignItems="center" sx={{ color: 'text.secondary' }}>
+                        <PeopleIcon sx={{ fontSize: 12 }} />
+                        <Typography variant="caption">{course.enrolled_count}</Typography>
+                      </Stack>
+                    )}
+                  </Stack>
+                </Box>
+              </Stack>
+            </Card>
           </motion.div>
         ))}
-      </div>
-    </div>
+      </Stack>
+    </Card>
   );
 }

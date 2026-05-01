@@ -5,11 +5,27 @@ import {
   Button, TextField, InputLabel, Card, Tabs, Tab, Avatar, 
   Box, Typography, Container, IconButton, Chip
 } from '@mui/material';
-import { Input } from '@/components/ui/input';
-import { 
-  User, Calendar, Award, BookOpen, Clock, 
-  Settings, Bell, Shield, Save, Camera
-} from 'lucide-react';
+import PersonIcon from '@mui/icons-material/Person';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import SettingsIcon from '@mui/icons-material/Settings';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import ShieldIcon from '@mui/icons-material/Shield';
+import SaveIcon from '@mui/icons-material/Save';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+const iconWrap = (IconCmp) => ({ size, color, className, ...rest }) => <IconCmp className={className} sx={{ fontSize: size || 16, color: color || 'inherit' }} {...rest} />;
+const User = iconWrap(PersonIcon);
+const Calendar = iconWrap(CalendarTodayIcon);
+const Award = iconWrap(EmojiEventsIcon);
+const BookOpen = iconWrap(MenuBookIcon);
+const Clock = iconWrap(AccessTimeIcon);
+const Settings = iconWrap(SettingsIcon);
+const Bell = iconWrap(NotificationsIcon);
+const Shield = iconWrap(ShieldIcon);
+const Save = iconWrap(SaveIcon);
+const Camera = iconWrap(PhotoCameraIcon);
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import AchievementBadge from '@/components/dashboard/AchievementBadge';
@@ -435,7 +451,7 @@ export default function Profile() {
                   <div className="space-y-4">
                     <div>
                       <p className="font-medium text-gray-900 mb-2">Account Email</p>
-                      <Input value={user?.email} disabled />
+                      <TextField value={user?.email || ''} disabled fullWidth size="small" />
                     </div>
                     <div>
                       <p className="font-medium text-gray-900 mb-2">Password</p>

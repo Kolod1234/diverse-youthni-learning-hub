@@ -1,7 +1,8 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Trophy, Zap, TrendingUp } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
+import { Box, Typography, Chip, Stack, LinearProgress } from '@mui/material';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import BoltIcon from '@mui/icons-material/Bolt';
 
 export default function PointsDisplay({ points, level, compact = false }) {
   const pointsForNextLevel = level * 100;
@@ -9,48 +10,53 @@ export default function PointsDisplay({ points, level, compact = false }) {
 
   if (compact) {
     return (
-      <div className="flex items-center gap-2">
-        <Badge className="bg-gradient-to-r from-yellow-500 to-orange-500 text-white">
-          <Zap className="w-3 h-3 mr-1" />
-          {points} pts
-        </Badge>
-        <Badge className="bg-gradient-to-r from-purple-500 to-indigo-500 text-white">
-          <Trophy className="w-3 h-3 mr-1" />
-          Level {level}
-        </Badge>
-      </div>
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Chip
+          icon={<BoltIcon sx={{ fontSize: 12, color: 'white !important' }} />}
+          label={`${points} pts`}
+          sx={{ background: 'linear-gradient(to right, #eab308, #f97316)', color: 'white', fontWeight: 600 }}
+        />
+        <Chip
+          icon={<EmojiEventsIcon sx={{ fontSize: 12, color: 'white !important' }} />}
+          label={`Level ${level}`}
+          sx={{ background: 'linear-gradient(to right, #a855f7, #6366f1)', color: 'white', fontWeight: 600 }}
+        />
+      </Stack>
     );
   }
 
   return (
-    <div className="bg-gradient-to-br from-indigo-50 to-purple-50 rounded-xl p-4 border border-indigo-200">
-      <div className="flex items-center justify-between mb-3">
-        <div className="flex items-center gap-2">
-          <div className="w-10 h-10 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-lg flex items-center justify-center">
-            <Trophy className="w-5 h-5 text-white" />
-          </div>
-          <div>
-            <p className="text-sm text-gray-600">Level {level}</p>
-            <p className="text-2xl font-bold text-gray-900">{points} pts</p>
-          </div>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-500">Next Level</p>
-          <p className="text-sm font-semibold text-indigo-600">{pointsForNextLevel - (points % 100)} pts</p>
-        </div>
-      </div>
-      
-      <div className="w-full bg-white rounded-full h-2">
+    <Box sx={{ background: 'linear-gradient(to bottom right, #eef2ff, #f3e8ff)', borderRadius: 3, p: 2, border: 1, borderColor: '#c7d2fe' }}>
+      <Stack direction="row" alignItems="center" justifyContent="space-between" sx={{ mb: 1.5 }}>
+        <Stack direction="row" spacing={1} alignItems="center">
+          <Box sx={{ width: 40, height: 40, background: 'linear-gradient(to bottom right, #fbbf24, #f97316)', borderRadius: 2, display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <EmojiEventsIcon sx={{ fontSize: 20, color: 'white' }} />
+          </Box>
+          <Box>
+            <Typography variant="caption" color="text.secondary">Level {level}</Typography>
+            <Typography variant="h5" fontWeight={700}>{points} pts</Typography>
+          </Box>
+        </Stack>
+        <Box sx={{ textAlign: 'right' }}>
+          <Typography variant="caption" color="text.secondary">Next Level</Typography>
+          <Typography variant="body2" fontWeight={600} sx={{ color: '#4f46e5' }}>
+            {pointsForNextLevel - (points % 100)} pts
+          </Typography>
+        </Box>
+      </Stack>
+
+      <Box sx={{ width: '100%', bgcolor: 'background.paper', borderRadius: 50, overflow: 'hidden' }}>
         <motion.div
           initial={{ width: 0 }}
           animate={{ width: `${progressToNextLevel}%` }}
           transition={{ duration: 0.5 }}
-          className="bg-gradient-to-r from-indigo-500 to-purple-500 h-2 rounded-full"
-        />
-      </div>
-      <p className="text-xs text-gray-500 mt-1 text-center">
+        >
+          <Box sx={{ height: 8, background: 'linear-gradient(to right, #6366f1, #a855f7)', borderRadius: 50 }} />
+        </motion.div>
+      </Box>
+      <Typography variant="caption" color="text.secondary" sx={{ display: 'block', textAlign: 'center', mt: 0.5 }}>
         {progressToNextLevel.toFixed(0)}% to Level {level + 1}
-      </p>
-    </div>
+      </Typography>
+    </Box>
   );
 }

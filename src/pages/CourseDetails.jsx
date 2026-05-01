@@ -9,10 +9,39 @@ import {
   Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
-import { 
-  Play, Clock, Users, Star, BookOpen, Award, CheckCircle, 
-  Lock, ChevronRight, Download, Globe, Trophy, ArrowLeft, MessageSquare, Brain, Settings
-} from 'lucide-react';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import StarIcon from '@mui/icons-material/Star';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LockIcon from '@mui/icons-material/Lock';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import DownloadIcon from '@mui/icons-material/Download';
+import LanguageIcon from '@mui/icons-material/Language';
+import EmojiEvents2Icon from '@mui/icons-material/EmojiEvents';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ChatIcon from '@mui/icons-material/Chat';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import SettingsIcon from '@mui/icons-material/Settings';
+const iconWrap = (IconCmp) => ({ size, color, className, ...rest }) => <IconCmp className={className} sx={{ fontSize: size || 16, color: color || 'inherit' }} {...rest} />;
+const Play = iconWrap(PlayArrowIcon);
+const Clock = iconWrap(AccessTimeIcon);
+const Users = iconWrap(PeopleIcon);
+const Star = iconWrap(StarIcon);
+const BookOpen = iconWrap(MenuBookIcon);
+const Award = iconWrap(EmojiEventsIcon);
+const CheckCircle = iconWrap(CheckCircleIcon);
+const Lock = iconWrap(LockIcon);
+const ChevronRight = iconWrap(ChevronRightIcon);
+const Download = iconWrap(DownloadIcon);
+const Globe = iconWrap(LanguageIcon);
+const Trophy = iconWrap(EmojiEvents2Icon);
+const ArrowLeft = iconWrap(ArrowBackIcon);
+const MessageSquare = iconWrap(ChatIcon);
+const Brain = iconWrap(PsychologyIcon);
+const Settings = iconWrap(SettingsIcon);
 import ModuleProgress from '@/components/interactive/ModuleProgress';
 import { format } from 'date-fns';
 import { motion } from 'framer-motion';

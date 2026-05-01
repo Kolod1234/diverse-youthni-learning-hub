@@ -3,10 +3,13 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Badge } from '@/components/ui/badge';
-import { HelpCircle, CheckCircle, Clock, Trophy, RefreshCw, Play } from 'lucide-react';
+import { Card, Button, Chip, Box, Typography, Stack } from '@mui/material';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
 import { motion } from 'framer-motion';
 
 export default function StudentQuizzes({ enrollments, user }) {
@@ -39,31 +42,34 @@ export default function StudentQuizzes({ enrollments, user }) {
 
   if (isLoading) {
     return (
-      <div className="space-y-3">
+      <Stack spacing={1.5}>
         {[1, 2, 3].map(i => (
-          <div key={i} className="h-20 bg-gray-100 rounded-xl animate-pulse" />
+          <Box key={i} sx={{ height: 80, bgcolor: 'action.hover', borderRadius: 3 }} className="animate-pulse" />
         ))}
-      </div>
+      </Stack>
     );
   }
 
   if (quizzes.length === 0) {
     return (
-      <div className="text-center py-14 bg-gray-50 rounded-2xl">
-        <HelpCircle className="w-12 h-12 text-gray-300 mx-auto mb-3" />
-        <p className="font-medium text-gray-600">No quizzes available</p>
-        <p className="text-sm text-gray-400 mt-1">Quizzes from your enrolled courses will appear here</p>
-      </div>
+      <Box sx={{ textAlign: 'center', py: 7, bgcolor: 'action.hover', borderRadius: 4 }}>
+        <HelpOutlineIcon sx={{ fontSize: 48, color: '#d1d5db', mb: 1.5 }} />
+        <Typography fontWeight={500} color="text.secondary">No quizzes available</Typography>
+        <Typography variant="caption" color="text.disabled" sx={{ mt: 0.5, display: 'block' }}>
+          Quizzes from your enrolled courses will appear here
+        </Typography>
+      </Box>
     );
   }
 
   return (
-    <div className="space-y-3">
+    <Stack spacing={1.5}>
       {quizzes.map((quiz, i) => {
         const quizAttempts = getAttemptsForQuiz(quiz.id);
         const bestScore = getBestScore(quiz.id);
         const passed = bestScore !== null && bestScore >= (quiz.passing_score || 70);
         const attempted = quizAttempts.length > 0;
+        const borderColor = passed ? 'success.light' : attempted ? 'warning.light' : 'divider';
 
         return (
           <motion.div
@@ -72,73 +78,73 @@ export default function StudentQuizzes({ enrollments, user }) {
             animate={{ opacity: 1, y: 0 }}
             transition={{ delay: i * 0.05 }}
           >
-            <Card className={`p-4 border ${passed ? 'border-green-200' : attempted ? 'border-amber-200' : 'border-gray-200'} hover:shadow-md transition-shadow`}>
-              <div className="flex items-center gap-4">
-                <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 ${
-                  passed ? 'bg-green-100' : attempted ? 'bg-amber-100' : 'bg-indigo-100'
-                }`}>
+            <Card sx={{ p: 2, border: 1, borderColor, '&:hover': { boxShadow: 3 }, transition: 'box-shadow 0.2s' }}>
+              <Stack direction="row" spacing={2} alignItems="center">
+                <Box sx={{ width: 40, height: 40, borderRadius: 3, display: 'flex', alignItems: 'center', justifyContent: 'center', flexShrink: 0, bgcolor: passed ? '#d1fae5' : attempted ? '#fef3c7' : '#e0e7ff' }}>
                   {passed ? (
-                    <Trophy className="w-5 h-5 text-green-600" />
+                    <EmojiEventsIcon sx={{ fontSize: 20, color: '#059669' }} />
                   ) : attempted ? (
-                    <RefreshCw className="w-5 h-5 text-amber-600" />
+                    <RefreshIcon sx={{ fontSize: 20, color: '#d97706' }} />
                   ) : (
-                    <HelpCircle className="w-5 h-5 text-indigo-600" />
+                    <HelpOutlineIcon sx={{ fontSize: 20, color: '#4f46e5' }} />
                   )}
-                </div>
+                </Box>
 
-                <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-2 flex-wrap">
-                    <h3 className="font-semibold text-gray-900 truncate">{quiz.title}</h3>
+                <Box sx={{ flex: 1, minWidth: 0 }}>
+                  <Stack direction="row" spacing={1} alignItems="center" flexWrap="wrap" useFlexGap>
+                    <Typography fontWeight={600} noWrap>{quiz.title}</Typography>
                     {passed ? (
-                      <Badge className="bg-green-100 text-green-700 border-0 text-xs">
-                        <CheckCircle className="w-3 h-3 mr-1" /> Passed
-                      </Badge>
+                      <Chip
+                        icon={<CheckCircleIcon sx={{ fontSize: 12 }} />}
+                        label="Passed"
+                        size="small"
+                        sx={{ bgcolor: '#d1fae5', color: '#059669', height: 20, fontSize: '0.65rem' }}
+                      />
                     ) : attempted ? (
-                      <Badge className="bg-amber-100 text-amber-700 border-0 text-xs">Attempted</Badge>
+                      <Chip label="Attempted" size="small" sx={{ bgcolor: '#fef3c7', color: '#d97706', height: 20, fontSize: '0.65rem' }} />
                     ) : (
-                      <Badge className="bg-indigo-100 text-indigo-700 border-0 text-xs">Not Started</Badge>
+                      <Chip label="Not Started" size="small" sx={{ bgcolor: '#e0e7ff', color: '#4f46e5', height: 20, fontSize: '0.65rem' }} />
                     )}
-                  </div>
-                  <div className="flex items-center gap-3 mt-1 text-xs text-gray-500 flex-wrap">
-                    <span>{quiz.questions?.length || 0} questions</span>
+                  </Stack>
+                  <Stack direction="row" spacing={1.5} alignItems="center" flexWrap="wrap" useFlexGap sx={{ mt: 0.5, color: 'text.secondary' }}>
+                    <Typography variant="caption">{quiz.questions?.length || 0} questions</Typography>
                     {quiz.time_limit_minutes && (
-                      <span className="flex items-center gap-1">
-                        <Clock className="w-3 h-3" />
-                        {quiz.time_limit_minutes} min
-                      </span>
+                      <Stack direction="row" spacing={0.5} alignItems="center">
+                        <AccessTimeIcon sx={{ fontSize: 12 }} />
+                        <Typography variant="caption">{quiz.time_limit_minutes} min</Typography>
+                      </Stack>
                     )}
-                    <span>Pass: {quiz.passing_score || 70}%</span>
+                    <Typography variant="caption">Pass: {quiz.passing_score || 70}%</Typography>
                     {bestScore !== null && (
-                      <span className={`font-semibold ${passed ? 'text-green-600' : 'text-amber-600'}`}>
+                      <Typography variant="caption" fontWeight={600} sx={{ color: passed ? '#059669' : '#d97706' }}>
                         Best: {bestScore}%
-                      </span>
+                      </Typography>
                     )}
                     {quizAttempts.length > 0 && (
-                      <span>{quizAttempts.length} attempt{quizAttempts.length !== 1 ? 's' : ''}</span>
+                      <Typography variant="caption">{quizAttempts.length} attempt{quizAttempts.length !== 1 ? 's' : ''}</Typography>
                     )}
-                  </div>
-                </div>
+                  </Stack>
+                </Box>
 
-                <Link to={createPageUrl('Quiz') + `?quizId=${quiz.id}`} className="flex-shrink-0">
-                  <Button
-                    size="sm"
-                    className={attempted
-                      ? 'bg-amber-600 hover:bg-amber-700 gap-1.5'
-                      : 'bg-indigo-600 hover:bg-indigo-700 gap-1.5'
-                    }
-                  >
-                    {attempted ? (
-                      <><RefreshCw className="w-3.5 h-3.5" /> Retake</>
-                    ) : (
-                      <><Play className="w-3.5 h-3.5" /> Start</>
-                    )}
-                  </Button>
-                </Link>
-              </div>
+                <Button
+                  component={Link}
+                  to={createPageUrl('Quiz') + `?quizId=${quiz.id}`}
+                  size="small"
+                  variant="contained"
+                  startIcon={attempted ? <RefreshIcon sx={{ fontSize: 14 }} /> : <PlayArrowIcon sx={{ fontSize: 14 }} />}
+                  sx={{
+                    flexShrink: 0,
+                    bgcolor: attempted ? '#d97706' : '#4f46e5',
+                    '&:hover': { bgcolor: attempted ? '#b45309' : '#4338ca' },
+                  }}
+                >
+                  {attempted ? 'Retake' : 'Start'}
+                </Button>
+              </Stack>
             </Card>
           </motion.div>
         );
       })}
-    </div>
+    </Stack>
   );
 }

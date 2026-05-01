@@ -2,12 +2,33 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
-import { RefreshCw, Lock } from 'lucide-react';
 import { 
   Card, Button, TextField, InputLabel, FormControl, Chip, Dialog, DialogTitle, DialogContent, DialogActions,
   Box, Typography, Container, IconButton, Tabs, Tab, InputAdornment, Select, MenuItem
 } from '@mui/material';
-import { BookOpen, Download, Search, X, Upload, Plus, Trash2, Edit, Share2 } from 'lucide-react';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import LockIcon from '@mui/icons-material/Lock';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import DownloadIcon from '@mui/icons-material/Download';
+import SearchIcon from '@mui/icons-material/Search';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadIcon from '@mui/icons-material/Upload';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
+import ShareIcon from '@mui/icons-material/Share';
+const iconWrap = (IconCmp) => ({ size, color, className, ...rest }) => <IconCmp className={className} sx={{ fontSize: size || 16, color: color || 'inherit' }} {...rest} />;
+const RefreshCw = iconWrap(RefreshIcon);
+const Lock = iconWrap(LockIcon);
+const BookOpen = iconWrap(MenuBookIcon);
+const Download = iconWrap(DownloadIcon);
+const Search = iconWrap(SearchIcon);
+const X = iconWrap(CloseIcon);
+const Upload = iconWrap(UploadIcon);
+const Plus = iconWrap(AddIcon);
+const Trash2 = iconWrap(DeleteIcon);
+const Edit = iconWrap(EditIcon);
+const Share2 = iconWrap(ShareIcon);
 
 const LIBRARY_PASSWORD = 'Library20170';
 
