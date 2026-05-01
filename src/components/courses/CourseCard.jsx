@@ -1,8 +1,11 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardMedia, CardContent, Chip, Box, Typography, Button } from '@mui/material';
-import { Star, Clock, Users, BookOpen } from 'lucide-react';
+import { Card, CardMedia, CardContent, Chip, Box, Typography, Button, Stack, Divider } from '@mui/material';
+import StarIcon from '@mui/icons-material/Star';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import GroupIcon from '@mui/icons-material/Group';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { motion } from 'framer-motion';
 
 const levelColors = {
@@ -155,29 +158,29 @@ export default function CourseCard({ course, index = 0 }) {
             
 
             {/* Stats Row 1 */}
-            <Box sx={{ display: 'grid', gridTemplateColumns: 'repeat(3, 1fr)', gap: 1.5, mb: 2 }}>
-              <Box sx={{ textAlign: 'center' }}>
+            <Stack direction="row" divider={<Divider orientation="vertical" flexItem />} sx={{ mb: 2 }}>
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
                 <Typography variant="body2" fontWeight={700}>{course.duration_hours || 0}h</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                  <Clock size={12} color="#6b7280" />
+                <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5}>
+                  <AccessTimeIcon sx={{ fontSize: 12, color: '#6b7280' }} />
                   <Typography variant="caption" color="text.secondary">Duration</Typography>
-                </Box>
+                </Stack>
               </Box>
-              <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
                 <Typography variant="body2" fontWeight={700}>{course.lesson_count || course.total_lessons || 0}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                  <BookOpen size={12} color="#6b7280" />
+                <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5}>
+                  <MenuBookIcon sx={{ fontSize: 12, color: '#6b7280' }} />
                   <Typography variant="caption" color="text.secondary">Lessons</Typography>
-                </Box>
+                </Stack>
               </Box>
-              <Box sx={{ textAlign: 'center' }}>
+              <Box sx={{ flex: 1, textAlign: 'center' }}>
                 {course.rating ? (
                   <>
                     <Typography variant="body2" fontWeight={700}>{course.rating.toFixed(1)}</Typography>
-                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 0.5 }}>
-                      <Star size={12} className="fill-amber-400 text-amber-400" />
+                    <Stack direction="row" alignItems="center" justifyContent="center" spacing={0.5}>
+                      <StarIcon sx={{ fontSize: 12, color: '#f59e0b' }} />
                       <Typography variant="caption" sx={{ color: '#f59e0b' }}>Rating</Typography>
-                    </Box>
+                    </Stack>
                   </>
                 ) : (
                   <>
@@ -186,15 +189,15 @@ export default function CourseCard({ course, index = 0 }) {
                   </>
                 )}
               </Box>
-            </Box>
+            </Stack>
             
             {/* Enrollment count */}
             {course.enrolled_count > 0 && (
-              <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 2, py: 1, bgcolor: '#f9fafb', borderRadius: 2 }}>
-                <Users size={16} color="#4f46e5" />
+              <Stack direction="row" alignItems="center" justifyContent="center" spacing={1} sx={{ mb: 2, py: 1, bgcolor: '#f9fafb', borderRadius: 2 }}>
+                <GroupIcon sx={{ fontSize: 16, color: '#4f46e5' }} />
                 <Typography variant="body2" fontWeight={600}>{course.enrolled_count.toLocaleString()}</Typography>
                 <Typography variant="body2" color="text.secondary">students enrolled</Typography>
-              </Box>
+              </Stack>
             )}
             
             {/* CTA Button */}

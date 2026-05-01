@@ -3,11 +3,18 @@ import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { base44 } from '@/api/base44Client';
 import usePullToRefresh from '@/components/lesson/usePullToRefresh';
-import { RefreshCw } from 'lucide-react';
-import { 
-  Slider, Checkbox, FormControlLabel, Button, Drawer, Box, Typography, Chip, Card, IconButton
+import {
+  Slider, Checkbox, FormControlLabel, Button, Drawer, Box, Stack, Paper, Typography, Chip, Card, IconButton, CircularProgress
 } from '@mui/material';
-import { Filter, X, BookOpen, Sparkles, TrendingUp, Award, Star, Clock, Users } from 'lucide-react';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import TuneIcon from '@mui/icons-material/Tune';
+import CloseIcon from '@mui/icons-material/Close';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import StarIcon from '@mui/icons-material/Star';
+import GroupIcon from '@mui/icons-material/Group';
 import { motion, AnimatePresence } from 'framer-motion';
 import CourseCard from '@/components/courses/CourseCard';
 import SearchBar from '@/components/courses/SearchBar';
@@ -192,7 +199,7 @@ export default function Explore() {
       {/* Qualification Type */}
       <Box>
         <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Award size={16} color="#FF8C00" />
+          <EmojiEventsIcon sx={{ fontSize: 16, color: '#FF8C00' }} />
           Qualification
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -243,7 +250,7 @@ export default function Explore() {
       {selectedQualification.includes('alevel') && (
         <Box>
           <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-            <TrendingUp size={16} color="#FF8C00" />
+            <TrendingUpIcon sx={{ fontSize: 16, color: '#FF8C00' }} />
             A-Level Stage
           </Typography>
           <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -295,7 +302,7 @@ export default function Explore() {
       {/* Categories */}
       <Box>
         <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <BookOpen size={16} color="#FF8C00" />
+          <MenuBookIcon sx={{ fontSize: 16, color: '#FF8C00' }} />
           Category
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -348,7 +355,7 @@ export default function Explore() {
       {/* Level */}
       <Box>
         <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TrendingUp size={16} color="#FF8C00" />
+          <TrendingUpIcon sx={{ fontSize: 16, color: '#FF8C00' }} />
           Level
         </Typography>
         <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
@@ -395,7 +402,7 @@ export default function Explore() {
       {/* Price Range */}
       <Box>
         <Typography variant="h6" fontWeight={600} sx={{ mb: 2, display: 'flex', alignItems: 'center', gap: 1 }}>
-          <Award size={16} color="#FF8C00" />
+          <EmojiEventsIcon sx={{ fontSize: 16, color: '#FF8C00' }} />
           Price Range
         </Typography>
         <Card sx={{ p: 2, border: 1, borderColor: 'divider' }}>
@@ -426,7 +433,7 @@ export default function Explore() {
             }
             label={
               <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                <Sparkles size={16} />
+                <AutoAwesomeIcon sx={{ fontSize: 16 }} />
                 <span>Free courses only</span>
               </Box>
             }
@@ -454,7 +461,7 @@ export default function Explore() {
           <Button 
             variant="outlined" 
             onClick={clearFilters}
-            startIcon={<X size={16} />}
+            startIcon={<CloseIcon sx={{ fontSize: 16 }} />}
             fullWidth
             sx={{
               background: 'linear-gradient(to right, #fef2f2, #ffedd5)',
@@ -480,31 +487,31 @@ export default function Explore() {
 
   // ✅ FIX: Show '...' while loading instead of 0
   const stats = [
-    { 
-      icon: BookOpen, 
-      label: 'Total Courses', 
-      value: isLoading ? '...' : coursesWithActualData.length, 
-      color: 'from-blue-500 to-cyan-500' 
+    {
+      icon: MenuBookIcon,
+      label: 'Total Courses',
+      value: isLoading ? '...' : coursesWithActualData.length,
+      color: 'from-blue-500 to-cyan-500'
     },
-    { 
-      icon: Users, 
-      label: 'Active Learners', 
-      value: enrollmentsLoading ? '...' : allEnrollments.length, 
-      color: 'from-purple-500 to-pink-500' 
+    {
+      icon: GroupIcon,
+      label: 'Active Learners',
+      value: enrollmentsLoading ? '...' : allEnrollments.length,
+      color: 'from-purple-500 to-pink-500'
     },
-    { 
-      icon: Star, 
-      label: 'Avg Rating', 
-      value: isLoading ? '...' : coursesWithActualData.length > 0 
-        ? (coursesWithActualData.filter(c => c.rating).reduce((sum, c) => sum + c.rating, 0) / (coursesWithActualData.filter(c => c.rating).length || 1)).toFixed(1) 
-        : '—', 
-      color: 'from-yellow-500 to-orange-500' 
+    {
+      icon: StarIcon,
+      label: 'Avg Rating',
+      value: isLoading ? '...' : coursesWithActualData.length > 0
+        ? (coursesWithActualData.filter(c => c.rating).reduce((sum, c) => sum + c.rating, 0) / (coursesWithActualData.filter(c => c.rating).length || 1)).toFixed(1)
+        : '—',
+      color: 'from-yellow-500 to-orange-500'
     },
-    { 
-      icon: TrendingUp, 
-      label: 'Success Rate', 
-      value: '96%', 
-      color: 'from-green-500 to-emerald-500' 
+    {
+      icon: TrendingUpIcon,
+      label: 'Success Rate',
+      value: '96%',
+      color: 'from-green-500 to-emerald-500'
     }
   ];
 
@@ -532,12 +539,14 @@ export default function Explore() {
               pointerEvents: 'none'
             }}
           >
-            <Box sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6, display: 'flex', alignItems: 'center', gap: 1 }}>
-              <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ bgcolor: '#2563eb', color: 'white', px: 3, py: 1.5, borderRadius: 50, boxShadow: 6 }}>
+              {pullDistance > 80
+                ? <CircularProgress size={16} sx={{ color: 'white' }} />
+                : <RefreshIcon sx={{ fontSize: 16 }} />}
               <Typography variant="body2" fontWeight={600}>
                 {pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}
               </Typography>
-            </Box>
+            </Stack>
           </Box>
         )}
         <Box sx={{ maxWidth: 1280, mx: 'auto', px: { xs: 2, sm: 3, lg: 4 }, py: 6 }}>
@@ -546,7 +555,7 @@ export default function Explore() {
             <Box sx={{ textAlign: 'center', mb: 8 }}>
               <motion.div whileHover={{ scale: 1.05 }}>
                 <Chip 
-                  icon={<Sparkles size={16} color="#2563eb" />}
+                  icon={<AutoAwesomeIcon sx={{ fontSize: 16, color: '#2563eb' }} />}
                   label="Discover Learning" 
                   sx={{ px: 3, py: 2.5, borderRadius: 50, bgcolor: 'primary.main', color: 'white', border: 2, borderColor: 'primary.main', fontWeight: 700, mb: 3 }}
                 />
@@ -569,7 +578,7 @@ export default function Explore() {
                   <motion.div key={i} initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: i * 0.1 }} whileHover={{ y: -4 }}>
                     <Card sx={{ p: 2.5, border: 1, borderColor: 'divider', boxShadow: 2, '&:hover': { boxShadow: 4 }, transition: 'all 0.3s', borderRadius: 4, bgcolor: 'background.paper' }}>
                       <Box sx={{ width: 48, height: 48, borderRadius: 3, bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', mb: 1.5, boxShadow: 3 }}>
-                        <Icon className="w-6 h-6" style={{ color: 'white' }} />
+                        <Icon sx={{ fontSize: 24, color: 'white' }} />
                       </Box>
                       <Typography variant="body2" sx={{ mb: 0.5, fontSize: '0.875rem', color: 'text.secondary' }}>{stat.label}</Typography>
                       <Typography variant="h5" fontWeight={700} sx={{ fontSize: { xs: '1.5rem', sm: '1.875rem' }, color: 'text.primary' }}>{stat.value}</Typography>
@@ -586,7 +595,7 @@ export default function Explore() {
               <Box sx={{ mb: 7 }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 3 }}>
                   <Typography variant="h4" fontWeight={700} sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Star size={24} color="#eab308" />
+                    <StarIcon sx={{ fontSize: 24, color: '#eab308' }} />
                     Featured Courses
                   </Typography>
                   <Chip label="Top Rated" sx={{ bgcolor: '#fef3c7', color: '#a16207' }} />
@@ -641,7 +650,7 @@ export default function Explore() {
                 <Button 
                   variant="outlined"
                   onClick={() => setMobileFilterOpen(true)}
-                  startIcon={<Filter size={20} color="#FF8C00" />}
+                  startIcon={<TuneIcon sx={{ fontSize: 20, color: '#FF8C00' }} />}
                   sx={{ height: 48, px: 2.5, borderRadius: 3, border: 2, borderColor: 'rgba(255,140,0,0.2)', background: 'linear-gradient(to right, white, #eff6ff)', boxShadow: 3, '&:hover': { borderColor: 'rgba(255,140,0,0.4)', boxShadow: 4 } }}
                 >
                   {hasActiveFilters && (
@@ -651,7 +660,7 @@ export default function Explore() {
               </Box>
               <Drawer anchor="left" open={mobileFilterOpen} onClose={() => setMobileFilterOpen(false)} PaperProps={{ sx: { width: 320, p: 3 } }}>
                 <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 3 }}>
-                  <Filter size={20} />
+                  <TuneIcon sx={{ fontSize: 20 }} />
                   <Typography variant="h6" fontWeight={600}>Filters</Typography>
                 </Box>
                 <FilterContent />
@@ -665,7 +674,7 @@ export default function Explore() {
               <motion.div initial={{ opacity: 0, x: -20 }} animate={{ opacity: 1, x: 0 }}>
                 <Card sx={{ position: 'sticky', top: 96, bgcolor: 'background.paper', p: 3, boxShadow: 4, border: 2, borderColor: 'divider', borderRadius: 4 }}>
                   <Typography variant="h6" fontWeight={700} sx={{ mb: 3, display: 'flex', alignItems: 'center', gap: 1 }}>
-                    <Filter size={20} color="#FF8C00" />
+                    <TuneIcon sx={{ fontSize: 20, color: '#FF8C00' }} />
                     Filters
                   </Typography>
                   <FilterContent />
@@ -680,7 +689,7 @@ export default function Explore() {
                   <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
                       <Box sx={{ width: 48, height: 48, borderRadius: '50%', bgcolor: 'primary.main', display: 'flex', alignItems: 'center', justifyContent: 'center', boxShadow: 3 }}>
-                        <BookOpen size={24} style={{ color: 'white' }} />
+                        <MenuBookIcon sx={{ fontSize: 24, color: 'white' }} />
                       </Box>
                       <Box>
                         <Typography variant="caption" color="text.secondary">Available Courses</Typography>
@@ -745,14 +754,14 @@ export default function Explore() {
                 <motion.div initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}>
                   <Card sx={{ textAlign: 'center', py: 10, bgcolor: 'background.paper', borderRadius: 6, border: 2, borderStyle: 'dashed', borderColor: 'divider', boxShadow: 4 }}>
                     <motion.div animate={{ y: [0, -10, 0] }} transition={{ repeat: Infinity, duration: 2 }}>
-                      <BookOpen size={80} color="rgba(255,140,0,0.5)" style={{ margin: '0 auto 24px' }} />
+                      <MenuBookIcon sx={{ fontSize: 80, color: 'rgba(255,140,0,0.5)', m: '0 auto 24px', display: 'block' }} />
                     </motion.div>
                     <Typography variant="h4" fontWeight={700} sx={{ mb: 1.5 }}>No courses found</Typography>
                     <Typography variant="h6" color="text.secondary" sx={{ mb: 4 }}>Try adjusting your search or filter criteria</Typography>
                     <Button 
                       onClick={clearFilters}
                       variant="contained"
-                      startIcon={<X size={16} />}
+                      startIcon={<CloseIcon sx={{ fontSize: 16 }} />}
                       sx={{ background: 'linear-gradient(to right, #2563eb, #7c3aed)', color: 'white', borderRadius: 50, px: 4, py: 1.5, fontWeight: 600, boxShadow: 3, '&:hover': { background: 'linear-gradient(to right, #1d4ed8, #6d28d9)', boxShadow: 4, transform: 'scale(1.05)' } }}
                     >
                       Clear all filters

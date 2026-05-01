@@ -3,10 +3,19 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Input } from '@/components/ui/input';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Lock, AlertCircle } from 'lucide-react';
+import {
+  Box,
+  Card,
+  CardContent,
+  TextField,
+  Button,
+  CircularProgress,
+  Alert,
+  Stack,
+  Typography,
+} from '@mui/material';
+import LockIcon from '@mui/icons-material/Lock';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
 import { toast } from 'sonner';
 
 export default function CoursePasswordProtection({ children, user }) {
@@ -28,27 +37,23 @@ export default function CoursePasswordProtection({ children, user }) {
 
   useEffect(() => {
     const checkAccess = async () => {
-      // Wait for user to be defined (either logged in or null)
       if (user === null && userLoading) {
         return;
       }
-      
+
       setUserLoading(false);
 
-      // Admin always has access
       if (user?.role === 'admin') {
         setHasAccess(true);
         return;
       }
 
-      // Check if password was already entered in this session
       const accessGranted = sessionStorage.getItem('course_access_granted');
       if (accessGranted === 'true') {
         setHasAccess(true);
         return;
       }
 
-      // Otherwise, user needs to enter password
       setHasAccess(false);
     };
 
@@ -60,7 +65,7 @@ export default function CoursePasswordProtection({ children, user }) {
     setError('');
 
     const correctPassword = getCoursePassword();
-    
+
     if (password === correctPassword) {
       sessionStorage.setItem('course_access_granted', 'true');
       setHasAccess(true);
@@ -77,66 +82,119 @@ export default function CoursePasswordProtection({ children, user }) {
 
   if (userLoading || contentLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gray-50">
-        <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-indigo-600"></div>
-      </div>
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          bgcolor: 'grey.50',
+        }}
+      >
+        <CircularProgress sx={{ color: '#4f46e5' }} />
+      </Box>
     );
   }
 
   if (!hasAccess) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 p-4">
-        <Card className="w-full max-w-md p-8 shadow-2xl">
-          <div className="text-center mb-6">
-            <div className="w-16 h-16 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-4">
-              <Lock className="w-8 h-8 text-indigo-600" />
-            </div>
-            <h2 className="text-2xl font-bold text-gray-900 mb-2">Course Access Required</h2>
-            <p className="text-gray-600">Please enter the password to access courses</p>
-          </div>
-
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div>
-              <Input
-                type="password"
-                placeholder="Enter password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className="text-center text-lg"
-                autoFocus
-              />
-              {error && (
-                <div className="flex items-center gap-2 mt-2 text-red-600 text-sm">
-                  <AlertCircle className="w-4 h-4" />
-                  <span>{error}</span>
-                </div>
-              )}
-            </div>
-
-            <div className="flex gap-3">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={handleGoBack}
-                className="flex-1"
+      <Box
+        sx={{
+          minHeight: '100vh',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
+          background: 'linear-gradient(to bottom right, #eef2ff, #faf5ff, #fdf2f8)',
+          p: 2,
+        }}
+      >
+        <Card sx={{ width: '100%', maxWidth: 448, boxShadow: 8, borderRadius: 3 }}>
+          <CardContent sx={{ p: 4 }}>
+            <Stack alignItems="center" spacing={2} sx={{ mb: 3 }}>
+              <Box
+                sx={{
+                  width: 64,
+                  height: 64,
+                  borderRadius: '50%',
+                  bgcolor: '#e0e7ff',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                }}
               >
-                Go Back
-              </Button>
-              <Button
-                type="submit"
-                className="flex-1 bg-indigo-600 hover:bg-indigo-700"
-                disabled={!password}
-              >
-                Access Courses
-              </Button>
-            </div>
-          </form>
+                <LockIcon sx={{ color: '#4f46e5', fontSize: 32 }} />
+              </Box>
+              <Typography variant="h5" fontWeight={700} align="center">
+                Course Access Required
+              </Typography>
+              <Typography variant="body2" color="text.secondary" align="center">
+                Please enter the password to access courses
+              </Typography>
+            </Stack>
 
-          <p className="text-center text-sm text-gray-500 mt-6">
-            Don't have the password? Contact your administrator
-          </p>
+            <Box component="form" onSubmit={handleSubmit}>
+              <Stack spacing={2}>
+                <Box>
+                  <TextField
+                    type="password"
+                    placeholder="Enter password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    fullWidth
+                    autoFocus
+                    inputProps={{
+                      style: { textAlign: 'center', fontSize: '1.125rem' },
+                    }}
+                  />
+                  {error && (
+                    <Alert
+                      icon={<ErrorOutlineIcon fontSize="small" />}
+                      severity="error"
+                      sx={{ mt: 1.5, py: 0.5 }}
+                    >
+                      {error}
+                    </Alert>
+                  )}
+                </Box>
+
+                <Stack direction="row" spacing={1.5}>
+                  <Button
+                    type="button"
+                    variant="outlined"
+                    onClick={handleGoBack}
+                    fullWidth
+                    sx={{ textTransform: 'none' }}
+                  >
+                    Go Back
+                  </Button>
+                  <Button
+                    type="submit"
+                    variant="contained"
+                    fullWidth
+                    disabled={!password}
+                    sx={{
+                      textTransform: 'none',
+                      bgcolor: '#4f46e5',
+                      '&:hover': { bgcolor: '#4338ca' },
+                    }}
+                  >
+                    Access Courses
+                  </Button>
+                </Stack>
+              </Stack>
+            </Box>
+
+            <Typography
+              variant="body2"
+              color="text.secondary"
+              align="center"
+              sx={{ mt: 3 }}
+            >
+              Don't have the password? Contact your administrator
+            </Typography>
+          </CardContent>
         </Card>
-      </div>
+      </Box>
     );
   }
 
