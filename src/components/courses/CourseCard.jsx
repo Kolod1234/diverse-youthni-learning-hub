@@ -24,14 +24,18 @@ const getCategoryBgColor = (category) => {
   return colors[category] || { bgcolor: '#f3f4f6', color: '#4b5563' };
 };
 
-export default function CourseCard({ course }) {
+export default function CourseCard({ course, index = 0 }) {
+  // ✅ PERF: cap stagger so the 50th card doesn't wait 5s. Also keep the
+  // animation short so cards become visible almost immediately.
+  const animDelay = Math.min(index, 6) * 0.03;
+  // First few visible cards load eagerly; the rest defer until they scroll into view.
+  const isAboveFold = index < 6;
 
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.4 }}
+      initial={{ opacity: 0, y: 12 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.2, delay: animDelay }}
     >
       <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
         <Card 
@@ -57,8 +61,10 @@ export default function CourseCard({ course }) {
             sx={{ position: 'relative', paddingTop: '56.25%', background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)' }}
           >
             <img
-              src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=1200&q=80')}
+              src={course.thumbnail || (course.category === 'biology' ? 'https://qtrypzzcjebvfcihiynt.supabase.co/storage/v1/object/public/base44-prod/public/69418fc30769c7d951368216/0071eb5e0_Biology.jpg' : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=640&q=75')}
               alt={course.title}
+              loading={isAboveFold ? 'eager' : 'lazy'}
+              decoding="async"
               style={{ position: 'absolute', top: 0, left: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.7s' }}
             />
             <Box sx={{ position: 'absolute', inset: 0, background: 'linear-gradient(to top, rgba(0,0,0,0.4), transparent, transparent)' }} />

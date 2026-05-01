@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import { useQuery, useQueryClient } from '@tanstack/react-query';
 import CoursePasswordProtection from '@/components/security/CoursePasswordProtection';
 import { base44 } from '@/api/base44Client';
@@ -102,50 +102,78 @@ export default function Explore() {
     staleTime: 5 * 60 * 1000,
   });
 
-  // Calculate actual ratings and enrollments for each course
-  const coursesWithActualData = courses.map(course => {
-    const courseReviews = allReviews.filter(r => 
-      r.course_id === course.id && (r.rating_type === 'course' || !r.rating_type)
-    );
-    const actualRating = courseReviews.length > 0
-      ? courseReviews.reduce((sum, r) => sum + r.rating, 0) / courseReviews.length
-      : null;
-    
-    const enrollmentCount = allEnrollments.filter(e => e.course_id === course.id).length;
-    
-    return {
-      ...course,
-      rating: actualRating,
-      enrolled_count: enrollmentCount,
-      // ✅ FIX: use stored total_lessons instead of fetching lessons
-      lesson_count: course.total_lessons || 0,
-    };
-  });
-
-  const filteredCourses = coursesWithActualData.filter(course => {
-    const matchesSearch = !searchQuery || 
-      course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.description?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-      course.instructor?.toLowerCase().includes(searchQuery.toLowerCase());
-    
-    const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
-    const matchesLevel = selectedLevels.length === 0 || selectedLevels.includes(course.level);
-    const matchesPrice = showFreeOnly 
-      ? course.price === 0 
-      : (course.price || 0) >= priceRange[0] && (course.price || 0) <= priceRange[1];
-    const matchesQualification = selectedQualification.includes(course.qualification_type || 'gcse');
-    const matchesALevelStage = course.qualification_type !== 'alevel' || !course.alevel_stage || selectedALevelStage.includes(course.alevel_stage);
-    
-    return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesQualification && matchesALevelStage;
-  });
-
-  const sortedCourses = [...filteredCourses].sort((a, b) => {
-    switch (sortBy) {
-      case 'rating': return (b.rating || 0) - (a.rating || 0);
-      case 'teachers': return (a.instructor || '').localeCompare(b.instructor || '');
-      default: return (b.enrolled_count || 0) - (a.enrolled_count || 0);
+  // ✅ PERF: Build review aggregation maps once per allReviews change instead of
+  // filtering allReviews for every course on every render.
+  const reviewStatsByCourse = useMemo(() => {
+    const map = new Map(); // course_id -> { sum, count }
+    for (const r of allReviews) {
+      if (r.rating_type && r.rating_type !== 'course') continue;
+      const entry = map.get(r.course_id) || { sum: 0, count: 0 };
+      entry.sum += r.rating || 0;
+      entry.count += 1;
+      map.set(r.course_id, entry);
     }
-  });
+    return map;
+  }, [allReviews]);
+
+  // ✅ PERF: Build enrollment count map once per allEnrollments change.
+  const enrollmentCountByCourse = useMemo(() => {
+    const map = new Map(); // course_id -> count
+    for (const e of allEnrollments) {
+      map.set(e.course_id, (map.get(e.course_id) || 0) + 1);
+    }
+    return map;
+  }, [allEnrollments]);
+
+  // ✅ PERF: Memoize the enriched courses list so it only recomputes when the
+  // underlying data changes — not on every search/filter keystroke.
+  const coursesWithActualData = useMemo(() => {
+    return courses.map(course => {
+      const stats = reviewStatsByCourse.get(course.id);
+      const actualRating = stats && stats.count > 0 ? stats.sum / stats.count : null;
+      const enrollmentCount = enrollmentCountByCourse.get(course.id) || 0;
+      return {
+        ...course,
+        rating: actualRating,
+        enrolled_count: enrollmentCount,
+        lesson_count: course.total_lessons || 0,
+      };
+    });
+  }, [courses, reviewStatsByCourse, enrollmentCountByCourse]);
+
+  // ✅ PERF: Memoize filtering so unrelated re-renders don't recompute.
+  const filteredCourses = useMemo(() => {
+    const q = searchQuery ? searchQuery.toLowerCase() : '';
+    return coursesWithActualData.filter(course => {
+      const matchesSearch = !q ||
+        course.title?.toLowerCase().includes(q) ||
+        course.description?.toLowerCase().includes(q) ||
+        course.instructor?.toLowerCase().includes(q);
+
+      const matchesCategory = selectedCategories.length === 0 || selectedCategories.includes(course.category);
+      const matchesLevel = selectedLevels.length === 0 || selectedLevels.includes(course.level);
+      const matchesPrice = showFreeOnly
+        ? course.price === 0
+        : (course.price || 0) >= priceRange[0] && (course.price || 0) <= priceRange[1];
+      const matchesQualification = selectedQualification.includes(course.qualification_type || 'gcse');
+      const matchesALevelStage = course.qualification_type !== 'alevel' || !course.alevel_stage || selectedALevelStage.includes(course.alevel_stage);
+
+      return matchesSearch && matchesCategory && matchesLevel && matchesPrice && matchesQualification && matchesALevelStage;
+    });
+  }, [coursesWithActualData, searchQuery, selectedCategories, selectedLevels, showFreeOnly, priceRange, selectedQualification, selectedALevelStage]);
+
+  // ✅ PERF: Memoize sorting too.
+  const sortedCourses = useMemo(() => {
+    const arr = [...filteredCourses];
+    arr.sort((a, b) => {
+      switch (sortBy) {
+        case 'rating': return (b.rating || 0) - (a.rating || 0);
+        case 'teachers': return (a.instructor || '').localeCompare(b.instructor || '');
+        default: return (b.enrolled_count || 0) - (a.enrolled_count || 0);
+      }
+    });
+    return arr;
+  }, [filteredCourses, sortBy]);
 
   const clearFilters = () => {
     setSelectedCategories([]);
@@ -480,7 +508,10 @@ export default function Explore() {
     }
   ];
 
-  const featuredCourses = coursesWithActualData.filter(c => c.rating && c.rating >= 4.5).slice(0, 3);
+  const featuredCourses = useMemo(
+    () => coursesWithActualData.filter(c => c.rating && c.rating >= 4.5).slice(0, 3),
+    [coursesWithActualData]
+  );
 
   return (
     <CoursePasswordProtection user={user}>
