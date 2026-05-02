@@ -1,15 +1,26 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Badge } from '@/components/ui/badge';
-import { ScrollArea } from '@/components/ui/scroll-area';
-import { 
-  LayoutTemplate, Plus, Search, Trash2, Eye, Copy, 
-  Filter, Star, FileText, Award, ClipboardList, Sparkles
-} from 'lucide-react';
+import { Button, Card, TextField, Chip, Box } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const ScrollArea = ({ children, className }) => <Box className={className} sx={{ overflowY: 'auto' }}>{children}</Box>;
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import DeleteIcon from '@mui/icons-material/Delete';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ContentCopyIcon from '@mui/icons-material/ContentCopy';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import StarIcon from '@mui/icons-material/Star';
+import DescriptionIcon from '@mui/icons-material/Description';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const LayoutTemplate = _w(DashboardIcon), Plus = _w(AddIcon), Search = _w(SearchIcon), Trash2 = _w(DeleteIcon);
+const Eye = _w(VisibilityIcon), Copy = _w(ContentCopyIcon), Filter = _w(FilterListIcon), Star = _w(StarIcon);
+const FileText = _w(DescriptionIcon), Award = _w(EmojiEventsIcon), ClipboardList = _w(AssignmentIcon), Sparkles = _w(AutoAwesomeIcon);
 import { toast } from 'sonner';
 import TemplateCreator from '@/components/templates/TemplateCreator';
 import TemplatePreview from '@/components/templates/TemplatePreview';

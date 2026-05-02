@@ -1,7 +1,12 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Box, Button, Card, CardContent, Tabs, Tab, Dialog, DialogTitle, DialogContent, DialogActions, TextField, Select, MenuItem, FormControl, InputLabel, Container, Typography } from '@mui/material';
-import { Sparkles, BarChart3, Save, BookOpen } from 'lucide-react';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import SaveIcon from '@mui/icons-material/Save';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Sparkles = _w(AutoAwesomeIcon), BarChart3 = _w(BarChartIcon), Save = _w(SaveIcon), BookOpen = _w(MenuBookIcon);
 import AIGenerateMode from '@/components/presentation/AIGenerateMode';
 import SlideWorkspace from '@/components/presentation/SlideWorkspace';
 import { toast } from 'sonner';

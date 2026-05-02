@@ -1,10 +1,24 @@
 import { useState, useRef } from "react";
 import { base44 } from "@/api/base44Client";
 import { MathJax, MathJaxContext } from "better-react-mathjax";
-import {
-  Loader2, Send, RotateCcw, BookOpen, Lightbulb, CheckCircle,
-  ChevronDown, ChevronUp, FileText, ImageIcon, X, Upload, Sparkles, Brain
-} from "lucide-react";
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import SendIcon from '@mui/icons-material/Send';
+import RestartAltIcon from '@mui/icons-material/RestartAlt';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+import DescriptionIcon from '@mui/icons-material/Description';
+import ImageIcon from '@mui/icons-material/Image';
+import CloseIcon from '@mui/icons-material/Close';
+import UploadIcon from '@mui/icons-material/Upload';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Loader2 = _w(HourglassEmptyIcon), Send = _w(SendIcon), RotateCcw = _w(RestartAltIcon), BookOpen = _w(MenuBookIcon);
+const Lightbulb = _w(LightbulbIcon), CheckCircle = _w(CheckCircleIcon), ChevronDown = _w(ExpandMoreIcon), ChevronUp = _w(ExpandLessIcon);
+const FileText = _w(DescriptionIcon), X = _w(CloseIcon), Upload = _w(UploadIcon), Sparkles = _w(AutoAwesomeIcon), Brain = _w(PsychologyIcon);
 import ReactMarkdown from "react-markdown";
 import ConfidenceBadge from "@/components/solver/ConfidenceBadge";
 import AnswerFeedback from "@/components/solver/AnswerFeedback";

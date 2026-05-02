@@ -2,10 +2,21 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Box, Button, Card, CardContent, CardMedia, Tabs, Tab, Chip, Container, Typography, Grid, LinearProgress } from '@mui/material';
-import { 
-  GraduationCap, BookOpen, Award, CheckCircle, ArrowRight, 
-  Target, Users, Lightbulb, Clock, TrendingUp, Settings
-} from 'lucide-react';
+import SchoolIcon from '@mui/icons-material/School';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import PeopleIcon from '@mui/icons-material/People';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import SettingsIcon from '@mui/icons-material/Settings';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const GraduationCap = _w(SchoolIcon), BookOpen = _w(MenuBookIcon), Award = _w(EmojiEventsIcon), CheckCircle = _w(CheckCircleIcon);
+const ArrowRight = _w(ArrowForwardIcon), Target = _w(GpsFixedIcon), Users = _w(PeopleIcon), Lightbulb = _w(LightbulbIcon);
+const Clock = _w(AccessTimeIcon), TrendingUp = _w(TrendingUpIcon), Settings = _w(SettingsIcon);
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
