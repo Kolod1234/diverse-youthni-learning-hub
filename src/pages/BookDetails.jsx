@@ -5,7 +5,15 @@ import { base44 } from '@/api/base44Client';
 import { 
   Box, Typography, Container, Button, IconButton, Chip, Tabs, Tab
 } from '@mui/material';
-import { ArrowLeft, Download, BookOpen, Edit, Trash2, Share2 } from 'lucide-react';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import DownloadIcon from '@mui/icons-material/Download';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import ShareIcon from '@mui/icons-material/Share';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const ArrowLeft = _w(ArrowBackIcon), Download = _w(DownloadIcon), BookOpen = _w(MenuBookIcon);
+const Edit = _w(EditIcon), Trash2 = _w(DeleteIcon), Share2 = _w(ShareIcon);
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';

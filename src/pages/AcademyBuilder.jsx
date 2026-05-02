@@ -9,7 +9,16 @@ import {
   DialogContent, DialogActions, Chip, Divider, Select, MenuItem, FormControl, InputLabel,
   Collapse
 } from '@mui/material';
-import { Plus, X, GripVertical, Save, ArrowLeft, ChevronDown, ChevronUp } from 'lucide-react';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+import SaveIcon from '@mui/icons-material/Save';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import ExpandLessIcon from '@mui/icons-material/ExpandLess';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Plus = _w(AddIcon), X = _w(CloseIcon), GripVertical = _w(DragIndicatorIcon);
+const Save = _w(SaveIcon), ArrowLeft = _w(ArrowBackIcon), ChevronDown = _w(ExpandMoreIcon), ChevronUp = _w(ExpandLessIcon);
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import ModuleCourseLessonsPreview from '@/components/academy/ModuleCourseLessonsPreview';

@@ -3,15 +3,39 @@ import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { 
-  ArrowLeft, Users, TrendingUp, Award, Brain, Clock, 
-  CheckCircle, XCircle, BarChart3, Download, MessageSquare
-} from 'lucide-react';
+import { Button, Card, LinearProgress, Tabs as MuiTabs, Tab as MuiTab, Box, Chip } from '@mui/material';
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ borderRadius: 1 }} />;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const TabsContext = React.createContext({ value: '', setValue: () => {} });
+const Tabs = ({ children, defaultValue, className }) => {
+  const [value, setValue] = React.useState(defaultValue);
+  return <TabsContext.Provider value={{ value, setValue }}><div className={className}>{children}</div></TabsContext.Provider>;
+};
+const TabsList = ({ children, className }) => {
+  const { value, setValue } = React.useContext(TabsContext);
+  return <MuiTabs value={value} onChange={(_, v) => setValue(v)} className={className} sx={{ borderBottom: 1, borderColor: 'divider' }}>{React.Children.map(children, c => c && React.cloneElement(c))}</MuiTabs>;
+};
+const TabsTrigger = ({ children, value, className, ...props }) => <MuiTab value={value} label={children} className={className} {...props} />;
+const TabsContent = ({ children, value, className }) => {
+  const ctx = React.useContext(TabsContext);
+  if (ctx.value !== value) return null;
+  return <Box className={className} sx={{ pt: 2 }}>{children}</Box>;
+};
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PeopleIcon from '@mui/icons-material/People';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import DownloadIcon from '@mui/icons-material/Download';
+import ChatIcon from '@mui/icons-material/Chat';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const ArrowLeft = _w(ArrowBackIcon), Users = _w(PeopleIcon), TrendingUp = _w(TrendingUpIcon), Award = _w(EmojiEventsIcon);
+const Brain = _w(PsychologyIcon), Clock = _w(AccessTimeIcon), CheckCircle = _w(CheckCircleIcon), XCircle = _w(CancelIcon);
+const BarChart3 = _w(BarChartIcon), Download = _w(DownloadIcon), MessageSquare = _w(ChatIcon);
 import { motion } from 'framer-motion';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer, PieChart, Pie, Cell, LineChart, Line } from 'recharts';
 
