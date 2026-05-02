@@ -3,15 +3,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Progress } from '@/components/ui/progress';
-import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Label } from '@/components/ui/label';
-import { 
-  Clock, CheckCircle, XCircle, AlertCircle, Trophy, 
-  ArrowLeft, ArrowRight, RefreshCw, Award, Target
-} from 'lucide-react';
+import { Button, Card, LinearProgress, Radio, RadioGroup as MuiRadioGroup, FormControlLabel } from '@mui/material';
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ borderRadius: 1 }} />;
+const RadioGroup = ({ value, onValueChange, disabled, children }) => (
+  <MuiRadioGroup value={value ?? ''} onChange={(e) => !disabled && onValueChange?.(e.target.value)}>{children}</MuiRadioGroup>
+);
+const RadioGroupItem = ({ value, id, className }) => <Radio value={value} id={id} size="small" className={className} />;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className} {...props}>{children}</label>;
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import MilitaryTechIcon from '@mui/icons-material/MilitaryTech';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Clock = _w(AccessTimeIcon), CheckCircle = _w(CheckCircleIcon), XCircle = _w(CancelIcon), AlertCircle = _w(ErrorOutlineIcon);
+const Trophy = _w(EmojiEventsIcon), ArrowLeft = _w(ArrowBackIcon), ArrowRight = _w(ArrowForwardIcon);
+const RefreshCw = _w(RefreshIcon), Award = _w(MilitaryTechIcon), Target = _w(GpsFixedIcon);
 import { motion, AnimatePresence } from 'framer-motion';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import confetti from 'canvas-confetti';

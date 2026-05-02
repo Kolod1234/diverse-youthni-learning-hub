@@ -6,7 +6,11 @@ import { useLocation } from 'react-router-dom';
 import {
   Container, Card, Box, Typography, Grid, Tabs, Tab, Button
 } from '@mui/material';
-import { Beaker, Play, Save } from 'lucide-react';
+import ScienceIcon from '@mui/icons-material/Science';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import SaveIcon from '@mui/icons-material/Save';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Beaker = _w(ScienceIcon), Play = _w(PlayArrowIcon), Save = _w(SaveIcon);
 import VisualSimulationEditor from '@/components/simulation/VisualSimulationEditor';
 import SimulationPlayer from '@/components/simulation/SimulationPlayer';
 

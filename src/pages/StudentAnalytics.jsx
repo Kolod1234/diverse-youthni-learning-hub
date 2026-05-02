@@ -1,9 +1,16 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { ArrowLeft, TrendingUp, Clock, Award, CheckCircle } from 'lucide-react';
+import { Card, Chip } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const ArrowLeft = _w(ArrowBackIcon), TrendingUp = _w(TrendingUpIcon), Clock = _w(AccessTimeIcon);
+const Award = _w(EmojiEventsIcon), CheckCircle = _w(CheckCircleIcon);
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 

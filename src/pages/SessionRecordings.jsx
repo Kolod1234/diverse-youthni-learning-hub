@@ -5,7 +5,15 @@ import {
   Container, Card, Box, Typography, Grid, Button, TextField,
   Chip, InputAdornment, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { Video, Search, Play, Eye, Download, Clock } from 'lucide-react';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import SearchIcon from '@mui/icons-material/Search';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import DownloadIcon from '@mui/icons-material/Download';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Video = _w(VideocamIcon), Search = _w(SearchIcon), Play = _w(PlayArrowIcon);
+const Eye = _w(VisibilityIcon), Download = _w(DownloadIcon), Clock = _w(AccessTimeIcon);
 import { motion } from 'framer-motion';
 
 export default function SessionRecordings() {

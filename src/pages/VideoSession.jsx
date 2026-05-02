@@ -3,13 +3,21 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { 
-  Video, Users, Calendar, Clock, ArrowLeft, 
-  CheckCircle, XCircle, Trash2, PlayCircle
-} from 'lucide-react';
+import { Button, Card, Chip } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+import VideocamIcon from '@mui/icons-material/Videocam';
+import PeopleIcon from '@mui/icons-material/People';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Video = _w(VideocamIcon), Users = _w(PeopleIcon), Calendar = _w(CalendarTodayIcon), Clock = _w(AccessTimeIcon);
+const ArrowLeft = _w(ArrowBackIcon), CheckCircle = _w(CheckCircleIcon), XCircle = _w(CancelIcon);
+const Trash2 = _w(DeleteIcon), PlayCircle = _w(PlayCircleOutlineIcon);
 import { format } from 'date-fns';
 import CustomVideoCall from '@/components/video/CustomVideoCall';
 import RealTimeChatPanel from '@/components/session/RealTimeChatPanel';

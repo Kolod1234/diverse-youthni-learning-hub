@@ -1,10 +1,31 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Brain, List, BookOpen, ArrowLeft, Sparkles, Award } from 'lucide-react';
+import { Button, Card, Tabs as MuiTabs, Tab as MuiTab, Box } from '@mui/material';
+const TabsContext = React.createContext({ value: '', setValue: () => {} });
+const Tabs = ({ children, defaultValue, className }) => {
+  const [value, setValue] = React.useState(defaultValue);
+  return <TabsContext.Provider value={{ value, setValue }}><div className={className}>{children}</div></TabsContext.Provider>;
+};
+const TabsList = ({ children, className }) => {
+  const { value, setValue } = React.useContext(TabsContext);
+  return <MuiTabs value={value} onChange={(_, v) => setValue(v)} className={className} sx={{ borderBottom: 1, borderColor: 'divider' }}>{React.Children.map(children, c => c && React.cloneElement(c))}</MuiTabs>;
+};
+const TabsTrigger = ({ children, value, className, ...props }) => <MuiTab value={value} label={children} className={className} {...props} />;
+const TabsContent = ({ children, value, className }) => {
+  const ctx = React.useContext(TabsContext);
+  if (ctx.value !== value) return null;
+  return <Box className={className} sx={{ pt: 2 }}>{children}</Box>;
+};
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import ListIcon from '@mui/icons-material/List';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Brain = _w(PsychologyIcon), List = _w(ListIcon), BookOpen = _w(MenuBookIcon);
+const ArrowLeft = _w(ArrowBackIcon), Sparkles = _w(AutoAwesomeIcon), Award = _w(EmojiEventsIcon);
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import QuizBuilder from '@/components/quiz/QuizBuilder';
