@@ -4,13 +4,51 @@ import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
-import { 
-  FileText, Presentation, ChevronLeft, ChevronRight, X, 
-  CheckCircle, Target, Maximize, Minimize, Home, BookOpen, Layout, ClipboardCheck,
-  ZoomIn, ZoomOut, Minimize2, BookmarkCheck, Search, Sparkles, Pencil, Eraser,
-  Settings, Volume2, Eye, Brain, List, Plus, Trash2, Lock, Key,
-  ChevronDown, ChevronUp, Info, StickyNote, Bookmark
-} from 'lucide-react';
+import DescriptionIcon from '@mui/icons-material/Description';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import FullscreenExitIcon from '@mui/icons-material/FullscreenExit';
+import HomeIcon from '@mui/icons-material/Home';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import ZoomInIcon from '@mui/icons-material/ZoomIn';
+import ZoomOutIcon from '@mui/icons-material/ZoomOut';
+import BookmarkAddedIcon from '@mui/icons-material/BookmarkAdded';
+import SearchIcon from '@mui/icons-material/Search';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import EditIcon from '@mui/icons-material/Edit';
+import AutoFixOffIcon from '@mui/icons-material/AutoFixOff';
+import SettingsIcon from '@mui/icons-material/Settings';
+import VolumeUpIcon from '@mui/icons-material/VolumeUp';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import ListIcon from '@mui/icons-material/List';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import LockIcon from '@mui/icons-material/Lock';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import InfoIcon from '@mui/icons-material/Info';
+import StickyNote2Icon from '@mui/icons-material/StickyNote2';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const FileText = _w(DescriptionIcon), Presentation = _w(SlideshowIcon), ChevronLeft = _w(ChevronLeftIcon), ChevronRight = _w(ChevronRightIcon);
+const X = _w(CloseIcon), CheckCircle = _w(CheckCircleIcon), Target = _w(GpsFixedIcon);
+const Maximize = _w(FullscreenIcon), Minimize = _w(FullscreenExitIcon), Home = _w(HomeIcon), BookOpen = _w(MenuBookIcon);
+const Layout = _w(DashboardIcon), ClipboardCheck = _w(FactCheckIcon), ZoomIn = _w(ZoomInIcon), ZoomOut = _w(ZoomOutIcon);
+const Minimize2 = _w(FullscreenExitIcon), BookmarkCheck = _w(BookmarkAddedIcon), Search = _w(SearchIcon);
+const Sparkles = _w(AutoAwesomeIcon), Pencil = _w(EditIcon), Eraser = _w(AutoFixOffIcon);
+const Settings = _w(SettingsIcon), Volume2 = _w(VolumeUpIcon), Eye = _w(VisibilityIcon), Brain = _w(PsychologyIcon);
+const List = _w(ListIcon), Plus = _w(AddIcon), Trash2 = _w(DeleteIcon), Lock = _w(LockIcon), Key = _w(VpnKeyIcon);
+const ChevronDown = _w(KeyboardArrowDownIcon), ChevronUp = _w(KeyboardArrowUpIcon), Info = _w(InfoIcon);
+const StickyNote = _w(StickyNote2Icon), Bookmark = _w(BookmarkIcon);
 import { DropdownMenuSeparator } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import {

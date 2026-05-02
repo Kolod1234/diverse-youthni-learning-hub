@@ -3,13 +3,33 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { 
-  ChevronLeft, ChevronRight, Check, ChevronDown, Menu, Search, X,
-  Lock, Key, BookOpen, CheckCircle, Settings, Maximize, FileText, Bookmark, MessageSquare, Clock, RefreshCw, Eye, Sparkles
-} from 'lucide-react';
-import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import CheckIcon from '@mui/icons-material/Check';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
 import MenuIcon from '@mui/icons-material/Menu';
+import SearchIcon from '@mui/icons-material/Search';
 import CloseIcon from '@mui/icons-material/Close';
+import LockIcon from '@mui/icons-material/Lock';
+import VpnKeyIcon from '@mui/icons-material/VpnKey';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import SettingsIcon from '@mui/icons-material/Settings';
+import FullscreenIcon from '@mui/icons-material/Fullscreen';
+import DescriptionIcon from '@mui/icons-material/Description';
+import BookmarkIcon from '@mui/icons-material/Bookmark';
+import ChatIcon from '@mui/icons-material/Chat';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import RefreshIcon from '@mui/icons-material/Refresh';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const ChevronLeft = _w(ChevronLeftIcon), ChevronRight = _w(ChevronRightIcon), Check = _w(CheckIcon);
+const ChevronDown = _w(KeyboardArrowDownIcon), Menu = _w(MenuIcon), Search = _w(SearchIcon), X = _w(CloseIcon);
+const Lock = _w(LockIcon), Key = _w(VpnKeyIcon), BookOpen = _w(MenuBookIcon), CheckCircle = _w(CheckCircleIcon);
+const Settings = _w(SettingsIcon), Maximize = _w(FullscreenIcon), FileText = _w(DescriptionIcon);
+const Bookmark = _w(BookmarkIcon), MessageSquare = _w(ChatIcon), Clock = _w(AccessTimeIcon);
+const RefreshCw = _w(RefreshIcon), Eye = _w(VisibilityIcon), Sparkles = _w(AutoAwesomeIcon);
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';

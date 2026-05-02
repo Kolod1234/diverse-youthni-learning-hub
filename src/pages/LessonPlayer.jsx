@@ -1,6 +1,15 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import { Presentation, Layout, Sparkles, Zap, BookOpen, Star, ChevronRight } from 'lucide-react';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import BoltIcon from '@mui/icons-material/Bolt';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import StarIcon from '@mui/icons-material/Star';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Presentation = _w(SlideshowIcon), Layout = _w(DashboardIcon), Sparkles = _w(AutoAwesomeIcon);
+const Zap = _w(BoltIcon), BookOpen = _w(MenuBookIcon), Star = _w(StarIcon), ChevronRight = _w(ChevronRightIcon);
 import { Button, Box, Typography, Chip } from '@mui/material';
 import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
