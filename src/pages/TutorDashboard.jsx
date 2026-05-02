@@ -3,13 +3,37 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useSearchParams } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import {
-  Home, Bell, ClipboardList, MessageSquare, Award, Users, FileText,
-  BookOpen, Target, BarChart, FileCheck, HelpCircle, Calendar,
-  Video, Menu, Plus, Search, ChevronRight, Edit, Trash2, X, GripVertical
-} from 'lucide-react';
+import HomeIcon from '@mui/icons-material/Home';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import ChatIcon from '@mui/icons-material/Chat';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import PeopleIcon from '@mui/icons-material/People';
+import DescriptionIcon from '@mui/icons-material/Description';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import MenuIcon from '@mui/icons-material/Menu';
+import AddIcon from '@mui/icons-material/Add';
+import SearchIcon from '@mui/icons-material/Search';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CloseIcon from '@mui/icons-material/Close';
+import DragIndicatorIcon from '@mui/icons-material/DragIndicator';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Home = _w(HomeIcon), Bell = _w(NotificationsIcon), ClipboardList = _w(AssignmentIcon), MessageSquare = _w(ChatIcon);
+const Award = _w(EmojiEventsIcon), Users = _w(PeopleIcon), FileText = _w(DescriptionIcon), BookOpen = _w(MenuBookIcon);
+const Target = _w(GpsFixedIcon), BarChart = _w(BarChartIcon), FileCheck = _w(FactCheckIcon), HelpCircle = _w(HelpOutlineIcon);
+const Calendar = _w(CalendarTodayIcon), Video = _w(VideocamIcon), Menu = _w(MenuIcon), Plus = _w(AddIcon);
+const Search = _w(SearchIcon), ChevronRight = _w(ChevronRightIcon), Edit = _w(EditIcon), Trash2 = _w(DeleteIcon);
+const X = _w(CloseIcon), GripVertical = _w(DragIndicatorIcon);
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
-import { Button } from '@/components/ui/button';
+import { Button } from '@mui/material';
 import { toast } from 'sonner';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import AdvancedFilters from '@/components/search/AdvancedFilters';

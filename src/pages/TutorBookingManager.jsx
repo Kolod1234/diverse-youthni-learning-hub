@@ -3,15 +3,28 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { 
-  Calendar, Clock, User, CheckCircle, XCircle, Plus, Trash2, 
-  Users, BookOpen, ArrowLeft, MessageSquare, Settings, ChevronDown 
-} from 'lucide-react';
+import { Button, Card, Chip, TextField } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={2} className={className} {...props} />;
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PersonIcon from '@mui/icons-material/Person';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import AddIcon from '@mui/icons-material/Add';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import ChatIcon from '@mui/icons-material/Chat';
+import SettingsIcon from '@mui/icons-material/Settings';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Calendar = _w(CalendarTodayIcon), Clock = _w(AccessTimeIcon), User = _w(PersonIcon), CheckCircle = _w(CheckCircleIcon);
+const XCircle = _w(CancelIcon), Plus = _w(AddIcon), Trash2 = _w(DeleteIcon), Users = _w(PeopleIcon);
+const BookOpen = _w(MenuBookIcon), ArrowLeft = _w(ArrowBackIcon), MessageSquare = _w(ChatIcon);
+const Settings = _w(SettingsIcon), ChevronDown = _w(KeyboardArrowDownIcon);
 import { toast } from 'sonner';
 import { format, parseISO } from 'date-fns';
 

@@ -3,14 +3,39 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import {
-  Video, Calendar, Users, Clock, Plus, Edit, Trash2, 
-  CheckCircle, XCircle, ArrowLeft, TrendingUp, Eye
-} from 'lucide-react';
+import { Button, Card, Chip, Tabs as MuiTabs, Tab as MuiTab, Box } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const TabsContext = React.createContext({ value: '', setValue: () => {} });
+const Tabs = ({ children, defaultValue, className, ...props }) => {
+  const [value, setValue] = React.useState(defaultValue);
+  return <TabsContext.Provider value={{ value, setValue }}><div className={className} {...props}>{children}</div></TabsContext.Provider>;
+};
+const TabsList = ({ children, className }) => {
+  const { value, setValue } = React.useContext(TabsContext);
+  return <MuiTabs value={value} onChange={(_, v) => setValue(v)} className={className} sx={{ borderBottom: 1, borderColor: 'divider' }}>{React.Children.map(children, (child) => child && React.cloneElement(child))}</MuiTabs>;
+};
+const TabsTrigger = ({ children, value, className, ...props }) => <MuiTab value={value} label={children} className={className} {...props} />;
+const TabsContent = ({ children, value, className }) => {
+  const ctx = React.useContext(TabsContext);
+  if (ctx.value !== value) return null;
+  return <Box className={className} sx={{ pt: 2 }}>{children}</Box>;
+};
+import VideocamIcon from '@mui/icons-material/Videocam';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import PeopleIcon from '@mui/icons-material/People';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CancelIcon from '@mui/icons-material/Cancel';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Video = _w(VideocamIcon), Calendar = _w(CalendarTodayIcon), Users = _w(PeopleIcon), Clock = _w(AccessTimeIcon);
+const Plus = _w(AddIcon), Edit = _w(EditIcon), Trash2 = _w(DeleteIcon), CheckCircle = _w(CheckCircleIcon);
+const XCircle = _w(CancelIcon), ArrowLeft = _w(ArrowBackIcon), TrendingUp = _w(TrendingUpIcon), Eye = _w(VisibilityIcon);
 import { format } from 'date-fns';
 import SessionScheduler from '@/components/tutor/SessionScheduler';
 import SessionParticipantsManager from '@/components/tutor/SessionParticipantsManager';

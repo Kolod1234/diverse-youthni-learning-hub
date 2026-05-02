@@ -3,18 +3,43 @@ import { useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { base44 } from '@/api/base44Client';
 import { useMutation } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import {
-  Sparkles, User, BookOpen, CheckCircle, ArrowRight, ArrowLeft,
-  Camera, X, Plus, Award, GraduationCap, Star, Lightbulb,
-  Monitor, ClipboardCheck, ChevronDown, ChevronUp, PlayCircle,
-  Users, BarChart3, MessageSquare, Video, FileText, Lock
-} from 'lucide-react';
+import { Button, Card, TextField, Chip, LinearProgress } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline className={className} {...props} />;
+const Badge = ({ children, className, ...props }) => <Chip label={children} size="small" className={className} {...props} />;
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ borderRadius: 1 }} />;
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import PersonIcon from '@mui/icons-material/Person';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import CloseIcon from '@mui/icons-material/Close';
+import AddIcon from '@mui/icons-material/Add';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import SchoolIcon from '@mui/icons-material/School';
+import StarIcon from '@mui/icons-material/Star';
+import LightbulbIcon from '@mui/icons-material/Lightbulb';
+import MonitorIcon from '@mui/icons-material/Monitor';
+import FactCheckIcon from '@mui/icons-material/FactCheck';
+import KeyboardArrowDownIcon from '@mui/icons-material/KeyboardArrowDown';
+import KeyboardArrowUpIcon from '@mui/icons-material/KeyboardArrowUp';
+import PlayCircleOutlineIcon from '@mui/icons-material/PlayCircleOutline';
+import PeopleIcon from '@mui/icons-material/People';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import ChatIcon from '@mui/icons-material/Chat';
+import VideocamIcon from '@mui/icons-material/Videocam';
+import DescriptionIcon from '@mui/icons-material/Description';
+import LockIcon from '@mui/icons-material/Lock';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Sparkles = _w(AutoAwesomeIcon), User = _w(PersonIcon), BookOpen = _w(MenuBookIcon), CheckCircle = _w(CheckCircleIcon);
+const ArrowRight = _w(ArrowForwardIcon), ArrowLeft = _w(ArrowBackIcon), Camera = _w(PhotoCameraIcon), X = _w(CloseIcon);
+const Plus = _w(AddIcon), Award = _w(EmojiEventsIcon), GraduationCap = _w(SchoolIcon), Star = _w(StarIcon);
+const Lightbulb = _w(LightbulbIcon), Monitor = _w(MonitorIcon), ClipboardCheck = _w(FactCheckIcon);
+const ChevronDown = _w(KeyboardArrowDownIcon), ChevronUp = _w(KeyboardArrowUpIcon), PlayCircle = _w(PlayCircleOutlineIcon);
+const Users = _w(PeopleIcon), BarChart3 = _w(BarChartIcon), MessageSquare = _w(ChatIcon);
+const Video = _w(VideocamIcon), FileText = _w(DescriptionIcon), Lock = _w(LockIcon);
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
