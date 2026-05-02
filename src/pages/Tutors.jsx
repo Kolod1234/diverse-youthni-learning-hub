@@ -4,15 +4,30 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import BecomeTutorButton from '@/components/tutor/BecomeTutorButton';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { 
-  Star, BookOpen, Users, Search, GraduationCap, 
-  Award, TrendingUp, ChevronRight, Plus, Sparkles, LogOut, MessageSquare, Calendar
-} from 'lucide-react';
+import { Button, Card, Chip, TextField, Avatar as MuiAvatar } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Avatar = ({ children, className, ...props }) => <MuiAvatar className={className} {...props}>{children}</MuiAvatar>;
+const AvatarImage = ({ src }) => null;
+const AvatarFallback = ({ children, className }) => <span className={className}>{children}</span>;
+import StarIcon from '@mui/icons-material/Star';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import PeopleIcon from '@mui/icons-material/People';
+import SearchIcon from '@mui/icons-material/Search';
+import SchoolIcon from '@mui/icons-material/School';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import ChevronRightIcon from '@mui/icons-material/ChevronRight';
+import AddIcon from '@mui/icons-material/Add';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+import LogoutIcon from '@mui/icons-material/Logout';
+import ChatIcon from '@mui/icons-material/Chat';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Star = _w(StarIcon), BookOpen = _w(MenuBookIcon), Users = _w(PeopleIcon), Search = _w(SearchIcon);
+const GraduationCap = _w(SchoolIcon), Award = _w(EmojiEventsIcon), TrendingUp = _w(TrendingUpIcon);
+const ChevronRight = _w(ChevronRightIcon), Plus = _w(AddIcon), Sparkles = _w(AutoAwesomeIcon);
+const LogOut = _w(LogoutIcon), MessageSquare = _w(ChatIcon), Calendar = _w(CalendarTodayIcon);
 import { motion } from 'framer-motion';
 import TutorProfileModal from '@/components/tutor/TutorProfileModal';
 

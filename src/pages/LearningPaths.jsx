@@ -3,14 +3,20 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Progress } from '@/components/ui/progress';
-import {
-  Clock, BookOpen, TrendingUp, CheckCircle, Lock,
-  ArrowRight, Target, Award
-} from 'lucide-react';
+import { Button, Card, Chip, LinearProgress } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ borderRadius: 1 }} />;
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import LockIcon from '@mui/icons-material/Lock';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Clock = _w(AccessTimeIcon), BookOpen = _w(MenuBookIcon), TrendingUp = _w(TrendingUpIcon), CheckCircle = _w(CheckCircleIcon);
+const Lock = _w(LockIcon), ArrowRight = _w(ArrowForwardIcon), Target = _w(GpsFixedIcon), Award = _w(EmojiEventsIcon);
 import { motion } from 'framer-motion';
 
 export default function LearningPaths() {

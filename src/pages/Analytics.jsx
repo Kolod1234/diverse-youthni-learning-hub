@@ -2,10 +2,17 @@ import React, { useState, useEffect } from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Card, Button, Tabs, Tab, Box, Typography, Container } from '@mui/material';
-import { 
-  TrendingUp, Target, Brain, Award, 
-  ArrowLeft, BarChart3, PieChart, Activity
-} from 'lucide-react';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+import GpsFixedIcon from '@mui/icons-material/GpsFixed';
+import PsychologyIcon from '@mui/icons-material/Psychology';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import BarChartIcon from '@mui/icons-material/BarChart';
+import PieChartIcon from '@mui/icons-material/PieChart';
+import TimelineIcon from '@mui/icons-material/Timeline';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const TrendingUp = _w(TrendingUpIcon), Target = _w(GpsFixedIcon), Brain = _w(PsychologyIcon), Award = _w(EmojiEventsIcon);
+const ArrowLeft = _w(ArrowBackIcon), BarChart3 = _w(BarChartIcon), PieChart = _w(PieChartIcon), Activity = _w(TimelineIcon);
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { motion } from 'framer-motion';

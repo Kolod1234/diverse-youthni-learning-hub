@@ -1,12 +1,21 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog';
-import { Progress } from '@/components/ui/progress';
-import { BookOpen, CheckCircle, Circle, Download, Eye } from 'lucide-react';
+import { Button, Card, Chip, LinearProgress, Dialog as MuiDialog, DialogTitle as MuiDialogTitle, DialogContent as MuiDialogContent } from '@mui/material';
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Progress = ({ value, className }) => <LinearProgress variant="determinate" value={value || 0} className={className} sx={{ borderRadius: 1 }} />;
+const Dialog = ({ open, onOpenChange, children }) => <MuiDialog open={!!open} onClose={() => onOpenChange?.(false)} maxWidth="lg" fullWidth>{children}</MuiDialog>;
+const DialogContent = ({ children, className }) => <MuiDialogContent className={className}>{children}</MuiDialogContent>;
+const DialogHeader = ({ children }) => <>{children}</>;
+const DialogTitle = ({ children, className }) => <MuiDialogTitle className={className}>{children}</MuiDialogTitle>;
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import RadioButtonUncheckedIcon from '@mui/icons-material/RadioButtonUnchecked';
+import DownloadIcon from '@mui/icons-material/Download';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const BookOpen = _w(MenuBookIcon), CheckCircle = _w(CheckCircleIcon), Circle = _w(RadioButtonUncheckedIcon);
+const Download = _w(DownloadIcon), Eye = _w(VisibilityIcon);
 import { toast } from 'sonner';
 import PDFViewer from '@/components/library/PDFViewer';
 

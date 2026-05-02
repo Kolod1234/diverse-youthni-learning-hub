@@ -2,10 +2,18 @@ import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button, Card, Tabs, Tab, Chip, Box, Typography, Container, Dialog, DialogTitle, DialogContent, DialogActions } from '@mui/material';
-import { 
-  Calendar as CalendarIcon, ClipboardList, Users, BookOpen,
-  Plus, Settings, Clock, MapPin, User
-} from 'lucide-react';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AddIcon from '@mui/icons-material/Add';
+import TuneIcon from '@mui/icons-material/Tune';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import PersonIcon from '@mui/icons-material/Person';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const CalendarIcon = _w(CalendarTodayIcon), ClipboardList = _w(AssignmentIcon), Users = _w(PeopleIcon), BookOpen = _w(MenuBookIcon);
+const Plus = _w(AddIcon), Settings = _w(TuneIcon), Clock = _w(AccessTimeIcon), MapPin = _w(LocationOnIcon), User = _w(PersonIcon);
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 import ProgramCalendar from '@/components/programs/ProgramCalendar';

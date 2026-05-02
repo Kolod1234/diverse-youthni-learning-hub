@@ -6,10 +6,22 @@ import {
   Card, Button, TextField, Box, Typography, Container, Tabs, Tab, 
   Avatar, IconButton, InputLabel, Dialog, DialogTitle, DialogContent, DialogActions
 } from '@mui/material';
-import { 
-  User, Lock, Settings as SettingsIcon, Presentation, Layout,
-  Camera, Save, ArrowLeft, CheckCircle2, AlertTriangle, Trash2, Bell
-} from 'lucide-react';
+import PersonIcon from '@mui/icons-material/Person';
+import LockIcon from '@mui/icons-material/Lock';
+import TuneIcon from '@mui/icons-material/Tune';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+import DashboardIcon from '@mui/icons-material/Dashboard';
+import PhotoCameraIcon from '@mui/icons-material/PhotoCamera';
+import SaveIcon from '@mui/icons-material/Save';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import WarningIcon from '@mui/icons-material/Warning';
+import DeleteIcon from '@mui/icons-material/Delete';
+import NotificationsIcon from '@mui/icons-material/Notifications';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const User = _w(PersonIcon), Lock = _w(LockIcon), SettingsIcon = _w(TuneIcon), Presentation = _w(SlideshowIcon);
+const Layout = _w(DashboardIcon), Camera = _w(PhotoCameraIcon), Save = _w(SaveIcon), ArrowLeft = _w(ArrowBackIcon);
+const CheckCircle2 = _w(CheckCircleIcon), AlertTriangle = _w(WarningIcon), Trash2 = _w(DeleteIcon), Bell = _w(NotificationsIcon);
 import { Switch, FormGroup } from '@mui/material';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';

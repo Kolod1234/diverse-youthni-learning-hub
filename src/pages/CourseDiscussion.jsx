@@ -3,16 +3,27 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { Textarea } from '@/components/ui/textarea';
-import { Input } from '@/components/ui/input';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Badge } from '@/components/ui/badge';
-import { 
-  MessageSquare, ThumbsUp, Send, ArrowLeft, Pin, 
-  MessageCircle, Search, Filter, Clock, TrendingUp
-} from 'lucide-react';
+import { Button, Card, TextField, Chip, Avatar as MuiAvatar } from '@mui/material';
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={4} className={className} {...props} />;
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Avatar = ({ children, className, ...props }) => <MuiAvatar className={className} {...props}>{children}</MuiAvatar>;
+const AvatarImage = ({ src }) => null;
+const AvatarFallback = ({ children, className }) => <span className={className}>{children}</span>;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+import ChatIcon from '@mui/icons-material/Chat';
+import ThumbUpIcon from '@mui/icons-material/ThumbUp';
+import SendIcon from '@mui/icons-material/Send';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import PushPinIcon from '@mui/icons-material/PushPin';
+import ChatBubbleOutlineIcon from '@mui/icons-material/ChatBubbleOutline';
+import SearchIcon from '@mui/icons-material/Search';
+import FilterListIcon from '@mui/icons-material/FilterList';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import TrendingUpIcon from '@mui/icons-material/TrendingUp';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const MessageSquare = _w(ChatIcon), ThumbsUp = _w(ThumbUpIcon), Send = _w(SendIcon), ArrowLeft = _w(ArrowBackIcon);
+const Pin = _w(PushPinIcon), MessageCircle = _w(ChatBubbleOutlineIcon), Search = _w(SearchIcon);
+const Filter = _w(FilterListIcon), Clock = _w(AccessTimeIcon), TrendingUp = _w(TrendingUpIcon);
 import { motion } from 'framer-motion';
 import { format } from 'date-fns';
 import { toast } from 'sonner';
