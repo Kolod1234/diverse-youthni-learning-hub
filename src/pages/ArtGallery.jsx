@@ -1,12 +1,16 @@
 import React, { useState } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Heart, Search, Palette } from 'lucide-react';
-import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent } from '@/components/ui/dialog';
+import { Card, Button, TextField, Chip, Dialog as MuiDialog, DialogContent as MuiDialogContent } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Dialog = ({ open, onOpenChange, children }) => <MuiDialog open={!!open} onClose={() => onOpenChange?.(false)} maxWidth="md" fullWidth>{children}</MuiDialog>;
+const DialogContent = ({ children, className }) => <MuiDialogContent className={className}>{children}</MuiDialogContent>;
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import SearchIcon from '@mui/icons-material/Search';
+import PaletteIcon from '@mui/icons-material/Palette';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Heart = _w(FavoriteIcon), Search = _w(SearchIcon), Palette = _w(PaletteIcon);
 
 export default function ArtGallery() {
   const [searchQuery, setSearchQuery] = useState('');

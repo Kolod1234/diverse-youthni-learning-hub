@@ -1,13 +1,38 @@
 import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
-import { Card } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Badge } from '@/components/ui/badge';
-import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
-import { Lock, Users, BookOpen, MessageSquare, UserCheck, UserX, Star, ClipboardList } from 'lucide-react';
+import { Card, Button, TextField, Chip, Avatar as MuiAvatar, Tabs as MuiTabs, Tab as MuiTab, Box } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
+const Avatar = ({ children, className, ...props }) => <MuiAvatar className={className} {...props}>{children}</MuiAvatar>;
+const AvatarImage = () => null;
+const AvatarFallback = ({ children, className }) => <span className={className}>{children}</span>;
+const TabsContext = React.createContext({ value: '', setValue: () => {} });
+const Tabs = ({ children, defaultValue, className }) => {
+  const [value, setValue] = React.useState(defaultValue);
+  return <TabsContext.Provider value={{ value, setValue }}><div className={className}>{children}</div></TabsContext.Provider>;
+};
+const TabsList = ({ children, className }) => {
+  const { value, setValue } = React.useContext(TabsContext);
+  return <MuiTabs value={value} onChange={(_, v) => setValue(v)} className={className} sx={{ borderBottom: 1, borderColor: 'divider' }}>{React.Children.map(children, c => c && React.cloneElement(c))}</MuiTabs>;
+};
+const TabsTrigger = ({ children, value, className, ...props }) => <MuiTab value={value} label={children} className={className} {...props} />;
+const TabsContent = ({ children, value, className }) => {
+  const ctx = React.useContext(TabsContext);
+  if (ctx.value !== value) return null;
+  return <Box className={className} sx={{ pt: 2 }}>{children}</Box>;
+};
+import LockIcon from '@mui/icons-material/Lock';
+import PeopleIcon from '@mui/icons-material/People';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import ChatIcon from '@mui/icons-material/Chat';
+import HowToRegIcon from '@mui/icons-material/HowToReg';
+import PersonOffIcon from '@mui/icons-material/PersonOff';
+import StarIcon from '@mui/icons-material/Star';
+import AssignmentIcon from '@mui/icons-material/Assignment';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Lock = _w(LockIcon), Users = _w(PeopleIcon), BookOpen = _w(MenuBookIcon), MessageSquare = _w(ChatIcon);
+const UserCheck = _w(HowToRegIcon), UserX = _w(PersonOffIcon), Star = _w(StarIcon), ClipboardList = _w(AssignmentIcon);
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
 import CoordinatorParticipants from '@/components/coordinator/CoordinatorParticipants';

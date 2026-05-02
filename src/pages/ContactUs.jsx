@@ -1,11 +1,16 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { useQuery } from '@tanstack/react-query';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
-import { Mail, Phone, MapPin, Send, CheckCircle } from 'lucide-react';
+import { Button, Card, TextField } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={4} className={className} {...props} />;
+import MailIcon from '@mui/icons-material/Mail';
+import PhoneIcon from '@mui/icons-material/Phone';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import SendIcon from '@mui/icons-material/Send';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Mail = _w(MailIcon), Phone = _w(PhoneIcon), MapPin = _w(LocationOnIcon), Send = _w(SendIcon), CheckCircle = _w(CheckCircleIcon);
 import { motion } from 'framer-motion';
 import { toast } from 'sonner';
 

@@ -1,11 +1,20 @@
 import React, { useState } from 'react';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Textarea } from '@/components/ui/textarea';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Label } from '@/components/ui/label';
-import { Loader2, Plus, X, ExternalLink, Presentation } from 'lucide-react';
+import { Button, Card, CardContent as MuiCardContent, CardHeader as MuiCardHeader, TextField, Box, Typography } from '@mui/material';
+const Input = ({ className, ...props }) => <TextField fullWidth size="small" className={className} {...props} />;
+const Textarea = ({ className, ...props }) => <TextField fullWidth multiline rows={4} className={className} {...props} />;
+const CardContent = ({ children, className, ...props }) => <MuiCardContent className={className} {...props}>{children}</MuiCardContent>;
+const CardHeader = ({ children, className, ...props }) => <MuiCardHeader className={className} title={null} {...props}>{children}</MuiCardHeader>;
+const CardTitle = ({ children, className }) => <Typography variant="h6" fontWeight={700} className={className}>{children}</Typography>;
+const CardDescription = ({ children, className }) => <Typography variant="body2" color="text.secondary" className={className}>{children}</Typography>;
+const Label = ({ children, className, htmlFor, ...props }) => <label htmlFor={htmlFor} className={className || 'block text-sm font-medium text-gray-700 mb-1'} {...props}>{children}</label>;
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import AddIcon from '@mui/icons-material/Add';
+import CloseIcon from '@mui/icons-material/Close';
+import OpenInNewIcon from '@mui/icons-material/OpenInNew';
+import SlideshowIcon from '@mui/icons-material/Slideshow';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Loader2 = _w(HourglassEmptyIcon), Plus = _w(AddIcon), X = _w(CloseIcon), ExternalLink = _w(OpenInNewIcon), Presentation = _w(SlideshowIcon);
 import { toast } from 'sonner';
 
 export default function CommunityEventSlides() {

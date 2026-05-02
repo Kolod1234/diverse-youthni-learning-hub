@@ -8,7 +8,17 @@ import {
   Box, Grid, Chip, IconButton, Dialog, DialogTitle, DialogContent, DialogActions,
   Select, MenuItem, FormControl, InputLabel, Switch, FormControlLabel, Divider
 } from '@mui/material';
-import { Award, Plus, Edit, Trash2, Users, CheckCircle, BookOpen, Sparkles } from 'lucide-react';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import AddIcon from '@mui/icons-material/Add';
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
+import PeopleIcon from '@mui/icons-material/People';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import MenuBookIcon from '@mui/icons-material/MenuBook';
+import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Award = _w(EmojiEventsIcon), Plus = _w(AddIcon), Edit = _w(EditIcon), Trash2 = _w(DeleteIcon);
+const Users = _w(PeopleIcon), CheckCircle = _w(CheckCircleIcon), BookOpen = _w(MenuBookIcon), Sparkles = _w(AutoAwesomeIcon);
 import { toast } from 'sonner';
 import AIAcademyGeneratorDialog from '@/components/academy/AIAcademyGeneratorDialog';
 

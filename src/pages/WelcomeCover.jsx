@@ -1,9 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
-import { Button } from '@/components/ui/button';
-import { Card } from '@/components/ui/card';
-import { GraduationCap, Users, Award, Eye, ArrowRight } from 'lucide-react';
+import { Button, Card } from '@mui/material';
+import SchoolIcon from '@mui/icons-material/School';
+import PeopleIcon from '@mui/icons-material/People';
+import EmojiEventsIcon from '@mui/icons-material/EmojiEvents';
+import VisibilityIcon from '@mui/icons-material/Visibility';
+import ArrowForwardIcon from '@mui/icons-material/ArrowForward';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const GraduationCap = _w(SchoolIcon), Users = _w(PeopleIcon), Award = _w(EmojiEventsIcon), Eye = _w(VisibilityIcon), ArrowRight = _w(ArrowForwardIcon);
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
 

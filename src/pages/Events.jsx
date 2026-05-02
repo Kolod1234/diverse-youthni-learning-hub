@@ -6,7 +6,17 @@ import {
   Dialog, DialogTitle, DialogContent, DialogActions, TextField, Avatar,
   Grid, Select, MenuItem, FormControl, InputLabel, Tabs, Tab
 } from '@mui/material';
-import { Calendar, MapPin, Clock, Users, Wifi, CheckCircle, X, HelpCircle } from 'lucide-react';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AccessTimeIcon from '@mui/icons-material/AccessTime';
+import PeopleIcon from '@mui/icons-material/People';
+import WifiIcon from '@mui/icons-material/Wifi';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import CloseIcon from '@mui/icons-material/Close';
+import HelpOutlineIcon from '@mui/icons-material/HelpOutline';
+const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
+const Calendar = _w(CalendarTodayIcon), MapPin = _w(LocationOnIcon), Clock = _w(AccessTimeIcon), Users = _w(PeopleIcon);
+const Wifi = _w(WifiIcon), CheckCircle = _w(CheckCircleIcon), X = _w(CloseIcon), HelpCircle = _w(HelpOutlineIcon);
 import PaginationBar from '@/components/ui/PaginationBar';
 import { format, isPast, isFuture, parseISO } from 'date-fns';
 import { motion } from 'framer-motion';

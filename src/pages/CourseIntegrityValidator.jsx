@@ -6,7 +6,13 @@ import {
   Table, TableBody, TableCell, TableContainer, TableHead, TableRow,
   Dialog, DialogTitle, DialogContent, DialogActions, Alert
 } from '@mui/material';
-import { Play, CheckCircle, AlertCircle, Loader, Download } from 'lucide-react';
+import PlayArrowIcon from '@mui/icons-material/PlayArrow';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
+import ErrorOutlineIcon from '@mui/icons-material/ErrorOutline';
+import HourglassEmptyIcon from '@mui/icons-material/HourglassEmpty';
+import DownloadIcon from '@mui/icons-material/Download';
+const _w = (I) => ({ size, color, className, style, sx: extraSx, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit', ...(extraSx || {}) }} {...r} />;
+const Play = _w(PlayArrowIcon), CheckCircle = _w(CheckCircleIcon), AlertCircle = _w(ErrorOutlineIcon), Loader = _w(HourglassEmptyIcon), Download = _w(DownloadIcon);
 
 export default function CourseIntegrityValidator() {
   const [isRunning, setIsRunning] = useState(false);
