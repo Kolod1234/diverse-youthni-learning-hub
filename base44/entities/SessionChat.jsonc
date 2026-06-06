@@ -1,0 +1,48 @@
+{
+  "name": "SessionChat",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to video session"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Message sender"
+    },
+    "sender_name": {
+      "type": "string"
+    },
+    "message": {
+      "type": "string",
+      "description": "Chat message content"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "reaction",
+        "system",
+        "file"
+      ],
+      "default": "text"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "Attached file URL"
+    },
+    "replied_to": {
+      "type": "string",
+      "description": "ID of message being replied to"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "session_id",
+    "sender_email",
+    "message"
+  ]
+}

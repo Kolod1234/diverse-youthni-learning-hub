@@ -1,0 +1,48 @@
+{
+  "name": "AIAnswerFeedback",
+  "type": "object",
+  "properties": {
+    "question": {
+      "type": "string",
+      "description": "The original student question"
+    },
+    "answer_snippet": {
+      "type": "string",
+      "description": "First 500 chars of the AI answer"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject (e.g. Mathematics)"
+    },
+    "qualification": {
+      "type": "string",
+      "description": "Qualification level (e.g. GCSE)"
+    },
+    "mode": {
+      "type": "string",
+      "description": "Solution mode used (full, hint, mark_scheme, explain)"
+    },
+    "confidence_score": {
+      "type": "number",
+      "description": "AI self-assessed confidence score 0-100"
+    },
+    "rating": {
+      "type": "string",
+      "enum": [
+        "thumbs_up",
+        "thumbs_down"
+      ],
+      "description": "User rating of answer quality"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Optional user comment about answer quality"
+    }
+  },
+  "required": [
+    "subject",
+    "qualification",
+    "mode",
+    "rating"
+  ]
+}

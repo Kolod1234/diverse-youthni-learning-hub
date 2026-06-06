@@ -1,0 +1,41 @@
+{
+  "name": "UserLibraryRole",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Full name of the user"
+    },
+    "library_role": {
+      "type": "string",
+      "enum": [
+        "viewer",
+        "contributor",
+        "moderator",
+        "curator"
+      ],
+      "description": "Assigned library role"
+    },
+    "assigned_by": {
+      "type": "string",
+      "description": "Email of the admin who assigned this role"
+    },
+    "assigned_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the role was assigned"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Optional notes about this user's role"
+    }
+  },
+  "required": [
+    "user_email",
+    "library_role"
+  ]
+}

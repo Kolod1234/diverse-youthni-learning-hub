@@ -1,0 +1,37 @@
+{
+  "name": "SessionParticipant",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to the live session"
+    },
+    "participant_email": {
+      "type": "string",
+      "description": "Participant's email"
+    },
+    "participant_name": {
+      "type": "string",
+      "description": "Participant's name"
+    },
+    "joined_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When they joined"
+    },
+    "last_active": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last activity timestamp"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Currently in session"
+    }
+  },
+  "required": [
+    "session_id",
+    "participant_email"
+  ]
+}

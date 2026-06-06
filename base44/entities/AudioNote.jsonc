@@ -1,0 +1,28 @@
+{
+  "name": "AudioNote",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "audio_url": {
+      "type": "string",
+      "description": "Recorded audio file"
+    },
+    "duration_seconds": {
+      "type": "number"
+    },
+    "transcript": {
+      "type": "string",
+      "description": "Auto-generated transcript"
+    },
+    "timestamp_position": {
+      "type": "number",
+      "description": "Where in lesson this was recorded"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "audio_url"
+  ]
+}

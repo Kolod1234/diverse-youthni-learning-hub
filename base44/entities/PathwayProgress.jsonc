@@ -1,0 +1,43 @@
+{
+  "name": "PathwayProgress",
+  "type": "object",
+  "properties": {
+    "pathway_id": {
+      "type": "string",
+      "description": "Reference to LearningPathway"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Student email"
+    },
+    "completed_resources": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "Array of completed resource IDs"
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall progress percentage"
+    },
+    "started_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "pathway_id",
+    "user_email"
+  ]
+}

@@ -1,0 +1,46 @@
+{
+  "name": "Rota",
+  "type": "object",
+  "properties": {
+    "program_id": {
+      "type": "string",
+      "description": "Reference to program"
+    },
+    "participant_email": {
+      "type": "string",
+      "description": "Participant's email"
+    },
+    "participant_name": {
+      "type": "string"
+    },
+    "shift_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Shift start time (HH:MM)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "Shift end time (HH:MM)"
+    },
+    "role": {
+      "type": "string",
+      "description": "Role/task assigned"
+    },
+    "location": {
+      "type": "string"
+    },
+    "notes": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "program_id",
+    "participant_email",
+    "shift_date",
+    "start_time",
+    "end_time"
+  ]
+}

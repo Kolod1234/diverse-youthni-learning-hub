@@ -1,0 +1,52 @@
+{
+  "name": "SCORMSuspendData",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to SCORM session"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to lesson"
+    },
+    "data": {
+      "type": "object",
+      "description": "JSON object containing suspended data (notes, progress, preferences, etc.)",
+      "additionalProperties": true
+    },
+    "data_size_bytes": {
+      "type": "number",
+      "description": "Size of suspend data in bytes"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When suspend data was created"
+    },
+    "updated_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When suspend data was last updated"
+    },
+    "checksum": {
+      "type": "string",
+      "description": "Hash of suspend data for integrity verification"
+    },
+    "version": {
+      "type": "number",
+      "default": 1,
+      "description": "Version number of this suspend data"
+    }
+  },
+  "required": [
+    "session_id",
+    "user_email",
+    "lesson_id",
+    "data"
+  ]
+}

@@ -1,0 +1,109 @@
+{
+  "name": "ReminderConfig",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Reminder title"
+    },
+    "reminder_type": {
+      "type": "string",
+      "enum": [
+        "assignment_submission",
+        "do_assignment",
+        "upcoming_class",
+        "news",
+        "new_course"
+      ],
+      "description": "Type of reminder"
+    },
+    "message": {
+      "type": "string",
+      "description": "Custom email message/body"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Email subject line"
+    },
+    "target_audience": {
+      "type": "string",
+      "enum": [
+        "all_students",
+        "specific_course",
+        "specific_group"
+      ],
+      "default": "all_students",
+      "description": "Who to send reminder to"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Course ID if targeting specific course"
+    },
+    "group_id": {
+      "type": "string",
+      "description": "Study group ID if targeting specific group"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether reminder is active"
+    },
+    "created_by_role": {
+      "type": "string",
+      "enum": [
+        "admin",
+        "teacher"
+      ],
+      "description": "Role of creator"
+    },
+    "sent_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times reminder has been sent"
+    },
+    "last_sent_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last time this reminder was sent"
+    },
+    "schedule_type": {
+      "type": "string",
+      "enum": [
+        "manual",
+        "once",
+        "continuous"
+      ],
+      "default": "manual",
+      "description": "Manual=send only when clicked, Once=send at specific time, Continuous=send at regular intervals"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date to send reminder (for once or continuous)"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "description": "Time to send reminder in HH:MM format"
+    },
+    "repeat_interval": {
+      "type": "number",
+      "description": "For continuous: interval in days"
+    },
+    "repeat_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "For continuous: when to stop repeating"
+    },
+    "is_scheduled_active": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether scheduled sending is active"
+    }
+  },
+  "required": [
+    "title",
+    "reminder_type",
+    "message",
+    "subject"
+  ]
+}

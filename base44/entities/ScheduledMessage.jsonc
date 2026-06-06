@@ -1,0 +1,52 @@
+{
+  "name": "ScheduledMessage",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string",
+      "description": "Recipient email address"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Message subject"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to send the message"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Sender email"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Sender name"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "sent",
+        "failed"
+      ],
+      "default": "pending",
+      "description": "Message status"
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the message was actually sent"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "content",
+    "scheduled_time",
+    "sender_email"
+  ]
+}

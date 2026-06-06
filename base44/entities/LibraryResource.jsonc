@@ -1,0 +1,59 @@
+{
+  "name": "LibraryResource",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Resource title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Resource description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "youth_work",
+        "gcse_books",
+        "gcse_past_questions",
+        "a_level_books",
+        "inspirational",
+        "dyni_books",
+        "workbooks_logbooks",
+        "history_books"
+      ],
+      "default": "gcse_books"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL of the resource file"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Cover image URL"
+    },
+    "author": {
+      "type": "string",
+      "description": "Author or creator"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "downloads_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "file_url"
+  ]
+}

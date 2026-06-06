@@ -1,0 +1,33 @@
+{
+  "name": "SupportMessage",
+  "type": "object",
+  "properties": {
+    "chat_id": {
+      "type": "string",
+      "description": "Reference to SupportChat"
+    },
+    "sender_role": {
+      "type": "string",
+      "enum": [
+        "user",
+        "agent",
+        "bot"
+      ],
+      "default": "user",
+      "description": "Who sent this message"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Display name of sender"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message text"
+    }
+  },
+  "required": [
+    "chat_id",
+    "content",
+    "sender_role"
+  ]
+}

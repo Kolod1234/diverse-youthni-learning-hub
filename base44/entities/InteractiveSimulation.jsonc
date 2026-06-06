@@ -1,0 +1,140 @@
+{
+  "name": "InteractiveSimulation",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Associated lesson"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "title": {
+      "type": "string",
+      "description": "Simulation title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "simulation_type": {
+      "type": "string",
+      "enum": [
+        "3d_model",
+        "lab_experiment",
+        "data_visualization",
+        "coding_sandbox",
+        "physics_simulation",
+        "chemistry_lab",
+        "math_visualization",
+        "branching_scenario",
+        "decision_tree",
+        "virtual_patient",
+        "case_study"
+      ],
+      "description": "Type of simulation"
+    },
+    "config": {
+      "type": "object",
+      "description": "Simulation configuration and parameters"
+    },
+    "scenario_data": {
+      "type": "object",
+      "description": "Branching scenario structure with nodes and choices",
+      "properties": {
+        "nodes": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "title": {
+                "type": "string"
+              },
+              "content": {
+                "type": "string"
+              },
+              "media_url": {
+                "type": "string"
+              },
+              "choices": {
+                "type": "array",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "text": {
+                      "type": "string"
+                    },
+                    "next_node_id": {
+                      "type": "string"
+                    },
+                    "feedback": {
+                      "type": "string"
+                    },
+                    "points": {
+                      "type": "number"
+                    }
+                  }
+                }
+              },
+              "is_end": {
+                "type": "boolean"
+              }
+            }
+          }
+        },
+        "start_node_id": {
+          "type": "string"
+        }
+      }
+    },
+    "embed_url": {
+      "type": "string",
+      "description": "External simulation URL (PhET, LabXchange, etc.)"
+    },
+    "custom_code": {
+      "type": "string",
+      "description": "Custom JavaScript for simulation"
+    },
+    "learning_objectives": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "interaction_data": {
+      "type": "object",
+      "description": "Tracks user interactions for analytics"
+    },
+    "completion_criteria": {
+      "type": "object",
+      "properties": {
+        "required_actions": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "min_time_seconds": {
+          "type": "number"
+        },
+        "required_paths": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "analytics_enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title",
+    "simulation_type"
+  ]
+}

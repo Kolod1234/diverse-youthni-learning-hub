@@ -1,0 +1,154 @@
+{
+  "name": "SCORMSession",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "scorm_version": {
+      "type": "string",
+      "enum": [
+        "1.2",
+        "2004"
+      ],
+      "description": "SCORM version used"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Unique session identifier"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "suspended",
+        "completed",
+        "abandoned"
+      ],
+      "default": "active",
+      "description": "Current session status"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When session started"
+    },
+    "last_activity_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last interaction timestamp"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When session was marked complete"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "default": 0,
+      "description": "Total session duration in seconds"
+    },
+    "entry_type": {
+      "type": "string",
+      "enum": [
+        "ab-initio",
+        "resume"
+      ],
+      "description": "Whether this is first attempt or resuming"
+    },
+    "exit_type": {
+      "type": "string",
+      "enum": [
+        "normal",
+        "time-out",
+        "suspend",
+        "logout"
+      ],
+      "default": "suspend",
+      "description": "How the session was exited"
+    },
+    "current_location": {
+      "type": "string",
+      "description": "Current position/slide in lesson"
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": [
+        "not attempted",
+        "attempted",
+        "completed",
+        "incomplete"
+      ],
+      "description": "SCORM completion status"
+    },
+    "success_status": {
+      "type": "string",
+      "enum": [
+        "passed",
+        "failed",
+        "unknown"
+      ],
+      "description": "SCORM success status"
+    },
+    "score_raw": {
+      "type": "number",
+      "description": "Raw score achieved"
+    },
+    "score_min": {
+      "type": "number",
+      "default": 0,
+      "description": "Minimum possible score"
+    },
+    "score_max": {
+      "type": "number",
+      "default": 100,
+      "description": "Maximum possible score"
+    },
+    "progress_measure": {
+      "type": "number",
+      "description": "Progress as decimal (0-1)"
+    },
+    "attempts": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of attempts for this lesson"
+    },
+    "interaction_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total interactions in session"
+    },
+    "bookmarks": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "location": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      },
+      "description": "Array of bookmarks (progress points)"
+    }
+  },
+  "required": [
+    "course_id",
+    "lesson_id",
+    "user_email",
+    "scorm_version",
+    "session_id"
+  ]
+}

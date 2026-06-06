@@ -1,0 +1,100 @@
+{
+  "name": "LessonProgress",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "time_spent_seconds": {
+      "type": "number",
+      "default": 0,
+      "description": "Total time spent on lesson in seconds"
+    },
+    "slides_viewed": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "slide_index": {
+            "type": "number"
+          },
+          "viewed_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "time_on_slide_seconds": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Array of slides viewed with timestamps"
+    },
+    "total_slides_viewed": {
+      "type": "number",
+      "default": 0,
+      "description": "Count of unique slides viewed"
+    },
+    "completion_status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+        "abandoned"
+      ],
+      "default": "not_started",
+      "description": "Current completion status"
+    },
+    "first_viewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When user first started the lesson"
+    },
+    "last_viewed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When user last accessed the lesson"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When lesson was completed"
+    },
+    "engagement_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Calculated engagement score (0-100)"
+    },
+    "sections_expanded": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of section keys that were expanded"
+    },
+    "interactions_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of interactive elements clicked"
+    },
+    "notes_created": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of notes created during lesson"
+    }
+  },
+  "required": [
+    "course_id",
+    "lesson_id",
+    "user_email"
+  ]
+}

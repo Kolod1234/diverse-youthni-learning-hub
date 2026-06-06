@@ -1,0 +1,40 @@
+{
+  "name": "FileShare",
+  "type": "object",
+  "properties": {
+    "resource_id": {
+      "type": "string",
+      "description": "Reference to LibraryResource"
+    },
+    "shared_with_email": {
+      "type": "string",
+      "description": "Email of user the file is shared with"
+    },
+    "shared_by_email": {
+      "type": "string",
+      "description": "Email of user who shared the file"
+    },
+    "shared_by_name": {
+      "type": "string",
+      "description": "Name of user who shared"
+    },
+    "message": {
+      "type": "string",
+      "description": "Optional message from sharer"
+    },
+    "permission": {
+      "type": "string",
+      "enum": [
+        "view",
+        "download"
+      ],
+      "default": "view",
+      "description": "Permission level"
+    }
+  },
+  "required": [
+    "resource_id",
+    "shared_with_email",
+    "shared_by_email"
+  ]
+}

@@ -1,0 +1,73 @@
+{
+  "name": "GroupStudySession",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "Study group reference"
+    },
+    "title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60
+    },
+    "challenge_id": {
+      "type": "string",
+      "description": "Optional challenge for the session"
+    },
+    "organizer_email": {
+      "type": "string"
+    },
+    "organizer_name": {
+      "type": "string"
+    },
+    "attendees": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "joined",
+              "maybe",
+              "declined"
+            ]
+          }
+        }
+      },
+      "default": []
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    }
+  },
+  "required": [
+    "group_id",
+    "title",
+    "scheduled_time"
+  ]
+}

@@ -1,0 +1,97 @@
+{
+  "name": "LMSReportingData",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to lesson"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "reporting_period_start": {
+      "type": "string",
+      "format": "date",
+      "description": "Start of reporting period"
+    },
+    "reporting_period_end": {
+      "type": "string",
+      "format": "date",
+      "description": "End of reporting period"
+    },
+    "total_sessions": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of sessions in period"
+    },
+    "total_time_seconds": {
+      "type": "number",
+      "default": 0,
+      "description": "Total time spent in period"
+    },
+    "completion_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of completions in period"
+    },
+    "last_completion_score": {
+      "type": "number",
+      "description": "Score from last completion"
+    },
+    "average_score": {
+      "type": "number",
+      "description": "Average score across all attempts"
+    },
+    "highest_score": {
+      "type": "number",
+      "description": "Best score achieved"
+    },
+    "pass_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of passing attempts"
+    },
+    "fail_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of failing attempts"
+    },
+    "interactions_total": {
+      "type": "number",
+      "default": 0,
+      "description": "Total interactions across sessions"
+    },
+    "scorm_errors_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of SCORM API errors"
+    },
+    "last_access": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Last access to lesson"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "not_started",
+        "in_progress",
+        "completed",
+        "abandoned"
+      ],
+      "description": "Overall status for period"
+    }
+  },
+  "required": [
+    "course_id",
+    "lesson_id",
+    "user_email",
+    "reporting_period_start",
+    "reporting_period_end"
+  ]
+}

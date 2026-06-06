@@ -1,0 +1,50 @@
+{
+  "name": "Discussion",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson (optional)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Discussion title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Discussion content"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Author name"
+    },
+    "user_avatar": {
+      "type": "string",
+      "description": "Author avatar"
+    },
+    "replies_count": {
+      "type": "number",
+      "default": 0
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent discussion ID for replies"
+    }
+  },
+  "required": [
+    "course_id",
+    "content"
+  ]
+}

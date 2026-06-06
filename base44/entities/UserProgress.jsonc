@@ -1,0 +1,42 @@
+{
+  "name": "UserProgress",
+  "type": "object",
+  "properties": {
+    "points": {
+      "type": "number",
+      "default": 0,
+      "description": "Total points earned"
+    },
+    "level": {
+      "type": "number",
+      "default": 1,
+      "description": "Current level"
+    },
+    "streak_days": {
+      "type": "number",
+      "default": 0,
+      "description": "Current learning streak in days"
+    },
+    "last_activity_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Last learning activity date"
+    },
+    "total_lessons_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "total_quizzes_completed": {
+      "type": "number",
+      "default": 0
+    },
+    "badges_earned": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": []
+}

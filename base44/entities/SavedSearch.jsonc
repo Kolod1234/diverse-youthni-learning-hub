@@ -1,0 +1,55 @@
+{
+  "name": "SavedSearch",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Name of the saved search"
+    },
+    "search_type": {
+      "type": "string",
+      "enum": [
+        "global",
+        "courses",
+        "lessons",
+        "students",
+        "assignments"
+      ],
+      "description": "Type of search"
+    },
+    "filters": {
+      "type": "object",
+      "description": "Saved filter configuration",
+      "properties": {
+        "query": {
+          "type": "string"
+        },
+        "category": {
+          "type": "string"
+        },
+        "status": {
+          "type": "string"
+        },
+        "enrollment_status": {
+          "type": "string"
+        },
+        "lesson_type": {
+          "type": "string"
+        },
+        "date_range": {
+          "type": "object"
+        }
+      }
+    },
+    "is_default": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to apply this search by default"
+    }
+  },
+  "required": [
+    "name",
+    "search_type",
+    "filters"
+  ]
+}

@@ -1,0 +1,80 @@
+{
+  "name": "SessionRecording",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to video session"
+    },
+    "title": {
+      "type": "string",
+      "description": "Recording title"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "URL to recording file"
+    },
+    "duration_seconds": {
+      "type": "number",
+      "description": "Recording duration"
+    },
+    "file_size_mb": {
+      "type": "number",
+      "description": "File size in megabytes"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Recording thumbnail"
+    },
+    "transcript": {
+      "type": "string",
+      "description": "Auto-generated transcript"
+    },
+    "chat_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "sender": {
+            "type": "string"
+          },
+          "message": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Chat messages during session"
+    },
+    "view_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether recording is publicly accessible"
+    },
+    "chapters": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "number"
+          },
+          "title": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Recording chapters for navigation"
+    }
+  },
+  "required": [
+    "session_id",
+    "recording_url"
+  ]
+}

@@ -1,0 +1,57 @@
+{
+  "name": "LiveSession",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "presenter_email": {
+      "type": "string",
+      "description": "Email of the session presenter"
+    },
+    "presenter_name": {
+      "type": "string",
+      "description": "Name of the presenter"
+    },
+    "session_code": {
+      "type": "string",
+      "description": "Unique code to join the session"
+    },
+    "current_slide_index": {
+      "type": "number",
+      "default": 0,
+      "description": "Current slide being shown"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether session is currently active"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the session started"
+    },
+    "ended_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the session ended"
+    },
+    "participant_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of active participants"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "course_id",
+    "presenter_email",
+    "session_code"
+  ]
+}

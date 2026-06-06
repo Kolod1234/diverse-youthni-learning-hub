@@ -1,0 +1,81 @@
+{
+  "name": "LearningImpactMetric",
+  "type": "object",
+  "properties": {
+    "metric_type": {
+      "type": "string",
+      "enum": [
+        "academy_completion",
+        "course_completion",
+        "time_to_competency",
+        "engagement_rate",
+        "roi"
+      ],
+      "description": "Type of metric"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "Academy, Course, or User ID"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "academy",
+        "course",
+        "user",
+        "organization"
+      ],
+      "description": "What this metric tracks"
+    },
+    "period_start": {
+      "type": "string",
+      "format": "date"
+    },
+    "period_end": {
+      "type": "string",
+      "format": "date"
+    },
+    "value": {
+      "type": "number",
+      "description": "Metric value"
+    },
+    "value_type": {
+      "type": "string",
+      "enum": [
+        "percentage",
+        "count",
+        "hours",
+        "currency"
+      ],
+      "description": "Unit of measurement"
+    },
+    "comparison_previous_period": {
+      "type": "number",
+      "description": "% change from previous period"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metric data",
+      "properties": {
+        "total_enrolled": {
+          "type": "number"
+        },
+        "total_completed": {
+          "type": "number"
+        },
+        "average_score": {
+          "type": "number"
+        },
+        "total_time_spent": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "metric_type",
+    "entity_id",
+    "entity_type",
+    "value"
+  ]
+}

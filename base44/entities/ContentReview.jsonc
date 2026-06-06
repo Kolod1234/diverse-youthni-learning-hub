@@ -1,0 +1,89 @@
+{
+  "name": "ContentReview",
+  "type": "object",
+  "properties": {
+    "version_id": {
+      "type": "string",
+      "description": "Reference to ContentVersion"
+    },
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "course",
+        "lesson",
+        "quiz"
+      ]
+    },
+    "entity_id": {
+      "type": "string"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Content reviewer"
+    },
+    "reviewer_name": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected",
+        "needs_changes"
+      ],
+      "default": "pending"
+    },
+    "review_criteria": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "passed": {
+            "type": "boolean"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "comments": {
+      "type": "string",
+      "description": "Overall review comments"
+    },
+    "suggested_changes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "field": {
+            "type": "string"
+          },
+          "current_value": {
+            "type": "string"
+          },
+          "suggested_value": {
+            "type": "string"
+          },
+          "reason": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "reviewed_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "version_id",
+    "entity_type",
+    "entity_id",
+    "reviewer_email"
+  ]
+}

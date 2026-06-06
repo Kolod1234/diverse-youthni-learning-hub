@@ -1,0 +1,29 @@
+{
+  "name": "LessonDifficulty",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "rating": {
+      "type": "number",
+      "description": "1-5 difficulty rating"
+    },
+    "time_spent_minutes": {
+      "type": "number"
+    },
+    "struggled_sections": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "feedback": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "rating"
+  ]
+}

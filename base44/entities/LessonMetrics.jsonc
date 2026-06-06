@@ -1,0 +1,96 @@
+{
+  "name": "LessonMetrics",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson"
+    },
+    "total_attempts": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of users who started the lesson"
+    },
+    "total_completions": {
+      "type": "number",
+      "default": 0,
+      "description": "Total number of users who completed the lesson"
+    },
+    "completion_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage of users who completed (0-100)"
+    },
+    "average_time_spent_seconds": {
+      "type": "number",
+      "default": 0,
+      "description": "Average time spent on lesson across all users"
+    },
+    "average_engagement_score": {
+      "type": "number",
+      "default": 0,
+      "description": "Average engagement score (0-100)"
+    },
+    "drop_off_rate": {
+      "type": "number",
+      "default": 0,
+      "description": "Percentage of users who abandoned the lesson"
+    },
+    "average_slides_viewed": {
+      "type": "number",
+      "default": 0,
+      "description": "Average number of slides viewed per user"
+    },
+    "most_viewed_slide_index": {
+      "type": "number",
+      "description": "Index of the most frequently viewed slide"
+    },
+    "least_viewed_slide_index": {
+      "type": "number",
+      "description": "Index of the least frequently viewed slide"
+    },
+    "average_quiz_score": {
+      "type": "number",
+      "description": "Average quiz score for users who took related quizzes"
+    },
+    "quiz_pass_rate": {
+      "type": "number",
+      "description": "Percentage of users who passed related quizzes"
+    },
+    "user_satisfaction": {
+      "type": "number",
+      "description": "Average satisfaction rating (0-5)"
+    },
+    "difficulty_feedback": {
+      "type": "string",
+      "enum": [
+        "too_easy",
+        "just_right",
+        "too_hard"
+      ],
+      "description": "Most common difficulty feedback"
+    },
+    "last_updated": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When metrics were last calculated"
+    },
+    "trend": {
+      "type": "string",
+      "enum": [
+        "improving",
+        "stable",
+        "declining"
+      ],
+      "description": "Trend in completion rate over time"
+    }
+  },
+  "required": [
+    "course_id",
+    "lesson_id"
+  ]
+}

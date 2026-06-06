@@ -1,0 +1,60 @@
+{
+  "name": "MediaLibrary",
+  "type": "object",
+  "properties": {
+    "file_url": {
+      "type": "string",
+      "description": "URL of the uploaded file"
+    },
+    "file_name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "file_type": {
+      "type": "string",
+      "enum": [
+        "image",
+        "video",
+        "audio"
+      ],
+      "description": "Type of media file"
+    },
+    "mime_type": {
+      "type": "string",
+      "description": "MIME type of the file"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "ai_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "AI-generated tags for the media"
+    },
+    "ai_description": {
+      "type": "string",
+      "description": "AI-generated description of the media"
+    },
+    "user_tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": [],
+      "description": "User-added tags"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Thumbnail preview URL"
+    }
+  },
+  "required": [
+    "file_url",
+    "file_name",
+    "file_type"
+  ]
+}

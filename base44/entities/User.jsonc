@@ -1,0 +1,16 @@
+{
+  "name": "User",
+  "type": "object",
+  "properties": {
+    "last_inactivity_email_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Timestamp of the last inactivity re-engagement email sent to this user"
+    },
+    "disable_inactivity_emails": {
+      "type": "boolean",
+      "default": false,
+      "description": "If true, this user will not receive inactivity re-engagement emails"
+    }
+  }
+}

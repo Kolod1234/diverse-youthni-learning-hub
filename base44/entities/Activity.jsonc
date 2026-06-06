@@ -1,0 +1,54 @@
+{
+  "name": "Activity",
+  "type": "object",
+  "properties": {
+    "program_id": {
+      "type": "string",
+      "description": "Reference to program"
+    },
+    "title": {
+      "type": "string",
+      "description": "Activity title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "activity_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time (HH:MM)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "End time (HH:MM)"
+    },
+    "location": {
+      "type": "string"
+    },
+    "assigned_participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of participant emails"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "in_progress",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled"
+    }
+  },
+  "required": [
+    "program_id",
+    "title",
+    "activity_date"
+  ]
+}

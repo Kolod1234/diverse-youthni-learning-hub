@@ -1,0 +1,42 @@
+{
+  "name": "StudyGroupMessage",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "Study group reference"
+    },
+    "message": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "sender_name": {
+      "type": "string"
+    },
+    "sender_avatar": {
+      "type": "string"
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "announcement",
+        "achievement",
+        "challenge"
+      ],
+      "default": "text"
+    },
+    "related_challenge_id": {
+      "type": "string",
+      "description": "For challenge-related messages"
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "group_id",
+    "message"
+  ]
+}

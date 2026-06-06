@@ -1,0 +1,66 @@
+{
+  "name": "WorkbookProgress",
+  "type": "object",
+  "properties": {
+    "qualification_id": {
+      "type": "string",
+      "description": "Reference to YouthWorkQualification"
+    },
+    "unit_index": {
+      "type": "number",
+      "description": "Index of the unit in curriculum"
+    },
+    "participant_email": {
+      "type": "string",
+      "description": "Email of the participant"
+    },
+    "participant_name": {
+      "type": "string",
+      "description": "Name of the participant"
+    },
+    "workbook_data": {
+      "type": "object",
+      "description": "All workbook responses"
+    },
+    "last_section": {
+      "type": "string",
+      "description": "Last section visited"
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Completion percentage"
+    },
+    "is_submitted": {
+      "type": "boolean",
+      "default": false,
+      "description": "Has the unit been submitted for assessment"
+    },
+    "is_approved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Has coordinator approved"
+    },
+    "approved_by": {
+      "type": "string",
+      "description": "Coordinator who approved"
+    },
+    "approved_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "coordinator_feedback": {
+      "type": "string",
+      "description": "Feedback from coordinator"
+    },
+    "assigned_coordinator_email": {
+      "type": "string",
+      "description": "Assigned coordinator email"
+    }
+  },
+  "required": [
+    "qualification_id",
+    "unit_index",
+    "participant_email"
+  ]
+}

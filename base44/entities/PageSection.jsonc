@@ -1,0 +1,157 @@
+{
+  "name": "PageSection",
+  "type": "object",
+  "properties": {
+    "page_name": {
+      "type": "string",
+      "description": "Page this section belongs to (e.g., Home, About)"
+    },
+    "section_type": {
+      "type": "string",
+      "enum": [
+        "hero_carousel",
+        "ecosystem",
+        "programs",
+        "features",
+        "success_stories",
+        "solutions",
+        "cta_section",
+        "leadership_cta",
+        "image_gallery",
+        "video_embed",
+        "team_members",
+        "faq_section",
+        "testimonial"
+      ],
+      "description": "Type of section"
+    },
+    "title": {
+      "type": "string",
+      "description": "Section title"
+    },
+    "subtitle": {
+      "type": "string",
+      "description": "Section subtitle"
+    },
+    "description": {
+      "type": "string",
+      "description": "Rich text content"
+    },
+    "cta_text": {
+      "type": "string",
+      "description": "Call-to-action button text"
+    },
+    "cta_link": {
+      "type": "string",
+      "description": "Call-to-action link"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether section is visible"
+    },
+    "seo_title": {
+      "type": "string",
+      "description": "SEO page title"
+    },
+    "seo_description": {
+      "type": "string",
+      "description": "SEO meta description"
+    },
+    "seo_keywords": {
+      "type": "string",
+      "description": "SEO keywords"
+    },
+    "gallery_images": {
+      "type": "array",
+      "description": "Image gallery data",
+      "items": {
+        "type": "object",
+        "properties": {
+          "url": {
+            "type": "string"
+          },
+          "caption": {
+            "type": "string"
+          },
+          "alt": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "gallery_layout": {
+      "type": "string",
+      "enum": [
+        "grid",
+        "masonry",
+        "carousel"
+      ],
+      "default": "grid"
+    },
+    "video_url": {
+      "type": "string",
+      "description": "YouTube/Vimeo embed URL"
+    },
+    "video_title": {
+      "type": "string"
+    },
+    "video_description": {
+      "type": "string"
+    },
+    "team_members": {
+      "type": "array",
+      "description": "Team members data",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          },
+          "bio": {
+            "type": "string"
+          },
+          "image": {
+            "type": "string"
+          },
+          "email": {
+            "type": "string"
+          },
+          "linkedin": {
+            "type": "string"
+          },
+          "twitter": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "faqs": {
+      "type": "array",
+      "description": "FAQ items",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "answer": {
+            "type": "string"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "section_type",
+    "order"
+  ]
+}

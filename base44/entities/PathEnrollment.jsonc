@@ -1,0 +1,33 @@
+{
+  "name": "PathEnrollment",
+  "type": "object",
+  "properties": {
+    "path_id": {
+      "type": "string",
+      "description": "Reference to learning path"
+    },
+    "current_course_index": {
+      "type": "number",
+      "default": 0,
+      "description": "Index of current course in path"
+    },
+    "completed_course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Completed course IDs in this path"
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "path_id"
+  ]
+}

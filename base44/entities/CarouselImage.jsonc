@@ -1,0 +1,33 @@
+{
+  "name": "CarouselImage",
+  "type": "object",
+  "properties": {
+    "image_url": {
+      "type": "string",
+      "description": "URL of the carousel image"
+    },
+    "carousel_type": {
+      "type": "string",
+      "enum": [
+        "main",
+        "leadership",
+        "hero"
+      ],
+      "default": "main",
+      "description": "Which carousel this image belongs to"
+    },
+    "order": {
+      "type": "number",
+      "description": "Display order",
+      "default": 0
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether to show in carousel"
+    }
+  },
+  "required": [
+    "image_url"
+  ]
+}

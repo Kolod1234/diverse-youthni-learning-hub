@@ -1,0 +1,62 @@
+{
+  "name": "SCORMPackage",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Associated lesson"
+    },
+    "title": {
+      "type": "string",
+      "description": "Package title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "scorm_version": {
+      "type": "string",
+      "enum": [
+        "1.2",
+        "2004"
+      ],
+      "default": "1.2",
+      "description": "SCORM version"
+    },
+    "package_url": {
+      "type": "string",
+      "description": "URL to uploaded SCORM zip package"
+    },
+    "manifest_xml": {
+      "type": "string",
+      "description": "Parsed imsmanifest.xml content"
+    },
+    "launch_url": {
+      "type": "string",
+      "description": "Entry point for SCORM content"
+    },
+    "mastery_score": {
+      "type": "number",
+      "description": "Required score to pass"
+    },
+    "max_time_allowed": {
+      "type": "string",
+      "description": "Maximum time allowed for completion"
+    },
+    "completion_threshold": {
+      "type": "number",
+      "description": "Percentage required for completion"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "package_url"
+  ]
+}

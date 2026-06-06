@@ -1,0 +1,54 @@
+{
+  "name": "StudyGroup",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Study group name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Study group description"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course ID"
+    },
+    "owner_email": {
+      "type": "string",
+      "description": "Group creator's email"
+    },
+    "owner_name": {
+      "type": "string",
+      "description": "Group creator's name"
+    },
+    "member_count": {
+      "type": "number",
+      "default": 1,
+      "description": "Number of members"
+    },
+    "max_members": {
+      "type": "number",
+      "default": 10,
+      "description": "Maximum number of members allowed"
+    },
+    "is_private": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether group requires approval to join"
+    },
+    "meeting_schedule": {
+      "type": "string",
+      "description": "Group meeting schedule"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "course_id",
+    "owner_email"
+  ]
+}

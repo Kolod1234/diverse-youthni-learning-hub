@@ -1,0 +1,50 @@
+{
+  "name": "LearningPath",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Learning path title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Path description"
+    },
+    "course_ids": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Ordered array of course IDs in the learning path"
+    },
+    "estimated_duration_weeks": {
+      "type": "number",
+      "description": "Estimated weeks to complete"
+    },
+    "difficulty_level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "category": {
+      "type": "string",
+      "description": "Subject category"
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Path thumbnail image"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "course_ids"
+  ]
+}

@@ -1,0 +1,107 @@
+{
+  "name": "xAPIStatement",
+  "type": "object",
+  "properties": {
+    "actor": {
+      "type": "object",
+      "description": "The learner (xAPI actor)",
+      "properties": {
+        "objectType": {
+          "type": "string",
+          "default": "Agent"
+        },
+        "name": {
+          "type": "string"
+        },
+        "mbox": {
+          "type": "string"
+        }
+      }
+    },
+    "verb": {
+      "type": "object",
+      "description": "The action (xAPI verb)",
+      "properties": {
+        "id": {
+          "type": "string"
+        },
+        "display": {
+          "type": "object"
+        }
+      }
+    },
+    "object": {
+      "type": "object",
+      "description": "The learning object (xAPI object)",
+      "properties": {
+        "objectType": {
+          "type": "string"
+        },
+        "id": {
+          "type": "string"
+        },
+        "definition": {
+          "type": "object"
+        }
+      }
+    },
+    "result": {
+      "type": "object",
+      "description": "Result of the interaction",
+      "properties": {
+        "score": {
+          "type": "object",
+          "properties": {
+            "scaled": {
+              "type": "number"
+            },
+            "raw": {
+              "type": "number"
+            },
+            "min": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          }
+        },
+        "success": {
+          "type": "boolean"
+        },
+        "completion": {
+          "type": "boolean"
+        },
+        "duration": {
+          "type": "string"
+        }
+      }
+    },
+    "context": {
+      "type": "object",
+      "description": "Context of the activity"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Associated lesson"
+    },
+    "synced_to_lrs": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether synced to external Learning Record Store"
+    }
+  },
+  "required": [
+    "actor",
+    "verb",
+    "object"
+  ]
+}

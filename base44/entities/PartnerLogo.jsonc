@@ -1,0 +1,42 @@
+{
+  "name": "PartnerLogo",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Organization name"
+    },
+    "logo_url": {
+      "type": "string",
+      "description": "Logo image URL"
+    },
+    "website_url": {
+      "type": "string",
+      "description": "Organization website"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "partner",
+        "funder"
+      ],
+      "default": "partner",
+      "description": "Type of organization"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Show on homepage"
+    },
+    "order": {
+      "type": "number",
+      "default": 0,
+      "description": "Display order"
+    }
+  },
+  "required": [
+    "name",
+    "logo_url",
+    "type"
+  ]
+}

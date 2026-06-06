@@ -1,0 +1,45 @@
+{
+  "name": "SupportChat",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user who opened the chat"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "open",
+        "closed",
+        "bot"
+      ],
+      "default": "open",
+      "description": "Status of the support conversation"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview of the last message"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "unread_admin": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether admin has unread messages"
+    },
+    "unread_user": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user has unread messages from agent"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

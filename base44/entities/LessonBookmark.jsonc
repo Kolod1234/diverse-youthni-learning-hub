@@ -1,0 +1,54 @@
+{
+  "name": "LessonBookmark",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to lesson"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to course"
+    },
+    "location": {
+      "type": "string",
+      "description": "Bookmark location/slide position"
+    },
+    "title": {
+      "type": "string",
+      "description": "User-friendly name for bookmark"
+    },
+    "notes": {
+      "type": "string",
+      "description": "User notes at this bookmark"
+    },
+    "timestamp": {
+      "type": "number",
+      "description": "Video/slide timestamp if applicable"
+    },
+    "created_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When bookmark was created"
+    },
+    "is_auto_bookmark": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether bookmark was created automatically by system"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Reference to SCORM session"
+    }
+  },
+  "required": [
+    "user_email",
+    "lesson_id",
+    "course_id",
+    "location"
+  ]
+}

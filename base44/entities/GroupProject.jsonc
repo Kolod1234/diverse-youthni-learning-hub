@@ -1,0 +1,92 @@
+{
+  "name": "GroupProject",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "title": {
+      "type": "string",
+      "description": "Project title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Project description and requirements"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "team_members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "workspace_id": {
+      "type": "string",
+      "description": "Associated collaborative workspace"
+    },
+    "deliverables": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "type": "string"
+          },
+          "description": {
+            "type": "string"
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "submitted_by": {
+            "type": "string"
+          },
+          "submitted_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "peer_reviews_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "planning",
+        "in_progress",
+        "review",
+        "completed"
+      ],
+      "default": "planning"
+    },
+    "grade": {
+      "type": "number",
+      "description": "Overall project grade"
+    },
+    "instructor_feedback": {
+      "type": "string"
+    }
+  },
+  "required": [
+    "course_id",
+    "title"
+  ]
+}

@@ -1,0 +1,52 @@
+{
+  "name": "Message",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to course (optional for direct messages)"
+    },
+    "conversation_id": {
+      "type": "string",
+      "description": "Group messages into conversations"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Message sender email"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Sender's name"
+    },
+    "sender_avatar": {
+      "type": "string",
+      "description": "Sender's avatar URL"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Recipient email"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "message_type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "system"
+      ],
+      "default": "text",
+      "description": "Type of message"
+    }
+  },
+  "required": [
+    "sender_email",
+    "recipient_email",
+    "content"
+  ]
+}

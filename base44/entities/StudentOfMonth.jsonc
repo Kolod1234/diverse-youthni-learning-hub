@@ -1,0 +1,40 @@
+{
+  "name": "StudentOfMonth",
+  "type": "object",
+  "properties": {
+    "student_email": {
+      "type": "string",
+      "description": "Student's email"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student's name"
+    },
+    "student_avatar": {
+      "type": "string",
+      "description": "Student's photo"
+    },
+    "month": {
+      "type": "string",
+      "description": "Month (e.g., January 2026)"
+    },
+    "achievement": {
+      "type": "string",
+      "description": "What they achieved"
+    },
+    "testimonial": {
+      "type": "string",
+      "description": "Student's testimonial"
+    },
+    "is_current": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this the current featured student"
+    }
+  },
+  "required": [
+    "student_name",
+    "month",
+    "achievement"
+  ]
+}

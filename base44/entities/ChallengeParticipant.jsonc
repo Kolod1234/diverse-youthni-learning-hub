@@ -1,0 +1,61 @@
+{
+  "name": "ChallengeParticipant",
+  "type": "object",
+  "properties": {
+    "challenge_id": {
+      "type": "string",
+      "description": "Challenge reference"
+    },
+    "participant_name": {
+      "type": "string"
+    },
+    "participant_avatar": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "in_progress",
+        "completed",
+        "failed",
+        "abandoned"
+      ],
+      "default": "in_progress"
+    },
+    "score": {
+      "type": "number",
+      "default": 0,
+      "description": "Points scored"
+    },
+    "time_taken_seconds": {
+      "type": "number",
+      "description": "Time to complete"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object"
+      },
+      "description": "User's answers"
+    },
+    "code_solution": {
+      "type": "string",
+      "description": "For coding challenges"
+    },
+    "started_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "completed_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "rank": {
+      "type": "number",
+      "description": "Position in leaderboard"
+    }
+  },
+  "required": [
+    "challenge_id"
+  ]
+}

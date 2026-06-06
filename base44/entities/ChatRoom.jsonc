@@ -1,0 +1,46 @@
+{
+  "name": "ChatRoom",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "direct",
+        "session",
+        "community"
+      ],
+      "description": "Type of chat room"
+    },
+    "participant_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of all participants"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Linked session ID (for session chats)"
+    },
+    "post_id": {
+      "type": "string",
+      "description": "Linked community post ID (for community chats)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Room title (for session/community rooms)"
+    },
+    "last_message": {
+      "type": "string",
+      "description": "Preview of last message"
+    },
+    "last_message_at": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "type",
+    "participant_emails"
+  ]
+}

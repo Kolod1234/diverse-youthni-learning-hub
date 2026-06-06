@@ -1,0 +1,76 @@
+{
+  "name": "LessonFeedback",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson being reviewed"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "content_quality": {
+      "type": "number",
+      "description": "Rating of content quality (1-5)",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "relevance": {
+      "type": "number",
+      "description": "Rating of content relevance (1-5)",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "clarity": {
+      "type": "number",
+      "description": "Rating of content clarity (1-5)",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "engagement": {
+      "type": "number",
+      "description": "Rating of content engagement (1-5)",
+      "enum": [
+        1,
+        2,
+        3,
+        4,
+        5
+      ]
+    },
+    "comment": {
+      "type": "string",
+      "description": "Detailed feedback comment"
+    },
+    "suggestions": {
+      "type": "string",
+      "description": "Suggestions for improvement"
+    },
+    "would_recommend": {
+      "type": "boolean",
+      "description": "Would the user recommend this lesson to others"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "course_id",
+    "content_quality",
+    "relevance"
+  ]
+}

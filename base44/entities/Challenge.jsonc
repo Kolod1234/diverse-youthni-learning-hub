@@ -1,0 +1,141 @@
+{
+  "name": "Challenge",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Challenge title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Challenge description"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "quiz",
+        "coding",
+        "reading",
+        "speed",
+        "study_time",
+        "streak"
+      ],
+      "description": "Type of challenge"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard",
+        "expert"
+      ],
+      "default": "medium"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Related course (optional)"
+    },
+    "study_group_id": {
+      "type": "string",
+      "description": "Related study group (optional)"
+    },
+    "creator_email": {
+      "type": "string",
+      "description": "User who created the challenge"
+    },
+    "creator_name": {
+      "type": "string"
+    },
+    "time_limit_minutes": {
+      "type": "number",
+      "description": "Time limit for completion"
+    },
+    "points_reward": {
+      "type": "number",
+      "default": 100,
+      "description": "Points awarded for completion"
+    },
+    "badge_reward": {
+      "type": "string",
+      "description": "Badge awarded (if any)"
+    },
+    "quiz_questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number"
+          },
+          "points": {
+            "type": "number",
+            "default": 10
+          }
+        }
+      }
+    },
+    "coding_problem": {
+      "type": "object",
+      "properties": {
+        "description": {
+          "type": "string"
+        },
+        "starter_code": {
+          "type": "string"
+        },
+        "test_cases": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "language": {
+          "type": "string",
+          "default": "javascript"
+        }
+      }
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When challenge starts"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When challenge ends"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Visible to all or group only"
+    },
+    "participant_count": {
+      "type": "number",
+      "default": 0
+    },
+    "completion_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "type",
+    "creator_email"
+  ]
+}

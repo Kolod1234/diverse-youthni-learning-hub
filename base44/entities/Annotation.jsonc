@@ -1,0 +1,71 @@
+{
+  "name": "Annotation",
+  "type": "object",
+  "properties": {
+    "resource_id": {
+      "type": "string",
+      "description": "Reference to the LibraryResource being annotated"
+    },
+    "page_number": {
+      "type": "number",
+      "description": "PDF page number"
+    },
+    "annotation_type": {
+      "type": "string",
+      "enum": [
+        "highlight",
+        "note",
+        "drawing"
+      ],
+      "description": "Type of annotation"
+    },
+    "content": {
+      "type": "string",
+      "description": "Text content for highlights and notes, or SVG/canvas data for drawings"
+    },
+    "highlighted_text": {
+      "type": "string",
+      "description": "The actual text that was highlighted"
+    },
+    "color": {
+      "type": "string",
+      "description": "Color code for highlight or drawing (e.g., #FFFF00)"
+    },
+    "position": {
+      "type": "object",
+      "properties": {
+        "x": {
+          "type": "number"
+        },
+        "y": {
+          "type": "number"
+        },
+        "width": {
+          "type": "number"
+        },
+        "height": {
+          "type": "number"
+        }
+      },
+      "description": "Position and size of the annotation on the page"
+    },
+    "drawing_data": {
+      "type": "string",
+      "description": "Canvas or SVG drawing data"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name of the user who created the annotation"
+    },
+    "is_visible": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether annotation is currently visible"
+    }
+  },
+  "required": [
+    "resource_id",
+    "page_number",
+    "annotation_type"
+  ]
+}

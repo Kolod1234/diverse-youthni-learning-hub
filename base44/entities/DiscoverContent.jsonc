@@ -1,0 +1,39 @@
+{
+  "name": "DiscoverContent",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Content title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Content description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "tech_news",
+        "gossip",
+        "announcement"
+      ],
+      "default": "announcement"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Featured image"
+    },
+    "link": {
+      "type": "string",
+      "description": "External link (optional)"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "title",
+    "category"
+  ]
+}

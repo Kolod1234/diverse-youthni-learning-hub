@@ -1,0 +1,40 @@
+{
+  "name": "Certificate",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "enrollment_id": {
+      "type": "string",
+      "description": "Reference to the enrollment"
+    },
+    "certificate_number": {
+      "type": "string",
+      "description": "Unique certificate number"
+    },
+    "issue_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "student_name": {
+      "type": "string"
+    },
+    "course_title": {
+      "type": "string"
+    },
+    "instructor_name": {
+      "type": "string"
+    },
+    "final_score": {
+      "type": "number",
+      "description": "Final course score percentage"
+    }
+  },
+  "required": [
+    "course_id",
+    "enrollment_id",
+    "certificate_number"
+  ]
+}

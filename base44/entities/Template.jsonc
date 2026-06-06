@@ -1,0 +1,67 @@
+{
+  "name": "Template",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Template name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Template description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "lesson",
+        "slide",
+        "assignment",
+        "quiz",
+        "custom"
+      ],
+      "default": "lesson",
+      "description": "Template category"
+    },
+    "thumbnail_url": {
+      "type": "string",
+      "description": "Template preview image"
+    },
+    "content": {
+      "type": "object",
+      "description": "Template content (flexible schema)",
+      "properties": {
+        "slides": {
+          "type": "array",
+          "items": {
+            "type": "object"
+          }
+        },
+        "metadata": {
+          "type": "object"
+        }
+      }
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": false,
+      "description": "Available to all users"
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0,
+      "description": "Times this template was used"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "name",
+    "category",
+    "content"
+  ]
+}

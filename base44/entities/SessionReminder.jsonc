@@ -1,0 +1,42 @@
+{
+  "name": "SessionReminder",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to the video session"
+    },
+    "recipient_email": {
+      "type": "string",
+      "description": "Who should receive the reminder"
+    },
+    "reminder_type": {
+      "type": "string",
+      "enum": [
+        "email",
+        "in_app",
+        "both"
+      ],
+      "default": "both"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When to send the reminder"
+    },
+    "is_sent": {
+      "type": "boolean",
+      "default": false
+    },
+    "sent_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When reminder was actually sent"
+    }
+  },
+  "required": [
+    "session_id",
+    "recipient_email",
+    "scheduled_time"
+  ]
+}

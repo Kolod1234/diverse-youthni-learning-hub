@@ -1,0 +1,35 @@
+{
+  "name": "SiteContent",
+  "type": "object",
+  "properties": {
+    "key": {
+      "type": "string",
+      "description": "Unique identifier for the content (e.g., 'hero_title', 'cta_button')"
+    },
+    "value": {
+      "type": "string",
+      "description": "The text content"
+    },
+    "section": {
+      "type": "string",
+      "enum": [
+        "home",
+        "footer",
+        "general",
+        "courses",
+        "programs",
+        "contact"
+      ],
+      "default": "general",
+      "description": "Which section/page this content belongs to"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of where this text appears"
+    }
+  },
+  "required": [
+    "key",
+    "value"
+  ]
+}

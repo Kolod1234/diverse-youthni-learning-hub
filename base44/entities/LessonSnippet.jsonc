@@ -1,0 +1,33 @@
+{
+  "name": "LessonSnippet",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string"
+    },
+    "title": {
+      "type": "string"
+    },
+    "content": {
+      "type": "string",
+      "description": "Saved text content"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Screenshot of content"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    }
+  },
+  "required": [
+    "lesson_id",
+    "title"
+  ]
+}

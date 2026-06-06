@@ -1,0 +1,45 @@
+{
+  "name": "LessonQuestion",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "question": {
+      "type": "string",
+      "description": "The question text"
+    },
+    "asker_name": {
+      "type": "string",
+      "description": "Name of the person asking"
+    },
+    "slide_index": {
+      "type": "number",
+      "description": "Related slide number"
+    },
+    "is_answered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether answered"
+    },
+    "answer": {
+      "type": "string",
+      "description": "Answer from instructor"
+    },
+    "upvotes": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of upvotes"
+    }
+  },
+  "required": [
+    "lesson_id",
+    "course_id",
+    "question"
+  ]
+}

@@ -1,0 +1,64 @@
+{
+  "name": "PageSectionVariant",
+  "type": "object",
+  "properties": {
+    "parent_section_id": {
+      "type": "string",
+      "description": "Reference to the original PageSection"
+    },
+    "variant_name": {
+      "type": "string",
+      "description": "Name/label for this variant (e.g., 'Version A', 'Red Button')"
+    },
+    "title": {
+      "type": "string"
+    },
+    "subtitle": {
+      "type": "string"
+    },
+    "description": {
+      "type": "string"
+    },
+    "cta_text": {
+      "type": "string"
+    },
+    "cta_link": {
+      "type": "string"
+    },
+    "background_color": {
+      "type": "string"
+    },
+    "image_url": {
+      "type": "string"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this variant is active in the test"
+    },
+    "traffic_percentage": {
+      "type": "number",
+      "default": 50,
+      "description": "Percentage of traffic to show this variant (0-100)"
+    },
+    "impressions": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of times shown"
+    },
+    "clicks": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of CTA clicks"
+    },
+    "conversions": {
+      "type": "number",
+      "default": 0,
+      "description": "Number of conversions"
+    }
+  },
+  "required": [
+    "parent_section_id",
+    "variant_name"
+  ]
+}

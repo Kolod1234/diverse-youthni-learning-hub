@@ -1,0 +1,57 @@
+{
+  "name": "TutorAvailability",
+  "type": "object",
+  "properties": {
+    "tutor_email": {
+      "type": "string",
+      "description": "Email of the tutor"
+    },
+    "day_of_week": {
+      "type": "string",
+      "enum": [
+        "monday",
+        "tuesday",
+        "wednesday",
+        "thursday",
+        "friday",
+        "saturday",
+        "sunday"
+      ],
+      "description": "Day of the week"
+    },
+    "start_time": {
+      "type": "string",
+      "description": "Start time (HH:MM format)"
+    },
+    "end_time": {
+      "type": "string",
+      "description": "End time (HH:MM format)"
+    },
+    "session_duration_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "Default session duration in minutes"
+    },
+    "allows_group": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether group sessions are allowed in this slot"
+    },
+    "max_group_size": {
+      "type": "number",
+      "default": 5,
+      "description": "Max students in a group session"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this availability slot is active"
+    }
+  },
+  "required": [
+    "tutor_email",
+    "day_of_week",
+    "start_time",
+    "end_time"
+  ]
+}

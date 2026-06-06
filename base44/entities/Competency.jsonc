@@ -1,0 +1,54 @@
+{
+  "name": "Competency",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Competency name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Detailed description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Subject category"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced",
+        "expert"
+      ],
+      "description": "Skill level"
+    },
+    "related_courses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Course IDs that teach this competency"
+    },
+    "assessment_criteria": {
+      "type": "array",
+      "description": "How to measure mastery",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "weight": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "name",
+    "category"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "SlideAnalytics",
+  "type": "object",
+  "properties": {
+    "slide_content": {
+      "type": "string",
+      "description": "The slide content that was generated"
+    },
+    "slide_title": {
+      "type": "string",
+      "description": "Slide title"
+    },
+    "topic": {
+      "type": "string",
+      "description": "The topic/subject it was about"
+    },
+    "was_kept": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether user kept this slide"
+    },
+    "regeneration_count": {
+      "type": "number",
+      "default": 0,
+      "description": "How many times regenerated"
+    },
+    "visual_type": {
+      "type": "string",
+      "enum": [
+        "diagram",
+        "image",
+        "both",
+        "none"
+      ],
+      "description": "Type of visual used"
+    },
+    "content_type": {
+      "type": "string",
+      "description": "General, code, math, history, etc"
+    },
+    "visual_style": {
+      "type": "string",
+      "description": "Visual style used"
+    },
+    "success_score": {
+      "type": "number",
+      "default": 100,
+      "description": "Score based on usage (100 = kept, 0 = deleted immediately)"
+    }
+  },
+  "required": [
+    "slide_content",
+    "topic"
+  ]
+}

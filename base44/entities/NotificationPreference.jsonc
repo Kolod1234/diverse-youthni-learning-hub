@@ -1,0 +1,58 @@
+{
+  "name": "NotificationPreference",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user"
+    },
+    "logbook_approvals": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive notifications for logbook approvals"
+    },
+    "program_announcements": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive program announcements and updates"
+    },
+    "mentor_messages": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive messages from mentors"
+    },
+    "activity_reminders": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive activity and event reminders"
+    },
+    "quiz_reminders": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive quiz deadline reminders"
+    },
+    "session_updates": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive live session updates and reminders"
+    },
+    "course_completions": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive course completion notifications"
+    },
+    "system_notifications": {
+      "type": "boolean",
+      "default": true,
+      "description": "Receive important system notifications"
+    },
+    "email_notifications": {
+      "type": "boolean",
+      "default": false,
+      "description": "Send notifications via email"
+    }
+  },
+  "required": [
+    "user_email"
+  ]
+}

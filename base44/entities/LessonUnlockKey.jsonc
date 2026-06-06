@@ -1,0 +1,50 @@
+{
+  "name": "LessonUnlockKey",
+  "type": "object",
+  "properties": {
+    "key_code": {
+      "type": "string",
+      "description": "Unique unlock key code (e.g., ABC-DEF-123)"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "ID of the lesson this key unlocks"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "ID of the course the lesson belongs to"
+    },
+    "generated_by": {
+      "type": "string",
+      "description": "Email of admin/tutor who generated this key"
+    },
+    "used_by_emails": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of emails of students who have used this key",
+      "default": []
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the key is still active"
+    },
+    "expires_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the key expires (optional)"
+    },
+    "max_uses": {
+      "type": "number",
+      "description": "Maximum number of uses (optional, unlimited if not set)"
+    }
+  },
+  "required": [
+    "key_code",
+    "lesson_id",
+    "course_id",
+    "generated_by"
+  ]
+}

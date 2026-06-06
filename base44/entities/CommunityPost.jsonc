@@ -1,0 +1,45 @@
+{
+  "name": "CommunityPost",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Post title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Post content"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "announcement",
+        "event",
+        "achievement",
+        "discussion",
+        "question"
+      ],
+      "default": "discussion"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Featured image"
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    },
+    "comments_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_pinned": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "title",
+    "content"
+  ]
+}

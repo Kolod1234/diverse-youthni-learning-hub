@@ -1,0 +1,109 @@
+{
+  "name": "Quiz",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson (optional)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Quiz title"
+    },
+    "description": {
+      "type": "string"
+    },
+    "topic": {
+      "type": "string",
+      "description": "Main topic"
+    },
+    "subtopic": {
+      "type": "string",
+      "description": "Subtopic for organization"
+    },
+    "passing_score": {
+      "type": "number",
+      "default": 70,
+      "description": "Minimum percentage to pass"
+    },
+    "time_limit_minutes": {
+      "type": "number",
+      "description": "Time limit in minutes (optional)"
+    },
+    "total_marks": {
+      "type": "number",
+      "description": "Total marks for the quiz"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "default": "medium"
+    },
+    "questions": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question": {
+            "type": "string"
+          },
+          "question_type": {
+            "type": "string",
+            "enum": [
+              "multiple_choice",
+              "short_answer",
+              "long_answer",
+              "image_based"
+            ],
+            "default": "multiple_choice"
+          },
+          "image_url": {
+            "type": "string",
+            "description": "Image or diagram URL for the question"
+          },
+          "options": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "correct_answer": {
+            "type": "number",
+            "description": "Index for multiple choice"
+          },
+          "correct_text_answer": {
+            "type": "string",
+            "description": "Answer for short/long answer questions"
+          },
+          "explanation": {
+            "type": "string"
+          },
+          "marks": {
+            "type": "number",
+            "default": 1
+          },
+          "time_limit_seconds": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "course_id",
+    "title",
+    "questions"
+  ]
+}

@@ -1,0 +1,101 @@
+{
+  "name": "SessionBooking",
+  "type": "object",
+  "properties": {
+    "tutor_email": {
+      "type": "string",
+      "description": "Tutor's email"
+    },
+    "tutor_name": {
+      "type": "string",
+      "description": "Tutor's display name"
+    },
+    "student_email": {
+      "type": "string",
+      "description": "Student's email"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student's display name"
+    },
+    "session_type": {
+      "type": "string",
+      "enum": [
+        "one_on_one",
+        "group"
+      ],
+      "default": "one_on_one",
+      "description": "Session type"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Related course (optional)"
+    },
+    "course_title": {
+      "type": "string",
+      "description": "Course title for display"
+    },
+    "subject": {
+      "type": "string",
+      "description": "Subject or topic for the session"
+    },
+    "booking_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of the session"
+    },
+    "booking_time": {
+      "type": "string",
+      "description": "Start time (HH:MM)"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "Session duration in minutes"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "confirmed",
+        "cancelled",
+        "completed"
+      ],
+      "default": "pending"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Created VideoSession ID"
+    },
+    "meeting_link": {
+      "type": "string",
+      "description": "Video call link"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Student notes/questions"
+    },
+    "tutor_notes": {
+      "type": "string",
+      "description": "Tutor response/notes"
+    },
+    "max_students": {
+      "type": "number",
+      "default": 1,
+      "description": "Max students for group sessions"
+    },
+    "group_participants": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of participant emails for group sessions"
+    }
+  },
+  "required": [
+    "tutor_email",
+    "student_email",
+    "booking_date",
+    "booking_time"
+  ]
+}

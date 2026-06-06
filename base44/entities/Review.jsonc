@@ -1,0 +1,53 @@
+{
+  "name": "Review",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson (for lesson-specific ratings)"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Rating from 1-5"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Review comment"
+    },
+    "rating_type": {
+      "type": "string",
+      "enum": [
+        "lesson",
+        "tutor",
+        "course"
+      ],
+      "description": "Type of rating"
+    },
+    "instructor_name": {
+      "type": "string",
+      "description": "Tutor name being rated"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Reviewer name"
+    },
+    "user_avatar": {
+      "type": "string",
+      "description": "Reviewer avatar URL"
+    },
+    "is_verified_purchase": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether the reviewer completed the course"
+    }
+  },
+  "required": [
+    "course_id",
+    "rating",
+    "rating_type"
+  ]
+}

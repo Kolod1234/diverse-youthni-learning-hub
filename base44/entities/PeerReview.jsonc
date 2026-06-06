@@ -1,0 +1,85 @@
+{
+  "name": "PeerReview",
+  "type": "object",
+  "properties": {
+    "submission_id": {
+      "type": "string",
+      "description": "Reference to assignment submission or project"
+    },
+    "reviewer_email": {
+      "type": "string",
+      "description": "Email of peer reviewer"
+    },
+    "reviewer_name": {
+      "type": "string",
+      "description": "Name of peer reviewer"
+    },
+    "reviewee_email": {
+      "type": "string",
+      "description": "Email of person being reviewed"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Rating out of 5"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Detailed peer feedback"
+    },
+    "criteria_scores": {
+      "type": "array",
+      "description": "Scores for specific criteria",
+      "items": {
+        "type": "object",
+        "properties": {
+          "criterion": {
+            "type": "string"
+          },
+          "score": {
+            "type": "number"
+          },
+          "comment": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "strengths": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Identified strengths"
+    },
+    "improvements": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Areas for improvement"
+    },
+    "is_anonymous": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether review is anonymous"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "submitted",
+        "acknowledged"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "submission_id",
+    "reviewer_email",
+    "reviewee_email"
+  ]
+}

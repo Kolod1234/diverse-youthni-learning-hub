@@ -1,0 +1,135 @@
+{
+  "name": "LMSIntegration",
+  "type": "object",
+  "required": [
+    "name",
+    "provider",
+    "integration_type"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Integration name"
+    },
+    "provider": {
+      "type": "string",
+      "enum": [
+        "moodle",
+        "canvas",
+        "blackboard",
+        "schoology",
+        "custom_lrs",
+        "workday",
+        "successfactors"
+      ],
+      "description": "LMS/HRIS provider"
+    },
+    "integration_type": {
+      "type": "string",
+      "enum": [
+        "lms",
+        "hris",
+        "lrs"
+      ],
+      "description": "Type of integration"
+    },
+    "endpoint_url": {
+      "type": "string",
+      "description": "API endpoint URL"
+    },
+    "auth_type": {
+      "type": "string",
+      "enum": [
+        "api_key",
+        "oauth2",
+        "basic_auth"
+      ],
+      "description": "Authentication method"
+    },
+    "credentials": {
+      "type": "object",
+      "description": "Encrypted credentials (API keys, tokens, etc.)"
+    },
+    "sync_enabled": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether automatic sync is enabled"
+    },
+    "sync_frequency": {
+      "type": "string",
+      "enum": [
+        "realtime",
+        "hourly",
+        "daily",
+        "weekly"
+      ],
+      "default": "daily"
+    },
+    "sync_direction": {
+      "type": "string",
+      "enum": [
+        "push",
+        "pull",
+        "bidirectional"
+      ],
+      "default": "push"
+    },
+    "data_mappings": {
+      "type": "array",
+      "description": "Field mappings between systems",
+      "items": {
+        "type": "object",
+        "properties": {
+          "source_field": {
+            "type": "string"
+          },
+          "target_field": {
+            "type": "string"
+          },
+          "transformation": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "last_sync_date": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "last_sync_status": {
+      "type": "string",
+      "enum": [
+        "success",
+        "failed",
+        "partial"
+      ]
+    },
+    "sync_log": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "timestamp": {
+            "type": "string"
+          },
+          "status": {
+            "type": "string"
+          },
+          "records_synced": {
+            "type": "number"
+          },
+          "errors": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      }
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  }
+}

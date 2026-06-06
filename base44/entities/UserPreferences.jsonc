@@ -1,0 +1,63 @@
+{
+  "name": "UserPreferences",
+  "type": "object",
+  "properties": {
+    "theme": {
+      "type": "object",
+      "properties": {
+        "primary_color": {
+          "type": "string",
+          "default": "#1e3a8a"
+        },
+        "font_family": {
+          "type": "string",
+          "default": "system"
+        },
+        "font_size": {
+          "type": "string",
+          "enum": [
+            "small",
+            "medium",
+            "large",
+            "x-large"
+          ],
+          "default": "medium"
+        }
+      }
+    },
+    "layout": {
+      "type": "string",
+      "enum": [
+        "card",
+        "magazine",
+        "minimal",
+        "split"
+      ],
+      "default": "card"
+    },
+    "content_density": {
+      "type": "string",
+      "enum": [
+        "compact",
+        "comfortable",
+        "spacious"
+      ],
+      "default": "comfortable"
+    },
+    "custom_shortcuts": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "string"
+      }
+    },
+    "enable_animations": {
+      "type": "boolean",
+      "default": true
+    },
+    "auto_play_videos": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": []
+}

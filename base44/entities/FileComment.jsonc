@@ -1,0 +1,30 @@
+{
+  "name": "FileComment",
+  "type": "object",
+  "properties": {
+    "resource_id": {
+      "type": "string",
+      "description": "Reference to LibraryResource"
+    },
+    "comment": {
+      "type": "string",
+      "description": "Comment text"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Commenter's name"
+    },
+    "user_avatar": {
+      "type": "string",
+      "description": "Commenter's avatar URL"
+    },
+    "parent_id": {
+      "type": "string",
+      "description": "Parent comment ID for replies"
+    }
+  },
+  "required": [
+    "resource_id",
+    "comment"
+  ]
+}

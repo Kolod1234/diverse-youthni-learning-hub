@@ -1,0 +1,42 @@
+{
+  "name": "CoordinatorRequest",
+  "type": "object",
+  "properties": {
+    "user_email": {
+      "type": "string",
+      "description": "Email of user requesting coordinator status"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name of user"
+    },
+    "reason": {
+      "type": "string",
+      "description": "Why they want to be a coordinator"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Request status"
+    },
+    "processed_by": {
+      "type": "string",
+      "description": "Admin who processed the request"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the request was processed"
+    }
+  },
+  "required": [
+    "user_email",
+    "user_name",
+    "reason"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "CollaborativeWorkspace",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Workspace name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Associated course"
+    },
+    "project_id": {
+      "type": "string",
+      "description": "Associated group project"
+    },
+    "members": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "email": {
+            "type": "string"
+          },
+          "name": {
+            "type": "string"
+          },
+          "role": {
+            "type": "string",
+            "enum": [
+              "owner",
+              "editor",
+              "viewer"
+            ]
+          }
+        }
+      }
+    },
+    "documents": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "title": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "type": {
+            "type": "string",
+            "enum": [
+              "document",
+              "spreadsheet",
+              "presentation",
+              "whiteboard"
+            ]
+          },
+          "file_url": {
+            "type": "string"
+          },
+          "last_edited_by": {
+            "type": "string"
+          },
+          "last_edited_date": {
+            "type": "string",
+            "format": "date-time"
+          }
+        }
+      }
+    },
+    "chat_enabled": {
+      "type": "boolean",
+      "default": true
+    },
+    "video_call_enabled": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "name",
+    "course_id"
+  ]
+}

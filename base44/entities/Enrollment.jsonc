@@ -1,0 +1,77 @@
+{
+  "name": "Enrollment",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "progress_percent": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall progress percentage"
+    },
+    "completed_lessons": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of completed lesson IDs"
+    },
+    "unlocked_lessons": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "string"
+          },
+          "unlocked_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "expires_at": {
+            "type": "string",
+            "format": "date-time"
+          },
+          "key_code": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Array of unlocked lessons with expiry dates"
+    },
+    "current_lesson_id": {
+      "type": "string",
+      "description": "Last viewed lesson ID"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "notes": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "lesson_id": {
+            "type": "string"
+          },
+          "content": {
+            "type": "string"
+          },
+          "timestamp": {
+            "type": "number"
+          }
+        }
+      }
+    }
+  },
+  "required": [
+    "course_id"
+  ]
+}

@@ -1,0 +1,55 @@
+{
+  "name": "Notification",
+  "type": "object",
+  "properties": {
+    "recipient_email": {
+      "type": "string",
+      "description": "Email of the user who receives this notification"
+    },
+    "title": {
+      "type": "string",
+      "description": "Notification title"
+    },
+    "message": {
+      "type": "string",
+      "description": "Notification message body"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "session_reminder",
+        "session_started",
+        "session_cancelled",
+        "quiz",
+        "logbook",
+        "program",
+        "message",
+        "announcement",
+        "general"
+      ],
+      "default": "general",
+      "description": "Type/category of notification"
+    },
+    "action_url": {
+      "type": "string",
+      "description": "URL to navigate to when the notification is clicked"
+    },
+    "is_read": {
+      "type": "boolean",
+      "default": false
+    },
+    "sent_by": {
+      "type": "string",
+      "description": "Email of the admin/system that sent this notification"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Related session ID if applicable"
+    }
+  },
+  "required": [
+    "recipient_email",
+    "title",
+    "message"
+  ]
+}

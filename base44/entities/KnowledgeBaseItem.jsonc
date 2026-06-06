@@ -1,0 +1,61 @@
+{
+  "name": "KnowledgeBaseItem",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Document title"
+    },
+    "content": {
+      "type": "string",
+      "description": "Extracted text content from document"
+    },
+    "summary": {
+      "type": "string",
+      "description": "AI-generated summary"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the original uploaded file"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "File extension (pdf, docx, txt, etc.)"
+    },
+    "category": {
+      "type": "string",
+      "description": "AI-detected category"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Source URL if imported from Wikipedia or other external source"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "AI-generated tags for searchability"
+    },
+    "key_concepts": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Main concepts identified by AI"
+    },
+    "metadata": {
+      "type": "object",
+      "description": "Additional metadata (page count, word count, etc.)"
+    },
+    "embedding_processed": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether AI has processed this document"
+    }
+  },
+  "required": [
+    "title",
+    "content"
+  ]
+}

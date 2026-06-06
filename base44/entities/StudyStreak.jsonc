@@ -1,0 +1,32 @@
+{
+  "name": "StudyStreak",
+  "type": "object",
+  "properties": {
+    "current_streak": {
+      "type": "number",
+      "default": 0,
+      "description": "Current consecutive days"
+    },
+    "longest_streak": {
+      "type": "number",
+      "default": 0
+    },
+    "last_activity_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "streak_dates": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "format": "date"
+      },
+      "description": "All dates with activity"
+    },
+    "total_xp": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": []
+}

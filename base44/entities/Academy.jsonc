@@ -1,0 +1,108 @@
+{
+  "name": "Academy",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Academy title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Academy description"
+    },
+    "category": {
+      "type": "string",
+      "description": "Subject category"
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Academy thumbnail URL"
+    },
+    "instructor_email": {
+      "type": "string",
+      "description": "Lead instructor/expert email"
+    },
+    "instructor_name": {
+      "type": "string",
+      "description": "Lead instructor name"
+    },
+    "program_structure": {
+      "type": "array",
+      "description": "Structured modules and milestones",
+      "items": {
+        "type": "object",
+        "properties": {
+          "module_title": {
+            "type": "string"
+          },
+          "module_description": {
+            "type": "string"
+          },
+          "course_ids": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "required_competencies": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          },
+          "order": {
+            "type": "number"
+          }
+        }
+      }
+    },
+    "certification_requirements": {
+      "type": "object",
+      "properties": {
+        "minimum_completion": {
+          "type": "number",
+          "description": "Minimum % of courses to complete"
+        },
+        "minimum_score": {
+          "type": "number",
+          "description": "Minimum average quiz score"
+        },
+        "required_competencies": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "final_assessment_required": {
+          "type": "boolean",
+          "default": false
+        }
+      }
+    },
+    "estimated_duration_weeks": {
+      "type": "number",
+      "description": "Estimated completion time in weeks"
+    },
+    "enrolled_count": {
+      "type": "number",
+      "default": 0
+    },
+    "completion_count": {
+      "type": "number",
+      "default": 0
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "certificate_template": {
+      "type": "string",
+      "description": "Custom certificate template design"
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "instructor_email"
+  ]
+}

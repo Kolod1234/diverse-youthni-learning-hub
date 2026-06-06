@@ -1,0 +1,37 @@
+{
+  "name": "ReviewSchedule",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "course_id": {
+      "type": "string"
+    },
+    "completed_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "next_review_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "review_count": {
+      "type": "number",
+      "default": 0
+    },
+    "interval_days": {
+      "type": "number",
+      "default": 1,
+      "description": "Current spaced repetition interval"
+    },
+    "mastery_level": {
+      "type": "number",
+      "default": 0,
+      "description": "0-100 mastery score"
+    }
+  },
+  "required": [
+    "lesson_id"
+  ]
+}

@@ -1,0 +1,91 @@
+{
+  "name": "SCORMErrorLog",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to SCORM session"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to lesson"
+    },
+    "scorm_version": {
+      "type": "string",
+      "enum": [
+        "1.2",
+        "2004"
+      ],
+      "description": "SCORM version"
+    },
+    "error_code": {
+      "type": "string",
+      "description": "SCORM error code from API"
+    },
+    "error_message": {
+      "type": "string",
+      "description": "Human-readable error message"
+    },
+    "context": {
+      "type": "string",
+      "description": "Operation context (e.g., 'setValue', 'commit', 'initialize')"
+    },
+    "element": {
+      "type": "string",
+      "description": "SCORM element that caused error (e.g., 'cmi.location')"
+    },
+    "value_attempted": {
+      "type": "string",
+      "description": "Value that was being set when error occurred"
+    },
+    "severity": {
+      "type": "string",
+      "enum": [
+        "info",
+        "warning",
+        "error",
+        "critical"
+      ],
+      "default": "error",
+      "description": "Error severity level"
+    },
+    "diagnostic": {
+      "type": "string",
+      "description": "Detailed diagnostic information"
+    },
+    "user_agent": {
+      "type": "string",
+      "description": "Browser/client user agent"
+    },
+    "ip_address": {
+      "type": "string",
+      "description": "User's IP address"
+    },
+    "timestamp": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When error occurred"
+    },
+    "resolved": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this error was resolved"
+    },
+    "resolution_notes": {
+      "type": "string",
+      "description": "Notes on how error was resolved"
+    }
+  },
+  "required": [
+    "session_id",
+    "user_email",
+    "lesson_id",
+    "scorm_version",
+    "error_code",
+    "context"
+  ]
+}

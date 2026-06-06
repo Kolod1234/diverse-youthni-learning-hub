@@ -1,0 +1,52 @@
+{
+  "name": "QuizAttempt",
+  "type": "object",
+  "properties": {
+    "quiz_id": {
+      "type": "string",
+      "description": "Reference to the quiz"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "score": {
+      "type": "number",
+      "description": "Score percentage (0-100)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether the attempt passed"
+    },
+    "answers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_index": {
+            "type": "number"
+          },
+          "selected_answer": {
+            "type": "number"
+          },
+          "is_correct": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "time_taken_seconds": {
+      "type": "number",
+      "description": "Time taken to complete"
+    },
+    "attempt_number": {
+      "type": "number",
+      "description": "Attempt count for this quiz"
+    }
+  },
+  "required": [
+    "quiz_id",
+    "course_id",
+    "score"
+  ]
+}

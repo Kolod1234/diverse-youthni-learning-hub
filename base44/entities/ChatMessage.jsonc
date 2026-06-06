@@ -1,0 +1,39 @@
+{
+  "name": "ChatMessage",
+  "type": "object",
+  "properties": {
+    "room_id": {
+      "type": "string",
+      "description": "Reference to ChatRoom"
+    },
+    "sender_email": {
+      "type": "string",
+      "description": "Sender email"
+    },
+    "sender_name": {
+      "type": "string",
+      "description": "Sender display name"
+    },
+    "sender_avatar": {
+      "type": "string",
+      "description": "Sender avatar URL"
+    },
+    "content": {
+      "type": "string",
+      "description": "Message content"
+    },
+    "type": {
+      "type": "string",
+      "enum": [
+        "text",
+        "system"
+      ],
+      "default": "text"
+    }
+  },
+  "required": [
+    "room_id",
+    "sender_email",
+    "content"
+  ]
+}

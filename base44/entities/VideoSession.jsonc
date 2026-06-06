@@ -1,0 +1,100 @@
+{
+  "name": "VideoSession",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course (optional)"
+    },
+    "title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Session description"
+    },
+    "tutor_email": {
+      "type": "string",
+      "description": "Email of the tutor hosting the session"
+    },
+    "tutor_name": {
+      "type": "string",
+      "description": "Name of the tutor"
+    },
+    "scheduled_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Session date"
+    },
+    "scheduled_time": {
+      "type": "string",
+      "description": "Session start time (HH:MM)"
+    },
+    "duration_minutes": {
+      "type": "number",
+      "default": 60,
+      "description": "Duration in minutes"
+    },
+    "meeting_room_id": {
+      "type": "string",
+      "description": "Unique ID for video room"
+    },
+    "meet_link": {
+      "type": "string",
+      "description": "Google Meet link for the session"
+    },
+    "calendar_event_id": {
+      "type": "string",
+      "description": "Google Calendar event ID"
+    },
+    "invited_students": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Array of invited student emails"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "scheduled",
+        "live",
+        "completed",
+        "cancelled"
+      ],
+      "default": "scheduled",
+      "description": "Session status"
+    },
+    "recording_url": {
+      "type": "string",
+      "description": "URL to session recording"
+    },
+    "is_recurring": {
+      "type": "boolean",
+      "default": false,
+      "description": "Is this a recurring session"
+    },
+    "recurrence_pattern": {
+      "type": "string",
+      "enum": [
+        "daily",
+        "weekly",
+        "biweekly",
+        "monthly"
+      ],
+      "description": "Recurrence pattern"
+    },
+    "recurrence_end_date": {
+      "type": "string",
+      "format": "date",
+      "description": "When recurring sessions end"
+    }
+  },
+  "required": [
+    "title",
+    "tutor_email",
+    "scheduled_date",
+    "scheduled_time"
+  ]
+}

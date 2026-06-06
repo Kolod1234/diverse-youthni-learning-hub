@@ -1,0 +1,43 @@
+{
+  "name": "LessonHighlight",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string"
+    },
+    "text": {
+      "type": "string",
+      "description": "Highlighted text"
+    },
+    "color": {
+      "type": "string",
+      "enum": [
+        "yellow",
+        "green",
+        "blue",
+        "pink",
+        "purple"
+      ],
+      "default": "yellow"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional note on highlight"
+    },
+    "position": {
+      "type": "object",
+      "properties": {
+        "start": {
+          "type": "number"
+        },
+        "end": {
+          "type": "number"
+        }
+      }
+    }
+  },
+  "required": [
+    "lesson_id",
+    "text"
+  ]
+}

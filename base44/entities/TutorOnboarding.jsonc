@@ -1,0 +1,33 @@
+{
+  "name": "TutorOnboarding",
+  "type": "object",
+  "properties": {
+    "tutor_email": {
+      "type": "string",
+      "description": "Tutor's email"
+    },
+    "current_step": {
+      "type": "number",
+      "default": 0,
+      "description": "Current onboarding step (0-4)"
+    },
+    "completed_steps": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of completed step IDs"
+    },
+    "is_completed": {
+      "type": "boolean",
+      "default": false
+    },
+    "skipped": {
+      "type": "boolean",
+      "default": false
+    }
+  },
+  "required": [
+    "tutor_email"
+  ]
+}

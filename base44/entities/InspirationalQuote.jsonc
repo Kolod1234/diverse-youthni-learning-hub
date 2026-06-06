@@ -1,0 +1,33 @@
+{
+  "name": "InspirationalQuote",
+  "type": "object",
+  "properties": {
+    "quote": {
+      "type": "string",
+      "description": "The quote text"
+    },
+    "author": {
+      "type": "string",
+      "description": "Quote author"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "education",
+        "leadership",
+        "success",
+        "motivation",
+        "wisdom"
+      ],
+      "default": "motivation"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    }
+  },
+  "required": [
+    "quote",
+    "author"
+  ]
+}

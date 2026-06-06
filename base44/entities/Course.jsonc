@@ -1,0 +1,130 @@
+{
+  "name": "Course",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Course title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Course description"
+    },
+    "instructor": {
+      "type": "string",
+      "description": "Instructor name"
+    },
+    "instructor_avatar": {
+      "type": "string",
+      "description": "Instructor avatar URL"
+    },
+    "thumbnail": {
+      "type": "string",
+      "description": "Course thumbnail image URL"
+    },
+    "qualification_type": {
+      "type": "string",
+      "enum": [
+        "gcse",
+        "alevel"
+      ],
+      "default": "gcse",
+      "description": "Course qualification type"
+    },
+    "alevel_stage": {
+      "type": "string",
+      "enum": [
+        "as",
+        "a2",
+        "full"
+      ],
+      "description": "A-Level course stage (AS-Level, A2, or Full A-Level)"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "mathematics",
+        "further_mathematics",
+        "english_language",
+        "english_literature",
+        "english_language_literature",
+        "biology",
+        "chemistry",
+        "physics",
+        "science",
+        "computer_science",
+        "digital_technology",
+        "software_systems_development",
+        "technology_design",
+        "history",
+        "geography",
+        "economics",
+        "government_politics",
+        "religious_studies",
+        "life_health_sciences",
+        "environmental_technology"
+      ],
+      "description": "Subject category"
+    },
+    "level": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "duration_hours": {
+      "type": "number",
+      "description": "Total duration in hours"
+    },
+    "total_lessons": {
+      "type": "number",
+      "description": "Total number of lessons"
+    },
+    "price": {
+      "type": "number",
+      "description": "Course price (0 for free)"
+    },
+    "rating": {
+      "type": "number",
+      "description": "Average rating out of 5"
+    },
+    "enrolled_count": {
+      "type": "number",
+      "description": "Number of enrolled students"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      }
+    },
+    "syllabus_url": {
+      "type": "string",
+      "description": "Syllabus PDF download URL"
+    },
+    "exam_board": {
+      "type": "string",
+      "description": "Examination board (e.g., CCEA, AQA, Edexcel)"
+    },
+    "assigned_tutors": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Emails of tutors assigned to this course (max 2)",
+      "maxItems": 2
+    }
+  },
+  "required": [
+    "title",
+    "description",
+    "category"
+  ]
+}

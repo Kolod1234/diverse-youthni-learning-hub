@@ -1,0 +1,47 @@
+{
+  "name": "FileUpload",
+  "type": "object",
+  "properties": {
+    "file_name": {
+      "type": "string",
+      "description": "Original file name"
+    },
+    "file_url": {
+      "type": "string",
+      "description": "URL to the uploaded file"
+    },
+    "file_type": {
+      "type": "string",
+      "description": "MIME type of the file"
+    },
+    "file_size": {
+      "type": "number",
+      "description": "File size in bytes"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "image",
+        "document",
+        "video",
+        "audio",
+        "other"
+      ],
+      "description": "File category"
+    },
+    "description": {
+      "type": "string",
+      "description": "Optional description of the file"
+    },
+    "is_public": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether file is publicly accessible"
+    }
+  },
+  "required": [
+    "file_name",
+    "file_url",
+    "file_type"
+  ]
+}

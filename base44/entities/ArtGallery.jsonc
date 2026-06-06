@@ -1,0 +1,51 @@
+{
+  "name": "ArtGallery",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Artwork title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of the artwork"
+    },
+    "artist_name": {
+      "type": "string",
+      "description": "Artist's name"
+    },
+    "artist_email": {
+      "type": "string",
+      "description": "Artist's email"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Artwork image URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "painting",
+        "drawing",
+        "photography",
+        "digital",
+        "sculpture",
+        "mixed_media"
+      ],
+      "default": "drawing"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false
+    },
+    "likes_count": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "title",
+    "artist_name",
+    "image_url"
+  ]
+}

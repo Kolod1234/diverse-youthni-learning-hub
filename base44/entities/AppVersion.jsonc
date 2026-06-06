@@ -1,0 +1,37 @@
+{
+  "name": "AppVersion",
+  "type": "object",
+  "properties": {
+    "version_name": {
+      "type": "string",
+      "description": "Version name e.g. 1.0.2"
+    },
+    "version_code": {
+      "type": "number",
+      "description": "Integer version code for comparison"
+    },
+    "apk_url": {
+      "type": "string",
+      "description": "Public URL to download the APK"
+    },
+    "release_notes": {
+      "type": "string",
+      "description": "What's new in this version"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this is the current active version"
+    },
+    "notify_users": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether to send email notification to all users"
+    }
+  },
+  "required": [
+    "version_name",
+    "version_code",
+    "apk_url"
+  ]
+}

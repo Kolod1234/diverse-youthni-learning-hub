@@ -1,0 +1,49 @@
+{
+  "name": "CourseEnrollment",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of enrolled user"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Name of enrolled user"
+    },
+    "assigned_by": {
+      "type": "string",
+      "description": "Email of coordinator/admin who assigned"
+    },
+    "coordinator_email": {
+      "type": "string",
+      "description": "Assigned coordinator for this enrollment"
+    },
+    "group_name": {
+      "type": "string",
+      "description": "Optional group/cohort name"
+    },
+    "enrollment_status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "dropped",
+        "pending"
+      ],
+      "default": "active",
+      "description": "Enrollment status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Coordinator notes"
+    }
+  },
+  "required": [
+    "course_id",
+    "user_email"
+  ]
+}

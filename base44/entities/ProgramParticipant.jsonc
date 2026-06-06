@@ -1,0 +1,44 @@
+{
+  "name": "ProgramParticipant",
+  "type": "object",
+  "properties": {
+    "program_id": {
+      "type": "string",
+      "description": "Reference to program"
+    },
+    "participant_email": {
+      "type": "string",
+      "description": "Participant's email"
+    },
+    "participant_name": {
+      "type": "string"
+    },
+    "mentor_email": {
+      "type": "string",
+      "description": "Assigned mentor's email"
+    },
+    "mentor_name": {
+      "type": "string"
+    },
+    "current_task": {
+      "type": "string",
+      "description": "What they're currently working on"
+    },
+    "progress_notes": {
+      "type": "string"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "on_hold"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "program_id",
+    "participant_email"
+  ]
+}

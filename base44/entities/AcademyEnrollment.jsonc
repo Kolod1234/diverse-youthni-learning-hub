@@ -1,0 +1,78 @@
+{
+  "name": "AcademyEnrollment",
+  "type": "object",
+  "properties": {
+    "academy_id": {
+      "type": "string",
+      "description": "Reference to academy"
+    },
+    "student_email": {
+      "type": "string",
+      "description": "Student email"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student name"
+    },
+    "current_module_index": {
+      "type": "number",
+      "default": 0,
+      "description": "Current module position"
+    },
+    "completed_courses": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Completed course IDs"
+    },
+    "competency_progress": {
+      "type": "array",
+      "description": "Progress on competencies",
+      "items": {
+        "type": "object",
+        "properties": {
+          "competency_name": {
+            "type": "string"
+          },
+          "progress_percent": {
+            "type": "number"
+          },
+          "mastered": {
+            "type": "boolean"
+          }
+        }
+      }
+    },
+    "overall_progress": {
+      "type": "number",
+      "default": 0,
+      "description": "Overall completion percentage"
+    },
+    "average_score": {
+      "type": "number",
+      "description": "Average quiz score"
+    },
+    "is_certified": {
+      "type": "boolean",
+      "default": false
+    },
+    "certificate_id": {
+      "type": "string",
+      "description": "Reference to certificate"
+    },
+    "certification_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "time_spent_hours": {
+      "type": "number",
+      "default": 0,
+      "description": "Total time spent in academy"
+    }
+  },
+  "required": [
+    "academy_id",
+    "student_email"
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "name": "Achievement",
+  "type": "object",
+  "properties": {
+    "type": {
+      "type": "string",
+      "enum": [
+        "badge",
+        "certificate"
+      ],
+      "description": "Achievement type"
+    },
+    "name": {
+      "type": "string",
+      "description": "Achievement name"
+    },
+    "description": {
+      "type": "string"
+    },
+    "icon": {
+      "type": "string",
+      "description": "Icon identifier"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Related course ID (for certificates)"
+    },
+    "earned_date": {
+      "type": "string",
+      "format": "date"
+    }
+  },
+  "required": [
+    "type",
+    "name"
+  ]
+}

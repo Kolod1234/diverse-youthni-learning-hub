@@ -1,0 +1,60 @@
+{
+  "name": "LearningPathway",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Pathway title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Pathway description"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "youth_work",
+        "gcse_books",
+        "gcse_past_questions",
+        "a_level_books",
+        "inspirational",
+        "dyni_books",
+        "workbooks_logbooks",
+        "history_books"
+      ],
+      "description": "Pathway category"
+    },
+    "cover_image": {
+      "type": "string",
+      "description": "Pathway cover image URL"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether pathway is visible to students"
+    },
+    "estimated_hours": {
+      "type": "number",
+      "description": "Estimated completion time in hours"
+    },
+    "difficulty": {
+      "type": "string",
+      "enum": [
+        "beginner",
+        "intermediate",
+        "advanced"
+      ],
+      "default": "beginner"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "default": []
+    }
+  },
+  "required": [
+    "title"
+  ]
+}

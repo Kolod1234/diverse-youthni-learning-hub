@@ -1,0 +1,49 @@
+{
+  "name": "Submission",
+  "type": "object",
+  "properties": {
+    "assignment_id": {
+      "type": "string",
+      "description": "Reference to assignment"
+    },
+    "student_email": {
+      "type": "string",
+      "description": "Student's email"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student's name"
+    },
+    "content": {
+      "type": "string",
+      "description": "Submission text"
+    },
+    "file_urls": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Attached files"
+    },
+    "grade": {
+      "type": "number",
+      "description": "Points awarded"
+    },
+    "feedback": {
+      "type": "string",
+      "description": "Instructor feedback"
+    },
+    "is_graded": {
+      "type": "boolean",
+      "default": false
+    },
+    "submitted_date": {
+      "type": "string",
+      "format": "date-time"
+    }
+  },
+  "required": [
+    "assignment_id",
+    "student_email"
+  ]
+}

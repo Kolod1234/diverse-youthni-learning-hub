@@ -1,0 +1,88 @@
+{
+  "name": "ExpertContentTemplate",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Template title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Template description"
+    },
+    "template_type": {
+      "type": "string",
+      "enum": [
+        "lesson",
+        "quiz",
+        "assignment",
+        "interactive"
+      ],
+      "description": "Type of content"
+    },
+    "category": {
+      "type": "string",
+      "description": "Subject category"
+    },
+    "structure": {
+      "type": "object",
+      "description": "Template structure and fields",
+      "properties": {
+        "sections": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "properties": {
+              "section_title": {
+                "type": "string"
+              },
+              "section_type": {
+                "type": "string",
+                "enum": [
+                  "text",
+                  "media",
+                  "quiz",
+                  "activity"
+                ]
+              },
+              "placeholder_content": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "suggested_duration": {
+          "type": "number"
+        }
+      }
+    },
+    "ai_prompts": {
+      "type": "array",
+      "description": "AI assistance prompts for content creation",
+      "items": {
+        "type": "object",
+        "properties": {
+          "prompt_title": {
+            "type": "string"
+          },
+          "prompt_text": {
+            "type": "string"
+          }
+        }
+      }
+    },
+    "usage_count": {
+      "type": "number",
+      "default": 0
+    },
+    "created_by": {
+      "type": "string",
+      "description": "Creator email"
+    }
+  },
+  "required": [
+    "title",
+    "template_type",
+    "category"
+  ]
+}

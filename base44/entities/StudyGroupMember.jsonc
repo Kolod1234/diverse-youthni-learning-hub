@@ -1,0 +1,44 @@
+{
+  "name": "StudyGroupMember",
+  "type": "object",
+  "properties": {
+    "group_id": {
+      "type": "string",
+      "description": "Study group ID"
+    },
+    "member_email": {
+      "type": "string",
+      "description": "Member's email"
+    },
+    "member_name": {
+      "type": "string",
+      "description": "Member's name"
+    },
+    "member_avatar": {
+      "type": "string",
+      "description": "Member's avatar URL"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "active",
+        "left"
+      ],
+      "default": "active"
+    },
+    "role": {
+      "type": "string",
+      "enum": [
+        "owner",
+        "moderator",
+        "member"
+      ],
+      "default": "member"
+    }
+  },
+  "required": [
+    "group_id",
+    "member_email"
+  ]
+}

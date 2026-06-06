@@ -1,0 +1,66 @@
+{
+  "name": "ContentVersion",
+  "type": "object",
+  "properties": {
+    "entity_type": {
+      "type": "string",
+      "enum": [
+        "course",
+        "lesson",
+        "quiz"
+      ],
+      "description": "Type of content being versioned"
+    },
+    "entity_id": {
+      "type": "string",
+      "description": "ID of the content entity"
+    },
+    "version_number": {
+      "type": "number",
+      "description": "Sequential version number"
+    },
+    "content_snapshot": {
+      "type": "object",
+      "description": "Full snapshot of content at this version"
+    },
+    "change_summary": {
+      "type": "string",
+      "description": "Summary of changes in this version"
+    },
+    "changed_fields": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "List of fields that changed"
+    },
+    "author_email": {
+      "type": "string",
+      "description": "Who made the changes"
+    },
+    "author_name": {
+      "type": "string"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this version is live"
+    },
+    "review_status": {
+      "type": "string",
+      "enum": [
+        "draft",
+        "pending_review",
+        "approved",
+        "rejected"
+      ],
+      "default": "draft"
+    }
+  },
+  "required": [
+    "entity_type",
+    "entity_id",
+    "version_number",
+    "content_snapshot"
+  ]
+}

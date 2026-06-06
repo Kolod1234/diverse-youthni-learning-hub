@@ -1,0 +1,40 @@
+{
+  "name": "RSSFeed",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Feed item title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Feed item description/content"
+    },
+    "link": {
+      "type": "string",
+      "description": "URL to the full article"
+    },
+    "image_url": {
+      "type": "string",
+      "description": "Featured image URL"
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "Publication date"
+    },
+    "category": {
+      "type": "string",
+      "description": "Feed category"
+    },
+    "is_featured": {
+      "type": "boolean",
+      "default": false,
+      "description": "Highlight this item"
+    }
+  },
+  "required": [
+    "title",
+    "description"
+  ]
+}

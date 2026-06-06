@@ -1,0 +1,37 @@
+{
+  "name": "Assignment",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "title": {
+      "type": "string",
+      "description": "Assignment title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Assignment instructions"
+    },
+    "due_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Submission deadline"
+    },
+    "total_points": {
+      "type": "number",
+      "default": 100,
+      "description": "Maximum points"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false,
+      "description": "Visible to students"
+    }
+  },
+  "required": [
+    "course_id",
+    "title"
+  ]
+}

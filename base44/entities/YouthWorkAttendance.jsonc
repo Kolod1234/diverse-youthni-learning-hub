@@ -1,0 +1,50 @@
+{
+  "name": "YouthWorkAttendance",
+  "type": "object",
+  "properties": {
+    "participant_email": {
+      "type": "string",
+      "description": "Participant email"
+    },
+    "participant_name": {
+      "type": "string",
+      "description": "Participant name"
+    },
+    "qualification_id": {
+      "type": "string",
+      "description": "Reference to qualification"
+    },
+    "session_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date of session"
+    },
+    "session_title": {
+      "type": "string",
+      "description": "Session title"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "absent",
+        "late",
+        "excused"
+      ],
+      "default": "present",
+      "description": "Attendance status"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    },
+    "recorded_by": {
+      "type": "string",
+      "description": "Who recorded attendance"
+    }
+  },
+  "required": [
+    "participant_email",
+    "session_date"
+  ]
+}

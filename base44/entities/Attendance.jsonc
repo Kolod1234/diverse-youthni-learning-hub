@@ -1,0 +1,48 @@
+{
+  "name": "Attendance",
+  "type": "object",
+  "properties": {
+    "student_email": {
+      "type": "string",
+      "description": "Student's email"
+    },
+    "student_name": {
+      "type": "string",
+      "description": "Student's name"
+    },
+    "date": {
+      "type": "string",
+      "format": "date",
+      "description": "Attendance date"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "present",
+        "absent",
+        "late",
+        "excused"
+      ],
+      "default": "present",
+      "description": "Attendance status"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Related course ID (optional)"
+    },
+    "session_id": {
+      "type": "string",
+      "description": "Related session ID (optional)"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Additional notes"
+    }
+  },
+  "required": [
+    "student_email",
+    "student_name",
+    "date",
+    "status"
+  ]
+}

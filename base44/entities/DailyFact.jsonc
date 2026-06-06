@@ -1,0 +1,37 @@
+{
+  "name": "DailyFact",
+  "type": "object",
+  "properties": {
+    "fact": {
+      "type": "string",
+      "description": "The fact text"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "science",
+        "history",
+        "nature",
+        "technology",
+        "space"
+      ],
+      "default": "science"
+    },
+    "source_url": {
+      "type": "string",
+      "description": "Source URL where the fact was found"
+    },
+    "is_active": {
+      "type": "boolean",
+      "default": true
+    },
+    "fact_date": {
+      "type": "string",
+      "format": "date",
+      "description": "Date when this fact was added"
+    }
+  },
+  "required": [
+    "fact"
+  ]
+}

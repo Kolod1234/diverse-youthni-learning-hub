@@ -1,0 +1,96 @@
+{
+  "name": "QuizPerformance",
+  "type": "object",
+  "properties": {
+    "quiz_id": {
+      "type": "string",
+      "description": "Reference to the quiz"
+    },
+    "course_id": {
+      "type": "string",
+      "description": "Reference to the course"
+    },
+    "lesson_id": {
+      "type": "string",
+      "description": "Reference to the lesson (if quiz is tied to lesson)"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "User's email"
+    },
+    "attempt_number": {
+      "type": "number",
+      "description": "Which attempt this is"
+    },
+    "score_raw": {
+      "type": "number",
+      "description": "Raw score achieved"
+    },
+    "score_percentage": {
+      "type": "number",
+      "description": "Score as percentage (0-100)"
+    },
+    "passed": {
+      "type": "boolean",
+      "description": "Whether user passed the quiz"
+    },
+    "time_spent_seconds": {
+      "type": "number",
+      "description": "Time spent on quiz in seconds"
+    },
+    "questions_answered": {
+      "type": "number",
+      "description": "Number of questions answered"
+    },
+    "questions_correct": {
+      "type": "number",
+      "description": "Number of correct answers"
+    },
+    "question_performance": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "question_index": {
+            "type": "number"
+          },
+          "correct": {
+            "type": "boolean"
+          },
+          "time_seconds": {
+            "type": "number"
+          },
+          "attempts": {
+            "type": "number"
+          }
+        }
+      },
+      "description": "Performance per individual question"
+    },
+    "difficulty_rating": {
+      "type": "string",
+      "enum": [
+        "easy",
+        "medium",
+        "hard"
+      ],
+      "description": "User-perceived difficulty"
+    },
+    "attempted_at": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the quiz was attempted"
+    },
+    "feedback_provided": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether user received feedback"
+    }
+  },
+  "required": [
+    "quiz_id",
+    "course_id",
+    "user_email",
+    "score_percentage"
+  ]
+}

@@ -1,0 +1,50 @@
+{
+  "name": "LessonAnnotation",
+  "type": "object",
+  "properties": {
+    "lesson_id": {
+      "type": "string",
+      "description": "Lesson reference"
+    },
+    "content": {
+      "type": "string",
+      "description": "Annotation text"
+    },
+    "paragraph_index": {
+      "type": "number",
+      "description": "Which paragraph this annotation is on"
+    },
+    "user_name": {
+      "type": "string"
+    },
+    "user_avatar": {
+      "type": "string"
+    },
+    "is_shared": {
+      "type": "boolean",
+      "default": false,
+      "description": "Visible to all students"
+    },
+    "reactions": {
+      "type": "object",
+      "properties": {
+        "helpful": {
+          "type": "number",
+          "default": 0
+        },
+        "confusing": {
+          "type": "number",
+          "default": 0
+        },
+        "interesting": {
+          "type": "number",
+          "default": 0
+        }
+      }
+    }
+  },
+  "required": [
+    "lesson_id",
+    "content"
+  ]
+}

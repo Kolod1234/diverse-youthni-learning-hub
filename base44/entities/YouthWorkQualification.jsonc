@@ -1,0 +1,100 @@
+{
+  "name": "YouthWorkQualification",
+  "type": "object",
+  "properties": {
+    "level": {
+      "type": "string",
+      "enum": [
+        "Level 1",
+        "Level 2",
+        "Level 3"
+      ],
+      "description": "OCN qualification level"
+    },
+    "title": {
+      "type": "string",
+      "description": "Qualification title"
+    },
+    "description": {
+      "type": "string",
+      "description": "Qualification overview"
+    },
+    "credit_value": {
+      "type": "number",
+      "description": "Total credit value"
+    },
+    "guided_learning_hours": {
+      "type": "number",
+      "description": "Guided learning hours"
+    },
+    "curriculum": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "unit_title": {
+            "type": "string"
+          },
+          "unit_code": {
+            "type": "string"
+          },
+          "credits": {
+            "type": "number"
+          },
+          "level": {
+            "type": "string"
+          },
+          "learning_outcomes": {
+            "type": "array",
+            "items": {
+              "type": "string"
+            }
+          }
+        }
+      },
+      "description": "Units and curriculum structure"
+    },
+    "effective_practice_model": {
+      "type": "object",
+      "properties": {
+        "purpose": {
+          "type": "string"
+        },
+        "principles": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        },
+        "key_processes": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          }
+        }
+      },
+      "description": "Model of effective youth work practice"
+    },
+    "entry_requirements": {
+      "type": "string",
+      "description": "Entry requirements"
+    },
+    "progression_routes": {
+      "type": "string",
+      "description": "Progression pathways"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": true
+    },
+    "order": {
+      "type": "number",
+      "default": 0
+    }
+  },
+  "required": [
+    "level",
+    "title",
+    "description"
+  ]
+}

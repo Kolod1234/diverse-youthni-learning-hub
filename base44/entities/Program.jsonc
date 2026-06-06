@@ -1,0 +1,43 @@
+{
+  "name": "Program",
+  "type": "object",
+  "properties": {
+    "name": {
+      "type": "string",
+      "description": "Program name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Program description"
+    },
+    "start_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "end_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "coordinator": {
+      "type": "string",
+      "description": "Program coordinator name"
+    },
+    "coordinator_email": {
+      "type": "string",
+      "description": "Program coordinator email"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "active",
+        "completed",
+        "upcoming"
+      ],
+      "default": "active"
+    }
+  },
+  "required": [
+    "name",
+    "start_date"
+  ]
+}

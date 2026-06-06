@@ -1,0 +1,68 @@
+{
+  "name": "BlogPost",
+  "type": "object",
+  "properties": {
+    "title": {
+      "type": "string",
+      "description": "Blog post title"
+    },
+    "slug": {
+      "type": "string",
+      "description": "URL-friendly slug"
+    },
+    "excerpt": {
+      "type": "string",
+      "description": "Short summary"
+    },
+    "content": {
+      "type": "string",
+      "description": "Full blog post content (HTML)"
+    },
+    "featured_image": {
+      "type": "string",
+      "description": "Featured image URL"
+    },
+    "author_name": {
+      "type": "string",
+      "description": "Author name"
+    },
+    "author_avatar": {
+      "type": "string",
+      "description": "Author avatar URL"
+    },
+    "category": {
+      "type": "string",
+      "enum": [
+        "education",
+        "technology",
+        "student-success",
+        "announcements",
+        "tips"
+      ],
+      "default": "education"
+    },
+    "tags": {
+      "type": "array",
+      "items": {
+        "type": "string"
+      },
+      "description": "Post tags"
+    },
+    "is_published": {
+      "type": "boolean",
+      "default": false
+    },
+    "published_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "read_time_minutes": {
+      "type": "number",
+      "description": "Estimated read time"
+    }
+  },
+  "required": [
+    "title",
+    "content"
+  ]
+}

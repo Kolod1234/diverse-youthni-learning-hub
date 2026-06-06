@@ -1,0 +1,37 @@
+{
+  "name": "EventRSVP",
+  "type": "object",
+  "properties": {
+    "event_id": {
+      "type": "string",
+      "description": "Reference to Event"
+    },
+    "user_email": {
+      "type": "string",
+      "description": "Email of the user RSVPing"
+    },
+    "user_name": {
+      "type": "string",
+      "description": "Display name of the user"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "going",
+        "not_going",
+        "maybe"
+      ],
+      "default": "going",
+      "description": "RSVP status"
+    },
+    "note": {
+      "type": "string",
+      "description": "Optional note from the attendee"
+    }
+  },
+  "required": [
+    "event_id",
+    "user_email",
+    "status"
+  ]
+}

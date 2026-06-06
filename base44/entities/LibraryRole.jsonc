@@ -1,0 +1,70 @@
+{
+  "name": "LibraryRole",
+  "type": "object",
+  "properties": {
+    "role_name": {
+      "type": "string",
+      "enum": [
+        "viewer",
+        "contributor",
+        "moderator",
+        "curator"
+      ],
+      "description": "Predefined role types for library access"
+    },
+    "display_name": {
+      "type": "string",
+      "description": "Human-readable role name"
+    },
+    "description": {
+      "type": "string",
+      "description": "Description of what this role can do"
+    },
+    "permissions": {
+      "type": "object",
+      "properties": {
+        "can_upload": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_edit_own": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_edit_all": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_delete_own": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_delete_all": {
+          "type": "boolean",
+          "default": false
+        },
+        "can_manage_users": {
+          "type": "boolean",
+          "default": false
+        }
+      },
+      "required": [
+        "can_upload",
+        "can_edit_own",
+        "can_edit_all",
+        "can_delete_own",
+        "can_delete_all",
+        "can_manage_users"
+      ]
+    },
+    "is_custom": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether this is a custom role defined by admin"
+    }
+  },
+  "required": [
+    "role_name",
+    "permissions"
+  ]
+}

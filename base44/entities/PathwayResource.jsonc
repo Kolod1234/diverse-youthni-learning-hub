@@ -1,0 +1,32 @@
+{
+  "name": "PathwayResource",
+  "type": "object",
+  "properties": {
+    "pathway_id": {
+      "type": "string",
+      "description": "Reference to LearningPathway"
+    },
+    "resource_id": {
+      "type": "string",
+      "description": "Reference to LibraryResource"
+    },
+    "order": {
+      "type": "number",
+      "description": "Order in the pathway"
+    },
+    "is_required": {
+      "type": "boolean",
+      "default": true,
+      "description": "Whether this resource is required for completion"
+    },
+    "notes": {
+      "type": "string",
+      "description": "Educator's notes for this resource"
+    }
+  },
+  "required": [
+    "pathway_id",
+    "resource_id",
+    "order"
+  ]
+}

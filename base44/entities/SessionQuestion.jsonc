@@ -1,0 +1,40 @@
+{
+  "name": "SessionQuestion",
+  "type": "object",
+  "properties": {
+    "session_id": {
+      "type": "string",
+      "description": "Reference to the live session"
+    },
+    "question": {
+      "type": "string",
+      "description": "The question text"
+    },
+    "asker_email": {
+      "type": "string",
+      "description": "Who asked the question"
+    },
+    "asker_name": {
+      "type": "string",
+      "description": "Asker's name"
+    },
+    "answer": {
+      "type": "string",
+      "description": "Answer from presenter"
+    },
+    "is_answered": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether question has been answered"
+    },
+    "slide_index": {
+      "type": "number",
+      "description": "Slide number when question was asked"
+    }
+  },
+  "required": [
+    "session_id",
+    "question",
+    "asker_email"
+  ]
+}
