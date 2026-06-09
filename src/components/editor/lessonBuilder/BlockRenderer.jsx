@@ -1,4 +1,4 @@
-import React, { useRef } from 'react';
+import React, { useRef, useContext, useState, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
@@ -9,7 +9,19 @@ import ImageBlock from './ImageBlock';
 import VideoBlock from './VideoBlock';
 import TableBlock from './TableBlock';
 import TwoColumnsBlock from './TwoColumnsBlock';
+import { BlockExpandedContext } from './BlockWrapper';
 import { Upload, Image as ImageIcon } from 'lucide-react';
+
+// Small wrapper that renders InlineToolbar only when the parent block is
+// expanded. Wrapped in motion-reduce-safe transition. The toolbar itself
+// preserves selection via mouseDown.preventDefault, so collapsing must be
+// driven from outside the toolbar (via the block's Edit/Done button) — not
+// here. Receives all InlineToolbar props through ...rest.
+function GatedInlineToolbar(props) {
+  const expanded = useContext(BlockExpandedContext);
+  if (!expanded) return null;
+  return <InlineToolbar {...props} />;
+}
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
 // modal, no separate "edit" screen. Tutors edit inline, exactly where it sits.
@@ -63,7 +75,7 @@ function ParagraphBlock({ html, onChange }) {
   const ref = useRef(null);
   return (
     <div>
-      <InlineToolbar editableRef={ref} showHeadings />
+      <GatedInlineToolbar editableRef={ref} showHeadings />
       <InlineEditable
         ref={ref}
         value={html}
@@ -126,7 +138,7 @@ function QuoteBlock({ html, cite, onChange }) {
   const ref = useRef(null);
   return (
     <div className="border-l-4 border-indigo-500 bg-gray-50 rounded px-4 py-3">
-      <InlineToolbar editableRef={ref} />
+      <GatedInlineToolbar editableRef={ref} />
       <InlineEditable
         ref={ref}
         value={html}
@@ -167,7 +179,7 @@ function CalloutBlock({ variant = 'info', html, onChange }) {
           <option value="danger">⚠ Important</option>
         </select>
       </div>
-      <InlineToolbar editableRef={ref} />
+      <GatedInlineToolbar editableRef={ref} />
       <InlineEditable
         ref={ref}
         value={html}
@@ -361,7 +373,7 @@ function BadgeBlock({ label, color, html, onChange }) {
   return (
     <div className={`border rounded-lg p-3 ${palette[color] || palette.emerald}`}>
       <p className="text-[10px] tracking-widest uppercase font-bold mb-1">{label}</p>
-      <InlineToolbar editableRef={ref} />
+      <GatedInlineToolbar editableRef={ref} />
       <InlineEditable ref={ref} value={html} onChange={onChange} placeholder="Write here…" className="text-base" />
     </div>
   );

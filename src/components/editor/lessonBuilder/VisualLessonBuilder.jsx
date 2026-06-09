@@ -30,6 +30,9 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
   const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);
 
   const [focusedId, setFocusedId] = useState(null);
+  // Ephemeral accordion state: which block has its formatting / advanced
+  // controls expanded. Never serialised. Only one block expanded at a time.
+  const [expandedId, setExpandedId] = useState(null);
   const [slashOpen, setSlashOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
   // persistedAt: only set after a *real* server save via onPersist succeeds.
@@ -54,6 +57,7 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
     lastSerialised.current = slide?.content || '';
     setPersistedAt(null);
     setPersistError(null);
+    setExpandedId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.id, slide?.order]);
 
@@ -252,6 +256,9 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
                             onMove={(delta) => moveBlock(idx, delta)}
                             onToggleCollapse={() => toggleCollapse(idx)}
                             onAddBelow={(type) => addBlockAt(idx + 1, type)}
+                            expanded={expandedId === block.id}
+                            onToggleExpand={() => setExpandedId((cur) => cur === block.id ? null : block.id)}
+                            onRequestExpand={() => setExpandedId(block.id)}
                           >
                             <BlockRenderer
                               block={block}
