@@ -3,9 +3,15 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Save, Play, Settings2, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Play, Settings2, Sparkles, MoreVertical } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import SlideEditor from '@/components/editor/SlideEditor';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
@@ -161,35 +167,37 @@ export default function LessonEditor() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50">
-      {/* Calm, immersive editor header — owns the viewport (Layout hides public chrome) */}
+    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
+      {/* Calm, immersive editor header — owns the viewport (Layout hides public chrome).
+          At <sm we collapse to: [Back] [Title — truncated] [Save] [⋯ overflow]
+          so the primary Save action is never clipped at 390px, and settings/present
+          remain reachable through the overflow menu. ≥sm preserves the full inline row. */}
       <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3 sm:flex-1 min-w-0">
-            <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-slate-600 hover:text-slate-900">
-              <ArrowLeft className="w-4 h-4 mr-1.5" />
-              Back
-            </Button>
-            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 shrink-0" aria-hidden="true">
-              <span>/</span>
-              <span className="text-slate-500">Lesson Editor</span>
-              <span>/</span>
-            </div>
-            <h1 className="text-sm sm:text-base font-semibold text-slate-900 truncate">
-              {lessonId ? (lessonForm.title || 'Edit Lesson') : 'Create New Lesson'}
-            </h1>
-            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 ml-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
-              {lessonId ? 'Unsaved changes' : 'Not yet saved — use Save Lesson to persist'}
-            </span>
+        <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
+          <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-slate-600 hover:text-slate-900 px-2 sm:px-3">
+            <ArrowLeft className="w-4 h-4 sm:mr-1.5" />
+            <span className="hidden sm:inline">Back</span>
+          </Button>
+          <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 shrink-0" aria-hidden="true">
+            <span>/</span>
+            <span className="text-slate-500">Lesson Editor</span>
+            <span>/</span>
           </div>
-          <div className="flex gap-2 w-full sm:w-auto">
+          <h1 className="flex-1 min-w-0 text-sm sm:text-base font-semibold text-slate-900 truncate">
+            {lessonId ? (lessonForm.title || 'Edit Lesson') : 'Create New Lesson'}
+          </h1>
+          <span className="hidden md:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 shrink-0">
+            <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+            {lessonId ? 'Unsaved changes' : 'Not yet saved — use Save Lesson to persist'}
+          </span>
+
+          {/* Desktop / tablet — original inline buttons preserved verbatim */}
+          <div className="hidden sm:flex gap-2 shrink-0">
             <Button
               type="button"
               variant="outline"
               size="sm"
               onClick={() => setSettingsOpen(true)}
-              className="flex-1 sm:flex-none"
               title="Lesson settings (title, description, video, document, objectives…)"
             >
               <Settings2 className="w-4 h-4 mr-2" />
@@ -201,7 +209,6 @@ export default function LessonEditor() {
               size="sm"
               onClick={() => setPresenting(true)}
               disabled={!(lessonForm.slides || []).length}
-              className="flex-1 sm:flex-none"
               title={(lessonForm.slides || []).length ? 'Launch full-screen presenter' : 'Add slides to present'}
             >
               <Play className="w-4 h-4 mr-2" />
@@ -211,7 +218,7 @@ export default function LessonEditor() {
               size="sm"
               onClick={() => saveMutation.mutate()}
               disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
-              className="bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none"
+              className="bg-indigo-600 hover:bg-indigo-700"
             >
               {saveMutation.isPending ? (
                 <>
@@ -225,6 +232,46 @@ export default function LessonEditor() {
                 </>
               )}
             </Button>
+          </div>
+
+          {/* Mobile — compact Save + overflow. Save must never be clipped. */}
+          <div className="flex sm:hidden gap-1.5 shrink-0">
+            <Button
+              size="sm"
+              onClick={() => saveMutation.mutate()}
+              disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
+              className="bg-indigo-600 hover:bg-indigo-700 px-3"
+              aria-label="Save lesson"
+            >
+              {saveMutation.isPending ? (
+                <Loader2 className="w-4 h-4 animate-spin" />
+              ) : (
+                <>
+                  <Save className="w-4 h-4 sm:mr-2" />
+                  <span className="ml-1.5 text-xs font-semibold">Save</span>
+                </>
+              )}
+            </Button>
+            <DropdownMenu>
+              <DropdownMenuTrigger asChild>
+                <Button variant="outline" size="sm" className="px-2" aria-label="More actions">
+                  <MoreVertical className="w-4 h-4" />
+                </Button>
+              </DropdownMenuTrigger>
+              <DropdownMenuContent align="end" className="w-56">
+                <DropdownMenuItem onClick={() => setSettingsOpen(true)}>
+                  <Settings2 className="w-4 h-4 mr-2" />
+                  Lesson settings
+                </DropdownMenuItem>
+                <DropdownMenuItem
+                  onClick={() => setPresenting(true)}
+                  disabled={!(lessonForm.slides || []).length}
+                >
+                  <Play className="w-4 h-4 mr-2" />
+                  Present
+                </DropdownMenuItem>
+              </DropdownMenuContent>
+            </DropdownMenu>
           </div>
         </div>
       </div>

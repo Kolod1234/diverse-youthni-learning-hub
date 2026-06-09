@@ -5,7 +5,8 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download, Code } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download, Code, LayoutList } from 'lucide-react';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import VisualLessonBuilder from '@/components/editor/lessonBuilder/VisualLessonBuilder';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
@@ -19,6 +20,7 @@ import FigmaImporter from '@/components/editor/FigmaImporter';
 import ImageEditorModal from '@/components/editor/ImageEditorModal';
 import InlineCodeEditor from '@/components/editor/InlineCodeEditor';
 import InlineTextEditor from '@/components/editor/InlineTextEditor';
+import SlideThumbnailRail from '@/components/editor/SlideThumbnailRail';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -188,6 +190,11 @@ export default function SlideEditor({ slides = [], onChange, isPersisted = false
   const [inlineCode, setInlineCode] = useState('');
   const [codeLanguage, setCodeLanguage] = useState('javascript');
   const [showInlineTextEditor, setShowInlineTextEditor] = useState(false);
+  // Mobile/tablet slide rail — collapsed by default so the active canvas/title/toolbar
+  // appears immediately after the toolbar at 390px. Desktop (≥lg) still shows the
+  // persistent rail and ignores this state. No duplicated slide state — the drawer
+  // hosts the SAME rail JSX as the inline desktop rail.
+  const [slidesDrawerOpen, setSlidesDrawerOpen] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -780,92 +787,28 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         </div>
       </div>
 
+      {/* Shared thumbnail rail JSX — rendered inline on desktop (≥lg) AND inside
+          the mobile Sheet drawer. Same `slides` / `currentSlide` / `onChange` —
+          no duplicated state, reorder & selection behave identically. The
+          `onSelect` wrapper lets us close the drawer after picking a slide. */}
+      {(() => null)()}
       <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 w-full ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
-        {/* Thumbnail Sidebar — full width on mobile/tablet (stacked above the canvas),
-            fixed rail (lg:w-[280px], xl:w-72) on desktop. shrink-0 stops the canvas
-            from squishing the rail; min-h-0 keeps the inner ScrollArea bounded. */}
-        <Card className={`${fullscreenEdit ? 'lg:w-72' : 'lg:w-[280px] xl:w-72'} w-full shrink-0 flex flex-col border-2 max-h-[260px] lg:max-h-none min-h-0`}>
+        {/* Desktop rail — hidden below lg. At <lg, the active canvas appears
+            immediately after the toolbar; thumbnails are accessed via the
+            "Slides (N)" button below. */}
+        <Card className={`hidden lg:flex ${fullscreenEdit ? 'lg:w-72' : 'lg:w-[280px] xl:w-72'} shrink-0 flex-col border-2 min-h-0`}>
           <div className="p-4 border-b bg-gray-50">
             <p className="text-sm font-semibold text-gray-700">All Slides</p>
           </div>
           <ScrollArea className="flex-1">
-            <DragDropContext onDragEnd={handleDragEnd}>
-              <Droppable droppableId="slides">
-                {(provided) => (
-                  <div
-                    {...provided.droppableProps}
-                    ref={provided.innerRef}
-                    className="p-3 space-y-2"
-                  >
-                    {slides.map((slide, index) => (
-                      <Draggable key={index} draggableId={`slide-${index}`} index={index}>
-                        {(provided, snapshot) => (
-                          <div
-                            ref={provided.innerRef}
-                            {...provided.draggableProps}
-                            className={`group relative cursor-pointer transition-all ${
-                              currentSlide === index 
-                                ? 'ring-2 ring-indigo-500' 
-                                : 'hover:ring-2 hover:ring-gray-300'
-                            } ${snapshot.isDragging ? 'shadow-2xl rotate-2 scale-105' : ''}`}
-                            onClick={() => setCurrentSlide(index)}
-                          >
-                            <div className="bg-white border rounded-lg overflow-hidden">
-                              <div className="aspect-video bg-gradient-to-br from-gray-100 to-gray-200 p-3 text-xs overflow-hidden">
-                                <div className="bg-white rounded shadow-sm p-2 h-full overflow-hidden">
-                                  <div className="font-semibold text-gray-900 mb-1 truncate text-[10px]">
-                                    {slide.title || `Slide ${index + 1}`}
-                                  </div>
-                                  <div 
-                                    className="text-gray-600 line-clamp-3 text-[9px]"
-                                    dangerouslySetInnerHTML={{ 
-                                      __html: slide.content?.replace(/<[^>]*>/g, ' ').substring(0, 80) + '...' 
-                                    }}
-                                  />
-                                </div>
-                              </div>
-                              <div className="px-2 py-1.5 bg-gray-50 flex items-center justify-between">
-                                <div className="flex items-center gap-2">
-                                  <div {...provided.dragHandleProps} className="cursor-grab active:cursor-grabbing">
-                                    <GripVertical className="w-3 h-3 text-gray-400" />
-                                  </div>
-                                  <span className="text-xs font-medium text-gray-600">#{index + 1}</span>
-                                </div>
-                                <div className="flex gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="min-h-[44px] min-w-[44px] p-0"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      duplicateSlide(index);
-                                    }}
-                                  >
-                                    <Copy className="w-3 h-3" />
-                                  </Button>
-                                  <Button
-                                    variant="ghost"
-                                    size="sm"
-                                    className="min-h-[44px] min-w-[44px] p-0 text-red-600 hover:text-red-700"
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      if (confirm('Delete this slide?')) deleteSlide(index);
-                                    }}
-                                  >
-                                    <Trash2 className="w-3 h-3" />
-                                  </Button>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        )}
-                      </Draggable>
-                    ))}
-                    {provided.placeholder}
-                  </div>
-                )}
-              </Droppable>
-            </DragDropContext>
+            <SlideThumbnailRail
+              slides={slides}
+              currentSlide={currentSlide}
+              onSelect={(i) => setCurrentSlide(i)}
+              onDragEnd={handleDragEnd}
+              onDuplicate={(i) => duplicateSlide(i)}
+              onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
+            />
           </ScrollArea>
         </Card>
 
@@ -893,6 +836,18 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   <span className="text-sm font-medium text-gray-700 shrink-0">
                     Slide {currentSlide + 1} of {slides.length}
                   </span>
+                  {/* Mobile/tablet only — opens the slide thumbnail drawer. Hidden ≥lg
+                      because the persistent desktop rail is already visible. */}
+                  <Button
+                    variant="outline"
+                    size="sm"
+                    onClick={() => setSlidesDrawerOpen(true)}
+                    className="lg:hidden bg-indigo-50 border-indigo-200 text-indigo-700 hover:bg-indigo-100 min-h-[44px]"
+                    aria-label={`Open slide list, ${slides.length} slides`}
+                  >
+                    <LayoutList className="w-4 h-4 mr-1" />
+                    Slides ({slides.length})
+                  </Button>
                   <DropdownMenu>
                     <DropdownMenuTrigger asChild>
                       <Button
@@ -1185,6 +1140,54 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           )}
         </div>
         </div>
+
+        {/* Mobile/tablet slide thumbnail drawer — opens via the "Slides (N)" button.
+            Hosts the SAME SlideThumbnailRail component the desktop sidebar uses, so
+            selection, reorder, duplicate and delete behave identically and there is
+            NO duplicated slide state. Closed by default at all sizes. */}
+        <Sheet open={slidesDrawerOpen} onOpenChange={setSlidesDrawerOpen}>
+          <SheetContent side="left" className="w-[88vw] sm:w-[360px] p-0 flex flex-col">
+            <SheetHeader className="px-5 pt-5 pb-3 border-b">
+              <SheetTitle className="flex items-center gap-2 text-base">
+                <LayoutList className="w-4 h-4 text-indigo-600" />
+                Slides ({slides.length})
+              </SheetTitle>
+              <p className="text-xs text-slate-500">Tap to open. Drag to reorder.</p>
+            </SheetHeader>
+            <div className="flex-1 overflow-y-auto">
+              <SlideThumbnailRail
+                slides={slides}
+                currentSlide={currentSlide}
+                onSelect={(i) => { setCurrentSlide(i); setSlidesDrawerOpen(false); }}
+                onDragEnd={handleDragEnd}
+                onDuplicate={(i) => duplicateSlide(i)}
+                onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
+              />
+            </div>
+            <div className="border-t p-3 bg-slate-50">
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <Button className="w-full bg-indigo-600 hover:bg-indigo-700" size="sm">
+                    <Plus className="w-4 h-4 mr-2" />
+                    Add slide
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="start" className="w-64 max-h-[60vh] overflow-y-auto">
+                  {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
+                    <DropdownMenuItem
+                      key={key}
+                      onClick={() => { addSlide(key); setSlidesDrawerOpen(false); }}
+                      className="cursor-pointer py-3"
+                    >
+                      <span className="text-xl mr-3">{template.icon}</span>
+                      <span className="font-medium">{template.name}</span>
+                    </DropdownMenuItem>
+                  ))}
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </SheetContent>
+        </Sheet>
 
         {/* Save Template Modal */}
         {showSaveTemplate && (
