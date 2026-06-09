@@ -1,0 +1,54 @@
+{
+  "name": "CourseTeachingRequest",
+  "type": "object",
+  "properties": {
+    "course_id": {
+      "type": "string",
+      "description": "Course the tutor is requesting to teach"
+    },
+    "course_title": {
+      "type": "string",
+      "description": "Snapshot of the course title at request time"
+    },
+    "tutor_email": {
+      "type": "string",
+      "description": "Email of the requesting tutor"
+    },
+    "tutor_name": {
+      "type": "string",
+      "description": "Display name of the requesting tutor"
+    },
+    "message": {
+      "type": "string",
+      "description": "Optional note from the tutor for the admin"
+    },
+    "status": {
+      "type": "string",
+      "enum": [
+        "pending",
+        "approved",
+        "rejected"
+      ],
+      "default": "pending",
+      "description": "Review status \u2014 only an explicit admin approval may assign the tutor to the course"
+    },
+    "processed_by": {
+      "type": "string",
+      "description": "Admin email that approved or rejected the request"
+    },
+    "processed_date": {
+      "type": "string",
+      "format": "date-time",
+      "description": "When the request was approved or rejected"
+    },
+    "admin_response": {
+      "type": "string",
+      "description": "Optional message from the admin to the tutor on decision"
+    }
+  },
+  "required": [
+    "course_id",
+    "tutor_email",
+    "status"
+  ]
+}

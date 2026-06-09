@@ -48,6 +48,8 @@ import { motion } from 'framer-motion';
 import CourseLeaderboard from '@/components/gamification/CourseLeaderboard';
 import CourseSEO from '@/components/seo/CourseSEO';
 import DynamicCourseLanding from '@/components/course/DynamicCourseLanding';
+import RequestToTeachButton from '@/components/tutor/RequestToTeachButton';
+import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 const levelColors = {
   beginner: { bgcolor: '#dcfce7', color: '#15803d' },
@@ -102,10 +104,13 @@ export default function CourseDetails() {
     staleTime: 2 * 60 * 1000,
   });
 
+  // Tutors are teachers, not learners — don't query for their personal
+  // enrollment in this course. Admins still get the learner view if they want it.
+  const isTutor = user?.is_tutor === true && user?.role !== 'admin';
   const { data: enrollments = [] } = useQuery({
     queryKey: ['enrollment', courseId, user?.email],
     queryFn: () => base44.entities.Enrollment.filter({ course_id: courseId, created_by: user?.email }),
-    enabled: !!courseId && !!user?.email && !!course,
+    enabled: !!courseId && !!user?.email && !!course && !isTutor,
     staleTime: 1 * 60 * 1000,
   });
 
@@ -167,9 +172,11 @@ export default function CourseDetails() {
     },
   });
 
-  // Calculate enrollment status - move after all hooks
-  const enrollment = enrollments[0];
-  const isEnrolled = !!enrollment;
+  // Calculate enrollment status - move after all hooks.
+  // Tutors are never treated as enrolled — they get the "request to teach" flow.
+  const enrollment = isTutor ? null : enrollments[0];
+  const isEnrolled = !isTutor && !!enrollment;
+  const isAssignedTutor = !!user && course ? isCourseExplicitlyAssignedToTutor(course, user) : false;
 
   // Show all quizzes to enrolled students, only published to non-enrolled
   const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
@@ -339,7 +346,22 @@ export default function CourseDetails() {
                       )}
                     </Box>
                   
-                    {isEnrolled ? (
+                    {isTutor ? (
+                      // Tutors are teachers, not learners. They see "Request to Teach"
+                      // (or assigned/pending status) and never see Enroll or Continue Learning.
+                      <RequestToTeachButton course={course} user={user} />
+                    ) : user?.role === 'admin' && isAssignedTutor ? (
+                      <Button
+                        variant="contained"
+                        fullWidth
+                        size="large"
+                        component={Link}
+                        to={createPageUrl('TutorCourseManager') + `?courseId=${courseId}`}
+                        sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
+                      >
+                        Manage Course
+                      </Button>
+                    ) : isEnrolled ? (
                       <Button 
                         variant="contained"
                         fullWidth
