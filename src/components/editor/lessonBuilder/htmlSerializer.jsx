@@ -18,6 +18,26 @@ const escapeHtml = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
            .replace(/>/g, '&gt;').replace(/"/g, '&quot;');
 
+// Safe media URL sanitiser. Allows https:, http:, data:image/* (for tiny
+// inline previews), uploaded /storage/ paths, and protocol-relative // URLs.
+// Rejects javascript:, vbscript:, data:text/html, file:, etc. Returns the
+// trimmed URL on success, or empty string if the URL is unsafe / malformed.
+function sanitiseMediaUrl(url) {
+  if (!url) return '';
+  const trimmed = String(url).trim();
+  if (!trimmed) return '';
+  // Block dangerous schemes regardless of casing / whitespace.
+  if (/^\s*(javascript|vbscript|file|about|chrome|data:text\/html):/i.test(trimmed)) return '';
+  // Allow http(s), protocol-relative, data:image/*, and same-origin absolute paths.
+  if (/^https?:\/\//i.test(trimmed)) return trimmed;
+  if (/^\/\//.test(trimmed)) return trimmed;
+  if (/^data:image\//i.test(trimmed)) return trimmed;
+  if (/^\/[^/]/.test(trimmed)) return trimmed; // absolute same-origin path
+  // Bare upload paths (rare) — accept storage-style URIs the platform emits.
+  if (/^\/storage\//i.test(trimmed)) return trimmed;
+  return '';
+}
+
 // ── inline-editable HTML sanitiser ─────────────────────────────────────────
 // Strips dangerous nodes/attrs from contenteditable output before saving.
 // We keep enough semantic tags + safe inline `style` properties for the rich
@@ -146,10 +166,17 @@ function blockToHtml(b) {
     case 'definition':
       return `<div style="background:#F0F4F8; border-radius:12px; padding:20px; margin:16px 0;"><p style="margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#38B2AC; font-weight:700;">Definition</p><p style="margin:0 0 8px; font-size:20px; font-weight:700; color:#1A3C5A;">${escapeHtml(d.term || '')}</p><p style="margin:0; font-size:16px; line-height:1.6; color:#334E68;">${sanitiseInline(d.definition || '')}</p></div>`;
     case 'image': {
-      if (!d.url) return '';
+      // Accept the current ImageBlock keys (url/align/widthUnit/width/fit/...)
+      // AND legacy keys from older blocks or imported HTML
+      // (src / imageUrl / image_url / file_url / width_unit). The editor is
+      // the source of truth, but we adapt so nothing previously authored is
+      // dropped on re-serialisation.
+      const rawUrl = d.url || d.src || d.imageUrl || d.image_url || d.file_url || '';
+      const safeUrl = sanitiseMediaUrl(rawUrl);
+      if (!safeUrl) return '';
       const alignMap = { left:'flex-start', center:'center', right:'flex-end', full:'stretch' };
-      const align = d.align || 'center';
-      const unit = d.widthUnit === 'px' ? 'px' : 'percent';
+      const align = ['left','center','right','full'].includes(d.align) ? d.align : 'center';
+      const unit = (d.widthUnit || d.width_unit) === 'px' ? 'px' : 'percent';
       const widthRaw = Number(d.width) || (unit === 'px' ? 800 : 100);
       const widthVal = unit === 'percent'
         ? Math.max(20, Math.min(100, widthRaw))
@@ -158,14 +185,23 @@ function blockToHtml(b) {
         ? '100%'
         : (unit === 'percent' ? `${widthVal}%` : `${widthVal}px`);
       const fit = d.fit === 'cover' ? 'cover' : 'contain';
+      // Preserve aspect when set + px unit + locked (used by editor for height).
+      const aspect = Number(d.aspect) || null;
+      const heightAttr = aspect && unit === 'px' && d.lockAspect !== false
+        ? ` height="${Math.round(widthVal / aspect)}"`
+        : '';
       const captionLine = (d.caption || d.credit)
         ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption || '')}${d.credit ? ` <span style="font-style:normal; color:#9CA3AF;">— ${escapeHtml(d.credit)}</span>` : ''}</figcaption>`
         : '';
-      return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(d.url)}" alt="${escapeHtml(d.alt || '')}" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
+      return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}"${heightAttr} loading="lazy" decoding="async" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
     }
     case 'image-text': {
-      const imgCol = d.url
-        ? `<img src="${escapeHtml(d.url)}" alt="${escapeHtml(d.alt || '')}" style="width:100%; height:auto; border-radius:8px; display:block;" />`
+      // Same safe media URL handling as the standalone image block. Legacy
+      // keys accepted so previously authored slides round-trip unchanged.
+      const rawUrl = d.url || d.src || d.imageUrl || d.image_url || d.file_url || '';
+      const safeUrl = sanitiseMediaUrl(rawUrl);
+      const imgCol = safeUrl
+        ? `<img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}" loading="lazy" decoding="async" style="width:100%; height:auto; border-radius:8px; display:block;" />`
         : '<div style="background:#F3F4F6; border-radius:8px; aspect-ratio:4/3;"></div>';
       const textCol = `<div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(d.html || '')}</div>`;
       const [a, b] = d.side === 'right' ? [textCol, imgCol] : [imgCol, textCol];
@@ -493,6 +529,40 @@ function parseSimpleElement(el, tag) {
     if (!twoColHtml.includes('Left') || !twoColHtml.includes('Right')) {
       // eslint-disable-next-line no-console
       console.warn('[lessonBuilder] two-columns serializer dropped child content. Shape mismatch?');
+    }
+
+    // Image round-trip — the exact failing case the user reported.
+    const imageBlock = {
+      type: 'image',
+      data: {
+        url: 'https://placehold.co/600x400/png',
+        alt: 'Placeholder',
+        align: 'center',
+        widthUnit: 'percent',
+        width: 70,
+        fit: 'contain',
+        lockAspect: true,
+      },
+    };
+    const imgHtml = blockToHtml(imageBlock);
+    if (!imgHtml.includes('<img') || !imgHtml.includes('placehold.co')) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] image serializer dropped <img> tag or URL. Shape mismatch?');
+    }
+    if (!imgHtml.includes('70%')) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] image serializer ignored width 70%. Key mismatch?');
+    }
+
+    // Image-with-text round-trip.
+    const imageTextBlock = {
+      type: 'image-text',
+      data: { url: 'https://placehold.co/300x200/png', alt: 'a', html: 'hello', side: 'left' },
+    };
+    const itHtml = blockToHtml(imageTextBlock);
+    if (!itHtml.includes('<img') || !itHtml.includes('placehold.co') || !itHtml.includes('hello')) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] image-text serializer dropped <img> or text. Shape mismatch?');
     }
   } catch {
     /* never block module load */
