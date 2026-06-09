@@ -9,7 +9,7 @@ import ImageBlock from './ImageBlock';
 import VideoBlock from './VideoBlock';
 import TableBlock from './TableBlock';
 import TwoColumnsBlock from './TwoColumnsBlock';
-import { Upload, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, X } from 'lucide-react';
+import { Upload, Image as ImageIcon } from 'lucide-react';
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
 // modal, no separate "edit" screen. Tutors edit inline, exactly where it sits.
@@ -420,17 +420,6 @@ function LegacyHtmlBlock({ html, onChange }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-// AlignBtn used by ImageTextBlock — kept here as a local primitive.
-function AlignBtn({ children, active, onClick }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      className={`px-1.5 py-1 ${active ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-100'}`}
-    >{children}</button>
-  );
-}
-
 function stripTags(html) {
   if (!html) return '';
   if (typeof document === 'undefined') return String(html);
