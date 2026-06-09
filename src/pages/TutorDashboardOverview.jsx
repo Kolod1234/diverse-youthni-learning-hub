@@ -27,15 +27,6 @@ export default function TutorDashboardOverview() {
     });
   }, []);
 
-  // Fetch tutor's approved request to get approved subjects
-  const { data: tutorRequests = [] } = useQuery({
-    queryKey: ['tutor-request-overview', user?.email],
-    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 5),
-    enabled: !!user?.email && user?.role !== 'admin',
-  });
-
-  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
-
   // Only courses the admin explicitly assigned to this tutor (via course.assigned_tutors).
   // Approved subjects do NOT auto-add courses here.
   // Query key v2 to bust any stale cache from older filter logic.
@@ -163,20 +154,7 @@ export default function TutorDashboardOverview() {
                 <p className="text-slate-300 mt-1 text-sm">
                   {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
-                {approvedSubjects && approvedSubjects.length > 0 && (
-                  <div className="mt-3">
-                    <p className="text-blue-200 text-xs font-medium mb-1.5">
-                      Approved subjects (eligibility only — not a course assignment):
-                    </p>
-                    <div className="flex flex-wrap gap-2">
-                      {approvedSubjects.map(s => (
-                        <span key={s} className="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full capitalize">
-                          {s.replace(/_/g, ' ')}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
+
               </div>
               <div className="flex gap-3 flex-wrap">
                 <Link to={createPageUrl('TutorDashboard')}>
@@ -284,8 +262,7 @@ export default function TutorDashboardOverview() {
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
                   <p className="font-medium text-gray-600">No courses assigned</p>
                   <p className="text-sm mt-1 text-gray-500 max-w-md mx-auto">
-                    Approved subjects show what you're eligible to teach — they do not assign you to a course.
-                    Contact an admin to be assigned, or open a course on{' '}
+                    Contact an admin to be assigned to a course, or open a course on{' '}
                     <Link to={createPageUrl('Explore')} className="text-blue-600 hover:underline">Explore</Link>
                     {' '}and use <strong>Request to Teach</strong>.
                   </p>
@@ -466,33 +443,7 @@ export default function TutorDashboardOverview() {
               </div>
             </div>
 
-            {/* Approved Subjects (eligibility only — NOT course assignments) */}
-            {approvedSubjects && approvedSubjects.length > 0 && (
-              <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
-                  <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Approved Subjects
-                </h3>
-                <p className="text-xs text-gray-500 mb-3">
-                  Subjects you're eligible to teach. This is <strong>not</strong> a course assignment — an
-                  admin must add you to a specific course before you can manage it.
-                </p>
-                <div className="space-y-2">
-                  {approvedSubjects.map(subject => (
-                    <div key={subject} className="flex items-center justify-between p-2.5 bg-green-50 rounded-xl">
-                      <span className="text-sm text-green-800 capitalize font-medium">{subject.replace(/_/g, ' ')}</span>
-                      <CheckCircle2 className="w-4 h-4 text-green-600" />
-                    </div>
-                  ))}
-                </div>
-                {myCourses.length === 0 && (
-                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 mt-3">
-                    You have no courses assigned. Contact an admin, or use <strong>Request to Teach</strong> on a
-                    course in <Link to={createPageUrl('Explore')} className="underline">Explore</Link>.
-                  </p>
-                )}
-              </div>
-            )}
+
 
             {/* Performance Card */}
             <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white">
