@@ -129,9 +129,15 @@ export default function TutorCourseManager() {
     enabled: !!user,
   });
 
-  // Allow access if admin OR if course category is within tutor's approved subjects
+  // Allow access if admin, OR if tutor is explicitly assigned to this course,
+  // OR if the course category is within the tutor's approved subjects (case-insensitive).
+  const normalisedApproved = (approvedSubjects || []).map(s => (s || '').toLowerCase());
+  const courseCategory = (course?.category || '').toLowerCase();
+  const isAssignedTutor = !!user?.email && Array.isArray(course?.assigned_tutors) &&
+    course.assigned_tutors.includes(user.email);
   const isAllowedToEditCourse = !course || user?.role === 'admin' ||
-    (approvedSubjects || []).includes(course.category);
+    isAssignedTutor ||
+    normalisedApproved.includes(courseCategory);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],
