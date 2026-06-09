@@ -106,7 +106,10 @@ export function defaultBlockData(type) {
     };
     case 'divider':           return {};
     case 'spacer':            return { size: 32 };
-    case 'two-columns':       return { left: '', right: '' };
+    case 'two-columns':       return {
+      leftBlocks: [], rightBlocks: [],
+      ratio: 0.5, gap: 24, verticalAlign: 'top', stackOnMobile: true,
+    };
     case 'code':              return { code: '', language: 'javascript' };
     case 'math':              return { latex: '' };
     case 'scientific-equation': return { equation: '', caption: '', arrow: 'forward' };

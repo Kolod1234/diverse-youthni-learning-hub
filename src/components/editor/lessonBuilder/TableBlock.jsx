@@ -1,552 +1,500 @@
-import React, { useState, useCallback, useMemo } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import {
-  Plus, Trash2, ArrowUp, ArrowDown, ArrowLeft, ArrowRight,
-  AlignLeft, AlignCenter, AlignRight, Palette, Merge, Split,
-  Bold, Eraser,
+  Plus, Trash2, ChevronUp, ChevronDown, ChevronLeft, ChevronRight,
+  AlignLeft, AlignCenter, AlignRight, Palette, Highlighter, X,
+  Merge, Split, MoreHorizontal,
 } from 'lucide-react';
 import InlineEditable from './InlineEditable';
 
-// Visual table block.
+// Rich table block.
 //
-// Data shape (backwards-compatible — old { rows, header } still loads):
+// Data shape (backwards-compatible with the old `{ rows: string[][] }` shape —
+// migrateRows() upgrades legacy values to the new cell-object shape on read).
+//
 //   {
-//     header: boolean,                       // whether row 0 is a <thead> row
-//     caption: string,                       // optional <caption>
-//     striped: boolean,
-//     bordered: boolean,
-//     compact: boolean,
-//     rows: Cell[][]                         // 2D grid of cell objects
+//     rows: Cell[][],
+//     header: boolean,       // first row is rendered as <th> with role="columnheader"
+//     stripe: boolean,       // alternating row background
+//     caption: string,       // <caption> for screen readers + visible label
 //   }
-//
-// Cell shape — every entry is the "owner" of a logical cell. Cells that are
-// covered by a merge from above/left are marked `hidden: true` so they don't
-// render in the DOM but their slot still occupies the grid (this is how we
-// keep row/column indices stable while supporting merges).
 //
 //   Cell = {
-//     html: string,           // contents (rich text via InlineEditable)
-//     align: 'left'|'center'|'right',
-//     bg:   string|null,      // background colour
-//     border: boolean,        // override block-level bordered for this cell
-//     bold: boolean,
-//     rowspan: number,        // >= 1
-//     colspan: number,        // >= 1
-//     hidden: boolean,        // covered by a merge — don't render
+//     content: string,       // rich inline HTML (sanitised by serializer)
+//     align?:  'left'|'center'|'right',
+//     color?:  string,       // text colour
+//     bg?:     string,       // background colour
+//     border?: 'default'|'thick'|'none',
+//     rowSpan?: number,      // ≥ 2 means this cell spans
+//     colSpan?: number,
+//     hidden?: boolean,      // covered by a merged neighbour — not rendered
 //   }
+//
+// Merging:
+//   We allow a rectangular merge from a "primary" selected cell to a second
+//   click target. Cells covered by the merge get { hidden: true } and the
+//   primary cell gets rowSpan / colSpan. Unmerge restores hidden=false and
+//   resets the spans to 1.
 
-const PALETTE = [
-  null, '#FEF3C7', '#DBEAFE', '#DCFCE7', '#FCE7F3', '#FEE2E2', '#E0E7FF', '#F3F4F6',
-];
+const PALETTE_TEXT = ['#111827','#4F46E5','#10B981','#F59E0B','#EF4444','#0EA5E9','#6B7280',''];
+const PALETTE_BG   = ['#F9FAFB','#EEF2FF','#ECFDF5','#FEF3C7','#FEE2E2','#E0F2FE','#F5F3FF',''];
 
-const DEFAULT_CELL = () => ({
-  html: '', align: 'left', bg: null, border: false, bold: false,
-  rowspan: 1, colspan: 1, hidden: false,
-});
+const emptyCell = () => ({ content: '' });
 
-// Normalise legacy data: old format was `rows: string[][]` (just strings).
-function normalise(data = {}) {
-  const header   = data.header !== false;
-  const caption  = data.caption || '';
-  const striped  = !!data.striped;
-  const bordered = data.bordered !== false; // default on for legibility
-  const compact  = !!data.compact;
-  const raw = Array.isArray(data.rows) && data.rows.length ? data.rows : [[''], ['']];
-  // Pad ragged rows so every row has the same width.
-  const width = Math.max(...raw.map(r => Array.isArray(r) ? r.length : 0), 1);
-  const rows = raw.map(row => {
-    const r = Array.isArray(row) ? row : [];
-    const out = [];
-    for (let i = 0; i < width; i++) {
-      const cell = r[i];
-      if (cell && typeof cell === 'object') {
-        out.push({ ...DEFAULT_CELL(), ...cell });
-      } else {
-        out.push({ ...DEFAULT_CELL(), html: cell == null ? '' : String(cell) });
-      }
-    }
-    return out;
-  });
-  return { header, caption, striped, bordered, compact, rows };
+function migrateRows(rows) {
+  if (!Array.isArray(rows)) return [[emptyCell(), emptyCell()], [emptyCell(), emptyCell()]];
+  return rows.map(r => (Array.isArray(r) ? r : []).map(c => {
+    if (c && typeof c === 'object' && 'content' in c) return c;
+    return { content: typeof c === 'string' ? c : '' };
+  }));
 }
 
 export default function TableBlock({ data, onChange }) {
-  const norm = useMemo(() => normalise(data), [data]);
-  const { header, caption, striped, bordered, compact, rows } = norm;
-  const numCols = rows[0]?.length || 0;
+  const rows = migrateRows(data.rows);
+  const header = data.header !== false;
+  const stripe = !!data.stripe;
+  const caption = data.caption || '';
 
-  // selection — multi-cell allowed for merging
-  const [sel, setSel] = useState([]); // [{r,c}, …]
-  const inSel = (r, c) => sel.some(s => s.r === r && s.c === c);
+  // Selected cell { r, c } for the inline cell toolbar.
+  const [selected, setSelected] = useState(null);
+  // Merge mode: clicking another cell after this completes the merge.
+  const [mergePending, setMergePending] = useState(false);
 
-  const update = (patch) => onChange({ ...norm, ...patch });
-  const setRows = (next) => update({ rows: next });
-
-  // ── Cell helpers ────────────────────────────────────────────────────────
-  const setCell = useCallback((r, c, patch) => {
+  const update = (next) => onChange({ ...data, rows: next });
+  const patchCell = (r, c, patch) => {
     const next = rows.map(row => row.map(cell => ({ ...cell })));
     next[r][c] = { ...next[r][c], ...patch };
-    setRows(next);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [rows]);
-
-  const patchSelection = (patch) => {
-    if (!sel.length) return;
-    const next = rows.map(row => row.map(cell => ({ ...cell })));
-    sel.forEach(({ r, c }) => { next[r][c] = { ...next[r][c], ...patch }; });
-    setRows(next);
+    update(next);
   };
 
-  // ── Row operations ──────────────────────────────────────────────────────
-  const addRow = (at) => {
-    const next = rows.map(row => row.map(cell => ({ ...cell })));
-    next.splice(at, 0, Array.from({ length: numCols }, () => DEFAULT_CELL()));
-    setRows(next);
+  // ── Structure ops ──────────────────────────────────────────────────────
+  const numCols = rows[0]?.length || 0;
+
+  const addRow = (at = rows.length) => {
+    const newRow = Array.from({ length: Math.max(1, numCols) }, emptyCell);
+    const next = [...rows.slice(0, at), newRow, ...rows.slice(at)];
+    update(next);
   };
-  const removeRow = (idx) => {
+  const removeRow = (at) => {
     if (rows.length <= 1) return;
-    setRows(rows.filter((_, i) => i !== idx));
-    setSel([]);
+    update(rows.filter((_, i) => i !== at));
   };
-  const moveRow = (idx, delta) => {
-    const target = idx + delta;
-    if (target < 0 || target >= rows.length) return;
-    const next = rows.map(row => row.map(cell => ({ ...cell })));
-    [next[idx], next[target]] = [next[target], next[idx]];
-    setRows(next);
+  const moveRow = (at, delta) => {
+    const to = at + delta;
+    if (to < 0 || to >= rows.length) return;
+    const next = rows.map(r => [...r]);
+    [next[at], next[to]] = [next[to], next[at]];
+    update(next);
   };
 
-  // ── Column operations ───────────────────────────────────────────────────
-  const addCol = (at) => {
-    const next = rows.map(row => {
-      const r = row.map(cell => ({ ...cell }));
-      r.splice(at, 0, DEFAULT_CELL());
-      return r;
+  const addCol = (at = numCols) => {
+    const next = rows.map(r => {
+      const copy = [...r];
+      copy.splice(at, 0, emptyCell());
+      return copy;
     });
-    setRows(next);
+    update(next);
   };
-  const removeCol = (idx) => {
+  const removeCol = (at) => {
     if (numCols <= 1) return;
-    setRows(rows.map(row => row.filter((_, i) => i !== idx)));
-    setSel([]);
+    update(rows.map(r => r.filter((_, i) => i !== at)));
   };
-  const moveCol = (idx, delta) => {
-    const target = idx + delta;
-    if (target < 0 || target >= numCols) return;
-    const next = rows.map(row => {
-      const r = row.map(cell => ({ ...cell }));
-      [r[idx], r[target]] = [r[target], r[idx]];
-      return r;
-    });
-    setRows(next);
+  const moveCol = (at, delta) => {
+    const to = at + delta;
+    if (to < 0 || to >= numCols) return;
+    update(rows.map(r => {
+      const copy = [...r];
+      [copy[at], copy[to]] = [copy[to], copy[at]];
+      return copy;
+    }));
   };
 
-  // ── Merge / Unmerge ─────────────────────────────────────────────────────
-  // Merge requires a rectangular contiguous selection. The top-left cell
-  // becomes the owner with rowspan/colspan covering the rectangle; the rest
-  // are marked hidden so their indices remain stable.
-  const canMerge = useMemo(() => isRectSelection(sel), [sel]);
-  const canUnmerge = sel.length === 1 && (() => {
-    const { r, c } = sel[0];
+  // ── Merge / unmerge ────────────────────────────────────────────────────
+  // Merge a rectangle from (r1,c1) to (r2,c2) into the top-left cell.
+  const mergeRect = (r1, c1, r2, c2) => {
+    const top = Math.min(r1, r2), bot = Math.max(r1, r2);
+    const lef = Math.min(c1, c2), rig = Math.max(c1, c2);
+    if (top === bot && lef === rig) return;
+    const next = rows.map(r => r.map(c => ({ ...c })));
+    // Reject if any cell in range is already part of a different merge.
+    for (let r = top; r <= bot; r++) {
+      for (let c = lef; c <= rig; c++) {
+        if ((next[r][c].rowSpan && next[r][c].rowSpan > 1) ||
+            (next[r][c].colSpan && next[r][c].colSpan > 1) ||
+            next[r][c].hidden) {
+          return; // silently bail — caller can show feedback
+        }
+      }
+    }
+    next[top][lef].rowSpan = bot - top + 1;
+    next[top][lef].colSpan = rig - lef + 1;
+    for (let r = top; r <= bot; r++) {
+      for (let c = lef; c <= rig; c++) {
+        if (r === top && c === lef) continue;
+        next[r][c].hidden = true;
+      }
+    }
+    update(next);
+  };
+
+  const unmergeAt = (r, c) => {
     const cell = rows[r]?.[c];
-    return cell && (cell.rowspan > 1 || cell.colspan > 1);
-  })();
-
-  const mergeSelection = () => {
-    if (!canMerge) return;
-    const { minR, minC, maxR, maxC } = bounds(sel);
-    const next = rows.map(row => row.map(cell => ({ ...cell })));
-    // Concatenate non-empty cells' html into the owner so content isn't lost.
-    const combinedHtml = [];
-    for (let r = minR; r <= maxR; r++) {
-      for (let c = minC; c <= maxC; c++) {
-        if (r === minR && c === minC) continue;
-        const h = next[r][c].html;
-        if (h && h.trim()) combinedHtml.push(h);
-        next[r][c] = { ...next[r][c], hidden: true, rowspan: 1, colspan: 1 };
+    if (!cell) return;
+    const rowSpan = cell.rowSpan || 1;
+    const colSpan = cell.colSpan || 1;
+    if (rowSpan === 1 && colSpan === 1) return;
+    const next = rows.map(row => row.map(cc => ({ ...cc })));
+    for (let rr = r; rr < r + rowSpan; rr++) {
+      for (let cc = c; cc < c + colSpan; cc++) {
+        const target = next[rr]?.[cc];
+        if (!target) continue;
+        target.hidden = false;
+        target.rowSpan = 1;
+        target.colSpan = 1;
       }
     }
-    next[minR][minC] = {
-      ...next[minR][minC],
-      hidden: false,
-      rowspan: maxR - minR + 1,
-      colspan: maxC - minC + 1,
-      html: [next[minR][minC].html, ...combinedHtml].filter(Boolean).join(' '),
-    };
-    setRows(next);
-    setSel([{ r: minR, c: minC }]);
+    update(next);
   };
 
-  const unmergeSelection = () => {
-    if (!canUnmerge) return;
-    const { r, c } = sel[0];
-    const cell = rows[r][c];
-    const next = rows.map(row => row.map(x => ({ ...x })));
-    for (let rr = r; rr < r + cell.rowspan; rr++) {
-      for (let cc = c; cc < c + cell.colspan; cc++) {
-        next[rr][cc] = { ...next[rr][cc], hidden: false, rowspan: 1, colspan: 1 };
-      }
-    }
-    next[r][c] = { ...next[r][c], rowspan: 1, colspan: 1, hidden: false };
-    setRows(next);
-  };
+  // ── Render ─────────────────────────────────────────────────────────────
+  const selectedCell = selected ? rows[selected.r]?.[selected.c] : null;
 
-  const clearFormatting = () => {
-    if (!sel.length) return;
-    patchSelection({ align: 'left', bg: null, border: false, bold: false });
-  };
-
-  // ── Click selection ─────────────────────────────────────────────────────
-  const onCellMouseDown = (r, c, e) => {
-    if (e.shiftKey && sel.length) {
-      const a = sel[0];
-      const minR = Math.min(a.r, r), maxR = Math.max(a.r, r);
-      const minC = Math.min(a.c, c), maxC = Math.max(a.c, c);
-      const range = [];
-      for (let rr = minR; rr <= maxR; rr++) {
-        for (let cc = minC; cc <= maxC; cc++) range.push({ r: rr, c: cc });
-      }
-      setSel(range);
-    } else {
-      setSel([{ r, c }]);
-    }
-  };
-
-  // ── Render ──────────────────────────────────────────────────────────────
   return (
     <div className="space-y-2">
       <Toolbar
-        norm={norm}
-        update={update}
-        sel={sel}
-        canMerge={canMerge}
-        canUnmerge={canUnmerge}
-        onMerge={mergeSelection}
-        onUnmerge={unmergeSelection}
-        onAlign={(a) => patchSelection({ align: a })}
-        onColour={(bg) => patchSelection({ bg })}
-        onToggleBorder={() => patchSelection({ border: !sel.every(({r,c}) => rows[r][c].border) })}
-        onToggleBold={() => patchSelection({ bold: !sel.every(({r,c}) => rows[r][c].bold) })}
-        onClearFormatting={clearFormatting}
+        rows={rows}
+        header={header}
+        stripe={stripe}
+        caption={caption}
+        selected={selected}
+        selectedCell={selectedCell}
+        mergePending={mergePending}
+        onAddRow={() => addRow()}
+        onAddCol={() => addCol()}
+        onToggleHeader={() => onChange({ ...data, header: !header })}
+        onToggleStripe={() => onChange({ ...data, stripe: !stripe })}
+        onCaptionChange={(v) => onChange({ ...data, caption: v })}
+        onPatchCell={(patch) => selected && patchCell(selected.r, selected.c, patch)}
+        onStartMerge={() => setMergePending(true)}
+        onCancelMerge={() => setMergePending(false)}
+        onUnmerge={() => selected && unmergeAt(selected.r, selected.c)}
       />
 
-      {/* Mobile-scrolling wrapper so wide tables don't blow up the layout */}
-      <div className="overflow-x-auto -mx-1 px-1 rounded border border-gray-200 bg-white">
+      {/* Horizontal scroll container for mobile */}
+      <div className="overflow-x-auto -mx-1 px-1" role="region" aria-label={caption || 'Editable table'}>
         <table
-          className={`w-full text-sm ${bordered ? '' : ''}`}
-          style={{ borderCollapse: 'collapse', tableLayout: 'auto' }}
+          className="w-full border-collapse text-sm"
+          style={{ tableLayout: 'auto', minWidth: numCols > 4 ? `${numCols * 140}px` : '100%' }}
         >
           {caption && (
-            <caption className="text-left text-xs text-gray-500 italic px-2 py-1">
+            <caption className="text-left text-xs text-gray-500 italic pb-1">
               {caption}
             </caption>
           )}
-          {rows.map((row, r) => {
-            const isHeader = header && r === 0;
-            const RowTag = 'tr';
-            return (
-              <React.Fragment key={r}>
-                {isHeader ? (
-                  <thead>
-                    <RowTag>
-                      <RowControls
-                        side="left"
-                        onAddBefore={() => addRow(r)}
-                        onAddAfter={() => addRow(r + 1)}
-                        onRemove={() => removeRow(r)}
-                        onMoveUp={() => moveRow(r, -1)}
-                        onMoveDown={() => moveRow(r, 1)}
-                        disableUp={r === 0}
-                        disableDown={r === rows.length - 1}
-                      />
-                      {row.map((cell, c) =>
-                        cell.hidden ? null : (
-                          <CellTd
-                            key={c}
-                            as="th"
-                            scope="col"
-                            cell={cell}
-                            selected={inSel(r, c)}
-                            bordered={bordered || cell.border}
-                            compact={compact}
-                            onMouseDown={(e) => onCellMouseDown(r, c, e)}
-                            onChange={(v) => setCell(r, c, { html: v })}
+          <colgroup>
+            {Array.from({ length: numCols }).map((_, c) => <col key={c} />)}
+          </colgroup>
+          <thead className="sr-only">
+            {/* Visual header is rendered as the first body row to keep editing
+                ergonomics consistent — the column controls live above. */}
+            <tr>{Array.from({ length: numCols }).map((_, c) => <th key={c} scope="col">{`Column ${c + 1}`}</th>)}</tr>
+          </thead>
+          <tbody>
+            {/* Column control row (not part of saved data) */}
+            <tr aria-hidden="true">
+              {Array.from({ length: numCols }).map((_, c) => (
+                <td key={c} className="p-1 border-0">
+                  <ColControl
+                    index={c}
+                    numCols={numCols}
+                    onMoveLeft={() => moveCol(c, -1)}
+                    onMoveRight={() => moveCol(c, +1)}
+                    onInsertLeft={() => addCol(c)}
+                    onInsertRight={() => addCol(c + 1)}
+                    onRemove={() => removeCol(c)}
+                  />
+                </td>
+              ))}
+              <td className="p-1 border-0" />
+            </tr>
+
+            {rows.map((row, r) => {
+              const isHeaderRow = header && r === 0;
+              const rowStriped = stripe && !isHeaderRow && r % 2 === 0;
+              return (
+                <tr key={r} className={rowStriped ? 'bg-gray-50/60' : ''}>
+                  {row.map((cell, c) => {
+                    if (cell.hidden) return null;
+                    const isSel = selected?.r === r && selected?.c === c;
+                    const Cell = isHeaderRow ? 'th' : 'td';
+                    const align = cell.align || (isHeaderRow ? 'left' : 'left');
+                    const borderClass =
+                      cell.border === 'thick' ? 'border-2 border-gray-400' :
+                      cell.border === 'none'  ? 'border border-transparent' :
+                                                'border border-gray-200';
+                    return (
+                      <Cell
+                        key={c}
+                        rowSpan={cell.rowSpan || 1}
+                        colSpan={cell.colSpan || 1}
+                        scope={isHeaderRow ? 'col' : undefined}
+                        onClick={(e) => {
+                          if (mergePending && selected && (selected.r !== r || selected.c !== c)) {
+                            e.preventDefault();
+                            mergeRect(selected.r, selected.c, r, c);
+                            setMergePending(false);
+                            return;
+                          }
+                          setSelected({ r, c });
+                        }}
+                        className={`${borderClass} p-0 align-top ${isSel ? 'outline outline-2 outline-indigo-400 outline-offset-[-2px]' : ''} ${mergePending && !isSel ? 'cursor-crosshair' : ''}`}
+                        style={{
+                          backgroundColor: cell.bg || (isHeaderRow ? '#F3F4F6' : undefined),
+                          color: cell.color || undefined,
+                          fontWeight: isHeaderRow ? 600 : undefined,
+                          textAlign: align,
+                          verticalAlign: 'top',
+                        }}
+                      >
+                        <div className="px-3 py-2 min-h-[36px]">
+                          <InlineEditable
+                            value={cell.content || ''}
+                            onChange={(v) => patchCell(r, c, { content: v })}
+                            placeholder={isHeaderRow ? 'Header' : '…'}
+                            singleLine
+                            className="text-sm outline-none"
+                            ariaLabel={`Row ${r + 1} column ${c + 1}`}
                           />
-                        ),
-                      )}
-                    </RowTag>
-                  </thead>
-                ) : (
-                  <tbody>
-                    {r === (header ? 1 : 0) && (
-                      <tr aria-hidden="true">
-                        <td />
-                        {row.map((_, c) => (
-                          <td key={`colctl-${c}`} className="p-0">
-                            <ColControls
-                              onAddBefore={() => addCol(c)}
-                              onAddAfter={() => addCol(c + 1)}
-                              onRemove={() => removeCol(c)}
-                              onMoveLeft={() => moveCol(c, -1)}
-                              onMoveRight={() => moveCol(c, 1)}
-                              disableLeft={c === 0}
-                              disableRight={c === numCols - 1}
-                            />
-                          </td>
-                        ))}
-                      </tr>
-                    )}
-                    <RowTag className={striped && r % 2 === (header ? 0 : 1) ? 'bg-gray-50/60' : ''}>
-                      <RowControls
-                        side="left"
-                        onAddBefore={() => addRow(r)}
-                        onAddAfter={() => addRow(r + 1)}
-                        onRemove={() => removeRow(r)}
-                        onMoveUp={() => moveRow(r, -1)}
-                        onMoveDown={() => moveRow(r, 1)}
-                        disableUp={r === 0}
-                        disableDown={r === rows.length - 1}
-                      />
-                      {row.map((cell, c) =>
-                        cell.hidden ? null : (
-                          <CellTd
-                            key={c}
-                            as="td"
-                            cell={cell}
-                            selected={inSel(r, c)}
-                            bordered={bordered || cell.border}
-                            compact={compact}
-                            isRowHeader={false}
-                            onMouseDown={(e) => onCellMouseDown(r, c, e)}
-                            onChange={(v) => setCell(r, c, { html: v })}
-                          />
-                        ),
-                      )}
-                    </RowTag>
-                  </tbody>
-                )}
-              </React.Fragment>
-            );
-          })}
+                        </div>
+                      </Cell>
+                    );
+                  })}
+                  <td className="p-1 border-0 w-10">
+                    <RowControl
+                      index={r}
+                      numRows={rows.length}
+                      onMoveUp={() => moveRow(r, -1)}
+                      onMoveDown={() => moveRow(r, +1)}
+                      onInsertAbove={() => addRow(r)}
+                      onInsertBelow={() => addRow(r + 1)}
+                      onRemove={() => removeRow(r)}
+                    />
+                  </td>
+                </tr>
+              );
+            })}
+          </tbody>
         </table>
       </div>
-
-      {/* Add row at the end */}
-      <button
-        type="button"
-        onClick={() => addRow(rows.length)}
-        className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:underline"
-      >
-        <Plus className="w-3 h-3" /> Add row
-      </button>
     </div>
   );
 }
 
-// ─────────────────────────────────────────────────────────────────────────────
-function CellTd({ as = 'td', scope, cell, selected, bordered, compact, onMouseDown, onChange }) {
-  const Tag = as;
-  const style = {
-    border: bordered ? '1px solid #E5E7EB' : '1px solid transparent',
-    background: cell.bg || undefined,
-    textAlign: cell.align || 'left',
-    verticalAlign: 'top',
-    padding: compact ? '4px 6px' : '8px 12px',
-    outline: selected ? '2px solid #6366F1' : 'none',
-    outlineOffset: '-2px',
-    fontWeight: cell.bold || as === 'th' ? 600 : 400,
-    minWidth: 80,
-  };
-  return (
-    <Tag
-      scope={scope}
-      rowSpan={cell.rowspan > 1 ? cell.rowspan : undefined}
-      colSpan={cell.colspan > 1 ? cell.colspan : undefined}
-      style={style}
-      onMouseDown={onMouseDown}
-    >
-      <InlineEditable
-        value={cell.html}
-        onChange={onChange}
-        placeholder="…"
-        singleLine
-        className="text-sm"
-      />
-    </Tag>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
-function RowControls({ onAddBefore, onAddAfter, onRemove, onMoveUp, onMoveDown, disableUp, disableDown }) {
-  return (
-    <td className="p-0 w-8 align-middle text-center print:hidden" aria-hidden="true">
-      <div className="flex flex-col items-center gap-0.5 text-gray-400">
-        <MicroBtn label="Move row up" onClick={onMoveUp} disabled={disableUp}><ArrowUp className="w-3 h-3" /></MicroBtn>
-        <MicroBtn label="Insert row above" onClick={onAddBefore}><Plus className="w-3 h-3" /></MicroBtn>
-        <MicroBtn label="Delete row" onClick={onRemove}><Trash2 className="w-3 h-3" /></MicroBtn>
-        <MicroBtn label="Insert row below" onClick={onAddAfter}><Plus className="w-3 h-3 rotate-180" /></MicroBtn>
-        <MicroBtn label="Move row down" onClick={onMoveDown} disabled={disableDown}><ArrowDown className="w-3 h-3" /></MicroBtn>
-      </div>
-    </td>
-  );
-}
-
-function ColControls({ onAddBefore, onAddAfter, onRemove, onMoveLeft, onMoveRight, disableLeft, disableRight }) {
-  return (
-    <div className="flex items-center justify-center gap-0.5 py-0.5 text-gray-400 print:hidden">
-      <MicroBtn label="Move column left" onClick={onMoveLeft} disabled={disableLeft}><ArrowLeft className="w-3 h-3" /></MicroBtn>
-      <MicroBtn label="Insert column before" onClick={onAddBefore}><Plus className="w-3 h-3" /></MicroBtn>
-      <MicroBtn label="Delete column" onClick={onRemove}><Trash2 className="w-3 h-3" /></MicroBtn>
-      <MicroBtn label="Insert column after" onClick={onAddAfter}><Plus className="w-3 h-3" /></MicroBtn>
-      <MicroBtn label="Move column right" onClick={onMoveRight} disabled={disableRight}><ArrowRight className="w-3 h-3" /></MicroBtn>
-    </div>
-  );
-}
-
-function MicroBtn({ children, label, onClick, disabled }) {
-  return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={label}
-      aria-label={label}
-      className="w-5 h-5 inline-flex items-center justify-center rounded hover:bg-gray-100 hover:text-gray-700 disabled:opacity-30"
-    >
-      {children}
-    </button>
-  );
-}
-
-// ─────────────────────────────────────────────────────────────────────────────
+// ─── Sub-components ─────────────────────────────────────────────────────────
 function Toolbar({
-  norm, update, sel,
-  canMerge, canUnmerge, onMerge, onUnmerge,
-  onAlign, onColour, onToggleBorder, onToggleBold, onClearFormatting,
+  rows, header, stripe, caption, selected, selectedCell, mergePending,
+  onAddRow, onAddCol, onToggleHeader, onToggleStripe, onCaptionChange,
+  onPatchCell, onStartMerge, onCancelMerge, onUnmerge,
 }) {
-  const { header, caption, striped, bordered, compact } = norm;
-  const [paletteOpen, setPaletteOpen] = useState(false);
-  const hasSel = sel.length > 0;
-
+  const canUnmerge = selectedCell && ((selectedCell.rowSpan || 1) > 1 || (selectedCell.colSpan || 1) > 1);
   return (
-    <div className="flex flex-wrap items-center gap-1.5 bg-white border border-gray-200 rounded px-2 py-1.5">
-      {/* Table-level toggles */}
-      <label className="text-xs flex items-center gap-1 text-gray-700">
-        <input type="checkbox" checked={header} onChange={(e) => update({ header: e.target.checked })} />
-        Header row
-      </label>
-      <label className="text-xs flex items-center gap-1 text-gray-700">
-        <input type="checkbox" checked={striped} onChange={(e) => update({ striped: e.target.checked })} />
-        Striped
-      </label>
-      <label className="text-xs flex items-center gap-1 text-gray-700">
-        <input type="checkbox" checked={bordered} onChange={(e) => update({ bordered: e.target.checked })} />
-        Borders
-      </label>
-      <label className="text-xs flex items-center gap-1 text-gray-700">
-        <input type="checkbox" checked={compact} onChange={(e) => update({ compact: e.target.checked })} />
-        Compact
-      </label>
+    <div className="flex flex-wrap items-center gap-2 bg-gray-50 border border-gray-200 rounded-md px-2 py-1.5">
+      <BtnGroup>
+        <Btn onClick={onAddRow} title="Add row"><Plus className="w-3 h-3" /> Row</Btn>
+        <Btn onClick={onAddCol} title="Add column"><Plus className="w-3 h-3" /> Column</Btn>
+      </BtnGroup>
+
+      <BtnGroup>
+        <Toggle active={header} onClick={onToggleHeader} title="Treat first row as header">
+          Header row
+        </Toggle>
+        <Toggle active={stripe} onClick={onToggleStripe} title="Stripe alternating rows">
+          Stripes
+        </Toggle>
+      </BtnGroup>
 
       <input
         value={caption}
-        onChange={(e) => update({ caption: e.target.value })}
-        placeholder="Table caption (for accessibility)"
-        className="text-xs border border-gray-200 rounded px-2 py-0.5 flex-1 min-w-[140px]"
+        onChange={(e) => onCaptionChange(e.target.value)}
+        placeholder="Caption (optional, helps screen readers)"
+        className="text-xs border border-gray-200 rounded px-2 py-1 flex-1 min-w-[160px]"
+        aria-label="Table caption"
       />
 
-      <span aria-hidden className="inline-block w-px h-5 bg-gray-200 mx-0.5" />
+      {/* Selected cell controls */}
+      {selected && selectedCell && !selectedCell.hidden && (
+        <>
+          <span className="text-[10px] text-gray-400 px-1">Cell {selected.r + 1},{selected.c + 1}</span>
+          <BtnGroup>
+            <IconToggle active={selectedCell.align === 'left'}   onClick={() => onPatchCell({ align: 'left' })} title="Align left"><AlignLeft className="w-3 h-3" /></IconToggle>
+            <IconToggle active={selectedCell.align === 'center'} onClick={() => onPatchCell({ align: 'center' })} title="Align centre"><AlignCenter className="w-3 h-3" /></IconToggle>
+            <IconToggle active={selectedCell.align === 'right'}  onClick={() => onPatchCell({ align: 'right' })} title="Align right"><AlignRight className="w-3 h-3" /></IconToggle>
+          </BtnGroup>
 
-      {/* Per-cell controls — only meaningful when something is selected */}
-      <Group disabled={!hasSel} label="Selection: alignment">
-        <ToolBtn label="Align left"   onClick={() => onAlign('left')}><AlignLeft className="w-3.5 h-3.5" /></ToolBtn>
-        <ToolBtn label="Align centre" onClick={() => onAlign('center')}><AlignCenter className="w-3.5 h-3.5" /></ToolBtn>
-        <ToolBtn label="Align right"  onClick={() => onAlign('right')}><AlignRight className="w-3.5 h-3.5" /></ToolBtn>
-      </Group>
+          <ColourPick icon={<Palette className="w-3 h-3" />} title="Text colour" colours={PALETTE_TEXT} onPick={(c) => onPatchCell({ color: c || undefined })} />
+          <ColourPick icon={<Highlighter className="w-3 h-3" />} title="Cell background" colours={PALETTE_BG} onPick={(c) => onPatchCell({ bg: c || undefined })} />
 
-      <Group disabled={!hasSel} label="Selection: formatting">
-        <ToolBtn label="Toggle bold"   onClick={onToggleBold}><Bold className="w-3.5 h-3.5" /></ToolBtn>
-        <ToolBtn label="Toggle cell border" onClick={onToggleBorder}>
-          <span className="w-3.5 h-3.5 border border-current rounded-sm" aria-hidden />
-        </ToolBtn>
-        <div className="relative">
-          <ToolBtn label="Cell background colour" onClick={() => setPaletteOpen(o => !o)}>
-            <Palette className="w-3.5 h-3.5" />
-          </ToolBtn>
-          {paletteOpen && (
-            <div className="absolute top-full left-0 z-30 mt-1 bg-white border border-gray-200 rounded shadow p-2 flex gap-1">
-              {PALETTE.map((c, i) => (
-                <button
-                  key={i}
-                  type="button"
-                  title={c || 'No colour'}
-                  className="w-5 h-5 rounded-full border border-gray-300"
-                  style={{ background: c || 'repeating-linear-gradient(45deg,#fff,#fff 3px,#ddd 3px,#ddd 6px)' }}
-                  onClick={() => { onColour(c); setPaletteOpen(false); }}
-                />
-              ))}
-            </div>
+          <select
+            value={selectedCell.border || 'default'}
+            onChange={(e) => onPatchCell({ border: e.target.value })}
+            className="text-xs border border-gray-200 rounded px-1.5 py-1"
+            aria-label="Cell border"
+          >
+            <option value="default">Border: default</option>
+            <option value="thick">Border: thick</option>
+            <option value="none">Border: none</option>
+          </select>
+
+          {canUnmerge ? (
+            <Btn onClick={onUnmerge} title="Unmerge this cell"><Split className="w-3 h-3" /> Unmerge</Btn>
+          ) : mergePending ? (
+            <Btn onClick={onCancelMerge} title="Cancel merge" tone="amber">
+              <X className="w-3 h-3" /> Cancel merge
+            </Btn>
+          ) : (
+            <Btn onClick={onStartMerge} title="Merge with another cell (click to pick)">
+              <Merge className="w-3 h-3" /> Merge…
+            </Btn>
           )}
+        </>
+      )}
+    </div>
+  );
+}
+
+function RowControl({ index, numRows, onMoveUp, onMoveDown, onInsertAbove, onInsertBelow, onRemove }) {
+  return (
+    <PopMenu
+      ariaLabel={`Row ${index + 1} actions`}
+      items={[
+        { icon: ChevronUp,   label: 'Move up',       onClick: onMoveUp,    disabled: index === 0 },
+        { icon: ChevronDown, label: 'Move down',     onClick: onMoveDown,  disabled: index === numRows - 1 },
+        { icon: Plus,        label: 'Insert above',  onClick: onInsertAbove },
+        { icon: Plus,        label: 'Insert below',  onClick: onInsertBelow },
+        { icon: Trash2,      label: 'Delete row',    onClick: onRemove, disabled: numRows <= 1, danger: true },
+      ]}
+    />
+  );
+}
+
+function ColControl({ index, numCols, onMoveLeft, onMoveRight, onInsertLeft, onInsertRight, onRemove }) {
+  return (
+    <PopMenu
+      ariaLabel={`Column ${index + 1} actions`}
+      items={[
+        { icon: ChevronLeft,  label: 'Move left',       onClick: onMoveLeft,    disabled: index === 0 },
+        { icon: ChevronRight, label: 'Move right',      onClick: onMoveRight,   disabled: index === numCols - 1 },
+        { icon: Plus,         label: 'Insert left',     onClick: onInsertLeft },
+        { icon: Plus,         label: 'Insert right',    onClick: onInsertRight },
+        { icon: Trash2,       label: 'Delete column',   onClick: onRemove, disabled: numCols <= 1, danger: true },
+      ]}
+    />
+  );
+}
+
+function PopMenu({ items, ariaLabel }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [open]);
+  return (
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        title={ariaLabel}
+        aria-label={ariaLabel}
+        className="w-7 h-7 inline-flex items-center justify-center rounded hover:bg-gray-100 text-gray-500"
+      >
+        <MoreHorizontal className="w-3.5 h-3.5" />
+      </button>
+      {open && (
+        <div className="absolute right-0 top-full mt-1 z-30 bg-white border border-gray-200 rounded-md shadow-lg py-1 w-44">
+          {items.map(({ icon: Icon, label, onClick, disabled, danger }) => (
+            <button
+              key={label}
+              type="button"
+              disabled={disabled}
+              onClick={() => { if (disabled) return; onClick(); setOpen(false); }}
+              className={`w-full text-left px-3 py-1.5 text-xs flex items-center gap-2 ${disabled ? 'opacity-40 cursor-not-allowed' : 'hover:bg-gray-50'} ${danger ? 'text-red-600' : 'text-gray-700'}`}
+            >
+              <Icon className="w-3 h-3" /> {label}
+            </button>
+          ))}
         </div>
-        <ToolBtn label="Clear cell formatting" onClick={onClearFormatting}>
-          <Eraser className="w-3.5 h-3.5" />
-        </ToolBtn>
-      </Group>
-
-      <Group label="Merge cells">
-        <ToolBtn label="Merge selected cells" onClick={onMerge} disabled={!canMerge}>
-          <Merge className="w-3.5 h-3.5" />
-        </ToolBtn>
-        <ToolBtn label="Unmerge cell" onClick={onUnmerge} disabled={!canUnmerge}>
-          <Split className="w-3.5 h-3.5" />
-        </ToolBtn>
-      </Group>
+      )}
     </div>
   );
 }
 
-function Group({ children, disabled, label }) {
+function ColourPick({ icon, title, colours, onPick }) {
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    if (!open) return;
+    const close = (e) => { if (!ref.current?.contains(e.target)) setOpen(false); };
+    document.addEventListener('mousedown', close);
+    return () => document.removeEventListener('mousedown', close);
+  }, [open]);
   return (
-    <div className={`flex items-center gap-0.5 ${disabled ? 'opacity-40 pointer-events-none' : ''}`} aria-label={label} role="group">
-      {children}
+    <div className="relative" ref={ref}>
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        title={title}
+        aria-label={title}
+        className="px-2 py-1 text-xs inline-flex items-center gap-1 border border-gray-200 rounded text-gray-600 hover:bg-white"
+      >
+        {icon}
+      </button>
+      {open && (
+        <div className="absolute top-full left-0 mt-1 z-30 bg-white border border-gray-200 rounded-md shadow-lg p-2 grid grid-cols-4 gap-1 w-44">
+          {colours.map((c, i) => (
+            <button
+              key={i}
+              type="button"
+              aria-label={c || 'No colour'}
+              onClick={() => { onPick(c); setOpen(false); }}
+              className="w-7 h-7 rounded border border-gray-200 hover:scale-110 transition-transform"
+              style={{ background: c || 'repeating-linear-gradient(45deg,#fff,#fff 3px,#ddd 3px,#ddd 6px)' }}
+            />
+          ))}
+        </div>
+      )}
     </div>
   );
 }
 
-function ToolBtn({ children, label, onClick, disabled }) {
+function BtnGroup({ children }) {
+  return <div className="flex items-center gap-0.5 bg-white border border-gray-200 rounded px-1 py-0.5">{children}</div>;
+}
+function Btn({ children, onClick, title, tone }) {
+  const colour =
+    tone === 'amber' ? 'text-amber-700 hover:bg-amber-50' :
+                       'text-gray-700 hover:bg-gray-50';
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      disabled={disabled}
-      title={label}
-      aria-label={label}
-      className="h-7 w-7 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40 focus:outline-none focus:ring-2 focus:ring-indigo-300"
-    >
+    <button type="button" onClick={onClick} title={title} aria-label={title}
+      className={`px-2 py-1 text-xs inline-flex items-center gap-1 rounded ${colour}`}>
       {children}
     </button>
   );
 }
-
-// ─────────────────────────────────────────────────────────────────────────────
-function bounds(sel) {
-  return {
-    minR: Math.min(...sel.map(s => s.r)),
-    maxR: Math.max(...sel.map(s => s.r)),
-    minC: Math.min(...sel.map(s => s.c)),
-    maxC: Math.max(...sel.map(s => s.c)),
-  };
+function Toggle({ children, active, onClick, title }) {
+  return (
+    <button type="button" onClick={onClick} title={title} aria-pressed={active}
+      className={`px-2 py-1 text-xs rounded ${active ? 'bg-indigo-100 text-indigo-700' : 'text-gray-600 hover:bg-gray-50'}`}>
+      {children}
+    </button>
+  );
 }
-
-function isRectSelection(sel) {
-  if (sel.length < 2) return false;
-  const { minR, minC, maxR, maxC } = bounds(sel);
-  const expected = (maxR - minR + 1) * (maxC - minC + 1);
-  if (expected !== sel.length) return false;
-  const set = new Set(sel.map(s => `${s.r}:${s.c}`));
-  for (let r = minR; r <= maxR; r++) {
-    for (let c = minC; c <= maxC; c++) {
-      if (!set.has(`${r}:${c}`)) return false;
-    }
-  }
-  return true;
+function IconToggle({ children, active, onClick, title }) {
+  return (
+    <button type="button" onClick={onClick} title={title} aria-label={title} aria-pressed={active}
+      className={`px-1.5 py-1 rounded ${active ? 'bg-indigo-100 text-indigo-700' : 'text-gray-500 hover:bg-gray-50'}`}>
+      {children}
+    </button>
+  );
 }

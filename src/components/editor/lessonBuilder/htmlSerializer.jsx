@@ -223,12 +223,26 @@ function blockToHtml(b) {
       const padCss    = compact ? '6px 10px' : '10px 14px';
       const borderCss = bordered ? '1px solid #E5E7EB' : '1px solid transparent';
 
-      // Each entry may be a string (legacy) or a cell object {html, align, bg,
-      // border, bold, rowspan, colspan, hidden}. We collapse both to a common
-      // shape for rendering.
+      // Each entry may be:
+      //   • a string (legacy plain text/HTML cell)
+      //   • a cell object using the OLD shape {html, align, bg, border, bold, rowspan, colspan, hidden}
+      //   • a cell object using the NEW TableBlock shape {content, align, color, bg, border, rowSpan, colSpan, hidden}
+      // norm() collapses all three to a single render-friendly shape.
       const norm = (cell) => {
-        if (cell && typeof cell === 'object') return cell;
-        return { html: cell == null ? '' : String(cell) };
+        if (cell && typeof cell === 'object') {
+          return {
+            html:    'content' in cell ? cell.content : (cell.html || ''),
+            align:   cell.align,
+            color:   cell.color,
+            bg:      cell.bg,
+            border:  cell.border,        // new: 'default'|'thick'|'none' or legacy truthy
+            bold:    !!cell.bold,
+            rowspan: cell.rowSpan || cell.rowspan || 1,
+            colspan: cell.colSpan || cell.colspan || 1,
+            hidden:  !!cell.hidden,
+          };
+        }
+        return { html: cell == null ? '' : String(cell), rowspan: 1, colspan: 1 };
       };
 
       const renderCell = (cell, opts) => {
@@ -237,12 +251,17 @@ function blockToHtml(b) {
         const tag = opts.isHeader ? 'th' : 'td';
         const scope = opts.isHeader ? ' scope="col"' : '';
         const bg = c.bg ? `background:${escapeHtml(c.bg)};` : (opts.isHeader ? 'background:#F3F4F6;' : '');
+        const colour = c.color ? `color:${escapeHtml(c.color)};` : 'color:#1F2937;';
         const align = `text-align:${c.align === 'center' ? 'center' : c.align === 'right' ? 'right' : 'left'};`;
         const weight = c.bold || opts.isHeader ? 'font-weight:600;' : '';
-        const cellBorder = (bordered || c.border) ? `border:${borderCss};` : 'border:1px solid transparent;';
+        const cellBorderCss =
+          c.border === 'thick' ? '2px solid #9CA3AF' :
+          c.border === 'none'  ? '1px solid transparent' :
+                                 borderCss;
+        const cellBorder = `border:${cellBorderCss};`;
         const rowspan = c.rowspan > 1 ? ` rowspan="${c.rowspan}"` : '';
         const colspan = c.colspan > 1 ? ` colspan="${c.colspan}"` : '';
-        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} color:#1F2937; vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
+        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} ${colour} vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
       };
 
       const headHtml = hasHeader && rows[0]
@@ -264,8 +283,32 @@ function blockToHtml(b) {
       return `<hr style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;
     case 'spacer':
       return `<div style="height:${Math.max(8, Math.min(200, Number(d.size) || 32))}px;"></div>`;
-    case 'two-columns':
-      return `<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; margin:16px 0;"><div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(d.left || '')}</div><div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(d.right || '')}</div></div>`;
+    case 'two-columns': {
+      // Children can be either block arrays (new model) or legacy HTML
+      // strings. We render block arrays by recursively serialising; HTML
+      // strings are passed through sanitiseInline so saved slides without
+      // the new editor still render identically.
+      const renderSide = (side) => {
+        if (Array.isArray(side)) return blocksToHtml(side);
+        return `<div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(side || '')}</div>`;
+      };
+      const parseR = (r) => {
+        const m = String(r || '50:50').match(/^(\d{1,3}):(\d{1,3})$/);
+        if (!m) return [50, 50];
+        const a = Math.max(10, Math.min(90, Number(m[1])));
+        return [a, 100 - a];
+      };
+      const [lPct, rPct] = parseR(d.ratio);
+      const gap = Math.max(0, Math.min(64, Number(d.gap) || 24));
+      const align = ['center', 'flex-end'].includes(
+        d.align === 'center' ? 'center' : d.align === 'end' ? 'flex-end' : 'flex-start'
+      ) ? (d.align === 'center' ? 'center' : 'flex-end') : 'flex-start';
+      const stack = d.stack !== false;
+      // Inline media query is not possible — we approximate mobile stacking
+      // by letting flex-wrap collapse the row when widths fall below ~340px.
+      const flexWrap = stack ? 'wrap' : 'nowrap';
+      return `<div style="display:flex; flex-direction:row; flex-wrap:${flexWrap}; gap:${gap}px; margin:16px 0; align-items:${align};"><div style="flex:1 1 ${lPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(d.left)}</div><div style="flex:1 1 ${rPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(d.right)}</div></div>`;
+    }
     case 'code':
       return `<pre style="background:#1E1E1E; color:#D4D4D4; padding:20px; border-radius:8px; overflow-x:auto; margin:16px 0; font-family:Menlo,Monaco,Consolas,monospace; font-size:14px; line-height:1.6;"><code class="language-${escapeHtml(d.language || 'plaintext')}">${escapeHtml(d.code || '')}</code></pre>`;
     case 'math':

@@ -8,6 +8,7 @@ import ScientificEquationBlock from './ScientificEquationBlock';
 import ImageBlock from './ImageBlock';
 import VideoBlock from './VideoBlock';
 import TableBlock from './TableBlock';
+import TwoColumnsBlock from './TwoColumnsBlock';
 import { Upload, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, X } from 'lucide-react';
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
@@ -35,7 +36,15 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'table':             return <TableBlock data={d} onChange={onChange} />;
     case 'divider':           return <div className="py-2"><hr className="border-t border-gray-200" /></div>;
     case 'spacer':            return <SpacerBlock size={d.size} onChange={(size) => upd({ size })} />;
-    case 'two-columns':       return <TwoColumnsBlock data={d} onChange={upd} />;
+    case 'two-columns':       return (
+      <TwoColumnsBlock
+        data={d}
+        onChange={onChange}
+        renderChild={(child, childOnChange) => (
+          <BlockRenderer block={child} onChange={childOnChange} />
+        )}
+      />
+    );
     case 'code':              return <CodeBlock data={d} onChange={upd} />;
     case 'math':              return <MathBlock latex={d.latex} onChange={(latex) => upd({ latex })} />;
     case 'scientific-equation': return <ScientificEquationBlock data={d} onChange={onChange} />;
@@ -308,32 +317,8 @@ function SpacerBlock({ size = 32, onChange }) {
   );
 }
 
-function TwoColumnsBlock({ data, onChange }) {
-  const leftRef = useRef(null);
-  const rightRef = useRef(null);
-  return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-      <div className="border border-dashed border-gray-200 rounded p-2">
-        <InlineToolbar editableRef={leftRef} />
-        <InlineEditable
-          ref={leftRef}
-          value={data.left}
-          onChange={(v) => onChange({ ...data, left: v })}
-          placeholder="Left column"
-        />
-      </div>
-      <div className="border border-dashed border-gray-200 rounded p-2">
-        <InlineToolbar editableRef={rightRef} />
-        <InlineEditable
-          ref={rightRef}
-          value={data.right}
-          onChange={(v) => onChange({ ...data, right: v })}
-          placeholder="Right column"
-        />
-      </div>
-    </div>
-  );
-}
+// TwoColumnsBlock has been moved to ./TwoColumnsBlock.jsx — it is now a true
+// container that holds child blocks per side (see imports at the top).
 
 // TableBlock has been moved to ./TableBlock.jsx — see imports at the top.
 
