@@ -7,6 +7,7 @@ import MathBlock from './MathBlock';
 import ScientificEquationBlock from './ScientificEquationBlock';
 import ImageBlock from './ImageBlock';
 import VideoBlock from './VideoBlock';
+import TableBlock from './TableBlock';
 import { Upload, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, X } from 'lucide-react';
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
@@ -31,7 +32,7 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'image-text':        return <ImageTextBlock data={d} onChange={upd} />;
     case 'video':             return <VideoBlock data={d} onChange={onChange} />;
     case 'file':              return <FileBlock data={d} onChange={upd} />;
-    case 'table':             return <TableBlock data={d} onChange={upd} />;
+    case 'table':             return <TableBlock data={d} onChange={onChange} />;
     case 'divider':           return <div className="py-2"><hr className="border-t border-gray-200" /></div>;
     case 'spacer':            return <SpacerBlock size={d.size} onChange={(size) => upd({ size })} />;
     case 'two-columns':       return <TwoColumnsBlock data={d} onChange={upd} />;
@@ -334,56 +335,7 @@ function TwoColumnsBlock({ data, onChange }) {
   );
 }
 
-function TableBlock({ data, onChange }) {
-  const rows = data.rows || [];
-  const update = (r, c, v) => {
-    const next = rows.map(row => [...row]);
-    next[r][c] = v;
-    onChange({ ...data, rows: next });
-  };
-  const addRow = () => onChange({ ...data, rows: [...rows, Array(rows[0]?.length || 2).fill('')] });
-  const addCol = () => onChange({ ...data, rows: rows.map(r => [...r, '']) });
-  const removeRow = (idx) => onChange({ ...data, rows: rows.filter((_, i) => i !== idx) });
-  const removeCol = (idx) => onChange({ ...data, rows: rows.map(r => r.filter((_, i) => i !== idx)) });
-  return (
-    <div>
-      <div className="flex gap-2 mb-2">
-        <button type="button" onClick={addRow} className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded">+ Row</button>
-        <button type="button" onClick={addCol} className="text-xs px-2 py-1 bg-gray-100 hover:bg-gray-200 rounded">+ Column</button>
-        <label className="text-xs flex items-center gap-1">
-          <input type="checkbox" checked={!!data.header} onChange={(e) => onChange({ ...data, header: e.target.checked })} />
-          Header row
-        </label>
-      </div>
-      <div className="overflow-x-auto">
-        <table className="w-full border border-gray-200">
-          <tbody>
-            {rows.map((row, r) => (
-              <tr key={r} className={data.header && r === 0 ? 'bg-gray-50 font-semibold' : ''}>
-                {row.map((cell, c) => (
-                  <td key={c} className="border border-gray-200 p-1">
-                    <InlineEditable value={cell} onChange={(v) => update(r, c, v)} placeholder="…" singleLine className="text-sm" />
-                  </td>
-                ))}
-                <td className="w-6 text-center">
-                  <button type="button" onClick={() => removeRow(r)} className="text-gray-400 hover:text-red-500" aria-label={`Remove row ${r + 1}`}><X className="w-3 h-3" /></button>
-                </td>
-              </tr>
-            ))}
-            <tr>
-              {(rows[0] || []).map((_, c) => (
-                <td key={c} className="text-center">
-                  <button type="button" onClick={() => removeCol(c)} className="text-gray-400 hover:text-red-500 text-xs" aria-label={`Remove column ${c + 1}`}>×</button>
-                </td>
-              ))}
-              <td />
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-  );
-}
+// TableBlock has been moved to ./TableBlock.jsx — see imports at the top.
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Advanced blocks

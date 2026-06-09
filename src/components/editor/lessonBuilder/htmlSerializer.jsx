@@ -216,12 +216,49 @@ function blockToHtml(b) {
     case 'table': {
       const rows = d.rows || [];
       if (!rows.length) return '';
-      const header = d.header && rows[0]
-        ? `<thead><tr>${rows[0].map(c => `<th style="padding:10px 14px; background:#F3F4F6; border:1px solid #E5E7EB; text-align:left; font-weight:600; color:#1F2937;">${sanitiseInline(c || '')}</th>`).join('')}</tr></thead>`
+      const hasHeader = d.header !== false;
+      const striped   = !!d.striped;
+      const bordered  = d.bordered !== false;
+      const compact   = !!d.compact;
+      const padCss    = compact ? '6px 10px' : '10px 14px';
+      const borderCss = bordered ? '1px solid #E5E7EB' : '1px solid transparent';
+
+      // Each entry may be a string (legacy) or a cell object {html, align, bg,
+      // border, bold, rowspan, colspan, hidden}. We collapse both to a common
+      // shape for rendering.
+      const norm = (cell) => {
+        if (cell && typeof cell === 'object') return cell;
+        return { html: cell == null ? '' : String(cell) };
+      };
+
+      const renderCell = (cell, opts) => {
+        const c = norm(cell);
+        if (c.hidden) return '';
+        const tag = opts.isHeader ? 'th' : 'td';
+        const scope = opts.isHeader ? ' scope="col"' : '';
+        const bg = c.bg ? `background:${escapeHtml(c.bg)};` : (opts.isHeader ? 'background:#F3F4F6;' : '');
+        const align = `text-align:${c.align === 'center' ? 'center' : c.align === 'right' ? 'right' : 'left'};`;
+        const weight = c.bold || opts.isHeader ? 'font-weight:600;' : '';
+        const cellBorder = (bordered || c.border) ? `border:${borderCss};` : 'border:1px solid transparent;';
+        const rowspan = c.rowspan > 1 ? ` rowspan="${c.rowspan}"` : '';
+        const colspan = c.colspan > 1 ? ` colspan="${c.colspan}"` : '';
+        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} color:#1F2937; vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
+      };
+
+      const headHtml = hasHeader && rows[0]
+        ? `<thead><tr>${rows[0].map(c => renderCell(c, { isHeader: true })).join('')}</tr></thead>`
         : '';
-      const bodyRows = (d.header ? rows.slice(1) : rows).map(r =>
-        `<tr>${r.map(c => `<td style="padding:10px 14px; border:1px solid #E5E7EB; color:#1F2937;">${sanitiseInline(c || '')}</td>`).join('')}</tr>`).join('');
-      return `<table style="width:100%; border-collapse:collapse; margin:16px 0; font-size:15px;">${header}<tbody>${bodyRows}</tbody></table>`;
+      const body = (hasHeader ? rows.slice(1) : rows).map((r, i) => {
+        const stripeBg = striped && (i % 2 === 1) ? ' style="background:#F9FAFB;"' : '';
+        return `<tr${stripeBg}>${r.map(c => renderCell(c, { isHeader: false })).join('')}</tr>`;
+      }).join('');
+      const captionHtml = d.caption
+        ? `<caption style="caption-side:top; text-align:left; font-size:13px; color:#6B7280; padding:4px 2px 8px; font-style:italic;">${escapeHtml(d.caption)}</caption>`
+        : '';
+
+      // Outer wrapper enables horizontal scrolling on small screens so wide
+      // tables don't break the layout on mobile.
+      return `<div style="overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch;"><table style="width:100%; border-collapse:collapse; font-size:15px; min-width:480px;">${captionHtml}${headHtml}<tbody>${body}</tbody></table></div>`;
     }
     case 'divider':
       return `<hr style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;

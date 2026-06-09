@@ -15,6 +15,13 @@ import {
 let _id = 0;
 export const nextBlockId = () => `b_${Date.now().toString(36)}_${(_id++).toString(36)}`;
 
+// Default cell shape for the table block. Kept here so the registry and the
+// component agree on the structure.
+const emptyCell = () => ({
+  html: '', align: 'left', bg: null, border: false, bold: false,
+  rowspan: 1, colspan: 1, hidden: false,
+});
+
 export const BLOCK_GROUPS = [
   {
     label: 'Text',
@@ -90,7 +97,13 @@ export function defaultBlockData(type) {
       ratio: '16:9', align: 'center', widthUnit: 'percent', width: 100,
     };
     case 'file':              return { url: '', name: '' };
-    case 'table':             return { rows: [['', ''], ['', '']], header: true };
+    case 'table':             return {
+      header: true, caption: '', striped: false, bordered: true, compact: false,
+      rows: [
+        [emptyCell(), emptyCell()],
+        [emptyCell(), emptyCell()],
+      ],
+    };
     case 'divider':           return {};
     case 'spacer':            return { size: 32 };
     case 'two-columns':       return { left: '', right: '' };
