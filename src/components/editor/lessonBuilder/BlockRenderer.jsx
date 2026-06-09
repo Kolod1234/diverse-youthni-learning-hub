@@ -192,10 +192,11 @@ function DefinitionBlock({ term, definition, onChange }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Media blocks
-// ImageBlock and VideoBlock moved to their own files (./ImageBlock.jsx,
-// ./VideoBlock.jsx) with full upload/URL/caption/credit/poster/alignment/
-// resize/aspect/fit controls and safe iframe sandboxing.
 // ─────────────────────────────────────────────────────────────────────────────
+// ImageBlock and VideoBlock are imported from their own files (see top of
+// this module). They handle upload, URL, alt, caption, credit, visible
+// resize handles, alignment, fit/crop, aspect lock and reset themselves.
+
 function ImageTextBlock({ data, onChange }) {
   const ref = useRef(null);
   const upload = async (file) => {
@@ -482,6 +483,7 @@ function LegacyHtmlBlock({ html, onChange }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
+// AlignBtn used by ImageTextBlock — kept here as a local primitive.
 function AlignBtn({ children, active, onClick }) {
   return (
     <button

@@ -147,20 +147,21 @@ function blockToHtml(b) {
       return `<div style="background:#F0F4F8; border-radius:12px; padding:20px; margin:16px 0;"><p style="margin:0 0 8px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#38B2AC; font-weight:700;">Definition</p><p style="margin:0 0 8px; font-size:20px; font-weight:700; color:#1A3C5A;">${escapeHtml(d.term || '')}</p><p style="margin:0; font-size:16px; line-height:1.6; color:#334E68;">${sanitiseInline(d.definition || '')}</p></div>`;
     case 'image': {
       if (!d.url) return '';
-      const alignMap = { left:'flex-start', center:'center', right:'flex-end', full:'center' };
-      const justify = alignMap[d.align] || 'center';
-      const isFull = d.align === 'full';
-      const unit = d.widthUnit === 'px' ? 'px' : '%';
-      const rawW = Number(d.width) || (unit === '%' ? 100 : 800);
-      const w = unit === '%'
-        ? Math.max(20, Math.min(100, rawW))
-        : Math.max(80, Math.min(2000, rawW));
-      const figureWidth = isFull ? '100%' : `${w}${unit}`;
-      const objectFit = d.fit === 'cover' ? 'cover' : 'contain';
-      const captionHtml = d.caption || d.credit
-        ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption || '')}${d.credit ? ` <span style="color:#9CA3AF; font-style:normal;">— ${escapeHtml(d.credit)}</span>` : ''}</figcaption>`
+      const alignMap = { left:'flex-start', center:'center', right:'flex-end', full:'stretch' };
+      const align = d.align || 'center';
+      const unit = d.widthUnit === 'px' ? 'px' : 'percent';
+      const widthRaw = Number(d.width) || (unit === 'px' ? 800 : 100);
+      const widthVal = unit === 'percent'
+        ? Math.max(20, Math.min(100, widthRaw))
+        : Math.max(80, Math.min(2000, widthRaw));
+      const figureWidth = align === 'full'
+        ? '100%'
+        : (unit === 'percent' ? `${widthVal}%` : `${widthVal}px`);
+      const fit = d.fit === 'cover' ? 'cover' : 'contain';
+      const captionLine = (d.caption || d.credit)
+        ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption || '')}${d.credit ? ` <span style="font-style:normal; color:#9CA3AF;">— ${escapeHtml(d.credit)}</span>` : ''}</figcaption>`
         : '';
-      return `<div style="display:flex; justify-content:${justify}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(d.url)}" alt="${escapeHtml(d.alt || '')}" style="width:100%; height:auto; object-fit:${objectFit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionHtml}</figure></div>`;
+      return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(d.url)}" alt="${escapeHtml(d.alt || '')}" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
     }
     case 'image-text': {
       const imgCol = d.url
@@ -173,40 +174,41 @@ function blockToHtml(b) {
     case 'video': {
       const url = d.url || '';
       if (!url) return '';
-      // Resolve to a safe embed — only known providers are iframed; direct
-      // mp4/uploaded files render as a sandboxed <video> with optional poster.
+      // Whitelist providers for embed — anything else falls back to a native
+      // <video> tag (which only plays direct media files) so a malicious URL
+      // can never get its own iframe in the saved slide HTML.
       const yt = url.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/|youtube\.com\/shorts\/)([\w-]{6,})/);
       const vimeo = url.match(/vimeo\.com\/(?:video\/)?(\d+)/);
       const isDirect = /\.(mp4|webm|ogg|mov)(\?|$)/i.test(url) || /\/storage\//i.test(url);
-      const ratios = { '16:9': 56.25, '4:3': 75, '1:1': 100, '9:16': 177.78 };
-      const padBottom = ratios[d.ratio] || 56.25;
-      const unit = d.widthUnit === 'px' ? 'px' : '%';
-      const isFull = d.align === 'full';
-      const rawW = Number(d.width) || (unit === '%' ? 100 : 800);
-      const w = unit === '%'
-        ? Math.max(20, Math.min(100, rawW))
-        : Math.max(200, Math.min(1920, rawW));
-      const figureWidth = isFull ? '100%' : `${w}${unit}`;
-      const alignMap = { left:'flex-start', center:'center', right:'flex-end', full:'center' };
-      const justify = alignMap[d.align] || 'center';
-      const captionHtml = d.caption
+      const ratios = { '16:9': 16/9, '4:3': 4/3, '1:1': 1, '9:16': 9/16 };
+      const ratioV = ratios[d.ratio] || ratios['16:9'];
+      const paddingBottom = `${(1 / ratioV) * 100}%`;
+      // Width / alignment mirror image semantics.
+      const alignMap = { left:'flex-start', center:'center', right:'flex-end', full:'stretch' };
+      const align = d.align || 'center';
+      const unit = d.widthUnit === 'px' ? 'px' : 'percent';
+      const widthRaw = Number(d.width) || (unit === 'px' ? 800 : 100);
+      const widthVal = unit === 'percent'
+        ? Math.max(20, Math.min(100, widthRaw))
+        : Math.max(200, Math.min(1920, widthRaw));
+      const figureWidth = align === 'full'
+        ? '100%'
+        : (unit === 'percent' ? `${widthVal}%` : `${widthVal}px`);
+      let inner;
+      if (yt) {
+        inner = `<iframe src="https://www.youtube-nocookie.com/embed/${escapeHtml(yt[1])}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      } else if (vimeo) {
+        inner = `<iframe src="https://player.vimeo.com/video/${escapeHtml(vimeo[1])}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen loading="lazy" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"></iframe>`;
+      } else if (isDirect) {
+        inner = `<video src="${escapeHtml(url)}"${d.poster ? ` poster="${escapeHtml(d.poster)}"` : ''} controls preload="metadata" style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
+      } else {
+        // Unsupported provider — render a safe link rather than embed.
+        return `<p style="margin:16px 0;"><a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" style="color:#4F46E5; text-decoration:underline;">▶ Watch video</a></p>`;
+      }
+      const captionLine = d.caption
         ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption)}</figcaption>`
         : '';
-
-      let playerHtml = '';
-      if (yt) {
-        const src = `https://www.youtube-nocookie.com/embed/${yt[1]}`;
-        playerHtml = `<iframe src="${escapeHtml(src)}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" title="${escapeHtml(d.caption || 'Lesson video')}"></iframe>`;
-      } else if (vimeo) {
-        const src = `https://player.vimeo.com/video/${vimeo[1]}`;
-        playerHtml = `<iframe src="${escapeHtml(src)}" style="position:absolute; top:0; left:0; width:100%; height:100%; border:0;" allowfullscreen allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" loading="lazy" referrerpolicy="strict-origin-when-cross-origin" sandbox="allow-scripts allow-same-origin allow-presentation" title="${escapeHtml(d.caption || 'Lesson video')}"></iframe>`;
-      } else if (isDirect) {
-        playerHtml = `<video src="${escapeHtml(url)}"${d.poster ? ` poster="${escapeHtml(d.poster)}"` : ''} controls preload="metadata" style="position:absolute; top:0; left:0; width:100%; height:100%; background:#000;"></video>`;
-      } else {
-        // Unknown provider — show a safe link rather than embedding arbitrary content.
-        return `<p style="margin:16px 0; color:#92400E; background:#FFFBEB; border:1px solid #FDE68A; padding:10px 14px; border-radius:8px; font-size:14px;">Video link: <a href="${escapeHtml(url)}" target="_blank" rel="noopener noreferrer" style="color:#92400E; text-decoration:underline;">${escapeHtml(url)}</a></p>`;
-      }
-      return `<div style="display:flex; justify-content:${justify}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><div style="position:relative; padding-bottom:${padBottom}%; height:0; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); background:#000;">${playerHtml}</div>${captionHtml}</figure></div>`;
+      return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><div style="position:relative; padding-bottom:${paddingBottom}; height:0; border-radius:8px; overflow:hidden; box-shadow:0 4px 12px rgba(0,0,0,0.1); background:#000;">${inner}</div>${captionLine}</figure></div>`;
     }
     case 'file':
       if (!d.url) return '';
