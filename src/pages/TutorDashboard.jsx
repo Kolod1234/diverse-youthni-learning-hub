@@ -552,12 +552,25 @@ function ModulesView({ courses, user }) {
       )}
 
       {courses.length === 0 ? (
-        <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
-          <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
-          <h3 className="text-xl font-semibold text-gray-700 mb-2">No courses yet</h3>
-          <p className="text-gray-500 mb-6">Create your first course to get started</p>
-          <Button onClick={() => setShowCreateCourse(true)}><Plus className="w-4 h-4 mr-2" />Create First Course</Button>
-        </div>
+        user?.role === 'admin' ? (
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">No courses yet</h3>
+            <p className="text-gray-500 mb-6">Create your first course to get started</p>
+            <Button onClick={() => setShowCreateCourse(true)}><Plus className="w-4 h-4 mr-2" />Create First Course</Button>
+          </div>
+        ) : (
+          <div className="text-center py-16 bg-white border border-gray-200 rounded-lg">
+            <BookOpen className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+            <h3 className="text-xl font-semibold text-gray-700 mb-2">0 assigned courses</h3>
+            <p className="text-gray-500 mb-2 max-w-md mx-auto">
+              You have not been assigned to any courses yet.
+            </p>
+            <p className="text-gray-500 mb-6 max-w-md mx-auto">
+              Please contact an admin to be added as a tutor on a course.
+            </p>
+          </div>
+        )
       ) : (
         <div className="space-y-4">
           {filteredCourses.map((course) => {
@@ -890,10 +903,29 @@ function GradesView({ course, courses }) {
   const [selectedCourseId, setSelectedCourseId] = React.useState(course?.id || '');
   const targetCourseId = selectedCourseId || course?.id;
 
-  const { data: submissions = [] } = useQuery({
-    queryKey: ['course-submissions-grades', targetCourseId],
-    queryFn: () => base44.entities.Submission.filter({ course_id: targetCourseId }, '-created_date', 200),
+  // Submission has assignment_id (not course_id). To get the submissions for a
+  // course we must first load that course's assignments, then load submissions
+  // for each assignment_id.
+  const { data: courseAssignments = [] } = useQuery({
+    queryKey: ['course-assignments-for-grades', targetCourseId],
+    queryFn: () => base44.entities.Assignment.filter({ course_id: targetCourseId }, '-created_date', 200),
     enabled: !!targetCourseId,
+  });
+
+  const { data: submissions = [] } = useQuery({
+    queryKey: ['course-submissions-grades-v2', targetCourseId, courseAssignments.map(a => a.id).join(',')],
+    queryFn: async () => {
+      if (courseAssignments.length === 0) return [];
+      const groups = await Promise.all(
+        courseAssignments.map(a =>
+          base44.entities.Submission.filter({ assignment_id: a.id }, '-created_date', 200)
+        )
+      );
+      // Tag each submission with its assignment_id so the UI can build a
+      // correct Grade link further down.
+      return groups.flat();
+    },
+    enabled: !!targetCourseId && courseAssignments.length > 0,
   });
 
   const { data: quizAttempts = [] } = useQuery({
@@ -928,7 +960,7 @@ function GradesView({ course, courses }) {
                   <div className="font-medium text-gray-900 text-sm">{sub.student_name || sub.created_by}</div>
                   <div className="text-xs text-gray-500">{sub.title || 'Assignment submission'}</div>
                 </div>
-                <Link to={createPageUrl('GradeAssignments') + `?submissionId=${sub.id}`}><Button size="sm" className="border border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
+                <Link to={createPageUrl('GradeAssignments') + `?assignmentId=${sub.assignment_id}&courseId=${targetCourseId}`}><Button size="sm" className="border border-slate-300 bg-white text-slate-900 hover:bg-slate-50">Grade submission</Button></Link>
               </div>
             ))}
           </div>

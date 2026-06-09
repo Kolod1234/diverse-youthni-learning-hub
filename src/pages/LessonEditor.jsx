@@ -15,7 +15,7 @@ import SlideEditor from '@/components/editor/SlideEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
 import FullscreenPresenter from '@/components/presentation/FullscreenPresenter';
-import { canTutorAccessCourse } from '@/components/tutor/tutorAccess';
+import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function LessonEditor() {
   const location = useLocation();
@@ -40,41 +40,29 @@ export default function LessonEditor() {
         navigate(createPageUrl('Dashboard'));
         return;
       }
-      // If a courseId is provided, verify access (admin / assigned / creator / approved subject)
+      // If a courseId is provided, verify the tutor is explicitly assigned to it.
+      // Approved subjects do NOT grant access.
       if (courseId && userData.role !== 'admin') {
-        const [courses, tutorRequests] = await Promise.all([
-          base44.entities.Course.filter({ id: courseId }),
-          base44.entities.TutorRequest.filter({ user_email: userData.email, status: 'approved' }, '-created_date', 1),
-        ]);
+        const courses = await base44.entities.Course.filter({ id: courseId });
         const course = courses[0];
-        const approvedSubjects = tutorRequests[0]?.subjects || [];
-        if (course && !canTutorAccessCourse(course, userData, approvedSubjects)) {
-          toast.error('You are not approved to edit lessons for this course');
-          navigate(-1);
+        if (course && !isCourseExplicitlyAssignedToTutor(course, userData)) {
+          toast.error('You are not assigned to this course. Please contact an admin.');
+          navigate(createPageUrl('TutorDashboardOverview'));
         }
       }
     };
     loadUser();
   }, []);
 
-  // Tutor's approved subjects (drives course visibility in the picker)
-  const { data: tutorRequests = [] } = useQuery({
-    queryKey: ['tutor-request-for-editor', user?.email],
-    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
-    enabled: !!user?.email && user?.role !== 'admin',
-  });
-  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
-
+  // Course picker: only courses explicitly assigned to this tutor (or all for admins).
   const { data: tutorCourses = [] } = useQuery({
-    queryKey: ['tutor-courses-for-lesson-editor', user?.email, approvedSubjects?.join(',')],
+    queryKey: ['tutor-assigned-courses-for-lesson-editor-v2', user?.email, user?.role],
     queryFn: async () => {
       if (!user) return [];
       if (user.role === 'admin') {
         return base44.entities.Course.list('title', 5000);
       }
-      // Tutors see: explicitly assigned, courses they created, or courses in their approved subjects
-      const all = await base44.entities.Course.list('title', 5000);
-      return all.filter(c => canTutorAccessCourse(c, user, approvedSubjects));
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, 'title', 200);
     },
     enabled: !!user,
   });
@@ -89,6 +77,20 @@ export default function LessonEditor() {
     enabled: !!lessonId,
   });
 
+  // When editing an existing lesson, verify the tutor is assigned to that lesson's course.
+  // Blocks URL tampering with ?id=<otherLessonId>.
+  useEffect(() => {
+    if (!user || !lesson || user.role === 'admin') return;
+    (async () => {
+      const courses = await base44.entities.Course.filter({ id: lesson.course_id });
+      const lessonCourse = courses[0];
+      if (lessonCourse && !isCourseExplicitlyAssignedToTutor(lessonCourse, user)) {
+        toast.error('You are not assigned to this course. Please contact an admin.');
+        navigate(createPageUrl('TutorDashboardOverview'));
+      }
+    })();
+  }, [user, lesson]);
+
   useEffect(() => {
     if (lesson) {
       setLessonForm(lesson);
@@ -97,6 +99,17 @@ export default function LessonEditor() {
 
   const saveMutation = useMutation({
     mutationFn: async () => {
+      const targetCourseId = lessonForm.course_id || courseId || lesson?.course_id;
+      // Defence in depth: re-check the tutor is assigned to the target course
+      // before writing, so that even tampered form state cannot save into a
+      // course the tutor does not own.
+      if (user?.role !== 'admin' && targetCourseId) {
+        const courses = await base44.entities.Course.filter({ id: targetCourseId });
+        const targetCourse = courses[0];
+        if (targetCourse && !isCourseExplicitlyAssignedToTutor(targetCourse, user)) {
+          throw new Error('You are not assigned to this course. Please contact an admin.');
+        }
+      }
       if (lessonId) {
         await base44.entities.Lesson.update(lessonId, lessonForm);
       } else {

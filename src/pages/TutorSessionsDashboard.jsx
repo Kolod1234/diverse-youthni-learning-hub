@@ -64,8 +64,13 @@ export default function TutorSessionsDashboard() {
   });
 
   const { data: courses = [] } = useQuery({
-    queryKey: ['tutor-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }),
+    queryKey: ['tutor-assigned-courses-sessions-v2', user?.email, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.Course.list('-created_date', 200);
+      }
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 200);
+    },
     enabled: !!user?.email,
   });
 

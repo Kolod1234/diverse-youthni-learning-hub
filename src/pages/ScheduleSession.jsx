@@ -63,8 +63,13 @@ export default function ScheduleSession() {
   }, []);
 
   const { data: courses = [] } = useQuery({
-    queryKey: ['tutor-courses', user?.email],
-    queryFn: () => base44.entities.Course.filter({ created_by: user?.email }),
+    queryKey: ['tutor-assigned-courses-schedule-v2', user?.email, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.Course.list('-created_date', 200);
+      }
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 200);
+    },
     enabled: !!user?.email,
   });
 
@@ -161,6 +166,12 @@ export default function ScheduleSession() {
     e.preventDefault();
     if (!formData.course_id || !formData.title || !formData.scheduled_date || !formData.scheduled_time) {
       toast.error('Please fill in all required fields');
+      return;
+    }
+
+    // Defence in depth: block scheduling for a course the tutor was not assigned to.
+    if (user?.role !== 'admin' && !courses.some(c => c.id === formData.course_id)) {
+      toast.error('You are not assigned to that course.');
       return;
     }
 

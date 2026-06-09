@@ -96,8 +96,21 @@ export function isCourseExplicitlyAssignedToTutor(course, user) {
   if (!email) return false;
   const assigned = course.assigned_tutors;
   if (!Array.isArray(assigned) || assigned.length === 0) return false;
-  // Case-insensitive comparison to avoid email-casing mismatches
+  // Case-insensitive + trimmed comparison to avoid valid assignments
+  // disappearing because of formatting differences (e.g. " Foo@Bar.com ").
   return assigned.some(e => (e || '').toLowerCase().trim() === email);
+}
+
+/**
+ * Single source of truth for "can this user act as a tutor on this course".
+ * Use this everywhere a tutor needs to view, edit, manage lessons/quizzes/
+ * assignments, schedule sessions or grade work for a course.
+ *
+ * Approved tutor subjects are intentionally IGNORED — they grant the
+ * "tutor" role but never automatic course access. Admins get full access.
+ */
+export function canTutorManageCourse(course, user) {
+  return isCourseExplicitlyAssignedToTutor(course, user);
 }
 
 /**

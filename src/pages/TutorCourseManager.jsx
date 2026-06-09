@@ -104,28 +104,16 @@ export default function TutorCourseManager() {
     enabled: !!courseId,
   });
 
-  const { data: tutorRequest } = useQuery({
-    queryKey: ['tutor-request-for-courses', user?.email],
-    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
-    enabled: !!user?.email && user?.role !== 'admin',
-  });
-
-  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequest?.[0]?.subjects || []);
-
+  // Courses available in the "Import from Google Slides" picker.
+  // Only courses explicitly assigned to this tutor by an admin (or all for admins).
+  // Approved subjects do NOT grant access.
   const { data: allCourses = [] } = useQuery({
-    queryKey: ['all-tutor-courses', user?.email, approvedSubjects?.join(',')],
+    queryKey: ['tutor-assigned-courses-v2', user?.email, user?.role],
     queryFn: async () => {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 100);
       }
-      const [assignedCourses, ...subjectResults] = await Promise.all([
-        base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100),
-        ...(approvedSubjects || []).map(subject =>
-          base44.entities.Course.filter({ category: subject.toLowerCase() }, '-created_date', 50)
-        )
-      ]);
-      const all = [...assignedCourses, ...subjectResults.flat()];
-      return [...new Map(all.map(c => [c.id, c])).values()];
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100);
     },
     enabled: !!user,
   });
@@ -293,7 +281,7 @@ export default function TutorCourseManager() {
             <X className="w-8 h-8 text-red-600" />
           </div>
           <h2 className="text-2xl font-bold text-gray-900 mb-2">Access Denied</h2>
-          <p className="text-gray-600 mb-6">You are not approved to teach the subject of <strong>{course?.title}</strong>. Please contact an admin to update your approved subjects.</p>
+          <p className="text-gray-600 mb-6">You have not been assigned to <strong>{course?.title}</strong>. Please contact an admin to be added as a tutor for this course.</p>
           <Link to={createPageUrl('TutorDashboard')}>
             <Button className="bg-indigo-600 hover:bg-indigo-700">Back to Dashboard</Button>
           </Link>

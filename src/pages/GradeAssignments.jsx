@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { base44 } from '@/api/base44Client';
 import { Button, Card, TextField, Chip } from '@mui/material';
@@ -11,30 +11,74 @@ import SaveIcon from '@mui/icons-material/Save';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
 const ArrowLeft = _w(ArrowBackIcon), Save = _w(SaveIcon), CheckCircle = _w(CheckCircleIcon);
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { toast } from 'sonner';
+import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function GradeAssignments() {
   const urlParams = new URLSearchParams(window.location.search);
   const assignmentId = urlParams.get('assignmentId');
+  const courseIdParam = urlParams.get('courseId');
+  const navigate = useNavigate();
+  const [user, setUser] = useState(null);
+  const [accessChecked, setAccessChecked] = useState(false);
   const [gradingSubmission, setGradingSubmission] = useState(null);
   const [gradeForm, setGradeForm] = useState({});
   const queryClient = useQueryClient();
 
-  const { data: assignment } = useQuery({
+  // 1. Load the assignment.
+  const { data: assignment, isLoading: loadingAssignment } = useQuery({
     queryKey: ['assignment', assignmentId],
     queryFn: async () => {
       const assignments = await base44.entities.Assignment.filter({ id: assignmentId });
-      return assignments[0];
+      return assignments[0] || null;
     },
     enabled: !!assignmentId,
   });
 
+  // 2. Once we have the assignment, verify the tutor is assigned to its course.
+  //    Blocks URL tampering with ?assignmentId=<otherCoursesAssignment>.
+  useEffect(() => {
+    const verify = async () => {
+      const u = await base44.auth.me();
+      setUser(u);
+      if (!u || (!u.is_tutor && u.role !== 'admin')) {
+        toast.error('Only tutors can grade submissions.');
+        navigate(createPageUrl('Home'));
+        return;
+      }
+      if (!assignmentId) {
+        toast.error('Missing assignment.');
+        navigate(createPageUrl('TutorDashboard'));
+        return;
+      }
+      if (!assignment) return; // still loading
+      // If a courseId was supplied in the URL it must match the assignment's
+      // actual course (defence against tampering).
+      if (courseIdParam && courseIdParam !== assignment.course_id) {
+        toast.error('Assignment does not belong to that course.');
+        navigate(createPageUrl('TutorDashboard'));
+        return;
+      }
+      if (u.role !== 'admin') {
+        const courses = await base44.entities.Course.filter({ id: assignment.course_id });
+        const course = courses[0];
+        if (!course || !isCourseExplicitlyAssignedToTutor(course, u)) {
+          toast.error('You are not assigned to that course.');
+          navigate(createPageUrl('TutorDashboard'));
+          return;
+        }
+      }
+      setAccessChecked(true);
+    };
+    verify();
+  }, [assignment, assignmentId, courseIdParam]);
+
   const { data: submissions = [] } = useQuery({
     queryKey: ['submissions', assignmentId],
     queryFn: () => base44.entities.Submission.filter({ assignment_id: assignmentId }, '-created_date', 100),
-    enabled: !!assignmentId,
+    enabled: !!assignmentId && accessChecked,
   });
 
   const gradeMutation = useMutation({
@@ -59,6 +103,14 @@ export default function GradeAssignments() {
     });
   };
 
+  if (loadingAssignment || !accessChecked) {
+    return (
+      <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white flex items-center justify-center">
+        <p className="text-gray-500">Loading…</p>
+      </div>
+    );
+  }
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <div className="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
@@ -74,7 +126,7 @@ export default function GradeAssignments() {
 
         <Card className="p-6 bg-white text-slate-900">
           <h2 className="text-xl font-semibold mb-6 text-slate-900">Student Submissions</h2>
-          
+
           <div className="space-y-4">
             {submissions.map((submission) => (
               <Card key={submission.id} className="p-4 bg-gray-50">
@@ -96,18 +148,18 @@ export default function GradeAssignments() {
                   <div className="bg-white rounded-lg p-4 space-y-3">
                     <div>
                       <Label>Grade (out of {assignment?.total_points})</Label>
-                      <Input 
-                        type="number" 
+                      <Input
+                        type="number"
                         max={assignment?.total_points}
-                        value={gradeForm.grade || ''} 
-                        onChange={(e) => setGradeForm({ ...gradeForm, grade: e.target.value })} 
+                        value={gradeForm.grade || ''}
+                        onChange={(e) => setGradeForm({ ...gradeForm, grade: e.target.value })}
                       />
                     </div>
                     <div>
                       <Label>Feedback</Label>
-                      <Textarea 
-                        value={gradeForm.feedback || ''} 
-                        onChange={(e) => setGradeForm({ ...gradeForm, feedback: e.target.value })} 
+                      <Textarea
+                        value={gradeForm.feedback || ''}
+                        onChange={(e) => setGradeForm({ ...gradeForm, feedback: e.target.value })}
                         rows={3}
                       />
                     </div>
@@ -128,11 +180,11 @@ export default function GradeAssignments() {
                       </div>
                     )}
                     {!submission.is_graded && (
-                      <Button 
+                      <Button
                         onClick={() => {
                           setGradingSubmission(submission);
                           setGradeForm({ grade: assignment?.total_points, feedback: '' });
-                        }} 
+                        }}
                         size="sm"
                       >
                         <CheckCircle className="w-4 h-4 mr-2" />
