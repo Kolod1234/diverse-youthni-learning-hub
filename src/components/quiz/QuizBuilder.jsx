@@ -10,7 +10,7 @@ import { Plus, Trash2, GripVertical, Save, Clock, Image as ImageIcon, Upload, Ty
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { toast } from 'sonner';
 
-export default function QuizBuilder({ courses }) {
+export default function QuizBuilder({ courses, validateCourseAssigned }) {
   const [quizData, setQuizData] = useState({
     title: '',
     description: '',
@@ -141,7 +141,7 @@ export default function QuizBuilder({ courses }) {
     setQuizData({ ...quizData, questions: items });
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!quizData.title || !quizData.course_id) {
       toast.error('Please fill in title and select a course to publish to');
       return;
@@ -151,6 +151,17 @@ export default function QuizBuilder({ courses }) {
     if (hasEmptyQuestions) {
       toast.error('Please fill in all questions and options');
       return;
+    }
+
+    // Strict server-side re-check that the tutor is assigned to the target
+    // course. Blocks devtools/picker tampering and stale cached lists.
+    if (validateCourseAssigned) {
+      try {
+        await validateCourseAssigned(quizData.course_id);
+      } catch (err) {
+        toast.error(err.message);
+        return;
+      }
     }
 
     createQuizMutation.mutate({

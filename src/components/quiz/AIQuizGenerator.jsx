@@ -81,7 +81,7 @@ function shuffleQuestionOptions(question) {
 }
 
 // ── Main component ──────────────────────────────────────────────────────────
-export default function AIQuizGenerator({ courses }) {
+export default function AIQuizGenerator({ courses, validateCourseAssigned }) {
   const [topic, setTopic] = useState('');
   const [subtopic, setSubtopic] = useState('');
   const [additionalContext, setAdditionalContext] = useState('');
@@ -341,8 +341,17 @@ Return JSON:
     }));
   };
 
-  const handleSaveGenerated = () => {
+  const handleSaveGenerated = async () => {
     if (!generatedQuiz) return;
+    // Strict server-side re-check before publishing the AI-generated quiz.
+    if (validateCourseAssigned) {
+      try {
+        await validateCourseAssigned(courseId);
+      } catch (err) {
+        toast.error(err.message);
+        return;
+      }
+    }
     const totalMarks = generatedQuiz.questions.reduce((sum, q) => sum + (q.marks || 1), 0);
     saveQuizMutation.mutate({
       ...generatedQuiz,

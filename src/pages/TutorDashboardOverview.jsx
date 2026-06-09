@@ -12,7 +12,7 @@ import {
   BookMarked, UserCheck, Lock, Unlock, Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { filterAssignedCoursesForTutor } from '@/components/tutor/tutorAccess';
+
 
 export default function TutorDashboardOverview() {
   const [user, setUser] = useState(null);
@@ -278,7 +278,7 @@ export default function TutorDashboardOverview() {
                 <div className="py-14 text-center text-gray-400">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
                   <p className="font-medium text-gray-600">No courses assigned yet</p>
-                  <p className="text-sm mt-1">Courses in your approved subjects will appear here</p>
+                  <p className="text-sm mt-1">Please contact an admin to be assigned to a course.</p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">

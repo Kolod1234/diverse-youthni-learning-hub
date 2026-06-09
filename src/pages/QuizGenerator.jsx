@@ -32,6 +32,7 @@ import QuizBuilder from '@/components/quiz/QuizBuilder';
 import AIQuizGenerator from '@/components/quiz/AIQuizGenerator';
 import QuizList from '@/components/quiz/QuizList';
 import { toast } from 'sonner';
+import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function QuizGenerator() {
   const [user, setUser] = useState(null);
@@ -61,6 +62,23 @@ export default function QuizGenerator() {
     queryFn: () => base44.entities.Quiz.filter({ created_by: user?.email }, '-created_date', 200),
     enabled: !!user?.email,
   });
+
+  // Strict re-validation called by QuizBuilder / AIQuizGenerator immediately
+  // before every Quiz.create or Quiz.update. Re-fetches the live course row
+  // from the server so a stale `courses` list cannot be used to slip a quiz
+  // into an unassigned course.
+  const validateCourseAssigned = async (courseId) => {
+    if (!user) throw new Error('You must be signed in.');
+    if (user.role === 'admin') return true;
+    if (!courseId) throw new Error('Please select a course.');
+    const found = await base44.entities.Course.filter({ id: courseId });
+    const liveCourse = found[0];
+    if (!liveCourse) throw new Error('That course no longer exists.');
+    if (!isCourseExplicitlyAssignedToTutor(liveCourse, user)) {
+      throw new Error('You are not assigned to that course. Please contact an admin.');
+    }
+    return true;
+  };
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-purple-50 via-white to-indigo-50">
@@ -99,11 +117,11 @@ export default function QuizGenerator() {
           </TabsList>
 
           <TabsContent value="create">
-            <QuizBuilder courses={courses} />
+            <QuizBuilder courses={courses} validateCourseAssigned={validateCourseAssigned} />
           </TabsContent>
 
           <TabsContent value="ai">
-            <AIQuizGenerator courses={courses} />
+            <AIQuizGenerator courses={courses} validateCourseAssigned={validateCourseAssigned} />
           </TabsContent>
 
           <TabsContent value="manage">
