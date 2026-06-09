@@ -1,0 +1,313 @@
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
+import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
+import { Undo2, Redo2, Save, Eye, Plus, Check, Loader2 } from 'lucide-react';
+import { toast } from 'sonner';
+import BlockRenderer from './BlockRenderer';
+import BlockWrapper from './BlockWrapper';
+import SlashMenu from './SlashMenu';
+import PreviewModal from './PreviewModal';
+import { blocksToHtml, htmlToBlocks } from './htmlSerializer';
+import { createBlock, BLOCK_GROUPS } from './blockTypes';
+import useUndoRedo from './useUndoRedo';
+import useUnsavedChangesWarning from './useUnsavedChangesWarning';
+
+// VisualLessonBuilder
+// ------------------------------------------------------------------------------
+// Edits a single slide (title + content blocks). The parent gives us the slide
+// and a setter; we keep the blocks in undo/redo'able state internally and
+// always serialise back to slide.content as sanitised HTML so the existing
+// LessonPlayer / presentation pages render unchanged.
+
+const AUTOSAVE_MS = 1200;
+
+export default function VisualLessonBuilder({ slide, onChange }) {
+  // Derive initial blocks from the incoming slide content exactly once.
+  const initialBlocks = useMemo(() => htmlToBlocks(slide?.content || ''), [slide?.id || slide?.order]);
+  const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);
+
+  const [focusedId, setFocusedId] = useState(null);
+  const [slashOpen, setSlashOpen] = useState(false);
+  const [previewOpen, setPreviewOpen] = useState(false);
+  const [savedAt, setSavedAt] = useState(null);
+  const [saving, setSaving] = useState(false);
+  const lastSerialised = useRef(slide?.content || '');
+  const slideRef = useRef(slide);
+  slideRef.current = slide;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // Sync into builder when the parent switches to a different slide.
+  useEffect(() => {
+    const next = htmlToBlocks(slide?.content || '');
+    reset(next);
+    lastSerialised.current = slide?.content || '';
+    setSavedAt(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slide?.id, slide?.order]);
+
+  // Autosave: serialise blocks → HTML and push to parent on a debounce. We push
+  // to the parent which writes to slide.content, keeping the existing storage
+  // shape intact (LessonPlayer keeps reading slide.content as HTML).
+  const isDirty = lastSerialised.current !== blocksToHtml(blocks);
+  useUnsavedChangesWarning(isDirty);
+
+  useEffect(() => {
+    if (!slideRef.current) return;
+    const html = blocksToHtml(blocks);
+    if (html === lastSerialised.current) return;
+    setSaving(true);
+    const t = setTimeout(() => {
+      lastSerialised.current = html;
+      onChangeRef.current?.({ ...slideRef.current, content: html });
+      setSavedAt(new Date());
+      setSaving(false);
+    }, AUTOSAVE_MS);
+    return () => clearTimeout(t);
+  }, [blocks]);
+
+  // Keyboard shortcuts: Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z, Cmd/Ctrl+S.
+  useEffect(() => {
+    const onKey = (e) => {
+      if (!(e.ctrlKey || e.metaKey)) return;
+      if (e.key === 'z' && !e.shiftKey) { e.preventDefault(); undo(); }
+      else if ((e.key === 'z' && e.shiftKey) || e.key === 'y') { e.preventDefault(); redo(); }
+      else if (e.key === 's') { e.preventDefault(); manualSave(); }
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [undo, redo, blocks]);
+
+  // ── block mutation helpers ──────────────────────────────────────────────
+  const updateBlock = (idx, patch, opts) => {
+    setBlocks((prev) => {
+      const next = [...prev];
+      next[idx] = { ...next[idx], ...patch };
+      return next;
+    }, opts);
+  };
+  const updateBlockData = (idx, data) => updateBlock(idx, { data });
+
+  const addBlockAt = (idx, type) => {
+    setBlocks((prev) => {
+      const next = [...prev];
+      const block = createBlock(type);
+      next.splice(idx, 0, block);
+      // focus the new block on next render
+      setTimeout(() => setFocusedId(block.id), 0);
+      return next;
+    }, { immediate: true });
+  };
+
+  const duplicateBlock = (idx) => {
+    setBlocks((prev) => {
+      const next = [...prev];
+      const clone = { ...next[idx], id: createBlock('paragraph').id, data: JSON.parse(JSON.stringify(next[idx].data || {})) };
+      next.splice(idx + 1, 0, clone);
+      return next;
+    }, { immediate: true });
+    toast.success('Block duplicated');
+  };
+
+  const deleteBlock = (idx) => {
+    setBlocks((prev) => prev.filter((_, i) => i !== idx), { immediate: true });
+  };
+
+  const moveBlock = (idx, delta) => {
+    setBlocks((prev) => {
+      const target = idx + delta;
+      if (target < 0 || target >= prev.length) return prev;
+      const next = [...prev];
+      [next[idx], next[target]] = [next[target], next[idx]];
+      return next;
+    }, { immediate: true });
+  };
+
+  const toggleCollapse = (idx) => updateBlock(idx, { collapsed: !blocks[idx]?.collapsed }, { immediate: true });
+
+  const onDragEnd = (result) => {
+    if (!result.destination) return;
+    setBlocks((prev) => {
+      const next = [...prev];
+      const [item] = next.splice(result.source.index, 1);
+      next.splice(result.destination.index, 0, item);
+      return next;
+    }, { immediate: true });
+  };
+
+  const manualSave = () => {
+    if (!slideRef.current) return;
+    const html = blocksToHtml(blocks);
+    lastSerialised.current = html;
+    onChangeRef.current?.({ ...slideRef.current, content: html });
+    setSavedAt(new Date());
+    setSaving(false);
+    toast.success('Saved');
+  };
+
+  // ── render ──────────────────────────────────────────────────────────────
+  return (
+    <div className="bg-white rounded-lg border border-gray-200">
+      {/* Top action bar */}
+      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/60 rounded-t-lg sticky top-0 z-10">
+        <div className="flex items-center gap-1">
+          <ToolbarBtn label="Undo (Ctrl+Z)" onClick={undo} disabled={!canUndo}><Undo2 className="w-4 h-4" /></ToolbarBtn>
+          <ToolbarBtn label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!canRedo}><Redo2 className="w-4 h-4" /></ToolbarBtn>
+        </div>
+        <div className="flex items-center gap-2 text-xs text-gray-500">
+          <SaveStatus saving={saving} savedAt={savedAt} dirty={isDirty} />
+        </div>
+        <div className="flex items-center gap-1">
+          <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
+            <Eye className="w-4 h-4" /> Preview
+          </Button>
+          <Button size="sm" onClick={manualSave} className="gap-1.5 bg-indigo-600 hover:bg-indigo-700">
+            <Save className="w-4 h-4" /> Save
+          </Button>
+        </div>
+      </div>
+
+      {/* Slide title */}
+      {slide && (
+        <div className="px-6 pt-4">
+          <Label className="text-sm font-semibold mb-1 block">Slide title</Label>
+          <Input
+            value={slide.title || ''}
+            onChange={(e) => onChangeRef.current?.({ ...slide, title: e.target.value })}
+            placeholder="Untitled slide"
+            className="text-lg font-medium"
+          />
+        </div>
+      )}
+
+      {/* Blocks */}
+      <div className="px-6 py-4">
+        {blocks.length === 0 ? (
+          <EmptyState onPick={(type) => addBlockAt(0, type)} />
+        ) : (
+          <DragDropContext onDragEnd={onDragEnd}>
+            <Droppable droppableId="builder-blocks">
+              {(provided) => (
+                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2 pl-10">
+                  {blocks.map((block, idx) => (
+                    <Draggable key={block.id} draggableId={block.id} index={idx}>
+                      {(prov, snap) => (
+                        <div ref={prov.innerRef} {...prov.draggableProps}>
+                          <BlockWrapper
+                            index={idx}
+                            block={block}
+                            dragHandleProps={prov.dragHandleProps}
+                            isDragging={snap.isDragging}
+                            focused={focusedId === block.id}
+                            onFocus={() => setFocusedId(block.id)}
+                            onDuplicate={() => duplicateBlock(idx)}
+                            onDelete={() => deleteBlock(idx)}
+                            onMove={(delta) => moveBlock(idx, delta)}
+                            onToggleCollapse={() => toggleCollapse(idx)}
+                            onAddBelow={(type) => addBlockAt(idx + 1, type)}
+                          >
+                            <BlockRenderer
+                              block={block}
+                              focused={focusedId === block.id}
+                              onChange={(data) => updateBlockData(idx, data)}
+                            />
+                          </BlockWrapper>
+                        </div>
+                      )}
+                    </Draggable>
+                  ))}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        )}
+
+        {/* Add block at end */}
+        {blocks.length > 0 && (
+          <div className="pl-10 mt-3 relative">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setSlashOpen((o) => !o)}
+              className="gap-1.5 text-gray-600"
+            >
+              <Plus className="w-4 h-4" /> Add block
+            </Button>
+            {slashOpen && (
+              <div className="absolute left-10 top-full mt-1 z-20">
+                <SlashMenu
+                  open
+                  onClose={() => setSlashOpen(false)}
+                  onPick={(t) => { addBlockAt(blocks.length, t); setSlashOpen(false); }}
+                />
+              </div>
+            )}
+          </div>
+        )}
+      </div>
+
+      <PreviewModal open={previewOpen} onClose={() => setPreviewOpen(false)} html={blocksToHtml(blocks)} />
+    </div>
+  );
+}
+
+// ── auxiliary UI ──────────────────────────────────────────────────────────────
+function SaveStatus({ saving, savedAt, dirty }) {
+  if (saving) return <span className="inline-flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> Saving…</span>;
+  if (dirty) return <span className="text-amber-600">Unsaved changes</span>;
+  if (savedAt) return <span className="inline-flex items-center gap-1.5 text-emerald-600"><Check className="w-3 h-3" /> Saved {timeAgo(savedAt)}</span>;
+  return <span>Ready</span>;
+}
+
+function ToolbarBtn({ children, label, onClick, disabled }) {
+  return (
+    <button
+      type="button"
+      title={label}
+      aria-label={label}
+      onClick={onClick}
+      disabled={disabled}
+      className="h-8 w-8 inline-flex items-center justify-center rounded text-gray-600 hover:bg-gray-100 disabled:opacity-40 disabled:cursor-not-allowed"
+    >
+      {children}
+    </button>
+  );
+}
+
+function EmptyState({ onPick }) {
+  return (
+    <Card className="p-8 border-2 border-dashed border-gray-200 bg-gray-50/50 text-center">
+      <p className="text-base font-semibold text-gray-800 mb-1">Start building this slide</p>
+      <p className="text-sm text-gray-500 mb-6">Pick a block to begin. You can add, drag and reorder as much as you like.</p>
+      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2 max-w-3xl mx-auto">
+        {BLOCK_GROUPS.flatMap(g => g.items).slice(0, 12).map(item => {
+          const Icon = item.icon;
+          return (
+            <button
+              key={item.type}
+              type="button"
+              onClick={() => onPick(item.type)}
+              className="flex items-center gap-2 px-3 py-2 bg-white border border-gray-200 rounded-lg hover:border-indigo-400 hover:bg-indigo-50 text-left transition-colors"
+            >
+              <Icon className="w-4 h-4 text-indigo-600 shrink-0" />
+              <span className="text-sm text-gray-800 truncate">{item.name}</span>
+            </button>
+          );
+        })}
+      </div>
+    </Card>
+  );
+}
+
+function timeAgo(date) {
+  const diff = Math.floor((Date.now() - date.getTime()) / 1000);
+  if (diff < 5) return 'just now';
+  if (diff < 60) return `${diff}s ago`;
+  if (diff < 3600) return `${Math.floor(diff / 60)}m ago`;
+  return date.toLocaleTimeString();
+}

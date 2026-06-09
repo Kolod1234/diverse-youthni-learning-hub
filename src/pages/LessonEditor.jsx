@@ -10,7 +10,6 @@ import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import { Card } from '@/components/ui/card';
 import { toast } from 'sonner';
-import RichTextEditor from '@/components/editor/RichTextEditor';
 import SlideEditor from '@/components/editor/SlideEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
@@ -290,13 +289,17 @@ export default function LessonEditor() {
             </div>
           </Card>
 
-          {/* Description */}
+          {/* Description — short summary shown on the lesson list and
+              course pages. Long-form lesson content lives in the Slides
+              section below (Visual Lesson Builder). */}
           <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-4">Lesson Description</h2>
-            <RichTextEditor
+            <h2 className="text-lg font-semibold mb-2">Lesson Description</h2>
+            <p className="text-xs text-gray-500 mb-3">A short summary shown on the course page. Use the Slides section below for the actual lesson content.</p>
+            <Textarea
               value={lessonForm.description || ''}
-              onChange={(value) => setLessonForm({ ...lessonForm, description: value })}
-              placeholder="Write a comprehensive description..."
+              onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
+              placeholder="Write a comprehensive description…"
+              className="min-h-[140px]"
             />
           </Card>
 

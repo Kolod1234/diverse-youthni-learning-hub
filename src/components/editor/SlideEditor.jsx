@@ -6,7 +6,7 @@ import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
 import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download, Code } from 'lucide-react';
-import RichTextEditor from '@/components/editor/RichTextEditor';
+import VisualLessonBuilder from '@/components/editor/lessonBuilder/VisualLessonBuilder';
 import PresentationMode from '@/components/editor/PresentationMode';
 import CanvasSlideEditor from '@/components/editor/CanvasSlideEditor';
 import AdvancedTemplateBuilder from '@/components/editor/AdvancedTemplateBuilder';
@@ -151,7 +151,9 @@ const SLIDE_TEMPLATES = {
 export default function SlideEditor({ slides = [], onChange }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreenEdit, setFullscreenEdit] = useState(false);
-  const [editorMode, setEditorMode] = useState('rich'); // 'rich' or 'canvas'
+  // 'builder' = Visual Lesson Builder (new default).
+  // 'canvas' = original advanced Canvas mode (kept for power users).
+  const [editorMode, setEditorMode] = useState('builder');
   const [customTemplates, setCustomTemplates] = useState(() => {
     try {
       return JSON.parse(localStorage.getItem('customSlideTemplates') || '{}');
@@ -654,19 +656,21 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         <div className="flex items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
             <Button
-              variant={editorMode === 'rich' ? 'default' : 'ghost'}
+              variant={editorMode === 'builder' ? 'default' : 'ghost'}
               size="sm"
-              onClick={() => setEditorMode('rich')}
+              onClick={() => setEditorMode('builder')}
               className="min-h-[44px]"
+              title="Visual Lesson Builder (default)"
             >
-              <FileText className="w-4 h-4 mr-2" />
-              Rich Text
+              <Grid3x3 className="w-4 h-4 mr-2" />
+              Builder
             </Button>
             <Button
               variant={editorMode === 'canvas' ? 'default' : 'ghost'}
               size="sm"
               onClick={() => setEditorMode('canvas')}
               className="min-h-[44px]"
+              title="Advanced canvas mode"
             >
               <LayoutTemplate className="w-4 h-4 mr-2" />
               Canvas
@@ -1054,6 +1058,18 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                 ) : (
                 <ScrollArea className="h-full">
                   <div className="p-6 space-y-6">
+                    {/* Visual Lesson Builder — block-based, drag/drop,
+                        inline editing, autosave + preview. Serialises back
+                        to slide.content HTML for player compatibility. */}
+                    <VisualLessonBuilder
+                      slide={currentSlideData}
+                      onChange={(updatedSlide) => {
+                        const newSlides = [...slides];
+                        newSlides[currentSlide] = updatedSlide;
+                        onChange(newSlides);
+                      }}
+                    />
+
                     {/* Template Selector */}
                     <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
                       <div className="flex items-center gap-3 mb-4">
@@ -1146,22 +1162,9 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                       </div>
                     )}
 
-                    <div className="bg-white rounded-lg border-2 border-gray-200 p-5">
-                      <div className="flex items-center gap-2 mb-4">
-                        <FileText className="w-5 h-5 text-indigo-600" />
-                        <Label className="text-base font-semibold">Slide Content</Label>
-                      </div>
-                      <RichTextEditor
-                        key={`slide-editor-${currentSlide}`}
-                        value={currentSlideData.content || ''}
-                        onChange={(value) => updateSlide(currentSlide, 'content', value)}
-                        placeholder="Write your lesson content with rich formatting..."
-                      />
-                      <p className="text-xs text-gray-500 mt-3 flex items-center gap-2">
-                        <span>💡</span>
-                        <span>Use the toolbar above to add headings, lists, images, equations, and symbols. Click any image to replace it.</span>
-                      </p>
-                    </div>
+                    {/* Slide content is now edited by the Visual Lesson Builder
+                        at the top of this panel — Rich Text mode has been
+                        replaced with block-based editing. */}
                   </div>
                 </ScrollArea>
                 )}
