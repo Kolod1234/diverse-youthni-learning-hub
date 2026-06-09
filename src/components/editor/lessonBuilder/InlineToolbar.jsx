@@ -7,6 +7,7 @@ import {
   IndentIncrease, IndentDecrease, CaseUpper, CaseLower, CaseSensitive,
   Type as TypeIcon,
 } from 'lucide-react';
+import SymbolPalette from './SymbolPalette';
 
 // Rich inline toolbar for any text-y block. All actions go through the
 // editable ref's helpers so selection is preserved (mouseDown.preventDefault
@@ -61,6 +62,7 @@ export default function InlineToolbar({
   showIndent = true,
   showFontFamily = true,
   showClear = true,
+  showSymbols = true,
   compact = false,
 }) {
   const fire = (cmd, arg) => editableRef.current?.format(cmd, arg);
@@ -132,6 +134,11 @@ export default function InlineToolbar({
           <ToolBtn label="Subscript"   onClick={() => toggle('sub')}><Subscript className="w-3.5 h-3.5" /></ToolBtn>
           <ToolBtn label="Superscript" onClick={() => toggle('sup')}><Superscript className="w-3.5 h-3.5" /></ToolBtn>
         </>
+      )}
+
+      {/* Symbol palette — inserts a Unicode glyph at the caret */}
+      {showSymbols && (
+        <SymbolPalette onInsert={(ch) => fire('insertText', ch)} />
       )}
       <Divider />
 

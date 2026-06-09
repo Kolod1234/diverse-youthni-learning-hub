@@ -193,6 +193,16 @@ function blockToHtml(b) {
     case 'math':
       // Stored as MathJax-friendly delimiters; MathJaxContext is already present in Layout.
       return `<div style="text-align:center; margin:16px 0; font-size:18px;">$$${escapeHtml(d.latex || '')}$$</div>`;
+    case 'scientific-equation': {
+      // Plain Unicode equation (chem reactions, units, states). Rendered
+      // verbatim so subscripts/superscripts/state symbols/arrows that the
+      // tutor typed are preserved exactly in the player and presentation.
+      if (!d.equation) return '';
+      const captionHtml = d.caption
+        ? `<p style="margin:6px 0 0; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption)}</p>`
+        : '';
+      return `<div style="background:#F0FDF4; border:1px solid #A7F3D0; border-left:4px solid #10B981; border-radius:8px; padding:14px 18px; margin:16px 0;"><p style="margin:0; text-align:center; font-family:Menlo,Monaco,Consolas,monospace; font-size:18px; color:#064E3B; line-height:1.6;">${escapeHtml(d.equation)}</p>${captionHtml}</div>`;
+    }
     case 'learning-objective':
       return `<div style="background:#ECFDF5; border:1px solid #A7F3D0; border-radius:12px; padding:16px 20px; margin:16px 0;"><p style="margin:0 0 6px; font-size:13px; text-transform:uppercase; letter-spacing:1px; color:#047857; font-weight:700;">🎯 Learning Objective</p><div style="font-size:16px; color:#064E3B; line-height:1.6;">${sanitiseInline(d.html || '')}</div></div>`;
     case 'key-takeaway':

@@ -9,7 +9,7 @@ import {
   Type, Heading1, Heading2, Heading3, List, ListOrdered, Quote,
   AlertCircle, BookOpen, Image as ImageIcon, FileText, Video,
   Download, Table as TableIcon, Minus, MoveVertical, Columns2,
-  Code, Sigma, Target, Star, HelpCircle, FileCode
+  Code, Sigma, Target, Star, HelpCircle, FileCode, FlaskConical
 } from 'lucide-react';
 
 let _id = 0;
@@ -52,7 +52,8 @@ export const BLOCK_GROUPS = [
     label: 'Advanced',
     items: [
       { type: 'code',              name: 'Code Block',       icon: Code,        keywords: ['program'] },
-      { type: 'math',              name: 'Maths Formula',    icon: Sigma,       keywords: ['latex','equation'] },
+      { type: 'math',              name: 'Maths Formula',    icon: Sigma,       keywords: ['latex','equation','formula','algebra'] },
+      { type: 'scientific-equation', name: 'Scientific Equation', icon: FlaskConical, keywords: ['chemistry','reaction','units','physics','balanced'] },
       { type: 'learning-objective',name: 'Learning Objective',icon: Target,     keywords: ['goal','outcome'] },
       { type: 'key-takeaway',      name: 'Key Takeaway',     icon: Star,        keywords: ['summary'] },
       { type: 'knowledge-check',   name: 'Knowledge Check',  icon: HelpCircle,  keywords: ['quiz','question'] },
@@ -88,6 +89,7 @@ export function defaultBlockData(type) {
     case 'two-columns':       return { left: '', right: '' };
     case 'code':              return { code: '', language: 'javascript' };
     case 'math':              return { latex: '' };
+    case 'scientific-equation': return { equation: '', caption: '', arrow: 'forward' };
     case 'learning-objective':return { html: '' };
     case 'key-takeaway':      return { html: '' };
     case 'knowledge-check':   return { question: '', answer: '', hint: '' };

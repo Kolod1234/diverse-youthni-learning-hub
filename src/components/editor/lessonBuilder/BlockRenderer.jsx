@@ -3,6 +3,8 @@ import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
 import InlineToolbar from './InlineToolbar';
+import MathBlock from './MathBlock';
+import ScientificEquationBlock from './ScientificEquationBlock';
 import { Upload, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, X } from 'lucide-react';
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
@@ -33,6 +35,7 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'two-columns':       return <TwoColumnsBlock data={d} onChange={upd} />;
     case 'code':              return <CodeBlock data={d} onChange={upd} />;
     case 'math':              return <MathBlock latex={d.latex} onChange={(latex) => upd({ latex })} />;
+    case 'scientific-equation': return <ScientificEquationBlock data={d} onChange={onChange} />;
     case 'learning-objective':return <BadgeBlock label="🎯 Learning Objective" color="emerald" html={d.html} onChange={(html) => upd({ html })} />;
     case 'key-takeaway':      return <BadgeBlock label="⭐ Key Takeaway" color="amber" html={d.html} onChange={(html) => upd({ html })} />;
     case 'knowledge-check':   return <KnowledgeCheckBlock data={d} onChange={upd} />;
@@ -494,21 +497,8 @@ function CodeBlock({ data, onChange }) {
   );
 }
 
-function MathBlock({ latex, onChange }) {
-  return (
-    <div className="bg-gray-50 rounded p-3">
-      <p className="text-[10px] tracking-widest uppercase text-gray-500 mb-1">LaTeX</p>
-      <textarea
-        value={latex || ''}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="e.g.  E = mc^2"
-        className="w-full font-mono text-sm bg-white border border-gray-200 rounded p-2 outline-none min-h-[60px]"
-        spellCheck={false}
-      />
-      {latex && <p className="mt-2 text-center text-base">{`$$${latex}$$`}</p>}
-    </div>
-  );
-}
+// MathBlock moved to ./MathBlock.jsx — adds editable LaTeX/plain input,
+// live MathJax preview, and a symbol palette.
 
 function BadgeBlock({ label, color, html, onChange }) {
   const ref = useRef(null);
