@@ -382,19 +382,35 @@ function LayoutContent({ children, currentPageName }) {
                 Library
               </Button>
               )}
-              <Button
-                component={Link}
-                to={createPageUrl('Dashboard')}
-                startIcon={<BookOpen size={20} />}
-                sx={{
-                  color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary',
-                  bgcolor: location.pathname.includes('Dashboard') ? 'primary.main' + '15' : 'transparent',
-                  '&:hover': { bgcolor: 'action.hover' },
-                  px: 2, py: 1, borderRadius: 2
-                }}
-              >
-                My Learning
-              </Button>
+              {isTutorOrAdmin ? (
+                <Button
+                  component={Link}
+                  to={createPageUrl('TutorDashboardOverview')}
+                  startIcon={<BookOpen size={20} />}
+                  sx={{
+                    color: location.pathname.includes('TutorDashboard') ? 'primary.main' : 'text.secondary',
+                    bgcolor: location.pathname.includes('TutorDashboard') ? 'primary.main' + '15' : 'transparent',
+                    '&:hover': { bgcolor: 'action.hover' },
+                    px: 2, py: 1, borderRadius: 2
+                  }}
+                >
+                  My Courses
+                </Button>
+              ) : (
+                <Button
+                  component={Link}
+                  to={createPageUrl('Dashboard')}
+                  startIcon={<BookOpen size={20} />}
+                  sx={{
+                    color: location.pathname.includes('Dashboard') ? 'primary.main' : 'text.secondary',
+                    bgcolor: location.pathname.includes('Dashboard') ? 'primary.main' + '15' : 'transparent',
+                    '&:hover': { bgcolor: 'action.hover' },
+                    px: 2, py: 1, borderRadius: 2
+                  }}
+                >
+                  My Learning
+                </Button>
+              )}
 
               {/* More Menu */}
               <Button
@@ -770,10 +786,17 @@ function LayoutContent({ children, currentPageName }) {
                       <ListItemText primary="Library" />
                     </ListItemButton>
                     )}
-                    <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
-                      <ListItemIcon><BookOpen size={20} /></ListItemIcon>
-                      <ListItemText primary="My Learning" />
-                    </ListItemButton>
+                    {isTutorOrAdmin ? (
+                      <ListItemButton component={Link} to={createPageUrl('TutorDashboardOverview')} onClick={() => setMobileMenuOpen(false)}>
+                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
+                        <ListItemText primary="My Courses" />
+                      </ListItemButton>
+                    ) : (
+                      <ListItemButton component={Link} to={createPageUrl('Dashboard')} onClick={() => setMobileMenuOpen(false)}>
+                        <ListItemIcon><BookOpen size={20} /></ListItemIcon>
+                        <ListItemText primary="My Learning" />
+                      </ListItemButton>
+                    )}
                     <ListItemButton component={Link} to={createPageUrl('AcademyManager')} onClick={() => setMobileMenuOpen(false)}>
                       <ListItemIcon><Award size={20} /></ListItemIcon>
                       <ListItemText primary="Academies" />
@@ -900,7 +923,9 @@ function LayoutContent({ children, currentPageName }) {
         <Box sx={{ display: 'flex', width: '100%', justifyContent: 'space-around', alignItems: 'center' }}>
           {[
             { label: 'Courses', page: 'Explore', icon: Compass, match: 'Explore' },
-            { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
+            isTutorOrAdmin
+              ? { label: 'My Courses', page: 'TutorDashboardOverview', icon: BookOpen, match: 'TutorDashboard' }
+              : { label: 'Progress', page: 'Dashboard', icon: BarChart3, match: 'Dashboard' },
             ...(isTutorOrAdmin ? [{ label: 'Library', page: 'Library', icon: BookOpen, match: 'Library' }] : []),
             { label: 'Profile', page: 'Profile', icon: User, match: 'Profile' },
           ].map(({ label, page, icon: Icon, match }) => {
@@ -1010,9 +1035,9 @@ function LayoutContent({ children, currentPageName }) {
                   </Link>
                 </ListItem>
                 <ListItem disablePadding>
-                 <Link to={createPageUrl('Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>
+                 <Link to={createPageUrl(isTutorOrAdmin ? 'TutorDashboardOverview' : 'Dashboard')} style={{ textDecoration: 'none', color: 'inherit' }}>
                    <Typography variant="body2" color="text.secondary" sx={{ '&:hover': { color: 'primary.main' } }}>
-                     My Learning
+                     {isTutorOrAdmin ? 'My Courses' : 'My Learning'}
                    </Typography>
                  </Link>
                 </ListItem>
