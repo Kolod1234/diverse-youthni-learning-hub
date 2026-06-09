@@ -5,6 +5,8 @@ import InlineEditable from './InlineEditable';
 import InlineToolbar from './InlineToolbar';
 import MathBlock from './MathBlock';
 import ScientificEquationBlock from './ScientificEquationBlock';
+import ImageBlock from './ImageBlock';
+import VideoBlock from './VideoBlock';
 import { Upload, AlignLeft, AlignCenter, AlignRight, Image as ImageIcon, X } from 'lucide-react';
 
 // Per-block UI dispatcher. Each branch is intentionally compact — no rich text
@@ -25,9 +27,9 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'quote':             return <QuoteBlock html={d.html} cite={d.cite} onChange={upd} />;
     case 'callout':           return <CalloutBlock variant={d.variant} html={d.html} onChange={upd} />;
     case 'definition':        return <DefinitionBlock term={d.term} definition={d.definition} onChange={upd} />;
-    case 'image':             return <ImageBlock data={d} onChange={upd} />;
+    case 'image':             return <ImageBlock data={d} onChange={onChange} />;
     case 'image-text':        return <ImageTextBlock data={d} onChange={upd} />;
-    case 'video':             return <VideoBlock url={d.url} onChange={(url) => upd({ url })} />;
+    case 'video':             return <VideoBlock data={d} onChange={onChange} />;
     case 'file':              return <FileBlock data={d} onChange={upd} />;
     case 'table':             return <TableBlock data={d} onChange={upd} />;
     case 'divider':           return <div className="py-2"><hr className="border-t border-gray-200" /></div>;
@@ -190,77 +192,10 @@ function DefinitionBlock({ term, definition, onChange }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Media blocks
+// ImageBlock and VideoBlock moved to their own files (./ImageBlock.jsx,
+// ./VideoBlock.jsx) with full upload/URL/caption/credit/poster/alignment/
+// resize/aspect/fit controls and safe iframe sandboxing.
 // ─────────────────────────────────────────────────────────────────────────────
-function ImageBlock({ data, onChange }) {
-  const upload = async (file) => {
-    if (!file) return;
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      onChange({ ...data, url: file_url });
-    } catch {
-      toast.error('Failed to upload image');
-    }
-  };
-  return (
-    <div>
-      {data.url ? (
-        <div style={{ display: 'flex', justifyContent: data.align === 'left' ? 'flex-start' : data.align === 'right' ? 'flex-end' : 'center' }}>
-          <figure style={{ width: `${data.width || 100}%`, maxWidth: '100%', margin: 0 }}>
-            <img src={data.url} alt={data.alt || ''} className="w-full rounded-lg shadow-sm" />
-            <input
-              value={data.caption || ''}
-              onChange={(e) => onChange({ ...data, caption: e.target.value })}
-              placeholder="Caption (optional)"
-              className="mt-1 w-full text-center text-xs text-gray-500 italic bg-transparent outline-none border-b border-transparent focus:border-gray-200"
-            />
-          </figure>
-        </div>
-      ) : (
-        <label className="block border-2 border-dashed border-gray-300 rounded-lg p-8 text-center text-gray-500 hover:border-indigo-400 hover:bg-indigo-50 cursor-pointer transition-colors">
-          <ImageIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
-          <p className="text-sm font-medium">Click to upload an image</p>
-          <p className="text-xs mt-1">Or paste a URL below</p>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
-        </label>
-      )}
-      <div className="flex flex-wrap items-center gap-2 mt-2">
-        <input
-          value={data.url || ''}
-          onChange={(e) => onChange({ ...data, url: e.target.value })}
-          placeholder="Image URL"
-          className="flex-1 min-w-[160px] text-xs border border-gray-200 rounded px-2 py-1"
-        />
-        <input
-          value={data.alt || ''}
-          onChange={(e) => onChange({ ...data, alt: e.target.value })}
-          placeholder="Alt text (accessibility)"
-          className="flex-1 min-w-[160px] text-xs border border-gray-200 rounded px-2 py-1"
-        />
-        <div className="flex border border-gray-200 rounded">
-          <AlignBtn active={data.align === 'left'}   onClick={() => onChange({ ...data, align: 'left' })}><AlignLeft className="w-3.5 h-3.5" /></AlignBtn>
-          <AlignBtn active={data.align !== 'left' && data.align !== 'right'} onClick={() => onChange({ ...data, align: 'center' })}><AlignCenter className="w-3.5 h-3.5" /></AlignBtn>
-          <AlignBtn active={data.align === 'right'}  onClick={() => onChange({ ...data, align: 'right' })}><AlignRight className="w-3.5 h-3.5" /></AlignBtn>
-        </div>
-        <label className="text-xs text-gray-600 flex items-center gap-1">
-          Width
-          <input
-            type="range" min={20} max={100} step={5}
-            value={data.width ?? 100}
-            onChange={(e) => onChange({ ...data, width: Number(e.target.value) })}
-          />
-          <span className="w-8 text-right">{data.width ?? 100}%</span>
-        </label>
-        {data.url && (
-          <label className="text-xs text-indigo-600 cursor-pointer hover:underline flex items-center gap-1">
-            <Upload className="w-3 h-3" /> Replace
-            <input type="file" accept="image/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
-          </label>
-        )}
-      </div>
-    </div>
-  );
-}
-
 function ImageTextBlock({ data, onChange }) {
   const ref = useRef(null);
   const upload = async (file) => {
@@ -318,27 +253,6 @@ function ImageTextBlock({ data, onChange }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
         {data.side === 'right' ? <>{TextCol}{ImageCol}</> : <>{ImageCol}{TextCol}</>}
       </div>
-    </div>
-  );
-}
-
-function VideoBlock({ url, onChange }) {
-  const yt = url?.match(/(?:youtube\.com\/watch\?v=|youtu\.be\/|youtube\.com\/embed\/)([\w-]+)/);
-  const vimeo = url?.match(/vimeo\.com\/(\d+)/);
-  const embed = yt ? `https://www.youtube.com/embed/${yt[1]}` : vimeo ? `https://player.vimeo.com/video/${vimeo[1]}` : url;
-  return (
-    <div>
-      <input
-        value={url || ''}
-        onChange={(e) => onChange(e.target.value)}
-        placeholder="Paste a YouTube, Vimeo, or embed URL"
-        className="w-full text-sm border border-gray-200 rounded px-3 py-2 mb-2"
-      />
-      {url && (
-        <div className="relative pb-[56.25%] bg-black rounded-lg overflow-hidden">
-          <iframe src={embed} className="absolute inset-0 w-full h-full" allowFullScreen title="Video preview" />
-        </div>
-      )}
     </div>
   );
 }

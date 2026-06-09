@@ -79,9 +79,16 @@ export function defaultBlockData(type) {
     case 'quote':             return { html: '', cite: '' };
     case 'callout':           return { variant: 'info', html: '' };
     case 'definition':        return { term: '', definition: '' };
-    case 'image':             return { url: '', alt: '', caption: '', align: 'center', width: 100 };
+    case 'image':             return {
+      url: '', alt: '', caption: '', credit: '',
+      align: 'center', widthUnit: 'percent', width: 100,
+      aspect: null, lockAspect: true, fit: 'contain',
+    };
     case 'image-text':        return { url: '', alt: '', html: '', side: 'left' };
-    case 'video':             return { url: '' };
+    case 'video':             return {
+      url: '', caption: '', poster: '',
+      ratio: '16:9', align: 'center', widthUnit: 'percent', width: 100,
+    };
     case 'file':              return { url: '', name: '' };
     case 'table':             return { rows: [['', ''], ['', '']], header: true };
     case 'divider':           return {};
