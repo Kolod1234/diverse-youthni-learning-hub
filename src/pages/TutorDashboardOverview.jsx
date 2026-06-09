@@ -12,7 +12,7 @@ import {
   BookMarked, UserCheck, Lock, Unlock, Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
-import { filterCoursesForTutor } from '@/components/tutor/tutorAccess';
+import { filterAssignedCoursesForTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorDashboardOverview() {
   const [user, setUser] = useState(null);
@@ -36,16 +36,16 @@ export default function TutorDashboardOverview() {
 
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
-  // Fetch all courses, then filter via the centralised tutor-access rule
-  // (admin / assigned / creator / approved subject with aliases & case-insensitive match).
+  // Only courses the admin explicitly assigned to this tutor (via course.assigned_tutors),
+  // or courses the tutor created themselves. Approved subjects do NOT auto-add courses here.
   const { data: allCourses = [] } = useQuery({
-    queryKey: ['tutor-assigned-courses', user?.email, approvedSubjects?.join(',')],
+    queryKey: ['tutor-assigned-courses', user?.email],
     queryFn: async () => {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 200);
       }
       const all = await base44.entities.Course.list('-created_date', 500);
-      return filterCoursesForTutor(all, user, approvedSubjects);
+      return filterAssignedCoursesForTutor(all, user);
     },
     enabled: !!user,
   });

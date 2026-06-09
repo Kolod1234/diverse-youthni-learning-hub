@@ -70,9 +70,33 @@ export function canTutorAccessCourse(course, user, approvedSubjects) {
 
 /**
  * Filter a list of courses down to the ones the tutor can teach.
- * Useful when populating dashboards.
+ * Used by editors / pickers where any teachable course is acceptable.
  */
 export function filterCoursesForTutor(courses, user, approvedSubjects) {
   if (!Array.isArray(courses)) return [];
   return courses.filter(c => canTutorAccessCourse(c, user, approvedSubjects));
+}
+
+/**
+ * Return true ONLY for courses the tutor has been explicitly given
+ * (admin assignment via course.assigned_tutors, or courses the tutor created).
+ * Approved subjects do NOT count here — this is what the tutor dashboard
+ * should display as "My Assigned Courses".
+ */
+export function isCourseExplicitlyAssignedToTutor(course, user) {
+  if (!course || !user) return false;
+  if (user.role === 'admin') return true;
+  const email = user.email;
+  if (!email) return false;
+  if (Array.isArray(course.assigned_tutors) && course.assigned_tutors.includes(email)) return true;
+  if (course.created_by === email) return true;
+  return false;
+}
+
+/**
+ * Filter courses down to only those explicitly assigned to the tutor.
+ */
+export function filterAssignedCoursesForTutor(courses, user) {
+  if (!Array.isArray(courses)) return [];
+  return courses.filter(c => isCourseExplicitlyAssignedToTutor(c, user));
 }

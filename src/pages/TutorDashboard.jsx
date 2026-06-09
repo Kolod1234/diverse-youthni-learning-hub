@@ -38,7 +38,7 @@ import { toast } from 'sonner';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import AdvancedFilters from '@/components/search/AdvancedFilters';
 import UnlockLessonsView from '@/components/tutor/UnlockLessonsView';
-import { filterCoursesForTutor } from '@/components/tutor/tutorAccess';
+import { filterAssignedCoursesForTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -80,14 +80,14 @@ export default function TutorDashboard() {
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
   const { data: courses = [] } = useQuery({
-    queryKey: ['tutor-courses-by-subject', user?.email, approvedSubjects?.join(',')],
+    queryKey: ['tutor-courses-assigned', user?.email],
     queryFn: async () => {
       if (user?.role === 'admin') return base44.entities.Course.list('-created_date', 200);
-      // Pull all courses once and filter client-side using the centralised access rule.
-      // This is reliable because category names, subject names, and tutor assignment can
-      // all be checked together (including case-insensitive matching and subject aliases).
+      // Dashboard only shows courses the admin explicitly assigned to this tutor
+      // (or courses the tutor created themselves). Approved subjects alone do NOT
+      // grant a course a slot on the dashboard — assignment must be deliberate.
       const all = await base44.entities.Course.list('-created_date', 500);
-      return filterCoursesForTutor(all, user, approvedSubjects);
+      return filterAssignedCoursesForTutor(all, user);
     },
     enabled: !!user,
   });
