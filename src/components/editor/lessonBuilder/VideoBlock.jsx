@@ -5,6 +5,8 @@ import {
   Upload, Video as VideoIcon, AlignLeft, AlignCenter, AlignRight, Maximize2,
   RotateCcw, Image as ImageIcon,
 } from 'lucide-react';
+import BlockSettingsPanel from './BlockSettingsPanel';
+import { useBlockExpanded } from './BlockSettingsPanel';
 
 // Video block.
 //
@@ -57,6 +59,7 @@ export default function VideoBlock({ data, onChange }) {
   const merged = { ...DEFAULTS, ...(data || {}) };
   const { url, caption, poster, ratio, align, widthUnit, width } = merged;
   const update = (patch) => onChange({ ...merged, ...patch });
+  const expanded = useBlockExpanded();
 
   const upload = async (file) => {
     if (!file) return;
@@ -86,19 +89,24 @@ export default function VideoBlock({ data, onChange }) {
 
   return (
     <div>
-      {/* URL + upload row */}
-      <div className="flex flex-wrap items-center gap-2 mb-2">
-        <input
-          value={url || ''}
-          onChange={(e) => update({ url: e.target.value })}
-          placeholder="Paste a YouTube / Vimeo / MP4 URL, or upload"
-          className="flex-1 min-w-[200px] text-sm border border-gray-200 rounded px-3 py-1.5"
-        />
-        <label className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
-          <Upload className="w-3 h-3" /> Upload video
-          <input type="file" accept="video/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
-        </label>
-      </div>
+      {/* URL + upload row — shown when there's no video yet (so the user can
+          add one) OR when the block is expanded (advanced editing). Hidden
+          on the lesson canvas in the default collapsed state once a video
+          is set, keeping the preview clean. */}
+      {(!url || expanded) && (
+        <div className="flex flex-wrap items-center gap-2 mb-2">
+          <input
+            value={url || ''}
+            onChange={(e) => update({ url: e.target.value })}
+            placeholder="Paste a YouTube / Vimeo / MP4 URL, or upload"
+            className="flex-1 min-w-[200px] text-sm border border-gray-200 rounded px-3 py-1.5"
+          />
+          <label className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
+            <Upload className="w-3 h-3" /> Upload video
+            <input type="file" accept="video/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
+          </label>
+        </div>
+      )}
 
       {/* Player */}
       {url ? (
@@ -124,11 +132,13 @@ export default function VideoBlock({ data, onChange }) {
         </p>
       )}
 
-      <Controls
-        merged={merged}
-        update={update}
-        uploadPoster={uploadPoster}
-      />
+      <BlockSettingsPanel label="Video settings">
+        <Controls
+          merged={merged}
+          update={update}
+          uploadPoster={uploadPoster}
+        />
+      </BlockSettingsPanel>
     </div>
   );
 }

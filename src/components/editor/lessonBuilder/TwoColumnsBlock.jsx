@@ -5,6 +5,7 @@ import {
   Smartphone, Columns2,
 } from 'lucide-react';
 import { createBlock, BLOCK_GROUPS } from './blockTypes';
+import BlockSettingsPanel from './BlockSettingsPanel';
 
 // True container: each side holds an array of child blocks of any supported
 // type. Parent passes `renderChild(block, onChange)` so we can render any
@@ -100,16 +101,22 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
 
   return (
     <div className="space-y-2">
-      <Toolbar
-        ratio={ratio}
-        gap={gap}
-        verticalAlign={verticalAlign}
-        stackOnMobile={stackOnMobile}
-        onRatio={(r) => update({ ratio: r })}
-        onGap={(g) => update({ gap: g })}
-        onValign={(v) => update({ verticalAlign: v })}
-        onToggleStack={() => update({ stackOnMobile: !stackOnMobile })}
-      />
+      {/* Layout controls (ratio presets, gap, vertical alignment, mobile
+          stacking) live in the collapsible Block settings panel. The two
+          columns grid below — with its drag-resize divider and child blocks
+          — remains visible at all times. */}
+      <BlockSettingsPanel label="Two-column layout settings">
+        <Toolbar
+          ratio={ratio}
+          gap={gap}
+          verticalAlign={verticalAlign}
+          stackOnMobile={stackOnMobile}
+          onRatio={(r) => update({ ratio: r })}
+          onGap={(g) => update({ gap: g })}
+          onValign={(v) => update({ verticalAlign: v })}
+          onToggleStack={() => update({ stackOnMobile: !stackOnMobile })}
+        />
+      </BlockSettingsPanel>
 
       <div
         ref={wrapRef}

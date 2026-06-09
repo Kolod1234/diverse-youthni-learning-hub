@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useState, useCallback } from 'react';
+import React, { useRef, useContext, useState, useEffect, useCallback } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
@@ -221,6 +221,37 @@ function DefinitionBlock({ term, definition, onChange }) {
 
 function ImageTextBlock({ data, onChange }) {
   const ref = useRef(null);
+  const textColRef = useRef(null);
+  const expanded = useContext(BlockExpandedContext);
+  // The text toolbar appears only when this specific text region is actively
+  // being edited. We track focus on the contenteditable inside the text col so
+  // the toolbar disappears as soon as focus leaves it — preventing two visible
+  // toolbars when this block is adjacent to a paragraph that is also expanded
+  // (in practice only one block can be expanded at a time, but this is the
+  // belt-and-braces guarantee for the image-with-text case).
+  const [textFocused, setTextFocused] = useState(false);
+
+  useEffect(() => {
+    const root = textColRef.current;
+    if (!root) return;
+    const onFocusIn = () => setTextFocused(true);
+    const onFocusOut = (e) => {
+      // Keep open if focus moves to the toolbar itself (popovers, buttons).
+      if (root.contains(e.relatedTarget)) return;
+      setTextFocused(false);
+    };
+    root.addEventListener('focusin', onFocusIn);
+    root.addEventListener('focusout', onFocusOut);
+    return () => {
+      root.removeEventListener('focusin', onFocusIn);
+      root.removeEventListener('focusout', onFocusOut);
+    };
+  }, []);
+
+  // When the block collapses, also drop the focused flag so re-expanding
+  // starts in a clean "preview only" state.
+  useEffect(() => { if (!expanded) setTextFocused(false); }, [expanded]);
+
   const upload = async (file) => {
     if (!file) return;
     try {
@@ -241,17 +272,19 @@ function ImageTextBlock({ data, onChange }) {
           <input type="file" accept="image/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
         </label>
       )}
-      <input
-        value={data.alt || ''}
-        onChange={(e) => onChange({ ...data, alt: e.target.value })}
-        placeholder="Alt text"
-        className="mt-1 w-full text-xs border border-gray-200 rounded px-2 py-1"
-      />
+      {expanded && (
+        <input
+          value={data.alt || ''}
+          onChange={(e) => onChange({ ...data, alt: e.target.value })}
+          placeholder="Alt text"
+          className="mt-1 w-full text-xs border border-gray-200 rounded px-2 py-1"
+        />
+      )}
     </div>
   );
   const TextCol = (
-    <div>
-      <InlineToolbar editableRef={ref} />
+    <div ref={textColRef}>
+      {expanded && textFocused && <InlineToolbar editableRef={ref} />}
       <InlineEditable
         ref={ref}
         value={data.html}
@@ -262,17 +295,19 @@ function ImageTextBlock({ data, onChange }) {
   );
   return (
     <div>
-      <div className="flex items-center gap-2 mb-2">
-        <label className="text-xs text-gray-600">Image side:</label>
-        <select
-          value={data.side || 'left'}
-          onChange={(e) => onChange({ ...data, side: e.target.value })}
-          className="text-xs border border-gray-200 rounded px-1.5 py-0.5"
-        >
-          <option value="left">Left</option>
-          <option value="right">Right</option>
-        </select>
-      </div>
+      {expanded && (
+        <div className="flex items-center gap-2 mb-2">
+          <label className="text-xs text-gray-600">Image side:</label>
+          <select
+            value={data.side || 'left'}
+            onChange={(e) => onChange({ ...data, side: e.target.value })}
+            className="text-xs border border-gray-200 rounded px-1.5 py-0.5"
+          >
+            <option value="left">Left</option>
+            <option value="right">Right</option>
+          </select>
+        </div>
+      )}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
         {data.side === 'right' ? <>{TextCol}{ImageCol}</> : <>{ImageCol}{TextCol}</>}
       </div>

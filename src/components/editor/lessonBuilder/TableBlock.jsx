@@ -5,6 +5,7 @@ import {
   Merge, Split, MoreHorizontal,
 } from 'lucide-react';
 import InlineEditable from './InlineEditable';
+import BlockSettingsPanel from './BlockSettingsPanel';
 
 // Rich table block.
 //
@@ -160,24 +161,29 @@ export default function TableBlock({ data, onChange }) {
 
   return (
     <div className="space-y-2">
-      <Toolbar
-        rows={rows}
-        header={header}
-        stripe={stripe}
-        caption={caption}
-        selected={selected}
-        selectedCell={selectedCell}
-        mergePending={mergePending}
-        onAddRow={() => addRow()}
-        onAddCol={() => addCol()}
-        onToggleHeader={() => onChange({ ...data, header: !header })}
-        onToggleStripe={() => onChange({ ...data, stripe: !stripe })}
-        onCaptionChange={(v) => onChange({ ...data, caption: v })}
-        onPatchCell={(patch) => selected && patchCell(selected.r, selected.c, patch)}
-        onStartMerge={() => setMergePending(true)}
-        onCancelMerge={() => setMergePending(false)}
-        onUnmerge={() => selected && unmergeAt(selected.r, selected.c)}
-      />
+      {/* Table structural & cell-styling toolbar lives in the collapsible
+          Block settings panel — the table grid itself (with row/column
+          insert/move chevrons) remains visible at all times. */}
+      <BlockSettingsPanel label="Table settings">
+        <Toolbar
+          rows={rows}
+          header={header}
+          stripe={stripe}
+          caption={caption}
+          selected={selected}
+          selectedCell={selectedCell}
+          mergePending={mergePending}
+          onAddRow={() => addRow()}
+          onAddCol={() => addCol()}
+          onToggleHeader={() => onChange({ ...data, header: !header })}
+          onToggleStripe={() => onChange({ ...data, stripe: !stripe })}
+          onCaptionChange={(v) => onChange({ ...data, caption: v })}
+          onPatchCell={(patch) => selected && patchCell(selected.r, selected.c, patch)}
+          onStartMerge={() => setMergePending(true)}
+          onCancelMerge={() => setMergePending(false)}
+          onUnmerge={() => selected && unmergeAt(selected.r, selected.c)}
+        />
+      </BlockSettingsPanel>
 
       {/* Horizontal scroll container for mobile */}
       <div className="overflow-x-auto -mx-1 px-1" role="region" aria-label={caption || 'Editable table'}>

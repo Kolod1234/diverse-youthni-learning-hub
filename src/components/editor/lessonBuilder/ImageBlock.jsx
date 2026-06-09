@@ -5,6 +5,7 @@ import {
   Upload, AlignLeft, AlignCenter, AlignRight, Maximize2,
   Image as ImageIcon, RotateCcw, Lock, Unlock, Percent, Ruler,
 } from 'lucide-react';
+import BlockSettingsPanel from './BlockSettingsPanel';
 
 // Self-contained image block. Data shape (backwards-compatible with the old block):
 //   {
@@ -193,12 +194,15 @@ export default function ImageBlock({ data, onChange }) {
         <UploadDrop onFile={upload} />
       )}
 
-      {/* Controls */}
-      <Controls
-        merged={merged}
-        update={update}
-        onUpload={upload}
-      />
+      {/* Advanced controls — hidden until the block is in Edit mode. The
+          image preview above remains visible at all times. */}
+      <BlockSettingsPanel label="Image settings">
+        <Controls
+          merged={merged}
+          update={update}
+          onUpload={upload}
+        />
+      </BlockSettingsPanel>
     </div>
   );
 }
