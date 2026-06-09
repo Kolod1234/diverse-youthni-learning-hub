@@ -117,12 +117,40 @@ export default function PreviewModal({ open, onClose, html }) {
           style={{ width: '100%', maxWidth: cfg.width }}
         >
           <div className={`${device === 'presentation' ? 'p-8 sm:p-12' : 'p-4 sm:p-6'}`}>
+            {/* Wrap in reader-prose so authoring preview uses the same typography
+                primitives as the live CourseReaderView (editorial serif heads,
+                18px body, indigo links). slide.content HTML is not modified. */}
             <MathJax dynamic>
-              <div dangerouslySetInnerHTML={{ __html: html || '' }} />
+              <div className="reader-prose" dangerouslySetInnerHTML={{ __html: html || '' }} />
             </MathJax>
           </div>
         </div>
       </div>
+
+      {/* Scoped reader typography — mirrors CourseReaderShell so the editor
+          preview is visually representative of the learner view. Inlined here
+          because PreviewModal renders into a body-level portal outside the
+          host page's style cascade. */}
+      <style>{`
+        .reader-prose { font-size: 18px; line-height: 1.75; color: #1e293b; font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, sans-serif; }
+        .reader-prose p { margin: 0 0 1.1em; }
+        .reader-prose h1, .reader-prose h2, .reader-prose h3 {
+          font-family: ui-serif, Georgia, "Times New Roman", serif;
+          color: #0f172a; letter-spacing: -0.01em; line-height: 1.25;
+        }
+        .reader-prose h1 { font-size: 2.25rem; font-weight: 700; margin: 1.2em 0 0.5em; }
+        .reader-prose h2 { font-size: 1.875rem; font-weight: 700; margin: 1.6em 0 0.6em; }
+        .reader-prose h3 { font-size: 1.375rem; font-weight: 700; margin: 1.4em 0 0.5em; }
+        .reader-prose ul, .reader-prose ol { padding-left: 1.4em; margin: 0 0 1.1em; }
+        .reader-prose li { margin: 0.35em 0; }
+        .reader-prose a { color: #4f46e5; text-decoration: underline; text-underline-offset: 3px; }
+        .reader-prose img { max-width: 100%; height: auto; border-radius: 12px; }
+        .reader-prose blockquote {
+          margin: 1.4em 0; padding: 0.4em 1.2em;
+          border-left: 4px solid #4f46e5; background: #eef2ff;
+          color: #312e81; border-radius: 0 8px 8px 0;
+        }
+      `}</style>
     </div>
   );
 
