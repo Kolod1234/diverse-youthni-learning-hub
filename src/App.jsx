@@ -11,6 +11,7 @@ import CreationHub from './pages/CreationHub';
 import ProjectGallery from './pages/ProjectGallery';
 import ProjectDetail from './pages/ProjectDetail';
 import AdminProjectSubmissions from './pages/AdminProjectSubmissions';
+import AdminTeachingRequests from './pages/AdminTeachingRequests';
 import KahootHost from './pages/KahootHost';
 import KahootPlay from './pages/KahootPlay';
 import KahootAnalytics from './pages/KahootAnalytics';
@@ -72,6 +73,7 @@ const AuthenticatedApp = () => {
       <Route path="/project-gallery" element={<LayoutWrapper currentPageName="ProjectGallery"><ProjectGallery /></LayoutWrapper>} />
       <Route path="/project/:id" element={<LayoutWrapper currentPageName="ProjectDetail"><ProjectDetail /></LayoutWrapper>} />
       <Route path="/admin-project-submissions" element={<LayoutWrapper currentPageName="AdminProjectSubmissions"><AdminProjectSubmissions /></LayoutWrapper>} />
+      <Route path="/AdminTeachingRequests" element={<LayoutWrapper currentPageName="AdminTeachingRequests"><AdminTeachingRequests /></LayoutWrapper>} />
       <Route path="/kahoot-host" element={<LayoutWrapper currentPageName="KahootHost"><KahootHost /></LayoutWrapper>} />
       <Route path="/kahoot-play" element={<LayoutWrapper currentPageName="KahootPlay"><KahootPlay /></LayoutWrapper>} />
       <Route path="/kahoot-analytics" element={<LayoutWrapper currentPageName="KahootAnalytics"><KahootAnalytics /></LayoutWrapper>} />

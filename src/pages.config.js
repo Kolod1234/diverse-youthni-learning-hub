@@ -73,6 +73,7 @@ import AdminRolesPermissions from './pages/AdminRolesPermissions';
 import AdminStudentMessages from './pages/AdminStudentMessages';
 import AdminStudentOfMonth from './pages/AdminStudentOfMonth';
 import AdminSupportChats from './pages/AdminSupportChats';
+import AdminTeachingRequests from './pages/AdminTeachingRequests';
 import AdminTutorMonitor from './pages/AdminTutorMonitor';
 import AdminUserProfile from './pages/AdminUserProfile';
 import AdminUsers from './pages/AdminUsers';
@@ -190,6 +191,7 @@ export const PAGES = {
     "AdminStudentMessages": AdminStudentMessages,
     "AdminStudentOfMonth": AdminStudentOfMonth,
     "AdminSupportChats": AdminSupportChats,
+    "AdminTeachingRequests": AdminTeachingRequests,
     "AdminTutorMonitor": AdminTutorMonitor,
     "AdminUserProfile": AdminUserProfile,
     "AdminUsers": AdminUsers,

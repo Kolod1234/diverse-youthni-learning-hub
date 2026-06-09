@@ -164,12 +164,17 @@ export default function TutorDashboardOverview() {
                   {new Date().toLocaleDateString('en-GB', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}
                 </p>
                 {approvedSubjects && approvedSubjects.length > 0 && (
-                  <div className="flex flex-wrap gap-2 mt-3">
-                    {approvedSubjects.map(s => (
-                      <span key={s} className="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full capitalize">
-                        {s.replace(/_/g, ' ')}
-                      </span>
-                    ))}
+                  <div className="mt-3">
+                    <p className="text-blue-200 text-xs font-medium mb-1.5">
+                      Approved subjects (eligibility only — not a course assignment):
+                    </p>
+                    <div className="flex flex-wrap gap-2">
+                      {approvedSubjects.map(s => (
+                        <span key={s} className="bg-blue-500/30 border border-blue-400/40 text-blue-200 text-xs px-3 py-1 rounded-full capitalize">
+                          {s.replace(/_/g, ' ')}
+                        </span>
+                      ))}
+                    </div>
                   </div>
                 )}
               </div>
@@ -275,10 +280,15 @@ export default function TutorDashboardOverview() {
               </div>
 
               {myCourses.length === 0 ? (
-                <div className="py-14 text-center text-gray-400">
+                <div className="py-14 px-6 text-center text-gray-400">
                   <BookOpen className="w-12 h-12 mx-auto mb-3 opacity-40" />
-                  <p className="font-medium text-gray-600">No courses assigned yet</p>
-                  <p className="text-sm mt-1">Please contact an admin to be assigned to a course.</p>
+                  <p className="font-medium text-gray-600">No courses assigned</p>
+                  <p className="text-sm mt-1 text-gray-500 max-w-md mx-auto">
+                    Approved subjects show what you're eligible to teach — they do not assign you to a course.
+                    Contact an admin to be assigned, or open a course on{' '}
+                    <Link to={createPageUrl('Explore')} className="text-blue-600 hover:underline">Explore</Link>
+                    {' '}and use <strong>Request to Teach</strong>.
+                  </p>
                 </div>
               ) : (
                 <div className="divide-y divide-gray-100">
@@ -456,13 +466,17 @@ export default function TutorDashboardOverview() {
               </div>
             </div>
 
-            {/* Approved Subjects */}
+            {/* Approved Subjects (eligibility only — NOT course assignments) */}
             {approvedSubjects && approvedSubjects.length > 0 && (
               <div className="bg-white rounded-2xl border border-gray-200 shadow-sm p-5">
-                <h3 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+                <h3 className="font-semibold text-gray-900 mb-1 flex items-center gap-2">
                   <CheckCircle2 className="w-4 h-4 text-green-500" />
-                  Approved to Teach
+                  Approved Subjects
                 </h3>
+                <p className="text-xs text-gray-500 mb-3">
+                  Subjects you're eligible to teach. This is <strong>not</strong> a course assignment — an
+                  admin must add you to a specific course before you can manage it.
+                </p>
                 <div className="space-y-2">
                   {approvedSubjects.map(subject => (
                     <div key={subject} className="flex items-center justify-between p-2.5 bg-green-50 rounded-xl">
@@ -471,6 +485,12 @@ export default function TutorDashboardOverview() {
                     </div>
                   ))}
                 </div>
+                {myCourses.length === 0 && (
+                  <p className="text-xs text-amber-700 bg-amber-50 border border-amber-200 rounded-lg p-2.5 mt-3">
+                    You have no courses assigned. Contact an admin, or use <strong>Request to Teach</strong> on a
+                    course in <Link to={createPageUrl('Explore')} className="underline">Explore</Link>.
+                  </p>
+                )}
               </div>
             )}
 
