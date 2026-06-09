@@ -464,7 +464,7 @@ export default function Explore() {
               </Box>
               <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(3, 1fr)' }, gap: 3 }}>
                 {featuredCourses.map((course, i) => (
-                  <CourseCard key={course.id} course={course} index={i} />
+                  <CourseCard key={course.id} course={course} index={i} user={user} />
                 ))}
               </Box>
             </Box>
@@ -599,7 +599,7 @@ export default function Explore() {
                 <Box component={motion.div} layout sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'repeat(2, 1fr)', xl: 'repeat(3, 1fr)' }, gap: 4 }}>
                   <AnimatePresence>
                     {sortedCourses.map((course, index) => (
-                      <CourseCard key={course.id} course={course} index={index} />
+                      <CourseCard key={course.id} course={course} index={index} user={user} />
                     ))}
                   </AnimatePresence>
                 </Box>

@@ -1,12 +1,13 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
-import { Card, CardContent, Chip, Button, Box, Typography, Divider } from '@mui/material';
+import { Card, CardContent, Chip, Button, Box, Typography, Divider, Stack } from '@mui/material';
 import StarIcon from '@mui/icons-material/Star';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import MenuBookIcon from '@mui/icons-material/MenuBook';
 import { motion } from 'framer-motion';
+import RequestToTeachButton from '@/components/tutor/RequestToTeachButton';
 
 const levelColors = {
   beginner: { bgcolor: '#dcfce7', color: '#15803d' },
@@ -27,36 +28,45 @@ const getCategoryBgColor = (category) => {
   return colors[category] || { bgcolor: '#f3f4f6', color: '#4b5563' };
 };
 
-export default function CourseCard({ course, index = 0 }) {
+export default function CourseCard({ course, index = 0, user = null }) {
   const animDelay = Math.min(index, 6) * 0.03;
   const isAboveFold = index < 6;
 
   const categoryStyle = getCategoryBgColor(course.category);
   const levelStyle = levelColors[course.level] || levelColors.beginner;
 
+  // Tutors (not admins acting as tutors) see the "Request to Teach" action
+  // alongside "View Course". Learners and admins see the original single CTA.
+  const isTutor = user?.is_tutor === true && user?.role !== 'admin';
+
+  const courseHref = createPageUrl('CourseDetails') + `?id=${course.id}`;
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.2, delay: animDelay }}
+      style={{ height: '100%' }}
     >
-      <Link to={createPageUrl('CourseDetails') + `?id=${course.id}`} style={{ textDecoration: 'none' }}>
-        <Card
-          sx={{
-            borderRadius: 6,
-            overflow: 'hidden',
-            boxShadow: 3,
-            border: '2px solid transparent',
-            height: '100%',
-            transition: 'all 0.5s',
-            '&:hover': {
-              boxShadow: 8,
-              borderColor: 'primary.main',
-              '& .course-card-img': { transform: 'scale(1.1)' },
-            },
-          }}
-        >
-          {/* Image Section */}
+      <Card
+        sx={{
+          borderRadius: 6,
+          overflow: 'hidden',
+          boxShadow: 3,
+          border: '2px solid transparent',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          transition: 'all 0.5s',
+          '&:hover': {
+            boxShadow: 8,
+            borderColor: 'primary.main',
+            '& .course-card-img': { transform: 'scale(1.1)' },
+          },
+        }}
+      >
+        {/* Image Section — clickable link to course details */}
+        <Link to={courseHref} style={{ textDecoration: 'none', display: 'block' }}>
           <Box sx={{ position: 'relative', aspectRatio: '16/9', background: 'linear-gradient(to bottom right, #e5e7eb, #d1d5db)', overflow: 'hidden' }}>
             <Box
               component="img"
@@ -98,26 +108,29 @@ export default function CourseCard({ course, index = 0 }) {
               )}
             </Box>
           </Box>
+        </Link>
 
-          {/* Content Section */}
-          <CardContent sx={{ p: 3, position: 'relative', zIndex: 10 }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontSize: '1.125rem',
-                fontWeight: 700,
-                mb: 1,
-                display: '-webkit-box',
-                WebkitLineClamp: 2,
-                WebkitBoxOrient: 'vertical',
-                overflow: 'hidden',
-                color: 'text.primary',
-                transition: 'color 0.2s',
-                '&:hover': { color: 'primary.main' },
-              }}
-            >
-              {course.title}
-            </Typography>
+        {/* Content Section */}
+        <CardContent sx={{ p: 3, position: 'relative', zIndex: 10, flex: 1, display: 'flex', flexDirection: 'column' }}>
+            <Link to={courseHref} style={{ textDecoration: 'none' }}>
+              <Typography
+                variant="h6"
+                sx={{
+                  fontSize: '1.125rem',
+                  fontWeight: 700,
+                  mb: 1,
+                  display: '-webkit-box',
+                  WebkitLineClamp: 2,
+                  WebkitBoxOrient: 'vertical',
+                  overflow: 'hidden',
+                  color: 'text.primary',
+                  transition: 'color 0.2s',
+                  '&:hover': { color: 'primary.main' },
+                }}
+              >
+                {course.title}
+              </Typography>
+            </Link>
 
             <Typography
               variant="body2"
@@ -178,31 +191,38 @@ export default function CourseCard({ course, index = 0 }) {
               </Box>
             )}
 
-            {/* CTA Button */}
-            <Button
-              variant="contained"
-              fullWidth
-              sx={{
-                py: 1.5,
-                px: 2,
-                borderRadius: 3,
-                fontWeight: 700,
-                background: 'linear-gradient(to right, #003366, #1d4ed8)',
-                color: 'white',
-                boxShadow: 2,
-                '&:hover': {
-                  background: 'linear-gradient(to right, #002244, #1e3a8a)',
-                  boxShadow: 4,
-                  transform: 'scale(1.02)',
-                },
-                transition: 'all 0.3s',
-              }}
-            >
-              View Course →
-            </Button>
+            {/* CTA actions — pinned to bottom so cards align in the grid */}
+            <Box sx={{ mt: 'auto' }}>
+              <Stack spacing={1}>
+                <Button
+                  component={Link}
+                  to={courseHref}
+                  variant="contained"
+                  fullWidth
+                  sx={{
+                    py: 1.5,
+                    px: 2,
+                    borderRadius: 3,
+                    fontWeight: 700,
+                    background: 'linear-gradient(to right, #003366, #1d4ed8)',
+                    color: 'white',
+                    boxShadow: 2,
+                    '&:hover': {
+                      background: 'linear-gradient(to right, #002244, #1e3a8a)',
+                      boxShadow: 4,
+                    },
+                    transition: 'all 0.3s',
+                  }}
+                >
+                  View Course →
+                </Button>
+                {isTutor && (
+                  <RequestToTeachButton course={course} user={user} />
+                )}
+              </Stack>
+            </Box>
           </CardContent>
-        </Card>
-      </Link>
+      </Card>
     </motion.div>
   );
 }
