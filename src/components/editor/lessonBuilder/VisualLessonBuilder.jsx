@@ -4,7 +4,7 @@ import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Undo2, Redo2, Save, Eye, Plus, Check, Loader2 } from 'lucide-react';
+import { Undo2, Redo2, Save, Eye, Plus, Check, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 import BlockRenderer from './BlockRenderer';
 import BlockWrapper from './BlockWrapper';
@@ -24,7 +24,7 @@ import useUnsavedChangesWarning from './useUnsavedChangesWarning';
 
 const AUTOSAVE_MS = 1200;
 
-export default function VisualLessonBuilder({ slide, onChange }) {
+export default function VisualLessonBuilder({ slide, onChange, onPersist, isPersisted = false }) {
   // Derive initial blocks from the incoming slide content exactly once.
   const initialBlocks = useMemo(() => htmlToBlocks(slide?.content || ''), [slide?.id || slide?.order]);
   const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);
@@ -32,20 +32,28 @@ export default function VisualLessonBuilder({ slide, onChange }) {
   const [focusedId, setFocusedId] = useState(null);
   const [slashOpen, setSlashOpen] = useState(false);
   const [previewOpen, setPreviewOpen] = useState(false);
-  const [savedAt, setSavedAt] = useState(null);
+  // persistedAt: only set after a *real* server save via onPersist succeeds.
+  // We intentionally do NOT set this on every onChange — onChange only pushes
+  // edits into the parent's form state, which is not the same as a Lesson
+  // entity write. Showing "Saved" on unsaved drafts would mislead the user.
+  const [persistedAt, setPersistedAt] = useState(null);
   const [saving, setSaving] = useState(false);
+  const [persistError, setPersistError] = useState(null);
   const lastSerialised = useRef(slide?.content || '');
   const slideRef = useRef(slide);
   slideRef.current = slide;
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  const onPersistRef = useRef(onPersist);
+  onPersistRef.current = onPersist;
 
   // Sync into builder when the parent switches to a different slide.
   useEffect(() => {
     const next = htmlToBlocks(slide?.content || '');
     reset(next);
     lastSerialised.current = slide?.content || '';
-    setSavedAt(null);
+    setPersistedAt(null);
+    setPersistError(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.id, slide?.order]);
 
@@ -59,12 +67,11 @@ export default function VisualLessonBuilder({ slide, onChange }) {
     if (!slideRef.current) return;
     const html = blocksToHtml(blocks);
     if (html === lastSerialised.current) return;
-    setSaving(true);
     const t = setTimeout(() => {
       lastSerialised.current = html;
+      // Push edits up into the parent's form state. This is NOT a server save
+      // — it just keeps the in-memory lesson draft in sync with the blocks.
       onChangeRef.current?.({ ...slideRef.current, content: html });
-      setSavedAt(new Date());
-      setSaving(false);
     }, AUTOSAVE_MS);
     return () => clearTimeout(t);
   }, [blocks]);
@@ -139,14 +146,36 @@ export default function VisualLessonBuilder({ slide, onChange }) {
     }, { immediate: true });
   };
 
-  const manualSave = () => {
+  const manualSave = async () => {
     if (!slideRef.current) return;
     const html = blocksToHtml(blocks);
     lastSerialised.current = html;
-    onChangeRef.current?.({ ...slideRef.current, content: html });
-    setSavedAt(new Date());
-    setSaving(false);
-    toast.success('Saved');
+    const nextSlide = { ...slideRef.current, content: html };
+    // Always push the latest blocks into the parent's draft form state.
+    onChangeRef.current?.(nextSlide);
+
+    // If the parent provided an explicit persistence callback, attempt a real
+    // save. Only on a successful resolve do we claim the lesson was saved.
+    if (typeof onPersistRef.current === 'function') {
+      try {
+        setSaving(true);
+        setPersistError(null);
+        await onPersistRef.current(nextSlide);
+        setPersistedAt(new Date());
+        toast.success('Lesson saved');
+      } catch (err) {
+        const msg = err?.message || 'Failed to save lesson';
+        setPersistError(msg);
+        toast.error(msg);
+      } finally {
+        setSaving(false);
+      }
+    } else {
+      // No persistence callback wired — this is the LessonEditor draft flow.
+      // The outer Save Lesson button is the source of truth for persistence;
+      // here we just confirm the blocks have been applied to the draft.
+      toast.success('Applied to lesson draft');
+    }
   };
 
   // ── render ──────────────────────────────────────────────────────────────
@@ -159,14 +188,28 @@ export default function VisualLessonBuilder({ slide, onChange }) {
           <ToolbarBtn label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!canRedo}><Redo2 className="w-4 h-4" /></ToolbarBtn>
         </div>
         <div className="flex items-center gap-2 text-xs text-gray-500">
-          <SaveStatus saving={saving} savedAt={savedAt} dirty={isDirty} />
+          <SaveStatus
+            saving={saving}
+            persistedAt={persistedAt}
+            dirty={isDirty}
+            isPersisted={isPersisted}
+            hasPersistCallback={typeof onPersist === 'function'}
+            error={persistError}
+          />
         </div>
         <div className="flex items-center gap-1">
           <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
             <Eye className="w-4 h-4" /> Preview
           </Button>
-          <Button size="sm" onClick={manualSave} className="gap-1.5 bg-indigo-600 hover:bg-indigo-700">
-            <Save className="w-4 h-4" /> Save
+          <Button
+            size="sm"
+            onClick={manualSave}
+            disabled={saving}
+            className="gap-1.5 bg-indigo-600 hover:bg-indigo-700"
+            title={typeof onPersist === 'function' ? 'Save lesson now' : 'Apply blocks to the lesson draft (use the outer Save Lesson button to persist)'}
+          >
+            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+            {typeof onPersist === 'function' ? 'Save lesson' : 'Apply to lesson'}
           </Button>
         </div>
       </div>
@@ -257,11 +300,32 @@ export default function VisualLessonBuilder({ slide, onChange }) {
 }
 
 // ── auxiliary UI ──────────────────────────────────────────────────────────────
-function SaveStatus({ saving, savedAt, dirty }) {
-  if (saving) return <span className="inline-flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> Saving…</span>;
-  if (dirty) return <span className="text-amber-600">Unsaved changes</span>;
-  if (savedAt) return <span className="inline-flex items-center gap-1.5 text-emerald-600"><Check className="w-3 h-3" /> Saved {timeAgo(savedAt)}</span>;
-  return <span>Ready</span>;
+// Status semantics — never claim a server save we did not perform:
+//   saving                  → "Saving…"
+//   error                   → "Save failed"
+//   dirty & not persisted   → "Draft changes" (never persisted yet)
+//   dirty & persisted before→ "Unsaved changes"
+//   clean & persistedAt     → "Saved {time}"            (real persistence happened)
+//   clean & isPersisted     → "Saved"                   (parent says it's a real saved lesson)
+//   otherwise               → "Not yet saved"           (brand-new draft, no edits)
+function SaveStatus({ saving, persistedAt, dirty, isPersisted, hasPersistCallback, error }) {
+  if (saving) {
+    return <span className="inline-flex items-center gap-1.5"><Loader2 className="w-3 h-3 animate-spin" /> Saving…</span>;
+  }
+  if (error) {
+    return <span className="inline-flex items-center gap-1.5 text-red-600" title={error}><AlertCircle className="w-3 h-3" /> Save failed</span>;
+  }
+  if (dirty) {
+    if (isPersisted || persistedAt) return <span className="text-amber-600">Unsaved changes</span>;
+    return <span className="text-amber-600">Draft changes</span>;
+  }
+  if (persistedAt) {
+    return <span className="inline-flex items-center gap-1.5 text-emerald-600"><Check className="w-3 h-3" /> Saved {timeAgo(persistedAt)}</span>;
+  }
+  if (isPersisted) {
+    return <span className="inline-flex items-center gap-1.5 text-emerald-600"><Check className="w-3 h-3" /> Saved</span>;
+  }
+  return <span className="text-gray-500">{hasPersistCallback ? 'Not yet saved' : 'Not yet saved — use Save Lesson to persist'}</span>;
 }
 
 function ToolbarBtn({ children, label, onClick, disabled }) {

@@ -561,8 +561,9 @@ export default function LessonEditor() {
             <SlideEditor
               slides={lessonForm.slides || []}
               onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
+              isPersisted={!!lessonId}
             />
-            <p className="text-xs text-gray-500 mt-3">Create multi-page written lessons with rich text content</p>
+            <p className="text-xs text-gray-500 mt-3">Create multi-page lessons with flexible content blocks</p>
           </Card>
 
           {/* Resources */}
