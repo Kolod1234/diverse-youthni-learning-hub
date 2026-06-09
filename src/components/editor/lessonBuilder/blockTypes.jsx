@@ -107,8 +107,8 @@ export function defaultBlockData(type) {
     case 'divider':           return {};
     case 'spacer':            return { size: 32 };
     case 'two-columns':       return {
-      leftBlocks: [], rightBlocks: [],
-      ratio: 0.5, gap: 24, verticalAlign: 'top', stackOnMobile: true,
+      left: [], right: [],
+      ratio: '50:50', gap: 24, align: 'start', stack: true,
     };
     case 'code':              return { code: '', language: 'javascript' };
     case 'math':              return { latex: '' };

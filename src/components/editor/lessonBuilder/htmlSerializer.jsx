@@ -223,26 +223,12 @@ function blockToHtml(b) {
       const padCss    = compact ? '6px 10px' : '10px 14px';
       const borderCss = bordered ? '1px solid #E5E7EB' : '1px solid transparent';
 
-      // Each entry may be:
-      //   • a string (legacy plain text/HTML cell)
-      //   • a cell object using the OLD shape {html, align, bg, border, bold, rowspan, colspan, hidden}
-      //   • a cell object using the NEW TableBlock shape {content, align, color, bg, border, rowSpan, colSpan, hidden}
-      // norm() collapses all three to a single render-friendly shape.
+      // Each entry may be a string (legacy) or a cell object {html, align, bg,
+      // border, bold, rowspan, colspan, hidden}. We collapse both to a common
+      // shape for rendering.
       const norm = (cell) => {
-        if (cell && typeof cell === 'object') {
-          return {
-            html:    'content' in cell ? cell.content : (cell.html || ''),
-            align:   cell.align,
-            color:   cell.color,
-            bg:      cell.bg,
-            border:  cell.border,        // new: 'default'|'thick'|'none' or legacy truthy
-            bold:    !!cell.bold,
-            rowspan: cell.rowSpan || cell.rowspan || 1,
-            colspan: cell.colSpan || cell.colspan || 1,
-            hidden:  !!cell.hidden,
-          };
-        }
-        return { html: cell == null ? '' : String(cell), rowspan: 1, colspan: 1 };
+        if (cell && typeof cell === 'object') return cell;
+        return { html: cell == null ? '' : String(cell) };
       };
 
       const renderCell = (cell, opts) => {
@@ -251,17 +237,12 @@ function blockToHtml(b) {
         const tag = opts.isHeader ? 'th' : 'td';
         const scope = opts.isHeader ? ' scope="col"' : '';
         const bg = c.bg ? `background:${escapeHtml(c.bg)};` : (opts.isHeader ? 'background:#F3F4F6;' : '');
-        const colour = c.color ? `color:${escapeHtml(c.color)};` : 'color:#1F2937;';
         const align = `text-align:${c.align === 'center' ? 'center' : c.align === 'right' ? 'right' : 'left'};`;
         const weight = c.bold || opts.isHeader ? 'font-weight:600;' : '';
-        const cellBorderCss =
-          c.border === 'thick' ? '2px solid #9CA3AF' :
-          c.border === 'none'  ? '1px solid transparent' :
-                                 borderCss;
-        const cellBorder = `border:${cellBorderCss};`;
+        const cellBorder = (bordered || c.border) ? `border:${borderCss};` : 'border:1px solid transparent;';
         const rowspan = c.rowspan > 1 ? ` rowspan="${c.rowspan}"` : '';
         const colspan = c.colspan > 1 ? ` colspan="${c.colspan}"` : '';
-        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} ${colour} vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
+        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} color:#1F2937; vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
       };
 
       const headHtml = hasHeader && rows[0]
@@ -300,9 +281,9 @@ function blockToHtml(b) {
       };
       const [lPct, rPct] = parseR(d.ratio);
       const gap = Math.max(0, Math.min(64, Number(d.gap) || 24));
-      const align = ['center', 'flex-end'].includes(
-        d.align === 'center' ? 'center' : d.align === 'end' ? 'flex-end' : 'flex-start'
-      ) ? (d.align === 'center' ? 'center' : 'flex-end') : 'flex-start';
+      const align = d.align === 'center' ? 'center'
+                  : d.align === 'end'    ? 'flex-end'
+                                         : 'flex-start';
       const stack = d.stack !== false;
       // Inline media query is not possible — we approximate mobile stacking
       // by letting flex-wrap collapse the row when widths fall below ~340px.
