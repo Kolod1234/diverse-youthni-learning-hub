@@ -84,13 +84,20 @@ export function filterCoursesForTutor(courses, user, approvedSubjects) {
  * (not an email) and isn't a reliable signal of "the tutor owns this course".
  *
  * This is what the tutor dashboard should display as "My Assigned Courses".
+ *
+ * Note: admins (top-level role OR data.role) see ALL courses — they are not
+ * gated by assigned_tutors. Non-admin tutors must be in assigned_tutors.
  */
 export function isCourseExplicitlyAssignedToTutor(course, user) {
   if (!course || !user) return false;
+  // Treat as admin only if the platform role is admin (not a custom data.role)
   if (user.role === 'admin') return true;
-  const email = user.email;
+  const email = (user.email || '').toLowerCase().trim();
   if (!email) return false;
-  return Array.isArray(course.assigned_tutors) && course.assigned_tutors.includes(email);
+  const assigned = course.assigned_tutors;
+  if (!Array.isArray(assigned) || assigned.length === 0) return false;
+  // Case-insensitive comparison to avoid email-casing mismatches
+  return assigned.some(e => (e || '').toLowerCase().trim() === email);
 }
 
 /**

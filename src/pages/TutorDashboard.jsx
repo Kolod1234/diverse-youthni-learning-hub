@@ -80,14 +80,12 @@ export default function TutorDashboard() {
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
   const { data: courses = [] } = useQuery({
-    queryKey: ['tutor-courses-assigned', user?.email],
+    queryKey: ['tutor-courses-assigned-v2', user?.email, user?.role],
     queryFn: async () => {
       if (user?.role === 'admin') return base44.entities.Course.list('-created_date', 200);
-      // Dashboard only shows courses the admin explicitly assigned to this tutor
-      // (or courses the tutor created themselves). Approved subjects alone do NOT
-      // grant a course a slot on the dashboard — assignment must be deliberate.
-      const all = await base44.entities.Course.list('-created_date', 500);
-      return filterAssignedCoursesForTutor(all, user);
+      // Dashboard only shows courses the admin explicitly assigned to this tutor.
+      // Server-side filter is the source of truth.
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 200);
     },
     enabled: !!user,
   });

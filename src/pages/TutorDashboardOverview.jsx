@@ -36,16 +36,18 @@ export default function TutorDashboardOverview() {
 
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
-  // Only courses the admin explicitly assigned to this tutor (via course.assigned_tutors),
-  // or courses the tutor created themselves. Approved subjects do NOT auto-add courses here.
+  // Only courses the admin explicitly assigned to this tutor (via course.assigned_tutors).
+  // Approved subjects do NOT auto-add courses here.
+  // Query key v2 to bust any stale cache from older filter logic.
   const { data: allCourses = [] } = useQuery({
-    queryKey: ['tutor-assigned-courses', user?.email],
+    queryKey: ['tutor-assigned-courses-v2', user?.email, user?.role],
     queryFn: async () => {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 200);
       }
-      const all = await base44.entities.Course.list('-created_date', 500);
-      return filterAssignedCoursesForTutor(all, user);
+      // Server-side filter is the source of truth — only fetch courses where
+      // this tutor's email is in assigned_tutors. No client-side broadening.
+      return base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 200);
     },
     enabled: !!user,
   });
