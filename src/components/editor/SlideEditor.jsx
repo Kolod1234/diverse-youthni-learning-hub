@@ -649,15 +649,17 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
 
   return (
     <div className={`${fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}`}>
-      <div className="flex items-center justify-between mb-4">
-        <div className="flex items-center gap-3">
+      {/* Top toolbar — flex-wrap so the action buttons reflow on narrow viewports
+          instead of pushing the row off-screen and creating the blank right half. */}
+      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 shrink-0">
           <LayoutTemplate className="w-6 h-6 text-indigo-600" />
           <div>
             <h3 className="font-semibold text-gray-900">Slide Editor</h3>
             <p className="text-sm text-gray-500">{slides.length} slide{slides.length !== 1 ? 's' : ''} total</p>
           </div>
         </div>
-        <div className="flex items-center gap-2">
+        <div className="flex flex-wrap items-center gap-2">
           <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
             <Button
               variant={editorMode === 'builder' ? 'default' : 'ghost'}
@@ -778,9 +780,11 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         </div>
       </div>
 
-      <div className={`flex gap-6 ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
-        {/* Thumbnail Sidebar */}
-        <Card className={`${fullscreenEdit ? 'w-72' : 'w-64'} flex flex-col border-2`}>
+      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 w-full ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
+        {/* Thumbnail Sidebar — full width on mobile/tablet (stacked above the canvas),
+            fixed rail (lg:w-[280px], xl:w-72) on desktop. shrink-0 stops the canvas
+            from squishing the rail; min-h-0 keeps the inner ScrollArea bounded. */}
+        <Card className={`${fullscreenEdit ? 'lg:w-72' : 'lg:w-[280px] xl:w-72'} w-full shrink-0 flex flex-col border-2 max-h-[260px] lg:max-h-none min-h-0`}>
           <div className="p-4 border-b bg-gray-50">
             <p className="text-sm font-semibold text-gray-700">All Slides</p>
           </div>
@@ -865,12 +869,15 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           </ScrollArea>
         </Card>
 
-        {/* Main Editor */}
-        <div className="flex-1 flex flex-col">
+        {/* Main Editor — min-w-0 is critical: without it, flex-1 cannot shrink
+            below the intrinsic min-content width of the toolbar row, causing
+            horizontal overflow + the "blank right half" the user reported. */}
+        <div className="flex-1 min-w-0 w-full flex flex-col">
           {currentSlideData && (
             <>
-              {/* Navigation */}
-              <div className="flex items-center justify-between mb-4 bg-gray-50 rounded-lg p-3">
+              {/* Navigation — flex-wrap so the button row reflows below 1024px
+                  instead of forcing horizontal overflow on the parent. */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-gray-50 rounded-lg p-3">
                 <Button
                   variant="outline"
                   size="sm"
@@ -882,8 +889,8 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   Previous
                 </Button>
 
-                <div className="flex items-center gap-3">
-                  <span className="text-sm font-medium text-gray-700">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="text-sm font-medium text-gray-700 shrink-0">
                     Slide {currentSlide + 1} of {slides.length}
                   </span>
                   <DropdownMenu>

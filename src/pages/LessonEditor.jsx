@@ -187,7 +187,7 @@ export default function LessonEditor() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
-        <div className="max-w-6xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center justify-between gap-3 sm:flex-1">
             <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0">
               <ArrowLeft className="w-4 h-4 mr-2" />
@@ -239,7 +239,7 @@ export default function LessonEditor() {
         />
       )}
 
-      <div className="max-w-6xl mx-auto px-4 sm:px-6 py-4 sm:py-8 overflow-x-hidden">
+      <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
         <div className="space-y-6">
           {/* Basic Info */}
           <Card className="p-4 sm:p-6">
