@@ -38,6 +38,7 @@ import { toast } from 'sonner';
 import GlobalSearch from '@/components/search/GlobalSearch';
 import AdvancedFilters from '@/components/search/AdvancedFilters';
 import UnlockLessonsView from '@/components/tutor/UnlockLessonsView';
+import { filterCoursesForTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorDashboard() {
   const [user, setUser] = useState(null);
@@ -82,14 +83,11 @@ export default function TutorDashboard() {
     queryKey: ['tutor-courses-by-subject', user?.email, approvedSubjects?.join(',')],
     queryFn: async () => {
       if (user?.role === 'admin') return base44.entities.Course.list('-created_date', 200);
-      const [assignedCourses, ...subjectResults] = await Promise.all([
-        base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100),
-        ...(approvedSubjects || []).map(subject =>
-          base44.entities.Course.filter({ category: subject.toLowerCase() }, '-created_date', 50)
-        )
-      ]);
-      const all = [...assignedCourses, ...subjectResults.flat()];
-      return [...new Map(all.map(c => [c.id, c])).values()];
+      // Pull all courses once and filter client-side using the centralised access rule.
+      // This is reliable because category names, subject names, and tutor assignment can
+      // all be checked together (including case-insensitive matching and subject aliases).
+      const all = await base44.entities.Course.list('-created_date', 500);
+      return filterCoursesForTutor(all, user, approvedSubjects);
     },
     enabled: !!user,
   });

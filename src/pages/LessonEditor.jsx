@@ -15,6 +15,7 @@ import SlideEditor from '@/components/editor/SlideEditor';
 import FileUploadManager from '@/components/editor/FileUploadManager';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
 import FullscreenPresenter from '@/components/presentation/FullscreenPresenter';
+import { canTutorAccessCourse } from '@/components/tutor/tutorAccess';
 
 export default function LessonEditor() {
   const location = useLocation();
@@ -39,12 +40,16 @@ export default function LessonEditor() {
         navigate(createPageUrl('Dashboard'));
         return;
       }
-      // If a courseId is provided, verify the tutor is assigned to it
+      // If a courseId is provided, verify access (admin / assigned / creator / approved subject)
       if (courseId && userData.role !== 'admin') {
-        const courses = await base44.entities.Course.filter({ id: courseId });
+        const [courses, tutorRequests] = await Promise.all([
+          base44.entities.Course.filter({ id: courseId }),
+          base44.entities.TutorRequest.filter({ user_email: userData.email, status: 'approved' }, '-created_date', 1),
+        ]);
         const course = courses[0];
-        if (course && !(course.assigned_tutors || []).includes(userData.email) && course.created_by !== userData.email) {
-          toast.error('You are not assigned to edit lessons for this course');
+        const approvedSubjects = tutorRequests[0]?.subjects || [];
+        if (course && !canTutorAccessCourse(course, userData, approvedSubjects)) {
+          toast.error('You are not approved to edit lessons for this course');
           navigate(-1);
         }
       }
@@ -52,18 +57,24 @@ export default function LessonEditor() {
     loadUser();
   }, []);
 
+  // Tutor's approved subjects (drives course visibility in the picker)
+  const { data: tutorRequests = [] } = useQuery({
+    queryKey: ['tutor-request-for-editor', user?.email],
+    queryFn: () => base44.entities.TutorRequest.filter({ user_email: user?.email, status: 'approved' }, '-created_date', 1),
+    enabled: !!user?.email && user?.role !== 'admin',
+  });
+  const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
+
   const { data: tutorCourses = [] } = useQuery({
-    queryKey: ['tutor-courses-for-lesson-editor', user?.email],
+    queryKey: ['tutor-courses-for-lesson-editor', user?.email, approvedSubjects?.join(',')],
     queryFn: async () => {
       if (!user) return [];
       if (user.role === 'admin') {
         return base44.entities.Course.list('title', 5000);
       }
-      // Tutors only see their assigned courses
+      // Tutors see: explicitly assigned, courses they created, or courses in their approved subjects
       const all = await base44.entities.Course.list('title', 5000);
-      return all.filter(c =>
-        (c.assigned_tutors || []).includes(user.email) || c.created_by === user.email
-      );
+      return all.filter(c => canTutorAccessCourse(c, user, approvedSubjects));
     },
     enabled: !!user,
   });

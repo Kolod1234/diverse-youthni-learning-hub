@@ -12,6 +12,7 @@ import {
   BookMarked, UserCheck, Lock, Unlock, Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { filterCoursesForTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorDashboardOverview() {
   const [user, setUser] = useState(null);
@@ -35,21 +36,16 @@ export default function TutorDashboardOverview() {
 
   const approvedSubjects = user?.role === 'admin' ? null : (tutorRequests[0]?.subjects || []);
 
-  // Fetch ALL courses: explicitly assigned to tutor OR in their approved subjects
+  // Fetch all courses, then filter via the centralised tutor-access rule
+  // (admin / assigned / creator / approved subject with aliases & case-insensitive match).
   const { data: allCourses = [] } = useQuery({
     queryKey: ['tutor-assigned-courses', user?.email, approvedSubjects?.join(',')],
     queryFn: async () => {
       if (user?.role === 'admin') {
         return base44.entities.Course.list('-created_date', 200);
       }
-      const [assignedCourses, ...subjectResults] = await Promise.all([
-        base44.entities.Course.filter({ assigned_tutors: user.email }, '-created_date', 100),
-        ...(approvedSubjects || []).map(subject =>
-          base44.entities.Course.filter({ category: subject.toLowerCase() }, '-created_date', 50)
-        )
-      ]);
-      const all = [...assignedCourses, ...subjectResults.flat()];
-      return [...new Map(all.map(c => [c.id, c])).values()];
+      const all = await base44.entities.Course.list('-created_date', 500);
+      return filterCoursesForTutor(all, user, approvedSubjects);
     },
     enabled: !!user,
   });

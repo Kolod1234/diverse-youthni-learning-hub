@@ -41,6 +41,7 @@ import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
 import AdvancedAISlideGenerator from '@/components/tutor/AdvancedAISlideGenerator';
 import TemplateSelector from '@/components/templates/TemplateSelector';
 import ContentInsertMenu from '@/components/editor/ContentInsertMenu';
+import { canTutorAccessCourse } from '@/components/tutor/tutorAccess';
 
 export default function TutorCourseManager() {
   const [user, setUser] = useState(null);
@@ -129,15 +130,8 @@ export default function TutorCourseManager() {
     enabled: !!user,
   });
 
-  // Allow access if admin, OR if tutor is explicitly assigned to this course,
-  // OR if the course category is within the tutor's approved subjects (case-insensitive).
-  const normalisedApproved = (approvedSubjects || []).map(s => (s || '').toLowerCase());
-  const courseCategory = (course?.category || '').toLowerCase();
-  const isAssignedTutor = !!user?.email && Array.isArray(course?.assigned_tutors) &&
-    course.assigned_tutors.includes(user.email);
-  const isAllowedToEditCourse = !course || user?.role === 'admin' ||
-    isAssignedTutor ||
-    normalisedApproved.includes(courseCategory);
+  // Centralised access check: admin, explicitly assigned, creator, or approved subject (with aliases)
+  const isAllowedToEditCourse = canTutorAccessCourse(course, user, approvedSubjects);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],
