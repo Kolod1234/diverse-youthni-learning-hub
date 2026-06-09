@@ -656,17 +656,19 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
 
   return (
     <div className={`${fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}`}>
-      {/* Top toolbar — flex-wrap so the action buttons reflow on narrow viewports
-          instead of pushing the row off-screen and creating the blank right half. */}
-      <div className="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div className="flex items-center gap-3 shrink-0">
-          <LayoutTemplate className="w-6 h-6 text-indigo-600" />
-          <div>
-            <h3 className="font-semibold text-gray-900">Slide Editor</h3>
+      {/* Top toolbar — at ≥sm: flex-wrap as before (desktop/tablet behaviour unchanged).
+          Below sm (390px): the action row becomes a single horizontally-scrollable
+          strip so it never causes outer-page overflow and Save Lesson in the page
+          header stays unclipped. Title block stays compact and shrinkable. */}
+      <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-center sm:justify-between gap-3 mb-4">
+        <div className="flex items-center gap-3 min-w-0">
+          <LayoutTemplate className="w-6 h-6 text-indigo-600 shrink-0" />
+          <div className="min-w-0">
+            <h3 className="font-semibold text-gray-900 truncate">Slide Editor</h3>
             <p className="text-sm text-gray-500">{slides.length} slide{slides.length !== 1 ? 's' : ''} total</p>
           </div>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="flex sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [&>*]:shrink-0 sm:[&>*]:shrink">
           <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
             <Button
               variant={editorMode === 'builder' ? 'default' : 'ghost'}
@@ -789,9 +791,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
 
       {/* Shared thumbnail rail JSX — rendered inline on desktop (≥lg) AND inside
           the mobile Sheet drawer. Same `slides` / `currentSlide` / `onChange` —
-          no duplicated state, reorder & selection behave identically. The
-          `onSelect` wrapper lets us close the drawer after picking a slide. */}
-      {(() => null)()}
+          no duplicated state, reorder & selection behave identically. */}
       <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 w-full ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
         {/* Desktop rail — hidden below lg. At <lg, the active canvas appears
             immediately after the toolbar; thumbnails are accessed via the
@@ -819,8 +819,10 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           {currentSlideData && (
             <>
               {/* Navigation — flex-wrap so the button row reflows below 1024px
-                  instead of forcing horizontal overflow on the parent. */}
-              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-gray-50 rounded-lg p-3">
+                  instead of forcing horizontal overflow on the parent. At <sm the
+                  inner action cluster becomes horizontally scrollable so 390px
+                  never produces page overflow. */}
+              <div className="flex flex-wrap items-center justify-between gap-2 mb-4 bg-gray-50 rounded-lg p-3 max-w-full">
                 <Button
                   variant="outline"
                   size="sm"
@@ -832,8 +834,8 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                   Previous
                 </Button>
 
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="text-sm font-medium text-gray-700 shrink-0">
+                <div className="flex sm:flex-wrap items-center gap-2 min-w-0 flex-1 overflow-x-auto sm:overflow-visible [&>*]:shrink-0 sm:[&>*]:shrink">
+                  <span className="text-sm font-medium text-gray-700">
                     Slide {currentSlide + 1} of {slides.length}
                   </span>
                   {/* Mobile/tablet only — opens the slide thumbnail drawer. Hidden ≥lg
