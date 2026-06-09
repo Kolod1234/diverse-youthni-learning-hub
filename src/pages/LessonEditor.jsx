@@ -185,17 +185,27 @@ export default function LessonEditor() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="sticky top-0 z-10 bg-white border-b shadow-sm">
-        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-3 sm:py-4 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center justify-between gap-3 sm:flex-1">
-            <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0">
-              <ArrowLeft className="w-4 h-4 mr-2" />
+    <div className="min-h-screen bg-slate-50">
+      {/* Calm, immersive editor header — owns the viewport (Layout hides public chrome) */}
+      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
+        <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-2.5 sm:py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+          <div className="flex items-center gap-3 sm:flex-1 min-w-0">
+            <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-slate-600 hover:text-slate-900">
+              <ArrowLeft className="w-4 h-4 mr-1.5" />
               Back
             </Button>
-            <h1 className="text-base sm:text-xl font-bold text-gray-900 text-right sm:text-center sm:flex-1">
-              {lessonId ? 'Edit Lesson' : 'Create New Lesson'}
+            <div className="hidden sm:flex items-center gap-2 text-xs text-slate-400 shrink-0" aria-hidden="true">
+              <span>/</span>
+              <span className="text-slate-500">Lesson Editor</span>
+              <span>/</span>
+            </div>
+            <h1 className="text-sm sm:text-base font-semibold text-slate-900 truncate">
+              {lessonId ? (lessonForm.title || 'Edit Lesson') : 'Create New Lesson'}
             </h1>
+            <span className="hidden sm:inline-flex items-center gap-1.5 text-[11px] font-medium text-amber-700 bg-amber-50 border border-amber-200 rounded-full px-2 py-0.5 ml-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+              {lessonId ? 'Unsaved changes' : 'Not yet saved — use Save Lesson to persist'}
+            </span>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
           <Button
@@ -239,8 +249,8 @@ export default function LessonEditor() {
         />
       )}
 
-      <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 sm:py-8">
-        <div className="space-y-6">
+      <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
+        <div className="space-y-5">
           {/* Basic Info */}
           <Card className="p-4 sm:p-6">
             <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
@@ -555,15 +565,21 @@ export default function LessonEditor() {
             onSlidesGenerated={(slides) => setLessonForm({ ...lessonForm, slides })}
           />
 
-          {/* Custom Slides */}
-          <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-4">Written Lesson Content (Slides)</h2>
+          {/* Custom Slides — primary authoring surface. Indigo accent rule
+              matches the reference editor's heading treatment. */}
+          <Card className="p-4 sm:p-6 border-slate-200">
+            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100">
+              <span aria-hidden="true" className="w-1 h-6 bg-indigo-600 rounded-full" />
+              <div className="flex-1">
+                <h2 className="text-lg font-semibold text-slate-900">Written Lesson Content</h2>
+                <p className="text-xs text-slate-500 mt-0.5">Multi-page lessons with flexible content blocks. Edits are kept in this draft until you click Save Lesson.</p>
+              </div>
+            </div>
             <SlideEditor
               slides={lessonForm.slides || []}
               onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
               isPersisted={!!lessonId}
             />
-            <p className="text-xs text-gray-500 mt-3">Create multi-page lessons with flexible content blocks</p>
           </Card>
 
           {/* Resources */}

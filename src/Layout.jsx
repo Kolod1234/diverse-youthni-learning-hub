@@ -211,9 +211,19 @@ function LayoutContent({ children, currentPageName }) {
     };
   }, [location.pathname]);
 
-  const isLessonPlayer = currentPageName === 'LessonPlayer';
-
-  if (isLessonPlayer) {
+  // Pages that own the full viewport (no public site header/footer/mobile nav/chat).
+  // LessonEditor and any LessonPlayer variant render an immersive authoring or
+  // reading workspace; the public chrome would steal vertical space and clash
+  // with their own toolbars.
+  const IMMERSIVE_PAGES = new Set([
+    'LessonPlayer',
+    'LessonPlayerClassic',
+    'LessonPlayerPowerPoint',
+    'LessonPlayerRise',
+    'ModernLessonPlayer',
+    'LessonEditor',
+  ]);
+  if (IMMERSIVE_PAGES.has(currentPageName)) {
     return <>{children}</>;
   }
 
