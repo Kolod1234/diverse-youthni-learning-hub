@@ -20,15 +20,51 @@ const escapeHtml = (s = '') =>
 
 // ── inline-editable HTML sanitiser ─────────────────────────────────────────
 // Strips dangerous nodes/attrs from contenteditable output before saving.
+// We keep enough semantic tags + safe inline `style` properties for the rich
+// text controls (font family/size, colours, alignment, spacing, sub/sup,
+// underline/strike, case transforms applied at the text level, etc.) to
+// round-trip through save/reload without loss.
 const ALLOWED_TAGS = new Set([
   'b','strong','i','em','u','a','span','br','sub','sup','code',
-  'mark','small','s','strike'
+  'mark','small','s','strike','font','p','div'
 ]);
 const ALLOWED_ATTRS = {
-  a: ['href','target','rel'],
+  a:    ['href','target','rel','style'],
   span: ['style'],
   mark: ['style'],
+  font: ['color','face','size'],
+  p:    ['style'],
+  div:  ['style'],
+  b: ['style'], strong: ['style'], i: ['style'], em: ['style'],
+  u: ['style'], s: ['style'], strike: ['style'], small: ['style'],
+  code: ['style'], sub: ['style'], sup: ['style'],
 };
+// Inline CSS properties we are willing to preserve. Anything else is dropped.
+const ALLOWED_CSS = new Set([
+  'color','background-color','font-family','font-size','font-weight',
+  'font-style','text-decoration','text-decoration-line','text-align',
+  'line-height','letter-spacing','vertical-align','padding-left',
+  'margin-left','text-transform',
+]);
+function sanitiseStyle(style) {
+  if (!style) return '';
+  return String(style)
+    .split(';')
+    .map(decl => decl.trim())
+    .filter(Boolean)
+    .map(decl => {
+      const i = decl.indexOf(':');
+      if (i === -1) return null;
+      const prop = decl.slice(0, i).trim().toLowerCase();
+      const val  = decl.slice(i + 1).trim();
+      if (!ALLOWED_CSS.has(prop)) return null;
+      // Block url()/expression()/javascript: in values.
+      if (/url\s*\(|expression\s*\(|javascript:/i.test(val)) return null;
+      return `${prop}: ${val}`;
+    })
+    .filter(Boolean)
+    .join('; ');
+}
 function sanitiseInline(html) {
   if (typeof document === 'undefined') return String(html || '');
   const wrap = document.createElement('div');
@@ -45,7 +81,13 @@ function sanitiseInline(html) {
         }
         const allowed = ALLOWED_ATTRS[tag] || [];
         Array.from(child.attributes).forEach(a => {
-          if (!allowed.includes(a.name.toLowerCase())) child.removeAttribute(a.name);
+          const name = a.name.toLowerCase();
+          if (!allowed.includes(name)) { child.removeAttribute(a.name); return; }
+          if (name === 'style') {
+            const clean = sanitiseStyle(a.value);
+            if (clean) child.setAttribute('style', clean);
+            else child.removeAttribute('style');
+          }
         });
         if (tag === 'a') {
           const href = child.getAttribute('href') || '';

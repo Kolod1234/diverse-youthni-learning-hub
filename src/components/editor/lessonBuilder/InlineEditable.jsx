@@ -1,9 +1,12 @@
 import React, { useRef, useEffect } from 'react';
+import { applyFormat } from './formatCommands';
 
 // Tiny contenteditable wrapper used by every text-y block.
 // - keeps an uncontrolled DOM but syncs to value on external changes
 // - emits onChange(innerHTML) on input
-// - supports document.execCommand-based inline formatting through `format()`
+// - supports rich inline formatting through `format(cmd, arg)` which is
+//   delegated to formatCommands.applyFormat (semantic sub/sup, case
+//   transforms on the selection, font family/size, line-spacing, etc.)
 // - swallows Enter when `singleLine` is true so heading blocks behave nicely
 
 const InlineEditable = React.forwardRef(function InlineEditable({
@@ -32,9 +35,12 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     el: () => innerRef.current,
     focus: () => innerRef.current?.focus(),
     format: (cmd, arg) => {
-      innerRef.current?.focus();
-      try { document.execCommand(cmd, false, arg); } catch (_) {}
-      onChange?.(innerRef.current?.innerHTML || '');
+      const el = innerRef.current;
+      if (!el) return;
+      // Ensure the field is focused so the current selection is the live one.
+      if (document.activeElement !== el) el.focus();
+      applyFormat(el, cmd, arg);
+      onChange?.(el.innerHTML || '');
     },
   }), [onChange]);
 

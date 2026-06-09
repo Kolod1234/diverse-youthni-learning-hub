@@ -48,7 +48,7 @@ function ParagraphBlock({ html, onChange }) {
   const ref = useRef(null);
   return (
     <div>
-      <InlineToolbar editableRef={ref} />
+      <InlineToolbar editableRef={ref} showHeadings />
       <InlineEditable
         ref={ref}
         value={html}
