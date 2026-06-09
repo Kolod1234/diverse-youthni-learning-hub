@@ -216,33 +216,53 @@ function blockToHtml(b) {
     case 'table': {
       const rows = d.rows || [];
       if (!rows.length) return '';
-      const hasHeader = d.header !== false;
-      const striped   = !!d.striped;
-      const bordered  = d.bordered !== false;
+      // Accept BOTH the editor's current root keys (header / stripe) AND the
+      // historic shape (hasHeader / striped / bordered / compact). The editor
+      // is the source of truth — the serializer adapts.
+      const hasHeader = d.header !== false && d.hasHeader !== false;
+      const striped   = !!(d.stripe ?? d.striped);
+      const bordered  = d.bordered !== false; // default on
       const compact   = !!d.compact;
       const padCss    = compact ? '6px 10px' : '10px 14px';
       const borderCss = bordered ? '1px solid #E5E7EB' : '1px solid transparent';
 
-      // Each entry may be a string (legacy) or a cell object {html, align, bg,
-      // border, bold, rowspan, colspan, hidden}. We collapse both to a common
-      // shape for rendering.
-      const norm = (cell) => {
-        if (cell && typeof cell === 'object') return cell;
-        return { html: cell == null ? '' : String(cell) };
+      // Each entry may be a string (very old legacy) or a cell object. The
+      // editor writes {content, align, color, bg, border, rowSpan, colSpan,
+      // hidden}; we also accept the historic {html, bold, rowspan, colspan}
+      // form so nothing previously authored is lost.
+      const normCell = (cell) => {
+        if (cell == null) return { content: '' };
+        if (typeof cell !== 'object') return { content: String(cell) };
+        return {
+          content: cell.content != null ? cell.content : (cell.html != null ? cell.html : ''),
+          align:   cell.align,
+          color:   cell.color,
+          bg:      cell.bg,
+          border:  cell.border,
+          bold:    !!cell.bold,
+          rowSpan: Number(cell.rowSpan ?? cell.rowspan ?? 1) || 1,
+          colSpan: Number(cell.colSpan ?? cell.colspan ?? 1) || 1,
+          hidden:  !!cell.hidden,
+        };
       };
 
       const renderCell = (cell, opts) => {
-        const c = norm(cell);
+        const c = normCell(cell);
         if (c.hidden) return '';
         const tag = opts.isHeader ? 'th' : 'td';
         const scope = opts.isHeader ? ' scope="col"' : '';
         const bg = c.bg ? `background:${escapeHtml(c.bg)};` : (opts.isHeader ? 'background:#F3F4F6;' : '');
+        const colour = c.color ? `color:${escapeHtml(c.color)};` : 'color:#1F2937;';
         const align = `text-align:${c.align === 'center' ? 'center' : c.align === 'right' ? 'right' : 'left'};`;
         const weight = c.bold || opts.isHeader ? 'font-weight:600;' : '';
-        const cellBorder = (bordered || c.border) ? `border:${borderCss};` : 'border:1px solid transparent;';
-        const rowspan = c.rowspan > 1 ? ` rowspan="${c.rowspan}"` : '';
-        const colspan = c.colspan > 1 ? ` colspan="${c.colspan}"` : '';
-        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} color:#1F2937; vertical-align:top;">${sanitiseInline(c.html || '')}</${tag}>`;
+        const cellBorder = c.border === 'none'
+          ? 'border:1px solid transparent;'
+          : c.border === 'thick'
+            ? 'border:2px solid #9CA3AF;'
+            : `border:${borderCss};`;
+        const rowspan = c.rowSpan > 1 ? ` rowspan="${c.rowSpan}"` : '';
+        const colspan = c.colSpan > 1 ? ` colspan="${c.colSpan}"` : '';
+        return `<${tag}${scope}${rowspan}${colspan} style="padding:${padCss}; ${cellBorder} ${align} ${bg} ${weight} ${colour} vertical-align:top;">${sanitiseInline(c.content || '')}</${tag}>`;
       };
 
       const headHtml = hasHeader && rows[0]
@@ -265,30 +285,53 @@ function blockToHtml(b) {
     case 'spacer':
       return `<div style="height:${Math.max(8, Math.min(200, Number(d.size) || 32))}px;"></div>`;
     case 'two-columns': {
-      // Children can be either block arrays (new model) or legacy HTML
-      // strings. We render block arrays by recursively serialising; HTML
-      // strings are passed through sanitiseInline so saved slides without
-      // the new editor still render identically.
+      // The editor writes `leftBlocks` / `rightBlocks` (Block[]) plus a
+      // numeric `ratio` (0.15..0.85), `verticalAlign` (top|center|bottom),
+      // and `stackOnMobile`. Legacy slides used `left` / `right` HTML
+      // strings, `ratio: "50:50"`, `align: 'start'|'center'|'end'`, `stack`.
+      // We accept BOTH so nothing is lost on either path.
+      const leftSide  = Array.isArray(d.leftBlocks)  ? d.leftBlocks
+                       : Array.isArray(d.left)       ? d.left
+                       : (typeof d.left === 'string' ? d.left : []);
+      const rightSide = Array.isArray(d.rightBlocks) ? d.rightBlocks
+                       : Array.isArray(d.right)      ? d.right
+                       : (typeof d.right === 'string' ? d.right : []);
+
       const renderSide = (side) => {
         if (Array.isArray(side)) return blocksToHtml(side);
-        return `<div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(side || '')}</div>`;
+        if (typeof side === 'string' && side.trim())
+          return `<div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(side)}</div>`;
+        return '';
       };
-      const parseR = (r) => {
+
+      // Ratio: accept number (0..1), number (0..100) or "50:50" string.
+      const parseRatio = () => {
+        const r = d.ratio;
+        if (typeof r === 'number' && Number.isFinite(r)) {
+          const pct = r <= 1 ? r * 100 : r;
+          const a = Math.max(10, Math.min(90, Math.round(pct)));
+          return [a, 100 - a];
+        }
         const m = String(r || '50:50').match(/^(\d{1,3}):(\d{1,3})$/);
         if (!m) return [50, 50];
         const a = Math.max(10, Math.min(90, Number(m[1])));
         return [a, 100 - a];
       };
-      const [lPct, rPct] = parseR(d.ratio);
-      const gap = Math.max(0, Math.min(64, Number(d.gap) || 24));
-      const align = d.align === 'center' ? 'center'
-                  : d.align === 'end'    ? 'flex-end'
-                                         : 'flex-start';
-      const stack = d.stack !== false;
-      // Inline media query is not possible — we approximate mobile stacking
-      // by letting flex-wrap collapse the row when widths fall below ~340px.
+      const [lPct, rPct] = parseRatio();
+
+      const gap = Math.max(0, Math.min(96, Number(d.gap) || 24));
+
+      // Vertical align: editor uses verticalAlign (top|center|bottom); legacy
+      // serialiser used align (start|center|end).
+      const va = d.verticalAlign || d.align;
+      const align = va === 'center' || va === 'middle' ? 'center'
+                  : va === 'bottom' || va === 'end'    ? 'flex-end'
+                                                       : 'flex-start';
+
+      const stack = d.stackOnMobile !== false && d.stack !== false;
       const flexWrap = stack ? 'wrap' : 'nowrap';
-      return `<div style="display:flex; flex-direction:row; flex-wrap:${flexWrap}; gap:${gap}px; margin:16px 0; align-items:${align};"><div style="flex:1 1 ${lPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(d.left)}</div><div style="flex:1 1 ${rPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(d.right)}</div></div>`;
+
+      return `<div style="display:flex; flex-direction:row; flex-wrap:${flexWrap}; gap:${gap}px; margin:16px 0; align-items:${align};"><div style="flex:1 1 ${lPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(leftSide)}</div><div style="flex:1 1 ${rPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(rightSide)}</div></div>`;
     }
     case 'code':
       return `<pre style="background:#1E1E1E; color:#D4D4D4; padding:20px; border-radius:8px; overflow-x:auto; margin:16px 0; font-family:Menlo,Monaco,Consolas,monospace; font-size:14px; line-height:1.6;"><code class="language-${escapeHtml(d.language || 'plaintext')}">${escapeHtml(d.code || '')}</code></pre>`;
@@ -407,3 +450,51 @@ function parseSimpleElement(el, tag) {
 
   return null; // → legacy-html
 }
+
+// ── Dev-only round-trip assertion ──────────────────────────────────────────
+// Catches regressions where the editor's data shape (TableBlock /
+// TwoColumnsBlock) and the serializer drift apart. We don't throw — we log
+// once at module load in non-production environments so issues surface in
+// the dev console without breaking the editor.
+(function devRoundTripCheck() {
+  try {
+    if (typeof window === 'undefined') return;
+    // Only run in dev. Vite exposes import.meta.env.DEV; guard so production
+    // bundles strip this entire IIFE.
+    // eslint-disable-next-line no-undef
+    const isDev = !!(import.meta && import.meta.env && import.meta.env.DEV);
+    if (!isDev) return;
+
+    const tableBlock = {
+      type: 'table',
+      data: {
+        header: true, stripe: false, caption: 'Test',
+        rows: [
+          [{ content: 'H1' }, { content: 'H2' }],
+          [{ content: 'Cell' }, { content: 'Body' }],
+        ],
+      },
+    };
+    const tableHtml = blockToHtml(tableBlock);
+    if (!tableHtml.includes('Cell')) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] table serializer dropped cell content. Shape mismatch?');
+    }
+
+    const twoColBlock = {
+      type: 'two-columns',
+      data: {
+        leftBlocks:  [{ type: 'paragraph', data: { html: 'Left' } }],
+        rightBlocks: [{ type: 'paragraph', data: { html: 'Right' } }],
+        ratio: 0.5, gap: 24, verticalAlign: 'top', stackOnMobile: true,
+      },
+    };
+    const twoColHtml = blockToHtml(twoColBlock);
+    if (!twoColHtml.includes('Left') || !twoColHtml.includes('Right')) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] two-columns serializer dropped child content. Shape mismatch?');
+    }
+  } catch {
+    /* never block module load */
+  }
+})();

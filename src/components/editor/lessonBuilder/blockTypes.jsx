@@ -16,10 +16,11 @@ let _id = 0;
 export const nextBlockId = () => `b_${Date.now().toString(36)}_${(_id++).toString(36)}`;
 
 // Default cell shape for the table block. Kept here so the registry and the
-// component agree on the structure.
+// component agree on the structure (TableBlock writes `content` + camelCase
+// span keys; the serializer reads both shapes defensively).
 const emptyCell = () => ({
-  html: '', align: 'left', bg: null, border: false, bold: false,
-  rowspan: 1, colspan: 1, hidden: false,
+  content: '', align: 'left', bg: null, color: null, border: 'default',
+  rowSpan: 1, colSpan: 1, hidden: false,
 });
 
 export const BLOCK_GROUPS = [
@@ -98,7 +99,11 @@ export function defaultBlockData(type) {
     };
     case 'file':              return { url: '', name: '' };
     case 'table':             return {
-      header: true, caption: '', striped: false, bordered: true, compact: false,
+      // Root keys match what TableBlock writes (`header`, `stripe`, `caption`).
+      // `bordered` and `compact` remain optional rendering hints picked up by
+      // the serializer.
+      header: true, stripe: false, caption: '',
+      bordered: true, compact: false,
       rows: [
         [emptyCell(), emptyCell()],
         [emptyCell(), emptyCell()],
@@ -107,8 +112,9 @@ export function defaultBlockData(type) {
     case 'divider':           return {};
     case 'spacer':            return { size: 32 };
     case 'two-columns':       return {
-      left: [], right: [],
-      ratio: '50:50', gap: 24, align: 'start', stack: true,
+      // Match TwoColumnsBlock's normalised shape.
+      leftBlocks: [], rightBlocks: [],
+      ratio: 0.5, gap: 24, verticalAlign: 'top', stackOnMobile: true,
     };
     case 'code':              return { code: '', language: 'javascript' };
     case 'math':              return { latex: '' };
