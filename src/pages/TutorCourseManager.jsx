@@ -41,7 +41,7 @@ import LessonContentAnalyzer from '@/components/tutor/LessonContentAnalyzer';
 import AdvancedAISlideGenerator from '@/components/tutor/AdvancedAISlideGenerator';
 import TemplateSelector from '@/components/templates/TemplateSelector';
 import ContentInsertMenu from '@/components/editor/ContentInsertMenu';
-import { canTutorAccessCourse } from '@/components/tutor/tutorAccess';
+import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function TutorCourseManager() {
   const [user, setUser] = useState(null);
@@ -130,8 +130,9 @@ export default function TutorCourseManager() {
     enabled: !!user,
   });
 
-  // Centralised access check: admin, explicitly assigned, creator, or approved subject (with aliases)
-  const isAllowedToEditCourse = canTutorAccessCourse(course, user, approvedSubjects);
+  // Course management requires explicit admin assignment (or admin role).
+  // While the course is still loading we let the page render (returns true for falsy course).
+  const isAllowedToEditCourse = !course || isCourseExplicitlyAssignedToTutor(course, user);
 
   const { data: importCourseLessons = [] } = useQuery({
     queryKey: ['import-lessons', selectedCourseForImport],

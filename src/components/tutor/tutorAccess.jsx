@@ -55,7 +55,7 @@ export function canTutorAccessCourse(course, user, approvedSubjects) {
   if (email && Array.isArray(course.assigned_tutors) && course.assigned_tutors.includes(email)) {
     return true;
   }
-  if (email && course.created_by === email) return true;
+  // Note: course.created_by stores a user ID, not an email — do not compare to email here.
 
   const category = norm(course.category);
   if (!category) return false;
@@ -78,19 +78,19 @@ export function filterCoursesForTutor(courses, user, approvedSubjects) {
 }
 
 /**
- * Return true ONLY for courses the tutor has been explicitly given
- * (admin assignment via course.assigned_tutors, or courses the tutor created).
- * Approved subjects do NOT count here — this is what the tutor dashboard
- * should display as "My Assigned Courses".
+ * Return true ONLY for courses the tutor has been explicitly given by an admin
+ * via course.assigned_tutors. Approved subjects do NOT count here, and the
+ * `created_by` field is intentionally ignored because it stores a user ID
+ * (not an email) and isn't a reliable signal of "the tutor owns this course".
+ *
+ * This is what the tutor dashboard should display as "My Assigned Courses".
  */
 export function isCourseExplicitlyAssignedToTutor(course, user) {
   if (!course || !user) return false;
   if (user.role === 'admin') return true;
   const email = user.email;
   if (!email) return false;
-  if (Array.isArray(course.assigned_tutors) && course.assigned_tutors.includes(email)) return true;
-  if (course.created_by === email) return true;
-  return false;
+  return Array.isArray(course.assigned_tutors) && course.assigned_tutors.includes(email);
 }
 
 /**
