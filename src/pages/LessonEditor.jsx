@@ -3,17 +3,14 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
-import { ArrowLeft, Loader2, Save, Upload, Video, FileText, Target, Presentation, RefreshCw, Play, Sparkles } from 'lucide-react';
+import { ArrowLeft, Loader2, Save, Play, Settings2, Sparkles } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
-import { Textarea } from '@/components/ui/textarea';
-import { Card } from '@/components/ui/card';
+import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import SlideEditor from '@/components/editor/SlideEditor';
-import FileUploadManager from '@/components/editor/FileUploadManager';
 import AILessonAssistant from '@/components/lesson/AILessonAssistant';
 import FullscreenPresenter from '@/components/presentation/FullscreenPresenter';
+import LessonMetadataPanel from '@/components/editor/lessonBuilder/LessonMetadataPanel';
 import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
 
 export default function LessonEditor() {
@@ -29,6 +26,19 @@ export default function LessonEditor() {
   const [converting, setConverting] = useState(false);
   const [convertingPptx, setConvertingPptx] = useState(false);
   const [presenting, setPresenting] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
+  // Auto-open the settings drawer for brand-new drafts so the tutor must
+  // supply the required title/course before the SlideEditor is the only
+  // visible workspace. This preserves the existing required-field gate
+  // without re-introducing the old above-the-fold metadata cards.
+  useEffect(() => {
+    if (!lessonId && !lessonForm.title) {
+      setSettingsOpen(true);
+    }
+    // intentionally only on lessonId so we don't re-trigger while typing
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lessonId]);
 
   useEffect(() => {
     const loadUser = async () => {
@@ -135,43 +145,9 @@ export default function LessonEditor() {
     }
   });
 
-  const handleVideoUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file || !file.type.startsWith('video/')) {
-      toast.error('Please upload a video file');
-      return;
-    }
-    setUploading(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setLessonForm({ ...lessonForm, video_url: file_url });
-      toast.success('Video uploaded!');
-    } catch (error) {
-      toast.error('Failed to upload video');
-    } finally {
-      setUploading(false);
-    }
-  };
-
-  const handleDocumentUpload = async (e) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-    setUploading(true);
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      setLessonForm({ 
-        ...lessonForm, 
-        file_url,
-        file_type: file.name.split('.').pop(),
-        content_type: 'document'
-      });
-      toast.success('Document uploaded!');
-    } catch (error) {
-      toast.error('Failed to upload document');
-    } finally {
-      setUploading(false);
-    }
-  };
+  // Upload + convert handlers now live inside LessonMetadataPanel, which
+  // receives setUploading/setConverting/setConvertingPptx via props so this
+  // page can still gate Save while uploads are in flight.
 
   if (!user || isLoading) {
     return (
@@ -208,416 +184,34 @@ export default function LessonEditor() {
             </span>
           </div>
           <div className="flex gap-2 w-full sm:w-auto">
-          <Button
-            type="button"
-            variant="outline"
-            onClick={() => setPresenting(true)}
-            disabled={!(lessonForm.slides || []).length}
-            className="w-full sm:w-auto"
-            title={(lessonForm.slides || []).length ? 'Launch full-screen presenter' : 'Add slides to present'}
-          >
-            <Play className="w-4 h-4 mr-2" />
-            Present
-          </Button>
-          <Button 
-            onClick={() => saveMutation.mutate()} 
-            disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
-            className="bg-indigo-600 w-full sm:w-auto"
-          >
-            {saveMutation.isPending ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-2 animate-spin" />
-                Saving...
-              </>
-            ) : (
-              <>
-                <Save className="w-4 h-4 mr-2" />
-                Save Lesson
-              </>
-            )}
-          </Button>
-          </div>
-        </div>
-      </div>
-
-      {presenting && (
-        <FullscreenPresenter
-          slides={lessonForm.slides || []}
-          onClose={() => setPresenting(false)}
-          transition="fade"
-          showNotesByDefault={false}
-        />
-      )}
-
-      <div className="w-full max-w-screen-2xl mx-auto px-4 sm:px-6 py-4 sm:py-6">
-        <div className="space-y-5">
-          {/* Basic Info */}
-          <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-4">Basic Information</h2>
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-              {!lessonId && !courseId && (
-                <div className="md:col-span-2">
-                  <Label>Course *</Label>
-                  <select
-                    value={lessonForm.course_id || ''}
-                    onChange={(e) => setLessonForm({ ...lessonForm, course_id: e.target.value })}
-                    className="w-full px-3 py-2 border rounded-lg"
-                  >
-                    <option value="">Select a course</option>
-                    {tutorCourses.map(c => (
-                      <option key={c.id} value={c.id}>{c.title}</option>
-                    ))}
-                  </select>
-                </div>
-              )}
-              <div>
-                <Label>Lesson Title *</Label>
-                <Input 
-                  value={lessonForm.title || ''} 
-                  onChange={(e) => setLessonForm({ ...lessonForm, title: e.target.value })}
-                  placeholder="Introduction to the topic"
-                />
-              </div>
-              <div>
-                <Label>Section/Module</Label>
-                <Input 
-                  value={lessonForm.section || ''} 
-                  onChange={(e) => setLessonForm({ ...lessonForm, section: e.target.value })} 
-                  placeholder="e.g. Getting Started, Module 1"
-                />
-              </div>
-            </div>
-            <div className="mt-4">
-              <Label>Duration (minutes)</Label>
-              <Input 
-                type="number" 
-                value={lessonForm.duration_minutes || ''} 
-                onChange={(e) => setLessonForm({ ...lessonForm, duration_minutes: parseInt(e.target.value) })}
-                placeholder="10"
-                className="w-full sm:max-w-xs"
-              />
-            </div>
-          </Card>
-
-          {/* Description — short summary shown on the lesson list and
-              course pages. Long-form lesson content lives in the Slides
-              section below (Visual Lesson Builder). */}
-          <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-2">Lesson Description</h2>
-            <p className="text-xs text-gray-500 mb-3">A short summary shown on the course page. Use the Slides section below for the actual lesson content.</p>
-            <Textarea
-              value={lessonForm.description || ''}
-              onChange={(e) => setLessonForm({ ...lessonForm, description: e.target.value })}
-              placeholder="Write a comprehensive description…"
-              className="min-h-[140px]"
-            />
-          </Card>
-
-          {/* Video Content */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Video className="w-5 h-5 text-red-600" />
-              <h2 className="text-lg font-semibold">Video Content</h2>
-            </div>
-            <div className="space-y-3">
-              <div>
-                <Label>Video URL (YouTube, Vimeo, etc.)</Label>
-                <Input 
-                  value={lessonForm.video_url || ''} 
-                  onChange={(e) => setLessonForm({ ...lessonForm, video_url: e.target.value })} 
-                  placeholder="https://youtube.com/embed/..."
-                />
-              </div>
-              <div className="text-center text-sm text-gray-500">OR</div>
-              <div>
-                <input
-                  type="file"
-                  accept="video/*"
-                  onChange={handleVideoUpload}
-                  disabled={uploading}
-                  className="hidden"
-                  id="video-upload"
-                />
-                <label htmlFor="video-upload">
-                  <Button type="button" variant="outline" className="w-full" disabled={uploading} onClick={() => document.getElementById('video-upload').click()}>
-                    {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Upload className="w-4 h-4 mr-2" />Upload Video File</>}
-                  </Button>
-                </label>
-              </div>
-            </div>
-          </Card>
-
-          {/* Google Slides */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Presentation className="w-5 h-5 text-yellow-600" />
-              <h2 className="text-lg font-semibold">Google Slides Presentation</h2>
-            </div>
-            <div>
-              <Label>Google Slides URL</Label>
-              <Input
-                placeholder="https://docs.google.com/presentation/d/..."
-                value={lessonForm.google_slides_url || ''}
-                onChange={(e) => setLessonForm({ ...lessonForm, google_slides_url: e.target.value, content_type: 'googleslides' })}
-              />
-              <p className="text-xs text-gray-500 mt-2">Students will see your Google Slides embedded in the lesson player</p>
-              <div className="mt-3">
-                <Label>Total Slides (slide count in your presentation)</Label>
-                <Input
-                  type="number"
-                  min={1}
-                  placeholder="e.g. 43"
-                  value={lessonForm.total_slides || ''}
-                  onChange={(e) => setLessonForm({ ...lessonForm, total_slides: parseInt(e.target.value) || null })}
-                  className="w-full sm:max-w-xs mt-1"
-                />
-                <p className="text-xs text-gray-500 mt-1">Set this so the slide counter in the player shows the correct total (e.g. "8 / 43")</p>
-              </div>
-            </div>
-
-            {/* Convert to custom slides */}
-            {lessonId && lessonForm.google_slides_url && (
-              <div className="mt-4 p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                <p className="text-sm font-semibold text-purple-800 mb-1">🎨 Convert to Custom Slides</p>
-                <p className="text-xs text-gray-600 mb-3">Renders each Google Slide as a high-quality image so the lesson player Prev/Next controls work fully. The original slides layout and styling are preserved pixel-perfectly.</p>
-                <Button
-                  type="button"
-                  variant="outline"
-                  className="border-purple-400 text-purple-700 hover:bg-purple-100"
-                  disabled={converting}
-                  onClick={async () => {
-                    setConverting(true);
-                    try {
-                      const res = await base44.functions.invoke('convertGoogleSlideToCustom', { lessonId });
-                      toast.success(`✅ Converted ${res.data?.slideCount || ''} slides! Save the lesson to apply.`);
-                      // Refresh lesson data so slides appear
-                      queryClient.invalidateQueries(['lesson', lessonId]);
-                    } catch (err) {
-                      toast.error('Conversion failed: ' + (err?.response?.data?.error || err.message));
-                    } finally {
-                      setConverting(false);
-                    }
-                  }}
-                >
-                  {converting ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Converting...</> : <><RefreshCw className="w-4 h-4 mr-2" />Convert Slides Now</>}
-                </Button>
-              </div>
-            )}
-          </Card>
-
-          {/* Manus Slides */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Sparkles className="w-5 h-5 text-purple-600" />
-              <h2 className="text-lg font-semibold">Manus Slides</h2>
-            </div>
-            <div>
-              <Label>Manus Public Share URL</Label>
-              <Input
-                placeholder="https://manus.space/share/..."
-                value={lessonForm.manus_slides_url || ''}
-                onChange={(e) => setLessonForm({ ...lessonForm, manus_slides_url: e.target.value, content_type: e.target.value ? 'manusslides' : (lessonForm.content_type || 'richtext') })}
-              />
-              <p className="text-xs text-gray-500 mt-2">Paste the public share link from Manus. Because Manus blocks embedding, students will see a branded "Open Manus Slides" button that opens the deck in a new tab. For fully embedded slides, export from Manus as PPTX/PDF and use the Document Upload below.</p>
-            </div>
-          </Card>
-
-          {/* Document Upload */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <FileText className="w-5 h-5 text-blue-600" />
-              <h2 className="text-lg font-semibold">Upload Document (PPT, PDF, Word)</h2>
-            </div>
-            {lessonForm.file_url ? (
-              <div className="mt-3 space-y-3">
-                <div className="bg-green-50 border border-green-200 rounded-lg p-3">
-                  <div className="flex items-center justify-between">
-                    <p className="text-sm text-green-800">✓ {lessonForm.file_type?.toUpperCase()} uploaded</p>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => {
-                        setLessonForm({ 
-                          ...lessonForm, 
-                          file_url: null, 
-                          file_type: null,
-                          content_type: 'richtext'
-                        });
-                        toast.success('Document removed');
-                      }}
-                      className="text-red-600 hover:text-red-700 hover:bg-red-50"
-                    >
-                      Remove
-                    </Button>
-                  </div>
-                </div>
-                {lessonForm.file_type?.toLowerCase() === 'pptx' && (
-                  <div className="p-4 bg-purple-50 border border-purple-200 rounded-lg">
-                    <p className="text-sm font-semibold text-purple-800 mb-1">🎨 Convert PPTX to Editable Slides</p>
-                    <p className="text-xs text-gray-600 mb-3">
-                      Extracts text from each slide in your PowerPoint and populates the Slide Editor below so you can edit them directly.
-                      {(lessonForm.slides || []).length > 0 && (
-                        <span className="block mt-1 text-amber-700 font-medium">⚠ Existing slides will be replaced.</span>
-                      )}
-                    </p>
-                    <Button
-                      type="button"
-                      variant="outline"
-                      className="border-purple-400 text-purple-700 hover:bg-purple-100"
-                      disabled={convertingPptx}
-                      onClick={async () => {
-                        setConvertingPptx(true);
-                        try {
-                          const res = await base44.functions.invoke('convertPptxToCustomSlides', { fileUrl: lessonForm.file_url });
-                          const extractedSlides = res.data?.slides || [];
-                          if (!extractedSlides.length) {
-                            toast.error('No slides were extracted from the PPTX');
-                            return;
-                          }
-                          setLessonForm({ ...lessonForm, slides: extractedSlides });
-                          toast.success(`✅ Extracted ${extractedSlides.length} slides! Review and save.`);
-                        } catch (err) {
-                          toast.error('Conversion failed: ' + (err?.response?.data?.error || err.message));
-                        } finally {
-                          setConvertingPptx(false);
-                        }
-                      }}
-                    >
-                      {convertingPptx ? (
-                        <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Converting...</>
-                      ) : (
-                        <><RefreshCw className="w-4 h-4 mr-2" />Convert to Editable Slides</>
-                      )}
-                    </Button>
-                  </div>
-                )}
-              </div>
-            ) : (
-              <>
-                <input
-                  type="file"
-                  accept=".pdf,.ppt,.pptx,.doc,.docx"
-                  onChange={handleDocumentUpload}
-                  disabled={uploading}
-                  className="hidden"
-                  id="document-upload"
-                />
-                <label htmlFor="document-upload">
-                  <Button type="button" variant="outline" className="w-full" disabled={uploading} onClick={() => document.getElementById('document-upload').click()}>
-                    {uploading ? <><Loader2 className="w-4 h-4 mr-2 animate-spin" />Uploading...</> : <><Upload className="w-4 h-4 mr-2" />Upload Document</>}
-                  </Button>
-                </label>
-              </>
-            )}
-          </Card>
-
-          {/* Learning Objectives */}
-          <Card className="p-4 sm:p-6">
-            <div className="flex items-center gap-2 mb-4">
-              <Target className="w-5 h-5 text-green-600" />
-              <h2 className="text-lg font-semibold">Learning Objectives (CCEA)</h2>
-            </div>
-            <p className="text-sm text-gray-600 mb-3">What will students learn in this lesson?</p>
-            <div className="space-y-2">
-              {(lessonForm.learning_objectives || []).map((objective, idx) => (
-                <div key={idx} className="flex gap-2">
-                  <Input
-                    value={objective}
-                    onChange={(e) => {
-                      const newObjectives = [...(lessonForm.learning_objectives || [])];
-                      newObjectives[idx] = e.target.value;
-                      setLessonForm({ ...lessonForm, learning_objectives: newObjectives });
-                    }}
-                    placeholder="e.g., Describe the structure and function of cells"
-                  />
-                  <Button
-                    variant="outline"
-                    size="sm"
-                    onClick={() => {
-                      const newObjectives = (lessonForm.learning_objectives || []).filter((_, i) => i !== idx);
-                      setLessonForm({ ...lessonForm, learning_objectives: newObjectives });
-                    }}
-                  >
-                    Remove
-                  </Button>
-                </div>
-              ))}
-              <Button
-                variant="outline"
-                onClick={() => {
-                  setLessonForm({
-                    ...lessonForm,
-                    learning_objectives: [...(lessonForm.learning_objectives || []), '']
-                  });
-                }}
-              >
-                + Add Learning Objective
-              </Button>
-            </div>
-          </Card>
-
-          {/* AI Assistant */}
-          <AILessonAssistant
-            lessonTitle={lessonForm.title}
-            lessonContent={lessonForm.description}
-            learningObjectives={lessonForm.learning_objectives}
-            existingSlides={lessonForm.slides || []}
-            onSlidesGenerated={(slides) => setLessonForm({ ...lessonForm, slides })}
-          />
-
-          {/* Custom Slides — primary authoring surface. Indigo accent rule
-              matches the reference editor's heading treatment. */}
-          <Card className="p-4 sm:p-6 border-slate-200">
-            <div className="flex items-center gap-3 mb-4 pb-3 border-b border-slate-100">
-              <span aria-hidden="true" className="w-1 h-6 bg-indigo-600 rounded-full" />
-              <div className="flex-1">
-                <h2 className="text-lg font-semibold text-slate-900">Written Lesson Content</h2>
-                <p className="text-xs text-slate-500 mt-0.5">Multi-page lessons with flexible content blocks. Edits are kept in this draft until you click Save Lesson.</p>
-              </div>
-            </div>
-            <SlideEditor
-              slides={lessonForm.slides || []}
-              onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
-              isPersisted={!!lessonId}
-            />
-          </Card>
-
-          {/* Resources */}
-          <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-4">Supplementary Materials</h2>
-            <FileUploadManager
-              resources={lessonForm.resources || []}
-              onChange={(resources) => setLessonForm({ ...lessonForm, resources })}
-            />
-          </Card>
-
-          {/* Options */}
-          <Card className="p-4 sm:p-6">
-            <h2 className="text-lg font-semibold mb-4">Lesson Options</h2>
-            <div className="flex items-center gap-3">
-              <input 
-                type="checkbox" 
-                id="is_preview" 
-                checked={lessonForm.is_preview || false} 
-                onChange={(e) => setLessonForm({ ...lessonForm, is_preview: e.target.checked })}
-                className="w-4 h-4 text-indigo-600 rounded"
-              />
-              <Label htmlFor="is_preview" className="cursor-pointer">
-                Allow free preview (non-enrolled students can view)
-              </Label>
-            </div>
-          </Card>
-
-          {/* Save Button (Bottom) */}
-          <div className="flex flex-col-reverse sm:flex-row sm:justify-end gap-3 pb-8">
-            <Button variant="outline" onClick={() => navigate(-1)} className="w-full sm:w-auto">
-              Cancel
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setSettingsOpen(true)}
+              className="flex-1 sm:flex-none"
+              title="Lesson settings (title, description, video, document, objectives…)"
+            >
+              <Settings2 className="w-4 h-4 mr-2" />
+              Lesson settings
             </Button>
-            <Button 
-              onClick={() => saveMutation.mutate()} 
+            <Button
+              type="button"
+              variant="outline"
+              size="sm"
+              onClick={() => setPresenting(true)}
+              disabled={!(lessonForm.slides || []).length}
+              className="flex-1 sm:flex-none"
+              title={(lessonForm.slides || []).length ? 'Launch full-screen presenter' : 'Add slides to present'}
+            >
+              <Play className="w-4 h-4 mr-2" />
+              Present
+            </Button>
+            <Button
+              size="sm"
+              onClick={() => saveMutation.mutate()}
               disabled={!lessonForm.title || (!lessonId && !courseId && !lessonForm.course_id) || saveMutation.isPending}
-              className="bg-indigo-600 w-full sm:w-auto"
-              size="lg"
+              className="bg-indigo-600 hover:bg-indigo-700 flex-1 sm:flex-none"
             >
               {saveMutation.isPending ? (
                 <>
@@ -632,6 +226,91 @@ export default function LessonEditor() {
               )}
             </Button>
           </div>
+        </div>
+      </div>
+
+      {/* Lesson settings drawer — owns ALL metadata, description, media URLs,
+          uploads, objectives, options. Behaviour identical to the previous
+          stacked cards; only the location changes so the slide builder owns
+          the editor's primary fold per the reference. */}
+      <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
+        <SheetContent
+          side="right"
+          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0"
+        >
+          <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-4">
+            <SheetHeader>
+              <SheetTitle className="flex items-center gap-2 text-base">
+                <Settings2 className="w-4 h-4 text-indigo-600" />
+                Lesson settings
+              </SheetTitle>
+              <p className="text-xs text-slate-500">
+                Edits stay in this draft until you click Save Lesson.
+              </p>
+            </SheetHeader>
+          </div>
+          <div className="px-4 sm:px-5 py-5">
+            <LessonMetadataPanel
+              lessonForm={lessonForm}
+              setLessonForm={setLessonForm}
+              lessonId={lessonId}
+              courseId={courseId}
+              tutorCourses={tutorCourses}
+              uploading={uploading}
+              setUploading={setUploading}
+              converting={converting}
+              setConverting={setConverting}
+              convertingPptx={convertingPptx}
+              setConvertingPptx={setConvertingPptx}
+            />
+          </div>
+        </SheetContent>
+      </Sheet>
+
+      {presenting && (
+        <FullscreenPresenter
+          slides={lessonForm.slides || []}
+          onClose={() => setPresenting(false)}
+          transition="fade"
+          showNotesByDefault={false}
+        />
+      )}
+
+      {/* Primary authoring workspace — slide builder is THE first thing the
+          tutor sees. All metadata lives in the Lesson settings drawer above.
+          Reference image 1 = this layout. */}
+      <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+        {/* Title strip — current lesson title acts as the hero, no extra cards.
+            If the tutor hasn't named the lesson yet, prompt them gently to
+            open the settings drawer without blocking the canvas. */}
+        {!lessonForm.title && (
+          <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50/70 px-4 py-2.5 text-sm">
+            <div className="flex items-center gap-2 text-indigo-900">
+              <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
+              <span>Add a lesson title and course in <strong>Lesson settings</strong> before saving.</span>
+            </div>
+            <Button size="sm" variant="outline" onClick={() => setSettingsOpen(true)} className="shrink-0 border-indigo-300 text-indigo-700 hover:bg-indigo-100">
+              Open settings
+            </Button>
+          </div>
+        )}
+
+        {/* Slide builder — primary workspace (must be in initial viewport at 1440x900). */}
+        <SlideEditor
+          slides={lessonForm.slides || []}
+          onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
+          isPersisted={!!lessonId}
+        />
+
+        {/* AI assistant — secondary, below the canvas (kept available, not stacked above). */}
+        <div className="mt-6">
+          <AILessonAssistant
+            lessonTitle={lessonForm.title}
+            lessonContent={lessonForm.description}
+            learningObjectives={lessonForm.learning_objectives}
+            existingSlides={lessonForm.slides || []}
+            onSlidesGenerated={(slides) => setLessonForm({ ...lessonForm, slides })}
+          />
         </div>
       </div>
     </div>
