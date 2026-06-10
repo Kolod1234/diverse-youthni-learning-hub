@@ -63,6 +63,18 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
   const setLeft  = (next) => update({ leftBlocks:  next });
   const setRight = (next) => update({ rightBlocks: next });
 
+  // SHARED nested-accordion state — exactly one child across BOTH columns
+  // may be expanded at any time. Key shape: `${side}:${blockId}`. Ephemeral,
+  // never serialised. Done / Escape clear it. Toggling a closed child sets
+  // exactly that key (it does NOT merge — any previously open child closes
+  // automatically because expanded === (nestedExpandedKey === key)).
+  const [nestedExpandedKey, setNestedExpandedKey] = useState(null);
+  useEffect(() => {
+    const onKey = (e) => { if (e.key === 'Escape') setNestedExpandedKey(null); };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, []);
+
   // ── Draggable divider ────────────────────────────────────────────────────
   const wrapRef = useRef(null);
   const [dragging, setDragging] = useState(false);
@@ -131,18 +143,24 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
       >
         <Column
           title="Left"
+          side="left"
           blocks={leftBlocks}
           onChange={setLeft}
           renderChild={renderChild}
+          nestedExpandedKey={nestedExpandedKey}
+          setNestedExpandedKey={setNestedExpandedKey}
         />
 
         <Divider onMouseDown={onDividerDown} onTouchStart={onDividerDown} dragging={dragging} ratio={ratio} />
 
         <Column
           title="Right"
+          side="right"
           blocks={rightBlocks}
           onChange={setRight}
           renderChild={renderChild}
+          nestedExpandedKey={nestedExpandedKey}
+          setNestedExpandedKey={setNestedExpandedKey}
         />
       </div>
     </div>
@@ -235,7 +253,7 @@ function Divider({ onMouseDown, onTouchStart, dragging }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-function Column({ title, blocks, onChange, renderChild }) {
+function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey, setNestedExpandedKey }) {
   const [adderOpen, setAdderOpen] = useState(false);
 
   const updateAt = (idx, nextData) => {
@@ -288,15 +306,28 @@ function Column({ title, blocks, onChange, renderChild }) {
             disableDown={idx === blocks.length - 1}
             label={child.type}
           >
-            {/* Each nested child gets its OWN Edit/Done accordion. We
-                override BlockExpandedContext locally so the child's leaf
-                renderer reacts to *this* toggle, not the outer container's
-                Edit state. Ephemeral — never serialised. */}
-            <NestedAccordion label={blockTypeLabel(child.type)}>
-              {renderChild
-                ? renderChild(child, (nextData) => updateAt(idx, nextData))
-                : <div className="text-xs text-red-500">Child renderer missing</div>}
-            </NestedAccordion>
+            {/* Each nested child gets its OWN Edit/Done accordion driven by
+                a SHARED key owned by TwoColumnsBlock. Only one child across
+                both columns can be expanded at any time — opening this one
+                automatically collapses any other (including one in the
+                other column) because `expanded` is computed as
+                (nestedExpandedKey === key). Done toggles it back to null;
+                Escape clears it. Ephemeral — never serialised. */}
+            {(() => {
+              const key = `${side}:${child.id}`;
+              const expanded = nestedExpandedKey === key;
+              return (
+                <NestedAccordion
+                  label={blockTypeLabel(child.type)}
+                  expanded={expanded}
+                  onToggle={() => setNestedExpandedKey(expanded ? null : key)}
+                >
+                  {renderChild
+                    ? renderChild(child, (nextData) => updateAt(idx, nextData))
+                    : <div className="text-xs text-red-500">Child renderer missing</div>}
+                </NestedAccordion>
+              );
+            })()}
           </ChildWrapper>
         ))}
       </div>
@@ -377,13 +408,13 @@ function LayoutSettingsDisclosure({ children, label = 'Layout settings' }) {
 
 // NestedAccordion
 // ---------------
-// Gives each nested child block inside a TwoColumnsBlock its OWN Edit/Done
-// toggle. Overrides BlockExpandedContext locally so the child renderer
-// reacts to *this* toggle — not the outer container's Edit state. Without
-// this override, every nested image/paragraph would show its formatting
-// toolbar as soon as the two-columns wrapper was expanded.
-function NestedAccordion({ children, label }) {
-  const [expanded, setExpanded] = useState(false);
+// CONTROLLED. `expanded` and `onToggle` are supplied by TwoColumnsBlock so
+// a single shared `nestedExpandedKey` decides which child (across BOTH
+// columns) is currently expanded — exclusivity is enforced at the
+// container, not here. We still override BlockExpandedContext locally so
+// the child renderer reacts to *this* toggle, not the outer container's
+// Edit state. Ephemeral — never serialised.
+function NestedAccordion({ children, label, expanded, onToggle }) {
   return (
     <div className="border border-transparent hover:border-indigo-100 rounded">
       <div className="flex items-center justify-between gap-1 px-1.5 pt-1">
@@ -392,7 +423,7 @@ function NestedAccordion({ children, label }) {
         </span>
         <button
           type="button"
-          onClick={() => setExpanded(e => !e)}
+          onClick={onToggle}
           aria-expanded={expanded}
           aria-label={expanded ? `Done editing nested ${label}` : `Edit nested ${label}`}
           className={`inline-flex items-center gap-1 h-6 px-1.5 rounded text-[10px] font-medium border transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
