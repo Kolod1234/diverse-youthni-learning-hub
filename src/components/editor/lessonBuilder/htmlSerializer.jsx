@@ -321,17 +321,19 @@ function blockToHtml(b) {
     case 'spacer':
       return `<div style="height:${Math.max(8, Math.min(200, Number(d.size) || 32))}px;"></div>`;
     case 'two-columns': {
-      // The editor writes `leftBlocks` / `rightBlocks` (Block[]) plus a
-      // numeric `ratio` (0.15..0.85), `verticalAlign` (top|center|bottom),
-      // and `stackOnMobile`. Legacy slides used `left` / `right` HTML
-      // strings, `ratio: "50:50"`, `align: 'start'|'center'|'end'`, `stack`.
-      // We accept BOTH so nothing is lost on either path.
-      const leftSide  = Array.isArray(d.leftBlocks)  ? d.leftBlocks
-                       : Array.isArray(d.left)       ? d.left
-                       : (typeof d.left === 'string' ? d.left : []);
-      const rightSide = Array.isArray(d.rightBlocks) ? d.rightBlocks
-                       : Array.isArray(d.right)      ? d.right
-                       : (typeof d.right === 'string' ? d.right : []);
+      // Block name is historical — this block now supports 1, 2 or 3
+      // columns selected by `columnCount`. Legacy data (no columnCount)
+      // defaults to 2 columns; legacy `{ left, right }` HTML strings are
+      // still accepted so previously authored slides round-trip unchanged.
+      const leftSide   = Array.isArray(d.leftBlocks)   ? d.leftBlocks
+                        : Array.isArray(d.left)        ? d.left
+                        : (typeof d.left === 'string'  ? d.left  : []);
+      const middleSide = Array.isArray(d.middleBlocks) ? d.middleBlocks : [];
+      const rightSide  = Array.isArray(d.rightBlocks)  ? d.rightBlocks
+                        : Array.isArray(d.right)       ? d.right
+                        : (typeof d.right === 'string' ? d.right : []);
+
+      const columnCount = [1, 2, 3].includes(d.columnCount) ? d.columnCount : 2;
 
       const renderSide = (side) => {
         if (Array.isArray(side)) return blocksToHtml(side);
@@ -340,7 +342,7 @@ function blockToHtml(b) {
         return '';
       };
 
-      // Ratio: accept number (0..1), number (0..100) or "50:50" string.
+      // Ratio (2-col only): accept number (0..1), number (0..100) or "50:50".
       const parseRatio = () => {
         const r = d.ratio;
         if (typeof r === 'number' && Number.isFinite(r)) {
@@ -353,7 +355,6 @@ function blockToHtml(b) {
         const a = Math.max(10, Math.min(90, Number(m[1])));
         return [a, 100 - a];
       };
-      const [lPct, rPct] = parseRatio();
 
       const gap = Math.max(0, Math.min(96, Number(d.gap) || 24));
 
@@ -366,15 +367,14 @@ function blockToHtml(b) {
 
       const stack = d.stackOnMobile !== false && d.stack !== false;
 
-      // Responsive stacking is driven by a real CSS media query, not by
-      // `flex-wrap` + `min-width` (which the browser silently ignores when
-      // the parent is narrower than the sum of the min-widths, leaving the
-      // two columns side-by-side and clipped — the exact 65px / 65px bug
-      // reported at 390px). A scoped <style> block declares the rule:
-      // below 768px, each column becomes a full-width row. The class names
-      // are stable so the rule is shared across every two-column block in
-      // the slide. Idempotent — even if multiple <style> blocks land in the
-      // same document, identical CSS is benign.
+      // ── 1 column ─────────────────────────────────────────────────────
+      if (columnCount === 1) {
+        return `<div style="margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937;">${renderSide(leftSide)}</div>`;
+      }
+
+      // ── 2 or 3 columns: shared responsive flexbox with @media stack ──
+      // Classes are stable + shared so multiple instances reuse one rule.
+      // Below 768px each column becomes a full-width row when stack is on.
       const stackCss = stack
         ? `<style>
             .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
@@ -390,6 +390,13 @@ function blockToHtml(b) {
           </style>`;
       const rootClass = stack ? 'lb-twocol' : 'lb-twocol-nostack';
 
+      if (columnCount === 3) {
+        // Equal thirds.
+        return `${stackCss}<div class="${rootClass}"><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(leftSide)}</div><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(middleSide)}</div><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(rightSide)}</div></div>`;
+      }
+
+      // 2-column (default) — ratio-controlled basis.
+      const [lPct, rPct] = parseRatio();
       return `${stackCss}<div class="${rootClass}"><div class="lb-twocol-col" style="flex-basis:${lPct}%;">${renderSide(leftSide)}</div><div class="lb-twocol-col" style="flex-basis:${rPct}%;">${renderSide(rightSide)}</div></div>`;
     }
     case 'code':
