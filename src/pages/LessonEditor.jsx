@@ -293,12 +293,12 @@ export default function LessonEditor() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-50 overflow-x-hidden">
+    <div className="h-screen max-h-screen flex flex-col bg-slate-50 overflow-x-hidden overflow-y-hidden">
       {/* Calm, immersive editor header — owns the viewport (Layout hides public chrome).
           At <sm we collapse to: [Back] [Title — truncated] [Save] [⋯ overflow]
           so the primary Save action is never clipped at 390px, and settings/present
           remain reachable through the overflow menu. ≥sm preserves the full inline row. */}
-      <div className="sticky top-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
+      <div className="shrink-0 z-20 bg-white/95 backdrop-blur border-b border-slate-200">
         <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-6 py-2.5 sm:py-3 flex items-center gap-2 sm:gap-3">
           <Button variant="ghost" onClick={() => navigate(-1)} size="sm" className="shrink-0 text-slate-600 hover:text-slate-900 px-2 sm:px-3">
             <ArrowLeft className="w-4 h-4 sm:mr-1.5" />
@@ -461,15 +461,12 @@ export default function LessonEditor() {
         />
       )}
 
-      {/* Primary authoring workspace — the Phase 1 presentation shell owns
-          the full viewport below the header. No outer max-width / padding so
-          the pasteboard can match the reference proportions. */}
-      <div className="w-full">
-        {/* Title strip — current lesson title acts as the hero, no extra cards.
-            If the tutor hasn't named the lesson yet, prompt them gently to
-            open the settings drawer without blocking the canvas. */}
-        {!lessonForm.title && (
-          <div className="mb-3 flex items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50/70 px-4 py-2.5 text-sm">
+      {/* Optional banners — sit between the header and the workspace and
+          take only their natural height; they never steal from the
+          workspace stage area. */}
+      {!lessonForm.title && (
+        <div className="shrink-0 px-3 sm:px-6 pt-2">
+          <div className="flex items-center justify-between gap-3 rounded-xl border border-indigo-200 bg-indigo-50/70 px-4 py-2 text-sm">
             <div className="flex items-center gap-2 text-indigo-900">
               <Sparkles className="w-4 h-4 text-indigo-600 shrink-0" />
               <span>Add a lesson title and course in <strong>Lesson settings</strong> before saving.</span>
@@ -478,18 +475,16 @@ export default function LessonEditor() {
               Open settings
             </Button>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Accessible save-error region. Rendered above the canvas so it is
-            in the natural reading order after the header (where Save lives)
-            and is announced to assistive tech via role="alert". Cleared on
-            every save attempt. */}
-        {saveError && (
+      {saveError && (
+        <div className="shrink-0 px-3 sm:px-6 pt-2">
           <div
             id="lesson-editor-save-error"
             role="alert"
             aria-live="assertive"
-            className="mb-3 flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2.5 text-sm text-red-900"
+            className="flex items-start gap-2 rounded-xl border border-red-200 bg-red-50 px-4 py-2 text-sm text-red-900"
           >
             <AlertCircle className="w-4 h-4 mt-0.5 text-red-600 shrink-0" />
             <div className="flex-1">
@@ -500,13 +495,13 @@ export default function LessonEditor() {
               </span>
             </div>
           </div>
-        )}
+        </div>
+      )}
 
-        {/* Slide builder — Phase 1 presentation workspace. The shell owns the
-            ribbon, thumbnail rail, pasteboard, stage, inspector and status bar
-            and occupies the full available viewport (the AI assistant and
-            other long stacked panels that previously lived beneath the canvas
-            are now opened from ribbon commands inside the shell). */}
+      {/* Primary authoring workspace — owns the remaining viewport height
+          via flex-1. The shell renders ribbon, thumbnail rail, grey
+          pasteboard, centred 16:9 slide and bottom status bar. */}
+      <div className="flex-1 min-h-0 min-w-0 w-full">
         <SlideEditor
           slides={lessonForm.slides || []}
           onChange={(slides) => setLessonForm({ ...lessonForm, slides })}

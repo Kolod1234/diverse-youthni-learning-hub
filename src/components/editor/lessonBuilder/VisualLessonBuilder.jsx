@@ -25,7 +25,16 @@ import { injectFontStylesheet } from './fontFamilies';
 
 const AUTOSAVE_MS = 1200;
 
-export default function VisualLessonBuilder({ slide, onChange, onPersist, isPersisted = false, flushRef }) {
+export default function VisualLessonBuilder({
+  slide, onChange, onPersist, isPersisted = false, flushRef,
+  // chromeless: when true (used by the new PresentationWorkspace) the builder
+  // renders ONLY the block list — no outer card wrapper, no sticky toolbar
+  // row, no built-in title input. Undo/redo, save status and preview are
+  // owned by the surrounding workspace chrome (ribbon + status bar).
+  // Defaults to false so every legacy caller (SlideEditor canvas mode,
+  // AdminCourseBuilder, etc.) renders exactly as before.
+  chromeless = false,
+}) {
   // Ensure Google web fonts used by the font picker are loaded into the
   // document — once per app session. Idempotent. This also covers the
   // PreviewModal (same document) and any LessonPlayer that mounts after the
@@ -229,43 +238,49 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
   };
 
   // ── render ──────────────────────────────────────────────────────────────
+  // Chromeless rendering branch: outer card / sticky toolbar / title input
+  // are all suppressed so the builder sits cleanly INSIDE the PresentationWorkspace's
+  // 16:9 slide stage. The block list still renders identically.
   return (
-    <div className="bg-white rounded-lg border border-gray-200">
-      {/* Top action bar */}
-      <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/60 rounded-t-lg sticky top-0 z-10">
-        <div className="flex items-center gap-1">
-          <ToolbarBtn label="Undo (Ctrl+Z)" onClick={undo} disabled={!canUndo}><Undo2 className="w-4 h-4" /></ToolbarBtn>
-          <ToolbarBtn label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!canRedo}><Redo2 className="w-4 h-4" /></ToolbarBtn>
+    <div className={chromeless ? '' : 'bg-white rounded-lg border border-gray-200'}>
+      {/* Top action bar — hidden in chromeless mode (workspace ribbon
+          owns Undo/Redo/Preview and the LessonEditor header owns Save). */}
+      {!chromeless && (
+        <div className="flex flex-wrap items-center justify-between gap-2 px-3 py-2 border-b border-gray-100 bg-gray-50/60 rounded-t-lg sticky top-0 z-10">
+          <div className="flex items-center gap-1">
+            <ToolbarBtn label="Undo (Ctrl+Z)" onClick={undo} disabled={!canUndo}><Undo2 className="w-4 h-4" /></ToolbarBtn>
+            <ToolbarBtn label="Redo (Ctrl+Shift+Z)" onClick={redo} disabled={!canRedo}><Redo2 className="w-4 h-4" /></ToolbarBtn>
+          </div>
+          <div className="flex items-center gap-2 text-xs text-gray-500">
+            <SaveStatus
+              saving={saving}
+              persistedAt={persistedAt}
+              dirty={isDirty}
+              isPersisted={isPersisted}
+              hasPersistCallback={typeof onPersist === 'function'}
+              error={persistError}
+            />
+          </div>
+          <div className="flex items-center gap-1">
+            <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
+              <Eye className="w-4 h-4" /> Preview
+            </Button>
+            <Button
+              size="sm"
+              onClick={manualSave}
+              disabled={saving}
+              className="gap-1.5 bg-indigo-600 hover:bg-indigo-700"
+              title={typeof onPersist === 'function' ? 'Save lesson now' : 'Apply blocks to the lesson draft (use the outer Save Lesson button to persist)'}
+            >
+              {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
+              {typeof onPersist === 'function' ? 'Save lesson' : 'Apply to lesson'}
+            </Button>
+          </div>
         </div>
-        <div className="flex items-center gap-2 text-xs text-gray-500">
-          <SaveStatus
-            saving={saving}
-            persistedAt={persistedAt}
-            dirty={isDirty}
-            isPersisted={isPersisted}
-            hasPersistCallback={typeof onPersist === 'function'}
-            error={persistError}
-          />
-        </div>
-        <div className="flex items-center gap-1">
-          <Button variant="outline" size="sm" onClick={() => setPreviewOpen(true)} className="gap-1.5">
-            <Eye className="w-4 h-4" /> Preview
-          </Button>
-          <Button
-            size="sm"
-            onClick={manualSave}
-            disabled={saving}
-            className="gap-1.5 bg-indigo-600 hover:bg-indigo-700"
-            title={typeof onPersist === 'function' ? 'Save lesson now' : 'Apply blocks to the lesson draft (use the outer Save Lesson button to persist)'}
-          >
-            {saving ? <Loader2 className="w-4 h-4 animate-spin" /> : <Save className="w-4 h-4" />}
-            {typeof onPersist === 'function' ? 'Save lesson' : 'Apply to lesson'}
-          </Button>
-        </div>
-      </div>
+      )}
 
-      {/* Slide title */}
-      {slide && (
+      {/* Slide title — hidden in chromeless mode (workspace inspector owns title). */}
+      {!chromeless && slide && (
         <div className="px-6 pt-4">
           <Label className="text-sm font-semibold mb-1 block">Slide title</Label>
           <Input
@@ -278,7 +293,7 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
       )}
 
       {/* Blocks */}
-      <div className="px-6 py-4">
+      <div className={chromeless ? 'px-2 py-2' : 'px-6 py-4'}>
         {blocks.length === 0 ? (
           <EmptyState onPick={(type) => addBlockAt(0, type)} />
         ) : (

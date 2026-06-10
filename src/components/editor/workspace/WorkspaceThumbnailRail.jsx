@@ -27,7 +27,13 @@ export default function WorkspaceThumbnailRail({
   onAdd,
 }) {
   return (
-    <div className="h-full flex flex-col bg-white border-r border-slate-200">
+    // w-full + min-w-0 makes this rail fill its parent column (the
+    // workspace uses w-[240px] / w-[260px] containers). Without
+    // w-full the inner contents would collapse to intrinsic width
+    // and the rail would render at ~120 px regardless of the
+    // 240 px column allocation — that was the real-world
+    // "rail renders at 128 px" failure.
+    <div className="h-full w-full min-w-0 flex flex-col bg-white border-r border-slate-200">
       <div className="flex items-center justify-between px-3 py-2 border-b border-slate-200 bg-slate-50 shrink-0">
         <p className="text-[11px] font-semibold uppercase tracking-wide text-slate-500">
           Slides ({slides.length})

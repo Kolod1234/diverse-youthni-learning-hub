@@ -166,9 +166,12 @@ export default function WorkspaceShell({
 
   if (isEmpty) {
     return (
-      <div className="fixed inset-0 flex flex-col bg-slate-50 z-10">
+      <div
+        className="flex flex-col bg-slate-50 h-full w-full"
+        style={{ maxWidth: '100vw', overflow: 'hidden' }}
+      >
         {appBarSlot}
-        <div className="flex-1 min-h-0 overflow-auto flex items-center justify-center p-6 bg-slate-100">
+        <div className="flex-1 min-h-0 overflow-auto flex items-center justify-center p-6 bg-[#e9edf2]">
           <div className="max-w-xl w-full bg-white border border-slate-200 rounded-lg shadow-sm p-6 sm:p-8 text-center">
             <h2 className="text-xl font-semibold text-slate-900 mb-1">Start your first slide</h2>
             <p className="text-sm text-slate-500 mb-5">

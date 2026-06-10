@@ -19,26 +19,20 @@ import WorkspaceInspector from './WorkspaceInspector';
 /**
  * PresentationWorkspace
  * ---------------------
- * Phase 1 workspace shell. Wraps the existing VisualLessonBuilder in a
- * presentation-editor layout:
+ * Phase-1 REPAIR build. The previous build used `fixed inset-0` which
+ * stole the LessonEditor's own sticky header height, dropped the
+ * status bar slot, and routed mismatched prop names into the ribbon
+ * (causing every tab to render empty). This version:
  *
- *   ┌──────────────────────────────────────────────────────┐
- *   │ Ribbon (Home | Insert | Design | Arrange)            │
- *   ├──────────────┬───────────────────────────────────────┤
- *   │ Slide rail   │ Pasteboard (grey) with 16:9 canvas    │
- *   │ 240 px       │ Notes (collapsible)                   │
- *   │              │ Status bar                            │
- *   └──────────────┴───────────────────────────────────────┘
- *
- * NO data shape changes. NO serializer/player edits. The inner
- * VisualLessonBuilder is the same component used today and produces the
- * same HTML in slide.content. Notes are a string written to `slide.notes`
- * via the same `onChange` path the title and content already use; the
- * Lesson schema's slides array stores additional keys verbatim and every
- * existing reader ignores them.
- *
- * All "Slide N of M" / save state / zoom state is mirrored from the
- * existing LessonEditor truth; no new business logic is introduced.
+ *  • Lives INSIDE the LessonEditor's `<div className="w-full">` and
+ *    bounds its own height to the remaining viewport via
+ *    `calc(100vh - var(--lesson-header-h, 56px))`.
+ *  • Uses a strict grid: [ribbon] / [rail | stage] with the stage
+ *    column itself containing the pasteboard + status bar.
+ *  • Passes the status bar through WorkspaceStage's `statusBarSlot`.
+ *  • Passes ribbon handlers as flat named props (matches the new
+ *    ribbon prop API).
+ *  • `min-w-0` on the stage column kills the horizontal page scroll.
  */
 export default function PresentationWorkspace({
   // Slide collection
@@ -52,10 +46,6 @@ export default function PresentationWorkspace({
   // Save state (mirrored from LessonEditor)
   saving,
   saveError,
-  // Lesson-level chrome handlers
-  appBarSlot,
-  presentSlot,
-  settingsSlot,
   // Existing dialogs / modals from SlideEditor that we keep available
   onOpenTemplates,
   onOpenBlocks,
@@ -66,26 +56,19 @@ export default function PresentationWorkspace({
   onImportFigma,
   onAddImage,
   onPresent,
-  // eslint-disable-next-line no-unused-vars
-  presentDisabled,
 }) {
   const ws = useWorkspaceState();
 
   const currentSlideData = slides[currentSlide] || null;
   const slideTotal = slides.length;
 
-  // Local "dirty" probe — we don't introduce a new persistence model; we
-  // just observe whether the current slide.content differs from what the
-  // outer LessonEditor knows about. The LessonEditor itself owns the
-  // single source of truth for persistence.
   const [previewOpen, setPreviewOpen] = useState(false);
   const [dirty, setDirty] = useState(false);
   const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
   const [undoHandlers, setUndoHandlers] = useState({ undo: null, redo: null });
 
   // ---------------------------------------------------------------
-  // Slide CRUD — reused from SlideEditor's old implementation but
-  // surfaced through ribbon/rail. Same `onSlidesChange` contract.
+  // Slide CRUD
   // ---------------------------------------------------------------
   const addSlide = useCallback(() => {
     const next = [
@@ -134,13 +117,7 @@ export default function PresentationWorkspace({
   }, [slides, onSlidesChange, onCurrentSlideChange]);
 
   // ---------------------------------------------------------------
-  // Block-insertion ribbon commands — we don't reach into the inner
-  // VisualLessonBuilder's block state directly (that's its private
-  // undo-redo stack). Instead, we extend the current slide.content
-  // with a serialised block of the requested type, then let the
-  // builder re-hydrate via its external-content effect. This reuses
-  // the existing htmlSerializer ↔ block parser round-trip, so no new
-  // surfaces are introduced.
+  // Block-insertion ribbon commands — round-trip via serialiser.
   // ---------------------------------------------------------------
   const insertBlockType = useCallback((type) => {
     if (!currentSlideData) return;
@@ -152,6 +129,7 @@ export default function PresentationWorkspace({
     const newSlides = [...slides];
     newSlides[currentSlide] = updated;
     onSlidesChange(newSlides);
+    setDirty(true);
     const label = ALL_BLOCK_ITEMS.find((b) => b.type === type)?.name || 'Block';
     toast.success(`${label} added`);
   }, [currentSlideData, slides, currentSlide, onSlidesChange]);
@@ -163,17 +141,11 @@ export default function PresentationWorkspace({
     setDirty(true);
   }, [slides, currentSlide, onSlidesChange]);
 
-  // Notes — stored as `slide.notes` on the same slide object. Safe extra
-  // key; the Lesson schema's slides items are open objects, so additional
-  // keys round-trip through every existing reader unchanged.
   const handleNotesChange = useCallback((notes) => {
     if (!currentSlideData) return;
     handleSlideUpdate({ ...currentSlideData, notes });
   }, [currentSlideData, handleSlideUpdate]);
 
-  // Image insertion — keep using the existing SlideEditor's onAddImage
-  // pipeline so uploads + URL/alt/caption stay routed through the same
-  // FileUploadManager → htmlSerializer path that powers the player.
   const handleAddImage = useCallback(() => {
     if (onAddImage) return onAddImage();
     insertBlockType('image');
@@ -182,12 +154,21 @@ export default function PresentationWorkspace({
   // ---------------------------------------------------------------
   // Render
   // ---------------------------------------------------------------
+  //
+  // Height: the workspace must consume the remaining viewport below
+  // the LessonEditor's own sticky header. We set a CSS custom
+  // property fallback so this works even if the header height
+  // changes in future.
   return (
-    <div className="fixed inset-0 top-0 flex flex-col bg-slate-50 z-10">
-      {/* App bar — owned by the page so save state can stay co-located with
-          the mutation it controls. */}
-      {appBarSlot}
-
+    <div
+      className="flex flex-col bg-white h-full w-full"
+      style={{
+        // Belt and braces against any rogue child trying to widen
+        // the page beyond the viewport.
+        maxWidth: '100vw',
+        overflow: 'hidden',
+      }}
+    >
       {/* Ribbon */}
       <WorkspaceRibbon
         activeTab={ws.activeRibbonTab}
@@ -221,11 +202,12 @@ export default function PresentationWorkspace({
         inspectorOpen={ws.inspectorOpen}
       />
 
-      {/* Main grid — rail | stage */}
-      <div className="flex flex-1 min-h-0">
-        {/* Desktop rail — persistent. Hidden below lg; replaced by a drawer
-            that hosts the SAME WorkspaceThumbnailRail (no state duplication). */}
-        <div className="hidden lg:flex w-[240px] xl:w-[260px] shrink-0 min-h-0">
+      {/* Main row: rail | stage */}
+      <div className="flex flex-1 min-h-0 min-w-0">
+        {/* Desktop rail — fixed 240 px. Visible from md (≥768) so the
+            240 px isn't lost at 820 px. Below md, the drawer takes
+            over. */}
+        <div className="hidden md:flex w-[240px] shrink-0 min-h-0 border-r border-slate-200 bg-white">
           <WorkspaceThumbnailRail
             slides={slides}
             currentSlide={currentSlide}
@@ -239,10 +221,12 @@ export default function PresentationWorkspace({
           />
         </div>
 
-        {/* Stage column */}
+        {/* Stage column — min-w-0 is essential to allow it to shrink
+            below the intrinsic content width and prevent horizontal
+            page scroll. */}
         <div className="flex flex-col flex-1 min-w-0 min-h-0">
-          {/* Mobile/tablet "Slides (N)" button + open inspector */}
-          <div className="lg:hidden flex items-center gap-2 px-3 py-1.5 border-b border-slate-200 bg-white">
+          {/* Below-md: in-flow "Slides (N)" bar */}
+          <div className="md:hidden flex items-center gap-2 px-3 py-1.5 border-b border-slate-200 bg-white shrink-0">
             <Button
               variant="outline"
               size="sm"
@@ -253,54 +237,58 @@ export default function PresentationWorkspace({
               Slides ({slideTotal})
             </Button>
             <span className="text-xs text-slate-500">
-              Slide {currentSlide + 1} of {slideTotal}
+              Slide {Math.min(currentSlide + 1, slideTotal)} of {slideTotal}
             </span>
           </div>
 
-          {/* Pasteboard + canvas + notes + status */}
+          {/* WorkspaceStage owns pasteboard + status bar slot.
+              Notes are shown above the status bar via the slot. */}
           <WorkspaceStage
             zoom={ws.zoom}
             statusBarSlot={
               <>
-                <WorkspaceNotes
-                  open={ws.notesOpen}
-                  onToggle={() => ws.setNotesOpen((o) => !o)}
-                  value={currentSlideData?.notes}
-                  onChange={handleNotesChange}
-                  slideNumber={currentSlide + 1}
-                />
+                {ws.notesOpen && (
+                  <WorkspaceNotes
+                    open
+                    onToggle={() => ws.setNotesOpen(false)}
+                    value={currentSlideData?.notes}
+                    onChange={handleNotesChange}
+                    slideNumber={currentSlide + 1}
+                  />
+                )}
                 <WorkspaceStatusBar
-                  saving={saving}
-                  saveError={saveError}
-                  dirty={dirty}
+                  isPending={saving}
+                  hasError={!!saveError}
+                  isDirty={dirty}
                   isPersisted={isPersisted}
                   slideIndex={currentSlide}
-                  slideTotal={slideTotal}
-                  zoomId={ws.zoomId}
-                  onZoomChange={ws.setZoomId}
-                  onZoomStep={ws.cycleZoom}
+                  slideCount={slideTotal}
+                  zoom={ws.zoom?.value ?? 'fit'}
+                  onZoomChange={(v) => {
+                    if (v === 'fit') return ws.setZoomId('fit');
+                    if (v === 0.5)  return ws.setZoomId('50');
+                    if (v === 0.75) return ws.setZoomId('75');
+                    if (v === 1)    return ws.setZoomId('100');
+                  }}
                 />
               </>
             }
           >
             {currentSlideData && (
-              <div className="p-6">
-                <BuilderHost
-                  slide={currentSlideData}
-                  onChange={handleSlideUpdate}
-                  builderFlushRef={builderFlushRef}
-                  isPersisted={isPersisted}
-                  onUndoStateChange={setUndoState}
-                  onUndoHandlersChange={setUndoHandlers}
-                />
-              </div>
+              <BuilderHost
+                slide={currentSlideData}
+                onChange={handleSlideUpdate}
+                builderFlushRef={builderFlushRef}
+                isPersisted={isPersisted}
+                onUndoStateChange={setUndoState}
+                onUndoHandlersChange={setUndoHandlers}
+              />
             )}
           </WorkspaceStage>
         </div>
       </div>
 
-      {/* Mobile slide drawer — hosts the SAME rail JSX so reorder/select
-          behave identically. */}
+      {/* Mobile slide drawer — same rail component, no duplicated state. */}
       <Sheet open={ws.railDrawerOpen} onOpenChange={ws.setRailDrawerOpen}>
         <SheetContent side="left" className="w-[88vw] sm:w-[360px] p-0 flex flex-col">
           <SheetHeader className="px-4 pt-4 pb-2 border-b">
@@ -325,7 +313,7 @@ export default function PresentationWorkspace({
         </SheetContent>
       </Sheet>
 
-      {/* Slide inspector (collapsible — not permanently expanded) */}
+      {/* Slide inspector — collapsible. */}
       <WorkspaceInspector
         open={ws.inspectorOpen}
         onOpenChange={ws.setInspectorOpen}
@@ -335,14 +323,7 @@ export default function PresentationWorkspace({
         onSlideChange={handleSlideUpdate}
       />
 
-      {/* Lesson settings drawer (owned by parent — rendered here so it
-          inherits the workspace's z-stack) */}
-      {settingsSlot}
-
-      {/* Presenter overlay (owned by parent) */}
-      {presentSlot}
-
-      {/* Preview — uses the same PreviewModal the builder uses internally */}
+      {/* Preview */}
       <PreviewModal
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
@@ -353,22 +334,15 @@ export default function PresentationWorkspace({
 }
 
 /**
- * BuilderHost
- * ------------
- * Thin adapter around VisualLessonBuilder that lifts its undo/redo + dirty
- * state up so the workspace ribbon and status bar can show real values
- * instead of placeholders. We intentionally avoid forking the builder —
- * we just observe a couple of pieces of state via render-time inspection.
+ * BuilderHost — wires the existing VisualLessonBuilder into the stage.
+ * The builder owns its own keyboard undo/redo. Ribbon Undo/Redo
+ * dispatch synthetic key events so we don't fork the builder's
+ * internal stack.
  */
 function BuilderHost({
   slide, onChange, builderFlushRef, isPersisted,
   onUndoStateChange, onUndoHandlersChange,
 }) {
-  // The existing VisualLessonBuilder owns its own keyboard shortcuts for
-  // undo/redo (Cmd/Ctrl+Z, Cmd/Ctrl+Shift+Z). The ribbon buttons we wire
-  // here dispatch synthetic keydown events on the document so we don't
-  // have to rewire the builder's internal stack — Phase 1 promise: "do
-  // not change the builder".
   useEffect(() => {
     const undo = () => {
       const ev = new KeyboardEvent('keydown', { key: 'z', ctrlKey: true, bubbles: true });
@@ -379,17 +353,17 @@ function BuilderHost({
       window.dispatchEvent(ev);
     };
     onUndoHandlersChange({ undo, redo });
-    // Until we wire a deeper observer, treat undo/redo as always available
-    // — the builder's internal disabled state will no-op safely.
     onUndoStateChange({ canUndo: true, canRedo: true });
   }, [onUndoHandlersChange, onUndoStateChange]);
 
   return (
-    <VisualLessonBuilder
-      slide={slide}
-      onChange={onChange}
-      flushRef={builderFlushRef}
-      isPersisted={isPersisted}
-    />
+    <div className="w-full min-h-full p-4">
+      <VisualLessonBuilder
+        slide={slide}
+        onChange={onChange}
+        flushRef={builderFlushRef}
+        isPersisted={isPersisted}
+      />
+    </div>
   );
 }

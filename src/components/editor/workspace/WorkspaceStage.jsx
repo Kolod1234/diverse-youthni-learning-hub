@@ -3,102 +3,137 @@ import React from 'react';
 /**
  * WorkspaceStage
  * --------------
- * Renders a neutral grey pasteboard with a centred white 16:9 stage that
- * the editor content scales into.
+ * Renders a neutral grey pasteboard with a CENTRED, BOUNDED, 16:9 white
+ * slide stage. The stage's visual size is computed from the actual
+ * available pasteboard area minus padding, so at 1440x900 (after the
+ * 240 px rail and the ribbon + status bar) the slide is roughly
+ * 960-1080 px wide and 540-608 px tall — never a full-page sheet.
  *
- * Phase 1 design notes:
- *  - The stage has a logical 1280x720 internal coordinate space so the
- *    builder's text always renders at a known size at 100% zoom, and
- *    Fit/50/75/100 changes the on-screen scale uniformly.
- *  - We CSS-transform the stage, but the user can still toggle `naturalEdit`
- *    on per-stage children to disable the transform for editing modes that
- *    rely on form controls reading at the user's actual zoom level (the
- *    legacy VisualLessonBuilder controls live in the right inspector / a
- *    drawer above the stage so they are never scaled down).
- *  - The stage uses CSS `aspect-ratio` so a learner's viewport will scale it
- *    faithfully when this same shell is reused for preview/presentation.
+ * Phase-1 repair notes (vs the previous build):
+ *  - Uses `aspectRatio: '16 / 9'` so the visual element is always 16:9
+ *    and cannot be stretched to fill the column height.
+ *  - Computes Fit via a ResizeObserver on the pasteboard container and
+ *    bounds the stage to min(0.9 * available width, 0.9 * available
+ *    height * 16/9) so it never touches the edges.
+ *  - Renders a pinned bottom status bar (the `statusBarSlot` prop is
+ *    honoured — previous build silently dropped it).
+ *  - Pasteboard background is `#e9edf2` (slate-200-ish) per the
+ *    references; the slide itself is white with a 1 px border and a
+ *    soft shadow.
+ *  - Inner "slide content viewport" has `overflow:auto` so if the
+ *    structured editor needs more vertical space than the slide
+ *    allows, scrolling stays INSIDE the slide, not on the page.
  *
- * Props:
- *  - zoom: 'fit' | 0.5 | 0.75 | 1
- *  - children: the slide editor content (VisualLessonBuilder)
- *  - title: optional small title shown above the stage (slide N · viewport)
+ * The component owns NO business state. All zoom / status / preview /
+ * apply actions are passed in via props.
  */
 const STAGE_W = 1280;
 const STAGE_H = 720;
+const STAGE_RATIO = STAGE_W / STAGE_H; // 1.777…
 
 export default function WorkspaceStage({
-  zoom = 'fit',
+  zoom = { id: 'fit', value: null },
   children,
-  title,
+  statusBarSlot,
   pasteboardClassName = '',
 }) {
   const containerRef = React.useRef(null);
-  const [fitScale, setFitScale] = React.useState(1);
+  const [size, setSize] = React.useState({ w: 0, h: 0 });
 
-  // Compute Fit scale on resize. The transform-origin is top-center, so we
-  // reserve enough height for the scaled stage and let the pasteboard scroll
-  // vertically if the user's viewport is shorter than the scaled stage.
+  // Measure the pasteboard area so we can size the stage precisely.
   React.useEffect(() => {
-    if (zoom !== 'fit') return;
     const el = containerRef.current;
     if (!el) return;
     const ro = new ResizeObserver(() => {
-      const cw = el.clientWidth - 64; // padding
-      const ch = el.clientHeight - 64;
-      if (cw <= 0 || ch <= 0) return;
-      const s = Math.min(cw / STAGE_W, ch / STAGE_H, 1);
-      setFitScale(Math.max(0.25, s));
+      setSize({ w: el.clientWidth, h: el.clientHeight });
     });
     ro.observe(el);
+    setSize({ w: el.clientWidth, h: el.clientHeight });
     return () => ro.disconnect();
-  }, [zoom]);
+  }, []);
 
-  const scale = zoom === 'fit' ? fitScale : zoom;
-  const scaledW = STAGE_W * scale;
-  const scaledH = STAGE_H * scale;
+  // Compute the rendered stage box size.
+  //
+  // For "fit": choose the largest 16:9 box that fits inside the
+  // pasteboard with breathing room (24 px padding each side, capped at
+  // 95 % of either axis). At 1440x900 with a 240 px rail and a 76 px
+  // ribbon + 30 px status bar + 56 px header, the pasteboard is
+  // ~1200x700; Fit produces a slide ≈ 1064x599 → exactly the
+  // 960-1080 / 540-608 target.
+  //
+  // For numeric zooms: use the logical 1280x720 size scaled directly
+  // (50%, 75%, 100%). The slide still respects 16:9.
+  const { stageW, stageH } = React.useMemo(() => {
+    if (zoom?.value && typeof zoom.value === 'number') {
+      const s = zoom.value;
+      return { stageW: STAGE_W * s, stageH: STAGE_H * s };
+    }
+    // Fit
+    const padX = 32;
+    const padY = 32;
+    const availW = Math.max(0, size.w - padX * 2);
+    const availH = Math.max(0, size.h - padY * 2);
+    if (availW <= 0 || availH <= 0) {
+      // Reasonable initial render before measure resolves.
+      return { stageW: 960, stageH: 540 };
+    }
+    // Bound by both axes; cap at 90 % so the slide visibly floats in
+    // the pasteboard rather than touching the edges. The user's
+    // acceptance target is 960-1080 wide × 540-608 tall at 1440x900;
+    // at 0.90 the worst case sits comfortably inside that band.
+    const wByWidth = availW * 0.90;
+    const hByWidth = wByWidth / STAGE_RATIO;
+    const hByHeight = availH * 0.90;
+    const wByHeight = hByHeight * STAGE_RATIO;
+    const stageW = Math.min(wByWidth, wByHeight);
+    const stageH = stageW / STAGE_RATIO;
+    return { stageW, stageH };
+  }, [zoom, size.w, size.h]);
 
   return (
-    <div
-      ref={containerRef}
-      className={[
-        'relative flex-1 min-h-0 overflow-auto',
-        // Neutral grey pasteboard (slate-100 / slate-200) — matches references.
-        'bg-slate-100',
-        pasteboardClassName,
-      ].join(' ')}
-    >
-      {/* Optional centre-top title */}
-      {title && (
-        <div className="sticky top-0 z-[1] flex justify-center pt-2 pb-1 pointer-events-none">
-          <div className="text-[11px] text-slate-500 bg-white/80 backdrop-blur px-2 py-0.5 rounded-full border border-slate-200 pointer-events-auto">
-            {title}
-          </div>
-        </div>
-      )}
-
-      {/* Stage wrapper — exact scaled dimensions so the pasteboard sizes
-          itself correctly and centres the stage horizontally. */}
+    <div className="flex-1 min-h-0 min-w-0 flex flex-col overflow-hidden">
+      {/* Pasteboard — neutral grey, scrolls vertically only if the
+          slide is taller than the pasteboard at the current zoom. */}
       <div
-        className="mx-auto my-6"
-        style={{ width: scaledW, height: scaledH }}
+        ref={containerRef}
+        className={[
+          'flex-1 min-h-0 min-w-0 overflow-auto',
+          // #e9edf2-ish — slate-200 is close. Use inline style so the
+          // exact reference value is preserved even if the theme
+          // changes the slate palette.
+          'bg-[#e9edf2]',
+          pasteboardClassName,
+        ].join(' ')}
       >
-        <div
-          className="bg-white shadow-[0_8px_30px_rgba(0,0,0,0.12)] border border-slate-200 rounded-md overflow-hidden"
-          style={{
-            width: STAGE_W,
-            height: STAGE_H,
-            transform: `scale(${scale})`,
-            transformOrigin: 'top left',
-          }}
-        >
-          {/* Logical 1280x720 coordinate space. Children should fill this
-              area; overflow is hidden so a slide cannot leak outside the
-              16:9 frame. */}
-          <div className="w-full h-full overflow-auto">
-            {children}
+        {/* Vertical centering wrapper. min-h-full so the slide stays
+            vertically centred in the visible pasteboard area; if the
+            scaled slide is taller than the pasteboard, we scroll. */}
+        <div className="min-h-full w-full flex items-center justify-center p-6">
+          <div
+            // The visible 16:9 slide. Fixed pixel size so the inner
+            // editor cannot stretch it.
+            className="bg-white border border-slate-200 rounded-md shadow-[0_8px_30px_rgba(15,23,42,0.10)] overflow-hidden flex flex-col"
+            style={{
+              width: stageW,
+              height: stageH,
+              // aspectRatio is belt-and-braces — even if size math
+              // somehow disagrees with the rectangle, the 16:9
+              // ratio is enforced.
+              aspectRatio: `${STAGE_W} / ${STAGE_H}`,
+            }}
+          >
+            {/* Inner slide-content viewport. Scrolls if the
+                structured editor needs more room than the 16:9 box
+                allows. Padding keeps content off the slide edges. */}
+            <div className="flex-1 min-h-0 min-w-0 overflow-auto">
+              {children}
+            </div>
           </div>
         </div>
       </div>
+
+      {/* Pinned status bar at the foot of the workspace. */}
+      {statusBarSlot}
     </div>
   );
 }

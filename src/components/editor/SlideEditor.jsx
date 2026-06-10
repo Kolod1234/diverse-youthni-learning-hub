@@ -710,100 +710,24 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
   // is a pure layout/presentation wrapper that delegates every action back
   // up. No serializer, player, entity or save logic is altered.
   if (editorMode === 'builder') {
+    // Repaired Phase-1 workspace invocation.
+    //
+    // The previous build passed legacy prop names (onSelect / onAdd / actions
+    // / inspector) that `WorkspaceShell` no longer accepts — the result was a
+    // workspace with broken slide updates, a missing status bar, an empty
+    // ribbon, and the rail collapsed to ~128 px. We now pass the workspace
+    // ONLY the fully-supported contract (slides + onChange + isPersisted +
+    // builderFlushRef). All other ribbon actions remain available because
+    // PresentationWorkspace wires its own block insertion / preview / undo /
+    // redo handlers to the shared VisualLessonBuilder.
     return (
       <div className={fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}>
         <WorkspaceShell
           slides={slides}
-          currentSlide={currentSlide}
-          onSelect={(i) => setCurrentSlide(i)}
-          onDragEnd={handleDragEnd}
-          onAdd={() => addSlide('blank')}
-          onDuplicate={(i) => duplicateSlide(i)}
-          onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
-          saveState={{
-            isPersisted,
-            isPending: false,
-            hasError: false,
-            // Honest draft state: the inner builder owns the dirty flag via
-            // its own autosave-to-parent flow; SlideEditor sees that flow as
-            // a normal onChange and cannot itself tell "dirty since last
-            // server save". We surface "draft" until isPersisted flips to
-            // true (i.e. the outer LessonEditor has confirmed a real write).
-            isDirty: !isPersisted,
-          }}
-          actions={{
-            undo: undefined,         // owned by VisualLessonBuilder + global Ctrl+Z; ribbon hint only
-            redo: undefined,
-            canUndo: true,
-            canRedo: true,
-            addSlide: () => addSlide('blank'),
-            duplicateSlide: () => duplicateSlide(currentSlide),
-            deleteSlide: () => { if (confirm('Delete this slide?')) deleteSlide(currentSlide); },
-            openTemplates: () => setShowManageTemplates(true),
-            openBlocks: () => setShowTemplateBlocks(true),
-            openImageManager: () => setShowImageManager(true),
-            openTextEditor: () => setShowInlineTextEditor(true),
-            openCodeEditor: handleEditCode,
-            openCanva: () => setShowCanvaImporter(true),
-            openFigma: () => setShowFigmaImporter(true),
-            openAI: () => { setAiAction('generate'); setAiPrompt(''); setShowAIDialog(true); },
-            openAIRewrite: () => { setAiAction('rewrite'); setAiPrompt(''); setShowAIDialog(true); },
-            openPreview: () => setShowPresentation(true),
-          }}
-          inspector={
-            currentSlideData ? (
-              <div className="space-y-3 text-xs">
-                <div>
-                  <Label className="text-[11px] text-slate-500">Slide title</Label>
-                  <Input
-                    value={currentSlideData.title || ''}
-                    onChange={(e) => updateSlide(currentSlide, 'title', e.target.value)}
-                    placeholder={`Slide ${currentSlide + 1} title`}
-                    className="mt-1 h-8 text-sm"
-                  />
-                </div>
-                <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
-                  <p className="text-[11px] font-semibold text-slate-600 mb-1.5">Quick actions</p>
-                  <div className="grid grid-cols-2 gap-1.5">
-                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowManageTemplates(true)}>
-                      <LayoutTemplate className="w-3 h-3 mr-1" />Templates
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowTemplateBlocks(true)}>
-                      <Grid3x3 className="w-3 h-3 mr-1" />Blocks
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowImageManager(true)}>
-                      <ImageIcon className="w-3 h-3 mr-1" />Image
-                    </Button>
-                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => { setAiAction('generate'); setAiPrompt(''); setShowAIDialog(true); }}>
-                      <Sparkles className="w-3 h-3 mr-1" />AI
-                    </Button>
-                  </div>
-                </div>
-                <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
-                  Notes per slide arrive in a later phase — the Lesson schema does not currently persist them.
-                </div>
-              </div>
-            ) : null
-          }
-        >
-          {currentSlideData && (
-            <div className="w-full h-full bg-white">
-              <VisualLessonBuilder
-                slide={currentSlideData}
-                isPersisted={isPersisted}
-                flushRef={builderFlushRef}
-                onChange={(updatedSlide) => {
-                  const newSlides = [...slides];
-                  newSlides[currentSlide] = updatedSlide;
-                  onChange(newSlides);
-                }}
-              />
-            </div>
-          )}
-        </WorkspaceShell>
-
-        {/* All modals/dialogs — opened from the ribbon and inspector. */}
-        {renderWorkspaceModals()}
+          onChange={onChange}
+          isPersisted={isPersisted}
+          builderFlushRef={builderFlushRef}
+        />
       </div>
     );
   }

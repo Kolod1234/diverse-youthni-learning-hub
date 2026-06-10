@@ -1,54 +1,28 @@
 import React from 'react';
-import { Button } from '@/components/ui/button';
 import {
-  Undo2, Redo2, Copy, Trash2,
-  Plus, LayoutTemplate, Image as ImageIcon, Code, Sparkles,
-  Type, Palette, Grid3x3, Download, Wand2,
-  Eye, ChevronDown,
+  Plus, Copy, Trash2, Undo2, Redo2,
+  Image as ImageIcon, Type, Heading1, List, Table, Code,
+  LayoutTemplate, Grid3x3, Sparkles, Wand2, Download,
+  Eye, Play, FileText, Wrench,
 } from 'lucide-react';
 
 /**
  * WorkspaceRibbon
  * ---------------
- * A compact, presentation-style ribbon for the LessonEditor workspace.
+ * Compact, presentation-style ribbon. Phase-1 REPAIR build.
  *
- * RULES (per Phase 1 spec):
- *  - Every control wires to an EXISTING action handler the parent already
- *    has implemented. No inert controls. No new business logic introduced.
- *  - Tabs: Home / Insert / Design / Arrange. Groups within each tab are
- *    labelled and dividers separate them.
- *  - Horizontally scrollable on small screens; collapsed to one row.
- *  - Tooltips via title=; aria-labels on icon-only buttons; focus rings via
- *    shadcn Button.
+ * Critical fix vs the previous build: this component now accepts the
+ * EXACT prop names that PresentationWorkspace passes (onAddSlide,
+ * onAddImage, onPreview, etc.). Previously it expected `actions={...}`
+ * and silently rendered empty groups because every handler was
+ * undefined.
  *
- * Props: a single `actions` map of handler functions — all optional. A button
- * whose action is undefined is hidden (never disabled with no effect).
+ * Each tab renders ONLY when at least one of its commands is wired.
+ * Each command renders ONLY when its handler is wired. There are no
+ * inert buttons, ever.
  */
-const TABS = [
-  { id: 'home',    label: 'Home' },
-  { id: 'insert',  label: 'Insert' },
-  { id: 'design',  label: 'Design' },
-  { id: 'arrange', label: 'Arrange' },
-];
 
-function Group({ label, children }) {
-  return (
-    <div className="flex flex-col items-stretch shrink-0">
-      <div className="flex items-center gap-0.5 px-1.5">
-        {children}
-      </div>
-      <div className="text-[10px] text-slate-400 text-center mt-0.5 truncate px-1 select-none uppercase tracking-wide">
-        {label}
-      </div>
-    </div>
-  );
-}
-
-function Divider() {
-  return <div className="w-px self-stretch bg-slate-200 mx-1 my-1" aria-hidden="true" />;
-}
-
-function RibbonBtn({ icon: Icon, label, title, onClick, disabled, accent = false, compact = true }) {
+function Btn({ icon: Icon, label, title, onClick, disabled, accent }) {
   if (!onClick) return null;
   return (
     <button
@@ -58,152 +32,214 @@ function RibbonBtn({ icon: Icon, label, title, onClick, disabled, accent = false
       title={title || label}
       aria-label={label}
       className={[
-        'inline-flex items-center gap-1.5 rounded-md text-xs font-medium transition-colors',
-        compact ? 'h-8 px-2' : 'h-9 px-2.5',
+        'inline-flex flex-col items-center justify-center gap-0.5 rounded-md transition-colors',
+        'h-[56px] min-w-[56px] px-2 text-[11px] font-medium leading-tight',
         accent
-          ? 'text-indigo-700 hover:bg-indigo-50'
+          ? 'text-indigo-700 hover:bg-indigo-50 ring-1 ring-transparent hover:ring-indigo-200'
           : 'text-slate-700 hover:bg-slate-100',
         'disabled:opacity-40 disabled:cursor-not-allowed',
         'focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400',
       ].join(' ')}
     >
       {Icon && <Icon className="w-4 h-4 shrink-0" />}
-      <span className="hidden md:inline whitespace-nowrap">{label}</span>
+      <span className="whitespace-nowrap">{label}</span>
     </button>
   );
 }
 
-export default function WorkspaceRibbon({
-  activeTab = 'home',
-  onTabChange,
-  collapsed = false,
-  onToggleCollapsed,
-  actions = {},
-}) {
+function Group({ label, children }) {
+  // Strip undefined children before counting.
+  const kids = React.Children.toArray(children).filter(Boolean);
+  if (kids.length === 0) return null;
   return (
-    <div className="bg-white border-b border-slate-200 sticky top-[52px] z-10">
+    <div className="flex flex-col items-stretch shrink-0 px-1.5 border-r border-slate-200 last:border-r-0">
+      <div className="flex items-center gap-0.5">
+        {kids}
+      </div>
+      <div className="text-[10px] text-slate-400 text-center mt-0.5 truncate select-none uppercase tracking-wide">
+        {label}
+      </div>
+    </div>
+  );
+}
+
+const TAB_DEFS = ['home', 'insert', 'design', 'arrange'];
+
+export default function WorkspaceRibbon(props) {
+  const {
+    activeTab = 'home',
+    onTabChange,
+
+    // Slide CRUD
+    onAddSlide, onDuplicateSlide, onDeleteSlide,
+    onUndo, canUndo, onRedo, canRedo,
+
+    // Insert
+    onAddImage, onAddText, onAddHeading, onAddList, onAddTable,
+    onEditCode,
+    onOpenTemplates, onOpenBlocks,
+    onImportCanva, onImportFigma,
+
+    // AI
+    onOpenAI, onRewriteWithAI,
+
+    // Review
+    onPreview, onPresent,
+
+    // Inspector / notes toggles
+    onToggleInspector, onToggleNotes,
+    inspectorOpen, notesOpen,
+  } = props;
+
+  // Pre-compute which tabs have at least one wired action so we can
+  // hide empty ones rather than render dead headings.
+  const tabHasActions = {
+    home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent),
+    insert:  !!(onAddImage || onAddText || onAddHeading || onAddList || onAddTable || onEditCode || onOpenTemplates || onOpenBlocks || onImportCanva || onImportFigma || onOpenAI),
+    design:  !!(onOpenTemplates || onAddImage || onPreview),
+    arrange: !!(onDuplicateSlide || onDeleteSlide || onUndo || onRedo),
+  };
+  const visibleTabs = TAB_DEFS.filter((t) => tabHasActions[t]);
+
+  // If the currently selected tab has no actions (e.g. fresh draft
+  // before any slide is added), default to the first visible tab.
+  const tab = tabHasActions[activeTab] ? activeTab : (visibleTabs[0] || 'home');
+
+  return (
+    <div className="bg-white border-b border-slate-200 shrink-0">
       {/* Tabs row */}
-      <div className="flex items-center gap-1 px-3 pt-1.5 overflow-x-auto">
-        {TABS.map((t) => {
-          const active = t.id === activeTab;
+      <div className="flex items-center gap-0 px-3 pt-1 overflow-x-auto">
+        {visibleTabs.map((t) => {
+          const active = t === tab;
           return (
             <button
-              key={t.id}
+              key={t}
               type="button"
-              onClick={() => onTabChange?.(t.id)}
+              onClick={() => onTabChange?.(t)}
               className={[
-                'text-xs font-medium px-3 py-1.5 rounded-t-md transition-colors shrink-0',
+                'text-[12px] font-medium px-3 py-1.5 rounded-t-md transition-colors shrink-0 capitalize',
                 active
-                  ? 'text-indigo-700 bg-slate-50 border border-slate-200 border-b-transparent'
+                  ? 'text-indigo-700 bg-slate-50 border border-slate-200 border-b-transparent -mb-px'
                   : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50',
               ].join(' ')}
               aria-current={active ? 'page' : undefined}
             >
-              {t.label}
+              {t}
             </button>
           );
         })}
         <div className="flex-1" />
-        {onToggleCollapsed && (
+
+        {/* Right-aligned toggles — Notes + Inspector. Always visible
+            when wired so the workspace chrome is reachable in any tab. */}
+        {onToggleNotes && (
           <button
             type="button"
-            onClick={onToggleCollapsed}
-            className="text-[11px] text-slate-500 hover:text-slate-800 inline-flex items-center gap-1 px-2 py-1 rounded shrink-0"
-            aria-expanded={!collapsed}
-            aria-controls="workspace-ribbon-row"
+            onClick={onToggleNotes}
+            className={`text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded shrink-0 ${notesOpen ? 'text-indigo-700 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
+            title="Toggle speaker notes"
           >
-            <ChevronDown className={`w-3.5 h-3.5 transition-transform ${collapsed ? '-rotate-90' : ''}`} />
-            {collapsed ? 'Expand' : 'Collapse'}
+            <FileText className="w-3.5 h-3.5" />
+            Notes
+          </button>
+        )}
+        {onToggleInspector && (
+          <button
+            type="button"
+            onClick={onToggleInspector}
+            className={`text-[11px] inline-flex items-center gap-1 px-2 py-1 rounded shrink-0 ${inspectorOpen ? 'text-indigo-700 bg-indigo-50' : 'text-slate-600 hover:text-slate-900 hover:bg-slate-50'}`}
+            title="Toggle slide inspector"
+          >
+            <Wrench className="w-3.5 h-3.5" />
+            Inspector
           </button>
         )}
       </div>
 
-      {/* Ribbon row */}
-      {!collapsed && (
-        <div
-          id="workspace-ribbon-row"
-          className="flex items-stretch gap-0 px-2 pb-1.5 pt-1 overflow-x-auto border-t border-slate-100 bg-slate-50/60"
-        >
-          {activeTab === 'home' && (
-            <>
-              <Group label="Clipboard">
-                <RibbonBtn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={actions.undo} disabled={actions.canUndo === false} />
-                <RibbonBtn icon={Redo2} label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={actions.redo} disabled={actions.canRedo === false} />
-              </Group>
-              <Divider />
-              <Group label="Slide">
-                <RibbonBtn icon={Plus} label="Add" title="Add a new slide" onClick={actions.addSlide} accent />
-                <RibbonBtn icon={Copy} label="Duplicate" title="Duplicate current slide" onClick={actions.duplicateSlide} />
-                <RibbonBtn icon={Trash2} label="Delete" title="Delete current slide" onClick={actions.deleteSlide} />
-              </Group>
-              <Divider />
-              <Group label="Layout">
-                <RibbonBtn icon={LayoutTemplate} label="Templates" title="Choose a layout / template" onClick={actions.openTemplates} />
-                <RibbonBtn icon={Grid3x3} label="Blocks" title="Insert a block template" onClick={actions.openBlocks} />
-              </Group>
-              <Divider />
-              <Group label="Review">
-                <RibbonBtn icon={Eye} label="Preview" title="Preview the lesson" onClick={actions.openPreview} accent />
-              </Group>
-            </>
-          )}
+      {/* Ribbon row — 76 px tall (56 button + 20 group label). */}
+      <div
+        className="flex items-stretch px-2 py-1 overflow-x-auto bg-slate-50/60 border-t border-slate-100"
+        style={{ minHeight: 76 }}
+        role="toolbar"
+        aria-label={`${tab} ribbon`}
+      >
+        {tab === 'home' && (
+          <>
+            <Group label="Clipboard">
+              <Btn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={onUndo} disabled={canUndo === false} />
+              <Btn icon={Redo2} label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={onRedo} disabled={canRedo === false} />
+            </Group>
+            <Group label="Slide">
+              <Btn icon={Plus} label="New" title="Add a new slide" onClick={onAddSlide} accent />
+              <Btn icon={Copy} label="Duplicate" title="Duplicate current slide" onClick={onDuplicateSlide} />
+              <Btn icon={Trash2} label="Delete" title="Delete current slide" onClick={onDeleteSlide} />
+            </Group>
+            <Group label="Layout">
+              <Btn icon={LayoutTemplate} label="Templates" title="Slide templates" onClick={onOpenTemplates} />
+              <Btn icon={Grid3x3} label="Blocks" title="Block templates" onClick={onOpenBlocks} />
+            </Group>
+            <Group label="Review">
+              <Btn icon={Eye} label="Preview" title="Preview this slide" onClick={onPreview} />
+              <Btn icon={Play} label="Present" title="Launch presenter" onClick={onPresent} accent />
+            </Group>
+          </>
+        )}
 
-          {activeTab === 'insert' && (
-            <>
-              <Group label="Media">
-                <RibbonBtn icon={ImageIcon} label="Image" title="Insert / replace an image" onClick={actions.openImageManager} />
-                <RibbonBtn icon={Type} label="Text" title="Edit slide text" onClick={actions.openTextEditor} />
-                <RibbonBtn icon={Code} label="Code" title="Edit a code block" onClick={actions.openCodeEditor} />
-              </Group>
-              <Divider />
-              <Group label="Templates">
-                <RibbonBtn icon={LayoutTemplate} label="Templates" title="Slide templates" onClick={actions.openTemplates} />
-                <RibbonBtn icon={Grid3x3} label="Blocks" title="Block templates" onClick={actions.openBlocks} />
-              </Group>
-              <Divider />
-              <Group label="Import">
-                <RibbonBtn icon={Download} label="Canva" title="Import from Canva" onClick={actions.openCanva} />
-                <RibbonBtn icon={Download} label="Figma" title="Import from Figma" onClick={actions.openFigma} />
-              </Group>
-              <Divider />
-              <Group label="AI">
-                <RibbonBtn icon={Sparkles} label="AI" title="AI assistant" onClick={actions.openAI} accent />
-                <RibbonBtn icon={Wand2} label="Rewrite" title="Rewrite this slide" onClick={actions.openAIRewrite} />
-              </Group>
-            </>
-          )}
+        {tab === 'insert' && (
+          <>
+            <Group label="Text">
+              <Btn icon={Heading1} label="Heading" title="Insert heading" onClick={onAddHeading} />
+              <Btn icon={Type} label="Text" title="Insert paragraph" onClick={onAddText} />
+              <Btn icon={List} label="List" title="Insert bullet list" onClick={onAddList} />
+            </Group>
+            <Group label="Media">
+              <Btn icon={ImageIcon} label="Image" title="Insert / replace image" onClick={onAddImage} />
+              <Btn icon={Table} label="Table" title="Insert table" onClick={onAddTable} />
+              <Btn icon={Code} label="Code" title="Edit code block" onClick={onEditCode} />
+            </Group>
+            <Group label="Templates">
+              <Btn icon={LayoutTemplate} label="Templates" title="Slide templates" onClick={onOpenTemplates} />
+              <Btn icon={Grid3x3} label="Blocks" title="Block templates" onClick={onOpenBlocks} />
+            </Group>
+            <Group label="Import">
+              <Btn icon={Download} label="Canva" title="Import Canva design" onClick={onImportCanva} />
+              <Btn icon={Download} label="Figma" title="Import Figma design" onClick={onImportFigma} />
+            </Group>
+            <Group label="AI">
+              <Btn icon={Sparkles} label="Assist" title="AI assistant" onClick={onOpenAI} accent />
+              <Btn icon={Wand2} label="Rewrite" title="Rewrite this slide" onClick={onRewriteWithAI} />
+            </Group>
+          </>
+        )}
 
-          {activeTab === 'design' && (
-            <>
-              <Group label="Theme">
-                <RibbonBtn icon={Palette} label="Templates" title="Apply a verified template" onClick={actions.openTemplates} />
-              </Group>
-              <Divider />
-              <Group label="Media">
-                <RibbonBtn icon={ImageIcon} label="Image" title="Add or replace the slide image" onClick={actions.openImageManager} />
-              </Group>
-              <Divider />
-              <Group label="Review">
-                <RibbonBtn icon={Eye} label="Preview" title="Preview" onClick={actions.openPreview} accent />
-              </Group>
-            </>
-          )}
+        {tab === 'design' && (
+          <>
+            <Group label="Theme">
+              <Btn icon={LayoutTemplate} label="Templates" title="Apply a template" onClick={onOpenTemplates} />
+            </Group>
+            <Group label="Media">
+              <Btn icon={ImageIcon} label="Image" title="Slide image" onClick={onAddImage} />
+            </Group>
+            <Group label="Review">
+              <Btn icon={Eye} label="Preview" title="Preview" onClick={onPreview} />
+              <Btn icon={Play} label="Present" title="Launch presenter" onClick={onPresent} accent />
+            </Group>
+          </>
+        )}
 
-          {activeTab === 'arrange' && (
-            <>
-              <Group label="Order">
-                <RibbonBtn icon={Copy} label="Duplicate" title="Duplicate slide" onClick={actions.duplicateSlide} />
-                <RibbonBtn icon={Trash2} label="Delete" title="Delete slide" onClick={actions.deleteSlide} />
-              </Group>
-              <Divider />
-              <Group label="History">
-                <RibbonBtn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={actions.undo} disabled={actions.canUndo === false} />
-                <RibbonBtn icon={Redo2} label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={actions.redo} disabled={actions.canRedo === false} />
-              </Group>
-            </>
-          )}
-        </div>
-      )}
+        {tab === 'arrange' && (
+          <>
+            <Group label="Order">
+              <Btn icon={Copy} label="Duplicate" title="Duplicate slide" onClick={onDuplicateSlide} />
+              <Btn icon={Trash2} label="Delete" title="Delete slide" onClick={onDeleteSlide} />
+            </Group>
+            <Group label="History">
+              <Btn icon={Undo2} label="Undo" title="Undo (Ctrl+Z)" onClick={onUndo} disabled={canUndo === false} />
+              <Btn icon={Redo2} label="Redo" title="Redo (Ctrl+Shift+Z)" onClick={onRedo} disabled={canRedo === false} />
+            </Group>
+          </>
+        )}
+      </div>
     </div>
   );
 }

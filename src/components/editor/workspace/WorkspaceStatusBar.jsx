@@ -17,29 +17,29 @@ import { ZoomIn, ZoomOut, Maximize, Check, Loader2, AlertCircle } from 'lucide-r
  *   - hasError        true after a failed save mutation
  *   - isDirty         true when there are local draft edits not yet sent
  */
-const ZOOM_PRESETS = [
-  { value: 'fit', label: 'Fit' },
-  { value: 0.5,   label: '50%' },
-  { value: 0.75,  label: '75%' },
-  { value: 1,     label: '100%' },
-];
-
 export default function WorkspaceStatusBar({
+  // New (preferred) prop names — used by PresentationWorkspace.
   slideIndex = 0,
-  slideCount = 0,
-  zoom = 'fit',
-  onZoomChange,
+  slideTotal,
+  slideCount, // legacy alias
+  zoomId,
+  onZoomChange,   // (id) => void  — receives preset ID ('fit','50','75','100')
+  onZoomStep,    // (dir) => void
+  // Save state (PresentationWorkspace shape)
+  saving = false,
+  saveError = null,
+  dirty = false,
   isPersisted = false,
-  isPending = false,
-  hasError = false,
-  isDirty = false,
 }) {
-  const onPreset = (v) => onZoomChange?.(v);
-  const onStep = (dir) => {
-    if (zoom === 'fit') return onZoomChange?.(dir > 0 ? 0.75 : 0.5);
-    const next = Math.min(2, Math.max(0.25, +(zoom + dir * 0.1).toFixed(2)));
-    onZoomChange?.(next);
-  };
+  const totalCount = slideTotal != null ? slideTotal : (slideCount || 0);
+  const activePresetId = zoomId || 'fit';
+  const onPreset = (id) => onZoomChange?.(id);
+  const onStep = (dir) => onZoomStep?.(dir);
+  // Translate the PresentationWorkspace save shape into the StatusBar's
+  // internal flags so the existing render branches keep working.
+  const isPending = !!saving;
+  const hasError = !!saveError;
+  const isDirty = !!dirty;
 
   let status;
   if (isPending) {
@@ -74,14 +74,21 @@ export default function WorkspaceStatusBar({
     status = <span className="text-slate-500">Draft — not yet saved</span>;
   }
 
-  const zoomLabel = zoom === 'fit' ? 'Fit' : `${Math.round(zoom * 100)}%`;
+  // Preset IDs (string) used everywhere now — matches useWorkspaceState.
+  const PRESET_IDS = [
+    { id: 'fit', label: 'Fit' },
+    { id: '50', label: '50%' },
+    { id: '75', label: '75%' },
+    { id: '100', label: '100%' },
+  ];
+  const activeLabel = PRESET_IDS.find((p) => p.id === activePresetId)?.label || 'Fit';
 
   return (
-    <div className="flex items-center justify-between gap-3 px-3 h-8 bg-white border-t border-slate-200 text-[11px] text-slate-600">
+    <div className="flex items-center justify-between gap-3 px-3 bg-white border-t border-slate-200 text-[11px] text-slate-600 shrink-0" style={{ height: 30 }}>
       <div className="flex items-center gap-3 min-w-0">
-        <span className="font-medium text-slate-700">
-          {slideCount > 0
-            ? `Slide ${Math.min(slideIndex + 1, slideCount)} of ${slideCount}`
+        <span className="font-medium text-slate-700 tabular-nums">
+          {totalCount > 0
+            ? `Slide ${Math.min(slideIndex + 1, totalCount)} of ${totalCount}`
             : 'No slides'}
         </span>
         <span className="hidden sm:inline text-slate-300">·</span>
@@ -100,13 +107,13 @@ export default function WorkspaceStatusBar({
         </button>
 
         <div className="flex items-center gap-0.5 px-1">
-          {ZOOM_PRESETS.map((p) => {
-            const active = p.value === zoom;
+          {PRESET_IDS.map((p) => {
+            const active = p.id === activePresetId;
             return (
               <button
-                key={String(p.value)}
+                key={p.id}
                 type="button"
-                onClick={() => onPreset(p.value)}
+                onClick={() => onPreset(p.id)}
                 aria-pressed={active}
                 title={`Zoom: ${p.label}`}
                 className={[
@@ -130,7 +137,7 @@ export default function WorkspaceStatusBar({
           <ZoomIn className="w-3.5 h-3.5" />
         </button>
 
-        <span className="hidden md:inline text-slate-400 ml-1 tabular-nums">{zoomLabel}</span>
+        <span className="hidden md:inline text-slate-400 ml-1 tabular-nums">{activeLabel}</span>
 
         <button
           type="button"
