@@ -25,7 +25,7 @@ import { injectFontStylesheet } from './fontFamilies';
 
 const AUTOSAVE_MS = 1200;
 
-export default function VisualLessonBuilder({ slide, onChange, onPersist, isPersisted = false }) {
+export default function VisualLessonBuilder({ slide, onChange, onPersist, isPersisted = false, flushRef }) {
   // Ensure Google web fonts used by the font picker are loaded into the
   // document — once per app session. Idempotent. This also covers the
   // PreviewModal (same document) and any LessonPlayer that mounts after the
@@ -172,6 +172,29 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
       return next;
     }, { immediate: true });
   };
+
+  // Synchronous flush: serialise the current blocks into slide.content and push
+  // up to the parent IMMEDIATELY, bypassing the autosave debounce. Used by the
+  // outer LessonEditor's Save Lesson button so a tutor cannot lose un-flushed
+  // edits by clicking Save within the debounce window. Returns the serialised
+  // HTML so the caller can also use it directly if needed.
+  const flushToParent = () => {
+    if (!slideRef.current) return null;
+    const html = blocksToHtml(blocks);
+    if (html !== lastSerialised.current) {
+      lastSerialised.current = html;
+      onChangeRef.current?.({ ...slideRef.current, content: html });
+    }
+    return html;
+  };
+
+  // Expose flush to the parent via a ref. Re-binds on every render so the
+  // latest `blocks` closure is always used. Cleared on unmount.
+  useEffect(() => {
+    if (!flushRef) return;
+    flushRef.current = flushToParent;
+    return () => { if (flushRef.current === flushToParent) flushRef.current = null; };
+  });
 
   const manualSave = async () => {
     if (!slideRef.current) return;

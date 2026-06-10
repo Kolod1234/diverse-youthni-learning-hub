@@ -111,7 +111,7 @@ const SLIDE_TEMPLATES = {
 // slide belongs to has actually been written to the Lesson entity. It is
 // forwarded down so the builder's save status badge can show "Saved" only
 // when there is a real saved lesson, never on a brand-new draft.
-export default function SlideEditor({ slides = [], onChange, isPersisted = false }) {
+export default function SlideEditor({ slides = [], onChange, isPersisted = false, builderFlushRef }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [fullscreenEdit, setFullscreenEdit] = useState(false);
   // 'builder' = Visual Lesson Builder (new default).
@@ -1056,6 +1056,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                     <VisualLessonBuilder
                       slide={currentSlideData}
                       isPersisted={isPersisted}
+                      flushRef={builderFlushRef}
                       onChange={(updatedSlide) => {
                         const newSlides = [...slides];
                         newSlides[currentSlide] = updatedSlide;

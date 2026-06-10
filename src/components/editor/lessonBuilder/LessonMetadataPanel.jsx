@@ -56,6 +56,13 @@ export default function LessonMetadataPanel({
   setConverting,
   convertingPptx,
   setConvertingPptx,
+  // True when the URL `courseId` matches an authorised course in tutorCourses
+  // (admins see all). When true the picker is hidden and the course is shown
+  // as read-only context. When false (URL course missing or unauthorised),
+  // the picker is offered so the tutor can choose a course — never silently
+  // defaulted to "first course".
+  urlCourseValid = false,
+  urlCourseTitle = '',
 }) {
   const queryClient = useQueryClient();
 
@@ -101,19 +108,48 @@ export default function LessonMetadataPanel({
     <div className="space-y-4">
       {/* Basic Information */}
       <SectionCard title="Basic Information" subtitle="Course, title, section and duration.">
-        {!lessonId && !courseId && (
+        {/* Course context.
+            - Editing an existing lesson: don't show a course picker — the
+              lesson's course is fixed and validated by the parent on save.
+            - New lesson with a valid URL courseId: show the bound course as
+              read-only context so the tutor can SEE which course this will
+              be saved to (the original bug was a silent/missing binding).
+            - New lesson with no/invalid URL courseId: show the picker so the
+              tutor must choose an authorised course — never default silently. */}
+        {!lessonId && urlCourseValid && (
+          <div>
+            <Label className="text-xs">Course</Label>
+            <div
+              className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm mt-1 bg-slate-50 text-slate-800 truncate"
+              title={urlCourseTitle}
+              data-testid="lesson-editor-course-bound"
+            >
+              {urlCourseTitle || 'Selected course'}
+            </div>
+            <p className="text-[11px] text-slate-500 mt-1">
+              This lesson will be saved to this course.
+            </p>
+          </div>
+        )}
+        {!lessonId && !urlCourseValid && (
           <div>
             <Label className="text-xs">Course *</Label>
             <select
               value={lessonForm.course_id || ''}
               onChange={(e) => setLessonForm({ ...lessonForm, course_id: e.target.value })}
               className="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm mt-1 bg-white"
+              data-testid="lesson-editor-course-picker"
             >
               <option value="">Select a course</option>
               {tutorCourses.map((c) => (
                 <option key={c.id} value={c.id}>{c.title}</option>
               ))}
             </select>
+            {courseId && (
+              <p className="text-[11px] text-amber-700 mt-1">
+                The course in the URL is not available to you. Choose one of your courses above.
+              </p>
+            )}
           </div>
         )}
         <div>
