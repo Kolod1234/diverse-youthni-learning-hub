@@ -78,6 +78,7 @@ import { Card, TextField, Box, Button, Drawer, List, ListItem, ListItemButton, L
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import { toast } from 'sonner';
 import { motion } from 'framer-motion';
+import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
 export default function LessonPlayerClassic() {
   const location = useLocation();
@@ -131,6 +132,11 @@ export default function LessonPlayerClassic() {
   useEffect(() => {
     base44.auth.me().then(setUser);
   }, []);
+
+  // Ensure the lesson-builder web fonts are loaded so font-family inline
+  // styles set in the editor render correctly in the rendered slide HTML.
+  // Idempotent — only injects the <link> once per session.
+  useEffect(() => { injectFontStylesheet(); }, []);
 
   // useLessonPlayer is declared BELOW (after handleNextLesson/handlePrevLesson)
   // Stub refs so destructuring below works before the hook call is executed

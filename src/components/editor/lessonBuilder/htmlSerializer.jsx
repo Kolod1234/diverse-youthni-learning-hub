@@ -13,6 +13,7 @@
 // slides without losing custom styling, gradients, tables, etc.
 
 import { createBlock } from './blockTypes';
+import { sanitiseFontFamily } from './fontFamilies';
 
 const escapeHtml = (s = '') =>
   String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;')
@@ -80,6 +81,14 @@ function sanitiseStyle(style) {
       if (!ALLOWED_CSS.has(prop)) return null;
       // Block url()/expression()/javascript: in values.
       if (/url\s*\(|expression\s*\(|javascript:/i.test(val)) return null;
+      // font-family: only accept stacks that match one of the shipped fonts
+      // in fontFamilies.js. Drops anything else (e.g. a pasted "evil:url(…)"
+      // family or a custom family not in our list).
+      if (prop === 'font-family') {
+        const safe = sanitiseFontFamily(val);
+        if (!safe) return null;
+        return `${prop}: ${safe}`;
+      }
       return `${prop}: ${val}`;
     })
     .filter(Boolean)

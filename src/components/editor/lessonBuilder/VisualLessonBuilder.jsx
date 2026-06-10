@@ -14,6 +14,7 @@ import { blocksToHtml, htmlToBlocks } from './htmlSerializer';
 import { createBlock, BLOCK_GROUPS } from './blockTypes';
 import useUndoRedo from './useUndoRedo';
 import useUnsavedChangesWarning from './useUnsavedChangesWarning';
+import { injectFontStylesheet } from './fontFamilies';
 
 // VisualLessonBuilder
 // ------------------------------------------------------------------------------
@@ -25,6 +26,12 @@ import useUnsavedChangesWarning from './useUnsavedChangesWarning';
 const AUTOSAVE_MS = 1200;
 
 export default function VisualLessonBuilder({ slide, onChange, onPersist, isPersisted = false }) {
+  // Ensure Google web fonts used by the font picker are loaded into the
+  // document — once per app session. Idempotent. This also covers the
+  // PreviewModal (same document) and any LessonPlayer that mounts after the
+  // editor in the same SPA session.
+  useEffect(() => { injectFontStylesheet(); }, []);
+
   // Derive initial blocks from the incoming slide content exactly once.
   const initialBlocks = useMemo(() => htmlToBlocks(slide?.content || ''), [slide?.id || slide?.order]);
   const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);

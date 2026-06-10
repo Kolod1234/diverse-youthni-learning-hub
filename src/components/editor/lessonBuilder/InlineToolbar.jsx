@@ -8,6 +8,7 @@ import {
   Type as TypeIcon,
 } from 'lucide-react';
 import SymbolPalette from './SymbolPalette';
+import FontFamilyPicker from './FontFamilyPicker';
 
 // Rich inline toolbar for any text-y block. All actions go through the
 // editable ref's helpers so selection is preserved (mouseDown.preventDefault
@@ -23,13 +24,9 @@ import SymbolPalette from './SymbolPalette';
 
 const TEXT_COLORS = ['#1F2937', '#4F46E5', '#10B981', '#F59E0B', '#EF4444', '#EC4899', '#0EA5E9', '#000000', '#FFFFFF'];
 const HIGHLIGHT_COLORS = ['#FEF3C7', '#DBEAFE', '#DCFCE7', '#FCE7F3', '#FEE2E2', '#E0E7FF', 'transparent'];
-const FONT_FAMILIES = [
-  { label: 'Default', value: '' },
-  { label: 'Sans', value: 'system-ui, sans-serif' },
-  { label: 'Serif', value: 'Georgia, "Times New Roman", serif' },
-  { label: 'Mono', value: 'Menlo, Consolas, monospace' },
-  { label: 'Roboto', value: '"Roboto", system-ui, sans-serif' },
-];
+// Font families are now sourced from the shared `fontFamilies` module and
+// rendered by the searchable, grouped FontFamilyPicker component below.
+// The local 5-item list previously declared here is intentionally removed.
 const FONT_SIZES = [
   { label: '12', value: '12px' }, { label: '14', value: '14px' },
   { label: '16', value: '16px' }, { label: '18', value: '18px' },
@@ -94,17 +91,13 @@ export default function InlineToolbar({
         </>
       )}
 
-      {/* Font family + size */}
+      {/* Font family — searchable, grouped, scrollable picker (46 fonts).
+          Preserves selection (mouseDown.preventDefault inside) and writes the
+          chosen CSS stack via execCommand('fontName') so it round-trips
+          through sanitiseInline (font-family is in ALLOWED_CSS) and reloads
+          via htmlToBlocks unchanged. */}
       {showFontFamily && (
-        <Picker
-          label="Font family"
-          icon={<TypeIcon className="w-3.5 h-3.5" />}
-          ariaLabel="Font family"
-          items={FONT_FAMILIES}
-          onPick={(v) => fire('fontName', v || 'inherit')}
-          renderItem={(it) => <span style={{ fontFamily: it.value || 'inherit' }} className="text-sm">{it.label}</span>}
-          width="w-44"
-        />
+        <FontFamilyPicker onPick={(v) => fire('fontName', v || 'inherit')} />
       )}
       {showSizes && (
         <Picker

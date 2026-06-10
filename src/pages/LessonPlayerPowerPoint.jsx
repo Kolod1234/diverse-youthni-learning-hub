@@ -65,6 +65,7 @@ import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
 import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { NotesDialog, AIAssistantDialog, BookmarksPanel } from '@/components/lesson/LessonPlayerSharedUI';
+import { injectFontStylesheet } from '@/components/editor/lessonBuilder/fontFamilies';
 
 export default function LessonPlayerPowerPoint() {
   const location = useLocation();
@@ -106,6 +107,12 @@ export default function LessonPlayerPowerPoint() {
   useEffect(() => {
     base44.auth.me().then(setUser);
   }, [lessonId]);
+
+  // Ensure the lesson-builder web fonts (Roboto, Montserrat, Source Code Pro,
+  // etc.) are loaded into the document so font-family inline styles set by
+  // the editor render the actual web font face in the player. Idempotent —
+  // a single <link> is added the first time any consumer mounts.
+  useEffect(() => { injectFontStylesheet(); }, []);
 
   // ── Data fetching ──────────────────────────────────────────────────────────
   const { data: currentLessonArray = [], isLoading: lessonLoading } = useQuery({
