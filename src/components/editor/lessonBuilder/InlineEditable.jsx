@@ -175,12 +175,44 @@ const InlineEditable = React.forwardRef(function InlineEditable({
 
   // Wrap selection in an element. Useful for sub/sup/mark which we want
   // saved as real tags rather than execCommand's <span style="…">.
+  //
+  // COLLAPSED-CARET BEHAVIOUR (Word / Google Docs parity):
+  // If the caret is collapsed (no text selected), insert an empty wrapper
+  // at the caret and place the caret INSIDE it. Subsequently-typed text
+  // will be authored inside that wrapper and inherit its style — exactly
+  // what users expect when they pick "24px" or a highlight colour and
+  // then start typing. Previously we silently returned, which is the
+  // "Increase font does nothing" complaint.
   const wrapSelection = (tagName, attrs = {}) => {
     focusEditor();
     const range = getRange();
-    if (!range || range.collapsed) return;
+    if (!range) return;
+
     const wrapper = document.createElement(tagName);
     Object.entries(attrs).forEach(([k, v]) => wrapper.setAttribute(k, v));
+
+    if (range.collapsed) {
+      // Insert an empty wrapper with a zero-width space inside so the
+      // caret has a text node to live in. The ZWSP is invisible and the
+      // sanitiser keeps it (it's part of the text content, not markup).
+      // Browsers replace the ZWSP with the user's next keystroke, so
+      // the final HTML reads naturally.
+      const zwsp = document.createTextNode('\u200B');
+      wrapper.appendChild(zwsp);
+      range.insertNode(wrapper);
+      // Place caret immediately AFTER the ZWSP, inside the wrapper, so
+      // typed input goes into wrapper, inheriting its style.
+      const sel = window.getSelection();
+      sel.removeAllRanges();
+      const r = document.createRange();
+      r.setStart(zwsp, 1);
+      r.setEnd(zwsp, 1);
+      sel.addRange(r);
+      captureSelection();
+      emitChange();
+      return;
+    }
+
     try {
       // If selection spans multiple nodes, surroundContents throws.
       // Fall back to extract → append → insert.

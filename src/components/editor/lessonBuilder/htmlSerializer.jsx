@@ -232,7 +232,25 @@ function blockToHtml(b) {
       const captionLine = (d.caption || d.credit)
         ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption || '')}${d.credit ? ` <span style="font-style:normal; color:#9CA3AF;">— ${escapeHtml(d.credit)}</span>` : ''}</figcaption>`
         : '';
-      return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}"${heightAttr} loading="lazy" decoding="async" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
+      // CANONICAL MARKER: `data-lesson-block="image"` on the outer <div> lets
+      // htmlToBlocks reconstruct a native `image` block on reload (instead of
+      // falling through to `legacy-html`). Without this marker the figure-
+      // based markup would round-trip into a Legacy HTML block — losing the
+      // alt/caption/credit/width/align/fit controls the editor exposes.
+      // The marker is sanitiser-safe: htmlToBlocks reads it via getAttribute
+      // and the legacy-html fallback renders the wrapper verbatim if a
+      // future parser doesn't know about it.
+      const dataAttrs = [
+        `data-lesson-block="image"`,
+        `data-align="${align}"`,
+        `data-width="${widthVal}"`,
+        `data-width-unit="${unit}"`,
+        `data-fit="${fit}"`,
+        aspect ? `data-aspect="${aspect}"` : '',
+        `data-lock-aspect="${d.lockAspect === false ? 'false' : 'true'}"`,
+        d.credit ? `data-credit="${escapeHtml(d.credit)}"` : '',
+      ].filter(Boolean).join(' ');
+      return `<div ${dataAttrs} style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}"${heightAttr} loading="lazy" decoding="async" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
     }
     case 'image-text': {
       // Image+text layout MUST mirror the editor's two-column grid:
@@ -619,6 +637,42 @@ export function htmlToBlocks(html) {
 }
 
 function parseSimpleElement(el, tag) {
+  // CANONICAL BLOCK MARKER — if blocksToHtml stamped a `data-lesson-block`
+  // attribute on this element, reconstruct the native block from the
+  // embedded media + data-* attributes. Handles round-trip for image /
+  // image-text / video that previously fell through to legacy-html
+  // because their outer <div> wasn't recognised.
+  const lessonBlockKind = el.getAttribute && el.getAttribute('data-lesson-block');
+  if (tag === 'div' && lessonBlockKind === 'image') {
+    const img = el.querySelector('img');
+    if (img) {
+      const cap = el.querySelector('figcaption');
+      // figcaption text node holds the caption; nested <span> (if present)
+      // holds the credit — but we also persist credit on the data-credit
+      // attribute, which is the authoritative source on reload.
+      let caption = '';
+      if (cap) {
+        const clone = cap.cloneNode(true);
+        clone.querySelectorAll('span').forEach(s => s.remove());
+        caption = clone.textContent.replace(/^\s*—\s*/, '').trim();
+      }
+      const widthAttr = parseFloat(el.getAttribute('data-width'));
+      const aspectAttr = parseFloat(el.getAttribute('data-aspect'));
+      return createBlock('image', {
+        url: img.getAttribute('src') || '',
+        alt: img.getAttribute('alt') || '',
+        caption,
+        credit: el.getAttribute('data-credit') || '',
+        align: el.getAttribute('data-align') || 'center',
+        widthUnit: el.getAttribute('data-width-unit') === 'px' ? 'px' : 'percent',
+        width: Number.isFinite(widthAttr) ? widthAttr : 100,
+        fit: el.getAttribute('data-fit') === 'cover' ? 'cover' : 'contain',
+        aspect: Number.isFinite(aspectAttr) ? aspectAttr : null,
+        lockAspect: el.getAttribute('data-lock-aspect') !== 'false',
+      });
+    }
+  }
+
   // We only convert "pure" elements with no descendant tables/grids/divs that
   // would lose styling if reserialised. Anything fancy goes to legacy-html.
   const hasComplexChildren = el.querySelector('table, img, iframe, div, section, article');
@@ -726,6 +780,27 @@ function parseSimpleElement(el, tag) {
     if (!imgHtml.includes('70%')) {
       // eslint-disable-next-line no-console
       console.warn('[lessonBuilder] image serializer ignored width 70%. Key mismatch?');
+    }
+
+    // The exact regression the user reported: blocksToHtml → htmlToBlocks
+    // MUST return a native image block, NOT legacy-html. The canonical
+    // `data-lesson-block="image"` marker on the outer <div> is what makes
+    // parseSimpleElement reconstruct the native block.
+    const roundTripped = htmlToBlocks(imgHtml);
+    const first = roundTripped[0];
+    if (!first || first.type !== 'image') {
+      // eslint-disable-next-line no-console
+      console.warn(
+        '[lessonBuilder] image round-trip FAILED: got',
+        first?.type || 'null',
+        '— expected "image". Image inserts will appear as Legacy HTML.'
+      );
+    } else if (first.data.url !== 'https://placehold.co/600x400/png') {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] image round-trip lost URL:', first.data.url);
+    } else if (Number(first.data.width) !== 70) {
+      // eslint-disable-next-line no-console
+      console.warn('[lessonBuilder] image round-trip lost width:', first.data.width);
     }
 
     // Image-with-text round-trip.
