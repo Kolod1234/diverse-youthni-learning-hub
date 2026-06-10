@@ -105,49 +105,57 @@ const TEMPLATE_BLOCKS = {
         name: 'Remember Box',
         icon: Target,
         color: 'rose',
-        html: '<div style="background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%); border-left: 5px solid #F43F5E; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F43F5E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📌</div><div style="flex: 1;"><h4 style="color: #9F1239; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Remember</h4><p style="color: #881337; font-size: 15px; line-height: 1.6; margin: 0;">Highlight key facts that students must memorize.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #FFE4E6 0%, #FECDD3 100%); border-left: 5px solid #F43F5E; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F43F5E; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📌</div><div style="flex: 1;"><h4 style="color: #9F1239; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Remember</h4><p style="color: #881337; font-size: 15px; line-height: 1.6; margin: 0;">Highlight key facts that students must memorize.</p></div></div></div>',
+        nativeBlock: () => nb.callout('danger', '📌 Remember', 'Highlight key facts that students must memorize.')
       },
       {
         name: 'Common Mistake',
         icon: AlertTriangle,
         color: 'red',
-        html: '<div style="background: white; border: 2px dashed #DC2626; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">❌</div><div style="flex: 1;"><h4 style="color: #991B1B; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Common Mistake</h4><p style="color: #7F1D1D; font-size: 15px; line-height: 1.6; margin: 0;">Point out typical errors students make and how to avoid them.</p></div></div></div>'
+        html: '<div style="background: white; border: 2px dashed #DC2626; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">❌</div><div style="flex: 1;"><h4 style="color: #991B1B; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Common Mistake</h4><p style="color: #7F1D1D; font-size: 15px; line-height: 1.6; margin: 0;">Point out typical errors students make and how to avoid them.</p></div></div></div>',
+        nativeBlock: () => nb.callout('danger', '❌ Common Mistake', 'Point out typical errors students make and how to avoid them.')
       },
       {
         name: 'Fun Fact',
         icon: Zap,
         color: 'pink',
-        html: '<div style="background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border: 2px solid #EC4899;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #EC4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">🎨</div><div style="flex: 1;"><h4 style="color: #9F1239; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Fun Fact</h4><p style="color: #831843; font-size: 15px; line-height: 1.6; margin: 0;">Share interesting trivia to engage students and make learning fun.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-radius: 12px; padding: 20px; margin: 20px 0; border: 2px solid #EC4899;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #EC4899; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">🎨</div><div style="flex: 1;"><h4 style="color: #9F1239; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Fun Fact</h4><p style="color: #831843; font-size: 15px; line-height: 1.6; margin: 0;">Share interesting trivia to engage students and make learning fun.</p></div></div></div>',
+        nativeBlock: () => nb.callout('info', '🎨 Fun Fact', 'Share interesting trivia to engage students and make learning fun.')
       },
       {
         name: 'Study Tip',
         icon: BookOpen,
         color: 'cyan',
-        html: '<div style="background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); border-left: 5px solid #06B6D4; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #06B6D4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📚</div><div style="flex: 1;"><h4 style="color: #164E63; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Study Tip</h4><p style="color: #155E75; font-size: 15px; line-height: 1.6; margin: 0;">Provide effective study strategies and learning techniques.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #CFFAFE 0%, #A5F3FC 100%); border-left: 5px solid #06B6D4; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #06B6D4; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📚</div><div style="flex: 1;"><h4 style="color: #164E63; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Study Tip</h4><p style="color: #155E75; font-size: 15px; line-height: 1.6; margin: 0;">Provide effective study strategies and learning techniques.</p></div></div></div>',
+        nativeBlock: () => nb.callout('info', '📚 Study Tip', 'Provide effective study strategies and learning techniques.')
       },
       {
         name: 'Note Box',
         icon: FileText,
         color: 'yellow',
-        html: '<div style="background: #FFFBEB; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #FBBF24; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📝</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Note</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Additional notes or supplementary information.</p></div></div></div>'
+        html: '<div style="background: #FFFBEB; border: 2px solid #FBBF24; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #FBBF24; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">📝</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Note</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Additional notes or supplementary information.</p></div></div></div>',
+        nativeBlock: () => nb.callout('warning', '📝 Note', 'Additional notes or supplementary information.')
       },
       {
         name: 'Attention Box',
         icon: Zap,
         color: 'red',
-        html: '<div style="background: linear-gradient(135deg, #FEE2E2 0%, #FCA5A5 100%); border: 3px solid #DC2626; border-radius: 12px; padding: 24px; margin: 20px 0; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.2);"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 40px; height: 40px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 22px; animation: pulse 2s infinite;">⚡</div><div style="flex: 1;"><h4 style="color: #7F1D1D; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">Attention!</h4><p style="color: #991B1B; font-size: 15px; line-height: 1.6; margin: 0;">Critical alert requiring immediate attention from students.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #FEE2E2 0%, #FCA5A5 100%); border: 3px solid #DC2626; border-radius: 12px; padding: 24px; margin: 20px 0; box-shadow: 0 4px 16px rgba(220, 38, 38, 0.2);"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 40px; height: 40px; background: #DC2626; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 22px; animation: pulse 2s infinite;">⚡</div><div style="flex: 1;"><h4 style="color: #7F1D1D; font-size: 20px; font-weight: 700; margin: 0 0 8px 0; text-transform: uppercase;">Attention!</h4><p style="color: #991B1B; font-size: 15px; line-height: 1.6; margin: 0;">Critical alert requiring immediate attention from students.</p></div></div></div>',
+        nativeBlock: () => nb.callout('danger', '⚡ ATTENTION!', 'Critical alert requiring immediate attention from students.')
       },
       {
         name: 'Caution Box',
         icon: AlertTriangle,
         color: 'amber',
-        html: '<div style="background: #FFFBEB; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0; border: 2px solid #FCD34D;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚠</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Caution</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Advise students to proceed carefully or note potential issues.</p></div></div></div>'
+        html: '<div style="background: #FFFBEB; border-left: 5px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0; border: 2px solid #FCD34D;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚠</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Caution</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Advise students to proceed carefully or note potential issues.</p></div></div></div>',
+        nativeBlock: () => nb.callout('warning', '⚠ Caution', 'Advise students to proceed carefully or note potential issues.')
       },
       {
         name: 'Quick Tip',
         icon: Lightbulb,
         color: 'lime',
-        html: '<div style="background: linear-gradient(135deg, #ECFCCB 0%, #D9F99D 100%); border-radius: 8px; padding: 16px 20px; margin: 20px 0; border-left: 4px solid #84CC16;"><p style="color: #3F6212; font-size: 15px; line-height: 1.6; margin: 0;"><strong style="color: #365314;">💡 Quick Tip:</strong> Short, actionable advice in one sentence.</p></div>'
+        html: '<div style="background: linear-gradient(135deg, #ECFCCB 0%, #D9F99D 100%); border-radius: 8px; padding: 16px 20px; margin: 20px 0; border-left: 4px solid #84CC16;"><p style="color: #3F6212; font-size: 15px; line-height: 1.6; margin: 0;"><strong style="color: #365314;">💡 Quick Tip:</strong> Short, actionable advice in one sentence.</p></div>',
+        nativeBlock: () => nb.callout('success', '💡 Quick Tip', 'Short, actionable advice in one sentence.')
       }
     ]
   },
@@ -159,7 +167,8 @@ const TEMPLATE_BLOCKS = {
         name: 'Term Definition',
         icon: BookOpen,
         color: 'indigo',
-        html: '<div style="background: #F0F9FF; border: 2px solid #0EA5E9; border-radius: 12px; padding: 24px; margin: 20px 0;"><h3 style="color: #0369A1; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Term or Concept</h3><p style="color: #0C4A6E; font-size: 16px; line-height: 1.7; margin: 0; font-style: italic;">Clear definition goes here. Explain the term in simple, understandable language.</p></div>'
+        html: '<div style="background: #F0F9FF; border: 2px solid #0EA5E9; border-radius: 12px; padding: 24px; margin: 20px 0;"><h3 style="color: #0369A1; font-size: 20px; font-weight: 700; margin: 0 0 12px 0; text-transform: uppercase; letter-spacing: 0.5px;">Term or Concept</h3><p style="color: #0C4A6E; font-size: 16px; line-height: 1.7; margin: 0; font-style: italic;">Clear definition goes here. Explain the term in simple, understandable language.</p></div>',
+        nativeBlock: () => nb.definition('Term or Concept', 'Clear definition goes here. Explain the term in simple, understandable language.')
       },
       {
         name: 'Formula Box',
@@ -177,7 +186,8 @@ const TEMPLATE_BLOCKS = {
         name: 'Glossary Item',
         icon: BookOpen,
         color: 'teal',
-        html: '<div style="background: #F0FDFA; border-left: 4px solid #14B8A6; padding: 16px 20px; margin: 20px 0; border-radius: 8px;"><h4 style="color: #0F766E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0; display: inline-block;">Term:</h4> <p style="display: inline; color: #134E4A; font-size: 15px; line-height: 1.7;">Brief explanation of the glossary term.</p></div>'
+        html: '<div style="background: #F0FDFA; border-left: 4px solid #14B8A6; padding: 16px 20px; margin: 20px 0; border-radius: 8px;"><h4 style="color: #0F766E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0; display: inline-block;">Term:</h4> <p style="display: inline; color: #134E4A; font-size: 15px; line-height: 1.7;">Brief explanation of the glossary term.</p></div>',
+        nativeBlock: () => nb.definition('Term', 'Brief explanation of the glossary term.')
       },
       {
         name: 'Theorem Box',
