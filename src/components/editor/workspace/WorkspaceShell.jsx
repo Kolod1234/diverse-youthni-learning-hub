@@ -2,6 +2,8 @@ import React, { useState, useCallback } from 'react';
 import { toast } from 'sonner';
 import { base44 } from '@/api/base44Client';
 import PresentationWorkspace from './PresentationWorkspace';
+import { blocksToHtml, htmlToBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
+import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 
 // Existing dialog/modal components that the workspace ribbon delegates to.
 // All of these are pre-existing surfaces — we don't fork them, we just open
@@ -67,11 +69,34 @@ export default function WorkspaceShell({
   }, [slides, onChange]);
 
   // ───────────────── Image manager → insert image into current slide ─────
+  // Append a NATIVE lessonBuilder image block (NOT a raw <img>/<div> HTML
+  // string). Previously we wrote `<div><img .../></div>` straight into
+  // slide.content — htmlToBlocks couldn't recognise that as anything other
+  // than a top-level <div>, so the next time the editor loaded it the
+  // image surfaced as a "Legacy HTML" block, losing alt/caption/credit/
+  // width/alignment/fit/aspect-lock controls.
+  //
+  // Fix: parse current content → blocks, push a native `image` block with
+  // the full ImageBlock schema, then re-serialise. The editor now reloads
+  // it as a real image block with all controls intact.
   const handleImageSelected = useCallback((url) => {
     if (!currentSlideData) return;
-    const cur = currentSlideData.content || '';
-    const html = `<div style="text-align:center;margin:20px 0;"><img src="${url}" style="max-width:100%;height:auto;border-radius:12px;box-shadow:0 4px 12px rgba(0,0,0,0.1);" alt="Image" /></div>`;
-    updateSlide(currentSlide, 'content', cur + html);
+    if (!url) return;
+    const existingBlocks = htmlToBlocks(currentSlideData.content || '');
+    const imageBlock = createBlock('image', {
+      url,
+      alt: '',
+      caption: '',
+      credit: '',
+      align: 'center',
+      widthUnit: 'percent',
+      width: 100,
+      aspect: null,
+      lockAspect: true,
+      fit: 'contain',
+    });
+    const html = blocksToHtml([...existingBlocks, imageBlock]);
+    updateSlide(currentSlide, 'content', html);
   }, [currentSlideData, currentSlide, updateSlide]);
 
   // ───────────────── Edit code helper ──────────────────────────────────

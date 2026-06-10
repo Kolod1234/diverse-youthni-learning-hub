@@ -5,7 +5,7 @@ import {
   Palette, Highlighter, Heading1, Heading2, Heading3,
   Subscript, Superscript, RemoveFormatting, ChevronDown,
   IndentIncrease, IndentDecrease, CaseUpper, CaseLower, CaseSensitive,
-  Type as TypeIcon,
+  Type as TypeIcon, Plus, Minus,
 } from 'lucide-react';
 import SymbolPalette from './SymbolPalette';
 import FontFamilyPicker from './FontFamilyPicker';
@@ -62,11 +62,42 @@ export default function InlineToolbar({
   showSymbols = true,
   compact = false,
 }) {
-  const fire = (cmd, arg) => editableRef.current?.format(cmd, arg);
-  const style = (prop, value) => editableRef.current?.styleBlock?.(prop, value);
-  const toggle = (tag) => editableRef.current?.toggleWrap?.(tag);
-  const wrap = (tag, attrs) => editableRef.current?.wrapSelection?.(tag, attrs);
-  const transform = (fn) => editableRef.current?.transformSelection?.(fn);
+  // Every command first asks the editor to restore the user's saved
+  // selection. This survives the picker open/close cycle even when the
+  // browser briefly moves focus into the popover panel.
+  const restore = () => editableRef.current?.restoreSelection?.();
+  const fire = (cmd, arg) => { restore(); editableRef.current?.format(cmd, arg); };
+  const style = (prop, value) => { restore(); editableRef.current?.styleBlock?.(prop, value); };
+  const toggle = (tag) => { restore(); editableRef.current?.toggleWrap?.(tag); };
+  const wrap = (tag, attrs) => { restore(); editableRef.current?.wrapSelection?.(tag, attrs); };
+  const transform = (fn) => { restore(); editableRef.current?.transformSelection?.(fn); };
+  const unwrap = (tags) => { restore(); editableRef.current?.unwrapAncestor?.(tags); };
+
+  // Step the selected text through FONT_SIZES (Increase / Decrease font).
+  const stepFontSize = (delta) => {
+    restore();
+    // Try to read the computed size at the start of the selection so we
+    // know where to step from. Falls back to the middle entry.
+    let current = null;
+    try {
+      const el = editableRef.current?.el?.();
+      const sel = window.getSelection?.();
+      if (el && sel && sel.rangeCount > 0) {
+        const r = sel.getRangeAt(0);
+        let node = r.startContainer;
+        if (node && node.nodeType === 3) node = node.parentNode;
+        if (node && el.contains(node)) {
+          const cs = window.getComputedStyle(node);
+          const px = parseFloat(cs.fontSize);
+          if (Number.isFinite(px)) current = `${Math.round(px)}px`;
+        }
+      }
+    } catch { /* ignore */ }
+    const idx = FONT_SIZES.findIndex(s => s.value === current);
+    const startIdx = idx >= 0 ? idx : FONT_SIZES.findIndex(s => s.value === '16px');
+    const next = Math.max(0, Math.min(FONT_SIZES.length - 1, startIdx + delta));
+    wrap('span', { style: `font-size:${FONT_SIZES[next].value}` });
+  };
 
   return (
     <div
@@ -100,18 +131,26 @@ export default function InlineToolbar({
         <FontFamilyPicker onPick={(v) => fire('fontName', v || 'inherit')} />
       )}
       {showSizes && (
-        <Picker
-          label="Font size"
-          icon={<span className="text-[10px] font-semibold">Aa</span>}
-          ariaLabel="Font size"
-          items={FONT_SIZES}
-          onPick={(v) => {
-            // execCommand fontSize only accepts 1-7. Use a span style instead.
-            wrap('span', { style: `font-size:${v}` });
-          }}
-          renderItem={(it) => <span className="text-sm">{it.label}px</span>}
-          width="w-28"
-        />
+        <>
+          <Picker
+            label="Font size"
+            icon={<span className="text-[10px] font-semibold">Aa</span>}
+            ariaLabel="Font size"
+            items={FONT_SIZES}
+            onPick={(v) => {
+              // execCommand fontSize only accepts 1-7. Use a span style instead.
+              wrap('span', { style: `font-size:${v}` });
+            }}
+            renderItem={(it) => <span className="text-sm">{it.label}px</span>}
+            width="w-28"
+          />
+          <ToolBtn label="Increase font size" onClick={() => stepFontSize(+1)}>
+            <span className="inline-flex items-center text-[11px] font-semibold leading-none">A<Plus className="w-2.5 h-2.5 -mt-1" /></span>
+          </ToolBtn>
+          <ToolBtn label="Decrease font size" onClick={() => stepFontSize(-1)}>
+            <span className="inline-flex items-center text-[11px] font-semibold leading-none">A<Minus className="w-2.5 h-2.5 -mt-1" /></span>
+          </ToolBtn>
+        </>
       )}
       {(showFontFamily || showSizes) && <Divider />}
 
@@ -150,7 +189,13 @@ export default function InlineToolbar({
             colors={HIGHLIGHT_COLORS}
             includeNone
             onPick={(c) => {
-              if (!c || c === 'transparent') return; // user picked "none" handled below
+              // "No colour" → remove an existing <mark> wrapping the selection,
+              // leaving all other inline formatting intact. Other colours →
+              // wrap in a sanitiser-safe <mark> with a background-color style.
+              if (!c || c === 'transparent') {
+                unwrap('mark');
+                return;
+              }
               wrap('mark', { style: `background-color:${c}; padding:0 2px; border-radius:2px;` });
             }}
           />
@@ -267,6 +312,11 @@ function Picker({ label, icon, ariaLabel, items, onPick, renderItem, width = 'w-
               key={it.value || it.label}
               type="button"
               role="option"
+              // preventDefault on mousedown keeps the editor's selection
+              // alive across the click — without this some browsers
+              // collapse the range before onClick fires and font-size /
+              // highlight commands silently no-op.
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onPick(it.value); setOpen(false); }}
               className="block w-full text-left px-3 py-1.5 text-sm hover:bg-indigo-50 focus:bg-indigo-50 focus:outline-none"
             >
@@ -299,6 +349,8 @@ function ColorPicker({ label, icon, colors, onPick, includeNone = false }) {
               aria-label={c === 'transparent' ? 'No colour' : `Colour ${c}`}
               className="w-6 h-6 rounded-full border border-gray-300 hover:scale-110 transition-transform"
               style={{ background: c === 'transparent' ? 'repeating-linear-gradient(45deg,#fff,#fff 3px,#ddd 3px,#ddd 6px)' : c }}
+              // Preserve selection across the click — see Picker note.
+              onMouseDown={(e) => e.preventDefault()}
               onClick={() => { onPick(c); setOpen(false); }}
             />
           ))}

@@ -22,6 +22,16 @@ const InlineEditable = React.forwardRef(function InlineEditable({
 }, ref) {
   const innerRef = useRef(null);
   const lastValue = useRef(value);
+  // SELECTION SAVE-AND-RESTORE
+  // --------------------------
+  // The toolbar buttons / pickers / colour palettes can lose the editor's
+  // Range/Selection on click (focus shift to the popover element, the dropdown
+  // open click consuming the selection, etc.). We snapshot the last Range that
+  // was inside this editor on every selectionchange / mouseup / keyup / blur
+  // and restore it BEFORE every formatting command. This is the canonical fix
+  // for execCommand / Range-based editors and is required by the InlineToolbar
+  // commands (font size, highlight, sub/sup, links, case transforms, etc.).
+  const savedRangeRef = useRef(null);
 
   useEffect(() => {
     if (!innerRef.current) return;
@@ -32,14 +42,52 @@ const InlineEditable = React.forwardRef(function InlineEditable({
   }, [value]);
 
   // --- Selection helpers ------------------------------------------------
-  // All helpers refocus the editor first; mouseDown on toolbar buttons
-  // already preventDefault() so the selection survives the click.
-  const getRange = () => {
+  // We snapshot the live selection whenever it changes while the editor is
+  // focused, then restore the snapshot before each command so toolbar /
+  // dropdown clicks that briefly move focus (or that the browser processes
+  // before our preventDefault) do not lose the user's selected text.
+  const captureSelection = () => {
     const sel = window.getSelection?.();
-    if (!sel || sel.rangeCount === 0) return null;
+    if (!sel || sel.rangeCount === 0) return;
     const range = sel.getRangeAt(0);
-    if (!innerRef.current?.contains(range.commonAncestorContainer)) return null;
-    return range;
+    if (!innerRef.current?.contains(range.commonAncestorContainer)) return;
+    // Store a CLONE — the live Range mutates as the DOM changes.
+    savedRangeRef.current = range.cloneRange();
+  };
+
+  useEffect(() => {
+    const onSelChange = () => {
+      // Only capture when this editor currently owns focus, otherwise we'd
+      // overwrite our saved range with selections in OTHER inputs.
+      if (document.activeElement === innerRef.current) captureSelection();
+    };
+    document.addEventListener('selectionchange', onSelChange);
+    return () => document.removeEventListener('selectionchange', onSelChange);
+  }, []);
+
+  // Restore the saved range into the DOM selection. Returns the restored
+  // Range (or null if nothing to restore / the saved range is no longer
+  // attached to the editor).
+  const restoreSelection = () => {
+    const r = savedRangeRef.current;
+    if (!r) return null;
+    if (!innerRef.current?.contains(r.commonAncestorContainer)) return null;
+    const sel = window.getSelection();
+    if (!sel) return null;
+    sel.removeAllRanges();
+    sel.addRange(r);
+    return r;
+  };
+
+  const getRange = () => {
+    // Always try the live selection first; if it's outside the editor or
+    // missing (toolbar click moved focus away), fall back to the snapshot.
+    const sel = window.getSelection?.();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      if (innerRef.current?.contains(range.commonAncestorContainer)) return range;
+    }
+    return restoreSelection();
   };
 
   // Move any text-align / line-height set on the host editor div itself
@@ -94,7 +142,14 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     onChange?.(innerRef.current?.innerHTML || '');
   };
 
-  const focusEditor = () => innerRef.current?.focus();
+  // Focus the editor, then restore the most-recent saved Range. Toolbar
+  // commands MUST call this first so execCommand / Range ops act on the
+  // user's intended selection rather than on a collapsed caret left by
+  // the popover click.
+  const focusEditor = () => {
+    innerRef.current?.focus();
+    restoreSelection();
+  };
 
   // Replace selected text with the result of fn(selectedText). Keeps the
   // selection on the replacement so subsequent commands still apply.
@@ -114,6 +169,7 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     const r = document.createRange();
     r.selectNodeContents(node);
     sel.addRange(r);
+    captureSelection();
     emitChange();
   };
 
@@ -139,6 +195,7 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     const r = document.createRange();
     r.selectNodeContents(wrapper);
     sel.addRange(r);
+    captureSelection();
     emitChange();
   };
 
@@ -247,13 +304,51 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     emitChange();
   };
 
+  // Unwrap any element of the given tag(s) that fully contains the current
+  // selection — used by the "no highlight" branch to remove an existing
+  // <mark> without touching the rest of the inline formatting.
+  const unwrapAncestor = (tagNames) => {
+    focusEditor();
+    const range = getRange();
+    if (!range) return false;
+    const tags = Array.isArray(tagNames) ? tagNames : [tagNames];
+    let node = range.commonAncestorContainer;
+    if (node && node.nodeType === 3) node = node.parentNode;
+    let target = null;
+    while (node && innerRef.current?.contains(node)) {
+      if (node.nodeType === 1 && tags.includes(node.tagName.toLowerCase())) {
+        target = node; break;
+      }
+      node = node.parentNode;
+    }
+    if (!target) return false;
+    const parent = target.parentNode;
+    while (target.firstChild) parent.insertBefore(target.firstChild, target);
+    parent.removeChild(target);
+    emitChange();
+    return true;
+  };
+
   // Expose the node + helpers to the parent via ref.
   React.useImperativeHandle(ref, () => ({
     el: () => innerRef.current,
     focus: () => innerRef.current?.focus(),
+    // Save the current selection so a subsequent toolbar interaction (which
+    // may move focus into a popover) can still restore the user's range.
+    captureSelection,
+    // Restore the saved selection — used by the toolbar before opening a
+    // popover or executing a command.
+    restoreSelection,
     format: (cmd, arg) => {
-      focusEditor();
-      try { document.execCommand(cmd, false, arg); } catch (_) {}
+      focusEditor();              // ALSO restores the saved selection
+      try {
+        // styleWithCSS makes foreColor / hiliteColor emit <span style="…">
+        // which our sanitiser preserves, instead of legacy <font color>.
+        document.execCommand('styleWithCSS', false, true);
+        document.execCommand(cmd, false, arg);
+      } catch (_) {}
+      // Snapshot the new selection so a chained command still finds it.
+      captureSelection();
       emitChange();
     },
     transformSelection,
@@ -261,6 +356,7 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     toggleWrap,
     clearFormatting,
     styleBlock,
+    unwrapAncestor,
   }), [onChange]);
 
   return (
@@ -303,6 +399,11 @@ const InlineEditable = React.forwardRef(function InlineEditable({
         onChange?.(html);
       }}
       onBlur={() => {
+        // Snapshot the live selection one last time so the next toolbar
+        // click still finds the range the user had when they left the
+        // editor (e.g. clicked a dropdown that opened a popover and
+        // briefly stole focus).
+        captureSelection();
         // Catch the case where a user clicked Align Center as their last
         // action (no further input event) and then blurred to switch slides
         // or close edit mode. We re-emit so the wrapper-style migration
@@ -311,6 +412,9 @@ const InlineEditable = React.forwardRef(function InlineEditable({
           onChange?.(innerRef.current?.innerHTML || '');
         }
       }}
+      onMouseUp={captureSelection}
+      onKeyUp={captureSelection}
+      onTouchEnd={captureSelection}
       onKeyDown={(e) => {
         if (singleLine && e.key === 'Enter' && !e.shiftKey) e.preventDefault();
       }}
