@@ -226,16 +226,74 @@ function blockToHtml(b) {
       return `<div style="display:flex; justify-content:${alignMap[align] || 'center'}; margin:16px 0;"><figure style="margin:0; width:${figureWidth}; max-width:100%;"><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}"${heightAttr} loading="lazy" decoding="async" style="width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure></div>`;
     }
     case 'image-text': {
-      // Same safe media URL handling as the standalone image block. Legacy
-      // keys accepted so previously authored slides round-trip unchanged.
+      // Image+text layout MUST mirror the editor's two-column grid:
+      // - desktop: image and text side-by-side, image first when side=left
+      //   (or omitted) and text-first when side=right
+      // - mobile: stack vertically with the SAME visual order
+      // - the image keeps its full fidelity: url, alt, caption, credit,
+      //   width / widthUnit / fit / lockAspect / aspect — same shape as the
+      //   standalone image block (which the editor's ImageTextBlock now
+      //   shares via its inner image data — but legacy authored data may
+      //   only have url/alt/html/side, so all extras are optional).
+      //
+      // The previous serializer used `display:grid; grid-template-columns:1fr 1fr`
+      // with NO responsive stack and NO min-width:0 on cells. On mobile
+      // viewports the image column shrank to whatever %fluid width was
+      // available minus text overflow, which visually "dropped" the image
+      // because <img style="width:100%"> in a column with intrinsic-min-
+      // content overflow collapsed to a few pixels. We switch to the same
+      // flexbox + @media + [data-mobile-preview] rules that two-columns
+      // uses so the editor preview and live render agree.
       const rawUrl = d.url || d.src || d.imageUrl || d.image_url || d.file_url || '';
       const safeUrl = sanitiseMediaUrl(rawUrl);
+
+      // Optional image fidelity fields (mirrors standalone image block).
+      const unit = (d.widthUnit || d.width_unit) === 'px' ? 'px' : 'percent';
+      const widthRaw = Number(d.width) || (unit === 'px' ? 600 : 100);
+      const widthVal = unit === 'percent'
+        ? Math.max(20, Math.min(100, widthRaw))
+        : Math.max(80, Math.min(2000, widthRaw));
+      // The image fills its column by default — only honour a width override
+      // when the author explicitly set one (i.e. d.width is a real number).
+      const explicitWidth = Number.isFinite(Number(d.width));
+      const imgInlineWidth = explicitWidth
+        ? (unit === 'percent' ? `${widthVal}%` : `${widthVal}px`)
+        : '100%';
+      const fit = d.fit === 'cover' ? 'cover' : 'contain';
+      const aspect = Number(d.aspect) || null;
+      const heightAttr = aspect && unit === 'px' && d.lockAspect !== false && explicitWidth
+        ? ` height="${Math.round(widthVal / aspect)}"`
+        : '';
+
+      const captionLine = (d.caption || d.credit)
+        ? `<figcaption style="margin-top:8px; text-align:center; font-size:13px; color:#6B7280; font-style:italic;">${escapeHtml(d.caption || '')}${d.credit ? ` <span style="font-style:normal; color:#9CA3AF;">— ${escapeHtml(d.credit)}</span>` : ''}</figcaption>`
+        : '';
+
       const imgCol = safeUrl
-        ? `<img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}" loading="lazy" decoding="async" style="width:100%; height:auto; border-radius:8px; display:block;" />`
-        : '<div style="background:#F3F4F6; border-radius:8px; aspect-ratio:4/3;"></div>';
-      const textCol = `<div style="font-size:16px; line-height:1.7; color:#1F2937;">${sanitiseInline(d.html || '')}</div>`;
-      const [a, b] = d.side === 'right' ? [textCol, imgCol] : [imgCol, textCol];
-      return `<div style="display:grid; grid-template-columns:1fr 1fr; gap:24px; align-items:center; margin:16px 0;"><div>${a}</div><div>${b}</div></div>`;
+        ? `<figure style="margin:0; max-width:100%;"><img src="${escapeHtml(safeUrl)}" alt="${escapeHtml(d.alt || '')}"${heightAttr} loading="lazy" decoding="async" style="width:${imgInlineWidth}; max-width:100%; height:auto; object-fit:${fit}; border-radius:8px; box-shadow:0 4px 12px rgba(0,0,0,0.08); display:block;" />${captionLine}</figure>`
+        : '<div style="background:#F3F4F6; border-radius:8px; aspect-ratio:4/3; width:100%;"></div>';
+
+      const textCol = `<div style="font-size:16px; line-height:1.7; color:#1F2937; min-width:0; max-width:100%; overflow-wrap:anywhere; word-break:break-word;">${sanitiseInline(d.html || '')}</div>`;
+
+      const [first, second] = d.side === 'right' ? [textCol, imgCol] : [imgCol, textCol];
+
+      // Shared responsive rules. Same class as two-columns so multiple
+      // image-text blocks reuse the same stylesheet rule.
+      const gap = 24;
+      const stackCss = `<style>
+        .lb-imgtext{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:center;}
+        .lb-imgtext > .lb-imgtext-col{flex:1 1 0;min-width:0;max-width:100%;}
+        .lb-imgtext, .lb-imgtext *{overflow-wrap:anywhere;word-break:break-word;}
+        .lb-imgtext img, .lb-imgtext video, .lb-imgtext iframe, .lb-imgtext table, .lb-imgtext pre{max-width:100%;}
+        @media (max-width: 767px){
+          .lb-imgtext{flex-direction:column;flex-wrap:nowrap;align-items:stretch;}
+          .lb-imgtext > .lb-imgtext-col{flex:0 0 100%;width:100%;max-width:100%;}
+        }
+        [data-mobile-preview="true"] .lb-imgtext{flex-direction:column;flex-wrap:nowrap;align-items:stretch;}
+        [data-mobile-preview="true"] .lb-imgtext > .lb-imgtext-col{flex:0 0 100%;width:100%;max-width:100%;}
+      </style>`;
+
+      return `${stackCss}<div class="lb-imgtext"><div class="lb-imgtext-col">${first}</div><div class="lb-imgtext-col">${second}</div></div>`;
     }
     case 'video': {
       const url = d.url || '';

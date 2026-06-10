@@ -42,7 +42,57 @@ const InlineEditable = React.forwardRef(function InlineEditable({
     return range;
   };
 
-  const emitChange = () => onChange?.(innerRef.current?.innerHTML || '');
+  // Move any text-align / line-height set on the host editor div itself
+  // INTO a wrapping <div> that lives inside innerHTML. Why:
+  //  - execCommand("justifyCenter") and our earlier styleBlock() applied
+  //    these styles to the contenteditable host's style attribute. The host's
+  //    style attribute is NOT included in innerHTML, so the alignment
+  //    silently vanished on serialization (the "autobiography stays
+  //    left-aligned in preview" bug).
+  //  - We migrate eagerly: on every emit AND on blur. If a wrapper already
+  //    exists (single direct DIV child), reuse it instead of nesting.
+  //  - We only migrate the block-level CSS props the toolbar actually sets
+  //    on the host (text-align, line-height, text-indent). Inline-text
+  //    props (color, font-size, etc.) never end up on the host so we don't
+  //    touch them.
+  const HOST_MIGRATE_PROPS = ['text-align', 'line-height', 'text-indent'];
+  const normaliseHostStyleIntoInner = () => {
+    const root = innerRef.current;
+    if (!root) return false;
+    let migrated = false;
+    const styleObj = root.style;
+    if (!styleObj || styleObj.length === 0) return false;
+    // Snapshot props that are actually set on the host.
+    const toMigrate = HOST_MIGRATE_PROPS
+      .map(p => [p, styleObj.getPropertyValue(p)])
+      .filter(([, v]) => v && v.trim());
+    if (!toMigrate.length) return false;
+    // Find or create the wrapping <div>.
+    let wrapper = null;
+    if (root.children.length === 1
+        && root.firstElementChild.tagName === 'DIV'
+        && root.firstElementChild.childNodes.length === root.childNodes.length) {
+      wrapper = root.firstElementChild;
+    } else {
+      wrapper = document.createElement('div');
+      while (root.firstChild) wrapper.appendChild(root.firstChild);
+      root.appendChild(wrapper);
+    }
+    // Apply migrated props onto the wrapper (don't clobber existing values
+    // unless the host explicitly overrides them — host wins because it's
+    // the most recent user action).
+    toMigrate.forEach(([prop, val]) => {
+      wrapper.style.setProperty(prop, val);
+      styleObj.removeProperty(prop);
+    });
+    migrated = true;
+    return migrated;
+  };
+
+  const emitChange = () => {
+    normaliseHostStyleIntoInner();
+    onChange?.(innerRef.current?.innerHTML || '');
+  };
 
   const focusEditor = () => innerRef.current?.focus();
 
@@ -241,9 +291,25 @@ const InlineEditable = React.forwardRef(function InlineEditable({
         ...style,
       }}
       onInput={(e) => {
+        // Normalise any host-level text-align/line-height (set by
+        // execCommand or a stale styleBlock call before this fix) INTO the
+        // serialised innerHTML before notifying the parent. Without this,
+        // a learner who typed "AUTOBIOGRAPHY", clicked Align Center, then
+        // typed more would emit innerHTML missing the alignment — the
+        // preview would compute text-align:start.
+        normaliseHostStyleIntoInner();
         const html = e.currentTarget.innerHTML;
         lastValue.current = html;
         onChange?.(html);
+      }}
+      onBlur={() => {
+        // Catch the case where a user clicked Align Center as their last
+        // action (no further input event) and then blurred to switch slides
+        // or close edit mode. We re-emit so the wrapper-style migration
+        // is persisted to the block's data before the next serialization.
+        if (normaliseHostStyleIntoInner()) {
+          onChange?.(innerRef.current?.innerHTML || '');
+        }
       }}
       onKeyDown={(e) => {
         if (singleLine && e.key === 'Enter' && !e.shiftKey) e.preventDefault();
