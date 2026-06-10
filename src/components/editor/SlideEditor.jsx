@@ -22,6 +22,8 @@ import InlineCodeEditor from '@/components/editor/InlineCodeEditor';
 import InlineTextEditor from '@/components/editor/InlineTextEditor';
 import SlideThumbnailRail from '@/components/editor/SlideThumbnailRail';
 import ApplyTemplateConfirmDialog from '@/components/editor/lessonBuilder/ApplyTemplateConfirmDialog.jsx';
+import WorkspaceShell from '@/components/editor/workspace/WorkspaceShell';
+import WorkspaceModals from '@/components/editor/workspace/WorkspaceModals';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -656,6 +658,153 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           )}
         </div>
       </Card>
+    );
+  }
+
+  // Shared modal renderer for both the Phase 1 WorkspaceShell branch and the
+  // legacy Canvas branch. Lives in WorkspaceModals.jsx so this file stays
+  // under the 2000-line cap; behaviour is identical to the inline modals
+  // that appear later in this file.
+  const renderWorkspaceModals = () => (
+    <WorkspaceModals
+      SLIDE_TEMPLATES={SLIDE_TEMPLATES}
+      customTemplates={customTemplates}
+      showSaveTemplate={showSaveTemplate} setShowSaveTemplate={setShowSaveTemplate}
+      templateName={templateName} setTemplateName={setTemplateName}
+      templateIcon={templateIcon} setTemplateIcon={setTemplateIcon}
+      saveCustomTemplate={saveCustomTemplate}
+      showAIDialog={showAIDialog} setShowAIDialog={setShowAIDialog}
+      aiAction={aiAction} aiPrompt={aiPrompt} setAiPrompt={setAiPrompt} aiLoading={aiLoading}
+      handleAIGenerate={handleAIGenerate} handleAIRewrite={handleAIRewrite} handleAIGenerateImage={handleAIGenerateImage}
+      showManageTemplates={showManageTemplates} setShowManageTemplates={setShowManageTemplates}
+      handleTemplateApply={handleTemplateApply}
+      showAdvancedBuilder={showAdvancedBuilder} setShowAdvancedBuilder={setShowAdvancedBuilder}
+      saveAdvancedTemplate={saveAdvancedTemplate}
+      showTemplateBlocks={showTemplateBlocks} setShowTemplateBlocks={setShowTemplateBlocks}
+      currentSlideData={currentSlideData} updateSlide={updateSlide} currentSlide={currentSlide}
+      showPresentation={showPresentation} setShowPresentation={setShowPresentation}
+      slides={slides} onChange={onChange} setCurrentSlide={setCurrentSlide}
+      showImageManager={showImageManager} setShowImageManager={setShowImageManager}
+      showImageOverlay={showImageOverlay} setShowImageOverlay={setShowImageOverlay}
+      overlayImageUrl={overlayImageUrl} setOverlayImageUrl={setOverlayImageUrl}
+      showCanva={showCanva} setShowCanva={setShowCanva}
+      showCanvaImporter={showCanvaImporter} setShowCanvaImporter={setShowCanvaImporter}
+      showFigmaImporter={showFigmaImporter} setShowFigmaImporter={setShowFigmaImporter}
+      showImageEditor={showImageEditor} setShowImageEditor={setShowImageEditor}
+      imageToEdit={imageToEdit} setImageToEdit={setImageToEdit}
+      showInlineCodeEditor={showInlineCodeEditor} setShowInlineCodeEditor={setShowInlineCodeEditor}
+      inlineCode={inlineCode} codeLanguage={codeLanguage} handleSaveCode={handleSaveCode}
+      showInlineTextEditor={showInlineTextEditor} setShowInlineTextEditor={setShowInlineTextEditor}
+      pendingTemplate={pendingTemplate} setPendingTemplate={setPendingTemplate}
+      commitTemplateApply={commitTemplateApply}
+    />
+  );
+
+  // ────────────────────────────────────────────────────────────────────────
+  // PHASE 1 WORKSPACE SHELL
+  // ────────────────────────────────────────────────────────────────────────
+  // When the editor is in the default `builder` mode, render the new
+  // presentation-style workspace shell (ribbon · thumbnail rail · pasteboard ·
+  // status bar) around the EXISTING VisualLessonBuilder. All slide state and
+  // mutation continues to flow through this SlideEditor component — the shell
+  // is a pure layout/presentation wrapper that delegates every action back
+  // up. No serializer, player, entity or save logic is altered.
+  if (editorMode === 'builder') {
+    return (
+      <div className={fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}>
+        <WorkspaceShell
+          slides={slides}
+          currentSlide={currentSlide}
+          onSelect={(i) => setCurrentSlide(i)}
+          onDragEnd={handleDragEnd}
+          onAdd={() => addSlide('blank')}
+          onDuplicate={(i) => duplicateSlide(i)}
+          onDelete={(i) => { if (confirm('Delete this slide?')) deleteSlide(i); }}
+          saveState={{
+            isPersisted,
+            isPending: false,
+            hasError: false,
+            // Honest draft state: the inner builder owns the dirty flag via
+            // its own autosave-to-parent flow; SlideEditor sees that flow as
+            // a normal onChange and cannot itself tell "dirty since last
+            // server save". We surface "draft" until isPersisted flips to
+            // true (i.e. the outer LessonEditor has confirmed a real write).
+            isDirty: !isPersisted,
+          }}
+          actions={{
+            undo: undefined,         // owned by VisualLessonBuilder + global Ctrl+Z; ribbon hint only
+            redo: undefined,
+            canUndo: true,
+            canRedo: true,
+            addSlide: () => addSlide('blank'),
+            duplicateSlide: () => duplicateSlide(currentSlide),
+            deleteSlide: () => { if (confirm('Delete this slide?')) deleteSlide(currentSlide); },
+            openTemplates: () => setShowManageTemplates(true),
+            openBlocks: () => setShowTemplateBlocks(true),
+            openImageManager: () => setShowImageManager(true),
+            openTextEditor: () => setShowInlineTextEditor(true),
+            openCodeEditor: handleEditCode,
+            openCanva: () => setShowCanvaImporter(true),
+            openFigma: () => setShowFigmaImporter(true),
+            openAI: () => { setAiAction('generate'); setAiPrompt(''); setShowAIDialog(true); },
+            openAIRewrite: () => { setAiAction('rewrite'); setAiPrompt(''); setShowAIDialog(true); },
+            openPreview: () => setShowPresentation(true),
+          }}
+          inspector={
+            currentSlideData ? (
+              <div className="space-y-3 text-xs">
+                <div>
+                  <Label className="text-[11px] text-slate-500">Slide title</Label>
+                  <Input
+                    value={currentSlideData.title || ''}
+                    onChange={(e) => updateSlide(currentSlide, 'title', e.target.value)}
+                    placeholder={`Slide ${currentSlide + 1} title`}
+                    className="mt-1 h-8 text-sm"
+                  />
+                </div>
+                <div className="rounded-md border border-slate-200 bg-slate-50 p-2">
+                  <p className="text-[11px] font-semibold text-slate-600 mb-1.5">Quick actions</p>
+                  <div className="grid grid-cols-2 gap-1.5">
+                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowManageTemplates(true)}>
+                      <LayoutTemplate className="w-3 h-3 mr-1" />Templates
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowTemplateBlocks(true)}>
+                      <Grid3x3 className="w-3 h-3 mr-1" />Blocks
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => setShowImageManager(true)}>
+                      <ImageIcon className="w-3 h-3 mr-1" />Image
+                    </Button>
+                    <Button variant="outline" size="sm" className="h-7 text-[11px]" onClick={() => { setAiAction('generate'); setAiPrompt(''); setShowAIDialog(true); }}>
+                      <Sparkles className="w-3 h-3 mr-1" />AI
+                    </Button>
+                  </div>
+                </div>
+                <div className="rounded-md border border-amber-200 bg-amber-50 p-2 text-[11px] text-amber-900">
+                  Notes per slide arrive in a later phase — the Lesson schema does not currently persist them.
+                </div>
+              </div>
+            ) : null
+          }
+        >
+          {currentSlideData && (
+            <div className="w-full h-full bg-white">
+              <VisualLessonBuilder
+                slide={currentSlideData}
+                isPersisted={isPersisted}
+                flushRef={builderFlushRef}
+                onChange={(updatedSlide) => {
+                  const newSlides = [...slides];
+                  newSlides[currentSlide] = updatedSlide;
+                  onChange(newSlides);
+                }}
+              />
+            </div>
+          )}
+        </WorkspaceShell>
+
+        {/* All modals/dialogs — opened from the ribbon and inspector. */}
+        {renderWorkspaceModals()}
+      </div>
     );
   }
 

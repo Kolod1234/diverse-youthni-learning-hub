@@ -14,7 +14,6 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { toast } from 'sonner';
 import SlideEditor from '@/components/editor/SlideEditor';
-import AILessonAssistant from '@/components/lesson/AILessonAssistant';
 import FullscreenPresenter from '@/components/presentation/FullscreenPresenter';
 import LessonMetadataPanel from '@/components/editor/lessonBuilder/LessonMetadataPanel';
 import { isCourseExplicitlyAssignedToTutor } from '@/components/tutor/tutorAccess';
@@ -462,10 +461,10 @@ export default function LessonEditor() {
         />
       )}
 
-      {/* Primary authoring workspace — slide builder is THE first thing the
-          tutor sees. All metadata lives in the Lesson settings drawer above.
-          Reference image 1 = this layout. */}
-      <div className="w-full max-w-screen-2xl mx-auto px-3 sm:px-4 lg:px-6 py-3 sm:py-4">
+      {/* Primary authoring workspace — the Phase 1 presentation shell owns
+          the full viewport below the header. No outer max-width / padding so
+          the pasteboard can match the reference proportions. */}
+      <div className="w-full">
         {/* Title strip — current lesson title acts as the hero, no extra cards.
             If the tutor hasn't named the lesson yet, prompt them gently to
             open the settings drawer without blocking the canvas. */}
@@ -503,24 +502,17 @@ export default function LessonEditor() {
           </div>
         )}
 
-        {/* Slide builder — primary workspace (must be in initial viewport at 1440x900). */}
+        {/* Slide builder — Phase 1 presentation workspace. The shell owns the
+            ribbon, thumbnail rail, pasteboard, stage, inspector and status bar
+            and occupies the full available viewport (the AI assistant and
+            other long stacked panels that previously lived beneath the canvas
+            are now opened from ribbon commands inside the shell). */}
         <SlideEditor
           slides={lessonForm.slides || []}
           onChange={(slides) => setLessonForm({ ...lessonForm, slides })}
           isPersisted={!!lessonId}
           builderFlushRef={builderFlushRef}
         />
-
-        {/* AI assistant — secondary, below the canvas (kept available, not stacked above). */}
-        <div className="mt-6">
-          <AILessonAssistant
-            lessonTitle={lessonForm.title}
-            lessonContent={lessonForm.description}
-            learningObjectives={lessonForm.learning_objectives}
-            existingSlides={lessonForm.slides || []}
-            onSlidesGenerated={(slides) => setLessonForm({ ...lessonForm, slides })}
-          />
-        </div>
       </div>
     </div>
   );
