@@ -18,6 +18,12 @@ const TC_STYLE_ID = 'lb-twocol-editor-style';
 if (typeof document !== 'undefined' && !document.getElementById(TC_STYLE_ID)) {
   const styleEl = document.createElement('style');
   styleEl.id = TC_STYLE_ID;
+  // NB: text overflow rules (overflow-wrap / word-break / max-width:100% on
+  // descendants) are critical — long unbroken strings (URLs, code, words
+  // without spaces) otherwise force the column wider than its grid track,
+  // overflowing the slide and breaking the responsive stack. Applied to
+  // every descendant of .two-columns-block so it covers nested editors,
+  // pre/code, headings, images and tables alike.
   styleEl.textContent = `
     .two-columns-block {
       display: grid;
@@ -25,6 +31,17 @@ if (typeof document !== 'undefined' && !document.getElementById(TC_STYLE_ID)) {
       min-width: 0;
     }
     .two-columns-block > * { min-width: 0; }
+    .two-columns-block, .two-columns-block * {
+      overflow-wrap: anywhere;
+      word-break: break-word;
+    }
+    .two-columns-block img,
+    .two-columns-block video,
+    .two-columns-block iframe,
+    .two-columns-block table,
+    .two-columns-block pre {
+      max-width: 100%;
+    }
     @media (max-width: 767px) {
       .two-columns-block[data-stack="true"] {
         grid-template-columns: 1fr !important;
@@ -60,13 +77,17 @@ const PRESETS = [
 ];
 
 function normalise(data = {}) {
+  const columnCount = [1, 2, 3].includes(data.columnCount) ? data.columnCount : 2;
+
   // Legacy form: { left, right } HTML strings → wrap as a single legacy-html
   // child per side so existing slides round-trip without data loss.
   if (!Array.isArray(data.leftBlocks) && !Array.isArray(data.rightBlocks)
       && (typeof data.left === 'string' || typeof data.right === 'string')) {
     return {
-      leftBlocks:  data.left  ? [createBlock('legacy-html', { html: data.left  })] : [],
-      rightBlocks: data.right ? [createBlock('legacy-html', { html: data.right })] : [],
+      columnCount,
+      leftBlocks:   data.left  ? [createBlock('legacy-html', { html: data.left  })] : [],
+      middleBlocks: [],
+      rightBlocks:  data.right ? [createBlock('legacy-html', { html: data.right })] : [],
       ratio: typeof data.ratio === 'number' ? data.ratio : 0.5,
       gap: Number.isFinite(data.gap) ? data.gap : 24,
       verticalAlign: data.verticalAlign || 'top',
@@ -74,8 +95,10 @@ function normalise(data = {}) {
     };
   }
   return {
-    leftBlocks:  Array.isArray(data.leftBlocks)  ? data.leftBlocks  : [],
-    rightBlocks: Array.isArray(data.rightBlocks) ? data.rightBlocks : [],
+    columnCount,
+    leftBlocks:   Array.isArray(data.leftBlocks)   ? data.leftBlocks   : [],
+    middleBlocks: Array.isArray(data.middleBlocks) ? data.middleBlocks : [],
+    rightBlocks:  Array.isArray(data.rightBlocks)  ? data.rightBlocks  : [],
     ratio: typeof data.ratio === 'number' ? clamp(data.ratio, 0.15, 0.85) : 0.5,
     gap: Number.isFinite(data.gap) ? data.gap : 24,
     verticalAlign: ['top','center','bottom'].includes(data.verticalAlign) ? data.verticalAlign : 'top',
@@ -87,11 +110,16 @@ const clamp = (v, lo, hi) => Math.min(hi, Math.max(lo, v));
 
 export default function TwoColumnsBlock({ data, onChange, renderChild }) {
   const norm = useMemo(() => normalise(data), [data]);
-  const { leftBlocks, rightBlocks, ratio, gap, verticalAlign, stackOnMobile } = norm;
+  const { columnCount, leftBlocks, middleBlocks, rightBlocks, ratio, gap, verticalAlign, stackOnMobile } = norm;
 
   const update = (patch) => onChange({ ...norm, ...patch });
-  const setLeft  = (next) => update({ leftBlocks:  next });
-  const setRight = (next) => update({ rightBlocks: next });
+  const setLeft   = (next) => update({ leftBlocks:   next });
+  const setMiddle = (next) => update({ middleBlocks: next });
+  const setRight  = (next) => update({ rightBlocks:  next });
+
+  // Switching column count must NEVER destroy column content. We just hide
+  // middleBlocks when collapsing to 2, and re-show them when expanding to 3.
+  const setColumnCount = (n) => update({ columnCount: n });
 
   // SHARED nested-accordion state — exactly one child across BOTH columns
   // may be expanded at any time. Key shape: `${side}:${blockId}`. Ephemeral,
@@ -149,10 +177,12 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
           collapse the whole container block. Ephemeral local state. */}
       <LayoutSettingsDisclosure>
         <Toolbar
+          columnCount={columnCount}
           ratio={ratio}
           gap={gap}
           verticalAlign={verticalAlign}
           stackOnMobile={stackOnMobile}
+          onColumnCount={setColumnCount}
           onRatio={(r) => update({ ratio: r })}
           onGap={(g) => update({ gap: g })}
           onValign={(v) => update({ verticalAlign: v })}
@@ -164,64 +194,142 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
         ref={wrapRef}
         className="two-columns-block"
         data-stack={stackOnMobile ? 'true' : 'false'}
+        data-cols={columnCount}
         style={{
           // grid-template-columns is supplied via a CSS custom property so a
           // media query in the stylesheet (see top of file) can override it
           // at <=767px when stackOnMobile is true. Inline `gridTemplateColumns`
           // would defeat the media query — do NOT add it back here.
-          ['--tc-cols']: `${(ratio * 100).toFixed(2)}fr 8px ${((1 - ratio) * 100).toFixed(2)}fr`,
+          ['--tc-cols']: gridTemplateFor(columnCount, ratio),
           gap: `${gap}px`,
           alignItems: valign,
           userSelect: dragging ? 'none' : undefined,
         }}
       >
-        <Column
-          title="Left"
-          side="left"
-          blocks={leftBlocks}
-          onChange={setLeft}
-          renderChild={renderChild}
-          nestedExpandedKey={nestedExpandedKey}
-          setNestedExpandedKey={setNestedExpandedKey}
-        />
+        {columnCount === 1 && (
+          <Column
+            title="Content"
+            side="left"
+            blocks={leftBlocks}
+            onChange={setLeft}
+            renderChild={renderChild}
+            nestedExpandedKey={nestedExpandedKey}
+            setNestedExpandedKey={setNestedExpandedKey}
+          />
+        )}
 
-        <Divider onMouseDown={onDividerDown} onTouchStart={onDividerDown} dragging={dragging} ratio={ratio} />
+        {columnCount === 2 && (
+          <>
+            <Column
+              title="Left"
+              side="left"
+              blocks={leftBlocks}
+              onChange={setLeft}
+              renderChild={renderChild}
+              nestedExpandedKey={nestedExpandedKey}
+              setNestedExpandedKey={setNestedExpandedKey}
+            />
+            <Divider onMouseDown={onDividerDown} onTouchStart={onDividerDown} dragging={dragging} ratio={ratio} />
+            <Column
+              title="Right"
+              side="right"
+              blocks={rightBlocks}
+              onChange={setRight}
+              renderChild={renderChild}
+              nestedExpandedKey={nestedExpandedKey}
+              setNestedExpandedKey={setNestedExpandedKey}
+            />
+          </>
+        )}
 
-        <Column
-          title="Right"
-          side="right"
-          blocks={rightBlocks}
-          onChange={setRight}
-          renderChild={renderChild}
-          nestedExpandedKey={nestedExpandedKey}
-          setNestedExpandedKey={setNestedExpandedKey}
-        />
+        {columnCount === 3 && (
+          <>
+            <Column
+              title="Left"
+              side="left"
+              blocks={leftBlocks}
+              onChange={setLeft}
+              renderChild={renderChild}
+              nestedExpandedKey={nestedExpandedKey}
+              setNestedExpandedKey={setNestedExpandedKey}
+            />
+            <Column
+              title="Middle"
+              side="middle"
+              blocks={middleBlocks}
+              onChange={setMiddle}
+              renderChild={renderChild}
+              nestedExpandedKey={nestedExpandedKey}
+              setNestedExpandedKey={setNestedExpandedKey}
+            />
+            <Column
+              title="Right"
+              side="right"
+              blocks={rightBlocks}
+              onChange={setRight}
+              renderChild={renderChild}
+              nestedExpandedKey={nestedExpandedKey}
+              setNestedExpandedKey={setNestedExpandedKey}
+            />
+          </>
+        )}
       </div>
     </div>
   );
 }
 
+// Build the grid-template-columns string for the current column count.
+// 1-col → single track. 2-col → ratio-controlled with an 8px divider gutter.
+// 3-col → equal thirds (no divider; drag-resize only makes sense for 2-col).
+function gridTemplateFor(columnCount, ratio) {
+  if (columnCount === 1) return '1fr';
+  if (columnCount === 3) return '1fr 1fr 1fr';
+  return `${(ratio * 100).toFixed(2)}fr 8px ${((1 - ratio) * 100).toFixed(2)}fr`;
+}
+
 // ─────────────────────────────────────────────────────────────────────────────
-function Toolbar({ ratio, gap, verticalAlign, stackOnMobile, onRatio, onGap, onValign, onToggleStack }) {
+function Toolbar({ columnCount, ratio, gap, verticalAlign, stackOnMobile, onColumnCount, onRatio, onGap, onValign, onToggleStack }) {
   return (
     <div className="flex flex-wrap items-center gap-2 bg-white border border-gray-200 rounded px-2 py-1.5">
-      <div className="flex items-center gap-1">
+      {/* Columns: 1 / 2 / 3 — drives layout. Ratio is only meaningful for 2. */}
+      <div className="flex items-center gap-1" role="group" aria-label="Number of columns">
         <Columns2 className="w-3.5 h-3.5 text-gray-500" />
-        <span className="text-xs text-gray-600">Ratio:</span>
-        {PRESETS.map(p => (
+        <span className="text-xs text-gray-600">Columns:</span>
+        {[1, 2, 3].map(n => (
           <button
-            key={p.label}
+            key={n}
             type="button"
-            onClick={() => onRatio(p.value)}
-            className={`text-xs px-2 py-0.5 rounded border ${Math.abs(ratio - p.value) < 0.01
-              ? 'bg-indigo-50 border-indigo-300 text-indigo-700'
+            onClick={() => onColumnCount(n)}
+            aria-pressed={columnCount === n}
+            className={`text-xs px-2 py-0.5 rounded border ${columnCount === n
+              ? 'bg-indigo-50 border-indigo-300 text-indigo-700 font-semibold'
               : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
-          >{p.label}</button>
+          >{n}</button>
         ))}
-        <span className="text-[11px] text-gray-400 ml-1">({Math.round(ratio * 100)} / {Math.round((1 - ratio) * 100)})</span>
       </div>
 
       <span aria-hidden className="w-px h-5 bg-gray-200 mx-1" />
+
+      {columnCount === 2 && (
+        <>
+          <div className="flex items-center gap-1">
+            <span className="text-xs text-gray-600">Ratio:</span>
+            {PRESETS.map(p => (
+              <button
+                key={p.label}
+                type="button"
+                onClick={() => onRatio(p.value)}
+                className={`text-xs px-2 py-0.5 rounded border ${Math.abs(ratio - p.value) < 0.01
+                  ? 'bg-indigo-50 border-indigo-300 text-indigo-700'
+                  : 'border-gray-200 text-gray-700 hover:bg-gray-50'}`}
+              >{p.label}</button>
+            ))}
+            <span className="text-[11px] text-gray-400 ml-1">({Math.round(ratio * 100)} / {Math.round((1 - ratio) * 100)})</span>
+          </div>
+
+          <span aria-hidden className="w-px h-5 bg-gray-200 mx-1" />
+        </>
+      )}
 
       <label className="text-xs text-gray-600 flex items-center gap-1">
         Gap
@@ -322,8 +430,9 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
 
   return (
     <div
-      className="border border-dashed border-gray-200 rounded p-2 min-w-0"
+      className="border border-dashed border-gray-200 rounded p-1 min-w-0 overflow-hidden"
       aria-label={`${title} column`}
+      style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', maxWidth: '100%' }}
     >
       {blocks.length === 0 && (
         <div className="text-xs text-gray-400 italic py-6 text-center">{title} column — empty</div>

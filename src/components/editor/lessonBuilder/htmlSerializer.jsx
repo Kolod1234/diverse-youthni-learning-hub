@@ -369,16 +369,30 @@ function blockToHtml(b) {
 
       // ── 1 column ─────────────────────────────────────────────────────
       if (columnCount === 1) {
-        return `<div style="margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937;">${renderSide(leftSide)}</div>`;
+        return `<div style="margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;">${renderSide(leftSide)}</div>`;
       }
 
       // ── 2 or 3 columns: shared responsive flexbox with @media stack ──
       // Classes are stable + shared so multiple instances reuse one rule.
       // Below 768px each column becomes a full-width row when stack is on.
+      // Text-overflow rules (overflow-wrap / word-break / max-width:100%) on
+      // every descendant prevent long unbroken strings (URLs, code, words
+      // without spaces) from forcing a column wider than its flex track and
+      // breaking the responsive stack.
+      const overflowRules = `
+        .lb-twocol, .lb-twocol *, .lb-twocol-nostack, .lb-twocol-nostack *{
+          overflow-wrap:anywhere; word-break:break-word;
+        }
+        .lb-twocol img, .lb-twocol video, .lb-twocol iframe, .lb-twocol table, .lb-twocol pre,
+        .lb-twocol-nostack img, .lb-twocol-nostack video, .lb-twocol-nostack iframe,
+        .lb-twocol-nostack table, .lb-twocol-nostack pre{
+          max-width:100%;
+        }`;
       const stackCss = stack
         ? `<style>
             .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
             .lb-twocol > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
+            ${overflowRules}
             @media (max-width: 767px){
               .lb-twocol{flex-direction:column;flex-wrap:nowrap;}
               .lb-twocol > .lb-twocol-col{flex:0 0 100%;width:100%;max-width:100%;}
@@ -387,6 +401,7 @@ function blockToHtml(b) {
         : `<style>
             .lb-twocol-nostack{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
             .lb-twocol-nostack > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
+            ${overflowRules}
           </style>`;
       const rootClass = stack ? 'lb-twocol' : 'lb-twocol-nostack';
 
