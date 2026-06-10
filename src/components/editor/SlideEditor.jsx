@@ -21,6 +21,7 @@ import ImageEditorModal from '@/components/editor/ImageEditorModal';
 import InlineCodeEditor from '@/components/editor/InlineCodeEditor';
 import InlineTextEditor from '@/components/editor/InlineTextEditor';
 import SlideThumbnailRail from '@/components/editor/SlideThumbnailRail';
+import ApplyTemplateConfirmDialog from '@/components/editor/lessonBuilder/ApplyTemplateConfirmDialog.jsx';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -156,6 +157,13 @@ export default function SlideEditor({ slides = [], onChange, isPersisted = false
   // accessible button. Closed by default so the active slide canvas is the
   // primary focus on every viewport. EPHEMERAL only — never serialised.
   const [editorToolsOpen, setEditorToolsOpen] = useState(false);
+  // Pending template application — only set when the slide already has
+  // content and applying the template would OVERWRITE the tutor's work.
+  // Empty slides skip the confirm and apply directly. EPHEMERAL only.
+  const [pendingTemplate, setPendingTemplate] = useState(null);
+  // Bumped after a successful template apply so VerifiedTemplateGallery
+  // can collapse itself and the canvas re-focuses on the new content.
+  const [templateApplyTick, setTemplateApplyTick] = useState(0);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -226,6 +234,42 @@ export default function SlideEditor({ slides = [], onChange, isPersisted = false
     onChange(newSlides);
     setCurrentSlide(newIndex);
     toast.success('Slide moved');
+  };
+
+  // True if the slide currently has no meaningful content (no text and no
+  // structural tags other than wrapper whitespace). Used to skip the
+  // "Replace slide content?" confirm on empty slides — applying a template
+  // to a fresh blank slide should be a one-click action.
+  const isEmptySlideContent = (html) => {
+    if (!html) return true;
+    const stripped = html
+      .replace(/<\s*p\s*>\s*<\s*\/\s*p\s*>/gi, '')   // empty <p></p>
+      .replace(/<br\s*\/?>/gi, '')                    // bare breaks
+      .replace(/<[^>]+>/g, '')                        // all tags
+      .replace(/&nbsp;/gi, ' ')
+      .trim();
+    return stripped.length === 0;
+  };
+
+  // Apply a verified template to the current slide.
+  // - If the slide is empty: apply immediately (the documented initial path).
+  // - Otherwise: open the Replace/Cancel confirm dialog and only commit
+  //   after explicit confirmation. This is what protects existing block work
+  //   from being silently wiped by a stray template click.
+  const handleTemplateApply = (content, name) => {
+    if (isEmptySlideContent(currentSlideData?.content)) {
+      commitTemplateApply(content, name);
+      return;
+    }
+    setPendingTemplate({ content, name: name || 'this template' });
+  };
+
+  const commitTemplateApply = (content, name) => {
+    updateSlide(currentSlide, 'content', content);
+    setPendingTemplate(null);
+    // Bump the tick so VerifiedTemplateGallery collapses itself.
+    setTemplateApplyTick((t) => t + 1);
+    toast.success(`${name || 'Template'} applied to draft — Save Lesson to persist`);
   };
 
   const extractCodeFromSlide = (content) => {
@@ -1024,13 +1068,15 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                         through htmlToBlocks ↔ blocksToHtml without falling
                         into legacy-html. Auto-collapses when the slide
                         already has content so the canvas stays the primary
-                        focus on every viewport. */}
+                        focus on every viewport. The `collapseTick` prop is
+                        bumped after a successful template apply so the
+                        gallery closes without us having to lift its open
+                        state — keeps disclosure UI fully local. */}
                     <VerifiedTemplateGallery
-                      hasContent={Boolean(currentSlideData?.content)}
+                      hasContent={Boolean(currentSlideData?.content) && !isEmptySlideContent(currentSlideData?.content)}
                       customTemplates={customTemplates}
-                      onApply={(content) => {
-                        updateSlide(currentSlide, 'content', content);
-                      }}
+                      collapseTick={templateApplyTick}
+                      onApply={(content, name) => handleTemplateApply(content, name)}
                       onManageCustom={Object.keys(customTemplates).length > 0
                         ? () => setShowManageTemplates(true)
                         : null}
@@ -1692,6 +1738,16 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             onCancel={() => setShowInlineTextEditor(false)}
           />
         )}
+
+        {/* Apply-template confirm — only mounted when pendingTemplate is set
+            (i.e. the slide already has content and a template button was
+            clicked). Empty slides bypass this entirely. */}
+        <ApplyTemplateConfirmDialog
+          open={Boolean(pendingTemplate)}
+          templateName={pendingTemplate?.name || ''}
+          onConfirm={() => pendingTemplate && commitTemplateApply(pendingTemplate.content, pendingTemplate.name)}
+          onCancel={() => setPendingTemplate(null)}
+        />
         </div>
         );
         }
@@ -1708,8 +1764,14 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
 // Disclosure state is EPHEMERAL — never persisted. Default starts collapsed
 // when the slide already has content (so the canvas remains the visual
 // primary), expanded when the slide is empty (so a tutor sees the choices).
-function VerifiedTemplateGallery({ hasContent, customTemplates, onApply, onManageCustom }) {
+function VerifiedTemplateGallery({ hasContent, customTemplates, onApply, onManageCustom, collapseTick = 0 }) {
   const [open, setOpen] = React.useState(!hasContent);
+  // Collapse on every successful template apply (parent bumps collapseTick).
+  // Initial render (collapseTick === 0) is ignored so we don't override the
+  // hasContent-driven default open state.
+  React.useEffect(() => {
+    if (collapseTick > 0) setOpen(false);
+  }, [collapseTick]);
   const builtIns = Object.entries(SLIDE_TEMPLATES);
   const customs = Object.entries(customTemplates || {});
 
@@ -1739,7 +1801,7 @@ function VerifiedTemplateGallery({ hasContent, customTemplates, onApply, onManag
               <button
                 key={key}
                 type="button"
-                onClick={() => onApply(t.content)}
+                onClick={() => onApply(t.content, t.name)}
                 title={`Apply ${t.name} to this slide`}
                 className="h-20 bg-white border border-indigo-100 rounded-md hover:border-indigo-400 hover:shadow-sm flex flex-col items-center justify-center gap-1 p-2 text-center transition-colors"
               >
@@ -1751,7 +1813,7 @@ function VerifiedTemplateGallery({ hasContent, customTemplates, onApply, onManag
               <button
                 key={key}
                 type="button"
-                onClick={() => onApply(t.content)}
+                onClick={() => onApply(t.content, t.name)}
                 title={`Apply ${t.name} to this slide`}
                 className="h-20 bg-emerald-50 border border-emerald-200 rounded-md hover:border-emerald-400 hover:shadow-sm flex flex-col items-center justify-center gap-1 p-2 text-center transition-colors relative"
               >
