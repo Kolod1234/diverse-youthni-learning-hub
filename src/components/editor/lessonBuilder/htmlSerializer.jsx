@@ -172,26 +172,29 @@ function blockToHtml(b) {
       // Text-wrap defenses: identical to the editor's InlineEditable so
       // long tokens (URLs, code, "AUTOBIOGRAPHY…") wrap inside the
       // preview instead of forcing horizontal overflow.
-      return `<p style="line-height:1.7; font-size:16px; color:#1F2937; margin:0 0 12px; min-width:0; max-width:100%; white-space:normal; overflow-wrap:anywhere; word-break:break-word;${extraStyle}">${inner}</p>`;
+      // `data-lesson-block="paragraph"` is the canonical marker so the
+      // parser reconstructs a native paragraph block even after the
+      // inner HTML carries inline formatting or nested wrappers.
+      return `<p data-lesson-block="paragraph" style="line-height:1.7; font-size:16px; color:#1F2937; margin:0 0 12px; min-width:0; max-width:100%; white-space:normal; overflow-wrap:anywhere; word-break:break-word;${extraStyle}">${inner}</p>`;
     }
     case 'heading-1':
-      return `<h1 style="font-size:36px; font-weight:700; color:#1A3C5A; margin:0 0 16px; line-height:1.2;">${escapeHtml(d.text || '')}</h1>`;
+      return `<h1 data-lesson-block="heading-1" style="font-size:36px; font-weight:700; color:#1A3C5A; margin:0 0 16px; line-height:1.2;">${escapeHtml(d.text || '')}</h1>`;
     case 'heading-2':
-      return `<h2 style="font-size:28px; font-weight:700; color:#1A3C5A; margin:24px 0 12px; line-height:1.25;">${escapeHtml(d.text || '')}</h2>`;
+      return `<h2 data-lesson-block="heading-2" style="font-size:28px; font-weight:700; color:#1A3C5A; margin:24px 0 12px; line-height:1.25;">${escapeHtml(d.text || '')}</h2>`;
     case 'heading-3':
-      return `<h3 style="font-size:22px; font-weight:600; color:#38B2AC; margin:20px 0 10px; line-height:1.3;">${escapeHtml(d.text || '')}</h3>`;
+      return `<h3 data-lesson-block="heading-3" style="font-size:22px; font-weight:600; color:#38B2AC; margin:20px 0 10px; line-height:1.3;">${escapeHtml(d.text || '')}</h3>`;
     case 'bullet-list': {
       const items = (d.items || []).filter(i => i && i.trim()).map(i =>
         `<li style="margin-bottom:8px; font-size:16px; color:#1F2937;">${sanitiseInline(i)}</li>`).join('');
-      return `<ul style="margin:0 0 16px; padding-left:24px; line-height:1.7;">${items}</ul>`;
+      return `<ul data-lesson-block="bullet-list" style="margin:0 0 16px; padding-left:24px; line-height:1.7;">${items}</ul>`;
     }
     case 'numbered-list': {
       const items = (d.items || []).filter(i => i && i.trim()).map(i =>
         `<li style="margin-bottom:8px; font-size:16px; color:#1F2937;">${sanitiseInline(i)}</li>`).join('');
-      return `<ol style="margin:0 0 16px; padding-left:24px; line-height:1.7;">${items}</ol>`;
+      return `<ol data-lesson-block="numbered-list" style="margin:0 0 16px; padding-left:24px; line-height:1.7;">${items}</ol>`;
     }
     case 'quote':
-      return `<blockquote style="border-left:4px solid #4F46E5; padding:12px 20px; margin:16px 0; background:#F3F4F6; border-radius:4px; color:#4B5563; font-style:italic;">${sanitiseInline(d.html || '')}${d.cite ? `<footer style="margin-top:8px; font-size:14px; color:#6B7280; font-style:normal;">— ${escapeHtml(d.cite)}</footer>` : ''}</blockquote>`;
+      return `<blockquote data-lesson-block="quote"${d.cite ? ` data-cite="${escapeHtml(d.cite)}"` : ''} style="border-left:4px solid #4F46E5; padding:12px 20px; margin:16px 0; background:#F3F4F6; border-radius:4px; color:#4B5563; font-style:italic;">${sanitiseInline(d.html || '')}${d.cite ? `<footer style="margin-top:8px; font-size:14px; color:#6B7280; font-style:normal;">— ${escapeHtml(d.cite)}</footer>` : ''}</blockquote>`;
     case 'callout': {
       const styles = {
         info:    { bg:'#EFF6FF', border:'#3B82F6', label:'💡 Note',    color:'#1E3A8A' },
@@ -320,7 +323,25 @@ function blockToHtml(b) {
         [data-mobile-preview="true"] .lb-imgtext > .lb-imgtext-col{flex:0 0 100%;width:100%;max-width:100%;}
       </style>`;
 
-      return `${stackCss}<div class="lb-imgtext"><div class="lb-imgtext-col">${first}</div><div class="lb-imgtext-col">${second}</div></div>`;
+      // CANONICAL MARKER: `data-lesson-block="image-text"` lets htmlToBlocks
+      // reconstruct a native image-text block on reload, preserving the
+      // image url/alt/caption/credit/width/fit AND the side (left/right) AND
+      // the rich-text body — instead of falling through to legacy-html.
+      const itAttrs = [
+        `data-lesson-block="image-text"`,
+        `data-side="${d.side === 'right' ? 'right' : 'left'}"`,
+        `data-url="${escapeHtml(safeUrl)}"`,
+        d.alt ? `data-alt="${escapeHtml(d.alt)}"` : '',
+        d.caption ? `data-caption="${escapeHtml(d.caption)}"` : '',
+        d.credit ? `data-credit="${escapeHtml(d.credit)}"` : '',
+        `data-width="${widthVal}"`,
+        `data-width-unit="${unit}"`,
+        `data-fit="${fit}"`,
+      ].filter(Boolean).join(' ');
+      // The body HTML is preserved verbatim inside the right column AND
+      // mirrored on data-html so the parser doesn't have to guess which
+      // column contains the rich text (it just reads the attribute).
+      return `${stackCss}<div ${itAttrs} data-html="${escapeHtml(d.html || '')}" class="lb-imgtext"><div class="lb-imgtext-col">${first}</div><div class="lb-imgtext-col">${second}</div></div>`;
     }
     case 'video': {
       const url = d.url || '';
@@ -428,11 +449,22 @@ function blockToHtml(b) {
         : '';
 
       // Outer wrapper enables horizontal scrolling on small screens so wide
-      // tables don't break the layout on mobile.
-      return `<div style="overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch;"><table style="width:100%; border-collapse:collapse; font-size:15px; min-width:480px;">${captionHtml}${headHtml}<tbody>${body}</tbody></table></div>`;
+      // tables don't break the layout on mobile. The canonical marker on
+      // the outer <div> lets htmlToBlocks reconstruct a native table block
+      // on reload (cells, header flag, stripe flag, caption all preserved
+      // via the inner <table>/<thead>/<tbody> structure the parser reads).
+      const tblAttrs = [
+        `data-lesson-block="table"`,
+        `data-header="${hasHeader ? 'true' : 'false'}"`,
+        `data-stripe="${striped ? 'true' : 'false'}"`,
+        `data-bordered="${bordered ? 'true' : 'false'}"`,
+        `data-compact="${compact ? 'true' : 'false'}"`,
+        d.caption ? `data-caption="${escapeHtml(d.caption)}"` : '',
+      ].filter(Boolean).join(' ');
+      return `<div ${tblAttrs} style="overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch;"><table style="width:100%; border-collapse:collapse; font-size:15px; min-width:480px;">${captionHtml}${headHtml}<tbody>${body}</tbody></table></div>`;
     }
     case 'divider':
-      return `<hr style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;
+      return `<hr data-lesson-block="divider" style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;
     case 'spacer':
       return `<div style="height:${Math.max(8, Math.min(200, Number(d.size) || 32))}px;"></div>`;
     case 'two-columns': {
@@ -494,13 +526,28 @@ function blockToHtml(b) {
       // already sits at the natural top of the row).
       const minH = (va === 'top' || !va) ? '' : 'min-height:240px;';
 
+      // Canonical column-container marker. The parser reads this on
+      // reload, splits the inner column divs by class, and recursively
+      // calls htmlToBlocks on each column's HTML to rebuild the nested
+      // native blocks — instead of dropping the whole thing into
+      // legacy-html. Width / ratio / gap / verticalAlign / stack are all
+      // persisted on data-* so the round-trip is lossless.
+      const tcAttrs = [
+        `data-lesson-block="two-columns"`,
+        `data-col-count="${columnCount}"`,
+        `data-gap="${gap}"`,
+        `data-vertical-align="${va || 'top'}"`,
+        `data-stack="${stack ? 'true' : 'false'}"`,
+        typeof d.ratio === 'number' ? `data-ratio="${d.ratio}"` : '',
+      ].filter(Boolean).join(' ');
+
       // ── 1 column ─────────────────────────────────────────────────────
       if (columnCount === 1) {
         // The toolbar's `gap` value is the only spacing control a 1-col
         // block has — so it MUST apply as the vertical gap between nested
         // blocks (otherwise it's a no-op, which the user explicitly
         // flagged). Use flex-direction:column + row-gap to space children.
-        return `<div style="display:flex; flex-direction:column; row-gap:${gap}px; justify-content:${justify}; ${minH} margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;">${renderSide(leftSide)}</div>`;
+        return `<div ${tcAttrs} style="display:flex; flex-direction:column; row-gap:${gap}px; justify-content:${justify}; ${minH} margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;"><div data-tc-col="left">${renderSide(leftSide)}</div></div>`;
       }
 
       // ── 2 or 3 columns: shared responsive flexbox with @media stack ──
@@ -554,12 +601,12 @@ function blockToHtml(b) {
 
       if (columnCount === 3) {
         // Equal thirds.
-        return `${stackCss}<div class="${rootClass}"><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(leftSide)}</div><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(middleSide)}</div><div class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(rightSide)}</div></div>`;
+        return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(leftSide)}</div><div data-tc-col="middle" class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(middleSide)}</div><div data-tc-col="right" class="lb-twocol-col" style="flex-basis:33.3333%;">${renderSide(rightSide)}</div></div>`;
       }
 
       // 2-column (default) — ratio-controlled basis.
       const [lPct, rPct] = parseRatio();
-      return `${stackCss}<div class="${rootClass}"><div class="lb-twocol-col" style="flex-basis:${lPct}%;">${renderSide(leftSide)}</div><div class="lb-twocol-col" style="flex-basis:${rPct}%;">${renderSide(rightSide)}</div></div>`;
+      return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" class="lb-twocol-col" style="flex-basis:${lPct}%;">${renderSide(leftSide)}</div><div data-tc-col="right" class="lb-twocol-col" style="flex-basis:${rPct}%;">${renderSide(rightSide)}</div></div>`;
     }
     case 'code':
       return `<pre style="background:#1E1E1E; color:#D4D4D4; padding:20px; border-radius:8px; overflow-x:auto; margin:16px 0; font-family:Menlo,Monaco,Consolas,monospace; font-size:14px; line-height:1.6;"><code class="language-${escapeHtml(d.language || 'plaintext')}">${escapeHtml(d.code || '')}</code></pre>`;
@@ -623,6 +670,16 @@ export function htmlToBlocks(html) {
 
   children.forEach((el, idx) => {
     const tag = el.tagName.toLowerCase();
+    // Skip standalone <style> siblings: blocksToHtml emits responsive
+    // stylesheets next to image-text and two-columns wrappers. They are
+    // pure runtime CSS; re-serialising re-emits them, so we don't need to
+    // capture them as legacy-html (doing so would also visually swallow
+    // the wrapper that follows). Treat them as transparent — neither
+    // parsed nor included in the unparsed run.
+    if (tag === 'style') {
+      flushUnparsedRun(idx);
+      return;
+    }
     const parsed = parseSimpleElement(el, tag);
     if (parsed) {
       flushUnparsedRun(idx);
@@ -639,10 +696,42 @@ export function htmlToBlocks(html) {
 function parseSimpleElement(el, tag) {
   // CANONICAL BLOCK MARKER — if blocksToHtml stamped a `data-lesson-block`
   // attribute on this element, reconstruct the native block from the
-  // embedded media + data-* attributes. Handles round-trip for image /
-  // image-text / video that previously fell through to legacy-html
-  // because their outer <div> wasn't recognised.
+  // embedded media + data-* attributes. This is what guarantees that any
+  // template (built via blocksToHtml(nativeTemplate())) round-trips back
+  // into individually editable blocks instead of falling into the
+  // legacy-html escape hatch.
   const lessonBlockKind = el.getAttribute && el.getAttribute('data-lesson-block');
+
+  if (lessonBlockKind === 'paragraph' && tag === 'p') {
+    return createBlock('paragraph', { html: el.innerHTML });
+  }
+  if (lessonBlockKind === 'heading-1') return createBlock('heading-1', { text: el.textContent.trim() });
+  if (lessonBlockKind === 'heading-2') return createBlock('heading-2', { text: el.textContent.trim() });
+  if (lessonBlockKind === 'heading-3') return createBlock('heading-3', { text: el.textContent.trim() });
+  if (lessonBlockKind === 'bullet-list' && tag === 'ul') {
+    const items = Array.from(el.children)
+      .filter(li => li.tagName.toLowerCase() === 'li')
+      .map(li => li.innerHTML);
+    return createBlock('bullet-list', { items: items.length ? items : [''] });
+  }
+  if (lessonBlockKind === 'numbered-list' && tag === 'ol') {
+    const items = Array.from(el.children)
+      .filter(li => li.tagName.toLowerCase() === 'li')
+      .map(li => li.innerHTML);
+    return createBlock('numbered-list', { items: items.length ? items : [''] });
+  }
+  if (lessonBlockKind === 'quote' && tag === 'blockquote') {
+    // Strip the optional <footer> we appended so the html field is just
+    // the quote body; cite comes from the data-cite attribute instead.
+    const clone = el.cloneNode(true);
+    clone.querySelectorAll('footer').forEach(f => f.remove());
+    return createBlock('quote', {
+      html: clone.innerHTML,
+      cite: el.getAttribute('data-cite') || '',
+    });
+  }
+  if (lessonBlockKind === 'divider' && tag === 'hr') return createBlock('divider');
+
   if (tag === 'div' && lessonBlockKind === 'image') {
     const img = el.querySelector('img');
     if (img) {
@@ -671,6 +760,81 @@ function parseSimpleElement(el, tag) {
         lockAspect: el.getAttribute('data-lock-aspect') !== 'false',
       });
     }
+  }
+
+  if (tag === 'div' && lessonBlockKind === 'image-text') {
+    // Image-text round-trip — the body html is persisted on data-html so we
+    // never have to guess which column held it. Image fidelity (alt,
+    // caption, credit, width, unit, fit, side) all come from data-* attrs.
+    const widthAttr = parseFloat(el.getAttribute('data-width'));
+    const html = el.getAttribute('data-html') || '';
+    return createBlock('image-text', {
+      url: el.getAttribute('data-url') || '',
+      alt: el.getAttribute('data-alt') || '',
+      caption: el.getAttribute('data-caption') || '',
+      credit: el.getAttribute('data-credit') || '',
+      html,
+      side: el.getAttribute('data-side') === 'right' ? 'right' : 'left',
+      widthUnit: el.getAttribute('data-width-unit') === 'px' ? 'px' : 'percent',
+      width: Number.isFinite(widthAttr) ? widthAttr : 100,
+      fit: el.getAttribute('data-fit') === 'cover' ? 'cover' : 'contain',
+    });
+  }
+
+  if (tag === 'div' && lessonBlockKind === 'table') {
+    const tableEl = el.querySelector('table');
+    if (tableEl) {
+      const hasHeader = el.getAttribute('data-header') !== 'false';
+      const stripe = el.getAttribute('data-stripe') === 'true';
+      const bordered = el.getAttribute('data-bordered') !== 'false';
+      const compact = el.getAttribute('data-compact') === 'true';
+      const caption = el.getAttribute('data-caption') || '';
+      const cellOf = (td) => ({
+        content: td.innerHTML.trim(),
+        align: (td.style?.textAlign === 'center' || td.style?.textAlign === 'right')
+                  ? td.style.textAlign : 'left',
+        bg: null, color: null, border: 'default',
+        rowSpan: Number(td.getAttribute('rowspan')) || 1,
+        colSpan: Number(td.getAttribute('colspan')) || 1,
+        hidden: false,
+      });
+      const headRow = tableEl.querySelector('thead tr');
+      const bodyRows = Array.from(tableEl.querySelectorAll('tbody tr'));
+      const rows = [];
+      if (hasHeader && headRow) {
+        rows.push(Array.from(headRow.children).map(cellOf));
+      }
+      bodyRows.forEach(tr => {
+        rows.push(Array.from(tr.children).map(cellOf));
+      });
+      return createBlock('table', {
+        header: hasHeader, stripe, bordered, compact, caption,
+        rows: rows.length ? rows : [[{ content: '' }, { content: '' }]],
+      });
+    }
+  }
+
+  if (tag === 'div' && lessonBlockKind === 'two-columns') {
+    const colCount = Math.min(3, Math.max(1, Number(el.getAttribute('data-col-count')) || 2));
+    const gap = Number(el.getAttribute('data-gap'));
+    const verticalAlign = el.getAttribute('data-vertical-align') || 'top';
+    const stackOnMobile = el.getAttribute('data-stack') !== 'false';
+    const ratioAttr = parseFloat(el.getAttribute('data-ratio'));
+    const colNode = (which) => el.querySelector(`[data-tc-col="${which}"]`);
+    // Recursively reparse each column's inner HTML back into native blocks
+    // — this is what makes nested template content (headings, paragraphs,
+    // images inside a 3-column editorial) individually editable on reload.
+    const parseSide = (node) => node ? htmlToBlocks(node.innerHTML) : [];
+    return createBlock('two-columns', {
+      columnCount: colCount,
+      leftBlocks:   parseSide(colNode('left')),
+      middleBlocks: colCount === 3 ? parseSide(colNode('middle')) : [],
+      rightBlocks:  colCount >= 2 ? parseSide(colNode('right')) : [],
+      ratio: Number.isFinite(ratioAttr) ? ratioAttr : 0.5,
+      gap: Number.isFinite(gap) ? gap : 24,
+      verticalAlign: ['top','center','middle','bottom'].includes(verticalAlign) ? verticalAlign : 'top',
+      stackOnMobile,
+    });
   }
 
   // We only convert "pure" elements with no descendant tables/grids/divs that

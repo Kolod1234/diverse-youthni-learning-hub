@@ -213,20 +213,87 @@ const InlineEditable = React.forwardRef(function InlineEditable({
       return;
     }
 
+    // NON-COLLAPSED WRAP — preserve existing inline ancestors.
+    //
+    // Previously this branch called `range.surroundContents(wrapper)` and
+    // fell back to `extractContents` + `appendChild`. Both strategies
+    // collapse the original inline parents (e.g. <mark>, <a>, <sub>) into
+    // a single new wrapper — so after applying a font size to text that
+    // was already highlighted, the <mark> ancestor was destroyed and the
+    // highlight disappeared.
+    //
+    // New strategy: walk every text node inside the range and wrap EACH
+    // one in its own copy of the requested tag. The original ancestor
+    // chain (mark, a, sub, sup, etc.) stays intact for every text node,
+    // so font family / size / colour / bold / italic can coexist with
+    // any pre-existing highlight without silent no-op.
+    const root = innerRef.current;
+    const wrapTextNodesInRange = () => {
+      // Collect every text node that intersects the range, in document order.
+      const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT, {
+        acceptNode(node) {
+          if (!node.nodeValue || node.nodeValue.length === 0) return NodeFilter.FILTER_REJECT;
+          return range.intersectsNode(node) ? NodeFilter.FILTER_ACCEPT : NodeFilter.FILTER_REJECT;
+        },
+      });
+      const textNodes = [];
+      let n;
+      while ((n = walker.nextNode())) textNodes.push(n);
+      if (!textNodes.length) return [];
+
+      const startNode = range.startContainer;
+      const endNode = range.endContainer;
+      const startOffset = range.startOffset;
+      const endOffset = range.endOffset;
+
+      const wrappers = [];
+      textNodes.forEach((tn) => {
+        // Trim each text node to the part that's inside the range.
+        let s = 0, e = tn.nodeValue.length;
+        if (tn === startNode) s = startOffset;
+        if (tn === endNode) e = endOffset;
+        if (s >= e) return;
+        // Split off the leading/trailing pieces so the wrapper covers
+        // EXACTLY the selected portion — no styling leakage.
+        let target = tn;
+        if (e < tn.nodeValue.length) target.splitText(e);
+        if (s > 0) target = target.splitText(s);
+        const w = wrapper.cloneNode(false); // new element with same tag + attrs
+        target.parentNode.insertBefore(w, target);
+        w.appendChild(target);
+        wrappers.push(w);
+      });
+      return wrappers;
+    };
+
+    let wrappers = [];
     try {
-      // If selection spans multiple nodes, surroundContents throws.
-      // Fall back to extract → append → insert.
-      range.surroundContents(wrapper);
+      wrappers = wrapTextNodesInRange();
     } catch {
-      const frag = range.extractContents();
-      wrapper.appendChild(frag);
-      range.insertNode(wrapper);
+      // Last-resort: if the tree walker / split strategy throws (e.g. the
+      // range straddles a non-text boundary in a way we can't handle), use
+      // the historic extract/insert path so the user still gets the style
+      // applied — accepting the same flatten-ancestor side-effect that
+      // existed before. This is rare in normal authoring flows.
+      try { range.surroundContents(wrapper); wrappers = [wrapper]; }
+      catch {
+        const frag = range.extractContents();
+        wrapper.appendChild(frag);
+        range.insertNode(wrapper);
+        wrappers = [wrapper];
+      }
     }
+
+    // Re-select the wrapped text so consecutive toolbar actions still act
+    // on the same range (font size → text colour → bold etc.).
     const sel = window.getSelection();
     sel.removeAllRanges();
-    const r = document.createRange();
-    r.selectNodeContents(wrapper);
-    sel.addRange(r);
+    if (wrappers.length > 0) {
+      const r = document.createRange();
+      r.setStartBefore(wrappers[0]);
+      r.setEndAfter(wrappers[wrappers.length - 1]);
+      sel.addRange(r);
+    }
     captureSelection();
     emitChange();
   };

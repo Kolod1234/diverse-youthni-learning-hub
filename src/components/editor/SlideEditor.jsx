@@ -24,6 +24,8 @@ import SlideThumbnailRail from '@/components/editor/SlideThumbnailRail';
 import ApplyTemplateConfirmDialog from '@/components/editor/lessonBuilder/ApplyTemplateConfirmDialog.jsx';
 import WorkspaceShell from '@/components/editor/workspace/WorkspaceShell';
 import WorkspaceModals from '@/components/editor/workspace/WorkspaceModals';
+import { NATIVE_TEMPLATES } from '@/components/editor/lessonBuilder/nativeTemplates';
+import { blocksToHtml } from '@/components/editor/lessonBuilder/htmlSerializer';
 import { toast } from 'sonner';
 import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { base44 } from '@/api/base44Client';
@@ -35,63 +37,37 @@ import {
 } from '@/components/ui/dropdown-menu';
 
 // ---------------------------------------------------------------------------
-// SLIDE_TEMPLATES — verified core set ONLY.
+// SLIDE_TEMPLATES — built from native block trees defined in `nativeTemplates.js`.
 //
-// Every entry below has been audited against the htmlSerializer parser
-// (parseSimpleElement in htmlSerializer.js). Each template uses only top-level
-// elements that parse cleanly back to lessonBuilder blocks without falling
-// into the legacy-html escape hatch: <h1>, <h2>, <p>, <ul>/<ol>, <blockquote>,
-// <hr>. NO wrapping <div>s, NO <table>, NO <img>, NO <iframe> at the top level
-// (those produce 'legacy-html' blocks today).
+// Each entry's `content` field is generated at module-load time by serialising
+// a native block tree through `blocksToHtml`. The output carries canonical
+// `data-lesson-block="…"` markers so `htmlToBlocks` reconstructs the same
+// native blocks on reload — meaning every heading, paragraph, list item,
+// quote, image, caption, column child and table cell stays individually
+// editable inside the Visual Lesson Builder. ZERO legacy-html blocks are
+// produced by any template.
 //
-// REMOVED in this release (until their serializer ↔ parser pairs are made
-// natively compatible in a separate task): Two Columns, Definition,
-// Image + Text, Image Top, Three Images, Before/After, Annotated Image,
-// Image Overlay, Image Gallery, Text on Image, Text Left/Right Image,
-// Multiple Images & Text, Diagram with Cards, Formula Slide, Info Cards Grid,
-// Risks/Ethics two-column. Tutors can build any of those by adding the
-// equivalent blocks (image, two-columns, table, etc.) from the block menu
-// inside the Visual Lesson Builder above.
-const SLIDE_TEMPLATES = {
-  blank: {
-    name: 'Blank Slide',
-    icon: '📄',
-    // <p> → parseSimpleElement → paragraph block. Verified round-trip.
-    content: '<p style="line-height:1.8; font-size:16px;">Start writing your content here…</p>'
-  },
-  title: {
-    name: 'Title Slide',
-    icon: '📌',
-    // <h1> + <h2> are both top-level "simple" elements with no descendant
-    // tables / images / divs, so they parse back to heading-1 + heading-2
-    // blocks. Verified round-trip (no legacy-html).
-    content: '<h1 style="font-size:48px; font-weight:700; color:#1A3C5A; margin:0 0 16px; line-height:1.1;">Main Lesson Title</h1><h2 style="font-size:28px; font-weight:400; color:#334E68; margin:0;">Subtitle or Key Concept</h2>'
-  },
-  content: {
-    name: 'Content Slide',
-    icon: '📝',
-    // <h2> + <p> + <p>. Verified round-trip.
-    content: '<h2 style="font-size:28px; font-weight:700; color:#1A3C5A; margin:0 0 12px;">Main Section Heading</h2><p style="font-size:16px; line-height:1.7; color:#334E68; margin:0 0 12px;">Add detailed explanation here. Use clear, concise language to explain complex concepts.</p><p style="font-size:16px; line-height:1.7; color:#334E68; margin:0;">Continue with additional details and examples.</p>'
-  },
-  bullets: {
-    name: 'Bullet Points',
-    icon: '📋',
-    // <h2> + <ul>. Verified round-trip.
-    content: '<h2 style="font-size:28px; font-weight:700; color:#1F2937; margin:0 0 12px;">Key Points</h2><ul style="margin:0; padding-left:24px; line-height:1.8;"><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">First important point with clear explanation</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Second important point with clear explanation</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Third important point with clear explanation</li></ul>'
-  },
-  steps: {
-    name: 'Step-by-Step',
-    icon: '🔢',
-    // <h2> + <ol>. Verified round-trip (becomes a numbered-list block).
-    content: '<h2 style="font-size:28px; font-weight:700; color:#1F2937; margin:0 0 12px;">Process or Procedure</h2><ol style="margin:0; padding-left:24px; line-height:1.8;"><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">First step — describe the first action or stage.</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Second step — explain the second action or stage.</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Third step — detail the final action or stage.</li></ol>'
-  },
-  quote: {
-    name: 'Quote / Highlight',
-    icon: '💬',
-    // <blockquote>. Verified round-trip.
-    content: '<blockquote style="border-left:4px solid #4F46E5; padding:12px 20px; margin:0; background:#F3F4F6; border-radius:4px; color:#4B5563; font-style:italic;">Insert an important quote or key takeaway message here.<footer style="margin-top:8px; font-size:14px; color:#6B7280; font-style:normal;">— Author or Source</footer></blockquote>'
-  }
-};
+// Builders the user explicitly asked for are all included in the native
+// templates registry: Blank, Title, Single-column article, Two-column
+// article, Three-column editorial, Image left + text right, Text left +
+// image right, Image top + text, Full-width image with caption, Newspaper
+// front page, Newspaper article, Tabloid cover, Tabloid story, Blog hero,
+// Blog article, Feature profile/interview, Quote/highlight, Definition/
+// explainer, Comparison/before-after, Data/table report.
+const SLIDE_TEMPLATES = Object.fromEntries(
+  Object.entries(NATIVE_TEMPLATES).map(([key, t]) => [
+    key,
+    {
+      name: t.name,
+      icon: t.icon,
+      category: t.category,
+      // Serialise the native block tree → canonical HTML. The HTML carries
+      // `data-lesson-block` markers so htmlToBlocks round-trips it back
+      // into individually editable native blocks on reload.
+      content: blocksToHtml(t.buildBlocks()),
+    },
+  ])
+);
 
 // Removed-from-this-release templates kept here as a documented list for the
 // next task that re-adds them with native parser support. Do not re-enable
