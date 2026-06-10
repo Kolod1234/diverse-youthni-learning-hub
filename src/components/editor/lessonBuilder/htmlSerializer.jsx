@@ -133,8 +133,38 @@ export function blocksToHtml(blocks = []) {
 function blockToHtml(b) {
   const d = b.data || {};
   switch (b.type) {
-    case 'paragraph':
-      return `<p style="line-height:1.7; font-size:16px; color:#1F2937; margin:0 0 12px;">${sanitiseInline(d.html || '')}</p>`;
+    case 'paragraph': {
+      // execCommand("justifyCenter"/"justifyLeft"/...) emits a wrapper
+      // <p>/<div> with `text-align:…` inside our html. After our sanitiser
+      // runs we end up with a block-level child carrying the alignment but
+      // its parent <p> wrapper still defaults to left, so the alignment
+      // doesn't reach the surrounding box (and looks wrong when the parent
+      // is centered/right while children only fill their own width). Lift
+      // any root-level text-align onto the outer <p> wrapper so the visual
+      // alignment matches what the toolbar applied.
+      const inner = sanitiseInline(d.html || '');
+      let extraStyle = '';
+      try {
+        if (typeof document !== 'undefined' && inner) {
+          const tmp = document.createElement('div');
+          tmp.innerHTML = inner;
+          // Walk top-level block-ish children, take the first non-empty
+          // text-align we see — that matches what an editor user would
+          // have selected for the paragraph as a whole.
+          for (const node of Array.from(tmp.children)) {
+            const ta = node.style?.textAlign;
+            if (ta && ['left','center','right','justify'].includes(ta)) {
+              extraStyle = ` text-align:${ta};`;
+              break;
+            }
+          }
+        }
+      } catch { /* fall through with no extra style */ }
+      // Text-wrap defenses: identical to the editor's InlineEditable so
+      // long tokens (URLs, code, "AUTOBIOGRAPHY…") wrap inside the
+      // preview instead of forcing horizontal overflow.
+      return `<p style="line-height:1.7; font-size:16px; color:#1F2937; margin:0 0 12px; min-width:0; max-width:100%; white-space:normal; overflow-wrap:anywhere; word-break:break-word;${extraStyle}">${inner}</p>`;
+    }
     case 'heading-1':
       return `<h1 style="font-size:36px; font-weight:700; color:#1A3C5A; margin:0 0 16px; line-height:1.2;">${escapeHtml(d.text || '')}</h1>`;
     case 'heading-2':
@@ -367,9 +397,25 @@ function blockToHtml(b) {
 
       const stack = d.stackOnMobile !== false && d.stack !== false;
 
+      // Map vertical-align to a flex `justify-content` value (axis is the
+      // column's main axis when flex-direction is column).
+      const justify = va === 'center' || va === 'middle' ? 'center'
+                    : va === 'bottom' || va === 'end'    ? 'flex-end'
+                                                         : 'flex-start';
+      // Apply a consistent minimum height ONLY when alignment isn't "top"
+      // — otherwise centred / bottom-aligned content has nothing to push
+      // off and the rule visually no-ops, which is exactly the bug the
+      // user measured. Top alignment doesn't need a min-height (content
+      // already sits at the natural top of the row).
+      const minH = (va === 'top' || !va) ? '' : 'min-height:240px;';
+
       // ── 1 column ─────────────────────────────────────────────────────
       if (columnCount === 1) {
-        return `<div style="margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;">${renderSide(leftSide)}</div>`;
+        // The toolbar's `gap` value is the only spacing control a 1-col
+        // block has — so it MUST apply as the vertical gap between nested
+        // blocks (otherwise it's a no-op, which the user explicitly
+        // flagged). Use flex-direction:column + row-gap to space children.
+        return `<div style="display:flex; flex-direction:column; row-gap:${gap}px; justify-content:${justify}; ${minH} margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;">${renderSide(leftSide)}</div>`;
       }
 
       // ── 2 or 3 columns: shared responsive flexbox with @media stack ──
@@ -397,9 +443,14 @@ function blockToHtml(b) {
       // We can't use container queries here because the serialized HTML is
       // injected into arbitrary host containers and we can't guarantee a
       // `container-type` ancestor. The attribute-driven rule is reliable.
+      // `min-height` on the flex row gives `align-items: center/flex-end`
+      // something to push off. Without it the row shrinks to the tallest
+      // column's content and the alignment visually no-ops. Top alignment
+      // doesn't need it (content already starts at the top edge).
+      const minHCss = minH; // already computed above for the 1-col branch
       const stackCss = stack
         ? `<style>
-            .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
+            .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};${minHCss}}
             .lb-twocol > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
             ${overflowRules}
             @media (max-width: 767px){
@@ -410,7 +461,7 @@ function blockToHtml(b) {
             [data-mobile-preview="true"] .lb-twocol > .lb-twocol-col{flex:0 0 100%;width:100%;max-width:100%;}
           </style>`
         : `<style>
-            .lb-twocol-nostack{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
+            .lb-twocol-nostack{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};${minHCss}}
             .lb-twocol-nostack > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
             ${overflowRules}
           </style>`;

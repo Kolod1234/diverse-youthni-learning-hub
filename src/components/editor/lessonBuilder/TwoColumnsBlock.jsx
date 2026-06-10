@@ -201,8 +201,17 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
           // at <=767px when stackOnMobile is true. Inline `gridTemplateColumns`
           // would defeat the media query — do NOT add it back here.
           ['--tc-cols']: gridTemplateFor(columnCount, ratio),
-          gap: `${gap}px`,
+          // For 1-col layouts the only thing the column-gap (`gap`) would
+          // affect on a single-track grid is nothing — vertical inter-block
+          // spacing already lives on the Column flex container. So we zero
+          // the grid gap when there's just one track to avoid a phantom
+          // 24px gutter on the right of the single column.
+          gap: columnCount === 1 ? 0 : `${gap}px`,
+          // alignItems vertically aligns the column tracks within the row.
+          // For 1-col this also needs a minimum row height to be visible,
+          // matching the serialized preview (see two-columns serializer).
           alignItems: valign,
+          minHeight: verticalAlign !== 'top' ? '240px' : undefined,
           userSelect: dragging ? 'none' : undefined,
         }}
       >
@@ -215,6 +224,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
             renderChild={renderChild}
             nestedExpandedKey={nestedExpandedKey}
             setNestedExpandedKey={setNestedExpandedKey}
+            blockSpacing={gap}
           />
         )}
 
@@ -331,8 +341,18 @@ function Toolbar({ columnCount, ratio, gap, verticalAlign, stackOnMobile, onColu
         </>
       )}
 
-      <label className="text-xs text-gray-600 flex items-center gap-1">
-        Gap
+      {/* Label disambiguates what the value actually controls:
+          - 1 column → "Block spacing" (vertical gap between nested blocks)
+          - 2/3 cols → "Column gap" (horizontal gap between columns).
+          The data key (`gap`) is unchanged — only the human label switches,
+          so previously authored blocks round-trip identically. */}
+      <label
+        className="text-xs text-gray-600 flex items-center gap-1"
+        title={columnCount === 1
+          ? 'Vertical space between blocks inside the column'
+          : 'Horizontal space between columns'}
+      >
+        {columnCount === 1 ? 'Block spacing' : 'Column gap'}
         <input
           type="number" min={0} max={96} value={gap}
           onChange={(e) => onGap(clamp(Number(e.target.value) || 0, 0, 96))}
@@ -396,7 +416,7 @@ function Divider({ onMouseDown, onTouchStart, dragging }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey, setNestedExpandedKey }) {
+function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey, setNestedExpandedKey, blockSpacing = 8 }) {
   const [adderOpen, setAdderOpen] = useState(false);
 
   const updateAt = (idx, nextData) => {
@@ -438,7 +458,15 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
         <div className="text-xs text-gray-400 italic py-6 text-center">{title} column — empty</div>
       )}
 
-      <div className="space-y-2">
+      {/* Vertical gap between nested blocks is driven by the `Gap` / `Block
+          spacing` toolbar value. For 2-/3-column layouts this is purely
+          visual breathing room inside the column; for 1-column it's the
+          ONLY thing the value controls (no second column → no column gap),
+          so it must actually apply here in the editor too — otherwise
+          editing a 1-col block with gap=24 shows zero spacing but the
+          serialized HTML uses 24px and the preview disagrees with the
+          editor. */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: `${blockSpacing}px` }}>
         {blocks.map((child, idx) => (
           <ChildWrapper
             key={child.id}

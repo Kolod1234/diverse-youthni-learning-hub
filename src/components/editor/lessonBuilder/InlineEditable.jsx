@@ -182,7 +182,23 @@ const InlineEditable = React.forwardRef(function InlineEditable({
       suppressContentEditableWarning
       data-placeholder={placeholder}
       className={`outline-none focus:ring-2 focus:ring-indigo-200 rounded transition ${className}`}
-      style={{ minHeight: singleLine ? undefined : '1.5em', ...style }}
+      // Text-wrap defenses: prevent a single long token (URL, code,
+      // unspaced word like "AUTOBIOGRAPHY...") from pushing the editor
+      // wider than its container and causing horizontal overflow.
+      // - min-width:0 lets flex/grid parents actually shrink this child
+      // - max-width:100% caps it to its track
+      // - white-space:normal undoes any inherited `nowrap`
+      // - overflow-wrap:anywhere + word-break:break-word break long tokens
+      // Caller `style` still wins for anything it explicitly sets.
+      style={{
+        minHeight: singleLine ? undefined : '1.5em',
+        minWidth: 0,
+        maxWidth: '100%',
+        whiteSpace: 'normal',
+        overflowWrap: 'anywhere',
+        wordBreak: 'break-word',
+        ...style,
+      }}
       onInput={(e) => {
         const html = e.currentTarget.innerHTML;
         lastValue.current = html;
