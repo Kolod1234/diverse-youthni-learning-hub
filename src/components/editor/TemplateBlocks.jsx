@@ -8,6 +8,44 @@ import {
   Plus, X, Search, Columns, Type, Grid3x3
 } from 'lucide-react';
 import { Input } from '@/components/ui/input';
+import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
+
+// ─────────────────────────────────────────────────────────────────────────────
+// Native-block factories — used by entries below that opt in via `nativeBlock`.
+// When present, WorkspaceShell serialises these through `blocksToHtml`, so the
+// inserted snippet round-trips as a *real, editable* native block (callout /
+// quote / heading / list / definition) — not a `legacy-html` wrapper.
+//
+// Each factory returns an array of blocks (same shape `createBlock` produces).
+// The visual HTML preview in the gallery is left untouched so the UI looks
+// identical; only the click-to-insert path is upgraded.
+// ─────────────────────────────────────────────────────────────────────────────
+const nb = {
+  callout: (variant, title, body) => [
+    createBlock('callout', {
+      variant,
+      html: `<p><strong>${title}</strong></p><p>${body}</p>`,
+    }),
+  ],
+  definition: (term, def) => [
+    createBlock('definition', { term, definition: def }),
+  ],
+  quote: (text, cite = '') => [
+    createBlock('quote', { html: text, cite }),
+  ],
+  heading: (level, text) => [
+    createBlock(`heading-${level}`, { text }),
+  ],
+  paragraph: (html) => [
+    createBlock('paragraph', { html }),
+  ],
+  bulletList: (items) => [
+    createBlock('bullet-list', { items }),
+  ],
+  numberedList: (items) => [
+    createBlock('numbered-list', { items }),
+  ],
+};
 
 const TEMPLATE_BLOCKS = {
   callouts: {
@@ -18,43 +56,50 @@ const TEMPLATE_BLOCKS = {
         name: 'Tip Box',
         icon: Lightbulb,
         color: 'blue',
-        html: '<div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-left: 5px solid #3B82F6; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">💡</div><div style="flex: 1;"><h4 style="color: #1E40AF; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Pro Tip</h4><p style="color: #1E3A8A; font-size: 15px; line-height: 1.6; margin: 0;">Add your helpful tip or advice here. This helps students remember key points.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #DBEAFE 0%, #BFDBFE 100%); border-left: 5px solid #3B82F6; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #3B82F6; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">💡</div><div style="flex: 1;"><h4 style="color: #1E40AF; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Pro Tip</h4><p style="color: #1E3A8A; font-size: 15px; line-height: 1.6; margin: 0;">Add your helpful tip or advice here. This helps students remember key points.</p></div></div></div>',
+        nativeBlock: () => nb.callout('info', '💡 Pro Tip', 'Add your helpful tip or advice here. This helps students remember key points.')
       },
       {
         name: 'Important Notice',
         icon: AlertTriangle,
         color: 'red',
-        html: '<div style="background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-left: 5px solid #EF4444; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚠️</div><div style="flex: 1;"><h4 style="color: #991B1B; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Important</h4><p style="color: #7F1D1D; font-size: 15px; line-height: 1.6; margin: 0;">Highlight critical information students need to remember.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #FEE2E2 0%, #FECACA 100%); border-left: 5px solid #EF4444; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #EF4444; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚠️</div><div style="flex: 1;"><h4 style="color: #991B1B; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Important</h4><p style="color: #7F1D1D; font-size: 15px; line-height: 1.6; margin: 0;">Highlight critical information students need to remember.</p></div></div></div>',
+        nativeBlock: () => nb.callout('danger', '⚠️ Important', 'Highlight critical information students need to remember.')
       },
       {
         name: 'Key Concept',
         icon: CheckCircle,
         color: 'green',
-        html: '<div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-left: 5px solid #10B981; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">✓</div><div style="flex: 1;"><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Key Concept</h4><p style="color: #064E3B; font-size: 15px; line-height: 1.6; margin: 0;">Emphasize essential concepts and learning objectives.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border-left: 5px solid #10B981; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">✓</div><div style="flex: 1;"><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Key Concept</h4><p style="color: #064E3B; font-size: 15px; line-height: 1.6; margin: 0;">Emphasize essential concepts and learning objectives.</p></div></div></div>',
+        nativeBlock: () => nb.callout('success', '✓ Key Concept', 'Emphasize essential concepts and learning objectives.')
       },
       {
         name: 'Info Box',
         icon: Info,
         color: 'purple',
-        html: '<div style="background: linear-gradient(135deg, #E9D5FF 0%, #D8B4FE 100%); border-left: 5px solid #A855F7; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #A855F7; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">ℹ️</div><div style="flex: 1;"><h4 style="color: #6B21A8; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Did You Know?</h4><p style="color: #581C87; font-size: 15px; line-height: 1.6; margin: 0;">Share interesting facts or additional context.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #E9D5FF 0%, #D8B4FE 100%); border-left: 5px solid #A855F7; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #A855F7; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">ℹ️</div><div style="flex: 1;"><h4 style="color: #6B21A8; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Did You Know?</h4><p style="color: #581C87; font-size: 15px; line-height: 1.6; margin: 0;">Share interesting facts or additional context.</p></div></div></div>',
+        nativeBlock: () => nb.callout('info', 'ℹ️ Did You Know?', 'Share interesting facts or additional context.')
       },
       {
         name: 'Warning Box',
         icon: AlertTriangle,
         color: 'orange',
-        html: '<div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚡</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Warning</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Caution students about common pitfalls or dangerous misconceptions.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #FEF3C7 0%, #FDE68A 100%); border: 2px solid #F59E0B; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #F59E0B; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">⚡</div><div style="flex: 1;"><h4 style="color: #92400E; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Warning</h4><p style="color: #78350F; font-size: 15px; line-height: 1.6; margin: 0;">Caution students about common pitfalls or dangerous misconceptions.</p></div></div></div>',
+        nativeBlock: () => nb.callout('warning', '⚡ Warning', 'Caution students about common pitfalls or dangerous misconceptions.')
       },
       {
         name: 'Success Box',
         icon: CheckCircle,
         color: 'emerald',
-        html: '<div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #10B981; border-radius: 12px; padding: 20px; margin: 20px 0; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">🎉</div><div style="flex: 1;"><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Well Done!</h4><p style="color: #064E3B; font-size: 15px; line-height: 1.6; margin: 0;">Celebrate achievements and reinforce positive learning outcomes.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #D1FAE5 0%, #A7F3D0 100%); border: 2px solid #10B981; border-radius: 12px; padding: 20px; margin: 20px 0; box-shadow: 0 4px 12px rgba(16, 185, 129, 0.2);"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #10B981; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">🎉</div><div style="flex: 1;"><h4 style="color: #065F46; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Well Done!</h4><p style="color: #064E3B; font-size: 15px; line-height: 1.6; margin: 0;">Celebrate achievements and reinforce positive learning outcomes.</p></div></div></div>',
+        nativeBlock: () => nb.callout('success', '🎉 Well Done!', 'Celebrate achievements and reinforce positive learning outcomes.')
       },
       {
         name: 'Question Box',
         icon: MessageSquare,
         color: 'indigo',
-        html: '<div style="background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%); border-left: 5px solid #6366F1; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #6366F1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">❓</div><div style="flex: 1;"><h4 style="color: #3730A3; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Think About It</h4><p style="color: #312E81; font-size: 15px; line-height: 1.6; margin: 0;">Pose thought-provoking questions to encourage critical thinking.</p></div></div></div>'
+        html: '<div style="background: linear-gradient(135deg, #E0E7FF 0%, #C7D2FE 100%); border-left: 5px solid #6366F1; border-radius: 12px; padding: 20px; margin: 20px 0;"><div style="display: flex; align-items: flex-start; gap: 12px;"><div style="flex-shrink: 0; width: 32px; height: 32px; background: #6366F1; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: white; font-weight: bold; font-size: 18px;">❓</div><div style="flex: 1;"><h4 style="color: #3730A3; font-size: 18px; font-weight: 700; margin: 0 0 8px 0;">Think About It</h4><p style="color: #312E81; font-size: 15px; line-height: 1.6; margin: 0;">Pose thought-provoking questions to encourage critical thinking.</p></div></div></div>',
+        nativeBlock: () => nb.callout('info', '❓ Think About It', 'Pose thought-provoking questions to encourage critical thinking.')
       },
       {
         name: 'Remember Box',

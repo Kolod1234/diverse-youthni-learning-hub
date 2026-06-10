@@ -362,8 +362,23 @@ export default function WorkspaceShell({
 
       {showTemplateBlocks && (
         <TemplateBlocks
-          onInsert={(html) => {
+          onInsert={(html, nativeBlocks) => {
             if (!currentSlideData) return;
+            // If TemplateBlocks supplied a NATIVE block array for this
+            // snippet (Pro Tip, Warning, Quote, etc.) merge it into the
+            // existing block tree and re-serialise. The resulting HTML
+            // carries `data-lesson-block="…"` markers, so when the
+            // builder reopens the slide it reconstructs the SAME blocks
+            // as fully editable native blocks — no more legacy-html
+            // wrapper around the snippet. Snippets without a native
+            // mapping (multi-column layouts, image grids, code, etc.)
+            // fall through to the original append-HTML behaviour.
+            if (Array.isArray(nativeBlocks) && nativeBlocks.length > 0) {
+              const existing = htmlToBlocks(currentSlideData.content || '');
+              const merged = blocksToHtml([...existing, ...nativeBlocks]);
+              updateSlide(currentSlide, 'content', merged);
+              return;
+            }
             updateSlide(currentSlide, 'content', (currentSlideData.content || '') + html);
           }}
           onConvertToColumns={() => {
