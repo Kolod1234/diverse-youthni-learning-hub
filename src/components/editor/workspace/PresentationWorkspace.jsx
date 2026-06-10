@@ -56,6 +56,11 @@ export default function PresentationWorkspace({
   onImportFigma,
   onAddImage,
   onPresent,
+  // Optional override — when the parent provides a custom preview handler
+  // (e.g. opens its own modal at a higher z-index), use that instead of
+  // the local `setPreviewOpen(true)` path. Preserves backwards-compat:
+  // if the parent does NOT pass this, the local PreviewModal still opens.
+  onPreview: onPreviewProp,
 }) {
   const ws = useWorkspaceState();
 
@@ -196,7 +201,12 @@ export default function PresentationWorkspace({
         onEditCode={onEditCode}
         onImportCanva={onImportCanva}
         onImportFigma={onImportFigma}
-        onPreview={() => setPreviewOpen(true)}
+        // RIBBON WIRING REPAIR (retest 2): Preview MUST open the device
+        // preview, never another dialog. We resolve the handler in a
+        // single, explicit place — parent override wins, local PreviewModal
+        // is the fallback. Both targets are PreviewModal (titled "Lesson
+        // preview"), never the block gallery.
+        onPreview={onPreviewProp || (() => setPreviewOpen(true))}
         onPresent={onPresent}
         onToggleNotes={() => ws.setNotesOpen((o) => !o)}
         notesOpen={ws.notesOpen}

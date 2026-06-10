@@ -420,14 +420,20 @@ export default function LessonEditor() {
         <SheetContent
           side="right"
           // [&>button]:z-20 lifts the Radix-default close (X at right-4/top-4)
-          // ABOVE our sticky header (z-10), so a click at the visible X
-          // coordinate actually hits the close button instead of being
-          // absorbed by the sticky bar. The in-header SheetClose remains
-          // as the primary, labelled control — both work now.
-          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0 [&>button]:z-20"
+          // ABOVE our sticky header (z-10), so a click at the X coordinate
+          // hits the close button instead of being absorbed by the sticky bar.
+          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0 [&>button]:z-30"
+          // Stop pointer-down inside the panel from bubbling to background
+          // template cards (which sit under the overlay). Radix already
+          // intercepts outside-clicks at the overlay layer, but a defensive
+          // stopPropagation here means even if a template card's click
+          // listener somehow attached to a bubbling phase ancestor, the
+          // sheet would not leak clicks through to it.
+          onClick={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
         >
-          <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-4">
-            <SheetHeader>
+          <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-4 flex items-start justify-between gap-3">
+            <SheetHeader className="flex-1 min-w-0">
               <SheetTitle className="flex items-center gap-2 text-base">
                 <Settings2 className="w-4 h-4 text-indigo-600" />
                 Lesson settings
@@ -436,6 +442,25 @@ export default function LessonEditor() {
                 Edits stay in this draft until you click Save Lesson.
               </p>
             </SheetHeader>
+            {/* Visible header Close — wrapped in SheetClose asChild so Radix
+                wires the native open-state change. This is the PRIMARY
+                labelled close for mouse + keyboard; the absolute X in the
+                top-right corner remains as a secondary affordance.
+                `type="button"` + onClick stopPropagation prevents the click
+                from bubbling to anything underneath. Tabindex is implicit
+                via the native button so Enter/Space activate it. */}
+            <SheetClose asChild>
+              <Button
+                type="button"
+                variant="ghost"
+                size="sm"
+                aria-label="Close lesson settings"
+                onClick={(e) => e.stopPropagation()}
+                className="shrink-0 h-8 px-2 text-slate-600 hover:text-slate-900 hover:bg-slate-100 -mr-2"
+              >
+                Close
+              </Button>
+            </SheetClose>
           </div>
           <div className="px-4 sm:px-5 py-5">
             <LessonMetadataPanel

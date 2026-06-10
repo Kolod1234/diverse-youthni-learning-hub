@@ -11,6 +11,8 @@ import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
 // canvas.
 import PresentationMode from '@/components/editor/PresentationMode';
 import TemplateBlocks from '@/components/editor/TemplateBlocks';
+import SlideTemplateGallery from '@/components/editor/lessonBuilder/SlideTemplateGallery';
+import ApplyTemplateConfirmDialog from '@/components/editor/lessonBuilder/ApplyTemplateConfirmDialog.jsx';
 import CanvaImporter from '@/components/editor/CanvaImporter';
 import FigmaImporter from '@/components/editor/FigmaImporter';
 import ImageManager from '@/components/editor/ImageManager';
@@ -46,7 +48,17 @@ export default function WorkspaceShell({
 }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showPresentation, setShowPresentation] = useState(false);
+  // showSlideTemplates → SlideTemplateGallery (full-slide native templates).
+  // showTemplateBlocks → TemplateBlocks (small block snippets to APPEND).
+  // These are DISTINCT modals routed from DISTINCT ribbon commands
+  // (Templates / Blocks). Previously both ribbon commands mapped to the
+  // same `setShowTemplateBlocks` setter, which is why the unique "Templates"
+  // ribbon button opened the "Template Blocks" dialog by mistake.
+  const [showSlideTemplates, setShowSlideTemplates] = useState(false);
   const [showTemplateBlocks, setShowTemplateBlocks] = useState(false);
+  // Pending full-slide template — set when the current slide already has
+  // content and a template would overwrite it. Confirm dialog reads this.
+  const [pendingSlideTemplate, setPendingSlideTemplate] = useState(null);
   const [showCanvaImporter, setShowCanvaImporter] = useState(false);
   const [showFigmaImporter, setShowFigmaImporter] = useState(false);
   const [showImageManager, setShowImageManager] = useState(false);
@@ -67,6 +79,36 @@ export default function WorkspaceShell({
     next[index] = { ...next[index], [field]: value };
     onChange(next);
   }, [slides, onChange]);
+
+  // ── Full-slide template application ────────────────────────────────────
+  // Empty slide → apply immediately. Non-empty → ask first via the
+  // ApplyTemplateConfirmDialog so the tutor's work is never wiped silently.
+  const isEmptySlideContent = (html) => {
+    if (!html) return true;
+    const stripped = String(html)
+      .replace(/<\s*p\s*>\s*<\s*\/\s*p\s*>/gi, '')
+      .replace(/<br\s*\/?>/gi, '')
+      .replace(/<[^>]+>/g, '')
+      .replace(/&nbsp;/gi, ' ')
+      .trim();
+    return stripped.length === 0;
+  };
+
+  const commitSlideTemplate = useCallback((html, name) => {
+    if (!currentSlideData) return;
+    updateSlide(currentSlide, 'content', html);
+    setPendingSlideTemplate(null);
+    toast.success(`${name || 'Template'} applied — Save Lesson to persist`);
+  }, [currentSlideData, currentSlide, updateSlide]);
+
+  const handleSlideTemplateApply = useCallback((html, name) => {
+    if (!currentSlideData) return;
+    if (isEmptySlideContent(currentSlideData.content)) {
+      commitSlideTemplate(html, name);
+      return;
+    }
+    setPendingSlideTemplate({ html, name: name || 'this template' });
+  }, [currentSlideData, commitSlideTemplate]);
 
   // ───────────────── Image manager → insert image into current slide ─────
   // Append a NATIVE lessonBuilder image block (NOT a raw <img>/<div> HTML
@@ -273,7 +315,11 @@ export default function WorkspaceShell({
         settingsSlot={settingsSlot}
         presentSlot={null}
         onAddImage={() => setShowImageManager(true)}
-        onOpenTemplates={() => setShowTemplateBlocks(true)}
+        // Templates → full-slide native template gallery (replaces the
+        // current slide). Blocks → small reusable snippets that append
+        // to the current slide. These two ribbon commands now route to
+        // their CORRECT distinct dialogs.
+        onOpenTemplates={() => setShowSlideTemplates(true)}
         onOpenBlocks={() => setShowTemplateBlocks(true)}
         onOpenAI={() => { setAiAction('generate'); setAiPrompt(''); setShowAIDialog(true); }}
         onRewriteWithAI={() => { setAiAction('rewrite'); setAiPrompt(''); setShowAIDialog(true); }}
@@ -288,8 +334,31 @@ export default function WorkspaceShell({
         <PresentationMode
           slides={slides}
           onClose={() => setShowPresentation(false)}
+          // `isPersisted` guards the legacy "Start Session" affordance
+          // inside PresentationMode. For unsaved drafts there is no
+          // persisted lesson id to anchor a live session to, so the
+          // button must be disabled (and any underlying permission /
+          // live-session API calls suppressed).
+          isPersisted={isPersisted}
         />
       )}
+
+      {/* Full-slide native template gallery — opened by the ribbon's
+          Templates command. Distinct from TemplateBlocks below. */}
+      <SlideTemplateGallery
+        open={showSlideTemplates}
+        onClose={() => setShowSlideTemplates(false)}
+        onApply={handleSlideTemplateApply}
+      />
+
+      {/* Confirm dialog — only mounts when a template apply would
+          overwrite existing content. Empty slides bypass it. */}
+      <ApplyTemplateConfirmDialog
+        open={Boolean(pendingSlideTemplate)}
+        templateName={pendingSlideTemplate?.name || ''}
+        onConfirm={() => pendingSlideTemplate && commitSlideTemplate(pendingSlideTemplate.html, pendingSlideTemplate.name)}
+        onCancel={() => setPendingSlideTemplate(null)}
+      />
 
       {showTemplateBlocks && (
         <TemplateBlocks

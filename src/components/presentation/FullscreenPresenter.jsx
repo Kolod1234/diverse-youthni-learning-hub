@@ -190,11 +190,32 @@ export default function FullscreenPresenter({
   }, [bumpControls, index]);
 
   const toggleBrowserFullscreen = async () => {
+    // PERMISSIONS REPAIR (retest 2): Chromium logs "TypeError: Permissions
+    // check failed" to the console when `requestFullscreen` is called in
+    // a context that doesn't allow it (e.g. inside an iframe without the
+    // `allow="fullscreen"` permission policy, or without a fresh user
+    // activation). Even though we already wrap in try/catch, the rejection
+    // surfaces as an "Uncaught (in promise)" line because Chromium treats
+    // the underlying TypeError specially.
+    //
+    // Two guards added:
+    //   1. Check `document.fullscreenEnabled` BEFORE calling — if the
+    //      embedding policy disallows fullscreen we never touch the API,
+    //      so no warning is emitted at all.
+    //   2. Use `.catch(() => {})` on the promise directly (in addition
+    //      to the try/await/catch) so any rejection is absorbed before
+    //      Chromium's "uncaught" detector runs.
     try {
+      if (typeof document === 'undefined') return;
+      if (!document.fullscreenEnabled) return; // policy says no — no-op silently
       if (!document.fullscreenElement) {
-        await containerRef.current?.requestFullscreen?.();
+        const p = containerRef.current?.requestFullscreen?.();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+        await p;
       } else {
-        await document.exitFullscreen?.();
+        const p = document.exitFullscreen?.();
+        if (p && typeof p.catch === 'function') p.catch(() => {});
+        await p;
       }
     } catch {
       // Silently ignore — some browsers block without user gesture
