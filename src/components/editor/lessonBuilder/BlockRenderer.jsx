@@ -281,7 +281,30 @@ function ImageTextBlock({ data, onChange }) {
   const ImageCol = (
     <div>
       {data.url ? (
-        <img src={data.url} alt={data.alt || ''} className="w-full rounded-lg shadow-sm" />
+        // The image is wrapped in a `group` so the Replace overlay
+        // appears on hover. Templates seed a placeholder URL, so the
+        // <label htmlFor=…> upload affordance never renders — without
+        // this overlay there is NO way to swap the placeholder for a
+        // real image except via the (hidden) settings panel. Clicking
+        // the wrapper or the Replace button opens the file picker.
+        <div className="group relative cursor-pointer" onClick={() => document.getElementById(fileInputId)?.click()} title="Click to replace image">
+          <img src={data.url} alt={data.alt || ''} className="w-full rounded-lg shadow-sm" />
+          <span className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 hover:bg-black/80 text-white text-xs font-medium opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity backdrop-blur-sm shadow-md pointer-events-none">
+            <Upload className="w-3.5 h-3.5" />
+            Replace
+          </span>
+          <input
+            id={fileInputId}
+            type="file"
+            accept="image/*"
+            className="hidden"
+            onChange={(e) => {
+              const f = e.target.files?.[0];
+              if (f) upload(f);
+              e.target.value = '';
+            }}
+          />
+        </div>
       ) : (
         <label htmlFor={fileInputId} className="block border-2 border-dashed rounded-lg p-6 text-center text-gray-500 hover:border-indigo-400 cursor-pointer">
           <ImageIcon className="w-7 h-7 mx-auto mb-1 text-gray-400" />
