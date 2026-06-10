@@ -21,7 +21,7 @@ import {
 import { motion, AnimatePresence } from 'framer-motion';
 import { toast } from 'sonner';
 
-export default function PresentationMode({ slides, onClose }) {
+export default function PresentationMode({ slides, onClose, isPersisted = true }) {
   const [currentSlide, setCurrentSlide] = useState(0);
   const [showNotes, setShowNotes] = useState(true);
   const [showQA, setShowQA] = useState(true);
@@ -326,8 +326,18 @@ export default function PresentationMode({ slides, onClose }) {
               <Button
                 variant="ghost"
                 size="sm"
-                onClick={createSession}
-                className="text-white hover:bg-gray-700"
+                // Live-session features require a persisted lesson id so
+                // the session can be anchored / recovered. For unsaved
+                // drafts we disable the button outright — clicking it
+                // would otherwise generate a local session id and (in
+                // some deployments) trigger backend permission checks
+                // tied to a lesson that doesn't yet exist, surfacing
+                // the "Permissions check failed" console error the
+                // test flagged.
+                onClick={isPersisted ? createSession : undefined}
+                disabled={!isPersisted}
+                title={isPersisted ? 'Start a live presentation session' : 'Save the lesson first to start a live session'}
+                className={`text-white hover:bg-gray-700 ${!isPersisted ? 'opacity-50 cursor-not-allowed' : ''}`}
               >
                 <Share2 className="w-4 h-4 mr-2" />
                 Start Session

@@ -307,21 +307,20 @@ function blockToHtml(b) {
 
       const [first, second] = d.side === 'right' ? [textCol, imgCol] : [imgCol, textCol];
 
-      // Shared responsive rules — emit as CSS GRID to match the two-columns
-      // container's layout engine (canonical-layout repair from retest 2).
-      // `minmax(0, 1fr)` per track is what allows a long, unbroken token
-      // (URL / code / unspaced word) to wrap INSIDE its grid track rather
-      // than push the track wider than its share.
+      // Shared responsive rules. Same class as two-columns so multiple
+      // image-text blocks reuse the same stylesheet rule.
       const gap = 24;
       const stackCss = `<style>
-        .lb-imgtext{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:${gap}px;margin:16px 0;align-items:center;}
-        .lb-imgtext > .lb-imgtext-col{min-width:0;max-width:100%;}
+        .lb-imgtext{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:center;}
+        .lb-imgtext > .lb-imgtext-col{flex:1 1 0;min-width:0;max-width:100%;}
         .lb-imgtext, .lb-imgtext *{overflow-wrap:anywhere;word-break:break-word;}
         .lb-imgtext img, .lb-imgtext video, .lb-imgtext iframe, .lb-imgtext table, .lb-imgtext pre{max-width:100%;}
         @media (max-width: 767px){
-          .lb-imgtext{grid-template-columns:1fr;align-items:stretch;}
+          .lb-imgtext{flex-direction:column;flex-wrap:nowrap;align-items:stretch;}
+          .lb-imgtext > .lb-imgtext-col{flex:0 0 100%;width:100%;max-width:100%;}
         }
-        [data-mobile-preview="true"] .lb-imgtext{grid-template-columns:1fr;align-items:stretch;}
+        [data-mobile-preview="true"] .lb-imgtext{flex-direction:column;flex-wrap:nowrap;align-items:stretch;}
+        [data-mobile-preview="true"] .lb-imgtext > .lb-imgtext-col{flex:0 0 100%;width:100%;max-width:100%;}
       </style>`;
 
       // CANONICAL MARKER: `data-lesson-block="image-text"` lets htmlToBlocks
@@ -515,23 +514,8 @@ function blockToHtml(b) {
 
       const stack = d.stackOnMobile !== false && d.stack !== false;
 
-      // CSS-GRID REPAIR (retest 2): the editor's two-columns container
-      // renders as display:grid (with grid-template-columns + gap +
-      // align-items) but the previous serializer emitted display:flex on
-      // the presentation/player side. Even though gap/alignment numerically
-      // matched, the LAYOUT ENGINE differed — a parity hazard the test
-      // explicitly flagged. We now emit the SAME canonical grid model in
-      // both sides so editor and presentation share one rendering path.
-      //
-      // For 1-col we still use a simple flex column (a single grid track
-      // adds no value and inflates the inline style budget).
-
-      // Map vertical-align to grid's `align-items` value. Grid uses
-      // start/center/end (not flex-start/flex-end) on the cross axis.
-      const alignItems = va === 'center' || va === 'middle' ? 'center'
-                       : va === 'bottom' || va === 'end'    ? 'end'
-                                                            : 'start';
-      // Flex fallback for the 1-col branch (column main axis).
+      // Map vertical-align to a flex `justify-content` value (axis is the
+      // column's main axis when flex-direction is column).
       const justify = va === 'center' || va === 'middle' ? 'center'
                     : va === 'bottom' || va === 'end'    ? 'flex-end'
                                                          : 'flex-start';
@@ -557,75 +541,72 @@ function blockToHtml(b) {
         typeof d.ratio === 'number' ? `data-ratio="${d.ratio}"` : '',
       ].filter(Boolean).join(' ');
 
-      // ── 1 column ─────────────────────────────────────────────────────
-      if (columnCount === 1) {
-        // The toolbar's `gap` value is the only spacing control a 1-col
-        // block has — so it MUST apply as the vertical gap between nested
-        // blocks (otherwise it's a no-op, which the user explicitly
-        // flagged). Use flex-direction:column + row-gap to space children.
-        return `<div ${tcAttrs} style="display:flex; flex-direction:column; row-gap:${gap}px; justify-content:${justify}; ${minH} margin:16px 0; font-size:16px; line-height:1.7; color:#1F2937; overflow-wrap:anywhere; word-break:break-word; max-width:100%;"><div data-tc-col="left">${renderSide(leftSide)}</div></div>`;
-      }
+      // ── CANONICAL LAYOUT ENGINE — CSS GRID ──────────────────────────
+      // Both editor (TwoColumnsBlock) and presentation/player render the
+      // SAME grid semantics: `display:grid`, `grid-template-columns`,
+      // `gap`, `align-items`. Switch to a single column at <=767px when
+      // stackOnMobile is on. Previously the serializer used flexbox
+      // while the editor used grid — superficially the gap/alignment
+      // matched but the underlying layout paths diverged. They now use
+      // ONE canonical engine.
 
-      // ── 2 or 3 columns: shared responsive CSS GRID with @media stack ──
-      // Canonical layout engine repair: editor and presentation/player MUST
-      // both render columns via `display: grid` so the layout semantics
-      // (grid-template-columns, gap, align-items) are identical end-to-end.
-      // Previous build used display:flex here while the editor used grid,
-      // so numerical parity (gap=24, align=middle) was coincidental rather
-      // than guaranteed.
-      //
-      // Classes are stable + shared so multiple instances reuse one rule.
-      // Below 768px each column becomes a single full-width grid row when
-      // stack is on. Text-overflow rules (overflow-wrap / word-break /
-      // max-width:100%) on every descendant prevent long unbroken strings
-      // from forcing a column wider than its track and breaking the
-      // responsive stack.
+      // Text-overflow rules (overflow-wrap / word-break / max-width:100%) on
+      // every descendant prevent long unbroken strings (URLs, code, words
+      // without spaces) from forcing a column wider than its grid track and
+      // breaking the responsive stack.
       const overflowRules = `
         .lb-twocol, .lb-twocol *, .lb-twocol-nostack, .lb-twocol-nostack *{
           overflow-wrap:anywhere; word-break:break-word;
         }
+        .lb-twocol > *, .lb-twocol-nostack > *{ min-width:0; }
         .lb-twocol img, .lb-twocol video, .lb-twocol iframe, .lb-twocol table, .lb-twocol pre,
         .lb-twocol-nostack img, .lb-twocol-nostack video, .lb-twocol-nostack iframe,
         .lb-twocol-nostack table, .lb-twocol-nostack pre{
           max-width:100%;
         }`;
-      // Compute the canonical grid-template-columns for this block.
-      //   - 3 cols: equal thirds via `repeat(3, minmax(0, 1fr))`
-      //   - 2 cols: ratio-controlled via two `<pct>fr` tracks (so the
-      //             intent of e.g. 60:40 is preserved precisely)
-      // `minmax(0, 1fr)` is critical — it lets a grid track shrink BELOW
-      // its intrinsic min-content width, which is what allows long
-      // unbroken strings to wrap inside the column rather than push the
-      // track wider than its share (the original 408-char overflow bug).
-      let templateColumns;
-      if (columnCount === 3) {
-        templateColumns = 'minmax(0, 1fr) minmax(0, 1fr) minmax(0, 1fr)';
-      } else {
-        const [lPct, rPct] = parseRatio();
-        // Use `minmax(0, <fr>)` per track so each side can shrink below
-        // intrinsic min-content. Without minmax(0,…) the long-string
-        // wrapping defenses below would not be effective at narrow widths.
-        templateColumns = `minmax(0, ${lPct}fr) minmax(0, ${rPct}fr)`;
+
+      // Resolve `grid-template-columns` per column count. 2-col uses the
+      // ratio; 3-col is equal thirds; 1-col is a single track.
+      const [lPct, rPct] = parseRatio();
+      const gridCols =
+        columnCount === 1 ? '1fr' :
+        columnCount === 3 ? '1fr 1fr 1fr' :
+        `${lPct}fr ${rPct}fr`;
+
+      // ── 1 column ─────────────────────────────────────────────────────
+      if (columnCount === 1) {
+        // For a single-track grid the column-gap has no effect, so the
+        // toolbar's `gap` value drives the vertical spacing between nested
+        // blocks via `row-gap` on a flex column inside the single track.
+        // This matches the editor's 1-col rendering (nested blocks use
+        // flex-direction:column with the same `gap` value).
+        const oneColStyle = [
+          `display:grid`,
+          `grid-template-columns:1fr`,
+          `align-items:${align}`,
+          `margin:16px 0`,
+          `max-width:100%`,
+          minH,
+          `overflow-wrap:anywhere`,
+          `word-break:break-word`,
+        ].filter(Boolean).join('; ');
+        const trackStyle = `display:flex; flex-direction:column; row-gap:${gap}px; justify-content:${justify}; min-width:0; max-width:100%; font-size:16px; line-height:1.7; color:#1F2937;`;
+        return `<div ${tcAttrs} style="${oneColStyle}"><div data-tc-col="left" style="${trackStyle}">${renderSide(leftSide)}</div></div>`;
       }
 
+      // ── 2 or 3 columns: shared responsive CSS grid with @media stack ──
       // Stacking rules need to fire in TWO situations:
       //   1) Live learner view — the real viewport is ≤767px.
-      //   2) Editor "Mobile" preview — the viewport is desktop-width but
-      //      the preview canvas is constrained to 390px. PreviewModal
-      //      marks the canvas with [data-mobile-preview="true"], so we
-      //      also stack when any ancestor carries that attribute.
-      // We can't use container queries here because the serialized HTML is
-      // injected into arbitrary host containers and we can't guarantee a
-      // `container-type` ancestor. The attribute-driven rule is reliable.
-      // `min-height` on the grid row gives `align-items: center/end`
-      // something to push off. Without it the row shrinks to the tallest
-      // column's content and the alignment visually no-ops. Top alignment
-      // doesn't need it (content already starts at the top edge).
-      const minHCss = minH; // already computed above for the 1-col branch
+      //   2) Editor "Mobile" preview — the viewport is desktop-width but the
+      //      preview canvas is constrained to 390px. PreviewModal marks the
+      //      canvas with [data-mobile-preview="true"], so we also stack when
+      //      any ancestor carries that attribute.
+      // Container queries can't be assumed because the serialized HTML is
+      // injected into arbitrary host containers without a guaranteed
+      // `container-type` ancestor — attribute-driven rules are reliable.
       const stackCss = stack
         ? `<style>
-            .lb-twocol{display:grid;grid-template-columns:${templateColumns};gap:${gap}px;margin:16px 0;align-items:${alignItems};${minHCss}}
-            .lb-twocol > .lb-twocol-col{min-width:0;max-width:100%;}
+            .lb-twocol{display:grid;grid-template-columns:${gridCols};gap:${gap}px;margin:16px 0;align-items:${align};${minH}max-width:100%;}
             ${overflowRules}
             @media (max-width: 767px){
               .lb-twocol{grid-template-columns:1fr;}
@@ -633,20 +614,17 @@ function blockToHtml(b) {
             [data-mobile-preview="true"] .lb-twocol{grid-template-columns:1fr;}
           </style>`
         : `<style>
-            .lb-twocol-nostack{display:grid;grid-template-columns:${templateColumns};gap:${gap}px;margin:16px 0;align-items:${alignItems};${minHCss}}
-            .lb-twocol-nostack > .lb-twocol-col{min-width:0;max-width:100%;}
+            .lb-twocol-nostack{display:grid;grid-template-columns:${gridCols};gap:${gap}px;margin:16px 0;align-items:${align};${minH}max-width:100%;}
             ${overflowRules}
           </style>`;
       const rootClass = stack ? 'lb-twocol' : 'lb-twocol-nostack';
 
-      // Grid tracks are defined by the container's grid-template-columns,
-      // so individual children no longer need a flex-basis. We keep the
-      // `data-tc-col` markers (the parser reads them) and the
-      // `.lb-twocol-col` class (for the shared min-width:0 rule).
       if (columnCount === 3) {
-        return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" class="lb-twocol-col">${renderSide(leftSide)}</div><div data-tc-col="middle" class="lb-twocol-col">${renderSide(middleSide)}</div><div data-tc-col="right" class="lb-twocol-col">${renderSide(rightSide)}</div></div>`;
+        return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" style="min-width:0;">${renderSide(leftSide)}</div><div data-tc-col="middle" style="min-width:0;">${renderSide(middleSide)}</div><div data-tc-col="right" style="min-width:0;">${renderSide(rightSide)}</div></div>`;
       }
-      return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" class="lb-twocol-col">${renderSide(leftSide)}</div><div data-tc-col="right" class="lb-twocol-col">${renderSide(rightSide)}</div></div>`;
+
+      // 2-column (default) — ratio-controlled via grid-template-columns.
+      return `${stackCss}<div ${tcAttrs} class="${rootClass}"><div data-tc-col="left" style="min-width:0;">${renderSide(leftSide)}</div><div data-tc-col="right" style="min-width:0;">${renderSide(rightSide)}</div></div>`;
     }
     case 'code':
       return `<pre style="background:#1E1E1E; color:#D4D4D4; padding:20px; border-radius:8px; overflow-x:auto; margin:16px 0; font-family:Menlo,Monaco,Consolas,monospace; font-size:14px; line-height:1.6;"><code class="language-${escapeHtml(d.language || 'plaintext')}">${escapeHtml(d.code || '')}</code></pre>`;
