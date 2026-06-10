@@ -317,10 +317,12 @@ export default function TutorCourseManager() {
               <Brain className="w-4 h-4 mr-2" />
               AI Generator
             </Button>
-            <Button onClick={() => setShowCreate(true)} className="bg-indigo-600">
-              <Plus className="w-4 h-4 mr-2" />
-              Add Lesson
-            </Button>
+            <Link to={`${createPageUrl('LessonEditor')}?courseId=${courseId}`}>
+              <Button className="bg-indigo-600">
+                <Plus className="w-4 h-4 mr-2" />
+                Add Lesson
+              </Button>
+            </Link>
             <Button
               onClick={() => setShowTemplates(true)}
               variant="outline"
@@ -589,12 +591,11 @@ export default function TutorCourseManager() {
                                         >
                                           <Brain className="w-4 h-4" />
                                         </Button>
-                                        <Button variant="outline" size="sm" onClick={() => {
-                                          setEditingLesson(lesson);
-                                          setLessonForm(lesson);
-                                        }}>
-                                          <Edit className="w-4 h-4" />
-                                        </Button>
+                                        <Link to={`${createPageUrl('LessonEditor')}?id=${lesson.id}&courseId=${courseId}`}>
+                                          <Button variant="outline" size="sm" title="Open in full-screen Lesson Editor">
+                                            <Edit className="w-4 h-4" />
+                                          </Button>
+                                        </Link>
                                         <Button variant="outline" size="sm" onClick={() => {
                                           if (confirm('Delete this lesson?')) deleteLessonMutation.mutate(lesson.id);
                                         }}>
