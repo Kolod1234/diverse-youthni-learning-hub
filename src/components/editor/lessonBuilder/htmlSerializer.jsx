@@ -365,9 +365,32 @@ function blockToHtml(b) {
                                                        : 'flex-start';
 
       const stack = d.stackOnMobile !== false && d.stack !== false;
-      const flexWrap = stack ? 'wrap' : 'nowrap';
 
-      return `<div style="display:flex; flex-direction:row; flex-wrap:${flexWrap}; gap:${gap}px; margin:16px 0; align-items:${align};"><div style="flex:1 1 ${lPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(leftSide)}</div><div style="flex:1 1 ${rPct}%; min-width:${stack ? '260px' : '0'}; max-width:100%;">${renderSide(rightSide)}</div></div>`;
+      // Responsive stacking is driven by a real CSS media query, not by
+      // `flex-wrap` + `min-width` (which the browser silently ignores when
+      // the parent is narrower than the sum of the min-widths, leaving the
+      // two columns side-by-side and clipped — the exact 65px / 65px bug
+      // reported at 390px). A scoped <style> block declares the rule:
+      // below 768px, each column becomes a full-width row. The class names
+      // are stable so the rule is shared across every two-column block in
+      // the slide. Idempotent — even if multiple <style> blocks land in the
+      // same document, identical CSS is benign.
+      const stackCss = stack
+        ? `<style>
+            .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
+            .lb-twocol > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
+            @media (max-width: 767px){
+              .lb-twocol{flex-direction:column;flex-wrap:nowrap;}
+              .lb-twocol > .lb-twocol-col{flex:0 0 100%;width:100%;max-width:100%;}
+            }
+          </style>`
+        : `<style>
+            .lb-twocol-nostack{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
+            .lb-twocol-nostack > .lb-twocol-col{flex:1 1 0;min-width:0;max-width:100%;}
+          </style>`;
+      const rootClass = stack ? 'lb-twocol' : 'lb-twocol-nostack';
+
+      return `${stackCss}<div class="${rootClass}"><div class="lb-twocol-col" style="flex-basis:${lPct}%;">${renderSide(leftSide)}</div><div class="lb-twocol-col" style="flex-basis:${rPct}%;">${renderSide(rightSide)}</div></div>`;
     }
     case 'code':
       return `<pre style="background:#1E1E1E; color:#D4D4D4; padding:20px; border-radius:8px; overflow-x:auto; margin:16px 0; font-family:Menlo,Monaco,Consolas,monospace; font-size:14px; line-height:1.6;"><code class="language-${escapeHtml(d.language || 'plaintext')}">${escapeHtml(d.code || '')}</code></pre>`;

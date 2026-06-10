@@ -7,6 +7,36 @@ import {
 import { createBlock, BLOCK_GROUPS, blockTypeLabel } from './blockTypes';
 import { BlockExpandedContext } from './BlockWrapper';
 
+// ── Editor-side responsive stylesheet ───────────────────────────────────────
+// The two-column grid is driven by a CSS custom property (`--tc-cols`) set
+// inline per instance, but the actual `display:grid` / `grid-template-columns`
+// declarations live in a real stylesheet so a media query can override them
+// at mobile widths. Inline styles cannot be overridden by `@media` rules from
+// a stylesheet, which is why the previous version stayed side-by-side on
+// 390px viewports. Injected ONCE at module load, idempotent.
+const TC_STYLE_ID = 'lb-twocol-editor-style';
+if (typeof document !== 'undefined' && !document.getElementById(TC_STYLE_ID)) {
+  const styleEl = document.createElement('style');
+  styleEl.id = TC_STYLE_ID;
+  styleEl.textContent = `
+    .two-columns-block {
+      display: grid;
+      grid-template-columns: var(--tc-cols, 1fr 8px 1fr);
+      min-width: 0;
+    }
+    .two-columns-block > * { min-width: 0; }
+    @media (max-width: 767px) {
+      .two-columns-block[data-stack="true"] {
+        grid-template-columns: 1fr !important;
+      }
+      .two-columns-block[data-stack="true"] > [data-tc-divider] {
+        display: none !important;
+      }
+    }
+  `;
+  document.head.appendChild(styleEl);
+}
+
 // True container: each side holds an array of child blocks of any supported
 // type. Parent passes `renderChild(block, onChange)` so we can render any
 // block via the main BlockRenderer without a circular import.
@@ -133,9 +163,13 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
       <div
         ref={wrapRef}
         className="two-columns-block"
+        data-stack={stackOnMobile ? 'true' : 'false'}
         style={{
-          display: 'grid',
-          gridTemplateColumns: `${(ratio * 100).toFixed(2)}fr 8px ${((1 - ratio) * 100).toFixed(2)}fr`,
+          // grid-template-columns is supplied via a CSS custom property so a
+          // media query in the stylesheet (see top of file) can override it
+          // at <=767px when stackOnMobile is true. Inline `gridTemplateColumns`
+          // would defeat the media query — do NOT add it back here.
+          ['--tc-cols']: `${(ratio * 100).toFixed(2)}fr 8px ${((1 - ratio) * 100).toFixed(2)}fr`,
           gap: `${gap}px`,
           alignItems: valign,
           userSelect: dragging ? 'none' : undefined,
@@ -242,6 +276,7 @@ function Divider({ onMouseDown, onTouchStart, dragging }) {
       role="separator"
       aria-orientation="vertical"
       aria-label="Resize columns — drag"
+      data-tc-divider=""
       onMouseDown={onMouseDown}
       onTouchStart={onTouchStart}
       className={`group flex items-center justify-center cursor-col-resize select-none rounded ${dragging ? 'bg-indigo-200' : 'bg-gray-100 hover:bg-indigo-100'}`}
