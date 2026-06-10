@@ -388,6 +388,15 @@ function blockToHtml(b) {
         .lb-twocol-nostack table, .lb-twocol-nostack pre{
           max-width:100%;
         }`;
+      // Stacking rules need to fire in TWO situations:
+      //   1) Live learner view — the real viewport is ≤767px.
+      //   2) Editor "Mobile" preview — the viewport is desktop-width but the
+      //      preview canvas is constrained to 390px. PreviewModal marks the
+      //      canvas with [data-mobile-preview="true"], so we also stack when
+      //      any ancestor carries that attribute.
+      // We can't use container queries here because the serialized HTML is
+      // injected into arbitrary host containers and we can't guarantee a
+      // `container-type` ancestor. The attribute-driven rule is reliable.
       const stackCss = stack
         ? `<style>
             .lb-twocol{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}
@@ -397,6 +406,8 @@ function blockToHtml(b) {
               .lb-twocol{flex-direction:column;flex-wrap:nowrap;}
               .lb-twocol > .lb-twocol-col{flex:0 0 100%;width:100%;max-width:100%;}
             }
+            [data-mobile-preview="true"] .lb-twocol{flex-direction:column;flex-wrap:nowrap;}
+            [data-mobile-preview="true"] .lb-twocol > .lb-twocol-col{flex:0 0 100%;width:100%;max-width:100%;}
           </style>`
         : `<style>
             .lb-twocol-nostack{display:flex;flex-direction:row;flex-wrap:nowrap;gap:${gap}px;margin:16px 0;align-items:${align};}

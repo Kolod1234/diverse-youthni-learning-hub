@@ -114,6 +114,13 @@ export default function PreviewModal({ open, onClose, html }) {
       <div className="flex-1 overflow-auto bg-slate-800 p-3 sm:p-6">
         <div
           className="mx-auto bg-white rounded shadow-2xl overflow-hidden"
+          // data-mobile-preview tells the serialized lesson HTML's stacking
+          // rules (see htmlSerializer two-columns block) to collapse 2- and
+          // 3-column layouts into a single column inside this canvas, even
+          // though the real viewport is wider than 767px. Without it the
+          // @media (max-width:767px) rule never fires and columns stay
+          // side-by-side in the simulated mobile frame.
+          data-mobile-preview={device === 'mobile' ? 'true' : undefined}
           style={{ width: '100%', maxWidth: cfg.width }}
         >
           <div className={`${device === 'presentation' ? 'p-8 sm:p-12' : 'p-4 sm:p-6'}`}>
