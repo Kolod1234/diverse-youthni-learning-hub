@@ -325,7 +325,8 @@ const TEMPLATE_BLOCKS = {
         name: 'Quote Box',
         icon: MessageSquare,
         color: 'pink',
-        html: '<div style="background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-radius: 12px; padding: 32px; margin: 20px 0; text-align: center;"><div style="font-size: 48px; color: #DB2777; margin-bottom: 16px; line-height: 1;">"</div><blockquote style="color: #831843; font-size: 20px; font-weight: 500; font-style: italic; line-height: 1.6; margin: 0 0 16px 0; max-width: 700px; margin-left: auto; margin-right: auto;">"Insert meaningful quote or key statement here"</blockquote><p style="color: #9F1239; font-size: 14px; font-weight: 600; margin: 0;">— Source or Author</p></div>'
+        html: '<div style="background: linear-gradient(135deg, #FCE7F3 0%, #FBCFE8 100%); border-radius: 12px; padding: 32px; margin: 20px 0; text-align: center;"><div style="font-size: 48px; color: #DB2777; margin-bottom: 16px; line-height: 1;">"</div><blockquote style="color: #831843; font-size: 20px; font-weight: 500; font-style: italic; line-height: 1.6; margin: 0 0 16px 0; max-width: 700px; margin-left: auto; margin-right: auto;">"Insert meaningful quote or key statement here"</blockquote><p style="color: #9F1239; font-size: 14px; font-weight: 600; margin: 0;">— Source or Author</p></div>',
+        nativeBlock: () => nb.quote('Insert meaningful quote or key statement here', 'Source or Author')
       },
       {
         name: 'Summary Box',
@@ -343,7 +344,11 @@ const TEMPLATE_BLOCKS = {
         name: 'Numbered Steps',
         icon: FileText,
         color: 'blue',
-        html: '<div style="background: #F0F9FF; border-radius: 12px; padding: 24px; margin: 20px 0;"><h4 style="color: #1E40AF; font-size: 20px; font-weight: 700; margin: 0 0 16px 0;">Step-by-Step Process</h4><ol style="margin: 0; padding-left: 24px; color: #1E3A8A; font-size: 15px; line-height: 2;"><li><strong>First Step:</strong> Description</li><li><strong>Second Step:</strong> Description</li><li><strong>Third Step:</strong> Description</li></ol></div>'
+        html: '<div style="background: #F0F9FF; border-radius: 12px; padding: 24px; margin: 20px 0;"><h4 style="color: #1E40AF; font-size: 20px; font-weight: 700; margin: 0 0 16px 0;">Step-by-Step Process</h4><ol style="margin: 0; padding-left: 24px; color: #1E3A8A; font-size: 15px; line-height: 2;"><li><strong>First Step:</strong> Description</li><li><strong>Second Step:</strong> Description</li><li><strong>Third Step:</strong> Description</li></ol></div>',
+        nativeBlock: () => [
+          createBlock('heading-3', { text: 'Step-by-Step Process' }),
+          createBlock('numbered-list', { items: ['<strong>First Step:</strong> Description', '<strong>Second Step:</strong> Description', '<strong>Third Step:</strong> Description'] }),
+        ]
       },
       {
         name: 'Checklist',
@@ -499,43 +504,50 @@ const TEMPLATE_BLOCKS = {
         name: 'Large Heading',
         icon: Type,
         color: 'gray',
-        html: '<h1 style="color: #1F2937; font-size: 48px; font-weight: 700; margin: 20px 0; line-height: 1.2;">Main Heading</h1>'
+        html: '<h1 style="color: #1F2937; font-size: 48px; font-weight: 700; margin: 20px 0; line-height: 1.2;">Main Heading</h1>',
+        nativeBlock: () => nb.heading(1, 'Main Heading')
       },
       {
         name: 'Section Heading',
         icon: Type,
         color: 'blue',
-        html: '<h2 style="color: #1E40AF; font-size: 36px; font-weight: 700; margin: 20px 0; line-height: 1.3; border-bottom: 3px solid #3B82F6; padding-bottom: 12px;">Section Title</h2>'
+        html: '<h2 style="color: #1E40AF; font-size: 36px; font-weight: 700; margin: 20px 0; line-height: 1.3; border-bottom: 3px solid #3B82F6; padding-bottom: 12px;">Section Title</h2>',
+        nativeBlock: () => nb.heading(2, 'Section Title')
       },
       {
         name: 'Subheading',
         icon: Type,
         color: 'indigo',
-        html: '<h3 style="color: #4338CA; font-size: 24px; font-weight: 700; margin: 20px 0;">Subheading</h3>'
+        html: '<h3 style="color: #4338CA; font-size: 24px; font-weight: 700; margin: 20px 0;">Subheading</h3>',
+        nativeBlock: () => nb.heading(3, 'Subheading')
       },
       {
         name: 'Paragraph',
         icon: FileText,
         color: 'slate',
-        html: '<p style="color: #1F2937; font-size: 16px; line-height: 1.8; margin: 20px 0;">Add your paragraph text here. Write clear, concise explanations that help students understand the topic.</p>'
+        html: '<p style="color: #1F2937; font-size: 16px; line-height: 1.8; margin: 20px 0;">Add your paragraph text here. Write clear, concise explanations that help students understand the topic.</p>',
+        nativeBlock: () => nb.paragraph('Add your paragraph text here. Write clear, concise explanations that help students understand the topic.')
       },
       {
         name: 'Bullet List',
         icon: FileText,
         color: 'green',
-        html: '<ul style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First bullet point</li><li>Second bullet point</li><li>Third bullet point</li></ul>'
+        html: '<ul style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First bullet point</li><li>Second bullet point</li><li>Third bullet point</li></ul>',
+        nativeBlock: () => nb.bulletList(['First bullet point', 'Second bullet point', 'Third bullet point'])
       },
       {
         name: 'Numbered List',
         icon: FileText,
         color: 'blue',
-        html: '<ol style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First item</li><li>Second item</li><li>Third item</li></ol>'
+        html: '<ol style="margin: 20px 0; padding-left: 24px; color: #1F2937; font-size: 16px; line-height: 2;"><li>First item</li><li>Second item</li><li>Third item</li></ol>',
+        nativeBlock: () => nb.numberedList(['First item', 'Second item', 'Third item'])
       },
       {
         name: 'Highlighted Quote',
         icon: MessageSquare,
         color: 'purple',
-        html: '<blockquote style="border-left: 4px solid #A855F7; background: #F3E8FF; padding: 20px 24px; margin: 20px 0; border-radius: 8px;"><p style="color: #6B21A8; font-size: 18px; line-height: 1.7; margin: 0; font-style: italic;">"Insert important quote or statement here"</p></blockquote>'
+        html: '<blockquote style="border-left: 4px solid #A855F7; background: #F3E8FF; padding: 20px 24px; margin: 20px 0; border-radius: 8px;"><p style="color: #6B21A8; font-size: 18px; line-height: 1.7; margin: 0; font-style: italic;">"Insert important quote or statement here"</p></blockquote>',
+        nativeBlock: () => nb.quote('Insert important quote or statement here')
       },
       {
         name: 'Centered Text',
@@ -733,7 +745,13 @@ export default function TemplateBlocks({ onInsert, onClose, onConvertToColumns }
                           onConvertToColumns(cols);
                           onClose();
                         } else {
-                          onInsert(block.html);
+                          // Pass the optional NATIVE block factory as a 2nd
+                          // arg. WorkspaceShell.onInsert prefers it when
+                          // present and falls back to the raw HTML
+                          // otherwise — so legacy callers that ignore the
+                          // 2nd arg keep working unchanged.
+                          const native = typeof block.nativeBlock === 'function' ? block.nativeBlock() : undefined;
+                          onInsert(block.html, native);
                           onClose();
                         }
                       }}
