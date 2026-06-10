@@ -141,15 +141,56 @@ const InlineEditable = React.forwardRef(function InlineEditable({
   // Apply a style to the containing block element (the nearest paragraph /
   // heading / list item / the editor root). Used for text-align,
   // text-indent, line-height — i.e. anything block-level.
+  //
+  // CRITICAL FIX (autobiography text-align:center regression):
+  // A fresh paragraph block typically contains a bare text node — no
+  // <p>/<h*>/<div> child inside the contenteditable. Previously we fell
+  // back to styling `innerRef.current` itself (the host editor div), which
+  // visually centred the text inside the editor but did NOT survive
+  // serialisation: `innerHTML` only emits the host's children, not its own
+  // style attribute. The serialiser then saw no aligned child and produced
+  // a default-aligned <p>, so the preview computed `text-align: start`.
+  //
+  // Fix: when there is no real block child to target, wrap the editor's
+  // current contents in a single <div> (preserving any selection range)
+  // and style THAT wrapper. That moves the style INSIDE innerHTML, so it
+  // serialises and round-trips correctly.
   const styleBlock = (prop, value) => {
     focusEditor();
+    const root = innerRef.current;
+    if (!root) return;
     const range = getRange();
-    const start = range ? (range.startContainer.nodeType === 3 ? range.startContainer.parentNode : range.startContainer) : innerRef.current;
+    const start = range ? (range.startContainer.nodeType === 3 ? range.startContainer.parentNode : range.startContainer) : root;
     const blockSelector = 'p,h1,h2,h3,h4,h5,h6,li,blockquote,div';
     let block = start?.closest?.(blockSelector);
-    if (!block || !innerRef.current.contains(block)) block = innerRef.current;
+    // Only accept the match if it's a real DESCENDANT of the editor (closest()
+    // climbs through ancestors too, which would include the editor root and
+    // any wrapping section — both useless for serialisation).
+    if (!block || block === root || !root.contains(block) || block.parentNode !== root && !root.contains(block.parentNode)) {
+      // Fall through to wrap logic below.
+      block = null;
+    }
+    if (!block) {
+      // No block child to target. Wrap the editor's children in a <div>
+      // so the style attribute lands inside innerHTML.
+      // Re-use an existing single-wrapper if we already created one to
+      // avoid stacking <div><div>… on repeated clicks.
+      const onlyChild = root.children.length === 1 ? root.firstElementChild : null;
+      if (onlyChild && onlyChild.tagName === 'DIV' && onlyChild.childNodes.length === root.childNodes.length) {
+        block = onlyChild;
+      } else {
+        const wrapper = document.createElement('div');
+        // Move every existing child (text + element nodes) into the wrapper.
+        while (root.firstChild) wrapper.appendChild(root.firstChild);
+        root.appendChild(wrapper);
+        block = wrapper;
+      }
+    }
     if (value === null || value === undefined || value === '') {
       block.style.removeProperty(prop);
+      // If the wrapper is now style-less and was created by us (the
+      // "single direct DIV child" pattern), leave it — it's harmless and
+      // preserves selection. The serialiser handles bare <div>s fine.
     } else {
       block.style.setProperty(prop, value);
     }
