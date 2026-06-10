@@ -155,13 +155,15 @@ export default function PresentationWorkspace({
   // Render
   // ---------------------------------------------------------------
   //
-  // Height: the workspace must consume the remaining viewport below
-  // the LessonEditor's own sticky header. We set a CSS custom
-  // property fallback so this works even if the header height
-  // changes in future.
+  // Height: the workspace consumes whatever the parent flex slot
+  // gives it via `h-full` + `min-h-0`. The chain is owned by the
+  // caller (LessonEditor → SlideEditor wrapper → WorkspaceShell
+  // wrapper). This component does NOT measure the viewport; it
+  // relies on a real flex parent and ResizeObserver inside the
+  // stage to recompute Fit on size changes.
   return (
     <div
-      className="flex flex-col bg-white h-full w-full"
+      className="flex flex-col bg-white h-full w-full min-h-0 min-w-0"
       style={{
         // Belt and braces against any rogue child trying to widen
         // the page beyond the viewport.
@@ -356,13 +358,23 @@ function BuilderHost({
     onUndoStateChange({ canUndo: true, canRedo: true });
   }, [onUndoHandlersChange, onUndoStateChange]);
 
+  // The 16:9 stage gives BuilderHost a fixed pixel size. We must
+  // (a) consume exactly that space (h-full / w-full),
+  // (b) allow internal scroll only INSIDE the slide (not on the
+  //     pasteboard or the page), and
+  // (c) use `chromeless` so VisualLessonBuilder skips its outer
+  //     Card + sticky toolbar + duplicate title input — those
+  //     surfaces already exist in the workspace ribbon and would
+  //     otherwise force an intrinsic height larger than the 16:9
+  //     box, producing the nested scrollbars the builder reported.
   return (
-    <div className="w-full min-h-full p-4">
+    <div className="w-full h-full overflow-auto p-3 lesson-slide-canvas">
       <VisualLessonBuilder
         slide={slide}
         onChange={onChange}
         flushRef={builderFlushRef}
         isPersisted={isPersisted}
+        chromeless
       />
     </div>
   );

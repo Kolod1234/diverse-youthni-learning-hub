@@ -227,8 +227,14 @@ export default function WorkspaceShell({
     );
   }
 
+  // Wrap PresentationWorkspace in a height-bearing flex column so the
+  // height chain reaches PresentationWorkspace's `h-full`. A fragment
+  // would silently break the chain — `h-full` resolves against the
+  // nearest sized ancestor, and a fragment provides none. The dialogs
+  // below the workspace are siblings of this wrapper so they keep their
+  // `fixed inset-0` overlay semantics unchanged.
   return (
-    <>
+    <div className="flex-1 min-h-0 min-w-0 flex flex-col w-full h-full">
       <PresentationWorkspace
         slides={slides}
         currentSlide={currentSlide}
@@ -382,6 +388,6 @@ export default function WorkspaceShell({
           </div>
         </div>
       )}
-    </>
+    </div>
   );
 }

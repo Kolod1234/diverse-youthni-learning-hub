@@ -720,8 +720,22 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
     // builderFlushRef). All other ribbon actions remain available because
     // PresentationWorkspace wires its own block insertion / preview / undo /
     // redo handlers to the shared VisualLessonBuilder.
+    // CRITICAL — height chain: the parent LessonEditor allocates the
+    // workspace its remaining viewport via `flex-1 min-h-0`. For
+    // `h-full` inside WorkspaceShell / PresentationWorkspace / Stage to
+    // resolve to a real pixel height, EVERY intermediate wrapper must
+    // also be `h-full` + a flex/min-h-0 context. When this wrapper was
+    // just `<div className="">` the chain broke and the workspace
+    // collapsed to its intrinsic content height (~313px in the
+    // builder's reported bug).
     return (
-      <div className={fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}>
+      <div
+        className={
+          fullscreenEdit
+            ? 'fixed inset-0 z-50 bg-white flex flex-col min-h-0 min-w-0'
+            : 'h-full w-full flex flex-col min-h-0 min-w-0'
+        }
+      >
         <WorkspaceShell
           slides={slides}
           onChange={onChange}

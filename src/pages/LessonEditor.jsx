@@ -5,7 +5,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { createPageUrl } from '@/utils';
 import { ArrowLeft, Loader2, Save, Play, Settings2, Sparkles, MoreVertical, AlertCircle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
+import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetClose } from '@/components/ui/sheet';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -419,7 +419,12 @@ export default function LessonEditor() {
       <Sheet open={settingsOpen} onOpenChange={setSettingsOpen}>
         <SheetContent
           side="right"
-          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0"
+          // [&>button]:z-20 lifts the Radix-default close (X at right-4/top-4)
+          // ABOVE our sticky header (z-10), so a click at the visible X
+          // coordinate actually hits the close button instead of being
+          // absorbed by the sticky bar. The in-header SheetClose remains
+          // as the primary, labelled control — both work now.
+          className="w-full sm:max-w-md md:max-w-lg overflow-y-auto bg-slate-50 p-0 [&>button]:z-20"
         >
           <div className="sticky top-0 z-10 bg-white border-b border-slate-200 px-6 py-4">
             <SheetHeader>
