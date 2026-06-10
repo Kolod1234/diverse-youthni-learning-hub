@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useCallback, useId } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import {
@@ -58,8 +58,25 @@ function resolveEmbed(url) {
 export default function VideoBlock({ data, onChange }) {
   const merged = { ...DEFAULTS, ...(data || {}) };
   const { url, caption, poster, ratio, align, widthUnit, width } = merged;
-  const update = (patch) => onChange({ ...merged, ...patch });
   const expanded = useBlockExpanded();
+
+  // Ref-based update — async upload callbacks (which may resolve AFTER a
+  // subsequent re-render) MUST merge into the latest data, not into the
+  // closure's snapshot. Otherwise a poster upload that finishes after a
+  // caption edit would clobber the new caption. Same pattern as ImageBlock.
+  const latestRef = useRef(merged);
+  latestRef.current = merged;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const update = useCallback((patch) => {
+    onChangeRef.current({ ...latestRef.current, ...patch });
+  }, []);
+
+  // Unique upload input ids — without these, two VideoBlocks on one slide
+  // could share <label for> targets and clicking one upload control would
+  // open the other block's picker.
+  const urlVideoInputId = useId();
+  const posterInputId = useId();
 
   const upload = async (file) => {
     if (!file) return;
@@ -101,9 +118,9 @@ export default function VideoBlock({ data, onChange }) {
             placeholder="Paste a YouTube / Vimeo / MP4 URL, or upload"
             className="flex-1 min-w-[200px] text-sm border border-gray-200 rounded px-3 py-1.5"
           />
-          <label className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
+          <label htmlFor={urlVideoInputId} className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
             <Upload className="w-3 h-3" /> Upload video
-            <input type="file" accept="video/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
+            <input id={urlVideoInputId} type="file" accept="video/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
           </label>
         </div>
       )}
@@ -137,6 +154,7 @@ export default function VideoBlock({ data, onChange }) {
           merged={merged}
           update={update}
           uploadPoster={uploadPoster}
+          posterInputId={posterInputId}
         />
       </BlockSettingsPanel>
     </div>
@@ -189,8 +207,11 @@ function Player({ resolved, ratio, poster, title }) {
 
 function EmptyVideoState({ onFile }) {
   const [over, setOver] = useState(false);
+  // Per-instance id so multiple empty-state pickers don't collide.
+  const dropInputId = useId();
   return (
     <label
+      htmlFor={dropInputId}
       className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
         over ? 'border-indigo-400 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400 hover:bg-indigo-50/40'
       }`}
@@ -201,12 +222,12 @@ function EmptyVideoState({ onFile }) {
       <VideoIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
       <p className="text-sm font-medium text-gray-700">Click to upload video, or drag & drop</p>
       <p className="text-xs text-gray-500 mt-1">Or paste a YouTube / Vimeo / MP4 URL above</p>
-      <input type="file" accept="video/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+      <input id={dropInputId} type="file" accept="video/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
     </label>
   );
 }
 
-function Controls({ merged, update, uploadPoster }) {
+function Controls({ merged, update, uploadPoster, posterInputId }) {
   const { caption, poster, ratio, align, widthUnit, width } = merged;
 
   return (
@@ -225,9 +246,9 @@ function Controls({ merged, update, uploadPoster }) {
           placeholder="Poster image URL (shown before play)"
           className="flex-1 min-w-[180px] text-xs border border-gray-200 rounded px-2 py-1"
         />
-        <label className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
+        <label htmlFor={posterInputId} className="text-xs text-indigo-600 cursor-pointer hover:underline inline-flex items-center gap-1">
           <ImageIcon className="w-3 h-3" /> Upload poster
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => uploadPoster(e.target.files?.[0])} />
+          <input id={posterInputId} type="file" accept="image/*" className="hidden" onChange={(e) => uploadPoster(e.target.files?.[0])} />
         </label>
       </div>
 

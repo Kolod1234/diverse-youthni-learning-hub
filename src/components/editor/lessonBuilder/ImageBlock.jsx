@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useState, useEffect, useCallback, useId } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import {
@@ -37,21 +37,31 @@ export default function ImageBlock({ data, onChange }) {
     align, widthUnit, width, aspect, lockAspect, fit,
   } = merged;
 
-  const update = (patch) => onChange({ ...merged, ...patch });
+  // STALE-CLOSURE FIX
+  // -----------------
+  // We always patch against the LATEST data, not the data captured in the
+  // closure at the time a callback was created. Without this, an async
+  // upload that fires `update({ url })` followed by an async `img.onload`
+  // that fires `update({ aspect })` would compute the second `...merged`
+  // from the pre-upload render — silently wiping the url back to ''.
+  // The ref + functional patcher pattern keeps every write atomic.
+  const latestRef = useRef(merged);
+  latestRef.current = merged;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const update = useCallback((patch) => {
+    const base = latestRef.current || {};
+    onChangeRef.current?.({ ...base, ...patch });
+  }, []);
 
-  // ── Upload & URL ────────────────────────────────────────────────────────
-  const upload = async (file) => {
-    if (!file) return;
-    try {
-      const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      update({ url: file_url });
-      detectAspect(file_url);
-    } catch {
-      toast.error('Failed to upload image');
-    }
-  };
+  // Unique per-instance id for the (otherwise hidden) file inputs. Prevents
+  // two ImageBlocks on the same slide from sharing an `id` and triggering
+  // the wrong block when a label is clicked.
+  const fileInputId = useId();
 
   // Detect intrinsic aspect ratio after URL changes so the lock can use it.
+  // Declared BEFORE `upload` so the upload handler can reference it without
+  // the temporal-dead-zone bug the previous ordering produced.
   const detectAspect = useCallback((src) => {
     if (!src) return;
     const img = new Image();
@@ -61,8 +71,19 @@ export default function ImageBlock({ data, onChange }) {
       }
     };
     img.src = src;
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [update]);
+
+  // ── Upload & URL ────────────────────────────────────────────────────────
+  const upload = async (file) => {
+    if (!file) return;
+    try {
+      const { file_url } = await base44.integrations.Core.UploadFile({ file });
+      update({ url: file_url, aspect: null });
+      detectAspect(file_url);
+    } catch {
+      toast.error('Failed to upload image');
+    }
+  };
 
   useEffect(() => {
     if (url && !aspect) detectAspect(url);
@@ -209,9 +230,14 @@ export default function ImageBlock({ data, onChange }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 function UploadDrop({ onFile }) {
+  // Each drop zone gets its OWN file input id — the previous shared id meant
+  // a click on one drop zone could trigger the wrong block's file picker when
+  // multiple ImageBlocks rendered on the same slide.
+  const inputId = useId();
   const [over, setOver] = useState(false);
   return (
     <label
+      htmlFor={inputId}
       className={`block border-2 border-dashed rounded-lg p-8 text-center cursor-pointer transition-colors ${
         over ? 'border-indigo-400 bg-indigo-50' : 'border-gray-300 hover:border-indigo-400 hover:bg-indigo-50/40'
       }`}
@@ -226,7 +252,7 @@ function UploadDrop({ onFile }) {
       <ImageIcon className="w-8 h-8 mx-auto mb-2 text-gray-400" />
       <p className="text-sm font-medium text-gray-700">Click to upload, or drag & drop</p>
       <p className="text-xs text-gray-500 mt-1">Or paste a URL below</p>
-      <input type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
+      <input id={inputId} type="file" accept="image/*" className="hidden" onChange={(e) => onFile(e.target.files?.[0])} />
     </label>
   );
 }
@@ -252,6 +278,8 @@ function ResizeHandle({ position, onPointerDown, onKeyDown, ariaLabel }) {
 // ─────────────────────────────────────────────────────────────────────────────
 function Controls({ merged, update, onUpload }) {
   const { url, alt, caption, credit, align, widthUnit, width, lockAspect, fit, aspect } = merged;
+  // Per-instance file input id keeps each block's Upload control independent.
+  const uploadInputId = useId();
 
   const setAlign = (a) => update({ align: a });
   const setFit   = (f) => update({ fit: f });
@@ -266,9 +294,9 @@ function Controls({ merged, update, onUpload }) {
           placeholder="Image URL"
           className="flex-1 min-w-[180px] text-xs border border-gray-200 rounded px-2 py-1"
         />
-        <label className="text-xs text-indigo-600 cursor-pointer hover:underline flex items-center gap-1">
+        <label htmlFor={uploadInputId} className="text-xs text-indigo-600 cursor-pointer hover:underline flex items-center gap-1">
           <Upload className="w-3 h-3" /> Upload
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files?.[0])} />
+          <input id={uploadInputId} type="file" accept="image/*" className="hidden" onChange={(e) => onUpload(e.target.files?.[0])} />
         </label>
       </div>
       <input

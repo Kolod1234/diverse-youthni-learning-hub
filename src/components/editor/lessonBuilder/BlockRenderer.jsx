@@ -1,4 +1,4 @@
-import React, { useRef, useContext, useState, useEffect, useCallback } from 'react';
+import React, { useRef, useContext, useState, useEffect, useCallback, useId } from 'react';
 import { base44 } from '@/api/base44Client';
 import { toast } from 'sonner';
 import InlineEditable from './InlineEditable';
@@ -231,6 +231,23 @@ function ImageTextBlock({ data, onChange }) {
   // belt-and-braces guarantee for the image-with-text case).
   const [textFocused, setTextFocused] = useState(false);
 
+  // Per-instance file input id so a click on this block's Upload control
+  // never triggers another block's file picker (which shared an id before).
+  const fileInputId = useId();
+
+  // STALE-CLOSURE FIX (mirrors ImageBlock)
+  // Async UploadFile + (optionally) async aspect detection both call onChange.
+  // Without latestRef, the second call would spread a stale `data` snapshot
+  // and silently undo the first. We keep both refs current and use a
+  // functional patcher.
+  const latestRef = useRef(data);
+  latestRef.current = data;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const patch = useCallback((partial) => {
+    onChangeRef.current?.({ ...(latestRef.current || {}), ...partial });
+  }, []);
+
   useEffect(() => {
     const root = textColRef.current;
     if (!root) return;
@@ -256,7 +273,7 @@ function ImageTextBlock({ data, onChange }) {
     if (!file) return;
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      onChange({ ...data, url: file_url });
+      patch({ url: file_url });
     } catch {
       toast.error('Failed to upload image');
     }
@@ -266,16 +283,16 @@ function ImageTextBlock({ data, onChange }) {
       {data.url ? (
         <img src={data.url} alt={data.alt || ''} className="w-full rounded-lg shadow-sm" />
       ) : (
-        <label className="block border-2 border-dashed rounded-lg p-6 text-center text-gray-500 hover:border-indigo-400 cursor-pointer">
+        <label htmlFor={fileInputId} className="block border-2 border-dashed rounded-lg p-6 text-center text-gray-500 hover:border-indigo-400 cursor-pointer">
           <ImageIcon className="w-7 h-7 mx-auto mb-1 text-gray-400" />
           <p className="text-xs">Upload image</p>
-          <input type="file" accept="image/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
+          <input id={fileInputId} type="file" accept="image/*" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
         </label>
       )}
       {expanded && (
         <input
           value={data.alt || ''}
-          onChange={(e) => onChange({ ...data, alt: e.target.value })}
+          onChange={(e) => patch({ alt: e.target.value })}
           placeholder="Alt text"
           className="mt-1 w-full text-xs border border-gray-200 rounded px-2 py-1"
         />
@@ -288,7 +305,7 @@ function ImageTextBlock({ data, onChange }) {
       <InlineEditable
         ref={ref}
         value={data.html}
-        onChange={(v) => onChange({ ...data, html: v })}
+        onChange={(v) => patch({ html: v })}
         placeholder="Describe the image…"
       />
     </div>
@@ -300,7 +317,7 @@ function ImageTextBlock({ data, onChange }) {
           <label className="text-xs text-gray-600">Image side:</label>
           <select
             value={data.side || 'left'}
-            onChange={(e) => onChange({ ...data, side: e.target.value })}
+            onChange={(e) => patch({ side: e.target.value })}
             className="text-xs border border-gray-200 rounded px-1.5 py-0.5"
           >
             <option value="left">Left</option>
@@ -316,11 +333,22 @@ function ImageTextBlock({ data, onChange }) {
 }
 
 function FileBlock({ data, onChange }) {
+  // Per-instance file input id + latest-data ref so async upload + name
+  // edits during the upload don't fight each other (same fix as ImageBlock).
+  const fileInputId = useId();
+  const latestRef = useRef(data);
+  latestRef.current = data;
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+  const patch = useCallback((partial) => {
+    onChangeRef.current?.({ ...(latestRef.current || {}), ...partial });
+  }, []);
+
   const upload = async (file) => {
     if (!file) return;
     try {
       const { file_url } = await base44.integrations.Core.UploadFile({ file });
-      onChange({ ...data, url: file_url, name: data.name || file.name });
+      patch({ url: file_url, name: (latestRef.current && latestRef.current.name) || file.name });
     } catch {
       toast.error('Failed to upload file');
     }
@@ -330,19 +358,19 @@ function FileBlock({ data, onChange }) {
       <span className="text-lg">📎</span>
       <input
         value={data.name || ''}
-        onChange={(e) => onChange({ ...data, name: e.target.value })}
+        onChange={(e) => patch({ name: e.target.value })}
         placeholder="File name (e.g. Worksheet.pdf)"
         className="flex-1 min-w-[180px] text-sm border border-indigo-200 rounded px-2 py-1"
       />
       <input
         value={data.url || ''}
-        onChange={(e) => onChange({ ...data, url: e.target.value })}
+        onChange={(e) => patch({ url: e.target.value })}
         placeholder="File URL"
         className="flex-1 min-w-[180px] text-xs border border-indigo-200 rounded px-2 py-1"
       />
-      <label className="text-xs text-indigo-700 cursor-pointer hover:underline flex items-center gap-1">
+      <label htmlFor={fileInputId} className="text-xs text-indigo-700 cursor-pointer hover:underline flex items-center gap-1">
         <Upload className="w-3 h-3" /> Upload
-        <input type="file" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
+        <input id={fileInputId} type="file" className="hidden" onChange={(e) => upload(e.target.files?.[0])} />
       </label>
     </div>
   );

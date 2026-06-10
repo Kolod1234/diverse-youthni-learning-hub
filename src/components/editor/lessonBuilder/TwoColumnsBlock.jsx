@@ -2,10 +2,10 @@ import React, { useCallback, useMemo, useRef, useState, useEffect } from 'react'
 import {
   Plus, Trash2, Copy, ArrowUp, ArrowDown, GripVertical,
   AlignStartVertical, AlignCenterVertical, AlignEndVertical,
-  Smartphone, Columns2,
+  Smartphone, Columns2, Settings2, ChevronDown, ChevronUp, Pencil, Check,
 } from 'lucide-react';
-import { createBlock, BLOCK_GROUPS } from './blockTypes';
-import BlockSettingsPanel from './BlockSettingsPanel';
+import { createBlock, BLOCK_GROUPS, blockTypeLabel } from './blockTypes';
+import { BlockExpandedContext } from './BlockWrapper';
 
 // True container: each side holds an array of child blocks of any supported
 // type. Parent passes `renderChild(block, onChange)` so we can render any
@@ -101,11 +101,11 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
 
   return (
     <div className="space-y-2">
-      {/* Layout controls (ratio presets, gap, vertical alignment, mobile
-          stacking) live in the collapsible Block settings panel. The two
-          columns grid below — with its drag-resize divider and child blocks
-          — remains visible at all times. */}
-      <BlockSettingsPanel label="Two-column layout settings">
+      {/* Layout settings — INDEPENDENT disclosure, intentionally NOT gated
+          by the outer block's Edit/Done state. A tutor can collapse the
+          row of presets at any time, even mid-edit, without having to
+          collapse the whole container block. Ephemeral local state. */}
+      <LayoutSettingsDisclosure>
         <Toolbar
           ratio={ratio}
           gap={gap}
@@ -116,7 +116,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
           onValign={(v) => update({ verticalAlign: v })}
           onToggleStack={() => update({ stackOnMobile: !stackOnMobile })}
         />
-      </BlockSettingsPanel>
+      </LayoutSettingsDisclosure>
 
       <div
         ref={wrapRef}
@@ -288,9 +288,15 @@ function Column({ title, blocks, onChange, renderChild }) {
             disableDown={idx === blocks.length - 1}
             label={child.type}
           >
-            {renderChild
-              ? renderChild(child, (nextData) => updateAt(idx, nextData))
-              : <div className="text-xs text-red-500">Child renderer missing</div>}
+            {/* Each nested child gets its OWN Edit/Done accordion. We
+                override BlockExpandedContext locally so the child's leaf
+                renderer reacts to *this* toggle, not the outer container's
+                Edit state. Ephemeral — never serialised. */}
+            <NestedAccordion label={blockTypeLabel(child.type)}>
+              {renderChild
+                ? renderChild(child, (nextData) => updateAt(idx, nextData))
+                : <div className="text-xs text-red-500">Child renderer missing</div>}
+            </NestedAccordion>
           </ChildWrapper>
         ))}
       </div>
@@ -339,6 +345,71 @@ function MiniBtn({ children, onClick, label, disabled, danger }) {
       aria-label={label}
       className={`h-5 w-5 inline-flex items-center justify-center rounded ${danger ? 'text-red-600 hover:bg-red-50' : 'text-gray-600 hover:bg-gray-100'} disabled:opacity-30`}
     >{children}</button>
+  );
+}
+
+// LayoutSettingsDisclosure
+// ------------------------
+// Independent disclosure for the ratio / gap / alignment / mobile-stack
+// controls. Crucially it does NOT read BlockExpandedContext — its open
+// state is decoupled from the outer block's Edit/Done toggle so a tutor
+// can leave Edit mode and still keep layout settings open (or vice versa).
+// Ephemeral only — never serialised.
+function LayoutSettingsDisclosure({ children, label = 'Layout settings' }) {
+  const [open, setOpen] = useState(false);
+  return (
+    <div className="rounded-md border border-indigo-100 bg-indigo-50/40">
+      <button
+        type="button"
+        onClick={() => setOpen(o => !o)}
+        aria-expanded={open}
+        className="w-full flex items-center justify-between gap-2 px-2 py-1.5 text-left rounded-md hover:bg-indigo-50/80 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      >
+        <span className="inline-flex items-center gap-1.5 text-[10px] uppercase tracking-widest text-indigo-700 font-semibold">
+          <Settings2 className="w-3 h-3" /> {label}
+        </span>
+        {open ? <ChevronUp className="w-3 h-3 text-indigo-700" /> : <ChevronDown className="w-3 h-3 text-indigo-700" />}
+      </button>
+      {open && <div className="px-2 pb-2 pt-1">{children}</div>}
+    </div>
+  );
+}
+
+// NestedAccordion
+// ---------------
+// Gives each nested child block inside a TwoColumnsBlock its OWN Edit/Done
+// toggle. Overrides BlockExpandedContext locally so the child renderer
+// reacts to *this* toggle — not the outer container's Edit state. Without
+// this override, every nested image/paragraph would show its formatting
+// toolbar as soon as the two-columns wrapper was expanded.
+function NestedAccordion({ children, label }) {
+  const [expanded, setExpanded] = useState(false);
+  return (
+    <div className="border border-transparent hover:border-indigo-100 rounded">
+      <div className="flex items-center justify-between gap-1 px-1.5 pt-1">
+        <span className="text-[10px] uppercase tracking-wider text-gray-400 font-semibold select-none">
+          {label}
+        </span>
+        <button
+          type="button"
+          onClick={() => setExpanded(e => !e)}
+          aria-expanded={expanded}
+          aria-label={expanded ? `Done editing nested ${label}` : `Edit nested ${label}`}
+          className={`inline-flex items-center gap-1 h-6 px-1.5 rounded text-[10px] font-medium border transition-colors focus:outline-none focus:ring-2 focus:ring-indigo-400 ${
+            expanded
+              ? 'bg-indigo-600 border-indigo-600 text-white hover:bg-indigo-700'
+              : 'bg-white border-gray-200 text-gray-700 hover:bg-gray-50'
+          }`}
+        >
+          {expanded ? <><Check className="w-2.5 h-2.5" /> Done</> : <><Pencil className="w-2.5 h-2.5" /> Edit</>}
+        </button>
+      </div>
+      <div className="px-1.5 pb-1.5 pt-1">
+        <BlockExpandedContext.Provider value={expanded}>
+          {children}
+        </BlockExpandedContext.Provider>
+      </div>
+    </div>
   );
 }
 

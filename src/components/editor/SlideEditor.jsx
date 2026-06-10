@@ -5,7 +5,7 @@ import { Label } from '@/components/ui/label';
 import { Card } from '@/components/ui/card';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Textarea } from '@/components/ui/textarea';
-import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download, Code, LayoutList } from 'lucide-react';
+import { Plus, Trash2, Copy, ChevronLeft, ChevronRight, LayoutTemplate, GripVertical, Maximize2, Image as ImageIcon, Save, FileText, Sparkles, Wand2, Loader2, Presentation, X, Grid3x3, Type, Download, Code, LayoutList, ChevronDown, ChevronUp, Wrench } from 'lucide-react';
 import { Sheet, SheetContent, SheetHeader, SheetTitle } from '@/components/ui/sheet';
 import VisualLessonBuilder from '@/components/editor/lessonBuilder/VisualLessonBuilder';
 import PresentationMode from '@/components/editor/PresentationMode';
@@ -31,124 +31,80 @@ import {
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
 
+// ---------------------------------------------------------------------------
+// SLIDE_TEMPLATES — verified core set ONLY.
+//
+// Every entry below has been audited against the htmlSerializer parser
+// (parseSimpleElement in htmlSerializer.js). Each template uses only top-level
+// elements that parse cleanly back to lessonBuilder blocks without falling
+// into the legacy-html escape hatch: <h1>, <h2>, <p>, <ul>/<ol>, <blockquote>,
+// <hr>. NO wrapping <div>s, NO <table>, NO <img>, NO <iframe> at the top level
+// (those produce 'legacy-html' blocks today).
+//
+// REMOVED in this release (until their serializer ↔ parser pairs are made
+// natively compatible in a separate task): Two Columns, Definition,
+// Image + Text, Image Top, Three Images, Before/After, Annotated Image,
+// Image Overlay, Image Gallery, Text on Image, Text Left/Right Image,
+// Multiple Images & Text, Diagram with Cards, Formula Slide, Info Cards Grid,
+// Risks/Ethics two-column. Tutors can build any of those by adding the
+// equivalent blocks (image, two-columns, table, etc.) from the block menu
+// inside the Visual Lesson Builder above.
 const SLIDE_TEMPLATES = {
   blank: {
     name: 'Blank Slide',
     icon: '📄',
-    content: '<p style="line-height: 1.8; font-size: 16px;">Start writing your content here...</p>'
+    // <p> → parseSimpleElement → paragraph block. Verified round-trip.
+    content: '<p style="line-height:1.8; font-size:16px;">Start writing your content here…</p>'
   },
   title: {
     name: 'Title Slide',
     icon: '📌',
-    content: '<div style="min-height: 400px; display: flex; align-items: center; justify-content: center; background: linear-gradient(135deg, #F0F4F8 0%, #E5E7EB 100%); border-radius: 24px; padding: 60px;"><div style="background: rgba(255, 255, 255, 0.75); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.5); border-radius: 24px; padding: 60px 80px; text-align: center; box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);"><h1 style="color: #1A3C5A; font-size: 48px; font-weight: 700; margin-bottom: 24px; line-height: 1.1;">Main Lesson Title</h1><h2 style="color: #334E68; font-size: 28px; font-weight: 400; margin-bottom: 32px; letter-spacing: 0.5px;">Subtitle or Key Concept</h2><div style="display: flex; justify-content: center; gap: 20px; flex-wrap: wrap;"><span style="background: rgba(56, 178, 172, 0.15); color: #1A3C5A; padding: 10px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; border: 1px solid rgba(56, 178, 172, 0.3);">Topic 1</span><span style="background: rgba(56, 178, 172, 0.15); color: #1A3C5A; padding: 10px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; border: 1px solid rgba(56, 178, 172, 0.3);">Topic 2</span><span style="background: rgba(56, 178, 172, 0.15); color: #1A3C5A; padding: 10px 24px; border-radius: 50px; font-size: 16px; font-weight: 600; border: 1px solid rgba(56, 178, 172, 0.3);">Topic 3</span></div></div></div>'
+    // <h1> + <h2> are both top-level "simple" elements with no descendant
+    // tables / images / divs, so they parse back to heading-1 + heading-2
+    // blocks. Verified round-trip (no legacy-html).
+    content: '<h1 style="font-size:48px; font-weight:700; color:#1A3C5A; margin:0 0 16px; line-height:1.1;">Main Lesson Title</h1><h2 style="font-size:28px; font-weight:400; color:#334E68; margin:0;">Subtitle or Key Concept</h2>'
   },
   content: {
     name: 'Content Slide',
     icon: '📝',
-    content: '<div style="background-color: #F0F4F8; padding: 40px; border-radius: 16px;"><h2 style="color: #1A3C5A; font-size: 36px; font-weight: 700; line-height: 1.2; margin-bottom: 32px;">Main Section Heading</h2><div style="border-left: 4px solid #38B2AC; padding-left: 24px; margin-bottom: 28px;"><h3 style="color: #38B2AC; font-size: 22px; font-weight: 600; margin-bottom: 12px;">Key Concept Title</h3><p style="color: #334E68; font-size: 18px; line-height: 1.6;">Add detailed explanation here. Use clear, concise language to explain complex concepts. Provide context and real-world applications where relevant.</p></div><div style="border-left: 4px solid #38B2AC; padding-left: 24px;"><h3 style="color: #38B2AC; font-size: 22px; font-weight: 600; margin-bottom: 12px;">Supporting Information</h3><p style="color: #334E68; font-size: 18px; line-height: 1.6;">Continue with additional details and examples. Break down complex information into digestible sections that build understanding progressively.</p></div></div>'
+    // <h2> + <p> + <p>. Verified round-trip.
+    content: '<h2 style="font-size:28px; font-weight:700; color:#1A3C5A; margin:0 0 12px;">Main Section Heading</h2><p style="font-size:16px; line-height:1.7; color:#334E68; margin:0 0 12px;">Add detailed explanation here. Use clear, concise language to explain complex concepts.</p><p style="font-size:16px; line-height:1.7; color:#334E68; margin:0;">Continue with additional details and examples.</p>'
   },
   bullets: {
     name: 'Bullet Points',
     icon: '📋',
-    content: '<h2 style="font-size: 28px; font-weight: bold; color: #1F2937; margin-bottom: 20px;">Key Points</h2><ul style="margin-left: 0; padding-left: 24px; line-height: 2;"><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">First important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Second important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Third important point with clear explanation</li><li style="margin-bottom: 12px; font-size: 16px; color: #1F2937;">Add more points as needed</li></ul>'
-  },
-  twoColumn: {
-    name: 'Two Column Layout',
-    icon: '📊',
-    content: '<div style="position: relative; width: 100%;"><div style="position: absolute; top: -35px; right: 10px; display: flex; align-items: center; gap: 8px; background: white; padding: 8px 12px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); z-index: 10;"><span style="font-size: 12px; color: #6B7280; font-weight: 600;">Text</span><input type="range" min="20" max="80" value="50" oninput="const table = this.closest(\'div\').nextElementSibling; const cells = table.querySelectorAll(\'td\'); cells[0].style.width = this.value + \'%\'; cells[1].style.width = (100 - this.value) + \'%\'; this.nextElementSibling.textContent = this.value + \'% / \' + (100 - this.value) + \'%\';" style="width: 100px; height: 6px; border-radius: 5px; outline: none; -webkit-appearance: none; appearance: none; background: linear-gradient(to right, #6366F1 0%, #6366F1 50%, #E5E7EB 50%, #E5E7EB 100%); cursor: pointer;" /><span style="font-size: 12px; color: #1F2937; font-weight: 600; min-width: 85px; text-align: right;">50% / 50%</span><span style="font-size: 12px; color: #6B7280; font-weight: 600;">Image</span></div><table style="width: 100%; border-collapse: collapse; background-color: #F9FAFB; border-radius: 12px; margin-top: 10px;"><tr><td style="width: 50%; vertical-align: top; padding: 30px;"><h2 style="color: #1A3C5A; font-size: 32px; font-weight: 700; margin-bottom: 20px;">Topic Title</h2><p style="color: #334E68; font-size: 17px; line-height: 1.7; margin-bottom: 16px;">Write your main content here. Explain the key concepts clearly and provide detailed information that helps students understand the topic.</p><p style="color: #334E68; font-size: 17px; line-height: 1.7; margin-bottom: 16px;">Add additional paragraphs as needed. Break down complex ideas into digestible sections.</p><ul style="color: #334E68; font-size: 17px; line-height: 1.8; margin-left: 20px;"><li>Key point 1</li><li>Key point 2</li><li>Key point 3</li></ul></td><td style="width: 50%; vertical-align: top; padding: 30px;"><img src="https://via.placeholder.com/800x600/1A3C5A/FFFFFF?text=Click+to+Add+Image" style="width: 100% !important; height: auto !important; max-width: none !important; min-height: 0 !important; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); display: block; object-fit: contain !important;" /></td></tr></table></div>'
-  },
-
-  definition: {
-    name: 'Definition Box',
-    icon: '📖',
-    content: '<div style="background-color: #F0F4F8; padding: 40px; border-radius: 16px;"><h2 style="color: #1A3C5A; font-size: 38px; font-weight: 700; margin-bottom: 28px; line-height: 1.2;">Key Term or Concept</h2><div style="background: linear-gradient(135deg, #1A3C5A 0%, #334E68 100%); color: white; padding: 24px 40px; border-radius: 12px; font-size: 22px; font-weight: 600; margin-bottom: 32px; box-shadow: 0 4px 15px rgba(26, 60, 90, 0.2); text-align: center;">Definition: Clear statement of the term or formula</div><div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 30px; margin-bottom: 24px;"><h3 style="color: #38B2AC; font-size: 22px; font-weight: 600; margin-bottom: 14px;">Detailed Explanation</h3><p style="color: #334E68; font-size: 18px; line-height: 1.6; margin: 0;">Provide comprehensive details that help students understand the core meaning. Break down complex concepts into clear, accessible language.</p></div><div style="background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(10px); border-radius: 16px; padding: 30px;"><h3 style="color: #38B2AC; font-size: 22px; font-weight: 600; margin-bottom: 14px;">Practical Example</h3><p style="color: #334E68; font-size: 18px; line-height: 1.6; margin: 0;">Provide a real-world example that illustrates the concept and helps students apply their understanding in practical contexts.</p></div></div>'
-  },
-  imageText: {
-    name: 'Image & Text',
-    icon: '🖼️',
-    content: '<h2 style="color: #4F46E5;">Visual Learning</h2><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px;"><div><img src="https://via.placeholder.com/400x300/4F46E5/FFFFFF?text=Add+Your+Image" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" /></div><div><p style="line-height: 1.8;">Add descriptive text here to explain the image. Include key observations, analysis, or context that helps students understand the visual content.</p></div></div>'
-  },
-  quote: {
-    name: 'Quote/Highlight',
-    icon: '💬',
-    content: '<div style="background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%); padding: 40px; border-radius: 12px; text-align: center; margin: 30px 0;"><blockquote style="color: white; font-size: 24px; font-weight: 600; font-style: italic; margin: 0;">"Insert an important quote or key takeaway message here"</blockquote><p style="color: rgba(255,255,255,0.8); margin-top: 15px; font-size: 16px;">— Author or Source</p></div>'
+    // <h2> + <ul>. Verified round-trip.
+    content: '<h2 style="font-size:28px; font-weight:700; color:#1F2937; margin:0 0 12px;">Key Points</h2><ul style="margin:0; padding-left:24px; line-height:1.8;"><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">First important point with clear explanation</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Second important point with clear explanation</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Third important point with clear explanation</li></ul>'
   },
   steps: {
     name: 'Step-by-Step',
     icon: '🔢',
-    content: '<h2 style="color: #4F46E5;">Process or Procedure</h2><div style="margin-top: 20px;"><div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; background: #F0F9FF; border-left: 4px solid #0EA5E9; border-radius: 4px;"><span style="background: #0EA5E9; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">1</span><div><strong>First Step</strong><p style="margin-top: 5px; color: #475569;">Describe the first action or stage in the process.</p></div></div><div style="display: flex; gap: 15px; margin-bottom: 15px; padding: 15px; background: #F0FDF4; border-left: 4px solid #10B981; border-radius: 4px;"><span style="background: #10B981; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">2</span><div><strong>Second Step</strong><p style="margin-top: 5px; color: #475569;">Explain the second action or stage.</p></div></div><div style="display: flex; gap: 15px; padding: 15px; background: #FEF3C7; border-left: 4px solid #F59E0B; border-radius: 4px;"><span style="background: #F59E0B; color: white; width: 30px; height: 30px; border-radius: 50%; display: flex; align-items: center; justify-content: center; flex-shrink: 0; font-weight: bold;">3</span><div><strong>Third Step</strong><p style="margin-top: 5px; color: #475569;">Detail the final action or stage.</p></div></div></div>'
+    // <h2> + <ol>. Verified round-trip (becomes a numbered-list block).
+    content: '<h2 style="font-size:28px; font-weight:700; color:#1F2937; margin:0 0 12px;">Process or Procedure</h2><ol style="margin:0; padding-left:24px; line-height:1.8;"><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">First step — describe the first action or stage.</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Second step — explain the second action or stage.</li><li style="margin-bottom:8px; font-size:16px; color:#1F2937;">Third step — detail the final action or stage.</li></ol>'
   },
-  imageTop: {
-    name: 'Image Top',
-    icon: '🖼️⬆️',
-    content: '<h2 style="color: #4F46E5; margin-bottom: 20px;">Visual Example</h2><div style="margin-bottom: 20px;"><img src="https://via.placeholder.com/800x400/4F46E5/FFFFFF?text=Add+Your+Image" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" /></div><p style="line-height: 1.8; color: #374151;">Add a detailed explanation below the image. This layout is perfect for diagrams, charts, or any visual that needs comprehensive text explanation underneath.</p><ul style="margin-top: 15px; line-height: 2;"><li>Key observation 1</li><li>Key observation 2</li><li>Key observation 3</li></ul>'
-  },
-  threeImages: {
-    name: 'Three Images',
-    icon: '🖼️🖼️🖼️',
-    content: '<h2 style="color: #4F46E5; margin-bottom: 25px;">Comparison or Examples</h2><div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px;"><div style="text-align: center;"><img src="https://via.placeholder.com/300x200/0EA5E9/FFFFFF?text=Image+1" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;" /><h4 style="color: #1F2937; margin-bottom: 8px; font-size: 16px;">Example 1</h4><p style="font-size: 14px; color: #6B7280;">Description of the first example or concept.</p></div><div style="text-align: center;"><img src="https://via.placeholder.com/300x200/10B981/FFFFFF?text=Image+2" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;" /><h4 style="color: #1F2937; margin-bottom: 8px; font-size: 16px;">Example 2</h4><p style="font-size: 14px; color: #6B7280;">Description of the second example or concept.</p></div><div style="text-align: center;"><img src="https://via.placeholder.com/300x200/F59E0B/FFFFFF?text=Image+3" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); margin-bottom: 10px;" /><h4 style="color: #1F2937; margin-bottom: 8px; font-size: 16px;">Example 3</h4><p style="font-size: 14px; color: #6B7280;">Description of the third example or concept.</p></div></div>'
-  },
-  beforeAfter: {
-    name: 'Before/After',
-    icon: '⏮️⏭️',
-    content: '<h2 style="color: #4F46E5; text-align: center; margin-bottom: 25px;">Before & After Comparison</h2><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;"><div style="padding: 20px; background: #FEF2F2; border-radius: 12px; border: 2px solid #FCA5A5;"><h3 style="color: #991B1B; text-align: center; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">❌ Before</h3><img src="https://via.placeholder.com/400x300/EF4444/FFFFFF?text=Before+State" style="width: 100%; border-radius: 8px; margin-bottom: 15px;" /><p style="font-size: 14px; color: #7F1D1D; line-height: 1.6;">Describe the initial state, problem, or situation before the change or intervention.</p></div><div style="padding: 20px; background: #F0FDF4; border-radius: 12px; border: 2px solid #86EFAC;"><h3 style="color: #14532D; text-align: center; margin-bottom: 15px; display: flex; align-items: center; justify-content: center; gap: 8px;">✅ After</h3><img src="https://via.placeholder.com/400x300/10B981/FFFFFF?text=After+State" style="width: 100%; border-radius: 8px; margin-bottom: 15px;" /><p style="font-size: 14px; color: #14532D; line-height: 1.6;">Describe the improved state, solution, or outcome after the change or intervention.</p></div></div>'
-  },
-  annotatedImage: {
-    name: 'Annotated Image',
-    icon: '🖼️📝',
-    content: '<h2 style="color: #4F46E5; margin-bottom: 20px;">Labeled Diagram</h2><div style="position: relative; margin-bottom: 25px;"><img src="https://via.placeholder.com/800x500/4F46E5/FFFFFF?text=Add+Diagram+Here" style="width: 100%; border-radius: 8px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);" /></div><div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;"><div style="padding: 12px; background: #EEF2FF; border-left: 4px solid #6366F1; border-radius: 4px;"><strong style="color: #312E81;">Label 1:</strong> <span style="color: #4B5563;">Explanation of the first labeled component or feature.</span></div><div style="padding: 12px; background: #EEF2FF; border-left: 4px solid #6366F1; border-radius: 4px;"><strong style="color: #312E81;">Label 2:</strong> <span style="color: #4B5563;">Explanation of the second labeled component or feature.</span></div><div style="padding: 12px; background: #EEF2FF; border-left: 4px solid #6366F1; border-radius: 4px;"><strong style="color: #312E81;">Label 3:</strong> <span style="color: #4B5563;">Explanation of the third labeled component or feature.</span></div><div style="padding: 12px; background: #EEF2FF; border-left: 4px solid #6366F1; border-radius: 4px;"><strong style="color: #312E81;">Label 4:</strong> <span style="color: #4B5563;">Explanation of the fourth labeled component or feature.</span></div></div>'
-  },
-  imageOverlay: {
-    name: 'Image Overlay',
-    icon: '🌄',
-    content: '<div style="position: relative; border-radius: 12px; overflow: hidden; margin-bottom: 20px;"><img src="https://via.placeholder.com/1200x600/1F2937/FFFFFF?text=Full+Width+Background" style="width: 100%; height: 400px; object-fit: cover;" /><div style="position: absolute; inset: 0; background: linear-gradient(to bottom, rgba(0,0,0,0.3), rgba(0,0,0,0.7)); display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 40px; text-align: center;"><h2 style="color: white; font-size: 36px; font-weight: bold; margin-bottom: 15px; text-shadow: 2px 2px 4px rgba(0,0,0,0.5);">Impactful Title Over Image</h2><p style="color: rgba(255,255,255,0.95); font-size: 18px; max-width: 700px; line-height: 1.6; text-shadow: 1px 1px 2px rgba(0,0,0,0.5);">Add a compelling description or key message that overlays the background image. Perfect for dramatic introductions or section breaks.</p></div></div>'
-  },
-  imageGallery: {
-    name: 'Image Gallery',
-    icon: '🎨',
-    content: '<h2 style="color: #4F46E5; margin-bottom: 20px;">Visual Gallery</h2><div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px; margin-bottom: 20px;"><img src="https://via.placeholder.com/400x300/6366F1/FFFFFF?text=Image+1" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /><img src="https://via.placeholder.com/400x300/8B5CF6/FFFFFF?text=Image+2" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /><img src="https://via.placeholder.com/400x300/EC4899/FFFFFF?text=Image+3" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /><img src="https://via.placeholder.com/400x300/F59E0B/FFFFFF?text=Image+4" style="width: 100%; height: 200px; object-fit: cover; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /></div><p style="line-height: 1.8; color: #374151;">Add descriptive text below the gallery to explain the collection of images, provide context, or highlight key observations across all the visuals shown above.</p>'
-  },
-  textOnImage: {
-    name: 'Text on Image',
-    icon: '📸',
-    content: '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 25px; margin-top: 20px;"><div style="position: relative; border-radius: 8px; overflow: hidden;"><img src="https://via.placeholder.com/450x350/0EA5E9/FFFFFF?text=Concept+1" style="width: 100%; height: 300px; object-fit: cover;" /><div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white;"><h3 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">First Concept</h3><p style="font-size: 14px; opacity: 0.95;">Brief description overlaid on the image.</p></div></div><div style="position: relative; border-radius: 8px; overflow: hidden;"><img src="https://via.placeholder.com/450x350/10B981/FFFFFF?text=Concept+2" style="width: 100%; height: 300px; object-fit: cover;" /><div style="position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(to top, rgba(0,0,0,0.8), transparent); padding: 20px; color: white;"><h3 style="font-size: 20px; font-weight: bold; margin-bottom: 8px;">Second Concept</h3><p style="font-size: 14px; opacity: 0.95;">Brief description overlaid on the image.</p></div></div></div><p style="margin-top: 20px; line-height: 1.8;">Add additional explanatory text here to provide more detail about both concepts shown in the images above.</p>'
-  },
-  textLeftImageRight: {
-    name: 'Text Left Image Right',
-    icon: '📝🖼️',
-    content: '<h1 style="font-size: 32px; font-weight: bold; color: #1F2937; margin-bottom: 32px; line-height: 1.3;">Topic Title Goes Here</h1><div style="display: grid; grid-template-columns: 1fr 2fr; gap: 40px; align-items: start;"><div><h2 style="color: #1E3A8A; font-size: 22px; font-weight: bold; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 3px solid #1E3A8A;">Key Concept or Formula</h2><div style="background: #DBEAFE; padding: 20px; border-radius: 8px; margin-bottom: 24px;"><p style="font-size: 16px; font-weight: 600; text-align: center; color: #1F2937;">Formula or Key Statement = Component A + Component B</p></div><h3 style="color: #1F2937; font-size: 18px; font-weight: bold; margin-bottom: 12px;">Detailed Points</h3><ul style="margin: 0; padding-left: 24px; line-height: 2;"><li style="margin-bottom: 12px; font-size: 15px; color: #374151;"><strong>Point 1:</strong> Detailed explanation</li><li style="margin-bottom: 12px; font-size: 15px; color: #374151;"><strong>Point 2:</strong> Additional context</li><li style="margin-bottom: 12px; font-size: 15px; color: #374151;"><strong>Point 3:</strong> Supporting information</li></ul></div><div style="background: #F9FAFB; padding: 24px; border-radius: 12px; border: 2px solid #E5E7EB;"><img src="https://via.placeholder.com/700x500/1E3A8A/FFFFFF?text=Add+Detailed+Diagram" style="width: 100%; border-radius: 8px;" /><p style="text-align: center; font-size: 13px; color: #6B7280; margin-top: 12px; font-style: italic;">Click image to replace - Add detailed caption</p></div></div>'
-  },
-  textRightImageLeft: {
-    name: 'Image Left Text Right',
-    icon: '🖼️📝',
-    content: '<h1 style="font-size: 32px; font-weight: bold; color: #1F2937; margin-bottom: 32px; line-height: 1.3;">Main Concept or Process Title</h1><div style="display: grid; grid-template-columns: 2fr 1fr; gap: 40px; align-items: start;"><div style="background: #F9FAFB; padding: 24px; border-radius: 12px; border: 2px solid #E5E7EB;"><img src="https://via.placeholder.com/700x500/10B981/FFFFFF?text=Add+Detailed+Diagram" style="width: 100%; border-radius: 8px; margin-bottom: 12px;" /><p style="text-align: center; font-size: 13px; color: #6B7280; font-style: italic;">Click image to replace - Add descriptive caption</p></div><div style="display: flex; flex-direction: column; gap: 20px;"><div style="background: #E5E7EB; padding: 20px; border-radius: 8px;"><h3 style="color: #1F2937; font-size: 18px; font-weight: bold; margin-bottom: 12px;">Key Point 1</h3><p style="font-size: 15px; line-height: 1.6; color: #374151; margin: 0;">Provide clear explanation of the first major concept or observation.</p></div><div style="background: #E5E7EB; padding: 20px; border-radius: 8px;"><h3 style="color: #1F2937; font-size: 18px; font-weight: bold; margin-bottom: 12px;">Key Point 2</h3><p style="font-size: 15px; line-height: 1.6; color: #374151; margin: 0;">Continue with supporting details and context.</p></div><div style="background: #E5E7EB; padding: 20px; border-radius: 8px;"><h3 style="color: #1F2937; font-size: 18px; font-weight: bold; margin-bottom: 12px;">Key Point 3</h3><p style="font-size: 15px; line-height: 1.6; color: #374151; margin: 0;">Conclude with final insights or applications.</p></div></div></div>'
-  },
-  multiImageText: {
-    name: 'Multiple Images & Text',
-    icon: '🖼️📄',
-    content: '<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;"><div><h2 style="color: #4F46E5; margin-bottom: 15px;">Detailed Explanation</h2><p style="line-height: 1.8; color: #374151; margin-bottom: 15px;">Add comprehensive text explanation here. Perfect for when you need multiple supporting images with detailed written content.</p><blockquote style="border-left: 4px solid #4F46E5; padding-left: 15px; margin: 15px 0; color: #4B5563; font-style: italic; background: #F3F4F6; padding: 15px; border-radius: 4px;">💡 Add an important note or key insight here</blockquote><p style="line-height: 1.8; color: #374151;">Continue with more explanatory text as needed.</p></div><div style="display: flex; flex-direction: column; gap: 15px;"><div><img src="https://via.placeholder.com/500x250/EC4899/FFFFFF?text=Image+1" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /><p style="text-align: center; font-size: 12px; color: #6B7280; margin-top: 5px;">Caption for first image</p></div><div><img src="https://via.placeholder.com/500x250/F59E0B/FFFFFF?text=Image+2" style="width: 100%; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);" /><p style="text-align: center; font-size: 12px; color: #6B7280; margin-top: 5px;">Caption for second image</p></div></div></div>'
-  },
-  diagramWithCards: {
-    name: 'Diagram with Info Cards',
-    icon: '🎯',
-    content: '<div style="background-color: #F0F4F8; padding: 40px; border-radius: 16px;"><h2 style="color: #1A3C5A; font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 40px;">Main Topic with Key Components</h2><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 20px;"><div style="background: white; border-radius: 24px; padding: 24px; box-shadow: 0 8px 24px rgba(26, 60, 90, 0.08); text-align: center; min-height: 450px;"><img src="https://via.placeholder.com/600x600/1A3C5A/FFFFFF?text=Add+Your+Diagram" style="max-width: 100%; height: auto; border-radius: 8px;" /></div></td><td style="width: 50%; vertical-align: top; padding-left: 20px;"><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 1</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Description of first key component or concept.</p></div></td><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 2</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Description of second key component or concept.</p></div></td></tr><tr><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 3</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Description of third key component or concept.</p></div></td><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 4</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Description of fourth key component or concept.</p></div></td></tr><tr><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 5</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Description of fifth key component or concept.</p></div></td><td style="width: 50%; padding: 6px; vertical-align: top;"><div style="background: rgba(255, 255, 255, 0.65); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 16px; height: 100%;"><h3 style="color: #1A3C5A; font-size: 18px; font-weight: 700; margin-bottom: 8px;">● Component 6</h3><p style="color: #334E68; font-size: 15px; line-height: 1.4; margin: 0;">Add more cards as needed for your topic.</p></div></td></tr></table></td></tr></table></div>'
-  },
-  formulaSlide: {
-    name: 'Formula Box (Science)',
-    icon: '🧮',
-    content: '<div style="background-color: #F0F4F8; padding: 40px; border-radius: 16px;"><h2 style="color: #1A3C5A; font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 24px;">Mathematical Concept or Calculation</h2><div style="background: linear-gradient(135deg, #1A3C5A 0%, #334E68 100%); color: white; padding: 24px 40px; border-radius: 12px; font-size: 26px; font-weight: 600; margin-bottom: 32px; box-shadow: 0 4px 15px rgba(26, 60, 90, 0.2); text-align: center;">Formula = Variable A ÷ Variable B</div><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 35%; vertical-align: top; padding-right: 12px;"><div style="background: rgba(255, 255, 255, 0.6); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.8); border-radius: 16px; padding: 20px;"><h3 style="color: #1A3C5A; font-size: 22px; margin-bottom: 16px;">Key Information</h3><table style="width: 100%; border-collapse: collapse;"><tr><td style="padding: 8px 0; font-size: 17px; color: #334E68; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Unit 1</td><td style="padding: 8px 0; font-size: 17px; font-weight: 600; color: #38B2AC; text-align: right; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Value</td></tr><tr><td style="padding: 8px 0; font-size: 17px; color: #334E68; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Unit 2</td><td style="padding: 8px 0; font-size: 17px; font-weight: 600; color: #38B2AC; text-align: right; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Value</td></tr><tr><td style="padding: 8px 0; font-size: 17px; color: #334E68; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Unit 3</td><td style="padding: 8px 0; font-size: 17px; font-weight: 600; color: #38B2AC; text-align: right; border-bottom: 1px solid rgba(51, 78, 104, 0.08);">Value</td></tr></table><h3 style="color: #1A3C5A; font-size: 20px; margin-top: 24px; margin-bottom: 12px;">Steps</h3><p style="color: #334E68; font-size: 16px; line-height: 1.5; margin: 0;">• Step 1: Description<br>• Step 2: Description<br>• Step 3: Description</p></div></td><td style="width: 65%; vertical-align: top; padding-left: 12px;"><div style="background: white; border-radius: 16px; padding: 16px; box-shadow: 0 4px 12px rgba(26, 60, 90, 0.05); min-height: 420px; display: flex; align-items: center; justify-content: center;"><img src="https://via.placeholder.com/700x400/38B2AC/FFFFFF?text=Add+Calculation+Example+Diagram" style="max-width: 100%; height: auto;" /></div></td></tr></table></div>'
-  },
-  infoCardsGrid: {
-    name: 'Info Cards Grid (No Image)',
-    icon: '📇',
-    content: '<div style="background-color: #F0F4F8; padding: 40px; border-radius: 16px;"><h1 style="color: #1A3C5A; font-size: 48px; font-weight: 700; line-height: 1.2; margin-bottom: 40px; text-align: center;">Topic Title</h1><div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 20px;"><div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); border-left: 5px solid #0EA5E9;"><h3 style="color: #0369A1; font-size: 20px; font-weight: 700; margin-bottom: 12px;">Card Title 1</h3><p style="color: #334E68; font-size: 16px; line-height: 1.6; margin: 0;">Add your description here. Explain the concept clearly and concisely.</p></div><div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); border-left: 5px solid #10B981;"><h3 style="color: #15803D; font-size: 20px; font-weight: 700; margin-bottom: 12px;">Card Title 2</h3><p style="color: #334E68; font-size: 16px; line-height: 1.6; margin: 0;">Add your description here. Explain the concept clearly and concisely.</p></div><div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); border-left: 5px solid #F59E0B;"><h3 style="color: #B45309; font-size: 20px; font-weight: 700; margin-bottom: 12px;">Card Title 3</h3><p style="color: #334E68; font-size: 16px; line-height: 1.6; margin: 0;">Add your description here. Explain the concept clearly and concisely.</p></div><div style="background: white; border-radius: 12px; padding: 24px; box-shadow: 0 2px 8px rgba(0,0,0,0.15), 0 0 1px rgba(0,0,0,0.1); border-left: 5px solid #8B5CF6;"><h3 style="color: #7E22CE; font-size: 20px; font-weight: 700; margin-bottom: 12px;">Card Title 4</h3><p style="color: #334E68; font-size: 16px; line-height: 1.6; margin: 0;">Add your description here. Explain the concept clearly and concisely.</p></div></div></div>'
-  },
-  risksEthics: {
-    name: 'Two Column',
-    icon: '📊',
-    content: '<div style="background-color: #F9FAFB; padding: 40px;"><h1 style="color: #1E3A8A; font-size: 42px; font-weight: 700; line-height: 1.2; margin-bottom: 40px; text-align: center;">Main Topic: Section Title</h1><table style="width: 100%; border-collapse: collapse;"><tr><td style="width: 50%; vertical-align: top; padding-right: 15px;"><div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);"><h2 style="color: #1E3A8A; font-size: 28px; font-weight: 700; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid #DBEAFE;">Column 1 Heading</h2><div style="margin-bottom: 24px;"><h3 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 1</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div><div style="margin-bottom: 24px;"><h3 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 2</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div><div style="margin-bottom: 24px;"><h3 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 3</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div><div><h3 style="color: #DC2626; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 4</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div></div></td><td style="width: 50%; vertical-align: top; padding-left: 15px;"><div style="background: white; border-radius: 16px; padding: 32px; box-shadow: 0 2px 12px rgba(0,0,0,0.08);"><h2 style="color: #1E3A8A; font-size: 28px; font-weight: 700; margin-bottom: 24px; padding-bottom: 16px; border-bottom: 3px solid #D1FAE5;">Column 2 Heading</h2><div style="margin-bottom: 24px;"><h3 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 1</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div><div style="margin-bottom: 24px;"><h3 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 2</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div><div><h3 style="color: #0891B2; font-size: 18px; font-weight: 700; margin-bottom: 8px;">Sub-heading 3</h3><p style="color: #4B5563; font-size: 15px; line-height: 1.6; margin: 0;">Add your content description here.</p></div></div></td></tr></table></div>'
+  quote: {
+    name: 'Quote / Highlight',
+    icon: '💬',
+    // <blockquote>. Verified round-trip.
+    content: '<blockquote style="border-left:4px solid #4F46E5; padding:12px 20px; margin:0; background:#F3F4F6; border-radius:4px; color:#4B5563; font-style:italic;">Insert an important quote or key takeaway message here.<footer style="margin-top:8px; font-size:14px; color:#6B7280; font-style:normal;">— Author or Source</footer></blockquote>'
   }
-  };
+};
+
+// Removed-from-this-release templates kept here as a documented list for the
+// next task that re-adds them with native parser support. Do not re-enable
+// without verifying round-trip first.
+//
+// twoColumn — needs a {data-block="two-columns"} parser branch
+// definition / formulaSlide — needs a {data-block="definition"} parser branch
+// imageText / imageTop / textOnImage / textLeftImageRight / textRightImageLeft / annotatedImage
+//   — needs an {data-block="image-text"} parser branch
+// threeImages / imageGallery / multiImageText — need a new gallery block
+// beforeAfter / risksEthics / infoCardsGrid / diagramWithCards — need
+//   a card-grid block.
+//
+// The old raw-HTML implementations of these templates have been deleted
+// from this file. They lived under `_REMOVED_PLACEHOLDER` for a few commits
+// during the transition; nothing references them now.
 
 // `isPersisted` tells the inner Visual Lesson Builder whether the lesson this
 // slide belongs to has actually been written to the Lesson entity. It is
@@ -195,6 +151,11 @@ export default function SlideEditor({ slides = [], onChange, isPersisted = false
   // persistent rail and ignores this state. No duplicated slide state — the drawer
   // hosts the SAME rail JSX as the inline desktop rail.
   const [slidesDrawerOpen, setSlidesDrawerOpen] = useState(false);
+  // Editor tools disclosure — collapses the secondary action row (Builder /
+  // Canvas / Blocks / Import / Present / AI / Fullscreen) behind a single
+  // accessible button. Closed by default so the active slide canvas is the
+  // primary focus on every viewport. EPHEMERAL only — never serialised.
+  const [editorToolsOpen, setEditorToolsOpen] = useState(false);
 
   const addSlide = (template = 'blank') => {
     const templateData = SLIDE_TEMPLATES[template] || customTemplates[template];
@@ -667,8 +628,27 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
             <h3 className="font-semibold text-gray-900 truncate">Slide Editor</h3>
             <p className="text-sm text-gray-500">{slides.length} slide{slides.length !== 1 ? 's' : ''} total</p>
           </div>
+          {/* Disclosure for the secondary action row. Sits next to the title
+              so it is always reachable, even when the action row itself is
+              collapsed. Works on every viewport so the canvas can be the
+              primary visual on desktop too if the tutor wants. */}
+          <button
+            type="button"
+            onClick={() => setEditorToolsOpen(o => !o)}
+            aria-expanded={editorToolsOpen}
+            aria-controls="slide-editor-tools"
+            className="inline-flex items-center gap-1.5 h-8 px-2.5 ml-1 rounded border border-gray-200 bg-white text-xs font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+          >
+            <Wrench className="w-3.5 h-3.5 text-gray-500" />
+            <span className="hidden sm:inline">Editor tools</span>
+            {editorToolsOpen ? <ChevronUp className="w-3 h-3" /> : <ChevronDown className="w-3 h-3" />}
+          </button>
         </div>
-        <div className="flex sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [&>*]:shrink-0 sm:[&>*]:shrink">
+        <div
+          id="slide-editor-tools"
+          hidden={!editorToolsOpen}
+          className={`${editorToolsOpen ? 'flex' : 'hidden'} sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [&>*]:shrink-0 sm:[&>*]:shrink`}
+        >
           <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
             <Button
               variant={editorMode === 'builder' ? 'default' : 'ghost'}
@@ -1039,58 +1019,22 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                       }}
                     />
 
-                    {/* Template Selector */}
-                    <div className="bg-gradient-to-br from-indigo-50 to-blue-50 border border-indigo-200 rounded-xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <LayoutTemplate className="w-5 h-5 text-indigo-600" />
-                        <Label className="text-base font-semibold text-indigo-900">Choose a Template</Label>
-                      </div>
-                      <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                        {Object.entries(SLIDE_TEMPLATES).map(([key, template]) => (
-                          <Button
-                            key={key}
-                            variant="outline"
-                            onClick={() => {
-                              updateSlide(currentSlide, 'content', template.content);
-                              toast.success(`${template.name} applied!`);
-                            }}
-                            className="h-24 bg-white hover:bg-indigo-50 hover:border-indigo-400 hover:shadow-md transition-all flex-col gap-2 p-3"
-                          >
-                            <span className="text-3xl">{template.icon}</span>
-                            <span className="text-xs font-medium text-center leading-tight text-gray-700">{template.name}</span>
-                          </Button>
-                        ))}
-                        
-                        {Object.entries(customTemplates).map(([key, template]) => (
-                          <Button
-                            key={key}
-                            variant="outline"
-                            onClick={() => {
-                              updateSlide(currentSlide, 'content', template.content);
-                              toast.success(`${template.name} applied!`);
-                            }}
-                            className="h-24 bg-gradient-to-br from-green-50 to-emerald-50 hover:from-green-100 hover:to-emerald-100 border-green-300 hover:border-green-400 hover:shadow-md transition-all flex-col gap-2 p-3 relative"
-                          >
-                            <span className="text-3xl">{template.icon}</span>
-                            <span className="text-xs font-medium text-center leading-tight text-gray-700">{template.name}</span>
-                            <span className="absolute top-1 right-1 text-[9px] bg-green-600 text-white px-1.5 py-0.5 rounded-full font-semibold">MY</span>
-                          </Button>
-                        ))}
-                      </div>
-                      <div className="flex items-center justify-between mt-3">
-                        <p className="text-xs text-indigo-700">💡 Click any template to instantly apply it to this slide</p>
-                        {Object.keys(customTemplates).length > 0 && (
-                          <Button
-                            variant="ghost"
-                            size="sm"
-                            onClick={() => setShowManageTemplates(true)}
-                            className="text-xs h-7"
-                          >
-                            Manage My Templates ({Object.keys(customTemplates).length})
-                          </Button>
-                        )}
-                      </div>
-                    </div>
+                    {/* Verified template gallery — collapsible disclosure.
+                        Lists only the 6 templates audited to round-trip
+                        through htmlToBlocks ↔ blocksToHtml without falling
+                        into legacy-html. Auto-collapses when the slide
+                        already has content so the canvas stays the primary
+                        focus on every viewport. */}
+                    <VerifiedTemplateGallery
+                      hasContent={Boolean(currentSlideData?.content)}
+                      customTemplates={customTemplates}
+                      onApply={(content) => {
+                        updateSlide(currentSlide, 'content', content);
+                      }}
+                      onManageCustom={Object.keys(customTemplates).length > 0
+                        ? () => setShowManageTemplates(true)
+                        : null}
+                    />
 
                     <div>
                       <Label className="text-base font-semibold mb-2 block">Slide Title</Label>
@@ -1751,3 +1695,86 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         </div>
         );
         }
+
+// ---------------------------------------------------------------------------
+// VerifiedTemplateGallery — small collapsible disclosure that lists the
+// 6 verified built-in templates plus any user-saved custom templates.
+//
+// Defined inline because:
+//   • It is tightly coupled to SLIDE_TEMPLATES + addSlide/onApply semantics
+//     of the parent SlideEditor.
+//   • It has no reusable surface area outside this file.
+//
+// Disclosure state is EPHEMERAL — never persisted. Default starts collapsed
+// when the slide already has content (so the canvas remains the visual
+// primary), expanded when the slide is empty (so a tutor sees the choices).
+function VerifiedTemplateGallery({ hasContent, customTemplates, onApply, onManageCustom }) {
+  const [open, setOpen] = React.useState(!hasContent);
+  const builtIns = Object.entries(SLIDE_TEMPLATES);
+  const customs = Object.entries(customTemplates || {});
+
+  return (
+    <div className="rounded-lg border border-indigo-100 bg-indigo-50/30">
+      <button
+        type="button"
+        onClick={() => setOpen((o) => !o)}
+        aria-expanded={open}
+        aria-controls="verified-template-gallery"
+        className="w-full flex items-center justify-between gap-2 px-3 py-2 text-left rounded-t-lg hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-400"
+      >
+        <span className="inline-flex items-center gap-2 text-sm font-semibold text-indigo-900">
+          <LayoutTemplate className="w-4 h-4 text-indigo-600" />
+          Slide templates
+          <span className="text-[11px] font-normal text-indigo-700/70">
+            ({builtIns.length} verified{customs.length ? ` · ${customs.length} custom` : ''})
+          </span>
+        </span>
+        {open ? <ChevronUp className="w-4 h-4 text-indigo-700" /> : <ChevronDown className="w-4 h-4 text-indigo-700" />}
+      </button>
+
+      {open && (
+        <div id="verified-template-gallery" className="px-3 pb-3 pt-1">
+          <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-2">
+            {builtIns.map(([key, t]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onApply(t.content)}
+                title={`Apply ${t.name} to this slide`}
+                className="h-20 bg-white border border-indigo-100 rounded-md hover:border-indigo-400 hover:shadow-sm flex flex-col items-center justify-center gap-1 p-2 text-center transition-colors"
+              >
+                <span className="text-2xl leading-none">{t.icon}</span>
+                <span className="text-[11px] font-medium text-gray-700 leading-tight">{t.name}</span>
+              </button>
+            ))}
+            {customs.map(([key, t]) => (
+              <button
+                key={key}
+                type="button"
+                onClick={() => onApply(t.content)}
+                title={`Apply ${t.name} to this slide`}
+                className="h-20 bg-emerald-50 border border-emerald-200 rounded-md hover:border-emerald-400 hover:shadow-sm flex flex-col items-center justify-center gap-1 p-2 text-center transition-colors relative"
+              >
+                <span className="text-2xl leading-none">{t.icon || '📄'}</span>
+                <span className="text-[11px] font-medium text-gray-700 leading-tight">{t.name}</span>
+                <span className="absolute top-0.5 right-0.5 text-[8px] bg-emerald-600 text-white px-1 py-0.5 rounded-full font-semibold leading-none">MY</span>
+              </button>
+            ))}
+          </div>
+          <div className="flex items-center justify-between mt-2">
+            <p className="text-[11px] text-indigo-700/80">
+              Click a template to replace this slide's content. Only audited
+              layouts are shown here; build any other layout block-by-block
+              above.
+            </p>
+            {onManageCustom && (
+              <Button variant="ghost" size="sm" onClick={onManageCustom} className="h-6 text-[11px] shrink-0">
+                Manage custom
+              </Button>
+            )}
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
