@@ -61,6 +61,22 @@ export default function VisualLessonBuilder({ slide, onChange, onPersist, isPers
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.id, slide?.order]);
 
+  // External content refresh: when the parent replaces slide.content (e.g. a
+  // template is applied from the SlideEditor), rehydrate the builder's blocks
+  // *without* triggering the autosave echo loop. The guard is
+  // `lastSerialised.current` — that ref always holds the HTML we last
+  // produced ourselves, so any incoming content that differs from it is an
+  // external mutation and we must adopt it.
+  useEffect(() => {
+    const incoming = slide?.content || '';
+    if (incoming === lastSerialised.current) return; // our own echo — ignore
+    const next = htmlToBlocks(incoming);
+    reset(next);
+    lastSerialised.current = incoming;
+    setExpandedId(null);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [slide?.content]);
+
   // Autosave: serialise blocks → HTML and push to parent on a debounce. We push
   // to the parent which writes to slide.content, keeping the existing storage
   // shape intact (LessonPlayer keeps reading slide.content as HTML).
