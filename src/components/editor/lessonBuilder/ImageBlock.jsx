@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import {
   Upload, AlignLeft, AlignCenter, AlignRight, Maximize2,
   Image as ImageIcon, RotateCcw, Lock, Unlock, Percent, Ruler,
+  Replace,
 } from 'lucide-react';
 import BlockSettingsPanel from './BlockSettingsPanel';
 
@@ -58,6 +59,12 @@ export default function ImageBlock({ data, onChange }) {
   // two ImageBlocks on the same slide from sharing an `id` and triggering
   // the wrong block when a label is clicked.
   const fileInputId = useId();
+
+  // Replace-image input ref — used by the overlay button on the visible
+  // image preview so the tutor can swap a template's placeholder for a
+  // real upload in one click (the old UX hid this inside the settings
+  // panel, which is why "add image" in templates appeared not to work).
+  const replaceInputRef = useRef(null);
 
   // Detect intrinsic aspect ratio after URL changes so the lock can use it.
   // Declared BEFORE `upload` so the upload handler can reference it without
@@ -185,6 +192,35 @@ export default function ImageBlock({ data, onChange }) {
                   height: heightStyle.height || 'auto',
                   objectFit: fit,
                   display: 'block',
+                }}
+              />
+
+              {/* Replace-image overlay — appears on hover/focus. Lets the
+                  tutor swap a placeholder image (used by templates) for
+                  their own upload in one click, without having to open
+                  the settings panel and find the small "Upload" link.
+                  Positioned top-right so it does not overlap the bottom-
+                  right resize corner. */}
+              <button
+                type="button"
+                onClick={() => replaceInputRef.current?.click()}
+                title="Replace image"
+                aria-label="Replace image"
+                className="absolute top-2 right-2 inline-flex items-center gap-1 px-2 py-1 rounded-md bg-black/60 hover:bg-black/80 text-white text-xs font-medium opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity backdrop-blur-sm shadow-md focus:outline-none focus:ring-2 focus:ring-indigo-300"
+              >
+                <Replace className="w-3.5 h-3.5" />
+                Replace
+              </button>
+              <input
+                ref={replaceInputRef}
+                type="file"
+                accept="image/*"
+                className="hidden"
+                onChange={(e) => {
+                  const f = e.target.files?.[0];
+                  if (f) upload(f);
+                  // Reset so picking the same file twice still triggers change.
+                  e.target.value = '';
                 }}
               />
 
