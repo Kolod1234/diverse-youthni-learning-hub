@@ -495,33 +495,33 @@ function KnowledgeCheckBlock({ data, onChange }) {
 
 function LegacyHtmlBlock({ html, onChange }) {
   // "Legacy HTML" blocks come from templates that use custom card styling.
-  // Most tutors only want to change the wording — not the HTML — so by default
-  // we render the styled preview AND make every text node directly editable
-  // in place via contentEditable. An "Edit source" escape hatch is still
-  // available for power users.
+  // Tutors should be able to edit the wording in place without ever touching
+  // markup. We render the styled card as a contentEditable surface, and
+  // expose an "Edit source" escape hatch for power users.
   const [sourceMode, setSourceMode] = React.useState(false);
   const previewRef = useRef(null);
-  const lastHtmlRef = useRef(html);
+  const isEditingRef = useRef(false);
 
-  // Keep the rendered DOM in sync when html prop changes from outside
-  // (template apply, undo/redo) — but NOT while the user is typing, or the
-  // caret would jump to the start of the editable region on every keystroke.
+  // Only sync the DOM from the html prop on mount and when the prop changes
+  // from outside (template apply, undo/redo, switching slides). While the
+  // user is actively typing we MUST NOT touch innerHTML — doing so collapses
+  // the selection to the start of the node, which is what made letters appear
+  // in reverse order ("the" -> "eht").
   useEffect(() => {
     if (sourceMode) return;
     if (!previewRef.current) return;
-    if (lastHtmlRef.current === html) return;
+    if (isEditingRef.current) return; // user is typing — leave the DOM alone
+    if (previewRef.current.innerHTML === (html || '')) return;
     previewRef.current.innerHTML = html || '';
-    lastHtmlRef.current = html;
   }, [html, sourceMode]);
 
   const handleInput = () => {
     const next = previewRef.current?.innerHTML || '';
-    lastHtmlRef.current = next;
     onChange(next);
   };
 
   return (
-    <div className="rounded">
+    <div>
       <div className="flex items-center justify-end mb-1.5">
         <button
           type="button"
@@ -545,7 +545,9 @@ function LegacyHtmlBlock({ html, onChange }) {
           contentEditable
           suppressContentEditableWarning
           onInput={handleInput}
-          className="bg-white rounded p-2 outline-none focus:ring-2 focus:ring-indigo-200"
+          onFocus={() => { isEditingRef.current = true; }}
+          onBlur={() => { isEditingRef.current = false; }}
+          className="outline-none focus:ring-2 focus:ring-indigo-200 rounded"
           dangerouslySetInnerHTML={{ __html: html || '' }}
         />
       )}
