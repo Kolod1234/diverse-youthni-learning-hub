@@ -1,4 +1,4 @@
-import React, { useRef, useCallback, useEffect } from 'react';
+import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { RotateCw, Copy, Trash2, ChevronUp, ChevronDown, BringToFront, SendToBack } from 'lucide-react';
 
 // FreeBlock
@@ -38,6 +38,16 @@ export default function FreeBlock({
   // reads the latest closure without having to re-bind listeners.
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+
+  // ── Edit mode (PowerPoint / Canva style) ─────────────────────────
+  // Single click  = select & drag the frame  (content is locked, drag wins)
+  // Double click  = unlock content for typing / text highlighting
+  // Deselecting   = lock content again
+  //
+  // We hold this locally because it should reset automatically the
+  // moment the block loses selection — no parent needs to know.
+  const [editing, setEditing] = useState(false);
+  useEffect(() => { if (!selected) setEditing(false); }, [selected]);
 
   // Window-level pointer handlers — reliable across rerenders and
   // when the cursor leaves the block element while dragging.
@@ -97,11 +107,14 @@ export default function FreeBlock({
 
   const begin = useCallback((e, mode, handle = null) => {
     // Don't start a drag from a contenteditable / form element so the
-    // user can still type / click inside the block content.
+    // user can still type / click inside the block content. We only
+    // honour this when the block is in EDIT mode — otherwise a single
+    // click anywhere on the block (including over its text) should
+    // begin a move, exactly like PowerPoint / Canva.
     const t = e.target;
     const tag = (t?.tagName || '').toLowerCase();
-    const editable = t?.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button';
-    if (mode === 'move' && editable && selected) return;
+    const isEditable = t?.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button';
+    if (mode === 'move' && editing && isEditable) return;
 
     e.preventDefault();
     e.stopPropagation();
@@ -116,7 +129,40 @@ export default function FreeBlock({
       host,
       start: { ...frame },
     };
-  }, [frame, hostRectRef, onSelect, selected]);
+  }, [frame, hostRectRef, onSelect, selected, editing]);
+
+  // Double-click anywhere inside the block enters "edit content" mode.
+  // We focus the first editable descendant so typing starts immediately
+  // — without it the user would have to click a second time to drop the
+  // caret, which feels broken.
+  const enterEditMode = useCallback((e) => {
+    if (!selected) {
+      // Make sure we own the selection before promoting to edit mode.
+      onSelect?.(e);
+    }
+    setEditing(true);
+    // Defer focus until after pointer-events are re-enabled below.
+    requestAnimationFrame(() => {
+      const root = e.currentTarget;
+      if (!root) return;
+      const editable = root.querySelector('[contenteditable="true"], input, textarea');
+      if (editable && typeof editable.focus === 'function') {
+        editable.focus();
+        // For contenteditable surfaces, place the caret where the user
+        // double-clicked instead of jumping to the start of the text.
+        try {
+          if (editable.isContentEditable && document.caretRangeFromPoint) {
+            const range = document.caretRangeFromPoint(e.clientX, e.clientY);
+            if (range) {
+              const sel = window.getSelection();
+              sel.removeAllRanges();
+              sel.addRange(range);
+            }
+          }
+        } catch { /* non-fatal */ }
+      }
+    });
+  }, [selected, onSelect]);
 
   return (
     <div
@@ -129,30 +175,40 @@ export default function FreeBlock({
         transform: `rotate(${frame.r || 0}deg)`,
         transformOrigin: 'center center',
         zIndex: frame.z || 1,
-        cursor: 'move',
-        outline: selected ? '2px solid #6366f1' : '1px dashed transparent',
+        // Cursor hints the current mode: text caret when editing, move
+        // arrow otherwise. Selected-but-not-editing keeps the move cursor
+        // so it's obvious another single click will drag.
+        cursor: editing ? 'text' : 'move',
+        outline: editing
+          ? '2px solid #4f46e5'
+          : selected ? '2px solid #6366f1' : '1px dashed transparent',
         outlineOffset: 2,
         borderRadius: 4,
         boxSizing: 'border-box',
         touchAction: 'none',
       }}
       onPointerDown={(e) => begin(e, 'move')}
+      onDoubleClick={enterEditMode}
       onMouseEnter={(e) => { if (!selected) e.currentTarget.style.outline = '1px dashed #c7d2fe'; }}
       onMouseLeave={(e) => { if (!selected) e.currentTarget.style.outline = '1px dashed transparent'; }}
     >
-      {/* Inner content — pointer events disabled while not selected so a
-          click selects the frame; once selected, pointer events return
-          so the user can edit text, click image controls, etc.
-          We deliberately DO NOT stop propagation here — the outer wrapper
-          needs to receive pointerdown so dragging keeps working after the
-          block is selected. The `begin` handler itself opts out of drag
-          when the pointer originates inside an editable element. */}
+      {/* Inner content
+          ─────────────
+          Editing model (PowerPoint / Canva parity):
+            • selected & !editing → pointer-events: none   (drag the frame)
+            • editing             → pointer-events: auto   (type, highlight, …)
+            • not selected        → pointer-events: none   (frame remains pickable)
+          We deliberately DO NOT stop propagation on the wrapper so a
+          single-click on text bubbles up to start a frame drag. Once
+          the user double-clicks to enter edit mode, the inner div
+          captures pointer events instead and `begin` refuses to drag
+          from inside editable nodes. */}
       <div
         style={{
           position: 'absolute', inset: 0,
           overflow: 'hidden',
-          pointerEvents: selected ? 'auto' : 'none',
-          userSelect: selected ? 'auto' : 'none',
+          pointerEvents: editing ? 'auto' : 'none',
+          userSelect: editing ? 'auto' : 'none',
         }}
       >
         {children}
