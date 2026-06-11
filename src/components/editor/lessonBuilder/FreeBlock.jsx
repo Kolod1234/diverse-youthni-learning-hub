@@ -194,24 +194,42 @@ export default function FreeBlock({
             <RotateCw style={{ width: 10, height: 10, color: '#4f46e5' }} />
           </button>
 
-          {/* 8 resize handles */}
+          {/* 8 resize handles — PowerPoint-style.
+              Each handle is a 22×22 px transparent hit-zone (easy to grab,
+              even on edges/corners) with a small 10×10 visible dot inside.
+              zIndex 4 keeps them above the inner content so they're always
+              reachable, even when the block contains scrollable text. */}
           {HANDLES.map((hd) => (
-            <button
+            <span
               key={hd.id}
-              type="button"
+              role="button"
               aria-label={`Resize ${hd.id}`}
               onPointerDown={(e) => begin(e, 'resize', hd.id)}
               style={{
                 position: 'absolute',
                 left: `${hd.x}%`, top: `${hd.y}%`,
                 transform: 'translate(-50%, -50%)',
-                width: 10, height: 10,
-                background: '#fff', border: '2px solid #6366f1',
-                borderRadius: 2, padding: 0,
+                width: 22, height: 22,
+                display: 'inline-flex',
+                alignItems: 'center', justifyContent: 'center',
+                background: 'transparent',
                 cursor: hd.cursor,
-                touchAction: 'none', zIndex: 2,
+                touchAction: 'none',
+                zIndex: 4,
               }}
-            />
+            >
+              <span
+                aria-hidden="true"
+                style={{
+                  width: 10, height: 10,
+                  background: '#fff',
+                  border: '2px solid #6366f1',
+                  borderRadius: 2,
+                  boxShadow: '0 1px 3px rgba(0,0,0,0.25)',
+                  pointerEvents: 'none',
+                }}
+              />
+            </span>
           ))}
         </>
       )}
