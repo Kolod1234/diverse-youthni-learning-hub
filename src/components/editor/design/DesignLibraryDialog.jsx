@@ -278,7 +278,7 @@ function AssetTile({ item, kind, onClick }) {
           <div className="w-full h-full" style={{ background: item.preview }} />
         ) : kind === 'html' ? (
           <div
-            className="w-full h-full p-2 text-[10px] overflow-hidden flex items-center"
+            className="w-full px-3 text-[10px] overflow-hidden [&>hr]:!my-0 [&>div]:!my-0"
             // The asset HTML is internally-authored static markup from
             // designAssets.js — no user input is ever rendered here.
             dangerouslySetInnerHTML={{ __html: item.html }}
