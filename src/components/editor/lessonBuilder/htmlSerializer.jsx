@@ -881,6 +881,18 @@ function parseSimpleElement(el, tag) {
   }
   if (lessonBlockKind === 'divider' && tag === 'hr') return createBlock('divider');
 
+  if (tag === 'div' && lessonBlockKind === 'shape') {
+    // Round-trip the shape block — geometry / fill / outline live on the
+    // data-* attributes so we never have to reparse the SVG.
+    const sw = parseFloat(el.getAttribute('data-stroke-width'));
+    return createBlock('shape', {
+      shape: el.getAttribute('data-shape') || 'square',
+      fill: el.getAttribute('data-fill') || '#6366f1',
+      stroke: el.getAttribute('data-stroke') || 'none',
+      strokeWidth: Number.isFinite(sw) ? sw : 2,
+    });
+  }
+
   if (tag === 'div' && lessonBlockKind === 'image') {
     const img = el.querySelector('img');
     if (img) {
