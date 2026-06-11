@@ -541,13 +541,14 @@ function blockToHtml(b) {
         arrowD:   '<polygon points="38,4 38,60 20,60 50,96 80,60 62,60 62,4" />',
       };
       const shapeKey = SHAPE_PATHS[d.shape] ? d.shape : 'square';
-      const fill = (d.fill === 'none' || !d.fill) ? (d.fill === 'none' ? 'none' : '#6366f1') : d.fill;
-      const stroke = d.stroke === 'none' || !d.stroke ? 'none' : d.stroke;
+      // Honour the `noFill` toggle from ShapeBlock — when true, the shape
+      // renders as outline only regardless of the stored fill value.
+      const noFill = d.noFill === true || d.fill === 'none';
+      const fillColor = d.fill && d.fill !== 'none' ? d.fill : '#6366f1';
+      const stroke = !d.stroke || d.stroke === 'none' ? 'none' : d.stroke;
       const strokeWidth = Number.isFinite(Number(d.strokeWidth)) ? Number(d.strokeWidth) : 2;
-      // If both fill and stroke are 'none', the shape would be invisible.
-      // Fall back to a faint outline so the slide still has *something*
-      // visible at the shape's location.
-      const finalFill = fill;
+      const finalFill = noFill ? 'none' : fillColor;
+      // Avoid an invisible shape when the user has both no fill and no outline.
       const finalStroke = (finalFill === 'none' && stroke === 'none') ? '#94a3b8' : stroke;
       const finalSW = (finalFill === 'none' && stroke === 'none') ? 1 : strokeWidth;
       const shapeAttrs = `fill="${escapeHtml(finalFill)}" stroke="${escapeHtml(finalStroke)}" stroke-width="${finalSW}" stroke-linejoin="round"`;
@@ -555,7 +556,8 @@ function blockToHtml(b) {
       const dataAttrs = [
         `data-lesson-block="shape"`,
         `data-shape="${escapeHtml(shapeKey)}"`,
-        `data-fill="${escapeHtml(finalFill)}"`,
+        `data-fill="${escapeHtml(fillColor)}"`,
+        `data-no-fill="${noFill ? '1' : '0'}"`,
         `data-stroke="${escapeHtml(finalStroke)}"`,
         `data-stroke-width="${finalSW}"`,
       ].join(' ');
@@ -888,6 +890,7 @@ function parseSimpleElement(el, tag) {
     return createBlock('shape', {
       shape: el.getAttribute('data-shape') || 'square',
       fill: el.getAttribute('data-fill') || '#6366f1',
+      noFill: el.getAttribute('data-no-fill') === '1',
       stroke: el.getAttribute('data-stroke') || 'none',
       strokeWidth: Number.isFinite(sw) ? sw : 2,
     });
