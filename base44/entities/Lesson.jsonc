@@ -122,6 +122,14 @@
           "order": {
             "type": "number",
             "description": "Slide order"
+          },
+          "background": {
+            "type": "string",
+            "description": "Optional CSS background value (colour / gradient / image URL) painted behind slide content"
+          },
+          "notes": {
+            "type": "string",
+            "description": "Presenter speaker notes (not shown to learners)"
           }
         }
       }

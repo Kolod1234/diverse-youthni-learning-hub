@@ -27,7 +27,7 @@ function getPortalTarget() {
   return el;
 }
 
-export default function PreviewModal({ open, onClose, html }) {
+export default function PreviewModal({ open, onClose, html, background }) {
   const [device, setDevice] = useState('desktop');
 
   // Close on Escape + lock body scroll while open. We don't unmount the
@@ -113,7 +113,7 @@ export default function PreviewModal({ open, onClose, html }) {
 
       <div className="flex-1 overflow-auto bg-slate-800 p-3 sm:p-6">
         <div
-          className="mx-auto bg-white rounded shadow-2xl overflow-hidden"
+          className="mx-auto rounded shadow-2xl overflow-hidden"
           // data-mobile-preview tells the serialized lesson HTML's stacking
           // rules (see htmlSerializer two-columns block) to collapse 2- and
           // 3-column layouts into a single column inside this canvas, even
@@ -121,7 +121,7 @@ export default function PreviewModal({ open, onClose, html }) {
           // @media (max-width:767px) rule never fires and columns stay
           // side-by-side in the simulated mobile frame.
           data-mobile-preview={device === 'mobile' ? 'true' : undefined}
-          style={{ width: '100%', maxWidth: cfg.width }}
+          style={{ width: '100%', maxWidth: cfg.width, background: background || '#ffffff' }}
         >
           <div className={`${device === 'presentation' ? 'p-8 sm:p-12' : 'p-4 sm:p-6'}`}>
             {/* Wrap in reader-prose so authoring preview uses the same typography

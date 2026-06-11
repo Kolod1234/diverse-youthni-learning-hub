@@ -426,6 +426,7 @@ export default function PresentationWorkspace({
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
         html={currentSlideData?.content || ''}
+        background={currentSlideData?.background || null}
       />
 
       {/* Design library — backgrounds, banners, shapes, lines, arrows,
