@@ -165,36 +165,12 @@ export default function DesignLibraryDialog({
           {/* Grid */}
           <div className="flex-1 overflow-y-auto p-4 bg-white">
             {current.kind === 'library' ? (
-              loadingLibrary ? (
-                <div className="flex items-center justify-center py-16">
-                  <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
-                </div>
-              ) : myAssets.length === 0 ? (
-                <div className="text-center py-12">
-                  <Library className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-                  <p className="text-slate-700 font-semibold">Your library is empty</p>
-                  <p className="text-sm text-slate-500 mt-1 max-w-xs mx-auto">
-                    Upload icons, banners or custom shapes once and reuse them in any lesson.
-                  </p>
-                  <Button className="mt-4" size="sm" onClick={() => setShowAssetUpload(true)}>
-                    <Plus className="w-4 h-4 mr-1.5" /> Add asset
-                  </Button>
-                </div>
-              ) : (
-                <>
-                  <div className="flex items-center justify-between mb-3">
-                    <p className="text-xs text-slate-500">{myAssets.length} saved asset{myAssets.length === 1 ? '' : 's'}</p>
-                    <Button size="sm" variant="outline" onClick={() => setShowAssetUpload(true)}>
-                      <Plus className="w-3.5 h-3.5 mr-1" /> Add new
-                    </Button>
-                  </div>
-                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
-                    {myAssets.map((asset) => (
-                      <LibraryAssetTile key={asset.id} asset={asset} onClick={() => handleLibraryAssetClick(asset)} />
-                    ))}
-                  </div>
-                </>
-              )
+              <MyLibraryGrid
+                assets={myAssets}
+                isLoading={loadingLibrary}
+                onPick={handleLibraryAssetClick}
+                onAdd={() => setShowAssetUpload(true)}
+              />
             ) : (
               <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
                 {current.items.map((item) => (
@@ -205,42 +181,87 @@ export default function DesignLibraryDialog({
           </div>
         </div>
 
-        <AssetUploadDialog
-          open={showAssetUpload}
-          onOpenChange={setShowAssetUpload}
-          onSaved={() => queryClient.invalidateQueries({ queryKey: ['asset-library-design-dialog'] })}
-        />
-
-        <div className="px-6 py-3 border-t flex justify-end bg-slate-50">
+        <div className="px-6 py-3 border-t flex items-center justify-between bg-slate-50">
+          {current.kind === 'library' ? (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setShowAssetUpload(true)}
+            >
+              <Plus className="w-4 h-4 mr-1" /> Add asset
+            </Button>
+          ) : <span />}
           <Button variant="ghost" size="sm" onClick={onClose}>
             <X className="w-4 h-4 mr-1" /> Close
           </Button>
         </div>
       </DialogContent>
+
+      {/* Reuse the full upload dialog so saved assets land in AssetLibrary
+          and become reusable across every lesson. */}
+      <AssetUploadDialog
+        open={showAssetUpload}
+        onOpenChange={setShowAssetUpload}
+        onSaved={() => {
+          queryClient.invalidateQueries({ queryKey: ['asset-library-design-dialog'] });
+          queryClient.invalidateQueries({ queryKey: ['asset-library'] });
+        }}
+      />
     </Dialog>
   );
 }
 
-function LibraryAssetTile({ asset, onClick }) {
+function MyLibraryGrid({ assets, isLoading, onPick, onAdd }) {
+  if (isLoading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <Loader2 className="w-6 h-6 animate-spin text-slate-400" />
+      </div>
+    );
+  }
+  if (!assets.length) {
+    return (
+      <div className="text-center py-12">
+        <Library className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+        <p className="text-slate-700 font-medium">Your library is empty</p>
+        <p className="text-sm text-slate-500 mt-1 max-w-sm mx-auto">
+          Upload icons, banners, logos or custom shapes so you can drop them into any lesson with one click.
+        </p>
+        <Button size="sm" className="mt-4" onClick={onAdd}>
+          <Plus className="w-4 h-4 mr-1" /> Add asset
+        </Button>
+      </div>
+    );
+  }
   return (
-    <button
-      type="button"
-      onClick={onClick}
-      title={asset.name}
-      className="group rounded-lg border border-slate-200 hover:border-indigo-400 hover:shadow-md bg-white overflow-hidden text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
-    >
-      <div className="w-full h-24 flex items-center justify-center bg-slate-50 overflow-hidden">
-        <img
-          src={asset.thumbnail_url || asset.file_url}
-          alt={asset.name}
-          className="max-w-full max-h-full object-contain"
-          loading="lazy"
-        />
-      </div>
-      <div className="px-2 py-1.5 text-xs font-medium text-slate-700 truncate group-hover:text-indigo-700">
-        {asset.name}
-      </div>
-    </button>
+    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-3">
+      {assets.map((asset) => (
+        <button
+          key={asset.id}
+          type="button"
+          onClick={() => onPick(asset)}
+          title={asset.name}
+          className="group rounded-lg border border-slate-200 hover:border-indigo-400 hover:shadow-md bg-white overflow-hidden text-left transition-all focus:outline-none focus-visible:ring-2 focus-visible:ring-indigo-400"
+        >
+          <div className="w-full h-24 flex items-center justify-center bg-slate-50 overflow-hidden">
+            <img
+              src={asset.thumbnail_url || asset.file_url}
+              alt={asset.name}
+              className="max-w-full max-h-full object-contain"
+              loading="lazy"
+            />
+          </div>
+          <div className="px-2 py-1.5">
+            <div className="text-xs font-medium text-slate-700 truncate group-hover:text-indigo-700">
+              {asset.name}
+            </div>
+            {asset.asset_type && (
+              <div className="text-[10px] text-slate-400 capitalize">{asset.asset_type.replace('_', ' ')}</div>
+            )}
+          </div>
+        </button>
+      ))}
+    </div>
   );
 }
 
