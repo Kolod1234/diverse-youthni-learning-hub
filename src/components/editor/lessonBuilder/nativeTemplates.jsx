@@ -427,6 +427,482 @@ export const NATIVE_TEMPLATES = {
       p('Briefly interpret the table for the reader.'),
     ],
   },
+
+  // ══════════════════════════════════════════════════════════════════════
+  // EXTRA TEMPLATES — added to enrich each category
+  // ══════════════════════════════════════════════════════════════════════
+
+  // ── More Basics ─────────────────────────────────────────────────────────
+  sectionDivider: {
+    name: 'Section divider',
+    icon: '➖',
+    category: 'Basics',
+    buildBlocks: () => [
+      h1('Part Two'),
+      h3('A short overline introducing the next section'),
+      divider(),
+    ],
+  },
+  agenda: {
+    name: 'Agenda',
+    icon: '🗒️',
+    category: 'Basics',
+    buildBlocks: () => [
+      h1('Today\'s agenda'),
+      ol([
+        'Welcome and introductions',
+        'Key concept of the lesson',
+        'Worked example',
+        'Discussion',
+        'Wrap-up and next steps',
+      ]),
+    ],
+  },
+  learningObjectives: {
+    name: 'Learning objectives',
+    icon: '🎯',
+    category: 'Basics',
+    buildBlocks: () => [
+      h2('By the end of this lesson you will be able to…'),
+      ul([
+        'State the key concept in your own words',
+        'Apply it to a worked example',
+        'Identify common pitfalls',
+      ]),
+    ],
+  },
+  bigQuote: {
+    name: 'Big quote',
+    icon: '❝',
+    category: 'Basics',
+    buildBlocks: () => [
+      quote('A single, powerful statement that anchors the lesson.', 'Source'),
+    ],
+  },
+  closingSlide: {
+    name: 'Closing / thank you',
+    icon: '👋',
+    category: 'Basics',
+    buildBlocks: () => [
+      h1('Thank you'),
+      h3('Questions?'),
+      p('Contact details, links, or next steps go here.'),
+    ],
+  },
+
+  // ── More Article ────────────────────────────────────────────────────────
+  longReadOpener: {
+    name: 'Long-read opener',
+    icon: '📜',
+    category: 'Article',
+    buildBlocks: () => [
+      image({
+        url: PLACEHOLDER_WIDE,
+        align: 'full',
+        widthUnit: 'percent',
+        width: 100,
+        fit: 'cover',
+      }),
+      h1('A headline that earns the long read'),
+      h3('A subtitle that sets the stakes'),
+      p('<em>By Author · Date · 12 minute read</em>'),
+      p('Opening paragraph — paint the scene with vivid detail and a clear hook.'),
+    ],
+  },
+  newsExplainer: {
+    name: 'News explainer',
+    icon: '❓',
+    category: 'Article',
+    buildBlocks: () => [
+      h1('Explainer: What\'s going on?'),
+      p('<em>A short summary of what this explainer covers.</em>'),
+      h2('What happened?'),
+      p('A clear, factual account of events.'),
+      h2('Why does it matter?'),
+      p('The significance for the reader.'),
+      h2('What happens next?'),
+      ul(['Possible outcome one', 'Possible outcome two', 'What to watch for']),
+    ],
+  },
+  caseStudy: {
+    name: 'Case study',
+    icon: '🔍',
+    category: 'Article',
+    buildBlocks: () => [
+      h1('Case study: Subject name'),
+      h3('Context · Date · Outcome'),
+      h2('Background'),
+      p('Brief background and context.'),
+      h2('Approach'),
+      ol(['Step one of the approach', 'Step two', 'Step three']),
+      h2('Result'),
+      p('What was achieved and why it matters.'),
+      callout('info', 'Key lesson: summarise the takeaway in one sentence.'),
+    ],
+  },
+  howToGuide: {
+    name: 'How-to guide',
+    icon: '🛠️',
+    category: 'Article',
+    buildBlocks: () => [
+      h1('How to do something useful'),
+      p('<em>A one-sentence promise of what the reader will achieve.</em>'),
+      h2('What you\'ll need'),
+      ul(['Item one', 'Item two', 'Item three']),
+      h2('Steps'),
+      ol([
+        'Do the first thing — describe it precisely',
+        'Do the second thing — include any tips',
+        'Do the third thing — common pitfalls to avoid',
+        'Verify the result',
+      ]),
+      callout('success', 'You\'re done! Quick recap of what was achieved.'),
+    ],
+  },
+  listicle: {
+    name: 'Listicle (Top 5)',
+    icon: '🏆',
+    category: 'Article',
+    buildBlocks: () => [
+      h1('Top 5 things you should know'),
+      p('<em>A one-line standfirst summarising the list.</em>'),
+      h2('1. First item'),
+      p('Why this matters in two short sentences.'),
+      h2('2. Second item'),
+      p('A second concise explanation.'),
+      h2('3. Third item'),
+      p('Continue the pattern.'),
+      h2('4. Fourth item'),
+      p('Keep paragraphs short.'),
+      h2('5. Fifth item'),
+      p('Close with the most memorable point.'),
+    ],
+  },
+
+  // ── More Image layouts ──────────────────────────────────────────────────
+  twoImagesSideBySide: {
+    name: 'Two images side by side',
+    icon: '🖼️',
+    category: 'Image layouts',
+    buildBlocks: () => [
+      h2('Compare these visuals'),
+      cols(2,
+        [image({ caption: 'Left caption' })],
+        [],
+        [image({ caption: 'Right caption' })],
+        { ratio: 0.5, gap: 24, verticalAlign: 'top' },
+      ),
+      p('A short paragraph drawing the comparison.'),
+    ],
+  },
+  imageGrid4: {
+    name: 'Image grid (4)',
+    icon: '🔲',
+    category: 'Image layouts',
+    buildBlocks: () => [
+      h2('Image gallery'),
+      cols(2,
+        [image({ caption: 'Top left' }), image({ caption: 'Bottom left' })],
+        [],
+        [image({ caption: 'Top right' }), image({ caption: 'Bottom right' })],
+        { ratio: 0.5, gap: 16, verticalAlign: 'top' },
+      ),
+    ],
+  },
+  heroOverlayHeading: {
+    name: 'Hero image with heading',
+    icon: '🌄',
+    category: 'Image layouts',
+    buildBlocks: () => [
+      image({
+        url: PLACEHOLDER_WIDE,
+        align: 'full',
+        widthUnit: 'percent',
+        width: 100,
+        fit: 'cover',
+      }),
+      h1('Headline over the hero'),
+      h3('Supporting subhead'),
+      p('A short paragraph beneath the hero image.'),
+    ],
+  },
+  portraitWithBio: {
+    name: 'Portrait with bio',
+    icon: '🧑',
+    category: 'Image layouts',
+    buildBlocks: () => [
+      imageText({
+        side: 'left',
+        url: PLACEHOLDER_PORTRAIT,
+        html: '<h2 style="font-size:24px; font-weight:700; color:#1A3C5A; margin:0 0 8px;">Person\'s name</h2><h3 style="font-size:16px; color:#475569; margin:0 0 12px;">Role · Organisation</h3><p>Short biography that introduces this person and why they matter to this lesson.</p>',
+      }),
+    ],
+  },
+  threeImageRow: {
+    name: 'Three images in a row',
+    icon: '🎞️',
+    category: 'Image layouts',
+    buildBlocks: () => [
+      h2('Three perspectives'),
+      cols(3,
+        [image({ caption: 'First' })],
+        [image({ caption: 'Second' })],
+        [image({ caption: 'Third' })],
+        { gap: 16, verticalAlign: 'top' },
+      ),
+    ],
+  },
+
+  // ── More Editorial ──────────────────────────────────────────────────────
+  opinionColumn: {
+    name: 'Opinion column',
+    icon: '✍️',
+    category: 'Editorial',
+    buildBlocks: () => [
+      h1('Opinion: The headline argument'),
+      h3('A subhead that sharpens the position'),
+      p('<strong>By Columnist Name</strong> — Opinion · Date'),
+      p('Opening paragraph that stakes the claim clearly.'),
+      p('Second paragraph develops the reasoning with one or two pieces of evidence.'),
+      quote('A pulled-out line that captures the column\'s sharpest point.', 'Columnist'),
+      p('Closing paragraph drives the conclusion home.'),
+    ],
+  },
+  magazineSpread: {
+    name: 'Magazine spread',
+    icon: '📔',
+    category: 'Editorial',
+    buildBlocks: () => [
+      h1('FEATURE HEADLINE'),
+      h3('A long, evocative subtitle that promises a rich read'),
+      cols(2,
+        [
+          image({ caption: 'Lead photograph' }),
+        ],
+        [],
+        [
+          p('<em>By Writer · Photography by Photographer</em>'),
+          p('Opening paragraph in a confident, literary voice.'),
+          p('Second paragraph builds the atmosphere.'),
+        ],
+        { ratio: 0.5, gap: 32, verticalAlign: 'top' },
+      ),
+    ],
+  },
+  editorsNote: {
+    name: "Editor's note",
+    icon: '📬',
+    category: 'Editorial',
+    buildBlocks: () => [
+      h1('From the editor'),
+      p('<em>A personal opening line from the editor.</em>'),
+      p('First paragraph framing this issue\'s theme.'),
+      p('Second paragraph picking out highlights for the reader.'),
+      p('<strong>— Editor Name</strong>'),
+    ],
+  },
+  sidebarStory: {
+    name: 'Story with sidebar',
+    icon: '📑',
+    category: 'Editorial',
+    buildBlocks: () => [
+      h1('Main story headline'),
+      cols(2,
+        [
+          p('Main story opening paragraph.'),
+          p('Continuation in the main column.'),
+          p('Final paragraph wrapping the story.'),
+        ],
+        [],
+        [
+          callout('info', '<strong>Sidebar</strong><br/>Quick facts, a related stat, or a short related item.'),
+          ul(['Related point one', 'Related point two', 'Related point three']),
+        ],
+        { ratio: 0.65, gap: 24, verticalAlign: 'top' },
+      ),
+    ],
+  },
+
+  // ── More Quote & explain ────────────────────────────────────────────────
+  prosCons: {
+    name: 'Pros and cons',
+    icon: '⚖️',
+    category: 'Quote & explain',
+    buildBlocks: () => [
+      h2('Weighing it up'),
+      cols(2,
+        [
+          h3('Pros'),
+          ul(['Advantage one', 'Advantage two', 'Advantage three']),
+        ],
+        [],
+        [
+          h3('Cons'),
+          ul(['Drawback one', 'Drawback two', 'Drawback three']),
+        ],
+        { ratio: 0.5, gap: 24, verticalAlign: 'top' },
+      ),
+      p('A short paragraph summarising the balance.'),
+    ],
+  },
+  faqList: {
+    name: 'FAQ',
+    icon: '❔',
+    category: 'Quote & explain',
+    buildBlocks: () => [
+      h2('Frequently asked questions'),
+      h3('Q. First question?'),
+      p('A clear, one or two sentence answer.'),
+      h3('Q. Second question?'),
+      p('A clear, one or two sentence answer.'),
+      h3('Q. Third question?'),
+      p('A clear, one or two sentence answer.'),
+    ],
+  },
+  keyTermsList: {
+    name: 'Key terms',
+    icon: '🔑',
+    category: 'Quote & explain',
+    buildBlocks: () => [
+      h2('Key terms'),
+      definition('Term one', 'Short, accessible definition of term one.'),
+      definition('Term two', 'Short, accessible definition of term two.'),
+      definition('Term three', 'Short, accessible definition of term three.'),
+    ],
+  },
+  mythVsFact: {
+    name: 'Myth vs fact',
+    icon: '🔮',
+    category: 'Quote & explain',
+    buildBlocks: () => [
+      h2('Myth vs fact'),
+      cols(2,
+        [
+          h3('Myth'),
+          callout('warning', 'State the common myth in one short sentence.'),
+        ],
+        [],
+        [
+          h3('Fact'),
+          callout('success', 'State the correct fact in one short sentence.'),
+        ],
+        { ratio: 0.5, gap: 24, verticalAlign: 'top' },
+      ),
+      p('A brief explanation of why the misconception exists.'),
+    ],
+  },
+  threeQuotes: {
+    name: 'Three quotes',
+    icon: '🗨️',
+    category: 'Quote & explain',
+    buildBlocks: () => [
+      h2('Voices'),
+      quote('First quote that opens the conversation.', 'Speaker one'),
+      quote('Second quote that adds a complementary view.', 'Speaker two'),
+      quote('Third quote that lands the closing thought.', 'Speaker three'),
+    ],
+  },
+
+  // ── More Data ───────────────────────────────────────────────────────────
+  keyStats: {
+    name: 'Key stats',
+    icon: '🔢',
+    category: 'Data',
+    buildBlocks: () => [
+      h2('Key statistics'),
+      cols(3,
+        [
+          h1('72%'),
+          p('Brief description of this statistic.'),
+        ],
+        [
+          h1('3.4×'),
+          p('Brief description of this statistic.'),
+        ],
+        [
+          h1('£1.2m'),
+          p('Brief description of this statistic.'),
+        ],
+        { gap: 16, verticalAlign: 'top' },
+      ),
+      p('Source: Add your data source here.'),
+    ],
+  },
+  comparisonTable: {
+    name: 'Comparison table',
+    icon: '📋',
+    category: 'Data',
+    buildBlocks: () => [
+      h2('Option comparison'),
+      table(
+        [
+          ['Feature', 'Option A', 'Option B', 'Option C'],
+          ['Cost', 'Low', 'Medium', 'High'],
+          ['Speed', 'Fast', 'Medium', 'Slow'],
+          ['Quality', 'Good', 'Better', 'Best'],
+          ['Recommended', 'Beginners', 'Most users', 'Power users'],
+        ],
+        { header: true, stripe: true, caption: 'Compare features at a glance' },
+      ),
+    ],
+  },
+  timelineTable: {
+    name: 'Timeline',
+    icon: '🕰️',
+    category: 'Data',
+    buildBlocks: () => [
+      h2('Timeline'),
+      table(
+        [
+          ['Date', 'Event', 'Significance'],
+          ['Year 1', 'First milestone', 'Why it mattered'],
+          ['Year 2', 'Second milestone', 'Why it mattered'],
+          ['Year 3', 'Third milestone', 'Why it mattered'],
+          ['Today', 'Where we are now', 'What it means'],
+        ],
+        { header: true, stripe: false, caption: 'Key moments at a glance' },
+      ),
+    ],
+  },
+  surveyResults: {
+    name: 'Survey results',
+    icon: '📈',
+    category: 'Data',
+    buildBlocks: () => [
+      h2('Survey results'),
+      p('<em>Sample: N = 0. Method: describe the survey method briefly.</em>'),
+      table(
+        [
+          ['Question', 'Agree', 'Neutral', 'Disagree'],
+          ['Statement one', '62%', '24%', '14%'],
+          ['Statement two', '48%', '31%', '21%'],
+          ['Statement three', '71%', '18%', '11%'],
+        ],
+        { header: true, stripe: true, caption: 'Table — Survey responses (%)' },
+      ),
+      callout('info', 'Key insight: summarise the headline finding in one sentence.'),
+    ],
+  },
+  budgetBreakdown: {
+    name: 'Budget breakdown',
+    icon: '💷',
+    category: 'Data',
+    buildBlocks: () => [
+      h2('Budget breakdown'),
+      table(
+        [
+          ['Category', 'Amount', 'Share'],
+          ['Personnel', '£40,000', '50%'],
+          ['Materials', '£20,000', '25%'],
+          ['Operations', '£12,000', '15%'],
+          ['Contingency', '£8,000', '10%'],
+          ['Total', '£80,000', '100%'],
+        ],
+        { header: true, stripe: true, caption: 'Project budget allocation' },
+      ),
+      p('Brief explanatory note about the allocation.'),
+    ],
+  },
 };
 
 // Convenience accessor.
