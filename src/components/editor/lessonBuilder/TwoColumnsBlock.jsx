@@ -455,7 +455,15 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
       style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', maxWidth: '100%' }}
     >
       {blocks.length === 0 && (
-        <div className="text-xs text-gray-400 italic py-6 text-center">{title} column — empty</div>
+        <div className="py-4 text-center space-y-2">
+          <div className="text-xs text-gray-400 italic">{title} column — empty</div>
+          <div className="flex flex-wrap gap-1 justify-center">
+            <QuickAddBtn onClick={() => insertAt(0, 'paragraph')}>+ Text</QuickAddBtn>
+            <QuickAddBtn onClick={() => insertAt(0, 'heading-2')}>+ Heading</QuickAddBtn>
+            <QuickAddBtn onClick={() => insertAt(0, 'bullet-list')}>+ List</QuickAddBtn>
+            <QuickAddBtn onClick={() => insertAt(0, 'image')}>+ Image</QuickAddBtn>
+          </div>
+        </div>
       )}
 
       {/* Vertical gap between nested blocks is driven by the `Gap` / `Block
@@ -535,6 +543,18 @@ function ChildWrapper({ children, label, onMoveUp, onMoveDown, onDuplicate, onDe
       </div>
       {children}
     </div>
+  );
+}
+
+function QuickAddBtn({ children, onClick }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-[11px] px-2 py-0.5 rounded border border-indigo-200 bg-white text-indigo-700 hover:bg-indigo-50 transition"
+    >
+      {children}
+    </button>
   );
 }
 
