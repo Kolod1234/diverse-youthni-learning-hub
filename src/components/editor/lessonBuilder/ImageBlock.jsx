@@ -4,9 +4,10 @@ import { toast } from 'sonner';
 import {
   Upload, AlignLeft, AlignCenter, AlignRight, Maximize2,
   Image as ImageIcon, RotateCcw, Lock, Unlock, Percent, Ruler,
-  Replace, Layers, AlignJustify, ArrowUp,
+  Replace, Layers, AlignJustify, ArrowUp, Move,
 } from 'lucide-react';
 import BlockSettingsPanel from './BlockSettingsPanel';
+import FloatingImage from './FloatingImage';
 
 // Self-contained image block. Data shape (backwards-compatible with the old block):
 //   {
@@ -22,6 +23,8 @@ import BlockSettingsPanel from './BlockSettingsPanel';
 // Resize handles are real, visible elements (no absolute drag layer) so the
 // block plays nicely with the @hello-pangea/dnd block reordering above.
 // Keyboard-resizable: Arrow keys while a handle is focused = ±1, Shift = ±10.
+
+const clampW0to100 = (n) => Math.max(5, Math.min(100, n));
 
 const DEFAULTS = {
   align: 'center',
@@ -193,9 +196,28 @@ export default function ImageBlock({ data, onChange }) {
       }
     : {};
 
+  // Free-floating (PowerPoint-style) mode: image is absolutely positioned
+  // inside a 16:9 host, dragged to move, corners/edges to resize.
+  const isFree = wrap === 'free';
+  const fx = typeof merged.floatX === 'number' ? merged.floatX : 10;
+  const fy = typeof merged.floatY === 'number' ? merged.floatY : 10;
+  const fw = typeof merged.floatW === 'number' ? merged.floatW : 30;
+  const fh = typeof merged.floatH === 'number'
+    ? merged.floatH
+    : (aspect ? clampW0to100((fw / (aspect / (16/9)))) : 40);
+
   return (
     <div>
-      {url ? (
+      {url && isFree ? (
+        <FloatingImage
+          url={url}
+          alt={alt}
+          fit={fit}
+          x={fx} y={fy} w={fw} h={fh}
+          aspect={aspect}
+          onChange={(patch) => update(patch)}
+        />
+      ) : url ? (
         <div
           style={outerStyle}
           onPointerMove={onPointerMove}
@@ -397,6 +419,9 @@ function Controls({ merged, update, onUpload }) {
           </AlignBtn>
           <AlignBtn active={wrap === 'above'} onClick={() => update({ wrap: 'above' })} label="Above text">
             <ArrowUp className="w-3.5 h-3.5" />
+          </AlignBtn>
+          <AlignBtn active={wrap === 'free'} onClick={() => update({ wrap: 'free' })} label="Free (drag & resize anywhere)">
+            <Move className="w-3.5 h-3.5" />
           </AlignBtn>
         </div>
         {(wrap === 'behind' || wrap === 'above') && (
