@@ -36,6 +36,10 @@ export default function WorkspaceStage({
   children,
   statusBarSlot,
   pasteboardClassName = '',
+  // Optional CSS `background` value applied to the 16:9 slide canvas.
+  // Used by the Design library to preview slide background templates
+  // (solid colours, gradients, images) without touching slide content.
+  stageBackground = null,
 }) {
   const containerRef = React.useRef(null);
   const [size, setSize] = React.useState({ w: 0, h: 0 });
@@ -112,7 +116,7 @@ export default function WorkspaceStage({
           <div
             // The visible 16:9 slide. Fixed pixel size so the inner
             // editor cannot stretch it.
-            className="bg-white border border-slate-200 rounded-md shadow-[0_8px_30px_rgba(15,23,42,0.10)] overflow-hidden flex flex-col"
+            className="border border-slate-200 rounded-md shadow-[0_8px_30px_rgba(15,23,42,0.10)] overflow-hidden flex flex-col"
             style={{
               width: stageW,
               height: stageH,
@@ -120,6 +124,8 @@ export default function WorkspaceStage({
               // somehow disagrees with the rectangle, the 16:9
               // ratio is enforced.
               aspectRatio: `${STAGE_W} / ${STAGE_H}`,
+              // White by default; overridden by per-slide design background.
+              background: stageBackground || '#ffffff',
             }}
           >
             {/* Inner slide-content viewport. Scrolls if the

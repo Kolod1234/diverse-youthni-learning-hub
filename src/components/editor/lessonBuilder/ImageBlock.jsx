@@ -4,7 +4,7 @@ import { toast } from 'sonner';
 import {
   Upload, AlignLeft, AlignCenter, AlignRight, Maximize2,
   Image as ImageIcon, RotateCcw, Lock, Unlock, Percent, Ruler,
-  Replace,
+  Replace, Layers, AlignJustify, ArrowUp,
 } from 'lucide-react';
 import BlockSettingsPanel from './BlockSettingsPanel';
 
@@ -29,6 +29,13 @@ const DEFAULTS = {
   width: 100,
   lockAspect: true,
   fit: 'contain',
+  // Text-wrap mode relative to neighbouring blocks:
+  //   'inline'  — default block flow (image takes its own row)
+  //   'behind'  — image sits behind text (decorative background)
+  //   'above'   — image floats above text (overlay)
+  wrap: 'inline',
+  // Opacity used by behind/above modes to keep text readable.
+  wrapOpacity: 1,
 };
 
 export default function ImageBlock({ data, onChange }) {
@@ -36,6 +43,7 @@ export default function ImageBlock({ data, onChange }) {
   const {
     url, alt, caption, credit,
     align, widthUnit, width, aspect, lockAspect, fit,
+    wrap, wrapOpacity,
   } = merged;
 
   // STALE-CLOSURE FIX
@@ -166,17 +174,36 @@ export default function ImageBlock({ data, onChange }) {
     ? { height: `${Math.round(width / aspect)}px` }
     : {};
 
+  // Outer wrapper styling for text-wrap modes.
+  //   inline → normal block flow
+  //   behind → zero-height host; image is absolutely positioned with
+  //            negative z-index so subsequent blocks render on top
+  //   above  → zero-height host; image floats above subsequent blocks
+  const isOverlay = wrap === 'behind' || wrap === 'above';
+  const outerStyle = isOverlay
+    ? { display: 'flex', justifyContent: justify, position: 'relative', height: 0, overflow: 'visible' }
+    : { display: 'flex', justifyContent: justify };
+  const figureExtraStyle = isOverlay
+    ? {
+        position: 'absolute',
+        top: 0,
+        opacity: wrapOpacity,
+        zIndex: wrap === 'behind' ? -1 : 5,
+        pointerEvents: wrap === 'behind' ? 'none' : 'auto',
+      }
+    : {};
+
   return (
     <div>
       {url ? (
         <div
-          style={{ display: 'flex', justifyContent: justify }}
+          style={outerStyle}
           onPointerMove={onPointerMove}
           onPointerUp={onPointerUp}
         >
           <figure
             ref={wrapRef}
-            style={{ width: figureWidth, maxWidth: '100%', margin: 0, position: 'relative' }}
+            style={{ width: figureWidth, maxWidth: '100%', margin: 0, position: 'relative', ...figureExtraStyle }}
             className={`group ${drag ? 'select-none' : ''}`}
           >
             <div
@@ -313,7 +340,7 @@ function ResizeHandle({ position, onPointerDown, onKeyDown, ariaLabel }) {
 
 // ─────────────────────────────────────────────────────────────────────────────
 function Controls({ merged, update, onUpload }) {
-  const { url, alt, caption, credit, align, widthUnit, width, lockAspect, fit, aspect } = merged;
+  const { url, alt, caption, credit, align, widthUnit, width, lockAspect, fit, aspect, wrap, wrapOpacity } = merged;
   // Per-instance file input id keeps each block's Upload control independent.
   const uploadInputId = useId();
 
@@ -356,6 +383,36 @@ function Controls({ merged, update, onUpload }) {
           placeholder="Credit / source (optional)"
           className="text-xs border border-gray-200 rounded px-2 py-1"
         />
+      </div>
+
+      {/* Text wrap mode — controls how the image overlays surrounding text */}
+      <div className="flex flex-wrap items-center gap-3">
+        <span className="text-xs text-gray-600">Text wrap</span>
+        <div className="flex border border-gray-200 rounded" role="group" aria-label="Image text wrap">
+          <AlignBtn active={(wrap || 'inline') === 'inline'} onClick={() => update({ wrap: 'inline' })} label="Inline with text">
+            <AlignJustify className="w-3.5 h-3.5" />
+          </AlignBtn>
+          <AlignBtn active={wrap === 'behind'} onClick={() => update({ wrap: 'behind' })} label="Behind text">
+            <Layers className="w-3.5 h-3.5" />
+          </AlignBtn>
+          <AlignBtn active={wrap === 'above'} onClick={() => update({ wrap: 'above' })} label="Above text">
+            <ArrowUp className="w-3.5 h-3.5" />
+          </AlignBtn>
+        </div>
+        {(wrap === 'behind' || wrap === 'above') && (
+          <label className="text-xs text-gray-600 flex items-center gap-1">
+            Opacity
+            <input
+              type="range"
+              min={0.1}
+              max={1}
+              step={0.05}
+              value={typeof wrapOpacity === 'number' ? wrapOpacity : 1}
+              onChange={(e) => update({ wrapOpacity: Number(e.target.value) })}
+              className="w-24"
+            />
+          </label>
+        )}
       </div>
 
       {/* Alignment + Fit */}

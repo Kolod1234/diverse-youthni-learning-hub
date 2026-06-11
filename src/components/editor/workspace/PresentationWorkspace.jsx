@@ -15,6 +15,7 @@ import WorkspaceStage from './WorkspaceStage';
 import WorkspaceNotes from './WorkspaceNotes';
 import WorkspaceStatusBar from './WorkspaceStatusBar';
 import WorkspaceInspector from './WorkspaceInspector';
+import DesignLibraryDialog from '@/components/editor/design/DesignLibraryDialog';
 
 /**
  * PresentationWorkspace
@@ -71,6 +72,10 @@ export default function PresentationWorkspace({
   const [dirty, setDirty] = useState(false);
   const [undoState, setUndoState] = useState({ canUndo: false, canRedo: false });
   const [undoHandlers, setUndoHandlers] = useState({ undo: null, redo: null });
+  // Design library dialog — `designTab` lets ribbon buttons open the
+  // dialog with a pre-selected category (Backgrounds, Banners, etc.).
+  const [designOpen, setDesignOpen] = useState(false);
+  const [designTab, setDesignTab] = useState('backgrounds');
 
   // ---------------------------------------------------------------
   // Slide CRUD
@@ -159,6 +164,45 @@ export default function PresentationWorkspace({
   }, [onAddImage, insertBlockType]);
 
   // ---------------------------------------------------------------
+  // Design library handlers
+  //   • image       → adds an image block populated with the asset
+  //   • html        → appends raw HTML (parsed back into native blocks
+  //                   where possible, otherwise a legacy-html block)
+  //   • background  → sets `slide.background` so the renderer can paint
+  //                   the slide canvas behind the content
+  // ---------------------------------------------------------------
+  const openDesignLibrary = useCallback((tab = 'backgrounds') => {
+    setDesignTab(tab);
+    setDesignOpen(true);
+  }, []);
+
+  const insertImageAsset = useCallback(({ url, alt }) => {
+    insertBlockType('image', { url, alt: alt || '', caption: '' });
+  }, [insertBlockType]);
+
+  const insertHtmlAsset = useCallback((html) => {
+    if (!currentSlideData) return;
+    const existing = currentSlideData.content || '';
+    const existingBlocks = htmlToBlocks(existing);
+    const newBlocks = htmlToBlocks(html);
+    const merged = blocksToHtml([...existingBlocks, ...newBlocks]);
+    const updated = { ...currentSlideData, content: merged };
+    const newSlides = [...slides];
+    newSlides[currentSlide] = updated;
+    onSlidesChange(newSlides);
+    setDirty(true);
+  }, [currentSlideData, slides, currentSlide, onSlidesChange]);
+
+  const applyBackground = useCallback((value) => {
+    if (!currentSlideData) return;
+    const updated = { ...currentSlideData, background: value };
+    const newSlides = [...slides];
+    newSlides[currentSlide] = updated;
+    onSlidesChange(newSlides);
+    setDirty(true);
+  }, [currentSlideData, slides, currentSlide, onSlidesChange]);
+
+  // ---------------------------------------------------------------
   // Inline format commands — run via document.execCommand against the
   // currently-focused contentEditable surface inside the builder.
   // execCommand is deprecated but remains the most reliable way to apply
@@ -237,6 +281,16 @@ export default function PresentationWorkspace({
         onAddOneColumn={() => insertBlockType('paragraph')}
         onAddTwoColumns={() => insertBlockType('two-columns', { columnCount: 2 })}
         onAddThreeColumns={() => insertBlockType('two-columns', { columnCount: 3, middleBlocks: [] })}
+        // Design library entry points — each opens the dialog at the
+        // matching category so the tutor lands on the right palette.
+        onOpenDesignBackgrounds={() => openDesignLibrary('backgrounds')}
+        onOpenDesignBanners={() => openDesignLibrary('banners')}
+        onOpenDesignCards={() => openDesignLibrary('cards')}
+        onOpenDesignShapes={() => openDesignLibrary('shapes')}
+        onOpenDesignLines={() => openDesignLibrary('lines')}
+        onOpenDesignArrows={() => openDesignLibrary('arrows')}
+        onOpenDesignSocial={() => openDesignLibrary('social')}
+        onImportDesignImage={() => openDesignLibrary('banners')}
         onToggleNotes={() => ws.setNotesOpen((o) => !o)}
         notesOpen={ws.notesOpen}
         onToggleInspector={() => ws.setInspectorOpen((o) => !o)}
@@ -286,6 +340,7 @@ export default function PresentationWorkspace({
               Notes are shown above the status bar via the slot. */}
           <WorkspaceStage
             zoom={ws.zoom}
+            stageBackground={currentSlideData?.background || null}
             statusBarSlot={
               <>
                 {ws.notesOpen && (
@@ -369,6 +424,17 @@ export default function PresentationWorkspace({
         open={previewOpen}
         onClose={() => setPreviewOpen(false)}
         html={currentSlideData?.content || ''}
+      />
+
+      {/* Design library — backgrounds, banners, shapes, lines, arrows,
+          social icons, card styles, and image import. */}
+      <DesignLibraryDialog
+        open={designOpen}
+        initialTab={designTab}
+        onClose={() => setDesignOpen(false)}
+        onInsertImage={insertImageAsset}
+        onInsertHtml={insertHtmlAsset}
+        onApplyBackground={applyBackground}
       />
     </div>
   );

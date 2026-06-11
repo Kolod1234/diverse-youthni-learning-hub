@@ -6,6 +6,7 @@ import {
   Eye, Play, FileText, Wrench,
   Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight,
   Columns2, Columns3, Square,
+  Palette, Flag, CreditCard, Shapes, Minus, ArrowRight, Share2, Upload,
 } from 'lucide-react';
 
 /**
@@ -92,6 +93,11 @@ export default function WorkspaceRibbon(props) {
     // AI
     onOpenAI, onRewriteWithAI,
 
+    // Design library (per-category entry points)
+    onOpenDesignBackgrounds, onOpenDesignBanners, onOpenDesignCards,
+    onOpenDesignShapes, onOpenDesignLines, onOpenDesignArrows,
+    onOpenDesignSocial, onImportDesignImage,
+
     // Review
     onPreview, onPresent,
 
@@ -105,7 +111,10 @@ export default function WorkspaceRibbon(props) {
   const tabHasActions = {
     home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent || onBold || onItalic || onAddTwoColumns),
     insert:  !!(onAddImage || onAddText || onAddHeading || onAddList || onAddTable || onEditCode || onOpenTemplates || onOpenBlocks || onImportCanva || onImportFigma || onOpenAI),
-    design:  !!(onOpenTemplates || onAddImage || onPreview),
+    design:  !!(onOpenTemplates || onAddImage || onPreview ||
+                 onOpenDesignBackgrounds || onOpenDesignBanners || onOpenDesignCards ||
+                 onOpenDesignShapes || onOpenDesignLines || onOpenDesignArrows ||
+                 onOpenDesignSocial || onImportDesignImage),
     arrange: !!(onDuplicateSlide || onDeleteSlide || onUndo || onRedo),
   };
   const visibleTabs = TAB_DEFS.filter((t) => tabHasActions[t]);
@@ -235,10 +244,24 @@ export default function WorkspaceRibbon(props) {
         {tab === 'design' && (
           <>
             <Group label="Theme">
-              <Btn icon={LayoutTemplate} label="Templates" title="Apply a template" onClick={onOpenTemplates} />
+              <Btn icon={Palette} label="Backgrounds" title="Slide background templates" onClick={onOpenDesignBackgrounds} accent />
+              <Btn icon={LayoutTemplate} label="Templates" title="Apply a slide template" onClick={onOpenTemplates} />
+            </Group>
+            <Group label="Elements">
+              <Btn icon={Flag} label="Banners" title="Banners and headers" onClick={onOpenDesignBanners} />
+              <Btn icon={CreditCard} label="Cards" title="Coloured cards and callouts" onClick={onOpenDesignCards} />
+              <Btn icon={Shapes} label="Shapes" title="Circles, squares, blobs and more" onClick={onOpenDesignShapes} />
+            </Group>
+            <Group label="Lines & Arrows">
+              <Btn icon={Minus} label="Lines" title="Dividers and rules" onClick={onOpenDesignLines} />
+              <Btn icon={ArrowRight} label="Arrows" title="Arrows and connectors" onClick={onOpenDesignArrows} />
+            </Group>
+            <Group label="Social">
+              <Btn icon={Share2} label="Icons" title="Social media icons" onClick={onOpenDesignSocial} />
             </Group>
             <Group label="Media">
-              <Btn icon={ImageIcon} label="Image" title="Slide image" onClick={onAddImage} />
+              <Btn icon={ImageIcon} label="Image" title="Insert image" onClick={onAddImage} />
+              <Btn icon={Upload} label="Import" title="Import your own image or design" onClick={onImportDesignImage} />
             </Group>
             <Group label="Review">
               <Btn icon={Eye} label="Preview" title="Preview" onClick={onPreview} />
