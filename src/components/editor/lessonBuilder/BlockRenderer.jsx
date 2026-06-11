@@ -504,14 +504,28 @@ function LegacyHtmlBlock({ html, onChange }) {
         </button>
       </div>
       {edit ? (
-        <textarea
-          value={html || ''}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full font-mono text-xs bg-white border border-amber-200 rounded p-2 outline-none min-h-[120px]"
-          spellCheck={false}
-        />
+        <>
+          <p className="text-[11px] text-amber-700 mb-1">
+            Edit the HTML below. Replace the placeholder text (e.g. “Click to edit. Add the message…”) with your own copy, then click <strong>Preview</strong>.
+          </p>
+          <textarea
+            value={html || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full font-mono text-xs bg-white border border-amber-200 rounded p-2 outline-none min-h-[160px]"
+            spellCheck={false}
+            autoFocus
+          />
+        </>
       ) : (
-        <div className="bg-white rounded p-2" dangerouslySetInnerHTML={{ __html: html || '' }} />
+        <div
+          role="button"
+          tabIndex={0}
+          onClick={() => setEdit(true)}
+          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEdit(true); } }}
+          title="Click to edit the HTML source"
+          className="bg-white rounded p-2 cursor-text hover:ring-2 hover:ring-amber-300 transition-shadow"
+          dangerouslySetInnerHTML={{ __html: html || '' }}
+        />
       )}
     </div>
   );
