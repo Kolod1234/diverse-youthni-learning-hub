@@ -9,6 +9,7 @@ import ImageBlock from './ImageBlock';
 import VideoBlock from './VideoBlock';
 import TableBlock from './TableBlock';
 import TwoColumnsBlock from './TwoColumnsBlock';
+import ShapeBlock from './ShapeBlock';
 import { BlockExpandedContext } from './BlockWrapper';
 import { Upload, Image as ImageIcon } from 'lucide-react';
 
@@ -46,6 +47,7 @@ export default function BlockRenderer({ block, onChange, focused }) {
     case 'video':             return <VideoBlock data={d} onChange={onChange} />;
     case 'file':              return <FileBlock data={d} onChange={upd} />;
     case 'table':             return <TableBlock data={d} onChange={onChange} />;
+    case 'shape':             return <ShapeBlock data={d} onChange={onChange} focused={focused} />;
     case 'divider':           return <div className="py-2"><hr className="border-t border-gray-200" /></div>;
     case 'spacer':            return <SpacerBlock size={d.size} onChange={(size) => upd({ size })} />;
     case 'two-columns':       return (

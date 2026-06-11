@@ -9,7 +9,8 @@ import {
   Type, Heading1, Heading2, Heading3, List, ListOrdered, Quote,
   AlertCircle, BookOpen, Image as ImageIcon, FileText, Video,
   Download, Table as TableIcon, Minus, MoveVertical, Columns2,
-  Code, Sigma, Target, Star, HelpCircle, FileCode, FlaskConical
+  Code, Sigma, Target, Star, HelpCircle, FileCode, FlaskConical,
+  Shapes,
 } from 'lucide-react';
 
 let _id = 0;
@@ -45,6 +46,7 @@ export const BLOCK_GROUPS = [
       { type: 'image-text',        name: 'Image with Text',  icon: ImageIcon,   keywords: ['caption'] },
       { type: 'video',             name: 'Video Embed',      icon: Video,       keywords: ['youtube','vimeo'] },
       { type: 'file',              name: 'File Download',    icon: Download,    keywords: ['attachment','pdf'] },
+      { type: 'shape',             name: 'Shape',            icon: Shapes,      keywords: ['shape','circle','square','triangle','arrow','star'] },
     ],
   },
   {
@@ -122,6 +124,13 @@ export function defaultBlockData(type) {
     case 'learning-objective':return { html: '' };
     case 'key-takeaway':      return { html: '' };
     case 'knowledge-check':   return { question: '', answer: '', hint: '' };
+    case 'shape':             return {
+      // Vector shape with PowerPoint-style fill / outline controls.
+      // `shape` is the geometry key understood by ShapeBlock.SHAPE_DEFS.
+      // `fill` accepts a CSS color or the literal 'none' for outline-only shapes.
+      // `stroke` likewise — pass 'none' to remove the border.
+      shape: 'rounded', fill: '#6366f1', stroke: 'none', strokeWidth: 2,
+    };
     case 'legacy-html':       return { html: '' };
     default:                  return {};
   }

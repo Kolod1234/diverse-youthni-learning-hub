@@ -34,6 +34,7 @@ export default function DesignLibraryDialog({
   onClose,
   onInsertImage,
   onInsertHtml,
+  onInsertShape,
   onApplyBackground,
 }) {
   const [activeTab, setActiveTab] = useState(initialTab);
@@ -79,6 +80,16 @@ export default function DesignLibraryDialog({
       toast.success(`${item.name} background applied`);
     } else if (current.kind === 'html') {
       onInsertHtml?.(item.html);
+      toast.success(`${item.name} added`);
+    } else if (current.kind === 'shape') {
+      // Insert as a native shape block so the tutor gets fill / outline /
+      // no-fill controls and the shape sits cleanly on the canvas.
+      onInsertShape?.({
+        shape: item.shape,
+        fill: item.fill ?? '#6366f1',
+        stroke: item.stroke ?? 'none',
+        strokeWidth: item.strokeWidth ?? 2,
+      });
       toast.success(`${item.name} added`);
     } else {
       onInsertImage?.({ url: item.url, alt: item.name });
@@ -284,6 +295,7 @@ function AssetTile({ item, kind, onClick }) {
             dangerouslySetInnerHTML={{ __html: item.html }}
           />
         ) : (
+          // image / shape — both use the same thumbnail rendering path.
           <img src={item.url} alt={item.name} className="max-w-full max-h-full object-contain" />
         )}
       </div>

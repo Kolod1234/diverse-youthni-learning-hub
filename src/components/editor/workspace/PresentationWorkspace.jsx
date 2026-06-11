@@ -181,6 +181,12 @@ export default function PresentationWorkspace({
     insertBlockType('image', { url, alt: alt || '', caption: '' });
   }, [insertBlockType]);
 
+  // Shapes are inserted as a native vector block so the tutor gets
+  // PowerPoint-style fill / outline / no-fill controls (no image chrome).
+  const insertShapeAsset = useCallback(({ shape, fill, stroke, strokeWidth }) => {
+    insertBlockType('shape', { shape, fill, stroke, strokeWidth });
+  }, [insertBlockType]);
+
   const insertHtmlAsset = useCallback((html) => {
     if (!currentSlideData) return;
     const existing = currentSlideData.content || '';
@@ -437,6 +443,7 @@ export default function PresentationWorkspace({
         onClose={() => setDesignOpen(false)}
         onInsertImage={insertImageAsset}
         onInsertHtml={insertHtmlAsset}
+        onInsertShape={insertShapeAsset}
         onApplyBackground={applyBackground}
       />
     </div>

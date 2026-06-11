@@ -178,20 +178,29 @@ const iconAsset = (IconComponent, color, size = 160, tile = 200) => {
   );
 };
 
+// Shapes — each item carries a `shape` geometry key understood by
+// ShapeBlock. Inserted as a real `shape` block (not an image) so the
+// tutor gets fill/outline/no-fill controls and the shape sits on the
+// canvas with no surrounding card chrome.
+//
+// `url` is still provided for the dialog's thumbnail grid only.
 export const SHAPES = [
-  { id: 'shape-circle', name: 'Circle', url: iconAsset(BsCircleFill, '#6366f1') },
-  { id: 'shape-square', name: 'Square', url: iconAsset(BsSquareFill, '#0ea5e9') },
-  { id: 'shape-triangle', name: 'Triangle', url: iconAsset(BsTriangleFill, '#10b981') },
-  { id: 'shape-star', name: 'Star', url: iconAsset(BsStarFill, '#ef4444') },
-  { id: 'shape-hex', name: 'Hexagon', url: iconAsset(BsHexagonFill, '#8b5cf6') },
-  { id: 'shape-pentagon', name: 'Pentagon', url: iconAsset(BsPentagonFill, '#f59e0b') },
-  { id: 'shape-octagon', name: 'Octagon', url: iconAsset(BsOctagonFill, '#0d9488') },
-  { id: 'shape-diamond', name: 'Diamond', url: iconAsset(BsDiamondFill, '#ec4899') },
-  { id: 'shape-heart', name: 'Heart', url: iconAsset(BsHeartFill, '#e11d48') },
-  { id: 'shape-cloud', name: 'Cloud', url: iconAsset(BsCloudFill, '#64748b') },
-  { id: 'shape-bolt', name: 'Bolt', url: iconAsset(BsLightningChargeFill, '#eab308') },
-  { id: 'shape-ring', name: 'Ring outline', url: iconAsset(FaRegCircle, '#0f172a') },
-  { id: 'shape-square-outline', name: 'Square outline', url: iconAsset(FaRegSquare, '#0f172a') },
+  { id: 'shape-circle',   name: 'Circle',          shape: 'circle',   fill: '#6366f1', url: iconAsset(BsCircleFill, '#6366f1') },
+  { id: 'shape-square',   name: 'Square',          shape: 'square',   fill: '#0ea5e9', url: iconAsset(BsSquareFill, '#0ea5e9') },
+  { id: 'shape-rounded',  name: 'Rounded square',  shape: 'rounded',  fill: '#0ea5e9', url: iconAsset(BsSquareFill, '#0ea5e9') },
+  { id: 'shape-triangle', name: 'Triangle',        shape: 'triangle', fill: '#10b981', url: iconAsset(BsTriangleFill, '#10b981') },
+  { id: 'shape-star',     name: 'Star',            shape: 'star',     fill: '#ef4444', url: iconAsset(BsStarFill, '#ef4444') },
+  { id: 'shape-hex',      name: 'Hexagon',         shape: 'hexagon',  fill: '#8b5cf6', url: iconAsset(BsHexagonFill, '#8b5cf6') },
+  { id: 'shape-pentagon', name: 'Pentagon',        shape: 'pentagon', fill: '#f59e0b', url: iconAsset(BsPentagonFill, '#f59e0b') },
+  { id: 'shape-octagon',  name: 'Octagon',         shape: 'octagon',  fill: '#0d9488', url: iconAsset(BsOctagonFill, '#0d9488') },
+  { id: 'shape-diamond',  name: 'Diamond',         shape: 'diamond',  fill: '#ec4899', url: iconAsset(BsDiamondFill, '#ec4899') },
+  { id: 'shape-heart',    name: 'Heart',           shape: 'heart',    fill: '#e11d48', url: iconAsset(BsHeartFill, '#e11d48') },
+  { id: 'shape-arrow-r',  name: 'Arrow right',     shape: 'arrowR',   fill: '#0f172a', url: iconAsset(BsArrowRight, '#0f172a') },
+  { id: 'shape-arrow-l',  name: 'Arrow left',      shape: 'arrowL',   fill: '#0f172a', url: iconAsset(BsArrowLeft, '#0f172a') },
+  { id: 'shape-arrow-u',  name: 'Arrow up',        shape: 'arrowU',   fill: '#10b981', url: iconAsset(BsArrowUp, '#10b981') },
+  { id: 'shape-arrow-d',  name: 'Arrow down',      shape: 'arrowD',   fill: '#f59e0b', url: iconAsset(BsArrowDown, '#f59e0b') },
+  { id: 'shape-ring',     name: 'Ring outline',    shape: 'circle',   fill: 'none', stroke: '#0f172a', strokeWidth: 4, url: iconAsset(FaRegCircle, '#0f172a') },
+  { id: 'shape-square-outline', name: 'Square outline', shape: 'rounded', fill: 'none', stroke: '#0f172a', strokeWidth: 4, url: iconAsset(FaRegSquare, '#0f172a') },
 ];
 
 // ---------------------------------------------------------------
@@ -299,7 +308,7 @@ export const DESIGN_TABS = [
   { id: 'backgrounds', label: 'Backgrounds', items: BACKGROUNDS, kind: 'background' },
   { id: 'banners', label: 'Banners', items: BANNERS, kind: 'image' },
   { id: 'cards', label: 'Card styles', items: CARDS, kind: 'html' },
-  { id: 'shapes', label: 'Shapes', items: SHAPES, kind: 'image' },
+  { id: 'shapes', label: 'Shapes', items: SHAPES, kind: 'shape' },
   { id: 'lines', label: 'Lines', items: LINES, kind: 'html' },
   { id: 'arrows', label: 'Arrows', items: ARROWS, kind: 'image' },
   { id: 'social', label: 'Social icons', items: SOCIAL_ICONS, kind: 'image' },

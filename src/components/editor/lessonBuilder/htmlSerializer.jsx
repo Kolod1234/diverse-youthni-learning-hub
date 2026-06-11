@@ -517,6 +517,52 @@ function blockToHtml(b) {
       ].filter(Boolean).join(' ');
       return `<div ${tblAttrs} style="overflow-x:auto; margin:16px 0; -webkit-overflow-scrolling:touch;"><table style="width:100%; border-collapse:collapse; font-size:15px; min-width:480px;">${captionHtml}${headHtml}<tbody>${body}</tbody></table></div>`;
     }
+    case 'shape': {
+      // Vector shape — emit a self-contained inline SVG so the rendered
+      // lesson / preview shows the shape without any image asset request.
+      // The geometry is identified by the `shape` key (resolved by
+      // ShapeBlock.SHAPE_DEFS); we duplicate the minimal geometry data
+      // here so we don't have to import the registry into the serializer
+      // (keeps the serializer free of React-side dependencies).
+      const SHAPE_PATHS = {
+        circle:   '<ellipse cx="50" cy="50" rx="48" ry="48" />',
+        square:   '<rect x="4" y="4" width="92" height="92" />',
+        rounded:  '<rect x="4" y="4" width="92" height="92" rx="12" ry="12" />',
+        triangle: '<polygon points="50,4 96,94 4,94" />',
+        diamond:  '<polygon points="50,4 96,50 50,96 4,50" />',
+        pentagon: '<polygon points="50,4 96,38 78,94 22,94 4,38" />',
+        hexagon:  '<polygon points="25,8 75,8 96,50 75,92 25,92 4,50" />',
+        octagon:  '<polygon points="30,4 70,4 96,30 96,70 70,96 30,96 4,70 4,30" />',
+        star:     '<polygon points="50,4 61,38 96,38 68,58 79,92 50,72 21,92 32,58 4,38 39,38" />',
+        heart:    '<path d="M50,86 C20,68 6,52 6,34 C6,20 17,10 30,10 C39,10 47,15 50,22 C53,15 61,10 70,10 C83,10 94,20 94,34 C94,52 80,68 50,86 Z" />',
+        arrowR:   '<polygon points="4,38 60,38 60,20 96,50 60,80 60,62 4,62" />',
+        arrowL:   '<polygon points="96,38 40,38 40,20 4,50 40,80 40,62 96,62" />',
+        arrowU:   '<polygon points="38,96 38,40 20,40 50,4 80,40 62,40 62,96" />',
+        arrowD:   '<polygon points="38,4 38,60 20,60 50,96 80,60 62,60 62,4" />',
+      };
+      const shapeKey = SHAPE_PATHS[d.shape] ? d.shape : 'square';
+      const fill = (d.fill === 'none' || !d.fill) ? (d.fill === 'none' ? 'none' : '#6366f1') : d.fill;
+      const stroke = d.stroke === 'none' || !d.stroke ? 'none' : d.stroke;
+      const strokeWidth = Number.isFinite(Number(d.strokeWidth)) ? Number(d.strokeWidth) : 2;
+      // If both fill and stroke are 'none', the shape would be invisible.
+      // Fall back to a faint outline so the slide still has *something*
+      // visible at the shape's location.
+      const finalFill = fill;
+      const finalStroke = (finalFill === 'none' && stroke === 'none') ? '#94a3b8' : stroke;
+      const finalSW = (finalFill === 'none' && stroke === 'none') ? 1 : strokeWidth;
+      const shapeAttrs = `fill="${escapeHtml(finalFill)}" stroke="${escapeHtml(finalStroke)}" stroke-width="${finalSW}" stroke-linejoin="round"`;
+      const geom = SHAPE_PATHS[shapeKey].replace('/>', ` ${shapeAttrs}/>`);
+      const dataAttrs = [
+        `data-lesson-block="shape"`,
+        `data-shape="${escapeHtml(shapeKey)}"`,
+        `data-fill="${escapeHtml(finalFill)}"`,
+        `data-stroke="${escapeHtml(finalStroke)}"`,
+        `data-stroke-width="${finalSW}"`,
+      ].join(' ');
+      // Wrapper div fills the available frame (or sits inline in flow mode).
+      // No card chrome — that's the whole point of the dedicated shape block.
+      return `<div ${dataAttrs} style="width:100%; height:100%; min-height:60px;"><svg viewBox="0 0 100 100" preserveAspectRatio="none" width="100%" height="100%" style="display:block; overflow:visible;">${geom}</svg></div>`;
+    }
     case 'divider':
       return `<hr data-lesson-block="divider" style="border:0; border-top:1px solid #E5E7EB; margin:24px 0;" />`;
     case 'spacer':

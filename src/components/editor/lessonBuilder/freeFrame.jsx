@@ -33,6 +33,7 @@ const TYPE_SIZE = {
   'callout':              { w: 55, h: 18 },
   'definition':           { w: 50, h: 20 },
   'image':                { w: 45, h: 45 },
+  'shape':                { w: 22, h: 28 },
   'image-text':           { w: 70, h: 45 },
   'video':                { w: 55, h: 45 },
   'file':                 { w: 35, h: 10 },
