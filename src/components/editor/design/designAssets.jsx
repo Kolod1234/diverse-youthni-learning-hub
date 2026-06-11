@@ -18,13 +18,9 @@ const svg = (markup, w = 400, h = 200) =>
   )}`;
 
 // ---------------------------------------------------------------
-// Social media icons
+// React-icons imports (must live at the top of the module).
 // ---------------------------------------------------------------
-// Uses the official brand SVG paths from `react-icons/si` (Simple Icons)
-// and `react-icons/md` for the generic email icon. We render them as
-// inline-SVG data URIs so they slot straight into the existing image
-// insertion pipeline (no React component rendering needed for picker
-// thumbnails or inserted blocks).
+// Social brand icons (Simple Icons + Font Awesome + Material).
 import {
   SiFacebook,
   SiInstagram,
@@ -39,8 +35,37 @@ import {
   SiTelegram,
   SiGithub,
 } from 'react-icons/si';
-import { FaLinkedinIn } from 'react-icons/fa';
+import {
+  FaLinkedinIn,
+  FaRegCircle,
+  FaRegSquare,
+  FaLongArrowAltRight,
+  FaLongArrowAltLeft,
+  FaArrowsAltH,
+} from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
+import {
+  BsCircleFill,
+  BsSquareFill,
+  BsTriangleFill,
+  BsStarFill,
+  BsHexagonFill,
+  BsPentagonFill,
+  BsOctagonFill,
+  BsDiamondFill,
+  BsHeartFill,
+  BsCloudFill,
+  BsLightningChargeFill,
+  BsArrowRight,
+  BsArrowLeft,
+  BsArrowUp,
+  BsArrowDown,
+  BsArrowUpRight,
+  BsArrowDownRight,
+  BsArrowReturnRight,
+  BsArrowRepeat,
+} from 'react-icons/bs';
+import { TbArrowCurveRight, TbArrowWaveRightUp } from 'react-icons/tb';
 
 // React-icons exposes each icon as a React component whose first child is
 // the raw SVG <path>. Extract those paths (respecting the icon's own
@@ -96,22 +121,46 @@ export const SOCIAL_ICONS = [
 ];
 
 // ---------------------------------------------------------------
-// Banners — high-quality stock photo banners from Unsplash.
-// Sized as 1200×240 panoramic crops so they slot into the existing
-// image-block insertion pipeline.
+// Banners (full-width images)
 // ---------------------------------------------------------------
-const unsplashBanner = (id) =>
-  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1600&h=320&q=80`;
+const banner = (markup) => svg(markup, 1200, 240);
 
 export const BANNERS = [
-  { id: 'banner-sunrise', name: 'Sunrise', url: unsplashBanner('photo-1506905925346-21bda4d32df4') },
-  { id: 'banner-ocean', name: 'Ocean', url: unsplashBanner('photo-1507525428034-b723cf961d3e') },
-  { id: 'banner-forest', name: 'Forest', url: unsplashBanner('photo-1448375240586-882707db888b') },
-  { id: 'banner-mountains', name: 'Mountains', url: unsplashBanner('photo-1464822759023-fed622ff2c3b') },
-  { id: 'banner-city', name: 'City skyline', url: unsplashBanner('photo-1480714378408-67cf0d13bc1b') },
-  { id: 'banner-desk', name: 'Workspace', url: unsplashBanner('photo-1499951360447-b19be8fe80f5') },
-  { id: 'banner-abstract', name: 'Abstract gradient', url: unsplashBanner('photo-1557682250-33bd709cbe85') },
-  { id: 'banner-paper', name: 'Paper texture', url: unsplashBanner('photo-1518655048521-f130df041f66') },
+  {
+    id: 'banner-sunrise',
+    name: 'Sunrise gradient',
+    url: banner(
+      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#ef4444"/></linearGradient></defs>` +
+        `<rect width="1200" height="240" fill="url(#g)"/>` +
+        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
+    ),
+  },
+  {
+    id: 'banner-ocean',
+    name: 'Ocean gradient',
+    url: banner(
+      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>` +
+        `<rect width="1200" height="240" fill="url(#g)"/>` +
+        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
+    ),
+  },
+  {
+    id: 'banner-forest',
+    name: 'Forest gradient',
+    url: banner(
+      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#0f766e"/></linearGradient></defs>` +
+        `<rect width="1200" height="240" fill="url(#g)"/>` +
+        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
+    ),
+  },
+  {
+    id: 'banner-mono',
+    name: 'Monochrome',
+    url: banner(
+      `<rect width="1200" height="240" fill="#0f172a"/>` +
+        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
+    ),
+  },
 ];
 
 // ---------------------------------------------------------------
@@ -119,21 +168,6 @@ export const BANNERS = [
 // ---------------------------------------------------------------
 // Wraps each icon in a coloured tile so it slots into the existing
 // image-block pipeline at 200×200px.
-import {
-  BsCircleFill,
-  BsSquareFill,
-  BsTriangleFill,
-  BsStarFill,
-  BsHexagonFill,
-  BsPentagonFill,
-  BsOctagonFill,
-  BsDiamondFill,
-  BsHeartFill,
-  BsCloudFill,
-  BsLightningChargeFill,
-} from 'react-icons/bs';
-import { FaRegCircle, FaRegSquare } from 'react-icons/fa';
-
 const iconAsset = (IconComponent, color, size = 160, tile = 200) => {
   const { viewBox, paths } = extractIcon(IconComponent, color);
   const offset = (tile - size) / 2;
@@ -196,27 +230,14 @@ export const LINES = [
   },
 ];
 
-// ---------------------------------------------------------------
-// Arrows — real React icons (Font Awesome + Tabler)
-// ---------------------------------------------------------------
-import {
-  FaLongArrowAltRight,
-  FaLongArrowAltLeft,
-  FaArrowsAltH,
-} from 'react-icons/fa';
-import {
-  TbArrowCurveRight,
-  TbArrowWaveRightUp,
-  TbArrowBigRight,
-  TbArrowBigLeft,
-} from 'react-icons/tb';
-
+// Arrows — real React icons rendered into a wide 240×120 tile so the
+// thumbnail reads as a directional arrow rather than a tiny glyph.
 const arrowAsset = (IconComponent, color) => {
   const { viewBox, paths } = extractIcon(IconComponent, color);
   return svg(
-    `<svg x="20" y="10" width="200" height="60" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${paths}</svg>`,
+    `<svg x="40" y="20" width="160" height="80" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${paths}</svg>`,
     240,
-    80
+    120
   );
 };
 
@@ -224,10 +245,16 @@ export const ARROWS = [
   { id: 'arrow-right', name: 'Arrow right', url: arrowAsset(FaLongArrowAltRight, '#0f172a') },
   { id: 'arrow-left', name: 'Arrow left', url: arrowAsset(FaLongArrowAltLeft, '#0f172a') },
   { id: 'arrow-double', name: 'Double arrow', url: arrowAsset(FaArrowsAltH, '#ef4444') },
-  { id: 'arrow-big-right', name: 'Bold arrow right', url: arrowAsset(TbArrowBigRight, '#6366f1') },
-  { id: 'arrow-big-left', name: 'Bold arrow left', url: arrowAsset(TbArrowBigLeft, '#6366f1') },
-  { id: 'arrow-curve', name: 'Curved arrow', url: arrowAsset(TbArrowCurveRight, '#0ea5e9') },
-  { id: 'arrow-wave', name: 'Wave arrow', url: arrowAsset(TbArrowWaveRightUp, '#10b981') },
+  { id: 'arrow-curve', name: 'Curved arrow', url: arrowAsset(TbArrowCurveRight, '#6366f1') },
+  { id: 'arrow-wave', name: 'Wave arrow', url: arrowAsset(TbArrowWaveRightUp, '#0ea5e9') },
+  { id: 'arrow-return', name: 'Return arrow', url: arrowAsset(BsArrowReturnRight, '#7c3aed') },
+  { id: 'arrow-up', name: 'Arrow up', url: arrowAsset(BsArrowUp, '#10b981') },
+  { id: 'arrow-down', name: 'Arrow down', url: arrowAsset(BsArrowDown, '#f59e0b') },
+  { id: 'arrow-up-right', name: 'Up-right', url: arrowAsset(BsArrowUpRight, '#0d9488') },
+  { id: 'arrow-down-right', name: 'Down-right', url: arrowAsset(BsArrowDownRight, '#ec4899') },
+  { id: 'arrow-repeat', name: 'Repeat', url: arrowAsset(BsArrowRepeat, '#475569') },
+  { id: 'arrow-simple-right', name: 'Simple right', url: arrowAsset(BsArrowRight, '#0f172a') },
+  { id: 'arrow-simple-left', name: 'Simple left', url: arrowAsset(BsArrowLeft, '#0f172a') },
 ];
 
 // ---------------------------------------------------------------
