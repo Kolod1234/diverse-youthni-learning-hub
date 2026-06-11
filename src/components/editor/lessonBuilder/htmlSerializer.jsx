@@ -539,24 +539,60 @@ function blockToHtml(b) {
         arrowL:   '<polygon points="96,38 40,38 40,20 4,50 40,80 40,62 96,62" />',
         arrowU:   '<polygon points="38,96 38,40 20,40 50,4 80,40 62,40 62,96" />',
         arrowD:   '<polygon points="38,4 38,60 20,60 50,96 80,60 62,60 62,4" />',
+        // ─── Stroke-only shapes (lines + line-style arrows) ─────────
+        // MUST stay in sync with STROKE_ONLY_SHAPES in ShapeBlock.jsx,
+        // otherwise lines round-trip back as a filled square (the bug
+        // reported by the tutor: line inserted → reload → big rectangle).
+        line:            '<line x1="4" y1="50" x2="96" y2="50" stroke-linecap="round" />',
+        lineDashed:      '<line x1="4" y1="50" x2="96" y2="50" stroke-linecap="round" stroke-dasharray="6,4" />',
+        lineDotted:      '<line x1="4" y1="50" x2="96" y2="50" stroke-linecap="round" stroke-dasharray="1,4" />',
+        arrowLineR:      '<path d="M4 50 L88 50 M70 32 L92 50 L70 68" stroke-linecap="round" stroke-linejoin="round" />',
+        arrowLineL:      '<path d="M96 50 L12 50 M30 32 L8 50 L30 68" stroke-linecap="round" stroke-linejoin="round" />',
+        arrowLineDouble: '<path d="M12 50 L88 50 M30 32 L8 50 L30 68 M70 32 L92 50 L70 68" stroke-linecap="round" stroke-linejoin="round" />',
       };
+      const STROKE_ONLY = new Set([
+        'line', 'lineDashed', 'lineDotted',
+        'arrowLineR', 'arrowLineL', 'arrowLineDouble',
+      ]);
       const shapeKey = SHAPE_PATHS[d.shape] ? d.shape : 'square';
-      // Honour the `noFill` toggle from ShapeBlock — when true, the shape
-      // renders as outline only regardless of the stored fill value.
-      const noFill = d.noFill === true || d.fill === 'none';
-      const fillColor = d.fill && d.fill !== 'none' ? d.fill : '#6366f1';
-      const stroke = !d.stroke || d.stroke === 'none' ? 'none' : d.stroke;
-      const strokeWidth = Number.isFinite(Number(d.strokeWidth)) ? Number(d.strokeWidth) : 2;
-      const finalFill = noFill ? 'none' : fillColor;
-      // Avoid an invisible shape when the user has both no fill and no outline.
-      const finalStroke = (finalFill === 'none' && stroke === 'none') ? '#94a3b8' : stroke;
-      const finalSW = (finalFill === 'none' && stroke === 'none') ? 1 : strokeWidth;
-      const shapeAttrs = `fill="${escapeHtml(finalFill)}" stroke="${escapeHtml(finalStroke)}" stroke-width="${finalSW}" stroke-linejoin="round"`;
+      const isStrokeOnly = STROKE_ONLY.has(shapeKey);
+
+      // For stroke-only shapes the picker's "Line colour" is stored in
+      // `fill`, so we promote it to the SVG stroke and force fill="none".
+      // Thickness comes straight from `strokeWidth`.
+      let finalFill;
+      let finalStroke;
+      let finalSW;
+      let noFill;
+
+      if (isStrokeOnly) {
+        noFill = true;
+        finalFill = 'none';
+        finalStroke = d.fill && d.fill !== 'none' ? d.fill : '#0f172a';
+        finalSW = Math.max(0.5, Number(d.strokeWidth) || 3);
+      } else {
+        noFill = d.noFill === true || d.fill === 'none';
+        const fillColor = d.fill && d.fill !== 'none' ? d.fill : '#6366f1';
+        const stroke = !d.stroke || d.stroke === 'none' ? 'none' : d.stroke;
+        const strokeWidth = Number.isFinite(Number(d.strokeWidth)) ? Number(d.strokeWidth) : 2;
+        finalFill = noFill ? 'none' : fillColor;
+        // Avoid an invisible shape when the user has both no fill and no outline.
+        finalStroke = (finalFill === 'none' && stroke === 'none') ? '#94a3b8' : stroke;
+        finalSW = (finalFill === 'none' && stroke === 'none') ? 1 : strokeWidth;
+      }
+
+      const shapeAttrs = `fill="${escapeHtml(finalFill)}" stroke="${escapeHtml(finalStroke)}" stroke-width="${finalSW}" stroke-linejoin="round"${
+        isStrokeOnly ? ' vector-effect="non-scaling-stroke"' : ''
+      }`;
       const geom = SHAPE_PATHS[shapeKey].replace('/>', ` ${shapeAttrs}/>`);
       const dataAttrs = [
         `data-lesson-block="shape"`,
         `data-shape="${escapeHtml(shapeKey)}"`,
-        `data-fill="${escapeHtml(fillColor)}"`,
+        // For stroke-only shapes, persist the line colour on data-fill so
+        // the editor round-trips it back into the colour picker. The SVG
+        // itself paints it as the stroke, but the editor model stays in
+        // sync with the controls.
+        `data-fill="${escapeHtml(isStrokeOnly ? finalStroke : (d.fill && d.fill !== 'none' ? d.fill : '#6366f1'))}"`,
         `data-no-fill="${noFill ? '1' : '0'}"`,
         `data-stroke="${escapeHtml(finalStroke)}"`,
         `data-stroke-width="${finalSW}"`,
