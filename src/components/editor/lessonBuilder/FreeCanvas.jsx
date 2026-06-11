@@ -55,6 +55,15 @@ export default function FreeCanvas({
   // Marquee selection state (drag-rectangle on empty canvas).
   const [marquee, setMarquee] = useState(null); // { x0,y0,x1,y1 } in % of host
 
+  // Alignment guides drawn while dragging a block. Populated by the
+  // active FreeBlock via the onSnapGuides callback. Each entry is
+  // { axis: 'x'|'y', value: number (%), span: [from, to] (%) }.
+  const [snapGuides, setSnapGuides] = useState([]);
+  // Keep latest blocks in a ref so the snap context lookup doesn't
+  // need to re-bind a stale closure on every render of FreeBlock.
+  const blocksRef = useRef(blocks);
+  blocksRef.current = blocks;
+
   // Deselect when clicking blank canvas (no drag yet).
   const onBackgroundDown = (e) => {
     if (e.target !== hostRef.current) return;
@@ -379,6 +388,15 @@ export default function FreeCanvas({
             onBringToFront={() => bringToFront(idx)}
             onSendToBack={() => sendToBack(idx)}
             hostRectRef={hostRectRef}
+            getSnapContext={() => ({
+              // Snap against every OTHER block on the slide. Group
+              // members are excluded so a group drag doesn't try to
+              // snap to its own members.
+              otherFrames: blocksRef.current
+                .filter((bb) => bb.id !== b.id && !(isGroupMember && selectedIds.has(bb.id)))
+                .map((bb) => getFrame(bb)),
+            })}
+            onSnapGuides={setSnapGuides}
           >
             <BlockRenderer
               block={b}
@@ -399,6 +417,41 @@ export default function FreeCanvas({
           onDelete={deleteSelected}
         />
       )}
+
+      {/* Snap alignment guides — drawn while a block is being dragged.
+          A vertical guide (axis 'x') is fixed at `value` on the X axis
+          and spans `[span[0], span[1]]` on the Y axis. Horizontal
+          guides are the mirror. Pointer-events stay off so the lines
+          never interfere with the active drag. */}
+      {snapGuides.map((g, i) => g.axis === 'x' ? (
+        <div
+          key={`sg-${i}`}
+          style={{
+            position: 'absolute',
+            left: `${g.value}%`,
+            top: `${Math.min(g.span[0], g.span[1])}%`,
+            height: `${Math.abs(g.span[1] - g.span[0])}%`,
+            width: 0,
+            borderLeft: '1px solid #ec4899',
+            pointerEvents: 'none',
+            zIndex: 9998,
+          }}
+        />
+      ) : (
+        <div
+          key={`sg-${i}`}
+          style={{
+            position: 'absolute',
+            top: `${g.value}%`,
+            left: `${Math.min(g.span[0], g.span[1])}%`,
+            width: `${Math.abs(g.span[1] - g.span[0])}%`,
+            height: 0,
+            borderTop: '1px solid #ec4899',
+            pointerEvents: 'none',
+            zIndex: 9998,
+          }}
+        />
+      ))}
 
       {/* Marquee rectangle while drag-selecting */}
       {marqueeRect && (

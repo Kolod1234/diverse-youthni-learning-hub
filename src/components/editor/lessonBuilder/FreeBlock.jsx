@@ -1,5 +1,6 @@
 import React, { useRef, useState, useCallback, useEffect } from 'react';
 import { RotateCw, Copy, Trash2, ChevronUp, ChevronDown, BringToFront, SendToBack } from 'lucide-react';
+import { computeSnap } from './useSnap';
 
 // FreeBlock
 // ---------------------------------------------------------------
@@ -31,6 +32,14 @@ export default function FreeBlock({
   // Used while a group selection overlay owns the transforms instead.
   suppressChrome = false,
   hostRectRef,    // ref to the canvas DOMRect getter
+  // Optional snap integration. `getSnapContext()` should return
+  // { otherFrames } — the frames of every block on the slide except
+  // this one — so the move handler can align edges/centres. `onSnapGuides`
+  // receives the current guide array (or [] when no snap is active) so
+  // the canvas can draw alignment lines while dragging. Both are
+  // optional; without them the block moves freely.
+  getSnapContext,
+  onSnapGuides,
   children,
 }) {
   const dragRef = useRef(null);
@@ -38,6 +47,12 @@ export default function FreeBlock({
   // reads the latest closure without having to re-bind listeners.
   const onChangeRef = useRef(onChange);
   onChangeRef.current = onChange;
+  // Same pattern for the snap callbacks — the move handler is bound
+  // once on mount and must always see the latest props.
+  const getSnapContextRef = useRef(getSnapContext);
+  getSnapContextRef.current = getSnapContext;
+  const onSnapGuidesRef = useRef(onSnapGuides);
+  onSnapGuidesRef.current = onSnapGuides;
 
   // ── Edit mode (PowerPoint / Canva style) ─────────────────────────
   // Single click  = select & drag the frame  (content is locked, drag wins)
@@ -61,10 +76,29 @@ export default function FreeBlock({
       const s = d.start;
 
       if (d.mode === 'move') {
-        onChangeRef.current({
-          x: clamp(s.x + dxPct, 0, 100 - s.w),
-          y: clamp(s.y + dyPct, 0, 100 - s.h),
-        });
+        let nx = clamp(s.x + dxPct, 0, 100 - s.w);
+        let ny = clamp(s.y + dyPct, 0, 100 - s.h);
+
+        // Snap to other blocks + canvas edges/centre, unless the user
+        // is holding Alt (the standard "free move" override across
+        // design tools). Skip when no snap context was wired up.
+        const ctx = getSnapContextRef.current?.();
+        if (ctx && !e.altKey) {
+          const { x: sx, y: sy, guides } = computeSnap({
+            frame: { x: nx, y: ny, w: s.w, h: s.h },
+            otherFrames: ctx.otherFrames || [],
+            hostWidthPx: d.host.width,
+            hostHeightPx: d.host.height,
+            thresholdPx: 6,
+          });
+          nx = clamp(sx, 0, 100 - s.w);
+          ny = clamp(sy, 0, 100 - s.h);
+          onSnapGuidesRef.current?.(guides);
+        } else {
+          onSnapGuidesRef.current?.([]);
+        }
+
+        onChangeRef.current({ x: nx, y: ny });
         return;
       }
 
@@ -94,7 +128,14 @@ export default function FreeBlock({
       }
       onChangeRef.current({ x: nx, y: ny, w: nw, h: nh });
     };
-    const onUp = () => { dragRef.current = null; };
+    const onUp = () => {
+      // Clear any active snap guides when the drag ends so the
+      // alignment lines disappear with the cursor release.
+      if (dragRef.current?.mode === 'move') {
+        onSnapGuidesRef.current?.([]);
+      }
+      dragRef.current = null;
+    };
     window.addEventListener('pointermove', onMove);
     window.addEventListener('pointerup', onUp);
     window.addEventListener('pointercancel', onUp);
