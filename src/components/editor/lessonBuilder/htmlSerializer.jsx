@@ -135,8 +135,62 @@ function sanitiseInline(html) {
 }
 
 // ── blocksToHtml ───────────────────────────────────────────────────────────
+// If ANY block carries a `frame`, the slide is rendered as a 16:9
+// free-canvas stage with absolutely-positioned, rotatable blocks. The
+// LessonPlayer and PreviewModal pick up this layout via the standalone
+// CSS embedded in the wrapper, so the editor / player render identically.
+// Slides with NO frames (legacy flow content) keep their original
+// document flow output untouched.
 export function blocksToHtml(blocks = []) {
+  const anyFramed = blocks.some(b => b && b.frame);
+  if (anyFramed) return blocksToFreeStageHtml(blocks);
   return blocks.map(blockToHtml).filter(Boolean).join('\n');
+}
+
+function clampFramePct(f) {
+  const num = (v, d) => Number.isFinite(Number(v)) ? Number(v) : d;
+  let w = num(f?.w, 50); let h = num(f?.h, 20);
+  w = Math.max(5, Math.min(100, w));
+  h = Math.max(5, Math.min(100, h));
+  let x = num(f?.x, 0); let y = num(f?.y, 0);
+  x = Math.max(0, Math.min(100 - w, x));
+  y = Math.max(0, Math.min(100 - h, y));
+  return { x, y, w, h, r: num(f?.r, 0), z: num(f?.z, 1) };
+}
+
+function blocksToFreeStageHtml(blocks) {
+  const css = `<style>
+    .lb-stage{position:relative;width:100%;aspect-ratio:16/9;overflow:hidden;}
+    .lb-stage .lb-frame{position:absolute;box-sizing:border-box;overflow:hidden;transform-origin:center center;}
+    .lb-stage .lb-frame > .lb-frame-inner{width:100%;height:100%;overflow:auto;}
+    .lb-stage .lb-frame > .lb-frame-inner > *{margin:0;}
+  </style>`;
+  const items = blocks.map((b) => {
+    const inner = blockToHtml(b);
+    if (!inner) return '';
+    const f = clampFramePct(b.frame);
+    const styles = [
+      `left:${f.x}%`,
+      `top:${f.y}%`,
+      `width:${f.w}%`,
+      `height:${f.h}%`,
+      f.r ? `transform:rotate(${f.r}deg)` : '',
+      `z-index:${f.z}`,
+    ].filter(Boolean).join(';');
+    const attrs = [
+      `class="lb-frame"`,
+      `data-lb-frame="1"`,
+      `data-fx="${f.x}"`,
+      `data-fy="${f.y}"`,
+      `data-fw="${f.w}"`,
+      `data-fh="${f.h}"`,
+      `data-fr="${f.r}"`,
+      `data-fz="${f.z}"`,
+      `style="${styles}"`,
+    ].join(' ');
+    return `<div ${attrs}><div class="lb-frame-inner">${inner}</div></div>`;
+  }).filter(Boolean).join('');
+  return `${css}<div class="lb-stage" data-lb-stage="free">${items}</div>`;
 }
 
 function blockToHtml(b) {
@@ -668,6 +722,37 @@ export function htmlToBlocks(html) {
 
   const wrap = document.createElement('div');
   wrap.innerHTML = trimmed;
+
+  // Free-canvas stage round-trip: when the slide HTML carries a
+  // `<div class="lb-stage" data-lb-stage="free">…</div>` wrapper, parse
+  // each .lb-frame back into a native block with a `frame` property,
+  // restoring positions/rotation/z-order exactly.
+  const stage = wrap.querySelector('[data-lb-stage="free"]');
+  if (stage) {
+    const out = [];
+    const frames = Array.from(stage.querySelectorAll(':scope > [data-lb-frame="1"]'));
+    frames.forEach((frameEl) => {
+      const inner = frameEl.querySelector(':scope > .lb-frame-inner');
+      const innerHtml = inner ? inner.innerHTML : frameEl.innerHTML;
+      const parsed = htmlToBlocks(innerHtml);
+      const block = parsed[0] || createBlock('legacy-html', { html: innerHtml });
+      const num = (k, d) => {
+        const v = parseFloat(frameEl.getAttribute(k));
+        return Number.isFinite(v) ? v : d;
+      };
+      block.frame = {
+        x: num('data-fx', 8),
+        y: num('data-fy', 8),
+        w: num('data-fw', 50),
+        h: num('data-fh', 20),
+        r: num('data-fr', 0),
+        z: num('data-fz', out.length + 1),
+      };
+      out.push(block);
+    });
+    return out;
+  }
+
   const children = Array.from(wrap.children);
 
   // No real top-level structure → wrap raw text as a paragraph.

@@ -1,17 +1,16 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { DragDropContext, Droppable, Draggable } from '@hello-pangea/dnd';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Undo2, Redo2, Save, Eye, Plus, Check, Loader2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
-import BlockRenderer from './BlockRenderer';
-import BlockWrapper from './BlockWrapper';
 import SlashMenu from './SlashMenu';
 import PreviewModal from './PreviewModal';
+import FreeCanvas from './FreeCanvas';
 import { blocksToHtml, htmlToBlocks } from './htmlSerializer';
 import { createBlock, BLOCK_GROUPS } from './blockTypes';
+import { migrateFlowToFrames, nextCascadePosition, clampFrame } from './freeFrame';
 import useUndoRedo from './useUndoRedo';
 import useUnsavedChangesWarning from './useUnsavedChangesWarning';
 import { injectFontStylesheet } from './fontFamilies';
@@ -42,10 +41,17 @@ export default function VisualLessonBuilder({
   useEffect(() => { injectFontStylesheet(); }, []);
 
   // Derive initial blocks from the incoming slide content exactly once.
-  const initialBlocks = useMemo(() => htmlToBlocks(slide?.content || ''), [slide?.id || slide?.order]);
+  // Legacy flow slides (no frames) are migrated to stacked frames on load
+  // so the free canvas isn't empty for previously-authored content.
+  const initialBlocks = useMemo(
+    () => migrateFlowToFrames(htmlToBlocks(slide?.content || '')),
+    [slide?.id || slide?.order]
+  );
   const { value: blocks, setValue: setBlocks, undo, redo, reset, canUndo, canRedo } = useUndoRedo(initialBlocks);
 
-  const [focusedId, setFocusedId] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const focusedId = selectedId;
+  const setFocusedId = setSelectedId;
   // Ephemeral accordion state: which block has its formatting / advanced
   // controls expanded. Never serialised. Only one block expanded at a time.
   const [expandedId, setExpandedId] = useState(null);
@@ -59,6 +65,10 @@ export default function VisualLessonBuilder({
   const [saving, setSaving] = useState(false);
   const [persistError, setPersistError] = useState(null);
   const lastSerialised = useRef(slide?.content || '');
+  // Holds an {x,y} percentage if the user double-clicked an empty canvas
+  // area to insert a block — used by the slash menu to place the new
+  // block exactly where the user clicked.
+  const pendingInsertRef = useRef(null);
   const slideRef = useRef(slide);
   slideRef.current = slide;
   const onChangeRef = useRef(onChange);
@@ -68,12 +78,13 @@ export default function VisualLessonBuilder({
 
   // Sync into builder when the parent switches to a different slide.
   useEffect(() => {
-    const next = htmlToBlocks(slide?.content || '');
+    const next = migrateFlowToFrames(htmlToBlocks(slide?.content || ''));
     reset(next);
     lastSerialised.current = slide?.content || '';
     setPersistedAt(null);
     setPersistError(null);
     setExpandedId(null);
+    setSelectedId(null);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [slide?.id, slide?.order]);
 
@@ -86,7 +97,7 @@ export default function VisualLessonBuilder({
   useEffect(() => {
     const incoming = slide?.content || '';
     if (incoming === lastSerialised.current) return; // our own echo — ignore
-    const next = htmlToBlocks(incoming);
+    const next = migrateFlowToFrames(htmlToBlocks(incoming));
     reset(next);
     lastSerialised.current = incoming;
     setExpandedId(null);
@@ -135,49 +146,17 @@ export default function VisualLessonBuilder({
   };
   const updateBlockData = (idx, data) => updateBlock(idx, { data });
 
-  const addBlockAt = (idx, type) => {
+  // Append a new block at a cascading position on the free canvas, or at
+  // a specific (xPct,yPct) if the caller specifies one (double-click insert).
+  const addBlock = (type, atPct) => {
     setBlocks((prev) => {
-      const next = [...prev];
       const block = createBlock(type);
-      next.splice(idx, 0, block);
-      // focus the new block on next render
+      const frame = atPct
+        ? clampFrame({ ...nextCascadePosition(prev, type), x: atPct.x, y: atPct.y })
+        : nextCascadePosition(prev, type);
+      block.frame = frame;
+      const next = [...prev, block];
       setTimeout(() => setFocusedId(block.id), 0);
-      return next;
-    }, { immediate: true });
-  };
-
-  const duplicateBlock = (idx) => {
-    setBlocks((prev) => {
-      const next = [...prev];
-      const clone = { ...next[idx], id: createBlock('paragraph').id, data: JSON.parse(JSON.stringify(next[idx].data || {})) };
-      next.splice(idx + 1, 0, clone);
-      return next;
-    }, { immediate: true });
-    toast.success('Block duplicated');
-  };
-
-  const deleteBlock = (idx) => {
-    setBlocks((prev) => prev.filter((_, i) => i !== idx), { immediate: true });
-  };
-
-  const moveBlock = (idx, delta) => {
-    setBlocks((prev) => {
-      const target = idx + delta;
-      if (target < 0 || target >= prev.length) return prev;
-      const next = [...prev];
-      [next[idx], next[target]] = [next[target], next[idx]];
-      return next;
-    }, { immediate: true });
-  };
-
-  const toggleCollapse = (idx) => updateBlock(idx, { collapsed: !blocks[idx]?.collapsed }, { immediate: true });
-
-  const onDragEnd = (result) => {
-    if (!result.destination) return;
-    setBlocks((prev) => {
-      const next = [...prev];
-      const [item] = next.splice(result.source.index, 1);
-      next.splice(result.destination.index, 0, item);
       return next;
     }, { immediate: true });
   };
@@ -292,74 +271,49 @@ export default function VisualLessonBuilder({
         </div>
       )}
 
-      {/* Blocks */}
-      <div className={chromeless ? 'px-4 sm:px-8 py-3' : 'px-6 py-4'}>
+      {/* Free canvas — absolute-positioned, rotatable, resizable blocks */}
+      <div className={chromeless ? 'px-2 sm:px-4 py-2 relative' : 'px-4 py-3 relative'}>
         {blocks.length === 0 ? (
-          <EmptyState onPick={(type) => addBlockAt(0, type)} />
+          <EmptyState onPick={(type) => addBlock(type)} />
         ) : (
-          <DragDropContext onDragEnd={onDragEnd}>
-            <Droppable droppableId="builder-blocks">
-              {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef} className={chromeless ? 'space-y-2 pl-10 pr-10' : 'space-y-2 pl-10'}>
-                  {blocks.map((block, idx) => (
-                    <Draggable key={block.id} draggableId={block.id} index={idx}>
-                      {(prov, snap) => (
-                        <div ref={prov.innerRef} {...prov.draggableProps}>
-                          <BlockWrapper
-                            index={idx}
-                            block={block}
-                            dragHandleProps={prov.dragHandleProps}
-                            isDragging={snap.isDragging}
-                            focused={focusedId === block.id}
-                            onFocus={() => setFocusedId(block.id)}
-                            onDuplicate={() => duplicateBlock(idx)}
-                            onDelete={() => deleteBlock(idx)}
-                            onMove={(delta) => moveBlock(idx, delta)}
-                            onToggleCollapse={() => toggleCollapse(idx)}
-                            onAddBelow={(type) => addBlockAt(idx + 1, type)}
-                            expanded={expandedId === block.id}
-                            onToggleExpand={() => setExpandedId((cur) => cur === block.id ? null : block.id)}
-                            onRequestExpand={() => setExpandedId(block.id)}
-                          >
-                            <BlockRenderer
-                              block={block}
-                              focused={focusedId === block.id}
-                              onChange={(data) => updateBlockData(idx, data)}
-                            />
-                          </BlockWrapper>
-                        </div>
-                      )}
-                    </Draggable>
-                  ))}
-                  {provided.placeholder}
-                </div>
-              )}
-            </Droppable>
-          </DragDropContext>
+          <FreeCanvas
+            blocks={blocks}
+            selectedId={selectedId}
+            onSelectId={setSelectedId}
+            onChangeBlocks={(updater, opts) => setBlocks(updater, opts)}
+            onAddBlockHere={(x, y) => {
+              // Open the add-block menu and remember the click point so the
+              // next picked block lands where the user double-clicked.
+              pendingInsertRef.current = { x, y };
+              setSlashOpen(true);
+            }}
+          />
         )}
 
-        {/* Add block at end */}
-        {blocks.length > 0 && (
-          <div className={chromeless ? 'pl-10 pr-10 mt-3 relative' : 'pl-10 mt-3 relative'}>
-            <Button
-              variant="outline"
-              size="sm"
-              onClick={() => setSlashOpen((o) => !o)}
-              className="gap-1.5 text-gray-600"
-            >
-              <Plus className="w-4 h-4" /> Add block
-            </Button>
-            {slashOpen && (
-              <div className="absolute left-10 top-full mt-1 z-20">
-                <SlashMenu
-                  open
-                  onClose={() => setSlashOpen(false)}
-                  onPick={(t) => { addBlockAt(blocks.length, t); setSlashOpen(false); }}
-                />
-              </div>
-            )}
-          </div>
-        )}
+        {/* Floating "Add block" button (always visible) */}
+        <div className="mt-3 relative">
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => { pendingInsertRef.current = null; setSlashOpen((o) => !o); }}
+            className="gap-1.5 text-gray-600"
+          >
+            <Plus className="w-4 h-4" /> Add block
+          </Button>
+          {slashOpen && (
+            <div className="absolute left-0 top-full mt-1 z-20">
+              <SlashMenu
+                open
+                onClose={() => setSlashOpen(false)}
+                onPick={(t) => {
+                  addBlock(t, pendingInsertRef.current);
+                  pendingInsertRef.current = null;
+                  setSlashOpen(false);
+                }}
+              />
+            </div>
+          )}
+        </div>
       </div>
 
       <PreviewModal open={previewOpen} onClose={() => setPreviewOpen(false)} html={blocksToHtml(blocks)} />
