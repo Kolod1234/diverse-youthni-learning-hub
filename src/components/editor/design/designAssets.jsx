@@ -43,33 +43,40 @@ import { FaLinkedinIn } from 'react-icons/fa';
 import { MdEmail } from 'react-icons/md';
 
 // React-icons exposes each icon as a React component whose first child is
-// the raw SVG <path>. Extract that path so we can wrap it in our own
-// branded rounded-square tile.
-const extractPath = (IconComponent) => {
-  const node = IconComponent({}).props.children;
-  // Some icons have multiple paths — normalise to array.
+// the raw SVG <path>. Extract those paths (respecting the icon's own
+// viewBox) so we can wrap them in our own branded rounded-square tile.
+const extractIcon = (IconComponent) => {
+  const rendered = IconComponent({});
+  const viewBox = rendered.props?.attr?.viewBox || '0 0 24 24';
+  const node = rendered.props.children;
   const children = Array.isArray(node) ? node : [node];
-  return children
+  const paths = children
     .map((child) => {
       if (!child || !child.props) return '';
-      const { d, fillRule, clipRule } = child.props;
+      const { d, fill, fillRule, clipRule } = child.props;
       if (!d) return '';
+      // Skip transparent placeholder paths (Material icons include one).
+      if (fill === 'none') return '';
       const attrs = [`d="${d}"`];
       if (fillRule) attrs.push(`fill-rule="${fillRule}"`);
       if (clipRule) attrs.push(`clip-rule="${clipRule}"`);
       return `<path ${attrs.join(' ')} fill="#fff"/>`;
     })
     .join('');
+  return { viewBox, paths };
 };
 
-const brandIcon = (IconComponent, bg) =>
-  svg(
+const brandIcon = (IconComponent, bg) => {
+  const { viewBox, paths } = extractIcon(IconComponent);
+  // Render a nested SVG so the icon's native viewBox is honoured and it
+  // is centred at ~64px inside the 120px branded tile.
+  return svg(
     `<rect width="120" height="120" rx="24" fill="${bg}"/>` +
-      // The source SVG uses a 24x24 viewBox — scale to ~64px and centre.
-      `<g transform="translate(28 28) scale(2.667)">${extractPath(IconComponent)}</g>`,
+      `<svg x="28" y="28" width="64" height="64" viewBox="${viewBox}">${paths}</svg>`,
     120,
     120
   );
+};
 
 export const SOCIAL_ICONS = [
   { id: 'soc-fb', name: 'Facebook', url: brandIcon(SiFacebook, '#1877F2') },
