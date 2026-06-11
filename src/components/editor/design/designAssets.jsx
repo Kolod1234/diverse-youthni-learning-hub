@@ -206,36 +206,45 @@ export const SHAPES = [
 // ---------------------------------------------------------------
 // Lines & arrows (HTML so they sit inline at any width)
 // ---------------------------------------------------------------
+// Lines — inserted as native `shape` blocks (stroke-only geometry inside
+// ShapeBlock). The colour picker + thickness slider on ShapeBlock then
+// works for every line straight away. `url` is a static SVG thumbnail
+// only used by the design dialog grid.
+const lineThumb = (markup) =>
+  svg(`<svg x="0" y="0" width="240" height="80" viewBox="0 0 240 80">${markup}</svg>`, 240, 80);
+
 export const LINES = [
   {
     id: 'line-solid',
     name: 'Solid line',
-    html: '<hr style="border:0;border-top:2px solid #0f172a;margin:1rem 0;" />',
+    shape: 'line',
+    fill: '#0f172a',
+    strokeWidth: 3,
+    url: lineThumb('<line x1="10" y1="40" x2="230" y2="40" stroke="#0f172a" stroke-width="3" stroke-linecap="round"/>'),
   },
   {
     id: 'line-dashed',
     name: 'Dashed line',
-    html: '<hr style="border:0;border-top:2px dashed #475569;margin:1rem 0;" />',
+    shape: 'lineDashed',
+    fill: '#475569',
+    strokeWidth: 3,
+    url: lineThumb('<line x1="10" y1="40" x2="230" y2="40" stroke="#475569" stroke-width="3" stroke-linecap="round" stroke-dasharray="10,6"/>'),
   },
   {
     id: 'line-dotted',
     name: 'Dotted line',
-    html: '<hr style="border:0;border-top:3px dotted #94a3b8;margin:1rem 0;" />',
+    shape: 'lineDotted',
+    fill: '#94a3b8',
+    strokeWidth: 4,
+    url: lineThumb('<line x1="10" y1="40" x2="230" y2="40" stroke="#94a3b8" stroke-width="4" stroke-linecap="round" stroke-dasharray="1,8"/>'),
   },
   {
     id: 'line-thick',
     name: 'Thick line',
-    html: '<hr style="border:0;border-top:6px solid #6366f1;border-radius:3px;margin:1.5rem 0;" />',
-  },
-  {
-    id: 'line-double',
-    name: 'Double line',
-    html: '<hr style="border:0;border-top:1px solid #0f172a;border-bottom:1px solid #0f172a;height:5px;margin:1rem 0;" />',
-  },
-  {
-    id: 'line-gradient',
-    name: 'Gradient line',
-    html: '<div style="height:3px;background:linear-gradient(90deg,#6366f1,#ec4899);border-radius:2px;margin:1rem 0;"></div>',
+    shape: 'line',
+    fill: '#6366f1',
+    strokeWidth: 8,
+    url: lineThumb('<line x1="10" y1="40" x2="230" y2="40" stroke="#6366f1" stroke-width="8" stroke-linecap="round"/>'),
   },
 ];
 
@@ -250,20 +259,66 @@ const arrowAsset = (IconComponent, color) => {
   );
 };
 
+// Arrows — inserted as native `shape` blocks so the same colour picker
+// + thickness slider that powers shapes/lines also powers arrows. The
+// chunky filled glyphs from react-icons are retained only as filled
+// `shape` variants below for tutors who want a heavier look.
 export const ARROWS = [
-  { id: 'arrow-right', name: 'Arrow right', url: arrowAsset(FaLongArrowAltRight, '#0f172a') },
-  { id: 'arrow-left', name: 'Arrow left', url: arrowAsset(FaLongArrowAltLeft, '#0f172a') },
-  { id: 'arrow-double', name: 'Double arrow', url: arrowAsset(FaArrowsAltH, '#ef4444') },
-  { id: 'arrow-curve', name: 'Curved arrow', url: arrowAsset(TbArrowCurveRight, '#6366f1') },
-  { id: 'arrow-wave', name: 'Wave arrow', url: arrowAsset(TbArrowWaveRightUp, '#0ea5e9') },
-  { id: 'arrow-return', name: 'Return arrow', url: arrowAsset(BsArrowReturnRight, '#7c3aed') },
-  { id: 'arrow-up', name: 'Arrow up', url: arrowAsset(BsArrowUp, '#10b981') },
-  { id: 'arrow-down', name: 'Arrow down', url: arrowAsset(BsArrowDown, '#f59e0b') },
-  { id: 'arrow-up-right', name: 'Up-right', url: arrowAsset(BsArrowUpRight, '#0d9488') },
-  { id: 'arrow-down-right', name: 'Down-right', url: arrowAsset(BsArrowDownRight, '#ec4899') },
-  { id: 'arrow-repeat', name: 'Repeat', url: arrowAsset(BsArrowRepeat, '#475569') },
-  { id: 'arrow-simple-right', name: 'Simple right', url: arrowAsset(BsArrowRight, '#0f172a') },
-  { id: 'arrow-simple-left', name: 'Simple left', url: arrowAsset(BsArrowLeft, '#0f172a') },
+  {
+    id: 'arrow-line-right',
+    name: 'Arrow right',
+    shape: 'arrowLineR',
+    fill: '#0f172a',
+    strokeWidth: 4,
+    url: arrowAsset(FaLongArrowAltRight, '#0f172a'),
+  },
+  {
+    id: 'arrow-line-left',
+    name: 'Arrow left',
+    shape: 'arrowLineL',
+    fill: '#0f172a',
+    strokeWidth: 4,
+    url: arrowAsset(FaLongArrowAltLeft, '#0f172a'),
+  },
+  {
+    id: 'arrow-line-double',
+    name: 'Double arrow',
+    shape: 'arrowLineDouble',
+    fill: '#ef4444',
+    strokeWidth: 4,
+    url: arrowAsset(FaArrowsAltH, '#ef4444'),
+  },
+  // Filled chevron arrows — keep the existing `arrowR/L/U/D` ShapeBlock
+  // geometry so users still have a bold "block arrow" choice and the
+  // fill colour control works on them naturally.
+  {
+    id: 'arrow-block-right',
+    name: 'Block right',
+    shape: 'arrowR',
+    fill: '#0f172a',
+    url: arrowAsset(BsArrowRight, '#0f172a'),
+  },
+  {
+    id: 'arrow-block-left',
+    name: 'Block left',
+    shape: 'arrowL',
+    fill: '#0f172a',
+    url: arrowAsset(BsArrowLeft, '#0f172a'),
+  },
+  {
+    id: 'arrow-block-up',
+    name: 'Block up',
+    shape: 'arrowU',
+    fill: '#10b981',
+    url: arrowAsset(BsArrowUp, '#10b981'),
+  },
+  {
+    id: 'arrow-block-down',
+    name: 'Block down',
+    shape: 'arrowD',
+    fill: '#f59e0b',
+    url: arrowAsset(BsArrowDown, '#f59e0b'),
+  },
 ];
 
 // ---------------------------------------------------------------
@@ -309,7 +364,7 @@ export const DESIGN_TABS = [
   { id: 'banners', label: 'Banners', items: BANNERS, kind: 'image' },
   { id: 'cards', label: 'Card styles', items: CARDS, kind: 'html' },
   { id: 'shapes', label: 'Shapes', items: SHAPES, kind: 'shape' },
-  { id: 'lines', label: 'Lines', items: LINES, kind: 'html' },
-  { id: 'arrows', label: 'Arrows', items: ARROWS, kind: 'image' },
+  { id: 'lines', label: 'Lines', items: LINES, kind: 'shape' },
+  { id: 'arrows', label: 'Arrows', items: ARROWS, kind: 'shape' },
   { id: 'social', label: 'Social icons', items: SOCIAL_ICONS, kind: 'image' },
 ];
