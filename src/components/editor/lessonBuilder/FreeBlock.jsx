@@ -1,4 +1,4 @@
-import React, { useRef, useCallback } from 'react';
+import React, { useRef, useCallback, useEffect } from 'react';
 import { RotateCw, Copy, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
 
 // FreeBlock
@@ -29,8 +29,75 @@ export default function FreeBlock({
   children,
 }) {
   const dragRef = useRef(null);
+  // Keep onChange in a ref so the window-level move handler always
+  // reads the latest closure without having to re-bind listeners.
+  const onChangeRef = useRef(onChange);
+  onChangeRef.current = onChange;
+
+  // Window-level pointer handlers — reliable across rerenders and
+  // when the cursor leaves the block element while dragging.
+  useEffect(() => {
+    const onMove = (e) => {
+      const d = dragRef.current;
+      if (!d) return;
+      e.preventDefault();
+      const dxPct = ((e.clientX - d.sx) / d.host.width) * 100;
+      const dyPct = ((e.clientY - d.sy) / d.host.height) * 100;
+      const s = d.start;
+
+      if (d.mode === 'move') {
+        onChangeRef.current({
+          x: clamp(s.x + dxPct, 0, 100 - s.w),
+          y: clamp(s.y + dyPct, 0, 100 - s.h),
+        });
+        return;
+      }
+
+      if (d.mode === 'rotate') {
+        const cx = d.host.left + ((s.x + s.w / 2) / 100) * d.host.width;
+        const cy = d.host.top  + ((s.y + s.h / 2) / 100) * d.host.height;
+        const ang = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI + 90;
+        const r = e.shiftKey ? Math.round(ang / 15) * 15 : Math.round(ang);
+        onChangeRef.current({ r });
+        return;
+      }
+
+      // Resize
+      let nx = s.x, ny = s.y, nw = s.w, nh = s.h;
+      const h = d.handle;
+      if (h.includes('e')) nw = clamp(s.w + dxPct, 5, 100 - s.x);
+      if (h.includes('s')) nh = clamp(s.h + dyPct, 5, 100 - s.y);
+      if (h.includes('w')) {
+        const newW = clamp(s.w - dxPct, 5, s.x + s.w);
+        nx = s.x + (s.w - newW);
+        nw = newW;
+      }
+      if (h.includes('n')) {
+        const newH = clamp(s.h - dyPct, 5, s.y + s.h);
+        ny = s.y + (s.h - newH);
+        nh = newH;
+      }
+      onChangeRef.current({ x: nx, y: ny, w: nw, h: nh });
+    };
+    const onUp = () => { dragRef.current = null; };
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    window.addEventListener('pointercancel', onUp);
+    return () => {
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      window.removeEventListener('pointercancel', onUp);
+    };
+  }, []);
 
   const begin = useCallback((e, mode, handle = null) => {
+    // Don't start a drag from a contenteditable / form element so the
+    // user can still type / click inside the block content.
+    const t = e.target;
+    const tag = (t?.tagName || '').toLowerCase();
+    const editable = t?.isContentEditable || tag === 'input' || tag === 'textarea' || tag === 'select' || tag === 'button';
+    if (mode === 'move' && editable && selected) return;
+
     e.preventDefault();
     e.stopPropagation();
     onSelect?.();
@@ -42,54 +109,7 @@ export default function FreeBlock({
       host,
       start: { ...frame },
     };
-    e.currentTarget.setPointerCapture?.(e.pointerId);
-  }, [frame, hostRectRef, onSelect]);
-
-  const move = useCallback((e) => {
-    const d = dragRef.current;
-    if (!d) return;
-    const dxPct = ((e.clientX - d.sx) / d.host.width) * 100;
-    const dyPct = ((e.clientY - d.sy) / d.host.height) * 100;
-    const s = d.start;
-
-    if (d.mode === 'move') {
-      onChange({
-        x: clamp(s.x + dxPct, 0, 100 - s.w),
-        y: clamp(s.y + dyPct, 0, 100 - s.h),
-      });
-      return;
-    }
-
-    if (d.mode === 'rotate') {
-      // Compute angle from block centre to cursor (in screen px).
-      const cx = d.host.left + ((s.x + s.w / 2) / 100) * d.host.width;
-      const cy = d.host.top  + ((s.y + s.h / 2) / 100) * d.host.height;
-      const ang = Math.atan2(e.clientY - cy, e.clientX - cx) * 180 / Math.PI + 90;
-      // Snap to 15° when shift held.
-      const r = e.shiftKey ? Math.round(ang / 15) * 15 : Math.round(ang);
-      onChange({ r });
-      return;
-    }
-
-    // Resize.
-    let nx = s.x, ny = s.y, nw = s.w, nh = s.h;
-    const h = d.handle;
-    if (h.includes('e')) nw = clamp(s.w + dxPct, 5, 100 - s.x);
-    if (h.includes('s')) nh = clamp(s.h + dyPct, 5, 100 - s.y);
-    if (h.includes('w')) {
-      const newW = clamp(s.w - dxPct, 5, s.x + s.w);
-      nx = s.x + (s.w - newW);
-      nw = newW;
-    }
-    if (h.includes('n')) {
-      const newH = clamp(s.h - dyPct, 5, s.y + s.h);
-      ny = s.y + (s.h - newH);
-      nh = newH;
-    }
-    onChange({ x: nx, y: ny, w: nw, h: nh });
-  }, [onChange]);
-
-  const end = useCallback(() => { dragRef.current = null; }, []);
+  }, [frame, hostRectRef, onSelect, selected]);
 
   return (
     <div
@@ -110,9 +130,6 @@ export default function FreeBlock({
         touchAction: 'none',
       }}
       onPointerDown={(e) => begin(e, 'move')}
-      onPointerMove={move}
-      onPointerUp={end}
-      onPointerCancel={end}
       onMouseEnter={(e) => { if (!selected) e.currentTarget.style.outline = '1px dashed #c7d2fe'; }}
       onMouseLeave={(e) => { if (!selected) e.currentTarget.style.outline = '1px dashed transparent'; }}
     >
