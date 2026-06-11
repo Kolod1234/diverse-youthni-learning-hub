@@ -45,7 +45,7 @@ import { MdEmail } from 'react-icons/md';
 // React-icons exposes each icon as a React component whose first child is
 // the raw SVG <path>. Extract those paths (respecting the icon's own
 // viewBox) so we can wrap them in our own branded rounded-square tile.
-const extractIcon = (IconComponent) => {
+const extractIcon = (IconComponent, color = '#fff') => {
   const rendered = IconComponent({});
   const viewBox = rendered.props?.attr?.viewBox || '0 0 24 24';
   const node = rendered.props.children;
@@ -60,14 +60,14 @@ const extractIcon = (IconComponent) => {
       const attrs = [`d="${d}"`];
       if (fillRule) attrs.push(`fill-rule="${fillRule}"`);
       if (clipRule) attrs.push(`clip-rule="${clipRule}"`);
-      return `<path ${attrs.join(' ')} fill="#fff"/>`;
+      return `<path ${attrs.join(' ')} fill="${color}"/>`;
     })
     .join('');
   return { viewBox, paths };
 };
 
 const brandIcon = (IconComponent, bg) => {
-  const { viewBox, paths } = extractIcon(IconComponent);
+  const { viewBox, paths } = extractIcon(IconComponent, '#fff');
   // Render a nested SVG so the icon's native viewBox is honoured and it
   // is centred at ~64px inside the 120px branded tile.
   return svg(
@@ -96,62 +96,68 @@ export const SOCIAL_ICONS = [
 ];
 
 // ---------------------------------------------------------------
-// Banners (full-width images)
+// Banners — high-quality stock photo banners from Unsplash.
+// Sized as 1200×240 panoramic crops so they slot into the existing
+// image-block insertion pipeline.
 // ---------------------------------------------------------------
-const banner = (markup) => svg(markup, 1200, 240);
+const unsplashBanner = (id) =>
+  `https://images.unsplash.com/${id}?auto=format&fit=crop&w=1600&h=320&q=80`;
 
 export const BANNERS = [
-  {
-    id: 'banner-sunrise',
-    name: 'Sunrise gradient',
-    url: banner(
-      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#fbbf24"/><stop offset="1" stop-color="#ef4444"/></linearGradient></defs>` +
-        `<rect width="1200" height="240" fill="url(#g)"/>` +
-        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
-    ),
-  },
-  {
-    id: 'banner-ocean',
-    name: 'Ocean gradient',
-    url: banner(
-      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#0ea5e9"/><stop offset="1" stop-color="#6366f1"/></linearGradient></defs>` +
-        `<rect width="1200" height="240" fill="url(#g)"/>` +
-        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
-    ),
-  },
-  {
-    id: 'banner-forest',
-    name: 'Forest gradient',
-    url: banner(
-      `<defs><linearGradient id="g" x1="0" x2="1"><stop offset="0" stop-color="#10b981"/><stop offset="1" stop-color="#0f766e"/></linearGradient></defs>` +
-        `<rect width="1200" height="240" fill="url(#g)"/>` +
-        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
-    ),
-  },
-  {
-    id: 'banner-mono',
-    name: 'Monochrome',
-    url: banner(
-      `<rect width="1200" height="240" fill="#0f172a"/>` +
-        `<text x="600" y="135" font-family="Inter, Arial, sans-serif" font-size="44" font-weight="800" text-anchor="middle" fill="#fff">Section title</text>`
-    ),
-  },
+  { id: 'banner-sunrise', name: 'Sunrise', url: unsplashBanner('photo-1506905925346-21bda4d32df4') },
+  { id: 'banner-ocean', name: 'Ocean', url: unsplashBanner('photo-1507525428034-b723cf961d3e') },
+  { id: 'banner-forest', name: 'Forest', url: unsplashBanner('photo-1448375240586-882707db888b') },
+  { id: 'banner-mountains', name: 'Mountains', url: unsplashBanner('photo-1464822759023-fed622ff2c3b') },
+  { id: 'banner-city', name: 'City skyline', url: unsplashBanner('photo-1480714378408-67cf0d13bc1b') },
+  { id: 'banner-desk', name: 'Workspace', url: unsplashBanner('photo-1499951360447-b19be8fe80f5') },
+  { id: 'banner-abstract', name: 'Abstract gradient', url: unsplashBanner('photo-1557682250-33bd709cbe85') },
+  { id: 'banner-paper', name: 'Paper texture', url: unsplashBanner('photo-1518655048521-f130df041f66') },
 ];
 
 // ---------------------------------------------------------------
-// Shapes (inserted as images so they can be resized / aligned)
+// Shapes — real React icons (Bootstrap Icons + Font Awesome solids)
 // ---------------------------------------------------------------
-const shape = (markup) => svg(markup, 200, 200);
+// Wraps each icon in a coloured tile so it slots into the existing
+// image-block pipeline at 200×200px.
+import {
+  BsCircleFill,
+  BsSquareFill,
+  BsTriangleFill,
+  BsStarFill,
+  BsHexagonFill,
+  BsPentagonFill,
+  BsOctagonFill,
+  BsDiamondFill,
+  BsHeartFill,
+  BsCloudFill,
+  BsLightningChargeFill,
+} from 'react-icons/bs';
+import { FaRegCircle, FaRegSquare } from 'react-icons/fa';
+
+const iconAsset = (IconComponent, color, size = 160, tile = 200) => {
+  const { viewBox, paths } = extractIcon(IconComponent, color);
+  const offset = (tile - size) / 2;
+  return svg(
+    `<svg x="${offset}" y="${offset}" width="${size}" height="${size}" viewBox="${viewBox}">${paths}</svg>`,
+    tile,
+    tile
+  );
+};
 
 export const SHAPES = [
-  { id: 'shape-circle', name: 'Circle', url: shape(`<circle cx="100" cy="100" r="80" fill="#6366f1"/>`) },
-  { id: 'shape-square', name: 'Square', url: shape(`<rect x="20" y="20" width="160" height="160" rx="8" fill="#0ea5e9"/>`) },
-  { id: 'shape-rounded', name: 'Rounded', url: shape(`<rect x="10" y="40" width="180" height="120" rx="40" fill="#f59e0b"/>`) },
-  { id: 'shape-triangle', name: 'Triangle', url: shape(`<polygon points="100,20 180,180 20,180" fill="#10b981"/>`) },
-  { id: 'shape-star', name: 'Star', url: shape(`<polygon points="100,15 122,78 190,78 135,118 156,182 100,142 44,182 65,118 10,78 78,78" fill="#ef4444"/>`) },
-  { id: 'shape-hex', name: 'Hexagon', url: shape(`<polygon points="100,15 173,57 173,143 100,185 27,143 27,57" fill="#8b5cf6"/>`) },
-  { id: 'shape-blob', name: 'Blob', url: shape(`<path d="M 60 20 C 130 0 200 60 170 130 C 150 195 60 200 30 140 C -10 80 10 35 60 20 Z" fill="#ec4899"/>`) },
-  { id: 'shape-ring', name: 'Ring', url: shape(`<circle cx="100" cy="100" r="80" fill="none" stroke="#0f172a" stroke-width="16"/>`) },
+  { id: 'shape-circle', name: 'Circle', url: iconAsset(BsCircleFill, '#6366f1') },
+  { id: 'shape-square', name: 'Square', url: iconAsset(BsSquareFill, '#0ea5e9') },
+  { id: 'shape-triangle', name: 'Triangle', url: iconAsset(BsTriangleFill, '#10b981') },
+  { id: 'shape-star', name: 'Star', url: iconAsset(BsStarFill, '#ef4444') },
+  { id: 'shape-hex', name: 'Hexagon', url: iconAsset(BsHexagonFill, '#8b5cf6') },
+  { id: 'shape-pentagon', name: 'Pentagon', url: iconAsset(BsPentagonFill, '#f59e0b') },
+  { id: 'shape-octagon', name: 'Octagon', url: iconAsset(BsOctagonFill, '#0d9488') },
+  { id: 'shape-diamond', name: 'Diamond', url: iconAsset(BsDiamondFill, '#ec4899') },
+  { id: 'shape-heart', name: 'Heart', url: iconAsset(BsHeartFill, '#e11d48') },
+  { id: 'shape-cloud', name: 'Cloud', url: iconAsset(BsCloudFill, '#64748b') },
+  { id: 'shape-bolt', name: 'Bolt', url: iconAsset(BsLightningChargeFill, '#eab308') },
+  { id: 'shape-ring', name: 'Ring outline', url: iconAsset(FaRegCircle, '#0f172a') },
+  { id: 'shape-square-outline', name: 'Square outline', url: iconAsset(FaRegSquare, '#0f172a') },
 ];
 
 // ---------------------------------------------------------------
@@ -190,13 +196,38 @@ export const LINES = [
   },
 ];
 
-const arrow = (markup) => svg(markup, 240, 80);
+// ---------------------------------------------------------------
+// Arrows — real React icons (Font Awesome + Tabler)
+// ---------------------------------------------------------------
+import {
+  FaLongArrowAltRight,
+  FaLongArrowAltLeft,
+  FaArrowsAltH,
+} from 'react-icons/fa';
+import {
+  TbArrowCurveRight,
+  TbArrowWaveRightUp,
+  TbArrowBigRight,
+  TbArrowBigLeft,
+} from 'react-icons/tb';
+
+const arrowAsset = (IconComponent, color) => {
+  const { viewBox, paths } = extractIcon(IconComponent, color);
+  return svg(
+    `<svg x="20" y="10" width="200" height="60" viewBox="${viewBox}" preserveAspectRatio="xMidYMid meet">${paths}</svg>`,
+    240,
+    80
+  );
+};
 
 export const ARROWS = [
-  { id: 'arrow-right', name: 'Arrow right', url: arrow(`<path d="M 20 40 L 200 40 M 180 20 L 220 40 L 180 60" stroke="#0f172a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`) },
-  { id: 'arrow-left', name: 'Arrow left', url: arrow(`<path d="M 220 40 L 40 40 M 60 20 L 20 40 L 60 60" stroke="#0f172a" stroke-width="6" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`) },
-  { id: 'arrow-curve', name: 'Curved arrow', url: arrow(`<path d="M 20 60 Q 120 -20 210 50 M 190 30 L 215 55 L 190 70" stroke="#6366f1" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`) },
-  { id: 'arrow-double', name: 'Double arrow', url: arrow(`<path d="M 30 40 L 210 40 M 50 20 L 20 40 L 50 60 M 190 20 L 220 40 L 190 60" stroke="#ef4444" stroke-width="5" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`) },
+  { id: 'arrow-right', name: 'Arrow right', url: arrowAsset(FaLongArrowAltRight, '#0f172a') },
+  { id: 'arrow-left', name: 'Arrow left', url: arrowAsset(FaLongArrowAltLeft, '#0f172a') },
+  { id: 'arrow-double', name: 'Double arrow', url: arrowAsset(FaArrowsAltH, '#ef4444') },
+  { id: 'arrow-big-right', name: 'Bold arrow right', url: arrowAsset(TbArrowBigRight, '#6366f1') },
+  { id: 'arrow-big-left', name: 'Bold arrow left', url: arrowAsset(TbArrowBigLeft, '#6366f1') },
+  { id: 'arrow-curve', name: 'Curved arrow', url: arrowAsset(TbArrowCurveRight, '#0ea5e9') },
+  { id: 'arrow-wave', name: 'Wave arrow', url: arrowAsset(TbArrowWaveRightUp, '#10b981') },
 ];
 
 // ---------------------------------------------------------------
