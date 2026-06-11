@@ -143,7 +143,7 @@ export default function FreeBlock({
       <div
         style={{
           position: 'absolute', inset: 0,
-          overflow: 'auto',
+          overflow: 'hidden',
           pointerEvents: selected ? 'auto' : 'none',
           userSelect: selected ? 'auto' : 'none',
         }}
