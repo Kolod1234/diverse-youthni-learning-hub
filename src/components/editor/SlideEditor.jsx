@@ -730,7 +730,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
   }
 
   return (
-    <div className={`${fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''}`}>
+    <div className={`${fullscreenEdit ? 'fixed inset-0 z-50 bg-white' : ''} overflow-hidden`}>
       {/* Top toolbar — at ≥sm: flex-wrap as before (desktop/tablet behaviour unchanged).
           Below sm (390px): the action row becomes a single horizontally-scrollable
           strip so it never causes outer-page overflow and Save Lesson in the page
@@ -761,7 +761,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
         <div
           id="slide-editor-tools"
           hidden={!editorToolsOpen}
-          className={`${editorToolsOpen ? 'flex' : 'hidden'} sm:flex-wrap items-center gap-2 overflow-x-auto sm:overflow-visible -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [&>*]:shrink-0 sm:[&>*]:shrink`}
+          className={`${editorToolsOpen ? 'flex' : 'hidden'} sm:flex-wrap items-center gap-2 overflow-hidden sm:overflow-visible -mx-3 px-3 sm:mx-0 sm:px-0 pb-1 sm:pb-0 [&>*]:shrink-0 sm:[&>*]:shrink`}
         >
           <div className="flex bg-gray-100 rounded-lg p-1 mr-2">
             <Button
@@ -886,7 +886,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
       {/* Shared thumbnail rail JSX — rendered inline on desktop (≥lg) AND inside
           the mobile Sheet drawer. Same `slides` / `currentSlide` / `onChange` —
           no duplicated state, reorder & selection behave identically. */}
-      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 w-full ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
+      <div className={`flex flex-col lg:flex-row gap-4 lg:gap-6 w-full overflow-hidden ${fullscreenEdit ? 'h-[calc(100vh-80px)] p-6' : 'min-h-[600px]'}`}>
         {/* Desktop rail — hidden below lg. At <lg, the active canvas appears
             immediately after the toolbar; thumbnails are accessed via the
             "Slides (N)" button below. */}
@@ -1118,8 +1118,8 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                     }}
                   />
                 ) : (
-                <ScrollArea className="h-full">
-                  <div className="p-6 space-y-6">
+                <div className="h-full overflow-hidden">
+                   <div className="p-6 space-y-6 h-full overflow-hidden">
                     {/* Visual Lesson Builder — block-based, drag/drop,
                         inline editing, autosave + preview. Serialises back
                         to slide.content HTML for player compatibility. */}
@@ -1196,8 +1196,8 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
                         at the top of this panel — Rich Text mode has been
                         replaced with block-based editing. */}
                   </div>
-                </ScrollArea>
-                )}
+                  </div>
+                  )}
               </Card>
             </>
           )}
