@@ -4,6 +4,8 @@ import {
   Image as ImageIcon, Type, Heading1, List, Table, Code,
   LayoutTemplate, Grid3x3, Sparkles, Wand2, Download,
   Eye, Play, FileText, Wrench,
+  Bold, Italic, Underline, AlignLeft, AlignCenter, AlignRight,
+  Columns2, Columns3, Square,
 } from 'lucide-react';
 
 /**
@@ -80,6 +82,13 @@ export default function WorkspaceRibbon(props) {
     onOpenTemplates, onOpenBlocks,
     onImportCanva, onImportFigma,
 
+    // Format (inline rich-text commands — execCommand based)
+    onBold, onItalic, onUnderline,
+    onAlignLeft, onAlignCenter, onAlignRight,
+
+    // Quick layouts
+    onAddOneColumn, onAddTwoColumns, onAddThreeColumns,
+
     // AI
     onOpenAI, onRewriteWithAI,
 
@@ -94,7 +103,7 @@ export default function WorkspaceRibbon(props) {
   // Pre-compute which tabs have at least one wired action so we can
   // hide empty ones rather than render dead headings.
   const tabHasActions = {
-    home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent),
+    home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent || onBold || onItalic || onAddTwoColumns),
     insert:  !!(onAddImage || onAddText || onAddHeading || onAddList || onAddTable || onEditCode || onOpenTemplates || onOpenBlocks || onImportCanva || onImportFigma || onOpenAI),
     design:  !!(onOpenTemplates || onAddImage || onPreview),
     arrange: !!(onDuplicateSlide || onDeleteSlide || onUndo || onRedo),
@@ -174,7 +183,18 @@ export default function WorkspaceRibbon(props) {
               <Btn icon={Copy} label="Duplicate" title="Duplicate current slide" onClick={onDuplicateSlide} />
               <Btn icon={Trash2} label="Delete" title="Delete current slide" onClick={onDeleteSlide} />
             </Group>
+            <Group label="Format">
+              <Btn icon={Bold} label="Bold" title="Bold (Ctrl+B)" onClick={onBold} />
+              <Btn icon={Italic} label="Italic" title="Italic (Ctrl+I)" onClick={onItalic} />
+              <Btn icon={Underline} label="Underline" title="Underline (Ctrl+U)" onClick={onUnderline} />
+              <Btn icon={AlignLeft} label="Left" title="Align left" onClick={onAlignLeft} />
+              <Btn icon={AlignCenter} label="Center" title="Align center" onClick={onAlignCenter} />
+              <Btn icon={AlignRight} label="Right" title="Align right" onClick={onAlignRight} />
+            </Group>
             <Group label="Layout">
+              <Btn icon={Square} label="1 col" title="Insert single column" onClick={onAddOneColumn} />
+              <Btn icon={Columns2} label="2 cols" title="Insert two columns" onClick={onAddTwoColumns} />
+              <Btn icon={Columns3} label="3 cols" title="Insert three columns" onClick={onAddThreeColumns} />
               <Btn icon={LayoutTemplate} label="Templates" title="Slide templates" onClick={onOpenTemplates} />
               <Btn icon={Grid3x3} label="Blocks" title="Block templates" onClick={onOpenBlocks} />
             </Group>

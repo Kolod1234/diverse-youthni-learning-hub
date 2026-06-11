@@ -124,11 +124,13 @@ export default function PresentationWorkspace({
   // ---------------------------------------------------------------
   // Block-insertion ribbon commands — round-trip via serialiser.
   // ---------------------------------------------------------------
-  const insertBlockType = useCallback((type) => {
+  const insertBlockType = useCallback((type, dataOverrides = null) => {
     if (!currentSlideData) return;
     const existing = currentSlideData.content || '';
     const existingBlocks = htmlToBlocks(existing);
-    const next = [...existingBlocks, createBlock(type)];
+    const block = createBlock(type);
+    if (dataOverrides) block.data = { ...block.data, ...dataOverrides };
+    const next = [...existingBlocks, block];
     const html = blocksToHtml(next);
     const updated = { ...currentSlideData, content: html };
     const newSlides = [...slides];
@@ -155,6 +157,22 @@ export default function PresentationWorkspace({
     if (onAddImage) return onAddImage();
     insertBlockType('image');
   }, [onAddImage, insertBlockType]);
+
+  // ---------------------------------------------------------------
+  // Inline format commands — run via document.execCommand against the
+  // currently-focused contentEditable surface inside the builder.
+  // execCommand is deprecated but remains the most reliable way to apply
+  // inline formatting to a focused contentEditable across browsers, and
+  // matches what the inline toolbar already uses.
+  // ---------------------------------------------------------------
+  const runFormatCmd = useCallback((cmd) => {
+    try {
+      document.execCommand(cmd, false, null);
+      setDirty(true);
+    } catch {
+      /* no-op: format command unsupported in this context */
+    }
+  }, []);
 
   // ---------------------------------------------------------------
   // Render
@@ -208,6 +226,17 @@ export default function PresentationWorkspace({
         // preview"), never the block gallery.
         onPreview={onPreviewProp || (() => setPreviewOpen(true))}
         onPresent={onPresent}
+        // Format shortcuts — operate on the focused contentEditable.
+        onBold={() => runFormatCmd('bold')}
+        onItalic={() => runFormatCmd('italic')}
+        onUnderline={() => runFormatCmd('underline')}
+        onAlignLeft={() => runFormatCmd('justifyLeft')}
+        onAlignCenter={() => runFormatCmd('justifyCenter')}
+        onAlignRight={() => runFormatCmd('justifyRight')}
+        // Quick layout shortcuts — insert the right block type.
+        onAddOneColumn={() => insertBlockType('paragraph')}
+        onAddTwoColumns={() => insertBlockType('two-columns', { columnCount: 2 })}
+        onAddThreeColumns={() => insertBlockType('two-columns', { columnCount: 3, middleBlocks: [] })}
         onToggleNotes={() => ws.setNotesOpen((o) => !o)}
         notesOpen={ws.notesOpen}
         onToggleInspector={() => ws.setInspectorOpen((o) => !o)}
@@ -378,7 +407,7 @@ function BuilderHost({
   //     otherwise force an intrinsic height larger than the 16:9
   //     box, producing the nested scrollbars the builder reported.
   return (
-    <div className="w-full h-full overflow-auto p-3 lesson-slide-canvas">
+    <div className="w-full h-full overflow-auto lesson-slide-canvas">
       <VisualLessonBuilder
         slide={slide}
         onChange={onChange}

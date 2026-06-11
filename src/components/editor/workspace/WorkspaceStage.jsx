@@ -69,21 +69,21 @@ export default function WorkspaceStage({
       return { stageW: STAGE_W * s, stageH: STAGE_H * s };
     }
     // Fit
-    const padX = 32;
-    const padY = 32;
+    const padX = 12;
+    const padY = 12;
     const availW = Math.max(0, size.w - padX * 2);
     const availH = Math.max(0, size.h - padY * 2);
     if (availW <= 0 || availH <= 0) {
       // Reasonable initial render before measure resolves.
       return { stageW: 960, stageH: 540 };
     }
-    // Bound by both axes; cap at 90 % so the slide visibly floats in
-    // the pasteboard rather than touching the edges. The user's
-    // acceptance target is 960-1080 wide × 540-608 tall at 1440x900;
-    // at 0.90 the worst case sits comfortably inside that band.
-    const wByWidth = availW * 0.90;
+    // Bound by both axes; cap at 98 % so the slide uses as much of the
+    // pasteboard as possible while keeping a small breathing gap. This
+    // widens the canvas significantly compared to the previous 0.90 cap,
+    // eliminating the large unused side margins reported.
+    const wByWidth = availW * 0.98;
     const hByWidth = wByWidth / STAGE_RATIO;
-    const hByHeight = availH * 0.90;
+    const hByHeight = availH * 0.98;
     const wByHeight = hByHeight * STAGE_RATIO;
     const stageW = Math.min(wByWidth, wByHeight);
     const stageH = stageW / STAGE_RATIO;
@@ -108,7 +108,7 @@ export default function WorkspaceStage({
         {/* Vertical centering wrapper. min-h-full so the slide stays
             vertically centred in the visible pasteboard area; if the
             scaled slide is taller than the pasteboard, we scroll. */}
-        <div className="min-h-full w-full flex items-center justify-center p-6">
+        <div className="min-h-full w-full flex items-center justify-center p-2 sm:p-3">
           <div
             // The visible 16:9 slide. Fixed pixel size so the inner
             // editor cannot stretch it.

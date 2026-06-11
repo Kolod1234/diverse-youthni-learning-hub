@@ -293,14 +293,14 @@ export default function VisualLessonBuilder({
       )}
 
       {/* Blocks */}
-      <div className={chromeless ? 'px-2 py-2' : 'px-6 py-4'}>
+      <div className={chromeless ? 'px-4 sm:px-8 py-3' : 'px-6 py-4'}>
         {blocks.length === 0 ? (
           <EmptyState onPick={(type) => addBlockAt(0, type)} />
         ) : (
           <DragDropContext onDragEnd={onDragEnd}>
             <Droppable droppableId="builder-blocks">
               {(provided) => (
-                <div {...provided.droppableProps} ref={provided.innerRef} className="space-y-2 pl-10">
+                <div {...provided.droppableProps} ref={provided.innerRef} className={chromeless ? 'space-y-2 pl-10 pr-10' : 'space-y-2 pl-10'}>
                   {blocks.map((block, idx) => (
                     <Draggable key={block.id} draggableId={block.id} index={idx}>
                       {(prov, snap) => (
@@ -340,7 +340,7 @@ export default function VisualLessonBuilder({
 
         {/* Add block at end */}
         {blocks.length > 0 && (
-          <div className="pl-10 mt-3 relative">
+          <div className={chromeless ? 'pl-10 pr-10 mt-3 relative' : 'pl-10 mt-3 relative'}>
             <Button
               variant="outline"
               size="sm"
