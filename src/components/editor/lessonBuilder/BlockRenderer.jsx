@@ -494,65 +494,100 @@ function KnowledgeCheckBlock({ data, onChange }) {
 }
 
 function LegacyHtmlBlock({ html, onChange }) {
-  // "Legacy HTML" blocks come from templates that use custom card styling.
-  // Tutors should be able to edit the wording in place without ever touching
-  // markup. We render the styled card as a contentEditable surface, and
-  // expose an "Edit source" escape hatch for power users.
-  const [sourceMode, setSourceMode] = React.useState(false);
-  const previewRef = useRef(null);
-  const isEditingRef = useRef(false);
+  return (
+    <LegacyHtmlEditor html={html} onChange={onChange} />
+  );
+}
 
-  // Only sync the DOM from the html prop on mount and when the prop changes
-  // from outside (template apply, undo/redo, switching slides). While the
-  // user is actively typing we MUST NOT touch innerHTML — doing so collapses
-  // the selection to the start of the node, which is what made letters appear
-  // in reverse order ("the" -> "eht").
-  useEffect(() => {
-    if (sourceMode) return;
-    if (!previewRef.current) return;
-    if (isEditingRef.current) return; // user is typing — leave the DOM alone
-    if (previewRef.current.innerHTML === (html || '')) return;
-    previewRef.current.innerHTML = html || '';
-  }, [html, sourceMode]);
+// Standalone editor for legacy-html blocks.
+// CRITICAL: the contentEditable surface is rendered ONCE via initial DOM only.
+// React must NEVER own its innerHTML — if it did, every keystroke would re-run
+// the diff and reset the DOM, collapsing the caret to the start (the bug that
+// made "the" appear as "eht"). We sync the DOM imperatively only when:
+//   • the prop changes AND the user isn't currently editing it, or
+//   • the user switches to/from source mode.
+class LegacyHtmlEditor extends React.Component {
+  constructor(props) {
+    super(props);
+    this.state = { sourceMode: false };
+    this.previewRef = React.createRef();
+    this.isEditing = false;
+  }
 
-  const handleInput = () => {
-    const next = previewRef.current?.innerHTML || '';
-    onChange(next);
+  componentDidMount() {
+    if (this.previewRef.current) {
+      this.previewRef.current.innerHTML = this.props.html || '';
+    }
+  }
+
+  componentDidUpdate(prevProps, prevState) {
+    // Only push the prop value into the DOM when:
+    //  • we just left source mode (need to re-render the styled card), or
+    //  • the html prop changed AND the user isn't actively typing.
+    const exitedSourceMode = prevState.sourceMode && !this.state.sourceMode;
+    const propChanged = prevProps.html !== this.props.html;
+    if (this.state.sourceMode) return;
+    if (!this.previewRef.current) return;
+    if (!exitedSourceMode && !propChanged) return;
+    if (!exitedSourceMode && this.isEditing) return;
+    if (this.previewRef.current.innerHTML === (this.props.html || '')) return;
+    this.previewRef.current.innerHTML = this.props.html || '';
+  }
+
+  // shouldComponentUpdate guards against unrelated parent re-renders churning
+  // the editable DOM. We re-render only when source mode flips or the html
+  // prop actually differs from what's currently in our DOM.
+  shouldComponentUpdate(nextProps, nextState) {
+    if (nextState.sourceMode !== this.state.sourceMode) return true;
+    if (nextProps.html !== this.props.html) return true;
+    return false;
+  }
+
+  handleInput = () => {
+    const next = this.previewRef.current?.innerHTML || '';
+    this.props.onChange(next);
   };
 
-  return (
-    <div>
-      <div className="flex items-center justify-end mb-1.5">
-        <button
-          type="button"
-          onClick={() => setSourceMode(s => !s)}
-          className="text-xs text-gray-500 hover:text-gray-800 hover:underline"
-        >
-          {sourceMode ? 'Done editing source' : 'Edit source'}
-        </button>
+  toggleSource = () => {
+    this.setState(s => ({ sourceMode: !s.sourceMode }));
+  };
+
+  render() {
+    const { html, onChange } = this.props;
+    const { sourceMode } = this.state;
+    return (
+      <div>
+        <div className="flex items-center justify-end mb-1.5">
+          <button
+            type="button"
+            onClick={this.toggleSource}
+            className="text-xs text-gray-500 hover:text-gray-800 hover:underline"
+          >
+            {sourceMode ? 'Done editing source' : 'Edit source'}
+          </button>
+        </div>
+        {sourceMode ? (
+          <textarea
+            value={html || ''}
+            onChange={(e) => onChange(e.target.value)}
+            className="w-full font-mono text-xs bg-white border border-gray-200 rounded p-2 outline-none min-h-[160px]"
+            spellCheck={false}
+            autoFocus
+          />
+        ) : (
+          <div
+            ref={this.previewRef}
+            contentEditable
+            suppressContentEditableWarning
+            onInput={this.handleInput}
+            onFocus={() => { this.isEditing = true; }}
+            onBlur={() => { this.isEditing = false; }}
+            className="outline-none focus:ring-2 focus:ring-indigo-200 rounded"
+          />
+        )}
       </div>
-      {sourceMode ? (
-        <textarea
-          value={html || ''}
-          onChange={(e) => onChange(e.target.value)}
-          className="w-full font-mono text-xs bg-white border border-gray-200 rounded p-2 outline-none min-h-[160px]"
-          spellCheck={false}
-          autoFocus
-        />
-      ) : (
-        <div
-          ref={previewRef}
-          contentEditable
-          suppressContentEditableWarning
-          onInput={handleInput}
-          onFocus={() => { isEditingRef.current = true; }}
-          onBlur={() => { isEditingRef.current = false; }}
-          className="outline-none focus:ring-2 focus:ring-indigo-200 rounded"
-          dangerouslySetInnerHTML={{ __html: html || '' }}
-        />
-      )}
-    </div>
-  );
+    );
+  }
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
