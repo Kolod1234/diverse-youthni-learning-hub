@@ -562,7 +562,13 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
   const currentSlideData = slides[currentSlide] || null;
 
   if (slides.length === 0) {
+    // Wrap the empty-state in a scrollable container. The parent LessonEditor
+    // sets `overflow-y-hidden` on the page so the workspace ribbon/status bar
+    // stay pinned; without an inner `overflow-y-auto` here, the template grid
+    // gets clipped on shorter viewports and the tutor cannot reach the
+    // templates below the fold.
     return (
+      <div className="h-full w-full min-h-0 overflow-y-auto p-4 sm:p-6">
       <Card className="p-12 text-center border-2 border-dashed">
         <div className="max-w-2xl mx-auto">
           <LayoutTemplate className="w-16 h-16 text-indigo-600 mx-auto mb-4" />
@@ -634,6 +640,7 @@ Generate ONE specific search query (3-6 words) to find the most relevant educati
           )}
         </div>
       </Card>
+      </div>
     );
   }
 
