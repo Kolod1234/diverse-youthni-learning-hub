@@ -112,6 +112,13 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
   const norm = useMemo(() => normalise(data), [data]);
   const { columnCount, leftBlocks, middleBlocks, rightBlocks, ratio, gap, verticalAlign, stackOnMobile } = norm;
 
+  // When the outer block is collapsed (not in Edit mode) we suppress all
+  // editor chrome — Layout Settings strip, dashed column outlines, nested
+  // accordion headers, add-block buttons — so the canvas matches the
+  // serialized preview pixel-for-pixel. Tutors enter Edit on the parent
+  // block to surface the controls again.
+  const outerExpanded = React.useContext(BlockExpandedContext);
+
   const update = (patch) => onChange({ ...norm, ...patch });
   const setLeft   = (next) => update({ leftBlocks:   next });
   const setMiddle = (next) => update({ middleBlocks: next });
@@ -171,24 +178,26 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
 
   return (
     <div className="space-y-2">
-      {/* Layout settings — INDEPENDENT disclosure, intentionally NOT gated
-          by the outer block's Edit/Done state. A tutor can collapse the
-          row of presets at any time, even mid-edit, without having to
-          collapse the whole container block. Ephemeral local state. */}
-      <LayoutSettingsDisclosure>
-        <Toolbar
-          columnCount={columnCount}
-          ratio={ratio}
-          gap={gap}
-          verticalAlign={verticalAlign}
-          stackOnMobile={stackOnMobile}
-          onColumnCount={setColumnCount}
-          onRatio={(r) => update({ ratio: r })}
-          onGap={(g) => update({ gap: g })}
-          onValign={(v) => update({ verticalAlign: v })}
-          onToggleStack={() => update({ stackOnMobile: !stackOnMobile })}
-        />
-      </LayoutSettingsDisclosure>
+      {/* Layout settings — only surface when the outer block is in Edit
+          mode. Keeping the strip mounted at all times pushed the column
+          content down on the canvas but NOT in the serialized preview,
+          which is the exact cause of the editor↔preview drift. */}
+      {outerExpanded && (
+        <LayoutSettingsDisclosure>
+          <Toolbar
+            columnCount={columnCount}
+            ratio={ratio}
+            gap={gap}
+            verticalAlign={verticalAlign}
+            stackOnMobile={stackOnMobile}
+            onColumnCount={setColumnCount}
+            onRatio={(r) => update({ ratio: r })}
+            onGap={(g) => update({ gap: g })}
+            onValign={(v) => update({ verticalAlign: v })}
+            onToggleStack={() => update({ stackOnMobile: !stackOnMobile })}
+          />
+        </LayoutSettingsDisclosure>
+      )}
 
       <div
         ref={wrapRef}
@@ -225,6 +234,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
             nestedExpandedKey={nestedExpandedKey}
             setNestedExpandedKey={setNestedExpandedKey}
             blockSpacing={gap}
+            showChrome={outerExpanded}
           />
         )}
 
@@ -238,8 +248,11 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
               renderChild={renderChild}
               nestedExpandedKey={nestedExpandedKey}
               setNestedExpandedKey={setNestedExpandedKey}
+              showChrome={outerExpanded}
             />
-            <Divider onMouseDown={onDividerDown} onTouchStart={onDividerDown} dragging={dragging} ratio={ratio} />
+            {outerExpanded
+              ? <Divider onMouseDown={onDividerDown} onTouchStart={onDividerDown} dragging={dragging} ratio={ratio} />
+              : <div data-tc-divider="" aria-hidden="true" />}
             <Column
               title="Right"
               side="right"
@@ -248,6 +261,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
               renderChild={renderChild}
               nestedExpandedKey={nestedExpandedKey}
               setNestedExpandedKey={setNestedExpandedKey}
+              showChrome={outerExpanded}
             />
           </>
         )}
@@ -262,6 +276,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
               renderChild={renderChild}
               nestedExpandedKey={nestedExpandedKey}
               setNestedExpandedKey={setNestedExpandedKey}
+              showChrome={outerExpanded}
             />
             <Column
               title="Middle"
@@ -271,6 +286,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
               renderChild={renderChild}
               nestedExpandedKey={nestedExpandedKey}
               setNestedExpandedKey={setNestedExpandedKey}
+              showChrome={outerExpanded}
             />
             <Column
               title="Right"
@@ -280,6 +296,7 @@ export default function TwoColumnsBlock({ data, onChange, renderChild }) {
               renderChild={renderChild}
               nestedExpandedKey={nestedExpandedKey}
               setNestedExpandedKey={setNestedExpandedKey}
+              showChrome={outerExpanded}
             />
           </>
         )}
@@ -416,7 +433,7 @@ function Divider({ onMouseDown, onTouchStart, dragging }) {
 }
 
 // ─────────────────────────────────────────────────────────────────────────────
-function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey, setNestedExpandedKey, blockSpacing = 8 }) {
+function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey, setNestedExpandedKey, blockSpacing = 8, showChrome = true }) {
   const [adderOpen, setAdderOpen] = useState(false);
 
   const updateAt = (idx, nextData) => {
@@ -448,13 +465,20 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
     onChange(next);
   };
 
+  // When chrome is hidden (outer block collapsed) the column is a plain
+  // div with the same min-width:0 / overflow rules — no dashed border, no
+  // padding — so the canvas layout matches the serialized preview exactly.
+  const containerClass = showChrome
+    ? 'border border-dashed border-gray-200 rounded p-1 min-w-0'
+    : 'min-w-0';
+
   return (
     <div
-      className="border border-dashed border-gray-200 rounded p-1 min-w-0"
+      className={containerClass}
       aria-label={`${title} column`}
       style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', maxWidth: '100%' }}
     >
-      {blocks.length === 0 && (
+      {showChrome && blocks.length === 0 && (
         <div className="py-4 text-center space-y-2">
           <div className="text-xs text-gray-400 italic">{title} column — empty</div>
           <div className="flex flex-wrap gap-1 justify-center">
@@ -475,58 +499,63 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
           serialized HTML uses 24px and the preview disagrees with the
           editor. */}
       <div style={{ display: 'flex', flexDirection: 'column', gap: `${blockSpacing}px` }}>
-        {blocks.map((child, idx) => (
-          <ChildWrapper
-            key={child.id}
-            onMoveUp={() => moveBy(idx, -1)}
-            onMoveDown={() => moveBy(idx, +1)}
-            onDuplicate={() => duplicateAt(idx)}
-            onDelete={() => removeAt(idx)}
-            disableUp={idx === 0}
-            disableDown={idx === blocks.length - 1}
-            label={child.type}
-          >
-            {/* Each nested child gets its OWN Edit/Done accordion driven by
-                a SHARED key owned by TwoColumnsBlock. Only one child across
-                both columns can be expanded at any time — opening this one
-                automatically collapses any other (including one in the
-                other column) because `expanded` is computed as
-                (nestedExpandedKey === key). Done toggles it back to null;
-                Escape clears it. Ephemeral — never serialised. */}
-            {(() => {
-              const key = `${side}:${child.id}`;
-              const expanded = nestedExpandedKey === key;
-              return (
-                <NestedAccordion
-                  label={blockTypeLabel(child.type)}
-                  expanded={expanded}
-                  onToggle={() => setNestedExpandedKey(expanded ? null : key)}
-                >
-                  {renderChild
-                    ? renderChild(child, (nextData) => updateAt(idx, nextData))
-                    : <div className="text-xs text-red-500">Child renderer missing</div>}
-                </NestedAccordion>
-              );
-            })()}
-          </ChildWrapper>
-        ))}
+        {blocks.map((child, idx) => {
+          const rendered = renderChild
+            ? renderChild(child, (nextData) => updateAt(idx, nextData))
+            : <div className="text-xs text-red-500">Child renderer missing</div>;
+
+          // Chrome-off path: render the child directly with NO ChildWrapper
+          // (no hover border / padding) and NO NestedAccordion (no
+          // "HEADING 3" label + Edit button). This is the path that makes
+          // the canvas match the preview pixel-for-pixel.
+          if (!showChrome) {
+            return <React.Fragment key={child.id}>{rendered}</React.Fragment>;
+          }
+
+          const key = `${side}:${child.id}`;
+          const expanded = nestedExpandedKey === key;
+          return (
+            <ChildWrapper
+              key={child.id}
+              onMoveUp={() => moveBy(idx, -1)}
+              onMoveDown={() => moveBy(idx, +1)}
+              onDuplicate={() => duplicateAt(idx)}
+              onDelete={() => removeAt(idx)}
+              disableUp={idx === 0}
+              disableDown={idx === blocks.length - 1}
+              label={child.type}
+            >
+              {/* Each nested child gets its OWN Edit/Done accordion driven by
+                  a SHARED key owned by TwoColumnsBlock. */}
+              <NestedAccordion
+                label={blockTypeLabel(child.type)}
+                expanded={expanded}
+                onToggle={() => setNestedExpandedKey(expanded ? null : key)}
+              >
+                {rendered}
+              </NestedAccordion>
+            </ChildWrapper>
+          );
+        })}
       </div>
 
-      <div className="relative mt-2">
-        <button
-          type="button"
-          onClick={() => setAdderOpen(o => !o)}
-          className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:underline"
-        >
-          <Plus className="w-3 h-3" /> Add block
-        </button>
-        {adderOpen && (
-          <BlockPicker
-            onPick={(type) => insertAt(blocks.length, type)}
-            onClose={() => setAdderOpen(false)}
-          />
-        )}
-      </div>
+      {showChrome && (
+        <div className="relative mt-2">
+          <button
+            type="button"
+            onClick={() => setAdderOpen(o => !o)}
+            className="text-xs inline-flex items-center gap-1 text-indigo-600 hover:underline"
+          >
+            <Plus className="w-3 h-3" /> Add block
+          </button>
+          {adderOpen && (
+            <BlockPicker
+              onPick={(type) => insertAt(blocks.length, type)}
+              onClose={() => setAdderOpen(false)}
+            />
+          )}
+        </div>
+      )}
     </div>
   );
 }
