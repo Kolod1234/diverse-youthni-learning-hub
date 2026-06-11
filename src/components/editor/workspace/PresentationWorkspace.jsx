@@ -57,6 +57,7 @@ export default function PresentationWorkspace({
   onImportFigma,
   onAddImage,
   onPresent,
+  onExportPptx,
   // Optional override — when the parent provides a custom preview handler
   // (e.g. opens its own modal at a higher z-index), use that instead of
   // the local `setPreviewOpen(true)` path. Preserves backwards-compat:
@@ -270,6 +271,7 @@ export default function PresentationWorkspace({
         // preview"), never the block gallery.
         onPreview={onPreviewProp || (() => setPreviewOpen(true))}
         onPresent={onPresent}
+        onExportPptx={onExportPptx}
         // Format shortcuts — operate on the focused contentEditable.
         onBold={() => runFormatCmd('bold')}
         onItalic={() => runFormatCmd('italic')}

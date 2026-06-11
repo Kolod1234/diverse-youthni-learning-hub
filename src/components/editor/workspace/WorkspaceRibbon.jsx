@@ -99,7 +99,7 @@ export default function WorkspaceRibbon(props) {
     onOpenDesignSocial, onImportDesignImage,
 
     // Review
-    onPreview, onPresent,
+    onPreview, onPresent, onExportPptx,
 
     // Inspector / notes toggles
     onToggleInspector, onToggleNotes,
@@ -109,7 +109,7 @@ export default function WorkspaceRibbon(props) {
   // Pre-compute which tabs have at least one wired action so we can
   // hide empty ones rather than render dead headings.
   const tabHasActions = {
-    home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent || onBold || onItalic || onAddTwoColumns),
+    home:    !!(onAddSlide || onDuplicateSlide || onDeleteSlide || onUndo || onRedo || onPreview || onPresent || onExportPptx || onBold || onItalic || onAddTwoColumns),
     insert:  !!(onAddImage || onAddText || onAddHeading || onAddList || onAddTable || onEditCode || onOpenTemplates || onOpenBlocks || onImportCanva || onImportFigma || onOpenAI),
     design:  !!(onOpenTemplates || onAddImage || onPreview ||
                  onOpenDesignBackgrounds || onOpenDesignBanners || onOpenDesignCards ||
@@ -210,6 +210,7 @@ export default function WorkspaceRibbon(props) {
             <Group label="Review">
               <Btn icon={Eye} label="Preview" title="Preview this slide" onClick={onPreview} />
               <Btn icon={Play} label="Present" title="Launch presenter" onClick={onPresent} accent />
+              <Btn icon={Download} label="Export PPTX" title="Download as PowerPoint (.pptx)" onClick={onExportPptx} />
             </Group>
           </>
         )}

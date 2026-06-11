@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import PresentationWorkspace from './PresentationWorkspace';
 import { blocksToHtml, htmlToBlocks } from '@/components/editor/lessonBuilder/htmlSerializer';
 import { createBlock } from '@/components/editor/lessonBuilder/blockTypes';
+import { exportSlidesToPptx } from './exportPptx';
 
 // Existing dialog/modal components that the workspace ribbon delegates to.
 // All of these are pre-existing surfaces — we don't fork them, we just open
@@ -328,6 +329,19 @@ export default function WorkspaceShell({
         onImportFigma={() => setShowFigmaImporter(true)}
         onPresent={() => setShowPresentation(true)}
         presentDisabled={slides.length === 0}
+        onExportPptx={async () => {
+          if (!slides.length) {
+            toast.error('Add at least one slide before exporting');
+            return;
+          }
+          const t = toast.loading('Building .pptx…');
+          try {
+            await exportSlidesToPptx(slides, 'lesson.pptx');
+            toast.success('PowerPoint downloaded', { id: t });
+          } catch (err) {
+            toast.error(`Export failed: ${err?.message || 'unknown error'}`, { id: t });
+          }
+        }}
       />
 
       {showPresentation && (
