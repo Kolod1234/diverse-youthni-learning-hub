@@ -96,7 +96,10 @@ export function migrateFlowToFrames(blocks) {
     const b = blocks[i];
     if (b.frame) { out.push(b); continue; }
     const size = TYPE_SIZE[b.type] || { w: 60, h: 18 };
-    const frame = clampFrame({ x: 6, y, w: 88, h: size.h, r: 0, z: i + 1 });
+    // Use the type's natural width so blocks have horizontal room to be
+    // dragged sideways. Don't stretch to 88% — that pins blocks to the
+    // left edge with virtually no horizontal travel.
+    const frame = clampFrame({ x: 6, y, w: size.w, h: size.h, r: 0, z: i + 1 });
     out.push({ ...b, frame });
     y = Math.min(94, y + frame.h + 2);
   }

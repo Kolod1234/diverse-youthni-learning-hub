@@ -135,7 +135,11 @@ export default function FreeBlock({
     >
       {/* Inner content — pointer events disabled while not selected so a
           click selects the frame; once selected, pointer events return
-          so the user can edit text, click image controls, etc. */}
+          so the user can edit text, click image controls, etc.
+          We deliberately DO NOT stop propagation here — the outer wrapper
+          needs to receive pointerdown so dragging keeps working after the
+          block is selected. The `begin` handler itself opts out of drag
+          when the pointer originates inside an editable element. */}
       <div
         style={{
           position: 'absolute', inset: 0,
@@ -143,7 +147,6 @@ export default function FreeBlock({
           pointerEvents: selected ? 'auto' : 'none',
           userSelect: selected ? 'auto' : 'none',
         }}
-        onPointerDown={(e) => { if (selected) e.stopPropagation(); }}
       >
         {children}
       </div>
