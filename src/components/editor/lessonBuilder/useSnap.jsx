@@ -24,7 +24,7 @@
 
 const REF_KEYS = ['start', 'center', 'end'];
 
-function buildTargets(otherFrames) {
+function buildTargets(otherFrames, gridStepPct) {
   // Returns { x: [{value, source}], y: [...] }
   const x = [
     { value: 0,   source: 'canvas-left'   },
@@ -44,6 +44,16 @@ function buildTargets(otherFrames) {
     y.push({ value: f.y + f.h / 2,   source: 'block-center' });
     y.push({ value: f.y + f.h,       source: 'block-bottom' });
   });
+  // Grid lines — added when snap-to-grid is enabled. We add every grid
+  // intersection from 0..100 so the closest one is picked alongside
+  // block/canvas targets. Grid snaps do NOT draw an alignment guide
+  // (the grid itself is already a visible reference).
+  if (gridStepPct && gridStepPct > 0) {
+    for (let v = 0; v <= 100 + 0.001; v += gridStepPct) {
+      x.push({ value: Math.min(100, v), source: 'grid' });
+      y.push({ value: Math.min(100, v), source: 'grid' });
+    }
+  }
   return { x, y };
 }
 
@@ -75,7 +85,7 @@ function bestSnap(refs, targets, thresholdPct) {
       const d = t.value - refVal;
       const ad = Math.abs(d);
       if (ad <= thresholdPct && (!best || ad < best.absDelta)) {
-        best = { delta: d, absDelta: ad, target: t.value, ref: key };
+        best = { delta: d, absDelta: ad, target: t.value, ref: key, source: t.source };
       }
     });
   });
@@ -98,6 +108,7 @@ export function computeSnap({
   hostWidthPx,      // canvas width in px (for px → % threshold conversion)
   hostHeightPx,
   thresholdPx = 6,  // snap radius in px
+  gridStepPct = 0,  // > 0 enables snap-to-grid at this spacing (in %)
 }) {
   if (!hostWidthPx || !hostHeightPx) {
     return { x: frame.x, y: frame.y, guides: [] };
@@ -107,7 +118,7 @@ export function computeSnap({
   const thyPct = (thresholdPx / hostHeightPx) * 100;
 
   const refs = movingRefs(frame);
-  const { x: xTargets, y: yTargets } = buildTargets(otherFrames);
+  const { x: xTargets, y: yTargets } = buildTargets(otherFrames, gridStepPct);
 
   const xSnap = bestSnap(refs.x, xTargets, thxPct);
   const ySnap = bestSnap(refs.y, yTargets, thyPct);
@@ -120,7 +131,9 @@ export function computeSnap({
   // top/leftmost edge of the moving (post-snap) frame and the
   // closest contributing source so the line reaches both.
   const guides = [];
-  if (xSnap) {
+  // Grid snaps don't produce alignment guides — the grid lines themselves
+  // are the visible reference and adding pink rules on top is noisy.
+  if (xSnap && xSnap.source !== 'grid') {
     // For a vertical guide we need a y-span covering the moving frame
     // and any block whose edge equals the snapped x value.
     let top = ny;
@@ -134,7 +147,7 @@ export function computeSnap({
     });
     guides.push({ axis: 'x', value: xSnap.target, span: [top, bot] });
   }
-  if (ySnap) {
+  if (ySnap && ySnap.source !== 'grid') {
     let left = nx;
     let right = nx + frame.w;
     otherFrames.forEach((f) => {

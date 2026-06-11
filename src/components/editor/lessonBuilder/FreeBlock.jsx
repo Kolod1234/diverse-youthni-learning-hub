@@ -90,6 +90,7 @@ export default function FreeBlock({
             hostWidthPx: d.host.width,
             hostHeightPx: d.host.height,
             thresholdPx: 6,
+            gridStepPct: ctx.gridStepPct || 0,
           });
           nx = clamp(sx, 0, 100 - s.w);
           ny = clamp(sy, 0, 100 - s.h);

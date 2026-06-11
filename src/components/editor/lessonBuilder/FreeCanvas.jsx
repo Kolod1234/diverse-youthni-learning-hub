@@ -3,6 +3,15 @@ import FreeBlock from './FreeBlock';
 import BlockRenderer from './BlockRenderer';
 import GroupSelectionOverlay from './GroupSelectionOverlay';
 import { getFrame, clampFrame } from './freeFrame';
+import { Grid3x3 } from 'lucide-react';
+
+// Grid size options expressed as % of canvas. A 16:9 canvas is 100% wide,
+// so 5% ≈ 64px at a 1280px canvas — a comfortable design grid.
+const GRID_SIZES = [
+  { label: 'S', value: 2.5 },
+  { label: 'M', value: 5   },
+  { label: 'L', value: 10  },
+];
 
 // FreeCanvas
 // ---------------------------------------------------------------
@@ -59,6 +68,20 @@ export default function FreeCanvas({
   // active FreeBlock via the onSnapGuides callback. Each entry is
   // { axis: 'x'|'y', value: number (%), span: [from, to] (%) }.
   const [snapGuides, setSnapGuides] = useState([]);
+
+  // Grid overlay + snap-to-grid. Persisted to localStorage so the
+  // tutor's preference survives reloads. Grid step is in % of canvas.
+  const [gridOn, setGridOn] = useState(() => {
+    try { return localStorage.getItem('fc:gridOn') === '1'; } catch { return false; }
+  });
+  const [gridStep, setGridStep] = useState(() => {
+    try {
+      const v = parseFloat(localStorage.getItem('fc:gridStep'));
+      return GRID_SIZES.some(g => g.value === v) ? v : 5;
+    } catch { return 5; }
+  });
+  useEffect(() => { try { localStorage.setItem('fc:gridOn', gridOn ? '1' : '0'); } catch {} }, [gridOn]);
+  useEffect(() => { try { localStorage.setItem('fc:gridStep', String(gridStep)); } catch {} }, [gridStep]);
   // Keep latest blocks in a ref so the snap context lookup doesn't
   // need to re-bind a stale closure on every render of FreeBlock.
   const blocksRef = useRef(blocks);
@@ -334,6 +357,71 @@ export default function FreeCanvas({
         touchAction: 'none',
       }}
     >
+      {/* Grid overlay — sits behind blocks, ignores pointer events.
+          Drawn as two crossed repeating gradients with cell size in %
+          of the canvas, so it scales with any host width and stays
+          aligned with the snap calculations (which also work in %). */}
+      {gridOn && (
+        <div
+          aria-hidden="true"
+          style={{
+            position: 'absolute',
+            inset: 0,
+            pointerEvents: 'none',
+            zIndex: 0,
+            backgroundImage:
+              `repeating-linear-gradient(0deg,  transparent 0 calc(${gridStep}% - 1px), rgba(99,102,241,0.18) calc(${gridStep}% - 1px) ${gridStep}%),` +
+              `repeating-linear-gradient(90deg, transparent 0 calc(${gridStep}% - 1px), rgba(99,102,241,0.18) calc(${gridStep}% - 1px) ${gridStep}%)`,
+          }}
+        />
+      )}
+
+      {/* Grid toolbar — top-right corner, only the canvas owns it so
+          it stays consistent across every host that mounts FreeCanvas. */}
+      <div
+        style={{
+          position: 'absolute',
+          top: 8, right: 8,
+          display: 'inline-flex', alignItems: 'center', gap: 4,
+          padding: '4px 6px',
+          background: 'rgba(31,41,55,0.92)', color: '#fff',
+          borderRadius: 8, fontSize: 11,
+          boxShadow: '0 4px 12px rgba(0,0,0,0.18)',
+          zIndex: 9999,
+        }}
+        onPointerDown={(e) => e.stopPropagation()}
+        onDoubleClick={(e) => e.stopPropagation()}
+      >
+        <button
+          type="button"
+          title={gridOn ? 'Hide grid' : 'Show grid (snap to grid)'}
+          onClick={() => setGridOn((v) => !v)}
+          style={{
+            width: 24, height: 24, padding: 0, border: 'none', borderRadius: 4,
+            background: gridOn ? '#6366f1' : 'transparent',
+            color: '#fff', cursor: 'pointer',
+            display: 'inline-flex', alignItems: 'center', justifyContent: 'center',
+          }}
+        >
+          <Grid3x3 className="w-3.5 h-3.5" />
+        </button>
+        {gridOn && GRID_SIZES.map((g) => (
+          <button
+            key={g.value}
+            type="button"
+            title={`Grid ${g.label}`}
+            onClick={() => setGridStep(g.value)}
+            style={{
+              width: 22, height: 22, padding: 0, border: 'none', borderRadius: 4,
+              background: gridStep === g.value ? 'rgba(255,255,255,0.18)' : 'transparent',
+              color: '#fff', cursor: 'pointer', fontSize: 11, fontWeight: 600,
+            }}
+          >
+            {g.label}
+          </button>
+        ))}
+      </div>
+
       {blocks.map((b, idx) => {
         const frame = getFrame(b);
         const isSelected = selectedIds.has(b.id);
@@ -395,6 +483,8 @@ export default function FreeCanvas({
               otherFrames: blocksRef.current
                 .filter((bb) => bb.id !== b.id && !(isGroupMember && selectedIds.has(bb.id)))
                 .map((bb) => getFrame(bb)),
+              // Snap to grid when the overlay is visible.
+              gridStepPct: gridOn ? gridStep : 0,
             })}
             onSnapGuides={setSnapGuides}
           >
