@@ -1,6 +1,7 @@
 import React, { useRef, useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Droplet, Paintbrush, Ban } from 'lucide-react';
+import BlockSettingsPanel from './BlockSettingsPanel';
 
 /**
  * ShapeBlock — renders an inline SVG shape with configurable fill, outline, and colors.
@@ -48,10 +49,23 @@ export default function ShapeBlock({ data, focused, onChange }) {
     };
   }, [focused]);
 
+  const strokeOnly = STROKE_ONLY_SHAPES.has(shape);
+  const panelLabel = strokeOnly ? 'Line properties' : 'Shape properties';
+
   return (
     <div ref={wrapperRef} className="w-full h-full flex flex-col items-center justify-center bg-transparent relative">
       <ShapeSVG merged={merged} />
 
+      {/* In-flow properties panel — appears in the standard "Block settings"
+          strip (same indigo container used by Image/Video/Table) so the
+          controls are discoverable even when the floating toolbar is hidden
+          behind another element or off-screen. */}
+      <BlockSettingsPanel label={panelLabel}>
+        <Controls merged={merged} update={update} />
+      </BlockSettingsPanel>
+
+      {/* Floating quick-access toolbar — unchanged. Stays portaled below the
+          shape for fast edits when the block is focused on the canvas. */}
       {focused && toolbarPos && typeof document !== 'undefined' && createPortal(
         <div
           style={{
