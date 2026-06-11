@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useRef, useEffect, useState } from 'react';
+import { createPortal } from 'react-dom';
 import { Droplet, Paintbrush, Ban } from 'lucide-react';
 
 /**
@@ -20,16 +21,52 @@ export default function ShapeBlock({ data, focused, onChange }) {
     onChange({ ...merged, ...patch });
   };
 
+  const wrapperRef = useRef(null);
+  const [toolbarPos, setToolbarPos] = useState(null);
+
+  // Position the floating toolbar using a portal so it escapes the FreeBlock's
+  // overflow:hidden container. Tracks the wrapper's bounding rect on every
+  // selection and on scroll/resize while focused.
+  useEffect(() => {
+    if (!focused || !wrapperRef.current) {
+      setToolbarPos(null);
+      return;
+    }
+    const update = () => {
+      const r = wrapperRef.current?.getBoundingClientRect();
+      if (!r) return;
+      setToolbarPos({ left: r.left + r.width / 2, top: r.bottom + 8 });
+    };
+    update();
+    window.addEventListener('scroll', update, true);
+    window.addEventListener('resize', update);
+    const interval = setInterval(update, 100); // catch drag/resize of the FreeBlock
+    return () => {
+      window.removeEventListener('scroll', update, true);
+      window.removeEventListener('resize', update);
+      clearInterval(interval);
+    };
+  }, [focused]);
+
   return (
-    <div className="w-full h-full flex flex-col items-center justify-center bg-transparent relative">
-      {/* SVG Shape */}
+    <div ref={wrapperRef} className="w-full h-full flex flex-col items-center justify-center bg-transparent relative">
       <ShapeSVG merged={merged} />
 
-      {/* Floating Toolbar — appears when focused */}
-      {focused && (
-        <div className="absolute -bottom-16 left-1/2 transform -translate-x-1/2 z-50">
+      {focused && toolbarPos && typeof document !== 'undefined' && createPortal(
+        <div
+          style={{
+            position: 'fixed',
+            left: toolbarPos.left,
+            top: toolbarPos.top,
+            transform: 'translateX(-50%)',
+            zIndex: 9999,
+          }}
+          onPointerDown={(e) => e.stopPropagation()}
+          onMouseDown={(e) => e.stopPropagation()}
+        >
           <Controls merged={merged} update={update} />
-        </div>
+        </div>,
+        document.body
       )}
     </div>
   );
