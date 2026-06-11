@@ -450,7 +450,7 @@ function Column({ title, side, blocks, onChange, renderChild, nestedExpandedKey,
 
   return (
     <div
-      className="border border-dashed border-gray-200 rounded p-1 min-w-0 overflow-hidden"
+      className="border border-dashed border-gray-200 rounded p-1 min-w-0"
       aria-label={`${title} column`}
       style={{ overflowWrap: 'anywhere', wordBreak: 'break-word', maxWidth: '100%' }}
     >
