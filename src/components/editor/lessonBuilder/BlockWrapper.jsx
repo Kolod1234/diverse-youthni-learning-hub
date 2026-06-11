@@ -95,7 +95,7 @@ export default function BlockWrapper({
           accordion toggle, and the existing move/duplicate/delete actions. */}
       <div className="flex items-center gap-1 px-3 pt-2">
         <span className="text-[11px] uppercase tracking-wider text-gray-400 font-semibold mr-auto select-none">
-          {blockTypeLabel(block.type)}
+          {block.type === 'legacy-html' ? '' : blockTypeLabel(block.type)}
         </span>
 
         <button

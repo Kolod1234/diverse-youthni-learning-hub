@@ -497,8 +497,7 @@ function LegacyHtmlBlock({ html, onChange }) {
   const [edit, setEdit] = React.useState(false);
   return (
     <div className="border border-amber-200 bg-amber-50/40 rounded p-2">
-      <div className="flex items-center justify-between mb-1.5">
-        <span className="text-[10px] uppercase tracking-widest text-amber-700 font-bold">⚠ Legacy HTML</span>
+      <div className="flex items-center justify-end mb-1.5">
         <button type="button" onClick={() => setEdit(e => !e)} className="text-xs text-amber-700 hover:underline">
           {edit ? 'Preview' : 'Edit source'}
         </button>
