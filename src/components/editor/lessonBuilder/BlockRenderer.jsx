@@ -494,35 +494,58 @@ function KnowledgeCheckBlock({ data, onChange }) {
 }
 
 function LegacyHtmlBlock({ html, onChange }) {
-  const [edit, setEdit] = React.useState(false);
+  // "Legacy HTML" blocks come from templates that use custom card styling.
+  // Most tutors only want to change the wording — not the HTML — so by default
+  // we render the styled preview AND make every text node directly editable
+  // in place via contentEditable. An "Edit source" escape hatch is still
+  // available for power users.
+  const [sourceMode, setSourceMode] = React.useState(false);
+  const previewRef = useRef(null);
+  const lastHtmlRef = useRef(html);
+
+  // Keep the rendered DOM in sync when html prop changes from outside
+  // (template apply, undo/redo) — but NOT while the user is typing, or the
+  // caret would jump to the start of the editable region on every keystroke.
+  useEffect(() => {
+    if (sourceMode) return;
+    if (!previewRef.current) return;
+    if (lastHtmlRef.current === html) return;
+    previewRef.current.innerHTML = html || '';
+    lastHtmlRef.current = html;
+  }, [html, sourceMode]);
+
+  const handleInput = () => {
+    const next = previewRef.current?.innerHTML || '';
+    lastHtmlRef.current = next;
+    onChange(next);
+  };
+
   return (
-    <div className="border border-amber-200 bg-amber-50/40 rounded p-2">
+    <div className="rounded">
       <div className="flex items-center justify-end mb-1.5">
-        <button type="button" onClick={() => setEdit(e => !e)} className="text-xs text-amber-700 hover:underline">
-          {edit ? 'Preview' : 'Edit source'}
+        <button
+          type="button"
+          onClick={() => setSourceMode(s => !s)}
+          className="text-xs text-gray-500 hover:text-gray-800 hover:underline"
+        >
+          {sourceMode ? 'Done editing source' : 'Edit source'}
         </button>
       </div>
-      {edit ? (
-        <>
-          <p className="text-[11px] text-amber-700 mb-1">
-            Edit the HTML below. Replace the placeholder text (e.g. “Click to edit. Add the message…”) with your own copy, then click <strong>Preview</strong>.
-          </p>
-          <textarea
-            value={html || ''}
-            onChange={(e) => onChange(e.target.value)}
-            className="w-full font-mono text-xs bg-white border border-amber-200 rounded p-2 outline-none min-h-[160px]"
-            spellCheck={false}
-            autoFocus
-          />
-        </>
+      {sourceMode ? (
+        <textarea
+          value={html || ''}
+          onChange={(e) => onChange(e.target.value)}
+          className="w-full font-mono text-xs bg-white border border-gray-200 rounded p-2 outline-none min-h-[160px]"
+          spellCheck={false}
+          autoFocus
+        />
       ) : (
         <div
-          role="button"
-          tabIndex={0}
-          onClick={() => setEdit(true)}
-          onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setEdit(true); } }}
-          title="Click to edit the HTML source"
-          className="bg-white rounded p-2 cursor-text hover:ring-2 hover:ring-amber-300 transition-shadow"
+          ref={previewRef}
+          contentEditable
+          suppressContentEditableWarning
+          onInput={handleInput}
+          className="bg-white rounded p-2 outline-none focus:ring-2 focus:ring-indigo-200"
           dangerouslySetInnerHTML={{ __html: html || '' }}
         />
       )}
