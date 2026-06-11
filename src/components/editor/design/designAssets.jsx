@@ -20,23 +20,72 @@ const svg = (markup, w = 400, h = 200) =>
 // ---------------------------------------------------------------
 // Social media icons
 // ---------------------------------------------------------------
-const socialIcon = (label, bg, glyph) =>
+// Uses the official brand SVG paths from `react-icons/si` (Simple Icons)
+// and `react-icons/md` for the generic email icon. We render them as
+// inline-SVG data URIs so they slot straight into the existing image
+// insertion pipeline (no React component rendering needed for picker
+// thumbnails or inserted blocks).
+import {
+  SiFacebook,
+  SiInstagram,
+  SiX,
+  SiYoutube,
+  SiTiktok,
+  SiWhatsapp,
+  SiPinterest,
+  SiSnapchat,
+  SiReddit,
+  SiDiscord,
+  SiTelegram,
+  SiGithub,
+} from 'react-icons/si';
+import { FaLinkedinIn } from 'react-icons/fa';
+import { MdEmail } from 'react-icons/md';
+
+// React-icons exposes each icon as a React component whose first child is
+// the raw SVG <path>. Extract that path so we can wrap it in our own
+// branded rounded-square tile.
+const extractPath = (IconComponent) => {
+  const node = IconComponent({}).props.children;
+  // Some icons have multiple paths — normalise to array.
+  const children = Array.isArray(node) ? node : [node];
+  return children
+    .map((child) => {
+      if (!child || !child.props) return '';
+      const { d, fillRule, clipRule } = child.props;
+      if (!d) return '';
+      const attrs = [`d="${d}"`];
+      if (fillRule) attrs.push(`fill-rule="${fillRule}"`);
+      if (clipRule) attrs.push(`clip-rule="${clipRule}"`);
+      return `<path ${attrs.join(' ')} fill="#fff"/>`;
+    })
+    .join('');
+};
+
+const brandIcon = (IconComponent, bg) =>
   svg(
     `<rect width="120" height="120" rx="24" fill="${bg}"/>` +
-      `<text x="60" y="78" font-family="Arial, sans-serif" font-size="56" font-weight="700" text-anchor="middle" fill="#fff">${glyph}</text>`,
+      // The source SVG uses a 24x24 viewBox — scale to ~64px and centre.
+      `<g transform="translate(28 28) scale(2.667)">${extractPath(IconComponent)}</g>`,
     120,
     120
   );
 
 export const SOCIAL_ICONS = [
-  { id: 'soc-fb', name: 'Facebook', url: socialIcon('Facebook', '#1877F2', 'f') },
-  { id: 'soc-ig', name: 'Instagram', url: socialIcon('Instagram', '#E1306C', '◎') },
-  { id: 'soc-tw', name: 'X / Twitter', url: socialIcon('Twitter', '#000000', '𝕏') },
-  { id: 'soc-yt', name: 'YouTube', url: socialIcon('YouTube', '#FF0000', '▶') },
-  { id: 'soc-li', name: 'LinkedIn', url: socialIcon('LinkedIn', '#0A66C2', 'in') },
-  { id: 'soc-tt', name: 'TikTok', url: socialIcon('TikTok', '#000000', '♪') },
-  { id: 'soc-wa', name: 'WhatsApp', url: socialIcon('WhatsApp', '#25D366', '✆') },
-  { id: 'soc-em', name: 'Email', url: socialIcon('Email', '#475569', '✉') },
+  { id: 'soc-fb', name: 'Facebook', url: brandIcon(SiFacebook, '#1877F2') },
+  { id: 'soc-ig', name: 'Instagram', url: brandIcon(SiInstagram, '#E4405F') },
+  { id: 'soc-x', name: 'X / Twitter', url: brandIcon(SiX, '#000000') },
+  { id: 'soc-yt', name: 'YouTube', url: brandIcon(SiYoutube, '#FF0000') },
+  { id: 'soc-li', name: 'LinkedIn', url: brandIcon(FaLinkedinIn, '#0A66C2') },
+  { id: 'soc-tt', name: 'TikTok', url: brandIcon(SiTiktok, '#000000') },
+  { id: 'soc-wa', name: 'WhatsApp', url: brandIcon(SiWhatsapp, '#25D366') },
+  { id: 'soc-tg', name: 'Telegram', url: brandIcon(SiTelegram, '#26A5E4') },
+  { id: 'soc-pin', name: 'Pinterest', url: brandIcon(SiPinterest, '#BD081C') },
+  { id: 'soc-sc', name: 'Snapchat', url: brandIcon(SiSnapchat, '#FFFC00') },
+  { id: 'soc-rd', name: 'Reddit', url: brandIcon(SiReddit, '#FF4500') },
+  { id: 'soc-dc', name: 'Discord', url: brandIcon(SiDiscord, '#5865F2') },
+  { id: 'soc-gh', name: 'GitHub', url: brandIcon(SiGithub, '#181717') },
+  { id: 'soc-em', name: 'Email', url: brandIcon(MdEmail, '#475569') },
 ];
 
 // ---------------------------------------------------------------
