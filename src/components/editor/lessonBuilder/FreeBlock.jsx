@@ -1,5 +1,5 @@
 import React, { useRef, useCallback, useEffect } from 'react';
-import { RotateCw, Copy, Trash2, ChevronUp, ChevronDown } from 'lucide-react';
+import { RotateCw, Copy, Trash2, ChevronUp, ChevronDown, BringToFront, SendToBack } from 'lucide-react';
 
 // FreeBlock
 // ---------------------------------------------------------------
@@ -24,7 +24,9 @@ const clamp = (n, lo, hi) => Math.max(lo, Math.min(hi, n));
 
 export default function FreeBlock({
   frame, selected, onSelect, onChange,
-  onDuplicate, onDelete, onBringForward, onSendBackward,
+  onDuplicate, onDelete,
+  onBringForward, onSendBackward,
+  onBringToFront, onSendToBack,
   hostRectRef,    // ref to the canvas DOMRect getter
   children,
 }) {
@@ -169,8 +171,11 @@ export default function FreeBlock({
             }}
             onPointerDown={(e) => e.stopPropagation()}
           >
+            <ToolBtn title="Bring to front" onClick={onBringToFront}><BringToFront className="w-3 h-3" /></ToolBtn>
             <ToolBtn title="Bring forward" onClick={onBringForward}><ChevronUp className="w-3 h-3" /></ToolBtn>
             <ToolBtn title="Send backward" onClick={onSendBackward}><ChevronDown className="w-3 h-3" /></ToolBtn>
+            <ToolBtn title="Send to back" onClick={onSendToBack}><SendToBack className="w-3 h-3" /></ToolBtn>
+            <span style={{ width: 1, height: 14, background: 'rgba(255,255,255,0.2)', margin: '0 2px' }} />
             <ToolBtn title="Duplicate" onClick={onDuplicate}><Copy className="w-3 h-3" /></ToolBtn>
             <ToolBtn title="Delete" onClick={onDelete}><Trash2 className="w-3 h-3" /></ToolBtn>
           </div>

@@ -67,7 +67,38 @@ export default function FreeCanvas({
     }, { immediate: true });
   }, [onChangeBlocks]);
 
+  // Move the selected block one layer up (above the next-highest z).
   const bringForward = useCallback((idx) => {
+    onChangeBlocks((prev) => {
+      const next = [...prev];
+      const f = getFrame(next[idx]);
+      const above = prev
+        .map((b, i) => ({ z: getFrame(b).z || 1, i }))
+        .filter(({ z, i }) => i !== idx && z > (f.z || 1))
+        .sort((a, b) => a.z - b.z)[0];
+      const newZ = above ? above.z + 1 : (f.z || 1);
+      next[idx] = { ...next[idx], frame: { ...f, z: newZ } };
+      return next;
+    }, { immediate: true });
+  }, [onChangeBlocks]);
+
+  // Move the selected block one layer down (below the next-lowest z).
+  const sendBackward = useCallback((idx) => {
+    onChangeBlocks((prev) => {
+      const next = [...prev];
+      const f = getFrame(next[idx]);
+      const below = prev
+        .map((b, i) => ({ z: getFrame(b).z || 1, i }))
+        .filter(({ z, i }) => i !== idx && z < (f.z || 1))
+        .sort((a, b) => b.z - a.z)[0];
+      const newZ = below ? Math.max(0, below.z - 1) : (f.z || 1);
+      next[idx] = { ...next[idx], frame: { ...f, z: newZ } };
+      return next;
+    }, { immediate: true });
+  }, [onChangeBlocks]);
+
+  // Jump the selected block to the very top of the stacking order.
+  const bringToFront = useCallback((idx) => {
     onChangeBlocks((prev) => {
       const maxZ = prev.reduce((m, b) => Math.max(m, getFrame(b).z || 1), 0);
       const next = [...prev];
@@ -77,12 +108,13 @@ export default function FreeCanvas({
     }, { immediate: true });
   }, [onChangeBlocks]);
 
-  const sendBackward = useCallback((idx) => {
+  // Jump the selected block to the very bottom of the stacking order.
+  const sendToBack = useCallback((idx) => {
     onChangeBlocks((prev) => {
       const minZ = prev.reduce((m, b) => Math.min(m, getFrame(b).z || 1), Infinity);
       const next = [...prev];
       const f = getFrame(next[idx]);
-      next[idx] = { ...next[idx], frame: { ...f, z: Math.max(0, minZ - 1) } };
+      next[idx] = { ...next[idx], frame: { ...f, z: Math.max(0, (Number.isFinite(minZ) ? minZ : 1) - 1) } };
       return next;
     }, { immediate: true });
   }, [onChangeBlocks]);
@@ -150,6 +182,8 @@ export default function FreeCanvas({
             onDelete={() => deleteAt(idx)}
             onBringForward={() => bringForward(idx)}
             onSendBackward={() => sendBackward(idx)}
+            onBringToFront={() => bringToFront(idx)}
+            onSendToBack={() => sendToBack(idx)}
             hostRectRef={hostRectRef}
           >
             <BlockRenderer
