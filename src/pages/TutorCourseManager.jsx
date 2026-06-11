@@ -298,18 +298,18 @@ export default function TutorCourseManager() {
           Back to Dashboard
         </Link>
 
-        <div className="mb-8">
+        <div className="mb-8 text-center">
           <h1 className="text-3xl font-bold text-gray-900 mb-2">Manage Course Lessons</h1>
           <p className="text-gray-500">{course?.title}</p>
         </div>
 
         <Card className="p-6 mb-6">
-        <div className="flex items-center justify-between mb-6">
-          <div>
+        <div className="flex flex-col items-center gap-4 mb-6">
+          <div className="text-center">
             <h2 className="text-xl font-semibold">Course Structure</h2>
             <p className="text-sm text-gray-500 mt-1">Organize your course into sections and lessons. Drag to reorder.</p>
           </div>
-          <div className="flex gap-2">
+          <div className="flex flex-wrap justify-center gap-2">
             <Button 
               onClick={() => setShowAIGenerator(true)} 
               className="bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
@@ -336,11 +336,11 @@ export default function TutorCourseManager() {
 
         {/* Import from Google Slides */}
         <Card className="p-4 mb-6 bg-gradient-to-r from-blue-50 to-indigo-50 border-blue-200">
-          <div className="flex items-center gap-3 mb-3">
+          <div className="flex flex-col items-center gap-2 mb-3 text-center">
             <div className="w-10 h-10 bg-blue-500 rounded-lg flex items-center justify-center">
               <Download className="w-5 h-5 text-white" />
             </div>
-            <div className="flex-1">
+            <div>
               <h3 className="font-semibold text-gray-900">Import from Google Slides</h3>
               <p className="text-sm text-gray-600">Paste a Google Slides presentation link</p>
             </div>
