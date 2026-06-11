@@ -27,6 +27,9 @@ export default function FreeBlock({
   onDuplicate, onDelete,
   onBringForward, onSendBackward,
   onBringToFront, onSendToBack,
+  // When true, the per-block toolbar / rotate / resize handles are hidden.
+  // Used while a group selection overlay owns the transforms instead.
+  suppressChrome = false,
   hostRectRef,    // ref to the canvas DOMRect getter
   children,
 }) {
@@ -102,7 +105,9 @@ export default function FreeBlock({
 
     e.preventDefault();
     e.stopPropagation();
-    onSelect?.();
+    // Pass the original event so the canvas can honour Shift/Cmd/Ctrl
+    // for additive multi-selection.
+    onSelect?.(e);
     const host = hostRectRef.current?.();
     if (!host) return;
     dragRef.current = {
@@ -153,8 +158,8 @@ export default function FreeBlock({
         {children}
       </div>
 
-      {/* Selection chrome */}
-      {selected && (
+      {/* Selection chrome — hidden when a group overlay owns the transforms */}
+      {selected && !suppressChrome && (
         <>
           {/* Toolbar above */}
           <div
