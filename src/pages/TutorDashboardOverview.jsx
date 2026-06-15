@@ -81,15 +81,26 @@ export default function TutorDashboardOverview() {
     enabled: !!user?.email,
   });
 
+  // Admins see all sessions (matches TutorSessionsDashboard behaviour); tutors see their own.
   const { data: sessions = [] } = useQuery({
-    queryKey: ['tutor-sessions', user?.email],
-    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 50),
+    queryKey: ['tutor-sessions-overview', user?.email, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.VideoSession.list('-scheduled_date', 200);
+      }
+      return base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 50);
+    },
     enabled: !!user?.email,
   });
 
   const { data: bookings = [] } = useQuery({
-    queryKey: ['tutor-bookings', user?.email],
-    queryFn: () => base44.entities.SessionBooking.filter({ tutor_email: user?.email }, '-created_date', 50),
+    queryKey: ['tutor-bookings-overview', user?.email, user?.role],
+    queryFn: () => {
+      if (user?.role === 'admin') {
+        return base44.entities.SessionBooking.list('-created_date', 100);
+      }
+      return base44.entities.SessionBooking.filter({ tutor_email: user?.email }, '-created_date', 50);
+    },
     enabled: !!user?.email,
   });
 
