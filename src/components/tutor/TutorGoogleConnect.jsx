@@ -1,45 +1,63 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { base44 } from '@/api/base44Client';
 import { Button } from '@/components/ui/button';
-import { CheckCircle2, Link2, Loader2, LogOut } from 'lucide-react';
+import { CheckCircle2, Link2, Loader2, LogOut, AlertCircle } from 'lucide-react';
 
-// ID of the "Tutor Google Calendar" workspace connector registered for this app.
-// Each tutor connects their OWN Google account so Meet sessions are hosted on their calendar.
+// ID of the "Tutor Google Calendar" workspace connector (APP_USER mode).
+// Each tutor connects their OWN Google account so Meet sessions are hosted on
+// their calendar (like Zoom). Connection state is verified server-side against
+// a real OAuth grant — never derived from popup-close, never self-declared.
 const CONNECTOR_ID = '6a2ff9b66b58a1afd53c7b4c';
 
 export default function TutorGoogleConnect() {
-  const [status, setStatus] = useState('checking'); // checking | connected | disconnected
+  const [status, setStatus] = useState('checking'); // checking | connected | disconnected | error
+  const [connectedEmail, setConnectedEmail] = useState(null);
   const [busy, setBusy] = useState(false);
+  const [errorMsg, setErrorMsg] = useState(null);
 
-  // We probe by attempting to create an OAuth URL through a tiny test: the only reliable
-  // way to know if the user is connected is to invoke a backend function that uses the
-  // connection. We piggy-back on the existing createGoogleMeetSession by NOT actually
-  // calling it (it would create a meeting). Instead we check by trying to connect and
-  // letting Base44 short-circuit if already authorized — but that opens a popup.
-  // Simpler approach: track connection state in user prefs after a successful connect.
-  useEffect(() => {
-    base44.auth.me()
-      .then(u => setStatus(u?.google_calendar_connected ? 'connected' : 'disconnected'))
-      .catch(() => setStatus('disconnected'));
+  const verify = useCallback(async () => {
+    try {
+      const res = await base44.functions.invoke('checkTutorGoogleConnection', {});
+      const data = res?.data || {};
+      if (data.connected) {
+        setConnectedEmail(data.email || null);
+        setStatus('connected');
+      } else {
+        setConnectedEmail(null);
+        setStatus('disconnected');
+      }
+      setErrorMsg(null);
+    } catch (e) {
+      setStatus('error');
+      setErrorMsg(e?.message || 'Could not check connection');
+    }
   }, []);
+
+  useEffect(() => { verify(); }, [verify]);
 
   const handleConnect = async () => {
     setBusy(true);
+    setErrorMsg(null);
     try {
       const url = await base44.connectors.connectAppUser(CONNECTOR_ID);
       const popup = window.open(url, '_blank', 'width=520,height=640');
+      if (!popup) {
+        setBusy(false);
+        setErrorMsg('Popup was blocked. Please allow popups and try again.');
+        return;
+      }
+      // When the popup closes, verify against the server. Popup-closed alone
+      // does NOT imply consent — the user may have cancelled or hit an error.
       const timer = setInterval(async () => {
-        if (!popup || popup.closed) {
+        if (popup.closed) {
           clearInterval(timer);
-          // Mark as connected on the user record so the UI persists across reloads.
-          await base44.auth.updateMe({ google_calendar_connected: true });
-          setStatus('connected');
+          await verify();
           setBusy(false);
         }
       }, 500);
     } catch (e) {
       setBusy(false);
-      alert('Could not start Google connection: ' + (e?.message || e));
+      setErrorMsg(e?.message || 'Could not start Google connection');
     }
   };
 
@@ -48,8 +66,7 @@ export default function TutorGoogleConnect() {
     try {
       await base44.connectors.disconnectAppUser(CONNECTOR_ID);
     } catch (_) { /* ignore */ }
-    await base44.auth.updateMe({ google_calendar_connected: false });
-    setStatus('disconnected');
+    await verify();
     setBusy(false);
   };
 
@@ -72,9 +89,14 @@ export default function TutorGoogleConnect() {
 
       {status === 'connected' && (
         <div className="space-y-2">
-          <div className="flex items-center gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
-            <CheckCircle2 className="w-4 h-4" />
-            <span>Connected — sessions host on your Google account</span>
+          <div className="flex items-start gap-2 text-sm text-emerald-700 bg-emerald-50 border border-emerald-200 rounded-lg px-3 py-2">
+            <CheckCircle2 className="w-4 h-4 mt-0.5 flex-shrink-0" />
+            <div>
+              <div>Connected — sessions host on your Google account</div>
+              {connectedEmail && (
+                <div className="text-xs text-emerald-800/80 mt-0.5">{connectedEmail}</div>
+              )}
+            </div>
           </div>
           <Button
             variant="outline"
@@ -90,15 +112,34 @@ export default function TutorGoogleConnect() {
       )}
 
       {status === 'disconnected' && (
-        <Button
-          size="sm"
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
-          onClick={handleConnect}
-          disabled={busy}
-        >
-          {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
-          Connect Google Calendar
-        </Button>
+        <>
+          <Button
+            size="sm"
+            className="w-full bg-blue-600 hover:bg-blue-700 text-white gap-2"
+            onClick={handleConnect}
+            disabled={busy}
+          >
+            {busy ? <Loader2 className="w-4 h-4 animate-spin" /> : <Link2 className="w-4 h-4" />}
+            Connect Google Calendar
+          </Button>
+          {errorMsg && (
+            <div className="mt-2 flex items-start gap-1.5 text-xs text-red-600">
+              <AlertCircle className="w-3.5 h-3.5 mt-0.5 flex-shrink-0" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+        </>
+      )}
+
+      {status === 'error' && (
+        <div className="flex items-start gap-2 text-sm text-amber-700 bg-amber-50 border border-amber-200 rounded-lg px-3 py-2">
+          <AlertCircle className="w-4 h-4 mt-0.5 flex-shrink-0" />
+          <div>
+            <div>Could not verify connection.</div>
+            {errorMsg && <div className="text-xs mt-0.5">{errorMsg}</div>}
+            <button onClick={verify} className="text-xs underline mt-1">Retry</button>
+          </div>
+        </div>
       )}
     </div>
   );
