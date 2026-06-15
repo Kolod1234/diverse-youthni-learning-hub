@@ -25,9 +25,16 @@ Deno.serve(async (req) => {
         const endDateTime = new Date(startDateTime.getTime() + (sessionData.duration_minutes || 60) * 60000);
 
         // Create attendees list (exclude empty/null emails)
-        const attendees = (sessionData.invited_students || [])
-            .filter(email => email && typeof email === 'string')
-            .map(email => ({ email }));
+        // Include the tutor (current user) so the event appears on their personal Google Calendar
+        // via the email invite — they can "Add to calendar" with one click from their inbox.
+        const tutorEmail = sessionData.tutor_email || user.email;
+        const studentEmails = (sessionData.invited_students || [])
+            .filter(email => email && typeof email === 'string');
+        const attendeeEmails = Array.from(new Set([tutorEmail, ...studentEmails].filter(Boolean)));
+        const attendees = attendeeEmails.map(email => ({
+            email,
+            ...(email === tutorEmail ? { organizer: true, responseStatus: 'accepted' } : {})
+        }));
 
         // Create Google Calendar event with Meet link
         const requestId = sessionData.meeting_room_id || `meet-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
