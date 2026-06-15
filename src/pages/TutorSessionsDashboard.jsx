@@ -58,8 +58,14 @@ export default function TutorSessionsDashboard() {
   }, []);
 
   const { data: sessions = [], isLoading } = useQuery({
-    queryKey: ['tutor-sessions', user?.email],
-    queryFn: () => base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 100),
+    queryKey: ['tutor-sessions', user?.email, user?.role],
+    queryFn: async () => {
+      // Admins see all sessions; tutors see their own
+      if (user?.role === 'admin') {
+        return base44.entities.VideoSession.list('-scheduled_date', 200);
+      }
+      return base44.entities.VideoSession.filter({ tutor_email: user?.email }, '-scheduled_date', 200);
+    },
     enabled: !!user?.email,
   });
 
@@ -88,12 +94,40 @@ export default function TutorSessionsDashboard() {
     },
   });
 
-  const upcomingSessions = sessions.filter(s => 
-    s.status === 'scheduled' || s.status === 'live'
-  );
-  const pastSessions = sessions.filter(s => 
-    s.status === 'completed' || s.status === 'cancelled'
-  );
+  // Date-aware classification: a scheduled session whose end-time has passed
+  // is moved to "Past" so it doesn't permanently clutter Upcoming.
+  const now = new Date();
+  const getSessionEnd = (s) => {
+    if (!s.scheduled_date || !s.scheduled_time) return null;
+    const start = new Date(`${s.scheduled_date}T${s.scheduled_time}`);
+    if (isNaN(start.getTime())) return null;
+    return new Date(start.getTime() + (s.duration_minutes || 60) * 60000);
+  };
+
+  const upcomingSessions = sessions
+    .filter(s => {
+      if (s.status === 'cancelled' || s.status === 'completed') return false;
+      if (s.status === 'live') return true;
+      const end = getSessionEnd(s);
+      return !end || end >= now; // future scheduled sessions
+    })
+    .sort((a, b) => {
+      const aDt = new Date(`${a.scheduled_date}T${a.scheduled_time}`).getTime() || 0;
+      const bDt = new Date(`${b.scheduled_date}T${b.scheduled_time}`).getTime() || 0;
+      return aDt - bDt; // soonest first
+    });
+
+  const pastSessions = sessions
+    .filter(s => {
+      if (s.status === 'completed' || s.status === 'cancelled') return true;
+      const end = getSessionEnd(s);
+      return end && end < now; // expired scheduled sessions
+    })
+    .sort((a, b) => {
+      const aDt = new Date(`${a.scheduled_date}T${a.scheduled_time}`).getTime() || 0;
+      const bDt = new Date(`${b.scheduled_date}T${b.scheduled_time}`).getTime() || 0;
+      return bDt - aDt; // most recent first
+    });
 
   const stats = {
     total: sessions.length,

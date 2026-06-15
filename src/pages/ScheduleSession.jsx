@@ -34,6 +34,7 @@ const _w = (I) => ({ size, color, className, style, ...r }) => <I className={cla
 const ArrowLeft = _w(ArrowBackIcon), Video = _w(VideocamIcon), Calendar = _w(CalendarTodayIcon), Clock = _w(AccessTimeIcon);
 const Users = _w(PeopleIcon), Plus = _w(AddIcon), Repeat = _w(RepeatIcon), RefreshCw = _w(RefreshIcon);
 import AvailabilityManager from '@/components/tutor/AvailabilityManager';
+import UpcomingSessionsList from '@/components/tutor/UpcomingSessionsList';
 
 export default function ScheduleSession() {
   const [user, setUser] = useState(null);
@@ -252,6 +253,10 @@ export default function ScheduleSession() {
           <div className="mb-6">
             <AvailabilityManager tutorEmail={user?.email} />
           </div>
+        )}
+
+        {user?.email && (
+          <UpcomingSessionsList tutorEmail={user.email} isAdmin={user.role === 'admin'} />
         )}
 
         <Card className="p-6">
