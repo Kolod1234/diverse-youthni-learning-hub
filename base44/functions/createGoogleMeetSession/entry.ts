@@ -11,12 +11,32 @@ Deno.serve(async (req) => {
 
         const { sessionData, sessionId } = await req.json();
 
-        // Get access token for Google Calendar (shared connector)
-        const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+        // ID of the registered "Tutor Google Calendar" workspace connector (APP_USER mode).
+        // Each tutor connects their OWN Google account; sessions are hosted on THEIR calendar.
+        const TUTOR_GCAL_CONNECTOR_ID = '6a2ff9b66b58a1afd53c7b4c';
+
+        // Try the tutor's own Google Calendar connection first (like Zoom — hosted by them).
+        // Fall back to the shared workspace account if the tutor hasn't connected yet.
+        let accessToken = null;
+        let hostedByTutor = false;
+        try {
+            const conn = await base44.asServiceRole.connectors.getCurrentAppUserConnection(TUTOR_GCAL_CONNECTOR_ID);
+            if (conn?.accessToken) {
+                accessToken = conn.accessToken;
+                hostedByTutor = true;
+            }
+        } catch (_) {
+            // Tutor hasn't connected their Google account — fall back to shared.
+        }
+
+        if (!accessToken) {
+            const shared = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+            accessToken = shared?.accessToken || null;
+        }
 
         if (!accessToken) {
             return Response.json({
-                error: 'Google Calendar is not connected. Please ask the workspace admin to connect Google Calendar.'
+                error: 'Google Calendar is not connected. Please connect your Google account from the Tutor Dashboard.'
             }, { status: 400 });
         }
 
@@ -115,7 +135,8 @@ Deno.serve(async (req) => {
             success: true,
             meet_link: meetLink,
             calendar_event_id: calendarEventId,
-            event_html_link: calendarEvent.htmlLink
+            event_html_link: calendarEvent.htmlLink,
+            hosted_by_tutor: hostedByTutor
         });
 
     } catch (error) {

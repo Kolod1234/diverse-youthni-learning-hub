@@ -12,6 +12,7 @@ import {
   BookMarked, UserCheck, Lock, Unlock, Key
 } from 'lucide-react';
 import { motion } from 'framer-motion';
+import TutorGoogleConnect from '@/components/tutor/TutorGoogleConnect';
 
 
 export default function TutorDashboardOverview() {
@@ -444,6 +445,9 @@ export default function TutorDashboardOverview() {
             </div>
 
 
+
+            {/* Google Calendar Connection */}
+            <TutorGoogleConnect />
 
             {/* Performance Card */}
             <div className="bg-gradient-to-br from-indigo-600 to-purple-700 rounded-2xl p-6 text-white">
