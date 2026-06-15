@@ -13,6 +13,7 @@ import {
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TutorGoogleConnect from '@/components/tutor/TutorGoogleConnect';
+import { classifySessions, getTodayActiveSessions } from '@/components/tutor/sessionClassifier';
 
 
 export default function TutorDashboardOverview() {
@@ -101,13 +102,15 @@ export default function TutorDashboardOverview() {
     ? Math.round(myEnrollments.reduce((s, e) => s + (e.progress_percent || 0), 0) / myEnrollments.length)
     : 0;
 
-  const upcomingSessions = sessions.filter(s =>
-    s.status === 'scheduled' && new Date(s.scheduled_date) >= new Date()
-  ).slice(0, 5);
+  // Shared classifier — includes currently running 'live' sessions and uses
+  // start+duration to drop expired records. See components/tutor/sessionClassifier.js
+  const { upcoming: allUpcomingSessions } = classifySessions(sessions);
+  const upcomingSessions = allUpcomingSessions.slice(0, 5);
 
   const pendingBookings = bookings.filter(b => b.status === 'pending');
-  const today = new Date().toISOString().split('T')[0];
-  const todaySessions = sessions.filter(s => s.scheduled_date === today);
+  // Today banner must only count active/upcoming sessions dated today —
+  // never completed, cancelled, or already-ended.
+  const todaySessions = getTodayActiveSessions(sessions);
 
   if (!user) return null;
 
@@ -128,7 +131,7 @@ export default function TutorDashboardOverview() {
     { label: 'Assigned Courses', value: myCourses.length, icon: BookOpen, color: 'from-blue-500 to-blue-600' },
     { label: 'Total Students', value: totalStudents, icon: Users, color: 'from-violet-500 to-purple-600' },
     { label: 'Avg Completion', value: `${avgCompletion}%`, icon: TrendingUp, color: 'from-emerald-500 to-green-600' },
-    { label: 'Upcoming Sessions', value: upcomingSessions.length, icon: Video, color: 'from-orange-500 to-amber-500' },
+    { label: 'Upcoming Sessions', value: allUpcomingSessions.length, icon: Video, color: 'from-orange-500 to-amber-500' },
   ];
 
   const quickActions = [
@@ -367,7 +370,7 @@ export default function TutorDashboardOverview() {
               <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                 <div>
                   <h2 className="text-lg font-semibold text-gray-900">Upcoming Sessions</h2>
-                  <p className="text-sm text-gray-500">{upcomingSessions.length} scheduled</p>
+                  <p className="text-sm text-gray-500">{allUpcomingSessions.length} scheduled</p>
                 </div>
                 <div className="flex gap-2">
                   <Link to={createPageUrl('ScheduleSession')}>

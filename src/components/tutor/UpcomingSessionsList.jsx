@@ -9,11 +9,13 @@ import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
 import PeopleIcon from '@mui/icons-material/People';
 import { format } from 'date-fns';
+import { classifySessions } from '@/components/tutor/sessionClassifier';
 
 /**
  * Shows the tutor's upcoming sessions (status scheduled or live, end-time in the future),
  * sorted by soonest first. Used on the Schedule Session page so tutors can see what's
- * already booked before scheduling another.
+ * already booked before scheduling another. Uses the shared classifier so it stays
+ * consistent with TutorDashboardOverview and TutorSessionsDashboard.
  */
 export default function UpcomingSessionsList({ tutorEmail, isAdmin, limit = 5 }) {
   const { data: sessions = [], isLoading } = useQuery({
@@ -25,21 +27,8 @@ export default function UpcomingSessionsList({ tutorEmail, isAdmin, limit = 5 })
     enabled: !!tutorEmail,
   });
 
-  const now = new Date();
-  const upcoming = sessions
-    .filter(s => {
-      if (s.status === 'cancelled' || s.status === 'completed') return false;
-      if (!s.scheduled_date || !s.scheduled_time) return s.status === 'live';
-      const start = new Date(`${s.scheduled_date}T${s.scheduled_time}`);
-      const end = new Date(start.getTime() + (s.duration_minutes || 60) * 60000);
-      return end >= now;
-    })
-    .sort((a, b) => {
-      const aDt = new Date(`${a.scheduled_date}T${a.scheduled_time}`).getTime() || 0;
-      const bDt = new Date(`${b.scheduled_date}T${b.scheduled_time}`).getTime() || 0;
-      return aDt - bDt;
-    })
-    .slice(0, limit);
+  const { upcoming } = classifySessions(sessions);
+  const upcomingSlice = upcoming.slice(0, limit);
 
   if (isLoading) {
     return (
@@ -49,7 +38,7 @@ export default function UpcomingSessionsList({ tutorEmail, isAdmin, limit = 5 })
     );
   }
 
-  if (upcoming.length === 0) {
+  if (upcomingSlice.length === 0) {
     return (
       <Card className="p-4 mb-6 border-dashed">
         <p className="text-sm text-gray-500">
@@ -64,14 +53,14 @@ export default function UpcomingSessionsList({ tutorEmail, isAdmin, limit = 5 })
       <div className="flex items-center justify-between mb-3">
         <h3 className="font-semibold text-gray-900 flex items-center gap-2">
           <CalendarTodayIcon sx={{ fontSize: 18, color: '#7c3aed' }} />
-          Your Upcoming Sessions ({upcoming.length})
+          Your Upcoming Sessions ({upcomingSlice.length})
         </h3>
         <Link to={createPageUrl('TutorSessionsDashboard')}>
           <Button size="small" variant="text">View all</Button>
         </Link>
       </div>
       <div className="space-y-2">
-        {upcoming.map(s => {
+        {upcomingSlice.map(s => {
           const start = s.scheduled_date && s.scheduled_time
             ? new Date(`${s.scheduled_date}T${s.scheduled_time}`)
             : null;

@@ -40,6 +40,7 @@ import { format } from 'date-fns';
 import SessionScheduler from '@/components/tutor/SessionScheduler';
 import SessionParticipantsManager from '@/components/tutor/SessionParticipantsManager';
 import SessionAttendance from '@/components/tutor/SessionAttendance';
+import { classifySessions } from '@/components/tutor/sessionClassifier';
 
 export default function TutorSessionsDashboard() {
   const [user, setUser] = useState(null);
@@ -94,40 +95,10 @@ export default function TutorSessionsDashboard() {
     },
   });
 
-  // Date-aware classification: a scheduled session whose end-time has passed
-  // is moved to "Past" so it doesn't permanently clutter Upcoming.
-  const now = new Date();
-  const getSessionEnd = (s) => {
-    if (!s.scheduled_date || !s.scheduled_time) return null;
-    const start = new Date(`${s.scheduled_date}T${s.scheduled_time}`);
-    if (isNaN(start.getTime())) return null;
-    return new Date(start.getTime() + (s.duration_minutes || 60) * 60000);
-  };
-
-  const upcomingSessions = sessions
-    .filter(s => {
-      if (s.status === 'cancelled' || s.status === 'completed') return false;
-      if (s.status === 'live') return true;
-      const end = getSessionEnd(s);
-      return !end || end >= now; // future scheduled sessions
-    })
-    .sort((a, b) => {
-      const aDt = new Date(`${a.scheduled_date}T${a.scheduled_time}`).getTime() || 0;
-      const bDt = new Date(`${b.scheduled_date}T${b.scheduled_time}`).getTime() || 0;
-      return aDt - bDt; // soonest first
-    });
-
-  const pastSessions = sessions
-    .filter(s => {
-      if (s.status === 'completed' || s.status === 'cancelled') return true;
-      const end = getSessionEnd(s);
-      return end && end < now; // expired scheduled sessions
-    })
-    .sort((a, b) => {
-      const aDt = new Date(`${a.scheduled_date}T${a.scheduled_time}`).getTime() || 0;
-      const bDt = new Date(`${b.scheduled_date}T${b.scheduled_time}`).getTime() || 0;
-      return bDt - aDt; // most recent first
-    });
+  // Shared classifier — same logic as TutorDashboardOverview & UpcomingSessionsList.
+  // Crucially, 'live' sessions whose end time has passed are NOT treated as upcoming
+  // (fixes stale Dec 2025 live records persisting in Upcoming).
+  const { upcoming: upcomingSessions, past: pastSessions } = classifySessions(sessions);
 
   const stats = {
     total: sessions.length,
