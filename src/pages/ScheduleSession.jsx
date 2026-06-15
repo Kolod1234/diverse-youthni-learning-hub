@@ -258,21 +258,36 @@ export default function ScheduleSession() {
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <Label htmlFor="course">Course *</Label>
-              <Select
+              <MuiSelect
+                id="course"
+                fullWidth
+                size="small"
+                displayEmpty
                 value={formData.course_id}
-                onValueChange={(value) => setFormData({ ...formData, course_id: value, invited_students: [] })}
+                onChange={(e) => setFormData({ ...formData, course_id: e.target.value, invited_students: [] })}
+                renderValue={(selected) => {
+                  if (!selected) return <span style={{ color: '#9ca3af' }}>Select a course</span>;
+                  const c = courses.find(c => c.id === selected);
+                  return c ? c.title : 'Select a course';
+                }}
               >
-                <SelectTrigger>
-                  <SelectValue placeholder="Select a course" />
-                </SelectTrigger>
-                <SelectContent>
-                  {courses.map(course => (
-                    <SelectItem key={course.id} value={course.id}>
+                {courses.length === 0 ? (
+                  <MenuItem value="" disabled>
+                    {user ? 'No courses assigned to you yet' : 'Loading…'}
+                  </MenuItem>
+                ) : (
+                  courses.map(course => (
+                    <MenuItem key={course.id} value={course.id}>
                       {course.title}
-                    </SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
+                    </MenuItem>
+                  ))
+                )}
+              </MuiSelect>
+              {user && user.role !== 'admin' && courses.length === 0 && (
+                <p className="text-xs text-amber-600 mt-1">
+                  You haven't been assigned to any courses yet. Ask an admin to assign you, or request to teach a course from the Tutor Dashboard.
+                </p>
+              )}
             </div>
 
             <div>
