@@ -4,6 +4,7 @@ import { base44 } from '@/api/base44Client';
 import { Link } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { Button, Card, Chip } from '@mui/material';
+import { toast } from 'sonner';
 const Badge = ({ children, className, variant, ...props }) => <Chip label={children} size="small" variant={variant === 'outline' ? 'outlined' : 'filled'} className={className} {...props} />;
 import VideocamIcon from '@mui/icons-material/Videocam';
 import PeopleIcon from '@mui/icons-material/People';
@@ -19,13 +20,10 @@ const Video = _w(VideocamIcon), Users = _w(PeopleIcon), Calendar = _w(CalendarTo
 const ArrowLeft = _w(ArrowBackIcon), CheckCircle = _w(CheckCircleIcon), XCircle = _w(CancelIcon);
 const Trash2 = _w(DeleteIcon), PlayCircle = _w(PlayCircleOutlineIcon);
 import { format } from 'date-fns';
-import CustomVideoCall from '@/components/video/CustomVideoCall';
-import RealTimeChatPanel from '@/components/session/RealTimeChatPanel';
 import SessionLiveChat from '@/components/chat/SessionLiveChat';
 
 export default function VideoSession() {
   const [user, setUser] = useState(null);
-  const [inSession, setInSession] = useState(false);
   const queryClient = useQueryClient();
 
   const urlParams = new URLSearchParams(window.location.search);
@@ -83,19 +81,62 @@ export default function VideoSession() {
 
   const isScheduledNow = sessionDateTime && new Date() >= sessionDateTime;
 
-  const handleStartSession = () => {
+  const [generatingMeet, setGeneratingMeet] = useState(false);
+
+  const openMeet = (url) => {
+    // Use a tab name so subsequent clicks reuse the same tab — fixes the
+    // "share screen creates multiple screens" issue caused by opening Meet
+    // in multiple tabs at once.
+    window.open(url, 'google-meet-session', 'noopener,noreferrer');
+  };
+
+  const generateMeetLink = async () => {
+    setGeneratingMeet(true);
+    try {
+      const { data } = await base44.functions.invoke('createGoogleMeetSession', {
+        sessionData: {
+          title: session.title,
+          description: session.description,
+          scheduled_date: session.scheduled_date,
+          scheduled_time: session.scheduled_time,
+          duration_minutes: session.duration_minutes,
+          invited_students: session.invited_students,
+          meeting_room_id: session.meeting_room_id,
+        },
+        sessionId: session.id,
+      });
+      if (data?.meet_link) {
+        await queryClient.invalidateQueries(['video-session']);
+        openMeet(data.meet_link);
+        return data.meet_link;
+      }
+      toast.error(data?.error || 'Could not generate Google Meet link.');
+    } catch (err) {
+      toast.error(err?.response?.data?.error || err.message || 'Could not generate Google Meet link.');
+    } finally {
+      setGeneratingMeet(false);
+    }
+    return null;
+  };
+
+  const handleStartSession = async () => {
     if (isTutor && session.status === 'scheduled') {
       updateSessionMutation.mutate({
         sessionId: session.id,
         data: { status: 'live' }
       });
     }
-    
-    // Redirect to Google Meet if available
+
     if (session.meet_link) {
-      window.open(session.meet_link, '_blank');
+      openMeet(session.meet_link);
+      return;
+    }
+
+    // No link yet — generate one (tutor only). Students must wait for the tutor.
+    if (isTutor) {
+      await generateMeetLink();
     } else {
-      setInSession(true);
+      toast.info('The tutor has not started Google Meet yet. Please wait a moment and refresh.');
     }
   };
 
@@ -106,14 +147,17 @@ export default function VideoSession() {
         data: { status: 'completed' }
       });
     }
-    setInSession(false);
   };
 
-  const handleResumeSession = () => {
+  const handleResumeSession = async () => {
     if (session.meet_link) {
-      window.open(session.meet_link, '_blank');
-    } else if (session.status === 'live' || (isTutor && session.status === 'scheduled')) {
-      setInSession(true);
+      openMeet(session.meet_link);
+      return;
+    }
+    if (isTutor) {
+      await generateMeetLink();
+    } else {
+      toast.info('The tutor has not started Google Meet yet. Please wait a moment and refresh.');
     }
   };
 
@@ -165,17 +209,6 @@ export default function VideoSession() {
           </Link>
         </Card>
       </div>
-    );
-  }
-
-  if (inSession) {
-    return (
-      <CustomVideoCall 
-        session={session}
-        course={course}
-        user={user}
-        onEndSession={handleEndSession}
-      />
     );
   }
 
@@ -293,21 +326,38 @@ export default function VideoSession() {
                   <p className="text-red-600 font-medium">This session has been cancelled</p>
                 </div>
               ) : session.status === 'live' ? (
-                <Button
-                  onClick={handleResumeSession}
-                  className="flex-1 h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
-                >
-                  <PlayCircle className="w-5 h-5 mr-2" />
-                  {session.meet_link ? 'Join Google Meet' : 'Resume Session'}
-                </Button>
+                <>
+                  <Button
+                    onClick={handleResumeSession}
+                    disabled={generatingMeet}
+                    className="flex-1 h-14 text-lg bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-700 hover:to-emerald-700"
+                  >
+                    <PlayCircle className="w-5 h-5 mr-2" />
+                    {generatingMeet ? 'Generating link…' : (session.meet_link ? 'Join Google Meet' : (isTutor ? 'Generate Meet Link' : 'Waiting for tutor…'))}
+                  </Button>
+                  {isTutor && (
+                    <Button
+                      variant="outline"
+                      onClick={() => {
+                        if (confirm('End this session for everyone? Students will no longer be able to join from here.')) {
+                          handleEndSession();
+                        }
+                      }}
+                      className="h-14"
+                    >
+                      <XCircle className="w-4 h-4 mr-2" />
+                      End Session
+                    </Button>
+                  )}
+                </>
               ) : (
                 <Button
                   onClick={handleStartSession}
-                  disabled={!isScheduledNow && !isTutor}
+                  disabled={(!isScheduledNow && !isTutor) || generatingMeet}
                   className="flex-1 h-14 text-lg bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700"
                 >
                   <Video className="w-5 h-5 mr-2" />
-                  {isTutor ? 'Start Google Meet' : 'Join Google Meet'}
+                  {generatingMeet ? 'Generating link…' : (isTutor ? 'Start Google Meet' : 'Join Google Meet')}
                 </Button>
               )}
 

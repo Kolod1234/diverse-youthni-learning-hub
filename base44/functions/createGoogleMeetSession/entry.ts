@@ -1,4 +1,4 @@
-import { createClientFromRequest } from 'npm:@base44/sdk@0.8.6';
+import { createClientFromRequest } from 'npm:@base44/sdk@0.8.31';
 
 Deno.serve(async (req) => {
     try {
@@ -11,17 +11,27 @@ Deno.serve(async (req) => {
 
         const { sessionData, sessionId } = await req.json();
 
-        // Get access token for Google Calendar
-        const accessToken = await base44.asServiceRole.connectors.getAccessToken('googlecalendar');
+        // Get access token for Google Calendar (shared connector)
+        const { accessToken } = await base44.asServiceRole.connectors.getConnection('googlecalendar');
+
+        if (!accessToken) {
+            return Response.json({
+                error: 'Google Calendar is not connected. Please ask the workspace admin to connect Google Calendar.'
+            }, { status: 400 });
+        }
 
         // Parse date and time
         const startDateTime = new Date(`${sessionData.scheduled_date}T${sessionData.scheduled_time}:00`);
-        const endDateTime = new Date(startDateTime.getTime() + sessionData.duration_minutes * 60000);
+        const endDateTime = new Date(startDateTime.getTime() + (sessionData.duration_minutes || 60) * 60000);
 
-        // Create attendees list
-        const attendees = (sessionData.invited_students || []).map(email => ({ email }));
+        // Create attendees list (exclude empty/null emails)
+        const attendees = (sessionData.invited_students || [])
+            .filter(email => email && typeof email === 'string')
+            .map(email => ({ email }));
 
         // Create Google Calendar event with Meet link
+        const requestId = sessionData.meeting_room_id || `meet-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
         const eventData = {
             summary: sessionData.title,
             description: sessionData.description || '',
@@ -36,7 +46,7 @@ Deno.serve(async (req) => {
             attendees: attendees,
             conferenceData: {
                 createRequest: {
-                    requestId: sessionData.meeting_room_id,
+                    requestId: requestId,
                     conferenceSolutionKey: {
                         type: 'hangoutsMeet'
                     }
@@ -66,15 +76,25 @@ Deno.serve(async (req) => {
         if (!response.ok) {
             const error = await response.text();
             console.error('Google Calendar API error:', error);
-            return Response.json({ 
+            return Response.json({
                 error: 'Failed to create Google Meet session',
-                details: error 
+                details: error
             }, { status: response.status });
         }
 
         const calendarEvent = await response.json();
-        const meetLink = calendarEvent.hangoutLink;
+        // hangoutLink is the primary Meet URL; fall back to conferenceData entry points if missing.
+        const meetLink = calendarEvent.hangoutLink
+            || calendarEvent.conferenceData?.entryPoints?.find(e => e.entryPointType === 'video')?.uri
+            || null;
         const calendarEventId = calendarEvent.id;
+
+        if (!meetLink) {
+            console.error('No Meet link returned by Google. Event:', JSON.stringify(calendarEvent));
+            return Response.json({
+                error: 'Google did not return a Meet link for this event. Please try again.'
+            }, { status: 502 });
+        }
 
         // Update the session with meet link
         if (sessionId) {
@@ -93,8 +113,8 @@ Deno.serve(async (req) => {
 
     } catch (error) {
         console.error('Error creating Google Meet session:', error);
-        return Response.json({ 
-            error: error.message || 'Internal server error' 
+        return Response.json({
+            error: error.message || 'Internal server error'
         }, { status: 500 });
     }
 });
