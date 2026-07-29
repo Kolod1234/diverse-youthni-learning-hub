@@ -128,7 +128,7 @@ export default function Explore() {
   }, [allEnrollments]);
 
   const coursesWithActualData = useMemo(() => {
-    return courses.map(course => {
+    return courses.filter(course => course.is_published !== false).map(course => {
       const stats = reviewStatsByCourse.get(course.id);
       const actualRating = stats && stats.count > 0 ? stats.sum / stats.count : null;
       const enrollmentCount = enrollmentCountByCourse.get(course.id) || 0;
