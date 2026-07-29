@@ -176,6 +176,7 @@ export default function CourseDetails() {
   // Tutors are never treated as enrolled — they get the "request to teach" flow.
   const enrollment = isTutor ? null : enrollments[0];
   const isEnrolled = !isTutor && !!enrollment;
+  const isAvailableForEnrollment = course?.is_published !== false;
   const isAssignedTutor = !!user && course ? isCourseExplicitlyAssignedToTutor(course, user) : false;
 
   // Show all quizzes to enrolled students, only published to non-enrolled
@@ -378,6 +379,16 @@ export default function CourseDetails() {
                         sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
                       >
                         Continue Learning
+                      </Button>
+                    ) : !isAvailableForEnrollment ? (
+                      <Button
+                        variant="outlined"
+                        fullWidth
+                        size="large"
+                        disabled
+                        sx={{ py: 2, fontSize: '1rem', borderRadius: 3 }}
+                      >
+                        Curriculum review in progress
                       </Button>
                     ) : (
                       <Button 
