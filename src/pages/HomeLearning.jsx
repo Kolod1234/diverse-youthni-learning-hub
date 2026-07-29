@@ -45,9 +45,10 @@ export default function HomeLearning() {
   });
 
   const filteredCourses = courses.filter(course => 
+    course.is_published !== false && (
     !searchQuery || 
     course.title?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    course.description?.toLowerCase().includes(searchQuery.toLowerCase())
+    course.description?.toLowerCase().includes(searchQuery.toLowerCase()))
   );
 
   const featuredCourses = filteredCourses.filter(c => c.is_featured).slice(0, 3);
