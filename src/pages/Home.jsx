@@ -147,8 +147,9 @@ export default function Home() {
     base44.auth.me().then(setUser).catch(() => setUser(null));
   }, []);
 
-  const featuredCourses = courses.filter(c => c.is_featured).slice(0, 3);
-  const sortedCourses = [...courses].sort((a, b) => {
+  const visibleCourses = courses.filter(c => c.is_published !== false);
+  const featuredCourses = visibleCourses.filter(c => c.is_featured).slice(0, 3);
+  const sortedCourses = [...visibleCourses].sort((a, b) => {
     if (sortBy === 'popular') return (b.enrolled_count || 0) - (a.enrolled_count || 0);
     if (sortBy === 'rating') return (b.rating || 0) - (a.rating || 0);
     if (sortBy === 'newest') return new Date(b.created_date) - new Date(a.created_date);
