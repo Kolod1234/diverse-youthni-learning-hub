@@ -15,6 +15,20 @@ const levelColors = {
   advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
+const alignmentLabels = {
+  aligned: 'CCEA aligned',
+  structurally_aligned: 'CCEA structure checked',
+  partially_aligned: 'CCEA review in progress',
+  needs_review: 'CCEA review required',
+};
+
+const alignmentColors = {
+  aligned: { bgcolor: '#dcfce7', color: '#166534' },
+  structurally_aligned: { bgcolor: '#dbeafe', color: '#1e40af' },
+  partially_aligned: { bgcolor: '#fef3c7', color: '#92400e' },
+  needs_review: { bgcolor: '#fee2e2', color: '#991b1b' },
+};
+
 const getCategoryBgColor = (category) => {
   const colors = {
     mathematics: { bgcolor: '#dbeafe', color: '#1d4ed8' },
@@ -80,6 +94,13 @@ export default function CourseCard({ course, index = 0, user = null }) {
 
             {/* Top-left badges */}
             <Box sx={{ position: 'absolute', top: 12, left: 12, display: 'flex', flexDirection: 'column', gap: 1 }}>
+              {course.exam_board === 'CCEA' && alignmentLabels[course.ccea_alignment_status] && (
+                <Chip
+                  label={alignmentLabels[course.ccea_alignment_status]}
+                  size="small"
+                  sx={{ ...alignmentColors[course.ccea_alignment_status], fontWeight: 700, fontSize: '0.68rem', boxShadow: 2, border: 0 }}
+                />
+              )}
               {course.is_featured && (
                 <Chip
                   label="⭐ Featured"
