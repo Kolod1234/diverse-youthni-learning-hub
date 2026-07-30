@@ -48,6 +48,7 @@ export default function EnhancedLessonPlayer({
   const [earnedPoints, setEarnedPoints] = useState(0);
   const [showBadges, setShowBadges] = useState(false);
   const [newBadges, setNewBadges] = useState([]);
+  const [currentContentSlide, setCurrentContentSlide] = useState(0);
   const containerRef = useRef(null);
   const mainContentRef = useRef(null);
 
@@ -73,11 +74,28 @@ export default function EnhancedLessonPlayer({
     staleTime: 5 * 60 * 1000
   });
 
-  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
+  const mathPathwayUnits = {
+    m1_m5: ['M1', 'M5'],
+    m2_m6: ['M2', 'M6'],
+    m3_m7: ['M3', 'M7'],
+    m4_m8: ['M4', 'M8'],
+  };
+  const selectedMathUnits = mathPathwayUnits[enrollment?.math_pathway] || [];
+  const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
+  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
+    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
+    : courseLessons;
+  const sortedLessons = [...pathwayLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lesson?.id);
   const nextLesson = sortedLessons[currentLessonIndex + 1];
   const prevLesson = sortedLessons[currentLessonIndex - 1];
   const progressPercent = sortedLessons.length > 0 ? ((currentLessonIndex + 1) / sortedLessons.length * 100) : 0;
+  const contentSlides = lesson?.slides || [];
+  const activeContentSlide = contentSlides[currentContentSlide];
+
+  useEffect(() => {
+    setCurrentContentSlide(0);
+  }, [lesson?.id]);
 
   // Load interactive content
   useEffect(() => {
@@ -107,7 +125,7 @@ export default function EnhancedLessonPlayer({
       if (!completedLessons.includes(lesson.id)) {
         await base44.entities.Enrollment.update(enrollment.id, {
           completed_lessons: [...completedLessons, lesson.id],
-          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
+          progress_percent: Math.round(((completedLessons.length + 1) / Math.max(sortedLessons.length, 1)) * 100)
         });
         
         const response = await base44.functions.invoke('awardPoints', {
@@ -174,12 +192,12 @@ export default function EnhancedLessonPlayer({
                 <div className="space-y-2">
                   <div className="flex justify-between text-xs text-slate-400">
                     <span>Progress</span>
-                    <span>{Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}%</span>
+                    <span>{Math.round((enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100)}%</span>
                   </div>
                   <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
                     <div
                       className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
-                      style={{ width: `${(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}%` }}
+                      style={{ width: `${(enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100}%` }}
                     />
                   </div>
                 </div>
@@ -257,7 +275,9 @@ export default function EnhancedLessonPlayer({
 
           <div className="flex items-center gap-2">
             <div className="text-xs text-slate-400 mr-4">
-              Slide {currentLessonIndex + 1} / {sortedLessons.length}
+              {contentSlides.length > 0
+                ? `Page ${currentContentSlide + 1} / ${contentSlides.length}`
+                : `Lesson ${currentLessonIndex + 1} / ${sortedLessons.length}`}
             </div>
             <button
               onClick={() => setShowAI(!showAI)}
@@ -307,6 +327,48 @@ export default function EnhancedLessonPlayer({
                 isFullscreen={isFullscreen}
                 toggleFullscreen={toggleFullscreen}
               />
+            ) : contentSlides.length > 0 && activeContentSlide ? (
+              <div className="min-h-full p-4 sm:p-8 lg:p-10">
+                <article className="mx-auto max-w-4xl rounded-2xl border border-slate-700 bg-slate-900/80 p-6 sm:p-10 shadow-2xl">
+                  <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-700 pb-4">
+                    <span className="text-xs font-semibold uppercase tracking-widest text-orange-400">
+                      CCEA Mathematics ?? {lesson.section || 'Lesson'}
+                    </span>
+                    <span className="text-sm text-slate-400">Page {currentContentSlide + 1} of {contentSlides.length}</span>
+                  </div>
+                  <h2 className="mb-6 text-2xl font-bold text-white sm:text-3xl">{activeContentSlide.title}</h2>
+                  <div
+                    className="text-base leading-relaxed text-slate-100 sm:text-lg [&_details]:my-4 [&_details]:rounded-lg [&_details]:bg-slate-800 [&_details]:p-4 [&_h2]:mb-4 [&_h2]:mt-6 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-orange-300 [&_li]:mb-2 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_strong]:text-white [&_summary]:cursor-pointer [&_summary]:font-semibold [&_table]:my-5 [&_table]:w-full [&_td]:border [&_td]:border-slate-600 [&_td]:p-3 [&_th]:border [&_th]:border-slate-600 [&_th]:bg-slate-800 [&_th]:p-3 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6"
+                    dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }}
+                  />
+                  <div className="mt-8 flex items-center justify-between gap-3 border-t border-slate-700 pt-5">
+                    <button
+                      onClick={() => setCurrentContentSlide(index => Math.max(index - 1, 0))}
+                      disabled={currentContentSlide === 0}
+                      className="flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-medium hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      <ChevronLeft className="h-4 w-4" /> Previous Page
+                    </button>
+                    <div className="hidden items-center gap-1.5 sm:flex">
+                      {contentSlides.map((_, index) => (
+                        <button
+                          key={index}
+                          onClick={() => setCurrentContentSlide(index)}
+                          aria-label={`Go to page ${index + 1}`}
+                          className={`h-2.5 rounded-full transition-all ${index === currentContentSlide ? 'w-7 bg-orange-500' : 'w-2.5 bg-slate-600 hover:bg-slate-500'}`}
+                        />
+                      ))}
+                    </div>
+                    <button
+                      onClick={() => setCurrentContentSlide(index => Math.min(index + 1, contentSlides.length - 1))}
+                      disabled={currentContentSlide === contentSlides.length - 1}
+                      className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-40"
+                    >
+                      Next Page <ChevronRight className="h-4 w-4" />
+                    </button>
+                  </div>
+                </article>
+              </div>
             ) : (
               <div className="h-full flex items-center justify-center text-slate-400">
                 No content available
@@ -404,8 +466,8 @@ export default function EnhancedLessonPlayer({
                 </div>
 
                 <textarea
-                  value={notes[String(currentLessonIndex)] || ''}
-                  onChange={(e) => saveNote(String(currentLessonIndex), e.target.value)}
+                  value={notes[`${lesson.id}:${currentContentSlide}`] || ''}
+                  onChange={(e) => saveNote(`${lesson.id}:${currentContentSlide}`, e.target.value)}
                   className="flex-1 bg-slate-700 text-white p-4 resize-none border-0 focus:outline-none"
                   placeholder="Add notes..."
                 />
