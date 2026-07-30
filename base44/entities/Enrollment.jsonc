@@ -6,6 +6,16 @@
       "type": "string",
       "description": "Reference to the course"
     },
+    "math_pathway": {
+      "type": "string",
+      "enum": [
+        "m1_m5",
+        "m2_m6",
+        "m3_m7",
+        "m4_m8"
+      ],
+      "description": "Selected CCEA GCSE Mathematics pathway"
+    },
     "progress_percent": {
       "type": "number",
       "default": 0,
