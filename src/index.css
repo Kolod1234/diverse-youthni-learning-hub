@@ -205,12 +205,39 @@ button:focus-visible {
     vertical-align: middle;
   }
 
+  .lesson-rich-content .geometry-diagram {
+    display: block;
+    width: min(100%, 46rem);
+    height: auto;
+    max-height: 28rem;
+    margin: 1.25rem auto 1.5rem;
+    border: 1px solid rgb(148 163 184 / 0.45);
+    border-radius: 0.875rem;
+    background: #f8fafc;
+    box-shadow: 0 8px 24px rgb(15 23 42 / 0.12);
+  }
+
+  .lesson-rich-content .geometry-diagram line,
+  .lesson-rich-content .geometry-diagram path,
+  .lesson-rich-content .geometry-diagram polygon,
+  .lesson-rich-content .geometry-diagram polyline,
+  .lesson-rich-content .geometry-diagram circle,
+  .lesson-rich-content .geometry-diagram ellipse {
+    vector-effect: non-scaling-stroke;
+  }
+
   @media (max-width: 640px) {
     .lesson-rich-content math[display="block"] {
       width: fit-content;
       max-width: calc(100% - 0.75rem);
       margin-left: 0.75rem;
       font-size: 1rem;
+    }
+
+    .lesson-rich-content .geometry-diagram {
+      max-height: 22rem;
+      margin-block: 1rem;
+      border-radius: 0.75rem;
     }
   }
 }
