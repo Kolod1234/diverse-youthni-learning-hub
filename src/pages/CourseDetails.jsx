@@ -6,7 +6,8 @@ import { Link, useNavigate } from 'react-router-dom';
 import { createPageUrl } from '@/utils';
 import { 
   Button, Card, CardContent, CardMedia, Chip, Box, Typography, Container,
-  Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs
+  Accordion, AccordionSummary, AccordionDetails, Tabs, Tab, Avatar, Breadcrumbs,
+  FormControl, InputLabel, Select, MenuItem, Alert
 } from '@mui/material';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import PlayArrowIcon from '@mui/icons-material/PlayArrow';
@@ -57,9 +58,17 @@ const levelColors = {
   advanced: { bgcolor: '#fee2e2', color: '#b91c1c' },
 };
 
+const DEFAULT_MATH_PATHWAYS = [
+  { code: 'm1_m5', label: 'Foundation Pathway 1', tier: 'Foundation', first_unit: 'M1', completion_unit: 'M5', grade_range: 'D-G', first_weighting: 45, completion_weighting: 55 },
+  { code: 'm2_m6', label: 'Foundation Pathway 2', tier: 'Foundation', first_unit: 'M2', completion_unit: 'M6', grade_range: 'C*-G', first_weighting: 45, completion_weighting: 55 },
+  { code: 'm3_m7', label: 'Higher Pathway 1', tier: 'Higher', first_unit: 'M3', completion_unit: 'M7', grade_range: 'B-E', first_weighting: 45, completion_weighting: 55 },
+  { code: 'm4_m8', label: 'Higher Pathway 2', tier: 'Higher', first_unit: 'M4', completion_unit: 'M8', grade_range: 'A*-D', first_weighting: 45, completion_weighting: 55 },
+];
+
 export default function CourseDetails() {
   const [user, setUser] = useState(null);
   const [tabValue, setTabValue] = useState('curriculum');
+  const [selectedMathPathway, setSelectedMathPathway] = useState('');
   const queryClient = useQueryClient();
   const navigate = useNavigate();
   
@@ -165,10 +174,23 @@ export default function CourseDetails() {
       progress_percent: 0,
       completed_lessons: [],
       is_completed: false,
+      ...(isMathPathwayCourse ? { math_pathway: selectedMathPathway } : {}),
     }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ['enrollment', courseId, user?.email] });
       queryClient.invalidateQueries({ queryKey: ['course-enrollments', courseId] });
+    },
+  });
+
+  const saveMathPathwayMutation = useMutation({
+    mutationFn: (mathPathway) => base44.entities.Enrollment.update(enrollment.id, {
+      math_pathway: mathPathway,
+      current_lesson_id: null,
+      progress_percent: 0,
+    }),
+    onSuccess: (_, mathPathway) => {
+      setSelectedMathPathway(mathPathway);
+      queryClient.invalidateQueries({ queryKey: ['enrollment', courseId, user?.email] });
     },
   });
 
@@ -178,12 +200,34 @@ export default function CourseDetails() {
   const isEnrolled = !isTutor && !!enrollment;
   const isAvailableForEnrollment = course?.is_published !== false;
   const isAssignedTutor = !!user && course ? isCourseExplicitlyAssignedToTutor(course, user) : false;
+  const isMathPathwayCourse = course?.requires_math_pathway === true || (
+    course?.qualification_type === 'gcse' &&
+    course?.category === 'mathematics' &&
+    course?.exam_board?.toUpperCase() === 'CCEA'
+  );
+  const mathPathways = course?.math_pathways?.length ? course.math_pathways : DEFAULT_MATH_PATHWAYS;
+  const activeMathPathway = isEnrolled ? enrollment?.math_pathway : selectedMathPathway;
+  const activeMathPathwayConfig = mathPathways.find(pathway => pathway.code === activeMathPathway);
+  const canChangeMathPathway = !isEnrolled || (enrollment?.completed_lessons?.length || 0) === 0;
+  const pathwayUnitCodes = activeMathPathwayConfig
+    ? [activeMathPathwayConfig.first_unit, activeMathPathwayConfig.completion_unit]
+    : [];
+  const hasMappedMathLessons = lessons.some(lesson => lesson.ccea_units?.length > 0);
+  const visibleLessons = isMathPathwayCourse && activeMathPathway && hasMappedMathLessons
+    ? lessons.filter(lesson => lesson.ccea_units?.some(unitCode => pathwayUnitCodes.includes(unitCode)))
+    : lessons;
+
+  useEffect(() => {
+    if (enrollment?.math_pathway) {
+      setSelectedMathPathway(enrollment.math_pathway);
+    }
+  }, [enrollment?.math_pathway]);
 
   // Show all quizzes to enrolled students, only published to non-enrolled
   const quizzes = isEnrolled ? allQuizzes : allQuizzes.filter(q => q.is_published);
 
-  // Group lessons by section
-  const sections = lessons.reduce((acc, lesson) => {
+  // Group pathway-visible lessons by section
+  const sections = visibleLessons.reduce((acc, lesson) => {
     const section = lesson.section || 'Getting Started';
     if (!acc[section]) acc[section] = [];
     acc[section].push(lesson);
@@ -304,7 +348,7 @@ export default function CourseDetails() {
                 
                 <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 2 }}>
                   <Chip icon={<Clock size={16} />} label={`${course.duration_hours || 0} hours`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
-                  <Chip icon={<BookOpen size={16} />} label={`${lessons.length} lessons`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
+                  <Chip icon={<BookOpen size={16} />} label={`${visibleLessons.length} lessons`} sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                   <Chip icon={<Globe size={16} />} label="English" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                   <Chip icon={<Award size={16} />} label="Certificate" sx={{ bgcolor: 'rgba(255,255,255,0.1)', color: 'white', border: 'none' }} />
                 </Box>
@@ -347,6 +391,46 @@ export default function CourseDetails() {
                       )}
                     </Box>
                   
+                    {isMathPathwayCourse && (
+                      <Box sx={{ mb: 3, p: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, bgcolor: '#f8fafc' }}>
+                        <Typography fontWeight={700} sx={{ mb: 0.5 }}>Choose your CCEA Mathematics pathway</Typography>
+                        <Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>
+                          Select one valid unit pair. Your first unit is worth 45% and the completion unit is worth 55%.
+                        </Typography>
+                        <FormControl fullWidth size="small" disabled={!canChangeMathPathway}>
+                          <InputLabel id="math-pathway-label">Mathematics pathway</InputLabel>
+                          <Select
+                            labelId="math-pathway-label"
+                            value={selectedMathPathway || enrollment?.math_pathway || ''}
+                            label="Mathematics pathway"
+                            onChange={(event) => setSelectedMathPathway(event.target.value)}
+                          >
+                            {mathPathways.map((pathway) => (
+                              <MenuItem key={pathway.code} value={pathway.code}>
+                                {pathway.label}: {pathway.first_unit} + {pathway.completion_unit} ({pathway.grade_range})
+                              </MenuItem>
+                            ))}
+                          </Select>
+                        </FormControl>
+                        {isEnrolled && selectedMathPathway && selectedMathPathway !== enrollment?.math_pathway && (
+                          <Button
+                            variant="contained"
+                            fullWidth
+                            onClick={() => saveMathPathwayMutation.mutate(selectedMathPathway)}
+                            disabled={saveMathPathwayMutation.isPending}
+                            sx={{ mt: 1.5 }}
+                          >
+                            {saveMathPathwayMutation.isPending ? 'Saving pathway...' : 'Save pathway'}
+                          </Button>
+                        )}
+                        {isEnrolled && enrollment?.math_pathway && (
+                          <Alert severity="success" sx={{ mt: 1.5 }}>
+                            Pathway saved. It becomes locked after you complete your first lesson.
+                          </Alert>
+                        )}
+                      </Box>
+                    )}
+
                     {isTutor ? (
                       // Tutors are teachers, not learners. They see "Request to Teach"
                       // (or assigned/pending status) and never see Enroll or Continue Learning.
@@ -368,8 +452,9 @@ export default function CourseDetails() {
                         fullWidth
                         size="large"
                         startIcon={<Play size={20} />}
+                        disabled={isMathPathwayCourse && !enrollment?.math_pathway}
                         onClick={() => {
-                          const sortedLessons = [...lessons].sort((a, b) => a.order - b.order);
+                          const sortedLessons = [...visibleLessons].sort((a, b) => a.order - b.order);
                           const targetLessonId = enrollment.current_lesson_id || sortedLessons[0]?.id;
                           if (targetLessonId) {
                             console.log('Continue Learning clicked:', { targetLessonId, courseId });
@@ -378,7 +463,7 @@ export default function CourseDetails() {
                         }}
                         sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
                       >
-                        Continue Learning
+                        {isMathPathwayCourse && !enrollment?.math_pathway ? 'Save pathway to continue' : 'Continue Learning'}
                       </Button>
                     ) : !isAvailableForEnrollment ? (
                       <Button
@@ -396,10 +481,14 @@ export default function CourseDetails() {
                         fullWidth
                         size="large"
                         onClick={() => enrollMutation.mutate()}
-                        disabled={enrollMutation.isPending}
+                        disabled={enrollMutation.isPending || (isMathPathwayCourse && !selectedMathPathway)}
                         sx={{ py: 2, fontSize: '1.125rem', borderRadius: 3 }}
                       >
-                        {enrollMutation.isPending ? 'Enrolling...' : (course.price === 0 ? 'Enroll for Free' : 'Buy Now')}
+                        {isMathPathwayCourse && !selectedMathPathway
+                          ? 'Choose a pathway first'
+                          : enrollMutation.isPending
+                            ? 'Enrolling...'
+                            : (course.price === 0 ? 'Enroll for Free' : 'Buy Now')}
                       </Button>
                     )}
                   
@@ -429,6 +518,35 @@ export default function CourseDetails() {
       <Container maxWidth="xl" sx={{ py: 6 }}>
         <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', lg: '2fr 1fr' }, gap: 4 }}>
           <Box>
+            {isMathPathwayCourse && (
+              activeMathPathwayConfig ? (
+                <Card sx={{ mb: 3, p: 3, borderRadius: 4, border: '1px solid #bfdbfe', bgcolor: '#eff6ff' }}>
+                  <Box sx={{ display: 'flex', justifyContent: 'space-between', gap: 2, flexWrap: 'wrap', mb: 2 }}>
+                    <Box>
+                      <Typography variant="h6" fontWeight={700}>{activeMathPathwayConfig.label}</Typography>
+                      <Typography variant="body2" color="text.secondary">
+                        {activeMathPathwayConfig.tier} Tier - Available grades {activeMathPathwayConfig.grade_range}
+                      </Typography>
+                    </Box>
+                    <Chip label={`${activeMathPathwayConfig.first_unit} + ${activeMathPathwayConfig.completion_unit}`} color="primary" />
+                  </Box>
+                  <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', sm: '1fr 1fr' }, gap: 2 }}>
+                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2 }}>
+                      <Typography fontWeight={700}>{activeMathPathwayConfig.first_unit}: First assessment unit</Typography>
+                      <Typography variant="body2" color="text.secondary">Calculator examination - {activeMathPathwayConfig.first_weighting}%</Typography>
+                    </Box>
+                    <Box sx={{ p: 2, bgcolor: 'white', borderRadius: 2 }}>
+                      <Typography fontWeight={700}>{activeMathPathwayConfig.completion_unit}: Completion unit</Typography>
+                      <Typography variant="body2" color="text.secondary">Non-calculator and calculator papers - {activeMathPathwayConfig.completion_weighting}%</Typography>
+                    </Box>
+                  </Box>
+                </Card>
+              ) : (
+                <Alert severity="info" sx={{ mb: 3 }}>
+                  Choose a Mathematics pathway to see your official CCEA unit combination.
+                </Alert>
+              )
+            )}
             <Tabs value={tabValue} onChange={(e, newValue) => setTabValue(newValue)} sx={{ mb: 3 }}>
               <Tab label="Curriculum" value="curriculum" />
               <Tab label="Overview" value="overview" />
@@ -440,7 +558,7 @@ export default function CourseDetails() {
                 <Card sx={{ borderRadius: 4, boxShadow: 1, border: '1px solid', borderColor: 'divider' }}>
                   <Box sx={{ p: 2, borderBottom: 1, borderColor: 'divider', display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                     <Typography fontWeight={500}>
-                      {Object.keys(sections).length} sections • {lessons.length} lessons
+                      {Object.keys(sections).length} sections • {visibleLessons.length} lessons
                     </Typography>
                     <Typography variant="body2" color="text.secondary">
                       {course.duration_hours || 0}h total
@@ -468,7 +586,8 @@ export default function CourseDetails() {
                             const isCompleted = enrollment?.completed_lessons?.includes(lesson.id);
                             const hasActiveKey = lessonKeys.some(k => k.lesson_id === lesson.id && k.is_active);
                             const isFirstLesson = index === 0 && sectionLessons === Object.values(sections)[0];
-                            const canAccess = (user?.role === 'admin' || user?.is_tutor) || isFirstLesson || hasActiveKey || lesson.is_preview;
+                            const hasRequiredMathPathway = !isMathPathwayCourse || !isEnrolled || !!enrollment?.math_pathway || user?.role === 'admin' || user?.is_tutor;
+                            const canAccess = hasRequiredMathPathway && ((user?.role === 'admin' || user?.is_tutor) || isFirstLesson || hasActiveKey || lesson.is_preview);
                             const lessonQuizCount = quizzes.filter(q => q.lesson_id === lesson.id).length;
 
                              return (
@@ -723,7 +842,7 @@ export default function CourseDetails() {
                     <BookOpen size={16} />
                     <Typography variant="body2">Lessons</Typography>
                   </Box>
-                  <Typography variant="body2" fontWeight={500}>{lessons.length}</Typography>
+                  <Typography variant="body2" fontWeight={500}>{visibleLessons.length}</Typography>
                 </Box>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, color: 'text.secondary' }}>
