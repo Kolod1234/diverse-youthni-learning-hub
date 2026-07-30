@@ -113,6 +113,44 @@
       "type": "string",
       "description": "Examination board (e.g., CCEA, AQA, Edexcel)"
     },
+    "requires_math_pathway": {
+      "type": "boolean",
+      "default": false,
+      "description": "Whether learners must select a CCEA Mathematics pathway"
+    },
+    "math_pathways": {
+      "type": "array",
+      "description": "Valid CCEA GCSE Mathematics unit pairings",
+      "items": {
+        "type": "object",
+        "properties": {
+          "code": {
+            "type": "string"
+          },
+          "label": {
+            "type": "string"
+          },
+          "tier": {
+            "type": "string"
+          },
+          "first_unit": {
+            "type": "string"
+          },
+          "completion_unit": {
+            "type": "string"
+          },
+          "grade_range": {
+            "type": "string"
+          },
+          "first_weighting": {
+            "type": "number"
+          },
+          "completion_weighting": {
+            "type": "number"
+          }
+        }
+      }
+    },
     "assigned_tutors": {
       "type": "array",
       "items": {
