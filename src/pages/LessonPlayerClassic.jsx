@@ -373,7 +373,7 @@ export default function LessonPlayerClassic() {
   const selectedMathUnits = mathPathwayUnits[enrollment?.math_pathway] || [];
   const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
   const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
-    ? courseLessons.filter(lessonItem => lessonItem.ccea_units?.some(unitCode => selectedMathUnits.includes(unitCode)))
+    ? courseLessons.filter(lessonItem => !lessonItem.ccea_units?.length || lessonItem.ccea_units.some(unitCode => selectedMathUnits.includes(unitCode)))
     : courseLessons;
 
   // Progress auto-save hook (after enrollment is defined)
