@@ -174,16 +174,20 @@ button:focus-visible {
     margin-top: 1.75rem;
   }
 
+  .lesson-rich-content math:not([display="block"]) {
+    display: inline math;
+    vertical-align: baseline;
+    line-height: normal;
+  }
+
   .lesson-rich-content p:has(> .step-number) {
-    display: flex;
-    align-items: flex-start;
-    gap: 0.35rem;
+    display: block;
     margin-bottom: 0.75rem;
   }
 
   .lesson-rich-content .step-number {
-    flex: 0 0 auto;
-    margin-top: 0.05rem;
+    vertical-align: middle;
+    margin: 0 0.65rem 0 0;
   }
 
   .lesson-rich-content .worked-example,
