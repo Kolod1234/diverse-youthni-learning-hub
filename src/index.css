@@ -156,3 +156,57 @@ button:focus-visible {
     @apply bg-background text-foreground;
   }
 }
+
+@layer components {
+  .lesson-rich-content math[display="block"] {
+    display: block;
+    width: calc(100% - 2.75rem);
+    max-width: calc(100% - 2.75rem);
+    margin: 1.25rem 0 1.5rem 2.75rem;
+    padding: 0.25rem 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    text-align: left;
+    line-height: 1.55;
+  }
+
+  .lesson-rich-content math[display="block"] + math[display="block"] {
+    margin-top: 1.75rem;
+  }
+
+  .lesson-rich-content p:has(> .step-number) {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.35rem;
+    margin-bottom: 0.75rem;
+  }
+
+  .lesson-rich-content .step-number {
+    flex: 0 0 auto;
+    margin-top: 0.05rem;
+  }
+
+  .lesson-rich-content .worked-example,
+  .lesson-rich-content .method-steps,
+  .lesson-rich-content .practice-block,
+  .lesson-rich-content .key-rule,
+  .lesson-rich-content .notation-note,
+  .lesson-rich-content .check-point,
+  .lesson-rich-content .answer-block {
+    overflow: hidden;
+  }
+
+  .lesson-rich-content td,
+  .lesson-rich-content th {
+    vertical-align: middle;
+  }
+
+  @media (max-width: 640px) {
+    .lesson-rich-content math[display="block"] {
+      width: calc(100% - 0.75rem);
+      max-width: calc(100% - 0.75rem);
+      margin-left: 0.75rem;
+      font-size: 1rem;
+    }
+  }
+}
