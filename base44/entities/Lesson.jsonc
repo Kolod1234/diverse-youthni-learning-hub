@@ -72,6 +72,23 @@
       "type": "string",
       "description": "Section/module name"
     },
+    "ccea_units": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "enum": [
+          "M1",
+          "M2",
+          "M3",
+          "M4",
+          "M5",
+          "M6",
+          "M7",
+          "M8"
+        ]
+      },
+      "description": "CCEA Mathematics units whose specification content this lesson supports"
+    },
     "is_preview": {
       "type": "boolean",
       "default": false,
