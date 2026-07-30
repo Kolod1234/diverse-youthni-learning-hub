@@ -214,7 +214,7 @@ export default function CourseDetails() {
     : [];
   const hasMappedMathLessons = lessons.some(lesson => lesson.ccea_units?.length > 0);
   const visibleLessons = isMathPathwayCourse && activeMathPathway && hasMappedMathLessons
-    ? lessons.filter(lesson => lesson.ccea_units?.some(unitCode => pathwayUnitCodes.includes(unitCode)))
+    ? lessons.filter(lesson => !lesson.ccea_units?.length || lesson.ccea_units.some(unitCode => pathwayUnitCodes.includes(unitCode)))
     : lessons;
 
   useEffect(() => {
