@@ -364,11 +364,23 @@ export default function LessonPlayerClassic() {
     staleTime: 2 * 60 * 1000
   });
 
+  const mathPathwayUnits = {
+    m1_m5: ['M1', 'M5'],
+    m2_m6: ['M2', 'M6'],
+    m3_m7: ['M3', 'M7'],
+    m4_m8: ['M4', 'M8'],
+  };
+  const selectedMathUnits = mathPathwayUnits[enrollment?.math_pathway] || [];
+  const hasMappedMathLessons = courseLessons.some(lessonItem => lessonItem.ccea_units?.length > 0);
+  const pathwayLessons = course?.requires_math_pathway && enrollment?.math_pathway && hasMappedMathLessons
+    ? courseLessons.filter(lessonItem => lessonItem.ccea_units?.some(unitCode => selectedMathUnits.includes(unitCode)))
+    : courseLessons;
+
   // Progress auto-save hook (after enrollment is defined)
   const { getLastProgress, clearProgress } = useProgressAutoSave(lessonId);
 
   // Sort lessons once
-  const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
+  const sortedLessons = [...pathwayLessons].sort((a, b) => a.order - b.order);
   const currentLessonIndex = sortedLessons.findIndex(l => l.id === lessonId);
   const nextLesson = sortedLessons[currentLessonIndex + 1];
   const prevLesson = sortedLessons[currentLessonIndex - 1];
@@ -436,7 +448,7 @@ export default function LessonPlayerClassic() {
 
   // Check if lesson is locked
   useEffect(() => {
-    if (!lesson || !enrollment || !courseLessons.length) return;
+    if (!lesson || !enrollment || !sortedLessons.length) return;
     
     // Admins and tutors can access all lessons
     if (user && (user.role === 'admin' || user.is_tutor)) {
@@ -444,7 +456,6 @@ export default function LessonPlayerClassic() {
       return;
     }
     
-    const sortedLessons = [...courseLessons].sort((a, b) => a.order - b.order);
     const isFirstLesson = sortedLessons[0]?.id === lessonId;
     
     if (isFirstLesson) {
@@ -468,7 +479,7 @@ export default function LessonPlayerClassic() {
     } else {
       setIsLessonLocked(false);
     }
-  }, [lesson, enrollment, courseLessons, lessonId, user]);
+  }, [lesson, enrollment, sortedLessons, lessonId, user]);
 
   const { data: quizzes = [] } = useQuery({
     queryKey: ['lessonQuizzes', lessonId, courseId],
@@ -493,7 +504,7 @@ export default function LessonPlayerClassic() {
       if (!completedLessons.includes(lessonId)) {
         await base44.entities.Enrollment.update(enrollment.id, {
           completed_lessons: [...completedLessons, lessonId],
-          progress_percent: Math.round(((completedLessons.length + 1) / courseLessons.length) * 100)
+          progress_percent: Math.round(((completedLessons.length + 1) / Math.max(sortedLessons.length, 1)) * 100)
         });
         
         // Clear progress tracking
@@ -534,7 +545,7 @@ export default function LessonPlayerClassic() {
 
         // Check if course is complete
         const newCompletedCount = completedLessons.length + 1;
-        if (newCompletedCount === courseLessons.length) {
+        if (newCompletedCount === sortedLessons.length) {
           setTimeout(() => setShowCertificate(true), 2000);
         }
       }
@@ -872,12 +883,12 @@ export default function LessonPlayerClassic() {
               <Stack spacing={1}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
+                    {Math.round((enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100)}% COMPLETE
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}
+                  value={(enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100}
                   sx={{ height: 8, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.2)' }}
                 />
               </Stack>
@@ -1000,12 +1011,12 @@ export default function LessonPlayerClassic() {
               <Stack spacing={1}>
                 <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between' }}>
                   <Typography variant="caption" sx={{ fontWeight: 600 }}>
-                    {Math.round((enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100)}% COMPLETE
+                    {Math.round((enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100)}% COMPLETE
                   </Typography>
                 </Box>
                 <LinearProgress
                   variant="determinate"
-                  value={(enrollment.completed_lessons?.length || 0) / sortedLessons.length * 100}
+                  value={(enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100}
                   sx={{ height: 8, borderRadius: 4, bgcolor: 'rgba(255,255,255,0.2)' }}
                 />
               </Stack>
