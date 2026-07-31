@@ -72,7 +72,7 @@ export default function CourseProgressWidget({ enrollments, courses }) {
         ) : lessonId ? (
           <Button
             component={Link}
-            to={createPageUrl('LessonPlayer') + `?courseId=${course.id}&lessonId=${lessonId}`}
+            to={createPageUrl('LessonPlayer') + `?course=${course.id}&lesson=${lessonId}`}
             fullWidth
             variant="contained"
             startIcon={<PlayArrowIcon />}
