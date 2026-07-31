@@ -18,8 +18,9 @@ export default function LessonPlayer() {
   const location = useLocation();
   const navigate = useNavigate();
   const params = new URLSearchParams(location.search);
-  const lessonId = params.get('lesson');
-  const courseId = params.get('course');
+  // Accept canonical query keys and older dashboard-link aliases.
+  const lessonId = params.get('lesson') || params.get('lessonId');
+  const courseId = params.get('course') || params.get('courseId');
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
