@@ -114,32 +114,8 @@ function getLessonData(category, stage) {
     // Physics
     physics_as: getPhysicsAS(),
     physics_a2: getPhysicsA2(),
-    
-    // Already populated subjects
-    geography_as: getGeographyAS(),
-    geography_a2: getGeographyA2(),
-    government_politics_as: getGovernmentPoliticsAS(),
-    government_politics_a2: getGovernmentPoliticsA2(),
-    religious_studies_as: getReligiousStudiesAS(),
-    religious_studies_a2: getReligiousStudiesA2(),
-    digital_technology_as: getDigitalTechnologyAS(),
-    digital_technology_a2: getDigitalTechnologyA2(),
-    software_systems_development_as: getSoftwareSystemsAS(),
-    software_systems_development_a2: getSoftwareSystemsA2(),
-    technology_design_as: getTechnologyDesignAS(),
-    technology_design_a2: getTechnologyDesignA2(),
-    english_literature_as: getEnglishLiteratureAS(),
-    english_literature_a2: getEnglishLiteratureA2(),
-    english_language_as: getEnglishLanguageAS(),
-    english_language_a2: getEnglishLanguageA2(),
-    mathematics_as: getMathematicsAS(),
-    mathematics_a2: getMathematicsA2(),
-    further_mathematics_as: getFurtherMathematicsAS(),
-    further_mathematics_a2: getFurtherMathematicsA2(),
-    life_health_sciences_as: getLifeHealthSciencesAS(),
-    life_health_sciences_a2: getLifeHealthSciencesA2(),
-    environmental_technology_as: getEnvironmentalTechnologyAS(),
-    environmental_technology_a2: getEnvironmentalTechnologyA2()
+
+    // Remaining A-Level subjects are handled by populateRemainingALevels.
   };
   
   return lessonMap[key] || [];
@@ -183,6 +159,3 @@ function getChemistryAS() { return []; }
 function getChemistryA2() { return []; }
 function getPhysicsAS() { return []; }
 function getPhysicsA2() { return []; }
-
-// Import existing complete functions from populateRemainingALevels
-${getExistingFunctions()}
