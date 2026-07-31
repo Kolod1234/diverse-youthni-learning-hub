@@ -69,12 +69,23 @@
       "description": ""
     }
   ],
+  "context_files": [],
+  "app_user_connector_configs": [],
+  "selected_skill_names": [],
+  "selected_workspace_skill_ids": [],
   "model": "automatic",
   "whatsapp_greeting": "Hello! I'm Manus, your AI assistant for building amazing educational experiences. I can help you create courses, generate content, implement AI features, and optimize your webapp. What would you like to work on today?",
+  "telegram_greeting": null,
+  "line_greeting": null,
   "memory_config": {
     "enabled": true,
     "scope": "both",
+    "include_other_conversation_context": false,
     "instructions": null
   },
+  "voice_config": {
+    "voice_id": null
+  },
+  "allow_anonymous_access": false,
   "name": "manus_builder"
 }
