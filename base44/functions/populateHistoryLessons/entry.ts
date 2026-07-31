@@ -601,10 +601,10 @@ Deno.serve(async (req) => {
     await base44.entities.Lesson.bulkCreate(a2LessonsToCreate);
 
     // Delete old individual courses
-    const oldCourseIds = courses.map(cd => {
+    const oldCourseIds = (await Promise.all(courses.map(async (cd) => {
       const existing = await base44.entities.Course.filter({ title: cd.title });
       return existing.length > 0 ? existing[0].id : null;
-    }).filter(id => id !== null);
+    }))).filter(id => id !== null);
 
     for (const courseId of oldCourseIds) {
       const lessons = await base44.entities.Lesson.filter({ course_id: courseId });
