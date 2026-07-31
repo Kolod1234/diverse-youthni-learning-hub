@@ -332,7 +332,7 @@ export default function EnhancedLessonPlayer({
                 <article className="mx-auto max-w-4xl rounded-2xl border border-slate-700 bg-slate-900/80 p-6 sm:p-10 shadow-2xl">
                   <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-700 pb-4">
                     <span className="text-xs font-semibold uppercase tracking-widest text-orange-400">
-                      CCEA Mathematics - {lesson.section || 'Lesson'}
+                      {course?.title || 'CCEA Course'} - {lesson.section || 'Lesson'}
                     </span>
                     <span className="text-sm text-slate-400">Page {currentContentSlide + 1} of {contentSlides.length}</span>
                   </div>
