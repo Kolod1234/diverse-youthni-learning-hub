@@ -349,16 +349,21 @@ export default function EnhancedLessonPlayer({
                     >
                       <ChevronLeft className="h-4 w-4" /> Previous Page
                     </button>
-                    <div className="hidden items-center gap-1.5 sm:flex">
-                      {contentSlides.map((_, index) => (
-                        <button
-                          key={index}
-                          onClick={() => setCurrentContentSlide(index)}
-                          aria-label={`Go to page ${index + 1}`}
-                          className={`h-2.5 rounded-full transition-all ${index === currentContentSlide ? 'w-7 bg-orange-500' : 'w-2.5 bg-slate-600 hover:bg-slate-500'}`}
-                        />
-                      ))}
-                    </div>
+                    <label className="flex items-center gap-2 text-sm text-slate-300">
+                      <span className="hidden sm:inline">Jump to</span>
+                      <select
+                        value={currentContentSlide}
+                        onChange={(event) => setCurrentContentSlide(Number(event.target.value))}
+                        aria-label="Choose lesson page"
+                        className="max-w-[8rem] rounded-lg border border-slate-600 bg-slate-800 px-2 py-2 text-sm text-white focus:border-orange-400 focus:outline-none sm:max-w-[18rem]"
+                      >
+                        {contentSlides.map((slide, index) => (
+                          <option key={index} value={index}>
+                            Page {index + 1}: {slide.title || `Slide ${index + 1}`}
+                          </option>
+                        ))}
+                      </select>
+                    </label>
                     <button
                       onClick={() => setCurrentContentSlide(index => Math.min(index + 1, contentSlides.length - 1))}
                       disabled={currentContentSlide === contentSlides.length - 1}
