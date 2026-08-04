@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -16,6 +17,7 @@ import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
+import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 
 export default function EnhancedLessonPlayer({
   lesson,
@@ -30,12 +32,15 @@ export default function EnhancedLessonPlayer({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
+  const shouldReduceMotion = useReducedMotion();
   const [showSidebar, setShowSidebar] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
   const [showQuizPanel, setShowQuizPanel] = useState(false);
+  const [showTopicQuiz, setShowTopicQuiz] = useState(false);
+  const [topicQuizCompleted, setTopicQuizCompleted] = useState(false);
   const [showMobileOutline, setShowMobileOutline] = useState(false);
   const [aiQuestion, setAiQuestion] = useState('');
   const [defineTerm, setDefineTerm] = useState('');
@@ -93,6 +98,8 @@ export default function EnhancedLessonPlayer({
 
   useEffect(() => {
     setCurrentContentSlide(0);
+    setShowTopicQuiz(false);
+    setTopicQuizCompleted(false);
   }, [lesson?.id]);
 
   useEffect(() => {
@@ -104,11 +111,13 @@ export default function EnhancedLessonPlayer({
   useEffect(() => {
     const handlePageKeys = (event) => {
       const tag = event.target?.tagName;
-      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (showTopicQuiz || tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
       if (event.key === 'ArrowRight') {
         event.preventDefault();
         if (currentContentSlide < contentSlides.length - 1) {
           setCurrentContentSlide(index => index + 1);
+        } else if (contentSlides.length > 0 && !topicQuizCompleted) {
+          setShowTopicQuiz(true);
         } else {
           onNext?.();
         }
@@ -124,7 +133,7 @@ export default function EnhancedLessonPlayer({
     };
     window.addEventListener('keydown', handlePageKeys);
     return () => window.removeEventListener('keydown', handlePageKeys);
-  }, [currentContentSlide, contentSlides.length, onNext, onPrev]);
+  }, [currentContentSlide, contentSlides.length, onNext, onPrev, showTopicQuiz, topicQuizCompleted]);
 
   useEffect(() => {
     mainContentRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' });
@@ -202,6 +211,8 @@ export default function EnhancedLessonPlayer({
   const estimatedMinutes = lesson.duration_minutes || Math.max(2, contentSlides.length * 2);
   const currentPageKey = lesson.id + ':' + currentContentSlide;
   const isBookmarked = bookmarks.includes(currentPageKey);
+  const topicQuizQuestions = interactiveContent?.quizQuestions || [];
+  const canOpenTopicQuiz = isLastPage && hasPages && !topicQuizCompleted;
 
   const closeTools = () => {
     setShowAI(false);
@@ -228,9 +239,17 @@ export default function EnhancedLessonPlayer({
   const goToNext = () => {
     if (hasPages && currentContentSlide < contentSlides.length - 1) {
       setCurrentContentSlide(index => index + 1);
+    } else if (hasPages && !topicQuizCompleted) {
+      setShowTopicQuiz(true);
     } else {
       onNext?.();
     }
+  };
+
+  const handleTopicQuizContinue = () => {
+    setTopicQuizCompleted(true);
+    setShowTopicQuiz(false);
+    if (nextLesson) onNext?.();
   };
 
   const handleTouchStart = (event) => {
@@ -275,7 +294,7 @@ export default function EnhancedLessonPlayer({
     '[&_summary]:cursor-pointer [&_summary]:font-semibold [&_summary]:text-[#10233f]',
     '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-xl [&_table]:text-[15px]',
     '[&_th]:border [&_th]:border-slate-200 [&_th]:bg-slate-100 [&_th]:p-3 [&_th]:text-left [&_td]:border [&_td]:border-slate-200 [&_td]:p-3',
-    '[&_img]:h-auto [&_img]:max-w-full [&_svg]:h-auto [&_svg]:max-w-full [&_figure]:my-7 [&_figure]:overflow-visible',
+    '[&_img]:h-auto [&_img]:max-w-full [&_img]:rounded-xl [&_img]:object-contain [&_video]:h-auto [&_video]:max-w-full [&_video]:rounded-xl [&_svg]:h-auto [&_svg]:max-w-full [&_figure]:my-7 [&_figure]:overflow-visible',
     '[&_math]:mx-1 [&_math]:inline-block [&_math]:align-middle [&_math]:font-serif [&_math]:text-[1.1em] [&_math]:text-[#0b1b32]',
     '[&_.key-rule]:my-6 [&_.key-rule]:rounded-xl [&_.key-rule]:border [&_.key-rule]:border-emerald-200 [&_.key-rule]:bg-emerald-50 [&_.key-rule]:p-5',
     '[&_.notation-note]:my-6 [&_.notation-note]:rounded-xl [&_.notation-note]:border [&_.notation-note]:border-orange-200 [&_.notation-note]:bg-orange-50 [&_.notation-note]:p-5',
@@ -497,7 +516,15 @@ export default function EnhancedLessonPlayer({
                 />
               </div>
             ) : hasPages && activeContentSlide ? (
-              <article className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12">
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.article
+                  key={currentPageKey}
+                  className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12"
+                  initial={shouldReduceMotion ? false : { opacity: 0, y: 14 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={shouldReduceMotion ? undefined : { opacity: 0, y: -10 }}
+                  transition={{ duration: shouldReduceMotion ? 0 : 0.22, ease: 'easeOut' }}
+                >
                 <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
                   <div>
                     <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
@@ -518,8 +545,9 @@ export default function EnhancedLessonPlayer({
                   </button>
                 </div>
                 <h2 className="mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
-                <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
-              </article>
+                  <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
+                </motion.article>
+              </AnimatePresence>
             ) : (
               <div className="mx-auto flex min-h-[420px] max-w-[920px] items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500">
                 No lesson content is available yet.
@@ -693,15 +721,25 @@ export default function EnhancedLessonPlayer({
           <button
             type="button"
             onClick={goToNext}
-            disabled={isLastPage && !nextLesson}
-            aria-label={isLastPage ? 'Go to next topic' : 'Go to next page'}
-            title={isLastPage ? 'Next topic' : 'Next page'}
+            disabled={isLastPage && !nextLesson && !canOpenTopicQuiz}
+            aria-label={canOpenTopicQuiz ? 'Open topic quiz' : isLastPage ? 'Go to next topic' : 'Go to next page'}
+            title={canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}
             className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] shadow-sm hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
           >
-            <span className="hidden sm:inline">{isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
+            <span className="hidden sm:inline">{canOpenTopicQuiz ? 'Topic quiz' : isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
           </button>
         </footer>
       </section>
+
+      <TopicQuizModal
+        open={showTopicQuiz}
+        lesson={lesson}
+        questions={topicQuizQuestions}
+        loading={loadingInteractives}
+        hasNextTopic={!!nextLesson}
+        onClose={() => setShowTopicQuiz(false)}
+        onContinue={handleTopicQuizContinue}
+      />
 
       <PointsAnimation show={showPointsAnimation} points={earnedPoints} onComplete={() => setShowPointsAnimation(false)} />
       <BadgeUnlock badges={newBadges} onClose={() => setShowBadges(false)} />
