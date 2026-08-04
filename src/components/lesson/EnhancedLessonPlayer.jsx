@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
+import { motion, useReducedMotion } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
@@ -565,7 +565,6 @@ export default function EnhancedLessonPlayer({
                 />
               </div>
             ) : hasPages && activeContentSlide ? (
-              <AnimatePresence mode="sync" initial={false}>
                 <motion.article
                   key={currentPageKey}
                   className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12"
@@ -596,7 +595,6 @@ export default function EnhancedLessonPlayer({
                 <h2 className="mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
                   <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
                 </motion.article>
-              </AnimatePresence>
             ) : (
               <div className="mx-auto flex min-h-[420px] max-w-[920px] items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500">
                 No lesson content is available yet.
