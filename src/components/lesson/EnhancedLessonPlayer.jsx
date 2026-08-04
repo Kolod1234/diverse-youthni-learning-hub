@@ -48,6 +48,7 @@ export default function EnhancedLessonPlayer({
   const [currentContentSlide, setCurrentContentSlide] = useState(0);
   const containerRef = useRef(null);
   const mainContentRef = useRef(null);
+  const touchStartRef = useRef(null);
 
   const {
     isFullscreen, toggleFullscreen, showAI, setShowAI,
@@ -230,6 +231,31 @@ export default function EnhancedLessonPlayer({
     } else {
       onNext?.();
     }
+  };
+
+  const handleTouchStart = (event) => {
+    if (event.touches.length !== 1 || event.target?.closest?.('button, a, input, textarea, select, [role="button"], [data-no-swipe]')) {
+      touchStartRef.current = null;
+      return;
+    }
+
+    const touch = event.touches[0];
+    touchStartRef.current = { x: touch.clientX, y: touch.clientY };
+  };
+
+  const handleTouchEnd = (event) => {
+    const start = touchStartRef.current;
+    const touch = event.changedTouches[0];
+    touchStartRef.current = null;
+    if (!start || !touch) return;
+
+    const deltaX = touch.clientX - start.x;
+    const deltaY = touch.clientY - start.y;
+    const isDeliberateHorizontalSwipe = Math.abs(deltaX) >= 64 && Math.abs(deltaX) > Math.abs(deltaY) * 1.35;
+    if (!isDeliberateHorizontalSwipe) return;
+
+    if (deltaX < 0) goToNext();
+    else goToPrevious();
   };
 
   const selectLesson = (id) => {
@@ -449,7 +475,14 @@ export default function EnhancedLessonPlayer({
         </header>
 
         <div className="flex min-h-0 flex-1 overflow-hidden">
-          <main ref={mainContentRef} className="min-w-0 flex-1 overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8" aria-label="Lesson content">
+          <main
+            ref={mainContentRef}
+            className="min-w-0 flex-1 touch-pan-y overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
+            aria-label="Lesson content"
+            onTouchStart={handleTouchStart}
+            onTouchEnd={handleTouchEnd}
+            onTouchCancel={() => { touchStartRef.current = null; }}
+          >
             {lesson.manus_slides_url ? (
               <div className="mx-auto min-h-full max-w-5xl rounded-xl bg-white p-4 shadow-sm">
                 <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
@@ -617,6 +650,8 @@ export default function EnhancedLessonPlayer({
             type="button"
             onClick={goToPrevious}
             disabled={isFirstPage && !prevLesson}
+            aria-label={isFirstPage ? 'Go to previous topic' : 'Go to previous page'}
+            title={isFirstPage ? 'Previous topic' : 'Previous page'}
             className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 sm:px-4"
           >
             <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">{isFirstPage ? 'Previous topic' : 'Previous page'}</span>
@@ -625,6 +660,7 @@ export default function EnhancedLessonPlayer({
           <div className="min-w-0 flex-1">
             <div className="mb-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-500">
               <span>{hasPages ? 'Page ' + (currentContentSlide + 1) + ' of ' + contentSlides.length : 'Lesson'}</span>
+              <span className="sm:hidden">Swipe or tap</span>
               <span className="hidden sm:inline">Use ← / → to navigate</span>
             </div>
             <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
@@ -658,6 +694,8 @@ export default function EnhancedLessonPlayer({
             type="button"
             onClick={goToNext}
             disabled={isLastPage && !nextLesson}
+            aria-label={isLastPage ? 'Go to next topic' : 'Go to next page'}
+            title={isLastPage ? 'Next topic' : 'Next page'}
             className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] shadow-sm hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
           >
             <span className="hidden sm:inline">{isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
