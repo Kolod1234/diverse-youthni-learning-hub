@@ -419,20 +419,20 @@ export default function EnhancedLessonPlayer({
             <button
               type="button"
               onClick={() => toggleTool('ai')}
-              className={'hidden h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:inline-flex sm:gap-2 ' + (showAI ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showAI ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
               aria-label="Open AI learning assistant"
               title="AI learning assistant"
             >
-              <Sparkles className="h-4.5 w-4.5" /><span className="hidden 2xl:inline">Ask</span>
+              <Sparkles className="h-4 w-4" /><span className="hidden 2xl:inline">Ask</span>
             </button>
             <button
               type="button"
               onClick={() => toggleTool('notes')}
-              className={'hidden h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:inline-flex sm:gap-2 ' + (showNotes ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              className={'inline-flex h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:gap-2 ' + (showNotes ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
               aria-label="Open notes"
               title="Notes"
             >
-              <MessageSquare className="h-4.5 w-4.5" /><span className="hidden 2xl:inline">Notes</span>
+              <MessageSquare className="h-4 w-4" /><span className="hidden 2xl:inline">Notes</span>
             </button>
             <button
               type="button"
@@ -654,9 +654,9 @@ export default function EnhancedLessonPlayer({
               type="button"
               onClick={() => markCompleteMutation.mutate()}
               disabled={markCompleteMutation.isPending}
-              className="hidden h-11 shrink-0 items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 sm:inline-flex"
+              className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-3 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 sm:px-4"
             >
-              <CheckCircle className="h-4 w-4" /> {markCompleteMutation.isPending ? 'Saving…' : 'Mark complete'}
+              <CheckCircle className="h-4 w-4" /><span className="hidden sm:inline">{markCompleteMutation.isPending ? 'Saving…' : 'Mark complete'}</span>
             </button>
           )}
 
