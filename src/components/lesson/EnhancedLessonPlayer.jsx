@@ -103,6 +103,18 @@ export default function EnhancedLessonPlayer({
   }, [lesson?.id]);
 
   useEffect(() => {
+    const previousHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
+    const previousBodyOverscroll = document.body.style.overscrollBehaviorY;
+    document.documentElement.style.overscrollBehaviorY = 'none';
+    document.body.style.overscrollBehaviorY = 'none';
+
+    return () => {
+      document.documentElement.style.overscrollBehaviorY = previousHtmlOverscroll;
+      document.body.style.overscrollBehaviorY = previousBodyOverscroll;
+    };
+  }, []);
+
+  useEffect(() => {
     if (lesson?.section) {
       setExpandedSections(prev => ({ ...prev, [lesson.section]: true }));
     }
@@ -402,7 +414,7 @@ export default function EnhancedLessonPlayer({
   );
 
   return (
-    <div ref={containerRef} className={'flex h-[100dvh] overflow-hidden bg-[#071326] text-white ' + (isFullscreen ? 'fixed inset-0 z-[100]' : '')}>
+    <div ref={containerRef} className={'flex h-[100dvh] overscroll-y-none overflow-hidden bg-[#071326] text-white ' + (isFullscreen ? 'fixed inset-0 z-[100]' : '')}>
       {showSidebar && (
         <aside className="hidden h-full w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#07182b] lg:flex">
           {outlineContent}
@@ -496,7 +508,7 @@ export default function EnhancedLessonPlayer({
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <main
             ref={mainContentRef}
-            className="min-w-0 flex-1 touch-pan-y overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
+            className="min-w-0 flex-1 touch-pan-y overscroll-y-contain overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
             aria-label="Lesson content"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
