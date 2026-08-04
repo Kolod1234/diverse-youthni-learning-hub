@@ -97,10 +97,22 @@ export default function EnhancedLessonPlayer({
   const activeContentSlide = contentSlides[currentContentSlide];
 
   useEffect(() => {
-    setCurrentContentSlide(0);
+    if (!lesson?.id) return;
+
+    const savedPage = Number.parseInt(sessionStorage.getItem('lesson-player-page:' + lesson.id), 10);
+    const restoredPage = Number.isInteger(savedPage) && savedPage >= 0 && savedPage < contentSlides.length
+      ? savedPage
+      : 0;
+
+    setCurrentContentSlide(restoredPage);
     setShowTopicQuiz(false);
     setTopicQuizCompleted(false);
-  }, [lesson?.id]);
+  }, [lesson?.id, contentSlides.length]);
+
+  useEffect(() => {
+    if (!lesson?.id || contentSlides.length === 0) return;
+    sessionStorage.setItem('lesson-player-page:' + lesson.id, String(currentContentSlide));
+  }, [lesson?.id, contentSlides.length, currentContentSlide]);
 
   useEffect(() => {
     const previousHtmlOverscroll = document.documentElement.style.overscrollBehaviorY;
@@ -108,9 +120,33 @@ export default function EnhancedLessonPlayer({
     document.documentElement.style.overscrollBehaviorY = 'none';
     document.body.style.overscrollBehaviorY = 'none';
 
+    const lessonScroller = mainContentRef.current;
+    let gestureStartX = 0;
+    let gestureStartY = 0;
+
+    const preventRefreshStart = (event) => {
+      if (event.touches.length !== 1) return;
+      gestureStartX = event.touches[0].clientX;
+      gestureStartY = event.touches[0].clientY;
+    };
+
+    const preventRefreshMove = (event) => {
+      if (!lessonScroller || event.touches.length !== 1 || lessonScroller.scrollTop > 0) return;
+
+      const deltaX = event.touches[0].clientX - gestureStartX;
+      const deltaY = event.touches[0].clientY - gestureStartY;
+      const isDownwardVerticalPull = deltaY > 0 && Math.abs(deltaY) > Math.abs(deltaX) * 1.2;
+      if (isDownwardVerticalPull) event.preventDefault();
+    };
+
+    lessonScroller?.addEventListener('touchstart', preventRefreshStart, { passive: true });
+    lessonScroller?.addEventListener('touchmove', preventRefreshMove, { passive: false });
+
     return () => {
       document.documentElement.style.overscrollBehaviorY = previousHtmlOverscroll;
       document.body.style.overscrollBehaviorY = previousBodyOverscroll;
+      lessonScroller?.removeEventListener('touchstart', preventRefreshStart);
+      lessonScroller?.removeEventListener('touchmove', preventRefreshMove);
     };
   }, []);
 
@@ -508,7 +544,8 @@ export default function EnhancedLessonPlayer({
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <main
             ref={mainContentRef}
-            className="min-w-0 flex-1 touch-pan-y overscroll-y-contain overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
+            className="min-w-0 flex-1 touch-pan-y overscroll-y-none overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
+            style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'none' }}
             aria-label="Lesson content"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
