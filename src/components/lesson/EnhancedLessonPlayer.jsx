@@ -36,12 +36,15 @@ export default function EnhancedLessonPlayer({
 }) {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
-  const [showSidebar, setShowSidebar] = useState(window.innerWidth >= 1024);
+  const [showSidebar, setShowSidebar] = useState(true);
   const [searchQuery, setSearchQuery] = useState('');
   const [expandedSections, setExpandedSections] = useState({});
   const [showUnlockDialog, setShowUnlockDialog] = useState(false);
   const [isLessonLocked, setIsLessonLocked] = useState(false);
   const [showQuizPanel, setShowQuizPanel] = useState(false);
+  const [showMobileOutline, setShowMobileOutline] = useState(false);
+  const [aiQuestion, setAiQuestion] = useState('');
+  const [defineTerm, setDefineTerm] = useState('');
   const [interactiveContent, setInteractiveContent] = useState(null);
   const [loadingInteractives, setLoadingInteractives] = useState(false);
   const [showPointsAnimation, setShowPointsAnimation] = useState(false);
@@ -96,6 +99,41 @@ export default function EnhancedLessonPlayer({
   useEffect(() => {
     setCurrentContentSlide(0);
   }, [lesson?.id]);
+
+  useEffect(() => {
+    if (lesson?.section) {
+      setExpandedSections(prev => ({ ...prev, [lesson.section]: true }));
+    }
+  }, [lesson?.id, lesson?.section]);
+
+  useEffect(() => {
+    const handlePageKeys = (event) => {
+      const tag = event.target?.tagName;
+      if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT') return;
+      if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        if (currentContentSlide < contentSlides.length - 1) {
+          setCurrentContentSlide(index => index + 1);
+        } else {
+          onNext?.();
+        }
+      }
+      if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        if (currentContentSlide > 0) {
+          setCurrentContentSlide(index => index - 1);
+        } else {
+          onPrev?.();
+        }
+      }
+    };
+    window.addEventListener('keydown', handlePageKeys);
+    return () => window.removeEventListener('keydown', handlePageKeys);
+  }, [currentContentSlide, contentSlides.length, onNext, onPrev]);
+
+  useEffect(() => {
+    mainContentRef.current?.scrollTo?.({ top: 0, behavior: 'smooth' });
+  }, [currentContentSlide, lesson?.id]);
 
   // Load interactive content
   useEffect(() => {
@@ -158,375 +196,481 @@ export default function EnhancedLessonPlayer({
     return acc;
   }, {});
 
-  return (
-    <div ref={containerRef} className={`flex h-screen bg-slate-950 text-white overflow-hidden ${isFullscreen ? 'fixed inset-0 z-50' : ''}`}>
-      {/* Sidebar */}
-      <AnimatePresence>
-        {showSidebar && (
-          <motion.div
-            initial={{ x: -320 }}
-            animate={{ x: 0 }}
-            exit={{ x: -320 }}
-            className="hidden lg:flex w-80 bg-gradient-to-b from-slate-900 to-slate-800 border-r border-slate-700 flex-col overflow-hidden fixed lg:relative h-full z-40 lg:z-0"
-          >
-            {/* Search */}
-            <div className="p-4 border-b border-slate-700">
-              <div className="relative">
-                <Search className="absolute left-3 top-2.5 w-4 h-4 text-slate-500" />
-                <input
-                  type="text"
-                  placeholder="Search lessons..."
-                  value={searchQuery}
-                  onChange={(e) => setSearchQuery(e.target.value)}
-                  className="w-full bg-slate-800 text-white pl-9 pr-3 py-2 rounded-lg border border-slate-700 focus:border-orange-500 outline-none text-sm"
-                />
-              </div>
-            </div>
+  const completedIds = enrollment?.completed_lessons || [];
+  const lessonProgress = sortedLessons.length > 0
+    ? Math.round((completedIds.length / sortedLessons.length) * 100)
+    : Math.round(progressPercent);
+  const hasPages = contentSlides.length > 0;
+  const isFirstPage = !hasPages || currentContentSlide === 0;
+  const isLastPage = !hasPages || currentContentSlide === contentSlides.length - 1;
+  const pageProgress = hasPages ? ((currentContentSlide + 1) / contentSlides.length) * 100 : 100;
+  const estimatedMinutes = lesson.duration_minutes || Math.max(2, contentSlides.length * 2);
+  const currentPageKey = lesson.id + ':' + currentContentSlide;
+  const isBookmarked = bookmarks.includes(currentPageKey);
 
-            {/* Course Info */}
-            <div className="p-4 border-b border-slate-700">
-              <h3 className="text-sm font-semibold text-orange-500 mb-1">COURSE</h3>
-              <p className="text-sm text-slate-300 mb-3">{course?.title || 'Course'}</p>
-              
-              {enrollment && (
-                <div className="space-y-2">
-                  <div className="flex justify-between text-xs text-slate-400">
-                    <span>Progress</span>
-                    <span>{Math.round((enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100)}%</span>
-                  </div>
-                  <div className="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                    <div
-                      className="h-full bg-gradient-to-r from-orange-500 to-orange-600 transition-all duration-300"
-                      style={{ width: `${(enrollment.completed_lessons?.length || 0) / Math.max(sortedLessons.length, 1) * 100}%` }}
-                    />
-                  </div>
+  const closeTools = () => {
+    setShowAI(false);
+    setShowNotes(false);
+    setShowQuizPanel(false);
+  };
+
+  const toggleTool = (tool) => {
+    const opening = tool === 'ai' ? !showAI : tool === 'notes' ? !showNotes : !showQuizPanel;
+    closeTools();
+    if (opening && tool === 'ai') setShowAI(true);
+    if (opening && tool === 'notes') setShowNotes(true);
+    if (opening && tool === 'quiz') setShowQuizPanel(true);
+  };
+
+  const goToPrevious = () => {
+    if (hasPages && currentContentSlide > 0) {
+      setCurrentContentSlide(index => index - 1);
+    } else {
+      onPrev?.();
+    }
+  };
+
+  const goToNext = () => {
+    if (hasPages && currentContentSlide < contentSlides.length - 1) {
+      setCurrentContentSlide(index => index + 1);
+    } else {
+      onNext?.();
+    }
+  };
+
+  const selectLesson = (id) => {
+    navigate('/LessonPlayerClassic?lesson=' + id + '&course=' + courseId);
+    setShowMobileOutline(false);
+  };
+
+  const richContentClasses = [
+    'lesson-rich-content text-[16px] sm:text-[17px] leading-7 sm:leading-8 text-slate-700',
+    '[&_p]:mb-5 [&_p]:max-w-none',
+    '[&_h2]:mt-9 [&_h2]:mb-4 [&_h2]:font-serif [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-[#0b1b32]',
+    '[&_h3]:mt-8 [&_h3]:mb-3 [&_h3]:font-serif [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-[#12345a]',
+    '[&_ul]:my-5 [&_ul]:list-disc [&_ul]:pl-6 [&_ol]:my-5 [&_ol]:list-decimal [&_ol]:pl-6 [&_li]:mb-2',
+    '[&_strong]:font-semibold [&_strong]:text-[#0b1b32]',
+    '[&_a]:text-indigo-700 [&_a]:underline [&_a]:underline-offset-2',
+    '[&_details]:my-5 [&_details]:rounded-xl [&_details]:border [&_details]:border-slate-200 [&_details]:bg-white [&_details]:p-4',
+    '[&_summary]:cursor-pointer [&_summary]:font-semibold [&_summary]:text-[#10233f]',
+    '[&_table]:my-6 [&_table]:w-full [&_table]:border-collapse [&_table]:overflow-hidden [&_table]:rounded-xl [&_table]:text-[15px]',
+    '[&_th]:border [&_th]:border-slate-200 [&_th]:bg-slate-100 [&_th]:p-3 [&_th]:text-left [&_td]:border [&_td]:border-slate-200 [&_td]:p-3',
+    '[&_img]:h-auto [&_img]:max-w-full [&_svg]:h-auto [&_svg]:max-w-full [&_figure]:my-7 [&_figure]:overflow-visible',
+    '[&_math]:mx-1 [&_math]:inline-block [&_math]:align-middle [&_math]:font-serif [&_math]:text-[1.1em] [&_math]:text-[#0b1b32]',
+    '[&_.key-rule]:my-6 [&_.key-rule]:rounded-xl [&_.key-rule]:border [&_.key-rule]:border-emerald-200 [&_.key-rule]:bg-emerald-50 [&_.key-rule]:p-5',
+    '[&_.notation-note]:my-6 [&_.notation-note]:rounded-xl [&_.notation-note]:border [&_.notation-note]:border-orange-200 [&_.notation-note]:bg-orange-50 [&_.notation-note]:p-5',
+    '[&_.worked-example]:my-6 [&_.worked-example]:rounded-xl [&_.worked-example]:border [&_.worked-example]:border-blue-200 [&_.worked-example]:bg-blue-50 [&_.worked-example]:p-5',
+    '[&_.method-steps]:my-6 [&_.method-steps]:rounded-xl [&_.method-steps]:border [&_.method-steps]:border-indigo-200 [&_.method-steps]:bg-indigo-50 [&_.method-steps]:p-5',
+    '[&_.practice-block]:my-6 [&_.practice-block]:rounded-xl [&_.practice-block]:border [&_.practice-block]:border-amber-200 [&_.practice-block]:bg-amber-50 [&_.practice-block]:p-5',
+    '[&_.answer-block]:my-5 [&_.answer-block]:rounded-xl [&_.answer-block]:border [&_.answer-block]:border-green-200 [&_.answer-block]:bg-green-50 [&_.answer-block]:p-5',
+    '[&_.check-point]:my-5 [&_.check-point]:rounded-xl [&_.check-point]:border [&_.check-point]:border-violet-200 [&_.check-point]:bg-violet-50 [&_.check-point]:p-5',
+    '[&_.step-number]:mr-2 [&_.step-number]:inline-flex [&_.step-number]:h-7 [&_.step-number]:w-7 [&_.step-number]:items-center [&_.step-number]:justify-center [&_.step-number]:rounded-full [&_.step-number]:bg-indigo-600 [&_.step-number]:text-sm [&_.step-number]:font-bold [&_.step-number]:text-white'
+  ].join(' ');
+
+  const outlineContent = (
+    <>
+      <div className="border-b border-white/10 px-5 pb-5 pt-5">
+        <div className="mb-4 flex items-center justify-between">
+          <span className="text-[11px] font-bold uppercase tracking-[0.18em] text-slate-300">Course outline</span>
+          <button
+            type="button"
+            onClick={() => { setShowSidebar(false); setShowMobileOutline(false); }}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-lg text-slate-300 hover:bg-white/10 hover:text-white"
+            aria-label="Collapse course outline"
+          >
+            <ChevronLeft className="h-5 w-5" />
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={() => navigate('/CourseDetails?id=' + courseId)}
+          className="mb-4 flex w-full items-start gap-3 text-left"
+        >
+          <BookOpen className="mt-0.5 h-5 w-5 shrink-0 text-orange-400" />
+          <span>
+            <span className="block text-[11px] uppercase tracking-[0.16em] text-slate-400">CCEA course</span>
+            <span className="mt-1 block text-sm font-semibold leading-5 text-white">{course?.title || 'Course'}</span>
+          </span>
+        </button>
+        <div className="mb-2 flex items-center justify-between text-xs text-slate-300">
+          <span>{lessonProgress}% complete</span>
+          <span>{completedIds.length} of {sortedLessons.length} lessons</span>
+        </div>
+        <div className="h-1.5 overflow-hidden rounded-full bg-white/15">
+          <div className="h-full rounded-full bg-orange-500 transition-all" style={{ width: lessonProgress + '%' }} />
+        </div>
+        <div className="relative mt-5">
+          <Search className="pointer-events-none absolute left-3 top-3 h-4 w-4 text-slate-400" />
+          <input
+            type="search"
+            placeholder="Search course outline"
+            value={searchQuery}
+            onChange={event => setSearchQuery(event.target.value)}
+            className="h-11 w-full rounded-lg border border-white/15 bg-white/5 pl-10 pr-3 text-sm text-white outline-none placeholder:text-slate-500 focus:border-orange-400"
+          />
+        </div>
+      </div>
+      <nav className="flex-1 overflow-y-auto py-3" aria-label="Course outline">
+        {Object.entries(groupedLessons).map(([section, sectionLessons]) => {
+          const isExpanded = expandedSections[section] !== false;
+          const filtered = sectionLessons.filter(item =>
+            !searchQuery || item.title.toLowerCase().includes(searchQuery.toLowerCase())
+          );
+          if (searchQuery && filtered.length === 0) return null;
+          return (
+            <div key={section} className="border-b border-white/10 py-1">
+              <button
+                type="button"
+                onClick={() => setExpandedSections(previous => ({ ...previous, [section]: !isExpanded }))}
+                className="flex min-h-12 w-full items-center justify-between px-5 py-3 text-left text-xs font-bold uppercase tracking-[0.12em] text-slate-200 hover:bg-white/5"
+              >
+                <span>{section}</span>
+                <ChevronRight className={'h-4 w-4 transition-transform ' + (isExpanded ? 'rotate-90' : '')} />
+              </button>
+              {isExpanded && (
+                <div className="px-2 pb-3">
+                  {filtered.map((item, index) => {
+                    const completed = completedIds.includes(item.id);
+                    const current = item.id === lesson.id;
+                    return (
+                      <button
+                        type="button"
+                        key={item.id}
+                        onClick={() => selectLesson(item.id)}
+                        aria-current={current ? 'page' : undefined}
+                        className={'relative mb-1 flex min-h-12 w-full items-center gap-3 rounded-lg px-3 py-2.5 text-left text-sm transition ' + (current ? 'bg-[#16314f] text-white' : 'text-slate-300 hover:bg-white/5 hover:text-white')}
+                      >
+                        {current && <span className="absolute inset-y-2 right-0 w-1 rounded-l-full bg-orange-500" />}
+                        <span className={'inline-flex h-6 w-6 shrink-0 items-center justify-center rounded-full border text-[11px] font-semibold ' + (completed ? 'border-emerald-400 bg-emerald-500 text-white' : current ? 'border-orange-400 text-orange-300' : 'border-slate-600 text-slate-400')}>
+                          {completed ? <Check className="h-3.5 w-3.5" /> : index + 1}
+                        </span>
+                        <span className="line-clamp-2 flex-1 leading-5">{item.title}</span>
+                      </button>
+                    );
+                  })}
                 </div>
               )}
             </div>
+          );
+        })}
+      </nav>
+      <div className="border-t border-white/10 px-5 py-4 text-xs text-slate-400">
+        Use <kbd className="rounded border border-white/15 px-1.5 py-0.5 text-slate-200">←</kbd>
+        <span className="mx-1">/</span>
+        <kbd className="rounded border border-white/15 px-1.5 py-0.5 text-slate-200">→</kbd> to change pages
+      </div>
+    </>
+  );
 
-            {/* Lessons List */}
-            <div className="flex-1 overflow-y-auto">
-              {Object.entries(groupedLessons).map(([section, sectionLessons]) => (
-                <div key={section} className="border-b border-slate-700 last:border-b-0">
-                  <button
-                    onClick={() => setExpandedSections(prev => ({ ...prev, [section]: !prev[section] }))}
-                    className="w-full px-4 py-3 flex items-center justify-between hover:bg-slate-800/50 transition text-xs font-semibold text-slate-400 uppercase tracking-wider"
-                  >
-                    {section}
-                    <ChevronRight className={`w-4 h-4 transition-transform ${expandedSections[section] ? 'rotate-90' : ''}`} />
-                  </button>
+  return (
+    <div ref={containerRef} className={'flex h-[100dvh] overflow-hidden bg-[#071326] text-white ' + (isFullscreen ? 'fixed inset-0 z-[100]' : '')}>
+      {showSidebar && (
+        <aside className="hidden h-full w-[288px] shrink-0 flex-col border-r border-white/10 bg-[#07182b] lg:flex">
+          {outlineContent}
+        </aside>
+      )}
 
-                  {expandedSections[section] && (
-                    <div className="space-y-1 px-2 py-2">
-                      {sectionLessons.filter(l =>
-                        !searchQuery || l.title.toLowerCase().includes(searchQuery.toLowerCase())
-                      ).map(l => {
-                        const completed = enrollment?.completed_lessons?.includes(l.id);
-                        const isCurrent = l.id === lesson.id;
+      {showMobileOutline && (
+        <div className="fixed inset-0 z-[80] lg:hidden">
+          <button
+            type="button"
+            onClick={() => setShowMobileOutline(false)}
+            className="absolute inset-0 bg-black/60"
+            aria-label="Close course outline"
+          />
+          <aside className="relative flex h-full w-[min(88vw,320px)] flex-col bg-[#07182b] shadow-2xl">
+            {outlineContent}
+          </aside>
+        </div>
+      )}
 
-                        return (
-                          <button
-                            key={l.id}
-                            onClick={() => {
-                              navigate(`/LessonPlayerClassic?lesson=${l.id}&course=${courseId}`);
-                              setExpandedSections(prev => ({ ...prev, [section]: false }));
-                            }}
-                            className={`w-full px-3 py-2.5 text-left rounded-lg text-sm transition flex items-center gap-2 ${
-                              isCurrent
-                                ? 'bg-orange-500/20 text-orange-300 border border-orange-500/30'
-                                : 'hover:bg-slate-700/50 text-slate-300'
-                            }`}
-                          >
-                            {completed ? (
-                              <CheckCircle className="w-4 h-4 text-green-500 flex-shrink-0" />
-                            ) : (
-                              <div className="w-4 h-4 rounded-full border border-slate-500 flex-shrink-0" />
-                            )}
-                            <span className="truncate flex-1">{l.title}</span>
-                          </button>
-                        );
-                      })}
-                    </div>
-                  )}
-                </div>
-              ))}
-            </div>
-          </motion.div>
-        )}
-      </AnimatePresence>
-
-      {/* Main Content */}
-      <div className="flex-1 flex flex-col overflow-hidden w-full lg:w-auto">
-        {/* Top Bar */}
-        <div className="bg-slate-900 border-b border-slate-700 px-6 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-4">
+      <section className="flex min-w-0 flex-1 flex-col overflow-hidden bg-[#eef1f5]">
+        <header className="z-30 flex min-h-[72px] shrink-0 items-center justify-between border-b border-white/10 bg-[#071326] px-3 text-white sm:px-5">
+          <div className="flex min-w-0 items-center gap-2 sm:gap-3">
             <button
-              onClick={() => setShowSidebar(!showSidebar)}
-              className="p-2 hover:bg-slate-800 rounded-lg transition"
-              title="Toggle sidebar"
+              type="button"
+              onClick={() => window.innerWidth < 1024 ? setShowMobileOutline(true) : setShowSidebar(!showSidebar)}
+              className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-lg text-slate-200 hover:bg-white/10"
+              aria-label="Toggle course outline"
             >
-              <Menu className="w-5 h-5" />
+              <Menu className="h-5 w-5" />
             </button>
-            <div>
-              <h1 className="text-lg font-semibold">{lesson.title}</h1>
-              <p className="text-xs text-slate-400">{lesson.section || 'Lesson'}</p>
-            </div>
+            <button
+              type="button"
+              onClick={() => navigate('/CourseDetails?id=' + courseId)}
+              className="hidden min-w-0 items-center gap-2 text-left sm:flex"
+            >
+              <ChevronLeft className="h-5 w-5 shrink-0 text-slate-300" />
+              <span className="hidden min-w-0 xl:block">
+                <span className="block truncate text-sm font-semibold">{course?.title || 'Course'}</span>
+                <span className="block truncate text-xs text-slate-400">{lesson.section || 'Lesson'}</span>
+              </span>
+            </button>
           </div>
 
-          <div className="flex items-center gap-2">
-            <div className="text-xs text-slate-400 mr-4">
-              {contentSlides.length > 0
-                ? `Page ${currentContentSlide + 1} / ${contentSlides.length}`
-                : `Lesson ${currentLessonIndex + 1} / ${sortedLessons.length}`}
-            </div>
+          <div className="min-w-0 flex-1 px-2 text-left sm:px-5 sm:text-center">
+            <h1 className="truncate font-serif text-base font-semibold sm:text-lg">{lesson.title}</h1>
+            <p className="mt-0.5 text-xs text-slate-400">
+              {hasPages ? 'Page ' + (currentContentSlide + 1) + ' of ' + contentSlides.length : 'Lesson ' + (currentLessonIndex + 1) + ' of ' + sortedLessons.length}
+            </p>
+          </div>
+
+          <div className="flex shrink-0 items-center gap-1">
             <button
-              onClick={() => setShowAI(!showAI)}
-              className={`p-2 rounded-lg transition ${showAI ? 'bg-orange-500/20 text-orange-300' : 'hover:bg-slate-800 text-slate-400'}`}
-              title="AI Assistant"
+              type="button"
+              onClick={() => toggleTool('ai')}
+              className={'hidden h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:inline-flex sm:gap-2 ' + (showAI ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              aria-label="Open AI learning assistant"
+              title="AI learning assistant"
             >
-              <Sparkles className="w-5 h-5" />
+              <Sparkles className="h-4.5 w-4.5" /><span className="hidden 2xl:inline">Ask</span>
             </button>
             <button
-              onClick={() => setShowNotes(!showNotes)}
-              className={`p-2 rounded-lg transition ${showNotes ? 'bg-orange-500/20 text-orange-300' : 'hover:bg-slate-800 text-slate-400'}`}
+              type="button"
+              onClick={() => toggleTool('notes')}
+              className={'hidden h-11 min-w-11 items-center justify-center rounded-lg px-3 text-xs transition sm:inline-flex sm:gap-2 ' + (showNotes ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              aria-label="Open notes"
               title="Notes"
             >
-              <MessageSquare className="w-5 h-5" />
+              <MessageSquare className="h-4.5 w-4.5" /><span className="hidden 2xl:inline">Notes</span>
             </button>
             <button
-              onClick={() => setShowQuizPanel(!showQuizPanel)}
-              className={`p-2 rounded-lg transition ${showQuizPanel ? 'bg-orange-500/20 text-orange-300' : 'hover:bg-slate-800 text-slate-400'}`}
-              title="Quiz Generator"
-            >
-              <Brain className="w-5 h-5" />
-            </button>
-            <button
+              type="button"
               onClick={toggleFullscreen}
-              className="p-2 hover:bg-slate-800 rounded-lg transition text-slate-400"
+              className="hidden h-11 w-11 items-center justify-center rounded-lg text-slate-200 hover:bg-white/10 md:inline-flex"
+              aria-label={isFullscreen ? 'Exit fullscreen' : 'Enter fullscreen'}
               title="Fullscreen"
             >
-              {isFullscreen ? <Minimize2 className="w-5 h-5" /> : <Maximize2 className="w-5 h-5" />}
+              {isFullscreen ? <Minimize2 className="h-5 w-5" /> : <Maximize2 className="h-5 w-5" />}
+            </button>
+            <button
+              type="button"
+              onClick={() => toggleTool('quiz')}
+              className={'inline-flex h-11 w-11 items-center justify-center rounded-lg sm:hidden ' + (showQuizPanel ? 'bg-orange-500 text-[#071326]' : 'text-slate-200 hover:bg-white/10')}
+              aria-label="Open lesson tools"
+            >
+              <Settings className="h-5 w-5" />
             </button>
           </div>
-        </div>
+        </header>
 
-        {/* Content Area */}
-        <div className="flex-1 overflow-hidden flex gap-4 p-4">
-          {/* Main Content */}
-          <div ref={mainContentRef} className="flex-1 bg-slate-800/30 rounded-lg overflow-auto">
+        <div className="flex min-h-0 flex-1 overflow-hidden">
+          <main ref={mainContentRef} className="min-w-0 flex-1 overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8" aria-label="Lesson content">
             {lesson.manus_slides_url ? (
-              <div className="w-full h-full flex items-center justify-center p-4 overflow-y-auto">
-                <div className="w-full max-w-3xl">
-                  <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
-                </div>
+              <div className="mx-auto min-h-full max-w-5xl rounded-xl bg-white p-4 shadow-sm">
+                <ManusSlidePlayer url={lesson.manus_slides_url} title={lesson.title} />
               </div>
             ) : lesson.google_slides_url || lesson.video_url || lesson.file_url ? (
-              <UniversalLessonPlayer
-                lesson={lesson}
-                totalSlides={lesson.total_slides || lesson.slides?.length || 1}
-                isFullscreen={isFullscreen}
-                toggleFullscreen={toggleFullscreen}
-              />
-            ) : contentSlides.length > 0 && activeContentSlide ? (
-              <div className="min-h-full p-4 sm:p-8 lg:p-10">
-                <article className="mx-auto max-w-4xl rounded-2xl border border-slate-700 bg-slate-900/80 p-6 sm:p-10 shadow-2xl">
-                  <div className="mb-6 flex items-center justify-between gap-4 border-b border-slate-700 pb-4">
-                    <span className="text-xs font-semibold uppercase tracking-widest text-orange-400">
-                      {course?.title || 'CCEA Course'} - {lesson.section || 'Lesson'}
-                    </span>
-                    <span className="text-sm text-slate-400">Page {currentContentSlide + 1} of {contentSlides.length}</span>
-                  </div>
-                  <h2 className="mb-6 text-2xl font-bold text-white sm:text-3xl">{activeContentSlide.title}</h2>
-                  <div
-                    className="lesson-rich-content text-base leading-relaxed text-slate-100 sm:text-lg [&_details]:my-4 [&_details]:rounded-xl [&_details]:border [&_details]:border-slate-600 [&_details]:bg-slate-800 [&_details]:p-4 [&_h2]:mb-4 [&_h2]:mt-7 [&_h2]:text-2xl [&_h2]:font-bold [&_h2]:text-white [&_h3]:mb-3 [&_h3]:mt-6 [&_h3]:text-xl [&_h3]:font-semibold [&_h3]:text-orange-300 [&_li]:mb-2 [&_ol]:my-4 [&_ol]:list-decimal [&_ol]:pl-6 [&_p]:mb-4 [&_strong]:text-white [&_summary]:cursor-pointer [&_summary]:font-semibold [&_table]:my-5 [&_table]:w-full [&_table]:overflow-hidden [&_table]:rounded-lg [&_td]:border [&_td]:border-slate-600 [&_td]:p-3 [&_th]:border [&_th]:border-slate-600 [&_th]:bg-slate-800 [&_th]:p-3 [&_ul]:my-4 [&_ul]:list-disc [&_ul]:pl-6 [&_math]:mx-1 [&_math]:font-serif [&_math]:text-[1.15em] [&_math]:text-white [&_.key-rule]:my-6 [&_.key-rule]:rounded-xl [&_.key-rule]:border [&_.key-rule]:border-emerald-500/40 [&_.key-rule]:bg-emerald-950/40 [&_.key-rule]:p-5 [&_.notation-note]:my-6 [&_.notation-note]:rounded-xl [&_.notation-note]:border [&_.notation-note]:border-orange-500/40 [&_.notation-note]:bg-orange-950/40 [&_.notation-note]:p-5 [&_.worked-example]:my-6 [&_.worked-example]:rounded-xl [&_.worked-example]:border [&_.worked-example]:border-blue-500/40 [&_.worked-example]:bg-blue-950/40 [&_.worked-example]:p-5 [&_.method-steps]:my-6 [&_.method-steps]:rounded-xl [&_.method-steps]:border [&_.method-steps]:border-indigo-500/40 [&_.method-steps]:bg-indigo-950/40 [&_.method-steps]:p-5 [&_.practice-block]:my-6 [&_.practice-block]:rounded-xl [&_.practice-block]:border [&_.practice-block]:border-amber-500/40 [&_.practice-block]:bg-amber-950/30 [&_.practice-block]:p-5 [&_.answer-block]:my-5 [&_.answer-block]:rounded-xl [&_.answer-block]:border [&_.answer-block]:border-green-500/40 [&_.answer-block]:bg-green-950/30 [&_.answer-block]:p-5 [&_.check-point]:my-5 [&_.check-point]:rounded-xl [&_.check-point]:border [&_.check-point]:border-purple-500/40 [&_.check-point]:bg-purple-950/30 [&_.check-point]:p-5 [&_.step-number]:mr-2 [&_.step-number]:inline-flex [&_.step-number]:h-7 [&_.step-number]:w-7 [&_.step-number]:items-center [&_.step-number]:justify-center [&_.step-number]:rounded-full [&_.step-number]:bg-indigo-500 [&_.step-number]:text-sm [&_.step-number]:font-bold [&_.step-number]:text-white"
-                    dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }}
-                  />
-                  <div className="mt-8 flex items-center justify-between gap-3 border-t border-slate-700 pt-5">
-                    <button
-                      onClick={() => setCurrentContentSlide(index => Math.max(index - 1, 0))}
-                      disabled={currentContentSlide === 0}
-                      className="flex items-center gap-2 rounded-lg border border-slate-600 bg-slate-800 px-4 py-2 text-sm font-medium hover:bg-slate-700 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      <ChevronLeft className="h-4 w-4" /> Previous Page
-                    </button>
-                    <label className="flex items-center gap-2 text-sm text-slate-300">
-                      <span className="hidden sm:inline">Jump to</span>
-                      <select
-                        value={currentContentSlide}
-                        onChange={(event) => setCurrentContentSlide(Number(event.target.value))}
-                        aria-label="Choose lesson page"
-                        className="max-w-[8rem] rounded-lg border border-slate-600 bg-slate-800 px-2 py-2 text-sm text-white focus:border-orange-400 focus:outline-none sm:max-w-[18rem]"
-                      >
-                        {contentSlides.map((slide, index) => (
-                          <option key={index} value={index}>
-                            Page {index + 1}: {slide.title || `Slide ${index + 1}`}
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                    <button
-                      onClick={() => setCurrentContentSlide(index => Math.min(index + 1, contentSlides.length - 1))}
-                      disabled={currentContentSlide === contentSlides.length - 1}
-                      className="flex items-center gap-2 rounded-lg bg-orange-600 px-4 py-2 text-sm font-medium hover:bg-orange-500 disabled:cursor-not-allowed disabled:opacity-40"
-                    >
-                      Next Page <ChevronRight className="h-4 w-4" />
-                    </button>
-                  </div>
-                </article>
-              </div>
-            ) : (
-              <div className="h-full flex items-center justify-center text-slate-400">
-                No content available
-              </div>
-            )}
-          </div>
-
-          {/* Side Panels */}
-          <AnimatePresence>
-            {showAI && (
-              <motion.div
-                initial={{ x: 320 }}
-                animate={{ x: 0 }}
-                exit={{ x: 320 }}
-                className="w-80 bg-slate-800 rounded-lg border border-slate-700 flex flex-col overflow-hidden"
-              >
-                <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <Lightbulb className="w-4 h-4 text-yellow-400" />
-                    <h3 className="font-semibold text-sm">AI Assistant</h3>
-                  </div>
-                  <button onClick={() => setShowAI(false)} className="text-slate-400 hover:text-white">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                {/* AI Tabs */}
-                <div className="flex gap-2 px-4 py-3 border-b border-slate-700">
-                  {['ask', 'summarize', 'define', 'translate'].map(tab => (
-                    <button
-                      key={tab}
-                      onClick={() => setAiTab(tab)}
-                      className={`px-3 py-1 text-xs font-medium rounded transition ${
-                        aiTab === tab
-                          ? 'bg-orange-500/20 text-orange-300'
-                          : 'text-slate-400 hover:text-slate-300'
-                      }`}
-                    >
-                      {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                    </button>
-                  ))}
-                </div>
-
-                {/* AI Response */}
-                <div className="flex-1 overflow-y-auto p-4">
-                  {aiLoading ? (
-                    <div className="flex items-center justify-center h-full">
-                      <Loader2 className="w-5 h-5 animate-spin text-orange-500" />
-                    </div>
-                  ) : aiResponse || aiSummary || aiTranslation ? (
-                    <p className="text-sm text-slate-300">{aiResponse || aiSummary || aiTranslation}</p>
-                  ) : (
-                    <p className="text-xs text-slate-500">Ask a question or select an action...</p>
-                  )}
-                </div>
-
-                {/* AI Input */}
-                {aiTab === 'ask' && (
-                  <div className="p-4 border-t border-slate-700 flex gap-2">
-                    <input
-                      type="text"
-                      placeholder="Ask..."
-                      className="flex-1 bg-slate-700 text-white px-3 py-2 rounded text-sm border border-slate-600 focus:border-orange-500 outline-none"
-                      onKeyPress={(e) => {
-                        if (e.key === 'Enter' && e.currentTarget.value) {
-                          askAI(e.currentTarget.value, lesson.title);
-                          e.currentTarget.value = '';
-                        }
-                      }}
-                    />
-                    <button className="bg-orange-500 hover:bg-orange-600 text-white p-2 rounded transition">
-                      <Send className="w-4 h-4" />
-                    </button>
-                  </div>
-                )}
-              </motion.div>
-            )}
-
-            {showQuizPanel && (
-              <QuizGeneratorPanel lesson={lesson} onClose={() => setShowQuizPanel(false)} />
-            )}
-
-            {showNotes && (
-              <motion.div
-                initial={{ x: 320 }}
-                animate={{ x: 0 }}
-                exit={{ x: 320 }}
-                className="w-80 bg-slate-800 rounded-lg border border-slate-700 flex flex-col overflow-hidden"
-              >
-                <div className="p-4 border-b border-slate-700 flex items-center justify-between">
-                  <h3 className="font-semibold text-sm">Notes</h3>
-                  <button onClick={() => setShowNotes(false)} className="text-slate-400 hover:text-white">
-                    <X className="w-4 h-4" />
-                  </button>
-                </div>
-
-                <textarea
-                  value={notes[`${lesson.id}:${currentContentSlide}`] || ''}
-                  onChange={(e) => saveNote(`${lesson.id}:${currentContentSlide}`, e.target.value)}
-                  className="flex-1 bg-slate-700 text-white p-4 resize-none border-0 focus:outline-none"
-                  placeholder="Add notes..."
+              <div className="mx-auto min-h-full max-w-6xl overflow-hidden rounded-xl bg-white shadow-sm">
+                <UniversalLessonPlayer
+                  lesson={lesson}
+                  totalSlides={lesson.total_slides || lesson.slides?.length || 1}
+                  isFullscreen={isFullscreen}
+                  toggleFullscreen={toggleFullscreen}
                 />
-
-                <button
-                  onClick={exportNotes}
-                  className="p-3 border-t border-slate-700 hover:bg-slate-700/50 transition flex items-center justify-center gap-2 text-sm font-medium"
-                >
-                  <Download className="w-4 h-4" />
-                  Export
-                </button>
-              </motion.div>
+              </div>
+            ) : hasPages && activeContentSlide ? (
+              <article className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12">
+                <div className="mb-8 flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-5">
+                  <div>
+                    <p className="text-[11px] font-bold uppercase tracking-[0.18em] text-orange-600">
+                      Page {currentContentSlide + 1} of {contentSlides.length} <span className="mx-1.5 text-slate-300">•</span> {lesson.section || 'Lesson'}
+                    </p>
+                    <p className="mt-2 flex items-center gap-2 text-xs text-slate-500">
+                      <Clock className="h-4 w-4" /> About {estimatedMinutes} min for this lesson
+                    </p>
+                  </div>
+                  <button
+                    type="button"
+                    onClick={() => toggleBookmark(currentPageKey)}
+                    className={'inline-flex h-11 items-center gap-2 rounded-lg border px-3 text-sm font-medium transition ' + (isBookmarked ? 'border-orange-300 bg-orange-50 text-orange-700' : 'border-slate-200 bg-white text-slate-600 hover:border-slate-300')}
+                    aria-label={isBookmarked ? 'Remove page bookmark' : 'Bookmark this page'}
+                  >
+                    {isBookmarked ? <BookmarkCheck className="h-4 w-4" /> : <Bookmark className="h-4 w-4" />}
+                    <span className="hidden sm:inline">{isBookmarked ? 'Saved' : 'Bookmark'}</span>
+                  </button>
+                </div>
+                <h2 className="mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
+                <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
+              </article>
+            ) : (
+              <div className="mx-auto flex min-h-[420px] max-w-[920px] items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500">
+                No lesson content is available yet.
+              </div>
             )}
-          </AnimatePresence>
-        </div>
+          </main>
 
+          <aside className="hidden w-[78px] shrink-0 flex-col items-center gap-2 border-l border-slate-200 bg-[#f7f8fb] px-2 py-6 xl:flex" aria-label="Lesson tools">
+            {[
+              { id: 'ai', label: 'Ask', icon: Sparkles, active: showAI },
+              { id: 'notes', label: 'Notes', icon: MessageSquare, active: showNotes },
+              { id: 'quiz', label: 'Practice', icon: Brain, active: showQuizPanel }
+            ].map(tool => {
+              const ToolIcon = tool.icon;
+              return (
+                <button
+                  type="button"
+                  key={tool.id}
+                  onClick={() => toggleTool(tool.id)}
+                  className={'flex min-h-16 w-full flex-col items-center justify-center gap-1 rounded-lg text-[11px] font-medium transition ' + (tool.active ? 'bg-[#071326] text-white' : 'text-slate-600 hover:bg-white hover:text-[#071326]')}
+                  aria-pressed={tool.active}
+                >
+                  <ToolIcon className="h-5 w-5" />
+                  {tool.label}
+                </button>
+              );
+            })}
+          </aside>
 
-        {/* Bottom Controls */}
-        <div className="bg-slate-900 border-t border-slate-700 px-6 py-4 flex items-center justify-between gap-3 flex-wrap">
-          <div className="flex gap-2 items-center">
-            <button
-              onClick={onPrev}
-              disabled={!prevLesson}
-              className="px-4 py-2 rounded-lg bg-slate-700 hover:bg-slate-600 disabled:opacity-40 transition flex items-center gap-2 text-sm font-medium border border-slate-600"
-              title="Go to previous topic"
-            >
-              <ChevronLeft className="w-4 h-4" />
-              Prev Topic
-            </button>
-            <button
-              onClick={onNext}
-              disabled={!nextLesson}
-              className="px-4 py-2 rounded-lg bg-indigo-700 hover:bg-indigo-600 disabled:opacity-40 transition flex items-center gap-2 text-sm font-medium"
-              title="Go to next topic"
-            >
-              Next Topic
-              <ChevronRight className="w-4 h-4" />
-            </button>
-          </div>
+          {(showAI || showNotes || showQuizPanel) && (
+            <aside className="fixed inset-x-0 bottom-[72px] top-[72px] z-[70] flex flex-col overflow-hidden border-t border-slate-200 bg-white text-slate-900 shadow-2xl sm:left-auto sm:w-[360px] sm:border-l sm:border-t-0 lg:relative lg:inset-auto lg:z-20 lg:w-[360px] lg:shrink-0 lg:shadow-none">
+              <div className="flex h-16 shrink-0 items-center justify-between border-b border-slate-200 px-5">
+                <h3 className="flex items-center gap-2 font-serif text-lg font-bold text-[#0b1b32]">
+                  {showAI && <><Sparkles className="h-5 w-5 text-orange-500" /> Learning assistant</>}
+                  {showNotes && <><MessageSquare className="h-5 w-5 text-indigo-600" /> Page notes</>}
+                  {showQuizPanel && <><Brain className="h-5 w-5 text-violet-600" /> Practice questions</>}
+                </h3>
+                <button type="button" onClick={closeTools} className="inline-flex h-11 w-11 items-center justify-center rounded-lg text-slate-500 hover:bg-slate-100" aria-label="Close lesson tools">
+                  <X className="h-5 w-5" />
+                </button>
+              </div>
 
-          {!isCompleted && (
-            <button
-              onClick={() => markCompleteMutation.mutate()}
-              disabled={markCompleteMutation.isPending}
-              className="px-6 py-2 rounded-lg bg-green-600 hover:bg-green-700 disabled:opacity-50 transition flex items-center gap-2 text-sm font-medium"
-            >
-              <CheckCircle className="w-4 h-4" />
-              {markCompleteMutation.isPending ? 'Saving...' : 'Mark Complete'}
-            </button>
+              {showAI && (
+                <div className="flex min-h-0 flex-1 flex-col">
+                  <div className="grid grid-cols-4 gap-1 border-b border-slate-200 p-2">
+                    {['ask', 'summary', 'define', 'translate'].map(tab => (
+                      <button
+                        type="button"
+                        key={tab}
+                        onClick={() => setAiTab(tab)}
+                        className={'min-h-10 rounded-md px-2 text-xs font-semibold capitalize ' + (aiTab === tab ? 'bg-[#071326] text-white' : 'text-slate-600 hover:bg-slate-100')}
+                      >
+                        {tab}
+                      </button>
+                    ))}
+                  </div>
+                  <div className="min-h-0 flex-1 overflow-y-auto p-5">
+                    {aiTab === 'ask' && (
+                      <div className="space-y-3">
+                        <label className="text-sm font-semibold text-slate-700" htmlFor="lesson-ai-question">Ask about this page</label>
+                        <textarea
+                          id="lesson-ai-question"
+                          value={aiQuestion}
+                          onChange={event => setAiQuestion(event.target.value)}
+                          placeholder="What would you like explained?"
+                          className="min-h-28 w-full resize-y rounded-lg border border-slate-300 p-3 text-sm outline-none focus:border-orange-500"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => { askAI(aiQuestion, activeContentSlide?.content || lesson.title); setAiQuestion(''); }}
+                          disabled={!aiQuestion.trim() || aiLoading}
+                          className="inline-flex min-h-11 w-full items-center justify-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] hover:bg-orange-400 disabled:opacity-50"
+                        >
+                          {aiLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <Send className="h-4 w-4" />} Ask
+                        </button>
+                      </div>
+                    )}
+                    {aiTab === 'summary' && (
+                      <button type="button" onClick={() => summariseSlide(activeContentSlide?.content || '')} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">
+                        {aiLoading ? 'Creating summary…' : 'Summarise this page'}
+                      </button>
+                    )}
+                    {aiTab === 'define' && (
+                      <div className="space-y-3">
+                        <input value={defineTerm} onChange={event => setDefineTerm(event.target.value)} placeholder="Enter a word or term" className="h-11 w-full rounded-lg border border-slate-300 px-3 text-sm outline-none focus:border-orange-500" />
+                        <button type="button" onClick={() => { defineWord(defineTerm); setDefineTerm(''); }} disabled={!defineTerm.trim() || aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">Explain this term</button>
+                      </div>
+                    )}
+                    {aiTab === 'translate' && (
+                      <div className="space-y-3">
+                        <select value={targetLanguage} onChange={event => setTargetLanguage(event.target.value)} className="h-11 w-full rounded-lg border border-slate-300 bg-white px-3 text-sm">
+                          <option value="es">Spanish</option><option value="fr">French</option><option value="de">German</option><option value="zh">Chinese</option><option value="ar">Arabic</option><option value="ur">Urdu</option><option value="pl">Polish</option>
+                        </select>
+                        <button type="button" onClick={() => translateSlide(activeContentSlide?.content || '', targetLanguage)} disabled={aiLoading} className="min-h-11 w-full rounded-lg bg-[#071326] px-4 text-sm font-semibold text-white disabled:opacity-50">Translate this page</button>
+                      </div>
+                    )}
+                    {(aiResponse || aiSummary || aiTranslation) && (
+                      <div className="mt-5 whitespace-pre-wrap rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-6 text-slate-700">
+                        {aiTab === 'summary' ? aiSummary : aiTab === 'translate' ? aiTranslation : aiResponse}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {showNotes && (
+                <div className="flex min-h-0 flex-1 flex-col p-5">
+                  <p className="mb-3 text-sm text-slate-500">Notes are saved for page {currentContentSlide + 1}.</p>
+                  <textarea
+                    value={notes[currentPageKey] || ''}
+                    onChange={event => saveNote(currentPageKey, event.target.value)}
+                    className="min-h-0 flex-1 resize-none rounded-lg border border-slate-300 bg-amber-50/40 p-4 text-sm leading-6 outline-none focus:border-indigo-500"
+                    placeholder="Write your notes here…"
+                  />
+                  <button type="button" onClick={exportNotes} className="mt-3 inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-slate-300 bg-white text-sm font-semibold text-slate-700 hover:bg-slate-50">
+                    <Download className="h-4 w-4" /> Export notes
+                  </button>
+                </div>
+              )}
+
+              {showQuizPanel && <div className="min-h-0 flex-1 overflow-y-auto"><QuizGeneratorPanel lesson={lesson} onClose={closeTools} /></div>}
+            </aside>
           )}
         </div>
-      </div>
 
-      {/* Animations */}
+        <footer className="z-40 flex min-h-[72px] shrink-0 items-center gap-3 border-t border-slate-200 bg-white px-3 text-slate-900 sm:px-5">
+          <button
+            type="button"
+            onClick={goToPrevious}
+            disabled={isFirstPage && !prevLesson}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg border border-slate-300 bg-white px-3 text-sm font-semibold text-slate-700 hover:bg-slate-50 disabled:cursor-not-allowed disabled:opacity-40 sm:px-4"
+          >
+            <ChevronLeft className="h-4 w-4" /><span className="hidden sm:inline">{isFirstPage ? 'Previous topic' : 'Previous page'}</span>
+          </button>
+
+          <div className="min-w-0 flex-1">
+            <div className="mb-1.5 flex items-center justify-between text-[11px] font-semibold text-slate-500">
+              <span>{hasPages ? 'Page ' + (currentContentSlide + 1) + ' of ' + contentSlides.length : 'Lesson'}</span>
+              <span className="hidden sm:inline">Use ← / → to navigate</span>
+            </div>
+            <div className="h-1.5 overflow-hidden rounded-full bg-slate-200">
+              <div className="h-full rounded-full bg-orange-500 transition-all duration-300" style={{ width: pageProgress + '%' }} />
+            </div>
+          </div>
+
+          {hasPages && (
+            <select
+              value={currentContentSlide}
+              onChange={event => setCurrentContentSlide(Number(event.target.value))}
+              aria-label="Choose lesson page"
+              className="hidden h-11 max-w-[210px] rounded-lg border border-slate-300 bg-white px-3 text-sm text-slate-700 outline-none focus:border-orange-500 md:block"
+            >
+              {contentSlides.map((slide, index) => <option key={index} value={index}>Page {index + 1}: {slide.title || 'Untitled'}</option>)}
+            </select>
+          )}
+
+          {(!isCompleted && isLastPage) && (
+            <button
+              type="button"
+              onClick={() => markCompleteMutation.mutate()}
+              disabled={markCompleteMutation.isPending}
+              className="hidden h-11 shrink-0 items-center gap-2 rounded-lg border border-emerald-300 bg-emerald-50 px-4 text-sm font-semibold text-emerald-800 hover:bg-emerald-100 disabled:opacity-50 sm:inline-flex"
+            >
+              <CheckCircle className="h-4 w-4" /> {markCompleteMutation.isPending ? 'Saving…' : 'Mark complete'}
+            </button>
+          )}
+
+          <button
+            type="button"
+            onClick={goToNext}
+            disabled={isLastPage && !nextLesson}
+            className="inline-flex h-11 shrink-0 items-center gap-2 rounded-lg bg-orange-500 px-4 text-sm font-bold text-[#071326] shadow-sm hover:bg-orange-400 disabled:cursor-not-allowed disabled:opacity-40 sm:px-5"
+          >
+            <span className="hidden sm:inline">{isLastPage ? 'Next topic' : 'Next page'}</span><ChevronRight className="h-5 w-5" />
+          </button>
+        </footer>
+      </section>
+
       <PointsAnimation show={showPointsAnimation} points={earnedPoints} onComplete={() => setShowPointsAnimation(false)} />
       <BadgeUnlock badges={newBadges} onClose={() => setShowBadges(false)} />
       <LessonUnlockDialog
