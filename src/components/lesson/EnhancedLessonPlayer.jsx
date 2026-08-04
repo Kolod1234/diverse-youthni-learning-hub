@@ -544,8 +544,8 @@ export default function EnhancedLessonPlayer({
         <div className="flex min-h-0 flex-1 overflow-hidden">
           <main
             ref={mainContentRef}
-            className="min-w-0 flex-1 touch-pan-y overscroll-y-none overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
-            style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'none' }}
+            className="min-w-0 flex-1 touch-pan-y touch-pinch-zoom overscroll-y-none overflow-y-auto scroll-smooth px-3 py-4 sm:px-6 sm:py-7 lg:px-8"
+            style={{ WebkitOverflowScrolling: 'touch', overscrollBehaviorY: 'none', touchAction: 'pan-y pinch-zoom' }}
             aria-label="Lesson content"
             onTouchStart={handleTouchStart}
             onTouchEnd={handleTouchEnd}
