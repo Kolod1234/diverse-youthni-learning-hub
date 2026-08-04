@@ -52,7 +52,6 @@ import ResumePrompt from '@/components/lesson/ResumePrompt';
 import CertificateGenerator from '@/components/lesson/CertificateGenerator';
 import AccessibilityControls from '@/components/lesson/AccessibilityControls';
 import QuickActions from '@/components/lesson/QuickActions';
-import useKeyboardShortcuts from '@/components/lesson/useKeyboardShortcuts';
 import ModernLessonPlayer from '@/components/lesson/ModernLessonPlayer';
 import useProgressAutoSave from '@/components/lesson/useProgressAutoSave';
 import usePictureInPicture from '@/components/lesson/usePictureInPicture';
@@ -155,8 +154,6 @@ export default function LessonPlayerClassic() {
     lessonId,
     containerRef: mainContentRef,
     user,
-    onNext: (...args) => handleNextLessonRef.current?.(...args),
-    onPrev: (...args) => handlePrevLessonRef.current?.(...args),
   });
 
   // Load user XP and update streak (with retry logic and debouncing)
@@ -437,14 +434,6 @@ export default function LessonPlayerClassic() {
     }
   };
   handlePrevLessonRef.current = handlePrevLesson;
-
-  useKeyboardShortcuts({
-    onNext: handleNextLesson,
-    onPrev: handlePrevLesson,
-    onToggleFullscreen: toggleFullscreen,
-    onBookmark: () => setShowBookmarksSheet(true),
-    onSearch: () => searchInputRef.current?.focus()
-  });
 
   // Check if lesson is locked
   useEffect(() => {
