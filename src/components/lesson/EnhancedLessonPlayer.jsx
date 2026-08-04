@@ -1,26 +1,20 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { base44 } from '@/api/base44Client';
 import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
-import { createPageUrl } from '@/utils';
-import { 
-  ChevronLeft, ChevronRight, Check, Menu, Search, X, Lock, Key,
-  BookOpen, CheckCircle, Sparkles, MessageSquare, Clock, Eye,
-  Bookmark, BookmarkCheck, Settings, Maximize2, Minimize2, Download,
-  Send, Lightbulb, Zap, Settings2, Loader2, RefreshCw, Brain
+import {
+  ChevronLeft, ChevronRight, Check, Menu, Search, X,
+  BookOpen, CheckCircle, Sparkles, MessageSquare, Clock,
+  Bookmark, BookmarkCheck, Settings, Maximize2, Minimize2,
+  Download, Send, Loader2, Brain
 } from 'lucide-react';
 import { toast } from 'sonner';
-import { motion, AnimatePresence } from 'framer-motion';
 import UniversalLessonPlayer from '@/components/lesson/UniversalLessonPlayer';
 import ManusSlidePlayer from '@/components/lesson/ManusSlidePlayer';
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import PointsAnimation from '@/components/gamification/PointsAnimation';
 import BadgeUnlock from '@/components/gamification/BadgeUnlock';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
-import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
-import TrueFalseQuiz from '@/components/lesson/TrueFalseQuiz';
-import MatchingGame from '@/components/lesson/MatchingGame';
-import ShortAnswerQuiz from '@/components/lesson/ShortAnswerQuiz';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 
 export default function EnhancedLessonPlayer({
