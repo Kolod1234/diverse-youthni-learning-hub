@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { AnimatePresence, motion, useReducedMotion } from 'framer-motion';
 import { ArrowRight, Brain, Loader2, Sparkles, X } from 'lucide-react';
 import InteractiveQuiz from '@/components/lesson/InteractiveQuiz';
@@ -15,7 +15,12 @@ export default function TopicQuizModal({
   const shouldReduceMotion = useReducedMotion();
   const [quizScore, setQuizScore] = useState(null);
   const [quizRunKey, setQuizRunKey] = useState(0);
+  const onCloseRef = useRef(onClose);
   const topicQuestions = useMemo(() => questions.slice(0, 5), [questions]);
+
+  useEffect(() => {
+    onCloseRef.current = onClose;
+  }, [onClose]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -24,12 +29,12 @@ export default function TopicQuizModal({
     setQuizRunKey(value => value + 1);
 
     const handleEscape = (event) => {
-      if (event.key === 'Escape') onClose?.();
+      if (event.key === 'Escape') onCloseRef.current?.();
     };
 
     window.addEventListener('keydown', handleEscape);
     return () => window.removeEventListener('keydown', handleEscape);
-  }, [open, lesson?.id, onClose]);
+  }, [open, lesson?.id]);
 
   const handleComplete = (score) => {
     setQuizScore({
