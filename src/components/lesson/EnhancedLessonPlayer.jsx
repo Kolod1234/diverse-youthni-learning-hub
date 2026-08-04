@@ -565,7 +565,7 @@ export default function EnhancedLessonPlayer({
                 />
               </div>
             ) : hasPages && activeContentSlide ? (
-              <AnimatePresence mode="wait" initial={false}>
+              <AnimatePresence mode="sync" initial={false}>
                 <motion.article
                   key={currentPageKey}
                   className="mx-auto w-full max-w-[920px] rounded-xl border border-slate-200 bg-[#fbfcfe] px-5 py-7 text-[#13233b] shadow-[0_8px_30px_rgba(15,23,42,0.08)] sm:px-10 sm:py-10 lg:px-14 lg:py-12"
