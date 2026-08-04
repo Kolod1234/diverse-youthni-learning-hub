@@ -20,7 +20,6 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import BookmarkIcon from '@mui/icons-material/Bookmark';
 import ChatIcon from '@mui/icons-material/Chat';
 import AccessTimeIcon from '@mui/icons-material/AccessTime';
-import RefreshIcon from '@mui/icons-material/Refresh';
 import VisibilityIcon from '@mui/icons-material/Visibility';
 import AutoAwesomeIcon from '@mui/icons-material/AutoAwesome';
 const _w = (I) => ({ size, color, className, style, ...r }) => <I className={className} style={style} sx={{ fontSize: size || 18, color: color || 'inherit' }} {...r} />;
@@ -29,7 +28,7 @@ const ChevronDown = _w(KeyboardArrowDownIcon), Menu = _w(MenuIcon), Search = _w(
 const Lock = _w(LockIcon), Key = _w(VpnKeyIcon), BookOpen = _w(MenuBookIcon), CheckCircle = _w(CheckCircleIcon);
 const Settings = _w(SettingsIcon), Maximize = _w(FullscreenIcon), FileText = _w(DescriptionIcon);
 const Bookmark = _w(BookmarkIcon), MessageSquare = _w(ChatIcon), Clock = _w(AccessTimeIcon);
-const RefreshCw = _w(RefreshIcon), Eye = _w(VisibilityIcon), Sparkles = _w(AutoAwesomeIcon);
+const Eye = _w(VisibilityIcon), Sparkles = _w(AutoAwesomeIcon);
 import LessonUnlockDialog from '@/components/lesson/LessonUnlockDialog';
 import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import { AIAssistantDialog } from '@/components/lesson/LessonPlayerSharedUI';
@@ -56,7 +55,6 @@ import ModernLessonPlayer from '@/components/lesson/ModernLessonPlayer';
 import useProgressAutoSave from '@/components/lesson/useProgressAutoSave';
 import usePictureInPicture from '@/components/lesson/usePictureInPicture';
 import useHapticFeedback from '@/components/lesson/useHapticFeedback';
-import usePullToRefresh from '@/components/lesson/usePullToRefresh';
 import CommandPalette from '@/components/lesson/CommandPalette';
 import BreadcrumbNav from '@/components/lesson/BreadcrumbNav';
 import ProgressRing from '@/components/lesson/ProgressRing';
@@ -119,14 +117,6 @@ export default function LessonPlayerClassic() {
   // Advanced hooks
   const { videoRef, isPiP, enterPiP, exitPiP } = usePictureInPicture();
   const haptic = useHapticFeedback();
-  const { isPulling, pullDistance } = usePullToRefresh(async () => {
-    await Promise.all([
-      refetchLesson(),
-      refetchCourse(),
-      refetchEnrollment()
-    ]);
-    haptic.success();
-  });
 
   useEffect(() => {
     base44.auth.me().then(setUser);
@@ -728,19 +718,6 @@ export default function LessonPlayerClassic() {
       {/* Scroll Progress */}
       <ScrollPositionIndicator />
       
-      {/* Pull to Refresh Indicator */}
-      {isPulling && (
-        <div 
-          className="fixed top-0 left-0 right-0 flex justify-center z-50 transition-transform"
-          style={{ transform: `translateY(${Math.min(pullDistance, 80)}px)` }}
-        >
-          <div className="bg-blue-600 text-white px-4 py-2 rounded-full shadow-lg flex items-center gap-2">
-            <RefreshCw className={`w-4 h-4 ${pullDistance > 80 ? 'animate-spin' : ''}`} />
-            <span className="text-sm">{pullDistance > 80 ? 'Release to refresh' : 'Pull to refresh'}</span>
-          </div>
-        </div>
-      )}
-
       <Box sx={{ display: 'flex', flexDirection: 'column', minHeight: '100vh', bgcolor: 'background.default' }}>
         {/* Top Bar */}
         <AppBar position="sticky" sx={{ bgcolor: 'background.paper', color: 'text.primary', boxShadow: 1, zIndex: 40 }}>
