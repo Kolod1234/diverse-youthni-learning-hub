@@ -19,6 +19,8 @@ import useLessonPlayer from '@/components/lesson/useLessonPlayer';
 import QuizGeneratorPanel from '@/components/lesson/QuizGeneratorPanel';
 import TopicQuizModal from '@/components/lesson/TopicQuizModal';
 
+const SolarSystem3D = React.lazy(() => import('@/components/lesson/SolarSystem3D'));
+
 export default function EnhancedLessonPlayer({
   lesson,
   course,
@@ -594,6 +596,11 @@ export default function EnhancedLessonPlayer({
                 </div>
                 <h2 className="mb-6 font-serif text-3xl font-bold leading-tight text-[#0b1b32] sm:text-4xl">{activeContentSlide.title}</h2>
                   <div className={richContentClasses} dangerouslySetInnerHTML={{ __html: activeContentSlide.content || '' }} />
+                  {activeContentSlide.content?.includes('data-interactive="solar-system-3d"') && (
+                    <React.Suspense fallback={<div className="mt-6 min-h-[420px] animate-pulse rounded-xl bg-slate-100" aria-label="Loading interactive Solar System" />}>
+                      <SolarSystem3D />
+                    </React.Suspense>
+                  )}
                 </motion.article>
             ) : (
               <div className="mx-auto flex min-h-[420px] max-w-[920px] items-center justify-center rounded-xl border border-slate-200 bg-white text-slate-500">
