@@ -335,8 +335,10 @@ export default function SolarSystem3D() {
           return;
         }
 
+        const visualRadius = body.config?.size ?? 2.15;
+        const clearDistance = Math.max(34, (visualRadius * 30) + 18);
         const labelWidth = Math.max(58, body.name.length * 8 + 18);
-        const offsets = [-26, -52, 22, -78, 48];
+        const offsets = [-clearDistance, -clearDistance - 28, clearDistance, -clearDistance - 56, clearDistance + 28];
         let chosenY = null;
         for (const offset of offsets) {
           const candidate = { left: baseX - (labelWidth / 2), right: baseX + (labelWidth / 2), top: baseY + offset - 12, bottom: baseY + offset + 12 };
